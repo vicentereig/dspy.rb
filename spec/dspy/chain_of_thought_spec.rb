@@ -18,7 +18,7 @@ RSpec.describe DSPy::Signature do
         
         qa = qa_cod.call(question: "Two dice are tossed. What is the probability that the sum equals two?")
         
-        expect(qa.answer).to eq("The probability that the sum equals two when two dice are tossed is 1/36.")
+        expect(qa.answer).to eq("1/36")
       end      
     end
 
