@@ -45,6 +45,11 @@ module DSPy
     def generate_system_prompt(signature)
       instructions = signature.class.description
       
+      # Add chain-of-thought specific instructions if needed
+      if defined?(DSPy::ChainOfThought) && caller_locations.any? { |loc| loc.path.include?('chain_of_thought.rb') }
+        instructions = "#{instructions}\n\nThink step by step to solve this problem. Break it down into parts, solve each part, and then combine the results to get the final answer."
+      end
+      
       output_fields_desc = signature.class.output_fields.map do |name, field|
         type_desc = field.type.is_a?(Array) ? field.type.join(', ') : field.type
         "#{name}: #{type_desc}"
@@ -57,6 +62,8 @@ module DSPy
         
         Format your response as a valid JSON object with these fields:
         #{output_fields_desc}
+        
+        If one of the fields is 'answer', make sure it contains the precise, concise final answer.
       PROMPT
     end
     
