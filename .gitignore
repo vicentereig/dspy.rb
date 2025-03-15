@@ -1,3 +1,5 @@
+.byebug_history
+.env
 *.gem
 notes/
 # Environment normalization

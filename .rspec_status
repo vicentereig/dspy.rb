@@ -1,4 +1,6 @@
-example_id                 | status | run_time        |
--------------------------- | ------ | --------------- |
-./spec/dspy_spec.rb[1:1:1] | passed | 0.00056 seconds |
-./spec/dspy_spec.rb[1:1:2] | passed | 0.00039 seconds |
+example_id                           | status | run_time        |
+------------------------------------ | ------ | --------------- |
+./spec/dspy/signature_spec.rb[1:1:1] | passed | 0.02806 seconds |
+./spec/dspy/signature_spec.rb[1:1:2] | passed | 0.00122 seconds |
+./spec/dspy_spec.rb[1:1:1]           | passed | 0.00026 seconds |
+./spec/dspy_spec.rb[1:1:2]           | passed | 0.00004 seconds |

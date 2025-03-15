@@ -21,8 +21,8 @@ Gem::Specification.new do |spec|
   
   spec.require_paths = ["lib"]
 
-  # Runtime dependencies go here
-  # spec.add_dependency "example-gem", "~> 1.0"
+  # Runtime dependencies
+  spec.add_dependency "ruby_llm", "~> 1.0" 
 
   # Development dependencies are already specified in the Gemfile
 end 

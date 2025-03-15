@@ -1,5 +1,17 @@
 # frozen_string_literal: true
+require 'ruby_llm'
 
 module DSPy
-  # Your code will go here
-end 
+  class << self
+    attr_accessor :lm
+    
+    def configure(lm: nil)
+      @lm = lm
+    end
+  end
+end
+
+require_relative 'dspy/field'
+require_relative 'dspy/signature'
+require_relative 'dspy/lm'
+require_relative 'dspy/predict' 
