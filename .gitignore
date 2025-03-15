@@ -1,1 +1,6 @@
-.rspec_status
+*.gem
+notes/
+# Environment normalization
+.bundle/
+vendor/bundle
+lib/bundler/man/
