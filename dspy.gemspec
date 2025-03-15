@@ -1,0 +1,28 @@
+# frozen_string_literal: true
+
+Gem::Specification.new do |spec|
+  spec.name = "dspy"
+  spec.version = "0.1.0"
+  spec.authors = ["Vicente Reig Rincón de Arellano"]
+  spec.email = ["hey@vicente.services"]
+
+  spec.summary = "Ruby port of DSPy 2.6"
+  spec.description = "A Ruby implementation of DSPy, a framework for programming with large language models"
+  spec.homepage = "https://github.com/vicentereig/dspy.rb"
+  spec.license = "MIT"
+  spec.required_ruby_version = ">= 2.6.0"
+
+  # Specify which files should be added to the gem when it is released.
+  spec.files = Dir.glob(%w[lib/**/*.rb README.md LICENSE.txt])
+  
+  # Uncomment to register executables
+  # spec.bindir = "exe"
+  # spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
+  
+  spec.require_paths = ["lib"]
+
+  # Runtime dependencies go here
+  # spec.add_dependency "example-gem", "~> 1.0"
+
+  # Development dependencies are already specified in the Gemfile
+end 

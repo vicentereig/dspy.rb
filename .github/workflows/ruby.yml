@@ -1,0 +1,30 @@
+name: Ruby Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Read Ruby version from .ruby-version
+      id: ruby-version
+      run: echo "version=$(cat .ruby-version)" >> $GITHUB_OUTPUT
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ steps.ruby-version.outputs.version }}
+        bundler-cache: true # This will cache your gems
+
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Run tests
+      run: bundle exec rspec 
