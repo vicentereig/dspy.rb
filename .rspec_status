@@ -1,7 +1,7 @@
 example_id                                  | status | run_time        |
 ------------------------------------------- | ------ | --------------- |
-./spec/dspy/chain_of_thought_spec.rb[1:1:1] | passed | 0.03191 seconds |
-./spec/dspy/signature_spec.rb[1:1:1]        | passed | 0.00207 seconds |
-./spec/dspy/signature_spec.rb[1:1:2]        | passed | 0.00136 seconds |
-./spec/dspy_spec.rb[1:1:1]                  | passed | 0.00028 seconds |
-./spec/dspy_spec.rb[1:1:2]                  | passed | 0.00004 seconds |
+./spec/dspy/chain_of_thought_spec.rb[1:1:1] | passed | 0.04807 seconds |
+./spec/dspy/signature_spec.rb[1:1:1]        | passed | 0.00316 seconds |
+./spec/dspy/signature_spec.rb[1:1:2]        | passed | 0.0016 seconds  |
+./spec/dspy_spec.rb[1:1:1]                  | passed | 0.00033 seconds |
+./spec/dspy_spec.rb[1:1:2]                  | passed | 0.00005 seconds |
