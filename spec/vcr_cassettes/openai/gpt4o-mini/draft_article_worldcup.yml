@@ -1,0 +1,1528 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nOutline a thorough overview
+        of a topic.\n\nThink step by step to solve this problem. Break it down into
+        parts, solve each part, and then combine the results to get the final answer.\n\n\n\nFormat
+        your response as a valid JSON object with these fields:\ntitle: String\nsections:
+        Array\nsection_subheadings: Hash\n\nIf one of the fields is ''answer'', make
+        sure it contains the precise, concise final answer.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:09:33 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '4242'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199870'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 39ms
+      X-Request-Id:
+      - req_ba7b2c336b7accb5fd33bfed844b8317
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=DzSS03SbOnJcg8Jk65apVNuCso.DIyUP8KFaXILXAdk-1742062173-1.0.1.1-VCtK6uGMVFOvamfnwu2WnRrQ05z8PgJTXje6084s.0JP_z.oy8mUTXWSGYQmyDswoAatpbNIGH_XunBlfiaXcrX6aczraDczvKcYX8OMKJc;
+        path=/; expires=Sat, 15-Mar-25 18:39:33 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=YPcRGL294Y9dxIZiHfHVNOqdsBfhyjW_IIkQ1jUUgE8-1742062173052-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df64abdd8431c-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQEqzCxBcMVyDdX2LSCeqhnLdnHV",
+          "object": "chat.completion",
+          "created": 1742062168,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"title\": \"Overview of Renewable Energy Sources\",\n  \"sections\": [\n    {\n      \"section_title\": \"Introduction\",\n      \"content\": \"Renewable energy sources are natural resources that are replenished at a higher rate than they are consumed. They provide sustainable alternatives to fossil fuels.\"\n    },\n    {\n      \"section_title\": \"Types of Renewable Energy Sources\",\n      \"content\": \"The main types of renewable energy sources include solar, wind, hydroelectric, geothermal, and biomass.\"\n    },\n    {\n      \"section_title\": \"Benefits of Renewable Energy\",\n      \"content\": \"Renewable energy reduces greenhouse gas emissions, decreases air pollution, provides energy security, and creates jobs.\"\n    },\n    {\n      \"section_title\": \"Challenges of Renewable Energy\",\n      \"content\": \"Challenges include intermittency, high initial costs, land use concerns, and technological limitations.\"\n    },\n    {\n      \"section_title\": \"Future of Renewable Energy\",\n      \"content\": \"The future of renewable energy looks promising with advancements in technology, increased investments, and supportive government policies.\"\n    }\n  ],\n  \"section_subheadings\": {\n    \"Introduction\": \"Definition and Importance\",\n    \"Types of Renewable Energy Sources\": \"Categories and Examples\",\n    \"Benefits of Renewable Energy\": \"Environmental and Economic Advantages\",\n    \"Challenges of Renewable Energy\": \"Obstacles and Issues\",\n    \"Future of Renewable Energy\": \"Trends and Innovations\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 103,
+            "completion_tokens": 299,
+            "total_tokens": 402,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_06737a9306"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:09:32 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nOutline a thorough overview
+        of a topic.\n\nThink step by step to solve this problem. Break it down into
+        parts, solve each part, and then combine the results to get the final answer.\n\n\n\nFormat
+        your response as a valid JSON object with these fields:\ntitle: String\nsections:
+        Array\nsection_subheadings: Hash\n\nIf one of the fields is ''answer'', make
+        sure it contains the precise, concise final answer.\n"},{"role":"assistant","content":"```json\n{\n  \"title\":
+        \"Overview of Renewable Energy Sources\",\n  \"sections\": [\n    {\n      \"section_title\":
+        \"Introduction\",\n      \"content\": \"Renewable energy sources are natural
+        resources that are replenished at a higher rate than they are consumed. They
+        provide sustainable alternatives to fossil fuels.\"\n    },\n    {\n      \"section_title\":
+        \"Types of Renewable Energy Sources\",\n      \"content\": \"The main types
+        of renewable energy sources include solar, wind, hydroelectric, geothermal,
+        and biomass.\"\n    },\n    {\n      \"section_title\": \"Benefits of Renewable
+        Energy\",\n      \"content\": \"Renewable energy reduces greenhouse gas emissions,
+        decreases air pollution, provides energy security, and creates jobs.\"\n    },\n    {\n      \"section_title\":
+        \"Challenges of Renewable Energy\",\n      \"content\": \"Challenges include
+        intermittency, high initial costs, land use concerns, and technological limitations.\"\n    },\n    {\n      \"section_title\":
+        \"Future of Renewable Energy\",\n      \"content\": \"The future of renewable
+        energy looks promising with advancements in technology, increased investments,
+        and supportive government policies.\"\n    }\n  ],\n  \"section_subheadings\":
+        {\n    \"Introduction\": \"Definition and Importance\",\n    \"Types of Renewable
+        Energy Sources\": \"Categories and Examples\",\n    \"Benefits of Renewable
+        Energy\": \"Environmental and Economic Advantages\",\n    \"Challenges of
+        Renewable Energy\": \"Obstacles and Issues\",\n    \"Future of Renewable Energy\":
+        \"Trends and Innovations\"\n  }\n}\n```"},{"role":"user","content":"Please
+        analyze the following:\n\ntopic: World Cup 2002\n\nRespond with JSON only.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:09:38 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '4358'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '199477'
+      X-Ratelimit-Reset-Requests:
+      - 12.242s
+      X-Ratelimit-Reset-Tokens:
+      - 156ms
+      X-Request-Id:
+      - req_17369af8ae439093459c69eee6bda970
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=xV_8TGR6d9baOobW2a_gkvb0S3Y0xt.voOjpkq12Cj8-1742062178-1.0.1.1-5DacEpnbsZEDtSoCJdItHdZRI.lC4Va2Cai0UMxxYdttAw1LzOwhHRxpem8VUMScTmBOhQ.8rVoe6NfRYX0tqo1FR5LdDSy2IJAGUwW_0V8;
+        path=/; expires=Sat, 15-Mar-25 18:39:38 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=aHoIt_EIsOHqbfc8qv3qO6hQPXiWgGsB3LBdIFYVEzc-1742062178219-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df66a4d6d1a1b-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQEvhbWHCooD8xTAnRvDst7qi5oI",
+          "object": "chat.completion",
+          "created": 1742062173,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"title\": \"Analysis of World Cup 2002\",\n  \"sections\": [\n    {\n      \"section_title\": \"Overview\",\n      \"content\": \"The 2002 FIFA World Cup was jointly hosted by South Korea and Japan, marking the first time the tournament was held in Asia.\"\n    },\n    {\n      \"section_title\": \"Key Highlights\",\n      \"content\": \"Brazil won the tournament, defeating Germany 2-0 in the final. This victory marked Brazil's fifth World Cup title.\"\n    },\n    {\n      \"section_title\": \"Notable Matches\",\n      \"content\": \"Some of the most memorable matches included the quarter-final match between South Korea and Italy, where South Korea won in a controversial decision.\"\n    },\n    {\n      \"section_title\": \"Impact on Host Nations\",\n      \"content\": \"The tournament had a significant impact on both South Korea and Japan, boosting tourism and showcasing their cultures to the world.\"\n    },\n    {\n      \"section_title\": \"Technological Innovations\",\n      \"content\": \"The 2002 World Cup introduced new broadcasting technologies and was the first to use the Video Assistant Referee (VAR) system, although it was not implemented in the tournament.\"\n    }\n  ],\n  \"section_subheadings\": {\n    \"Overview\": \"Introduction to the Event\",\n    \"Key Highlights\": \"Champion and Major Outcomes\",\n    \"Notable Matches\": \"Memorable Games and Controversies\",\n    \"Impact on Host Nations\": \"Cultural and Economic Effects\",\n    \"Technological Innovations\": \"Advancements in Broadcasting and Referee Assistance\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 427,
+            "completion_tokens": 332,
+            "total_tokens": 759,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_06737a9306"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:09:38 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:09:43 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '5308'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '199880'
+      X-Ratelimit-Reset-Requests:
+      - 16.048s
+      X-Ratelimit-Reset-Tokens:
+      - 36ms
+      X-Request-Id:
+      - req_4111ad22bb2b08ff38e31ca349c42335
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=UOCneCtXNrWJ6a5HzfvJ036R8eBjrO5N2yglmIbhRvs-1742062183-1.0.1.1-4.MVRN2VkHnAcSvFYrwl0nAehmdH2x4SEk914u5nOfBu4kCqsKQvNrH4i5DC3aRddN5e3uZWmXcGZ8TUBLhQHp_Ff_0Oa26SoGd5AQYuCf8;
+        path=/; expires=Sat, 15-Mar-25 18:39:43 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=8J7AM6YRkPF8VZgj2stweGVTZziQX7ZllLWLmnu82SA-1742062183992-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df6887a604b06-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQF0IZ5CLIqo1kRiDDHoYgECBMcx",
+          "object": "chat.completion",
+          "created": 1742062178,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"content\": {\n    \"title\": \"The Impact of Climate Change on Global Ecosystems\",\n    \"introduction\": {\n      \"paragraph1\": \"Climate change is one of the most pressing issues of our time, affecting various aspects of life on Earth. Its influence extends beyond just temperature increases; it impacts weather patterns, sea levels, and biodiversity.\",\n      \"paragraph2\": \"Understanding the effects of climate change on global ecosystems is crucial for developing effective conservation strategies and policies.\"\n    },\n    \"sections\": [\n      {\n        \"sectionTitle\": \"1. Changes in Temperature and Weather Patterns\",\n        \"sectionContent\": \"As global temperatures rise, regions experience altered weather patterns. This can lead to more frequent and severe weather events such as hurricanes, droughts, and floods.\"\n      },\n      {\n        \"sectionTitle\": \"2. Ocean Acidification and Marine Life\",\n        \"sectionContent\": \"Increased levels of carbon dioxide in the atmosphere lead to higher absorption of CO2 by oceans, causing acidification. This phenomenon adversely affects marine species, particularly those with calcium carbonate shells.\"\n      },\n      {\n        \"sectionTitle\": \"3. Impact on Terrestrial Ecosystems\",\n        \"sectionContent\": \"Changes in climate affect terrestrial ecosystems by altering habitats, affecting food availability, and leading to shifts in species distributions. Some species may thrive, while others face extinction.\"\n      },\n      {\n        \"sectionTitle\": \"4. Biodiversity and Extinction Risk\",\n        \"sectionContent\": \"The rapid pace of climate change poses significant risks to biodiversity. Species that cannot adapt quickly enough may face extinction, leading to loss of biodiversity and ecosystem services.\"\n      }\n    ],\n    \"conclusion\": {\n      \"finalThoughts\": \"Addressing climate change requires a concerted effort from individuals, communities, and governments worldwide. Protecting global ecosystems is essential for maintaining the balance of life on Earth.\"\n    }\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 93,
+            "completion_tokens": 394,
+            "total_tokens": 487,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:09:43 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"},{"role":"assistant","content":"```json\n{\n  \"content\":
+        {\n    \"title\": \"The Impact of Climate Change on Global Ecosystems\",\n    \"introduction\":
+        {\n      \"paragraph1\": \"Climate change is one of the most pressing issues
+        of our time, affecting various aspects of life on Earth. Its influence extends
+        beyond just temperature increases; it impacts weather patterns, sea levels,
+        and biodiversity.\",\n      \"paragraph2\": \"Understanding the effects of
+        climate change on global ecosystems is crucial for developing effective conservation
+        strategies and policies.\"\n    },\n    \"sections\": [\n      {\n        \"sectionTitle\":
+        \"1. Changes in Temperature and Weather Patterns\",\n        \"sectionContent\":
+        \"As global temperatures rise, regions experience altered weather patterns.
+        This can lead to more frequent and severe weather events such as hurricanes,
+        droughts, and floods.\"\n      },\n      {\n        \"sectionTitle\": \"2.
+        Ocean Acidification and Marine Life\",\n        \"sectionContent\": \"Increased
+        levels of carbon dioxide in the atmosphere lead to higher absorption of CO2
+        by oceans, causing acidification. This phenomenon adversely affects marine
+        species, particularly those with calcium carbonate shells.\"\n      },\n      {\n        \"sectionTitle\":
+        \"3. Impact on Terrestrial Ecosystems\",\n        \"sectionContent\": \"Changes
+        in climate affect terrestrial ecosystems by altering habitats, affecting food
+        availability, and leading to shifts in species distributions. Some species
+        may thrive, while others face extinction.\"\n      },\n      {\n        \"sectionTitle\":
+        \"4. Biodiversity and Extinction Risk\",\n        \"sectionContent\": \"The
+        rapid pace of climate change poses significant risks to biodiversity. Species
+        that cannot adapt quickly enough may face extinction, leading to loss of biodiversity
+        and ecosystem services.\"\n      }\n    ],\n    \"conclusion\": {\n      \"finalThoughts\":
+        \"Addressing climate change requires a concerted effort from individuals,
+        communities, and governments worldwide. Protecting global ecosystems is essential
+        for maintaining the balance of life on Earth.\"\n    }\n  }\n}\n```"},{"role":"user","content":"Please
+        analyze the following:\n\ntopic: Analysis of World Cup 2002\nsection_heading:
+        ## Overview\nsection_subheadings: [\"### Introduction to the Event\"]\n\nRespond
+        with JSON only.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:09:46 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '2056'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '199322'
+      X-Ratelimit-Reset-Requests:
+      - 18.891s
+      X-Ratelimit-Reset-Tokens:
+      - 203ms
+      X-Request-Id:
+      - req_bdb27fad6e3152789f28bf0aadaaeacb
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=cKp9pM9QgKX60LrqhhoAnDf.EtXfb1xZ1l6rwqi.evs-1742062186-1.0.1.1-iuymJ0jyC0Jx0tuSPLar.UKKsPDQwQj3yCYWoWPR7rnb8dt5p0YLkM48U2VpsBxUQxvQwmpHycND69BMTtiizbI9Fui7PVn9bssZ0OanlEg;
+        path=/; expires=Sat, 15-Mar-25 18:39:46 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=KcNokKdiR4CHWlVy9qn8e5rp5qjoWOViwF2almOgs_w-1742062186539-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df6aca8518c72-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQF6UpyE8k25Rh4Y1mkXNSbHE6dR",
+          "object": "chat.completion",
+          "created": 1742062184,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"topic\": \"Analysis of World Cup 2002\",\n  \"section_heading\": \"Overview\",\n  \"section_subheadings\": [\n    {\n      \"subheading\": \"Introduction to the Event\",\n      \"content\": \"The 2002 FIFA World Cup was co-hosted by South Korea and Japan, marking the first time the tournament was held in Asia. This edition of the World Cup was unique not only for its geographic location but also for its unexpected outcomes and memorable moments, including South Korea's remarkable run to the semifinals. The tournament showcased the growing competitiveness of Asian football and had a lasting impact on the sport's popularity in the region.\"\n    }\n  ]\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 532,
+            "completion_tokens": 144,
+            "total_tokens": 676,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:09:46 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:09:51 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '4180'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '199880'
+      X-Ratelimit-Reset-Requests:
+      - 24.99s
+      X-Ratelimit-Reset-Tokens:
+      - 36ms
+      X-Request-Id:
+      - req_0b3a46af31407ac986f418a675136f93
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=mcwDD03f4Vek7HpvGaJep5FCmIspxlabCqiDNdt3nq0-1742062191-1.0.1.1-fGXBL0FVfxHH5vqbOT9vttMeyFP8tguEzKjgnQqhh.qzrIElPP.1IfuMpHU_Loisin4yfZveeZrlzgc97tZFxD5aRf8fKLdww_Y9KEmsbQw;
+        path=/; expires=Sat, 15-Mar-25 18:39:51 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=x0mkQfLRiK1Kjr5_W4xeEVBXFs3ggbDXtJ6AonnrfuM-1742062191209-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df6bc8d337a99-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQF9ai2GN3hADRTtUDq0UNcMri7b",
+          "object": "chat.completion",
+          "created": 1742062187,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"content\": {\n    \"title\": \"The Impact of Climate Change on Global Ecosystems\",\n    \"introduction\": \"Climate change is one of the most pressing issues facing our planet today. Its effects are not only environmental but also socio-economic, influencing food security, health, and livelihoods worldwide.\",\n    \"sections\": [\n      {\n        \"heading\": \"Understanding Climate Change\",\n        \"summary\": \"Climate change refers to significant changes in global temperatures and weather patterns over time. Human activities, particularly the burning of fossil fuels and deforestation, are primary contributors to the increase in greenhouse gases.\"\n      },\n      {\n        \"heading\": \"Effects on Biodiversity\",\n        \"summary\": \"Climate change poses a significant threat to biodiversity, leading to habitat loss, altered species distribution, and increased extinction rates. Ecosystems such as coral reefs and forests are particularly vulnerable.\"\n      },\n      {\n        \"heading\": \"Impact on Agriculture\",\n        \"summary\": \"Agricultural productivity is being affected by climate change through altered precipitation patterns, increased frequency of extreme weather events, and shifting climate zones. This can lead to food insecurity in vulnerable regions.\"\n      },\n      {\n        \"heading\": \"Human Health Risks\",\n        \"summary\": \"Climate change exacerbates health risks by increasing the incidence of heat-related illnesses, respiratory conditions due to air pollution, and the spread of vector-borne diseases.\"\n      },\n      {\n        \"heading\": \"Mitigation and Adaptation Strategies\",\n        \"summary\": \"To combat the effects of climate change, various strategies can be adopted, including transitioning to renewable energy sources, implementing sustainable agricultural practices, and enhancing conservation efforts.\"\n      }\n    ],\n    \"conclusion\": \"Addressing climate change requires a global effort to reduce greenhouse gas emissions and enhance resilience in both natural and human systems. Collaborative action is essential to mitigate its impacts and secure a sustainable future.\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 93,
+            "completion_tokens": 385,
+            "total_tokens": 478,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:09:51 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"},{"role":"assistant","content":"```json\n{\n  \"content\":
+        {\n    \"title\": \"The Impact of Climate Change on Global Ecosystems\",\n    \"introduction\":
+        \"Climate change is one of the most pressing issues facing our planet today.
+        Its effects are not only environmental but also socio-economic, influencing
+        food security, health, and livelihoods worldwide.\",\n    \"sections\": [\n      {\n        \"heading\":
+        \"Understanding Climate Change\",\n        \"summary\": \"Climate change refers
+        to significant changes in global temperatures and weather patterns over time.
+        Human activities, particularly the burning of fossil fuels and deforestation,
+        are primary contributors to the increase in greenhouse gases.\"\n      },\n      {\n        \"heading\":
+        \"Effects on Biodiversity\",\n        \"summary\": \"Climate change poses
+        a significant threat to biodiversity, leading to habitat loss, altered species
+        distribution, and increased extinction rates. Ecosystems such as coral reefs
+        and forests are particularly vulnerable.\"\n      },\n      {\n        \"heading\":
+        \"Impact on Agriculture\",\n        \"summary\": \"Agricultural productivity
+        is being affected by climate change through altered precipitation patterns,
+        increased frequency of extreme weather events, and shifting climate zones.
+        This can lead to food insecurity in vulnerable regions.\"\n      },\n      {\n        \"heading\":
+        \"Human Health Risks\",\n        \"summary\": \"Climate change exacerbates
+        health risks by increasing the incidence of heat-related illnesses, respiratory
+        conditions due to air pollution, and the spread of vector-borne diseases.\"\n      },\n      {\n        \"heading\":
+        \"Mitigation and Adaptation Strategies\",\n        \"summary\": \"To combat
+        the effects of climate change, various strategies can be adopted, including
+        transitioning to renewable energy sources, implementing sustainable agricultural
+        practices, and enhancing conservation efforts.\"\n      }\n    ],\n    \"conclusion\":
+        \"Addressing climate change requires a global effort to reduce greenhouse
+        gas emissions and enhance resilience in both natural and human systems. Collaborative
+        action is essential to mitigate its impacts and secure a sustainable future.\"\n  }\n}\n```"},{"role":"user","content":"Please
+        analyze the following:\n\ntopic: Analysis of World Cup 2002\nsection_heading:
+        ## Key Highlights\nsection_subheadings: [\"### Champion and Major Outcomes\"]\n\nRespond
+        with JSON only.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:09:55 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '3533'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9996'
+      X-Ratelimit-Remaining-Tokens:
+      - '199302'
+      X-Ratelimit-Reset-Requests:
+      - 28.885s
+      X-Ratelimit-Reset-Tokens:
+      - 209ms
+      X-Request-Id:
+      - req_5de547afce2009e727400a53d06d49de
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=F.Zcz8DhmNPYVC5UcRRLfBySjdDLgIkYU8TK133p8ZA-1742062195-1.0.1.1-7KNKiv.63Z3EIrW8XSnbzdmJKi7f3tQvArzc3mG0IvZiOV1RiCSHYyS5XavDTzL6QZOGDVNVZOwItFrnKwMIhegX9lf_OCGz6rH2xQ.EiT8;
+        path=/; expires=Sat, 15-Mar-25 18:39:55 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=c8OhG8jr9JSW6vle2nEjC9vRwUKmmp46U42KV6XL5LI-1742062195299-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df6da3a18985c-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQFDg2CATZ5t1WhPDIJlsjDFly2K",
+          "object": "chat.completion",
+          "created": 1742062191,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"topic\": \"Analysis of World Cup 2002\",\n  \"section_heading\": \"Key Highlights\",\n  \"section_subheadings\": [\n    {\n      \"subheading\": \"Champion and Major Outcomes\",\n      \"content\": {\n        \"champion\": \"Brazil\",\n        \"final_score\": \"2-0\",\n        \"runner_up\": \"Germany\",\n        \"notable_achievement\": \"Brazil secured its fifth World Cup title, solidifying its status as the most successful team in World Cup history.\",\n        \"key_players\": [\n          {\n            \"name\": \"Ronaldo\",\n            \"contribution\": \"Scored 8 goals in the tournament, including 2 in the final.\"\n          },\n          {\n            \"name\": \"Rivaldo\",\n            \"contribution\": \"Played a crucial role in the team's attacking strategy.\"\n          },\n          {\n            \"name\": \"Ronaldinho\",\n            \"contribution\": \"Known for his brilliant playmaking and a memorable goal against England.\"\n          }\n        ],\n        \"memorable_moments\": [\n          \"Ronaldo's comeback after injury struggles prior to the tournament.\",\n          \"The dramatic semifinal match between Germany and South Korea.\",\n          \"The iconic free-kick goal by Ronaldinho against England.\"\n        ]\n      }\n    }\n  ]\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 524,
+            "completion_tokens": 273,
+            "total_tokens": 797,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:09:55 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:09:58 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '2371'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9996'
+      X-Ratelimit-Remaining-Tokens:
+      - '199880'
+      X-Ratelimit-Reset-Requests:
+      - 33.482s
+      X-Ratelimit-Reset-Tokens:
+      - 36ms
+      X-Request-Id:
+      - req_1d08f1af11516211d233c86218dc0088
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=n.Jo3qbFSvw7gVLpWC3rHJc6MIKN6jGv0bnjgkQhXd8-1742062198-1.0.1.1-CClpo30xzXDtBI59wYfVLJ2DPnf6hj79Nnz42fjol0X.zmaZ3eB7bQkpcoWE6qWt5dmNsf1qXSNyNnXjJfzmgjR4LylpmHBbuAX9Hu_sMbU;
+        path=/; expires=Sat, 15-Mar-25 18:39:58 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=MVY41j5rK5E5cyjCZK7MUfUIqlngTATYDRmbvTqXWSs-1742062198186-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df6f37eaa0f47-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQFHO5hiXxIcFCGiWCX6dg24fPEe",
+          "object": "chat.completion",
+          "created": 1742062195,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"content\": \"In today's fast-paced world, the importance of mental health is increasingly recognized. This article aims to explore various aspects of mental health, including its definition, significance, common disorders, and strategies for maintaining mental well-being. \\n\\n1. **Definition of Mental Health**: Mental health encompasses emotional, psychological, and social well-being, influencing how individuals think, feel, and act. \\n\\n2. **Significance of Mental Health**: Good mental health is crucial for overall health, affecting daily life, relationships, and productivity. \\n\\n3. **Common Mental Health Disorders**: This section will cover prevalent disorders such as anxiety, depression, and bipolar disorder, highlighting their symptoms and impacts. \\n\\n4. **Strategies for Maintaining Mental Well-being**: Practical tips will be provided, including stress management techniques, the importance of social connections, and when to seek professional help.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 93,
+            "completion_tokens": 192,
+            "total_tokens": 285,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:09:58 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"},{"role":"assistant","content":"```json\n{\n  \"content\":
+        \"In today''s fast-paced world, the importance of mental health is increasingly
+        recognized. This article aims to explore various aspects of mental health,
+        including its definition, significance, common disorders, and strategies for
+        maintaining mental well-being. \\n\\n1. **Definition of Mental Health**: Mental
+        health encompasses emotional, psychological, and social well-being, influencing
+        how individuals think, feel, and act. \\n\\n2. **Significance of Mental Health**:
+        Good mental health is crucial for overall health, affecting daily life, relationships,
+        and productivity. \\n\\n3. **Common Mental Health Disorders**: This section
+        will cover prevalent disorders such as anxiety, depression, and bipolar disorder,
+        highlighting their symptoms and impacts. \\n\\n4. **Strategies for Maintaining
+        Mental Well-being**: Practical tips will be provided, including stress management
+        techniques, the importance of social connections, and when to seek professional
+        help.\"\n}\n```"},{"role":"user","content":"Please analyze the following:\n\ntopic:
+        Analysis of World Cup 2002\nsection_heading: ## Notable Matches\nsection_subheadings:
+        [\"### Memorable Games and Controversies\"]\n\nRespond with JSON only.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:10:02 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '3695'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9995'
+      X-Ratelimit-Remaining-Tokens:
+      - '199585'
+      X-Ratelimit-Reset-Requests:
+      - 39.265s
+      X-Ratelimit-Reset-Tokens:
+      - 124ms
+      X-Request-Id:
+      - req_87aa536919df6b827f55ada7cba6d5f2
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=JsiPHZrqvgJn076Cwy_DlRPGkaXpF6QxoeC3Qbok3rQ-1742062202-1.0.1.1-8joX0EeWLpnORi77_H0xexCIUijzlC987nK1D_zVoYn_.L0H9_DtSUtgsJkK2_5JmAln4kaBUNp4XwvepTJqtTHxJWDUWW9DsPFgQkPtQUQ;
+        path=/; expires=Sat, 15-Mar-25 18:40:02 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=x6oEqeO7g0F1oSDuvcC54EPHDHDXorxjcGc..8fmKeI-1742062202370-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df7054a988c5f-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQFKboqpCyWy0k8CFmDFyGTJtbqC",
+          "object": "chat.completion",
+          "created": 1742062198,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"topic\": \"Analysis of World Cup 2002\",\n  \"section_heading\": \"## Notable Matches\",\n  \"section_subheadings\": [\n    \"### Memorable Games and Controversies\"\n  ],\n  \"content\": {\n    \"Memorable_Games_and_Controversies\": [\n      {\n        \"match\": \"Brazil vs. Germany (Final)\",\n        \"date\": \"June 30, 2002\",\n        \"summary\": \"Brazil secured their fifth World Cup title with a 2-0 victory over Germany, showcasing remarkable skill and teamwork.\"\n      },\n      {\n        \"match\": \"South Korea vs. Italy (Quarterfinal)\",\n        \"date\": \"June 18, 2002\",\n        \"summary\": \"A highly controversial match where South Korea's 2-1 victory included questionable refereeing decisions that sparked debates worldwide.\"\n      },\n      {\n        \"match\": \"Spain vs. South Korea (Quarterfinal)\",\n        \"date\": \"June 22, 2002\",\n        \"summary\": \"Spain was eliminated in a controversial match that saw two of their goals disallowed, leading to widespread criticism of the officiating.\"\n      },\n      {\n        \"match\": \"Brazil vs. Turkey (Group Stage)\",\n        \"date\": \"June 3, 2002\",\n        \"summary\": \"This match highlighted Brazil's attacking prowess, ending in a 2-1 win for Brazil, and setting the stage for their strong tournament run.\"\n      }\n    ]\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 335,
+            "completion_tokens": 315,
+            "total_tokens": 650,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:10:02 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:10:10 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '7838'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '199880'
+      X-Ratelimit-Reset-Requests:
+      - 43.685s
+      X-Ratelimit-Reset-Tokens:
+      - 36ms
+      X-Request-Id:
+      - req_20ec2eb6952131af07dc58793e17a03b
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=0HxIzPwxoQwjunyVkX9WkgzFO0bQVriaVdoeETVrX8o-1742062210-1.0.1.1-L2lUeOuj9JQfx90a5pG9nRhdgTvs6rbClddZT.QitXnh4OLXd7wmldF7h00sgvFkYfPkTw0E8pvAL_SQXP.IlI6Hxr6eYVzEkSVTVjbvF_I;
+        path=/; expires=Sat, 15-Mar-25 18:40:10 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=fk61A8ljO4NPZ2vY7KnDvz8pbaCzOSoDCV_WVtNKwMY-1742062210722-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df71fb8ff4fb3-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQFO4CNp4fyXzFHbDb980W2GekJx",
+          "object": "chat.completion",
+          "created": 1742062202,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"content\": {\n    \"title\": \"The Impact of Climate Change on Global Ecosystems\",\n    \"introduction\": {\n      \"summary\": \"Climate change is one of the most pressing issues of our time, affecting ecosystems across the globe. This article explores the various ways in which climate change is altering habitats, species distribution, and ecological interactions.\"\n    },\n    \"sections\": [\n      {\n        \"heading\": \"1. Understanding Climate Change\",\n        \"content\": \"Climate change refers to significant changes in global temperatures and weather patterns over time. While climate change is a natural phenomenon, human activities have accelerated its pace, resulting in widespread environmental consequences.\"\n      },\n      {\n        \"heading\": \"2. Effects on Biodiversity\",\n        \"content\": \"As temperatures rise and weather patterns shift, many species struggle to adapt, leading to changes in biodiversity. Some species may migrate to cooler areas, while others face extinction.\"\n      },\n      {\n        \"heading\": \"3. Alteration of Habitats\",\n        \"content\": \"Climate change is reshaping habitats from polar regions to tropical forests. Melting glaciers, rising sea levels, and changing precipitation patterns are transforming landscapes and affecting the flora and fauna they support.\"\n      },\n      {\n        \"heading\": \"4. Ecological Interactions\",\n        \"content\": \"The interconnectedness of species means that changes in one area can have ripple effects throughout an ecosystem. Altered food webs, shifts in predator-prey relationships, and changes in plant-pollinator dynamics are all consequences of climate change.\"\n      },\n      {\n        \"heading\": \"5. Mitigation and Adaptation Strategies\",\n        \"content\": \"To combat the effects of climate change, strategies such as conservation efforts, habitat restoration, and sustainable practices are essential. This section discusses various approaches being implemented worldwide to support ecosystems.\"\n      }\n    ],\n    \"conclusion\": {\n      \"summary\": \"Addressing climate change is crucial for the preservation of global ecosystems. Through understanding its impacts and implementing effective strategies, we can work towards a more sustainable future.\"\n    }\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 93,
+            "completion_tokens": 427,
+            "total_tokens": 520,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:10:10 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"},{"role":"assistant","content":"```json\n{\n  \"content\":
+        {\n    \"title\": \"The Impact of Climate Change on Global Ecosystems\",\n    \"introduction\":
+        {\n      \"summary\": \"Climate change is one of the most pressing issues
+        of our time, affecting ecosystems across the globe. This article explores
+        the various ways in which climate change is altering habitats, species distribution,
+        and ecological interactions.\"\n    },\n    \"sections\": [\n      {\n        \"heading\":
+        \"1. Understanding Climate Change\",\n        \"content\": \"Climate change
+        refers to significant changes in global temperatures and weather patterns
+        over time. While climate change is a natural phenomenon, human activities
+        have accelerated its pace, resulting in widespread environmental consequences.\"\n      },\n      {\n        \"heading\":
+        \"2. Effects on Biodiversity\",\n        \"content\": \"As temperatures rise
+        and weather patterns shift, many species struggle to adapt, leading to changes
+        in biodiversity. Some species may migrate to cooler areas, while others face
+        extinction.\"\n      },\n      {\n        \"heading\": \"3. Alteration of
+        Habitats\",\n        \"content\": \"Climate change is reshaping habitats from
+        polar regions to tropical forests. Melting glaciers, rising sea levels, and
+        changing precipitation patterns are transforming landscapes and affecting
+        the flora and fauna they support.\"\n      },\n      {\n        \"heading\":
+        \"4. Ecological Interactions\",\n        \"content\": \"The interconnectedness
+        of species means that changes in one area can have ripple effects throughout
+        an ecosystem. Altered food webs, shifts in predator-prey relationships, and
+        changes in plant-pollinator dynamics are all consequences of climate change.\"\n      },\n      {\n        \"heading\":
+        \"5. Mitigation and Adaptation Strategies\",\n        \"content\": \"To combat
+        the effects of climate change, strategies such as conservation efforts, habitat
+        restoration, and sustainable practices are essential. This section discusses
+        various approaches being implemented worldwide to support ecosystems.\"\n      }\n    ],\n    \"conclusion\":
+        {\n      \"summary\": \"Addressing climate change is crucial for the preservation
+        of global ecosystems. Through understanding its impacts and implementing effective
+        strategies, we can work towards a more sustainable future.\"\n    }\n  }\n}\n```"},{"role":"user","content":"Please
+        analyze the following:\n\ntopic: Analysis of World Cup 2002\nsection_heading:
+        ## Impact on Host Nations\nsection_subheadings: [\"### Cultural and Economic
+        Effects\"]\n\nRespond with JSON only.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:10:14 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '2820'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '199267'
+      X-Ratelimit-Reset-Requests:
+      - 43.804s
+      X-Ratelimit-Reset-Tokens:
+      - 219ms
+      X-Request-Id:
+      - req_da26658615c300d004609f82cb359808
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=YhBEn32qa8FkZMxcY5he4v7dFoyTjHTFQd_me7Pixcg-1742062214-1.0.1.1-yjcSdUtoVsnAsEZMwSJVdxZQcFyRDLxzQejpTcG0mGynpwjB_MhW14L87SR2XjLJQhG0Z7Lynj_HgYoOg8Rk3dCXMyRz1H8ruNgkgMhknj4;
+        path=/; expires=Sat, 15-Mar-25 18:40:14 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=LWMved6YKgOHdyGVjjiaTBUXCcQY8ag6OdxyQRN0WWk-1742062214230-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df754fa6e1a30-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQFXEcwjOAJyTbpq92SlORp7gRs0",
+          "object": "chat.completion",
+          "created": 1742062211,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"topic\": \"Analysis of World Cup 2002\",\n  \"section_heading\": \"Impact on Host Nations\",\n  \"section_subheadings\": [\n    {\n      \"subheading\": \"Cultural and Economic Effects\",\n      \"content\": {\n        \"cultural_effects\": \"The World Cup 2002, co-hosted by South Korea and Japan, significantly boosted national pride and cultural exchange between the two nations. It showcased their culture, traditions, and hospitality to a global audience, fostering a sense of unity and identity among the citizens.\",\n        \"economic_effects\": \"The tournament generated substantial economic benefits, including increased tourism, infrastructure development, and job creation. Host cities experienced a surge in visitors, leading to higher spending in local businesses and improvements in transportation and facilities.\"\n      }\n    }\n  ]\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 568,
+            "completion_tokens": 172,
+            "total_tokens": 740,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:10:14 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:10:15 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '958'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '199880'
+      X-Ratelimit-Reset-Requests:
+      - 49.008s
+      X-Ratelimit-Reset-Tokens:
+      - 36ms
+      X-Request-Id:
+      - req_f611970d17a001795f3e5d1c480d220a
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=tBx5JzkeEyOYYhYx76w4R59OoNo1w6OL6c3NZbYRXcs-1742062215-1.0.1.1-HTVl3EZ1LgTURStaxkMevqVXG7vogAxIu40ibigPp87d659Mu7g6tt59kZzrtc4QsxyooxzXULqhe7BiPjWZswptDdjMeYxXJSyZfoyWmxk;
+        path=/; expires=Sat, 15-Mar-25 18:40:15 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=OQXjo14JmTaPGpB2tWwJCTAH8aUqtkJWjNnmtjU2IxA-1742062215805-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df76a6ab8f834-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQFaMh4MnSQNolcKYCYe4d9XylXa",
+          "object": "chat.completion",
+          "created": 1742062214,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "{\n  \"content\": \"## Introduction\\n\\nIn today's fast-paced digital landscape, understanding the dynamics of technology and its impact on society is crucial. This article explores the various aspects of technological advancement, its benefits, challenges, and future implications. We will delve into how technology shapes our everyday lives, the ethical considerations it raises, and the potential it holds for future generations.\"\n}",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 93,
+            "completion_tokens": 77,
+            "total_tokens": 170,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:10:15 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nThink step by step to solve this problem. Break it down
+        into parts, solve each part, and then combine the results to get the final
+        answer.\n\n\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\n\nIf one of the fields is ''answer'', make sure it contains the precise,
+        concise final answer.\n"},{"role":"assistant","content":"{\n  \"content\":
+        \"## Introduction\\n\\nIn today''s fast-paced digital landscape, understanding
+        the dynamics of technology and its impact on society is crucial. This article
+        explores the various aspects of technological advancement, its benefits, challenges,
+        and future implications. We will delve into how technology shapes our everyday
+        lives, the ethical considerations it raises, and the potential it holds for
+        future generations.\"\n}"},{"role":"user","content":"Please analyze the following:\n\ntopic:
+        Analysis of World Cup 2002\nsection_heading: ## Technological Innovations\nsection_subheadings:
+        [\"### Advancements in Broadcasting and Referee Assistance\"]\n\nRespond with
+        JSON only.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 15 Mar 2025 18:10:18 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '1842'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9993'
+      X-Ratelimit-Remaining-Tokens:
+      - '199716'
+      X-Ratelimit-Reset-Requests:
+      - 56.203s
+      X-Ratelimit-Reset-Tokens:
+      - 85ms
+      X-Request-Id:
+      - req_1caaef64944dc1c76e7f36e20abd5bf0
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=.0sQMTqrgpJOq6nmhMEdAyPY1EpaOFlmpm._N.5uCDA-1742062218-1.0.1.1-tZfx_dTd7WKS9AFa3xv0USDjI1BiJDhGn.PlBwRzVg0RPILyidZh0QEDLCD9jv7RVZPmG_qzd8YEPXj9r28nnnxLoAxffmqiEcG5wjqSXfc;
+        path=/; expires=Sat, 15-Mar-25 18:40:18 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=9LH5qquwtvDEbtcUwAz7m09LE0NrxrxvDaG5a4bPVi8-1742062218141-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 920df77349e77cab-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBQFcXPBApDiDxrcNm9Ehm7uXgPbP",
+          "object": "chat.completion",
+          "created": 1742062216,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "{\n  \"content\": {\n    \"topic\": \"Analysis of World Cup 2002\",\n    \"section_heading\": \"## Technological Innovations\",\n    \"section_subheadings\": [\n      {\n        \"subheading\": \"### Advancements in Broadcasting and Referee Assistance\",\n        \"details\": \"The 2002 World Cup showcased significant technological advancements that transformed the viewing experience and officiating standards. Innovations such as high-definition broadcasting brought fans closer to the action, while technologies like the Video Assistant Referee (VAR) began to emerge, enhancing decision-making accuracy for referees. These advancements not only improved the transparency of the game but also engaged millions of viewers worldwide, setting new standards for future tournaments.\"\n      }\n    ]\n  }\n}",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 221,
+            "completion_tokens": 150,
+            "total_tokens": 371,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sat, 15 Mar 2025 18:10:18 GMT
+recorded_with: VCR 6.3.1

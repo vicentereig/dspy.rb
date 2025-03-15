@@ -8,6 +8,15 @@ module DSPy
     
     def initialize(signature_class)
       @signature_class = signature_class
+      prompt_with_reasoning = <<~PROMPT
+      #{@signature_class.description}
+      
+      Think step by step to solve this problem. Break it down into parts, solve each part, and then combine the results to get the final answer.
+      
+      PROMPT
+      
+      @signature_class.description(prompt_with_reasoning)
+      
     end
     
     def call(**input_values)

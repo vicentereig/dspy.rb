@@ -12,15 +12,20 @@ gem install dspy
 
 Actually program LLMs instead of prompting them.
 
-### Modules and Inference Frameworks
-Describing AI behabviours
-
+### Modules
+Describing Inference Frameworks
+- [ ] Modules: Signatures use JSON Schemas
 - [x] Modules: Predict 
 - [ ] Modules: RAG
-- [ ] Modules: Chain Of Thought
+- [x] Modules: Chain Of Thought
 - [ ] Modules: ReAct
-- [ ] Modules: Multiple Stage Pipelines
+- [x] Modules: Multiple Stage Pipelines
 - [ ] Modules: Adaptative Graph of Thoughts
+
+### Features
+- [ ] Thread safety
+- [ ] Retries without sleeping
+- [ ] Streaming
 - [ ] Support for multiple LM Providers
 - [ ] Support for reasoning providers
 
