@@ -1,9 +1,9 @@
 example_id                                    | status | run_time        |
 --------------------------------------------- | ------ | --------------- |
-./spec/dspy/chain_of_thought_spec.rb[1:1:1]   | passed | 0.02625 seconds |
-./spec/dspy/chain_of_thought_spec.rb[1:1:2]   | passed | 0.00118 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:1] | passed | 0.00716 seconds |
-./spec/dspy/signature_spec.rb[1:1:1]          | passed | 0.00162 seconds |
-./spec/dspy/signature_spec.rb[1:1:2]          | passed | 0.00118 seconds |
-./spec/dspy_spec.rb[1:1:1]                    | passed | 0.00043 seconds |
-./spec/dspy_spec.rb[1:1:2]                    | passed | 0.00003 seconds |
+./spec/dspy/chain_of_thought_spec.rb[1:1:1]   | passed | 0.03477 seconds |
+./spec/dspy/chain_of_thought_spec.rb[1:1:2]   | passed | 0.00154 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:1] | passed | 0.0079 seconds  |
+./spec/dspy/signature_spec.rb[1:1:1]          | passed | 0.00268 seconds |
+./spec/dspy/signature_spec.rb[1:1:2]          | passed | 0.00139 seconds |
+./spec/dspy_spec.rb[1:1:1]                    | passed | 0.00032 seconds |
+./spec/dspy_spec.rb[1:1:2]                    | passed | 0.00004 seconds |

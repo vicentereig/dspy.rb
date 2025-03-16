@@ -14,13 +14,13 @@ Actually program LLMs instead of prompting them.
 
 ### Modules
 Describing Inference Frameworks
-- [ ] Modules: Signatures use JSON Schemas
+- [ ] Modules: Signatures using JSON Schemas (?)
 - [x] Modules: Predict 
 - [ ] Modules: RAG
 - [x] Modules: Chain Of Thought
 - [ ] Modules: ReAct
 - [x] Modules: Multiple Stage Pipelines
-- [ ] Modules: Adaptative Graph of Thoughts
+- [ ] Modules: Adaptative Graph of Thoughts with Tools
 
 ### Features
 - [ ] Thread safety
