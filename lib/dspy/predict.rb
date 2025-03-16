@@ -5,23 +5,15 @@ module DSPy
     def initialize(signature_class)
       @signature_class = signature_class
     end
-    
+
     def call(**input_values)
       signature = @signature_class.new
-      validate_inputs(input_values)
-      # Generate a prediction using the configured LM
-      DSPy.lm.generate(input_values, signature)
-    end
-    
-    private
-    
-    def validate_inputs(input_values)
-      required_inputs = @signature_class.input_fields.keys
-      missing_inputs = required_inputs - input_values.keys
-      
-      if missing_inputs.any?
-        raise ArgumentError, "Missing required inputs: #{missing_inputs.join(', ')}"
-      end
+      # validate inputs
+      @signature_class.input_schema.call(input_values)
+      # build prompt
+      # invoke LM
+      # validate ouputs
+      # return them
     end
   end
-end 
+end

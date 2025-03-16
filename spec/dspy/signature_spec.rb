@@ -1,40 +1,50 @@
 require 'spec_helper'
 
-RSpec.describe DSPy::Signature do
-  describe 'sentiment classification example' do
-    before do
-      # Configure VCR for this example
-      VCR.use_cassette('openai/gpt4o-mini/classify_sentiment') do
-        # Load the model
-        lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-        DSPy.configure(lm: lm)
-        
-        # Define the signature class
-        class Classify < DSPy::Signature
-          description "Classify sentiment of a given sentence."
-          
-          input :sentence, String
-          output :sentiment, [:positive, :negative, :neutral]
-          output :confidence, Float
-        end
-        
-        # Create the predictor
-        @classify = DSPy::Predict.new(Classify)
-        
-        # Run the prediction
-        @prediction = @classify.call(sentence: "This book was super fun to read, though not the last chapter.")
-      end
+RSpec.describe DSPy::Predict do
+  class SentimentClassifier < DSPy::Signature
+    description "Classify sentiment of a given sentence."
+
+    input do
+      required(:sentence).value(:string) #.description('The sentence whose sentiment you are analyzing')
     end
-    
-    it 'makes a prediction with the correct structure' do
-      expect(@prediction).to be_a(Classify)
-      expect(@prediction.sentiment).to eq(:mixed)
-      expect(@prediction.confidence).to be_a(Float)
-      expect(@prediction.confidence).to be_between(0.0, 1.0)
-    end
-    
-    it 'returns a mixed sentiment for the example' do
-      expect(@prediction.sentiment).to eq(:mixed)
+    output do
+      required(:sentiment).value(included_in?: [:positive, :negative, :neutral])
+      #.description('The allowed values to classify sentences')
+      required(:confidence).value(:float) #.description('The confidence score for the classification')
     end
   end
-end 
+
+  it 'defines input schema' do
+    classifier = SentimentClassifier.new
+    expect(classifier.class.input_schema.json_schema).to eq({ :$schema => "http://json-schema.org/draft-06/schema#",
+                                                              :properties => { :sentence => { :type => "string" } },
+                                                              :required => ["sentence"], :type => "object" })
+  end
+
+  it 'defines output schema' do
+    classifier = SentimentClassifier.new
+    expect(classifier.class.output_schema.json_schema).to eq({ :$schema => "http://json-schema.org/draft-06/schema#",
+                                                               :properties => {:confidence=>{:type=>"number"}, :sentiment=>{:enum=>[:positive, :negative, :neutral]}},
+                                                               :required => ["sentiment", "confidence"],
+                                                               :type => "object" })
+  end
+
+  class SentimentClassifierWithDescriptions < DSPy::Signature
+    description "Classify sentiment of a given sentence."
+
+    input do
+      required(:sentence)
+        .value(:string)
+        .meta(description: 'The sentence whose sentiment you are analyzing')
+    end
+
+    output do
+      required(:sentiment)
+        .value(included_in?: [:positive, :negative, :neutral])
+        .meta(description: 'The allowed values to classify sentences')
+
+      required(:confidence).value(:float)
+                .meta(description:'The confidence score for the classification')
+    end
+  end
+end
