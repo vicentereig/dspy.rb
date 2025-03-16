@@ -8,22 +8,20 @@ module DSPy
     
     def initialize(signature_class)
       @signature_class = signature_class
-      prompt_with_reasoning = <<~PROMPT
-      #{@signature_class.description}
       
-      Think step by step to solve this problem. Break it down into parts, solve each part, and then combine the results to get the final answer.
+      prompt_with_reasoning = <<~PROMPT
+      Reasoning: Let's think step by step in order to #{@signature_class.description}
       
       PROMPT
-      
-      @signature_class.description(prompt_with_reasoning)
-      
+
+      @signature_class.class_eval do
+        output :reasoning, String, desc: prompt_with_reasoning
+      end
     end
     
     def call(**input_values)
-      # Create a Predict instance with the modified signature
       predictor = DSPy::Predict.new(signature_class)
       
-      # Run the prediction with chain-of-thought prompting
       predictor.call(**input_values)
     end
     

@@ -7,12 +7,8 @@ module DSPy
     end
     
     def call(**input_values)
-      # Create a new instance of the signature
       signature = @signature_class.new
-      
-      # Validate that all required inputs are provided
       validate_inputs(input_values)
-      
       # Generate a prediction using the configured LM
       DSPy.lm.generate(input_values, signature)
     end
