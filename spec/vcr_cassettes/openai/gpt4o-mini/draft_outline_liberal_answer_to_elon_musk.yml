@@ -1,0 +1,259 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nOutline a thorough overview
+        of a topic.\n\nFormat your response as a valid JSON object with these fields:\ntitle:
+        String\nsections: Array\nsection_subheadings: Hash\nreasoning: String\n\nIf
+        one of the fields is ''answer'', make sure it contains the precise, concise
+        final answer.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 16 Mar 2025 12:40:13 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '7654'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199901'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 29ms
+      X-Request-Id:
+      - req_bb4388600cf0795e9c59681a872fcf0a
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=0wTs1BjaYM8e1wYc.VdgHDxOaMvjRANrpihLUHzBP1I-1742128813-1.0.1.1-mRXWosIKY9eukWE6bRoSBR0OwuxDZycE2o5L6vbjVFGjI_ELFwP5LBi523_0mj1p4i8AZYeJ7FWlW34xmnztcA0UbMwRTV4ipQVRr2o9Cbw;
+        path=/; expires=Sun, 16-Mar-25 13:10:13 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=eRHFnYO2FIKZWzrhn3jiLceR3fYoif1vGlZpdp7L4ss-1742128813270-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 921451289f40334e-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBhZdc9wGkRN2BUt9REELpF2iBWui",
+          "object": "chat.completion",
+          "created": 1742128805,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"title\": \"The Impact of Climate Change on Global Ecosystems\",\n  \"sections\": [\n    {\n      \"section_title\": \"Introduction\",\n      \"content\": \"This section provides an overview of climate change, its causes, and its relevance to global ecosystems.\"\n    },\n    {\n      \"section_title\": \"Effects on Biodiversity\",\n      \"content\": \"Discusses how climate change affects species diversity, extinction rates, and habitat loss.\"\n    },\n    {\n      \"section_title\": \"Ocean Changes\",\n      \"content\": \"Covers the impact of climate change on ocean temperatures, acidity, and marine life.\"\n    },\n    {\n      \"section_title\": \"Terrestrial Ecosystems\",\n      \"content\": \"Examines the effects on forests, grasslands, and other terrestrial environments.\"\n    },\n    {\n      \"section_title\": \"Climate Change Mitigation\",\n      \"content\": \"Explores strategies to mitigate the effects of climate change on ecosystems.\"\n    },\n    {\n      \"section_title\": \"Conclusion\",\n      \"content\": \"Summarizes the key points discussed and emphasizes the importance of addressing climate change.\"\n    }\n  ],\n  \"section_subheadings\": {\n    \"Introduction\": [\n      \"Definition of Climate Change\",\n      \"Importance to Ecosystems\"\n    ],\n    \"Effects on Biodiversity\": [\n      \"Species Extinction\",\n      \"Habitat Alteration\"\n    ],\n    \"Ocean Changes\": [\n      \"Temperature Increase\",\n      \"Acidification Impact\"\n    ],\n    \"Terrestrial Ecosystems\": [\n      \"Forest Changes\",\n      \"Grassland Dynamics\"\n    ],\n    \"Climate Change Mitigation\": [\n      \"Renewable Energy\",\n      \"Conservation Efforts\"\n    ],\n    \"Conclusion\": [\n      \"Key Takeaways\",\n      \"Call to Action\"\n    ]\n  },\n  \"reasoning\": \"This overview provides a structured examination of how climate change impacts various ecosystems, highlighting the interconnectedness of environmental factors and the urgency of addressing these challenges.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 78,
+            "completion_tokens": 409,
+            "total_tokens": 487,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_06737a9306"
+        }
+  recorded_at: Sun, 16 Mar 2025 12:40:13 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nOutline a thorough overview
+        of a topic.\n\nFormat your response as a valid JSON object with these fields:\ntitle:
+        String\nsections: Array\nsection_subheadings: Hash\nreasoning: String\n\nIf
+        one of the fields is ''answer'', make sure it contains the precise, concise
+        final answer.\n"},{"role":"assistant","content":"```json\n{\n  \"title\":
+        \"The Impact of Climate Change on Global Ecosystems\",\n  \"sections\": [\n    {\n      \"section_title\":
+        \"Introduction\",\n      \"content\": \"This section provides an overview
+        of climate change, its causes, and its relevance to global ecosystems.\"\n    },\n    {\n      \"section_title\":
+        \"Effects on Biodiversity\",\n      \"content\": \"Discusses how climate change
+        affects species diversity, extinction rates, and habitat loss.\"\n    },\n    {\n      \"section_title\":
+        \"Ocean Changes\",\n      \"content\": \"Covers the impact of climate change
+        on ocean temperatures, acidity, and marine life.\"\n    },\n    {\n      \"section_title\":
+        \"Terrestrial Ecosystems\",\n      \"content\": \"Examines the effects on
+        forests, grasslands, and other terrestrial environments.\"\n    },\n    {\n      \"section_title\":
+        \"Climate Change Mitigation\",\n      \"content\": \"Explores strategies to
+        mitigate the effects of climate change on ecosystems.\"\n    },\n    {\n      \"section_title\":
+        \"Conclusion\",\n      \"content\": \"Summarizes the key points discussed
+        and emphasizes the importance of addressing climate change.\"\n    }\n  ],\n  \"section_subheadings\":
+        {\n    \"Introduction\": [\n      \"Definition of Climate Change\",\n      \"Importance
+        to Ecosystems\"\n    ],\n    \"Effects on Biodiversity\": [\n      \"Species
+        Extinction\",\n      \"Habitat Alteration\"\n    ],\n    \"Ocean Changes\":
+        [\n      \"Temperature Increase\",\n      \"Acidification Impact\"\n    ],\n    \"Terrestrial
+        Ecosystems\": [\n      \"Forest Changes\",\n      \"Grassland Dynamics\"\n    ],\n    \"Climate
+        Change Mitigation\": [\n      \"Renewable Energy\",\n      \"Conservation
+        Efforts\"\n    ],\n    \"Conclusion\": [\n      \"Key Takeaways\",\n      \"Call
+        to Action\"\n    ]\n  },\n  \"reasoning\": \"This overview provides a structured
+        examination of how climate change impacts various ecosystems, highlighting
+        the interconnectedness of environmental factors and the urgency of addressing
+        these challenges.\"\n}\n```"},{"role":"user","content":"Please analyze the
+        following:\n\ntopic: There Is a Liberal Answer to Elon Musk\n\nRespond with
+        JSON only.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 16 Mar 2025 12:40:20 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '6542'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '199401'
+      X-Ratelimit-Reset-Requests:
+      - 9.126s
+      X-Ratelimit-Reset-Tokens:
+      - 179ms
+      X-Request-Id:
+      - req_0a7df5a8c2f094744d4198de74fa5d29
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=z2dGWi35GHXZtUWaPqP3tB.8dI3zGSOPq6o3zMHUZJA-1742128820-1.0.1.1-nP65vkTqycrz8ov2DWYFE7.qxoDyJddQcN2lahRjHrbfqwpl9LnYT7MPo0YWZxPPNf5pRlt0FAr3ca2jjrCG6yy6L2ML.e.LzUNQKKjrwME;
+        path=/; expires=Sun, 16-Mar-25 13:10:20 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=qmLfIeAyL9L5HOjgU_cRDURqvzlHPyO6.wnMfbgzXDg-1742128820358-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9214515dcdc2c443-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBhZlfRMg4wtakMZZjdF9wLamtKpe",
+          "object": "chat.completion",
+          "created": 1742128813,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"title\": \"There Is a Liberal Answer to Elon Musk\",\n  \"sections\": [\n    {\n      \"section_title\": \"Introduction\",\n      \"content\": \"An overview of Elon Musk's influence in technology and society and the need for a liberal response.\"\n    },\n    {\n      \"section_title\": \"Musk's Impact on Technology\",\n      \"content\": \"Analysis of Musk's contributions to industries such as electric vehicles, space exploration, and social media.\"\n    },\n    {\n      \"section_title\": \"The Case for Regulation\",\n      \"content\": \"Discusses the necessity for regulatory frameworks to address the challenges posed by Musk's ventures.\"\n    },\n    {\n      \"section_title\": \"Promoting Equity and Access\",\n      \"content\": \"Explores how liberal policies can ensure equitable access to technology and innovation.\"\n    },\n    {\n      \"section_title\": \"Sustainability and Ethical Innovation\",\n      \"content\": \"Examines the importance of sustainability and ethical considerations in technology development.\"\n    },\n    {\n      \"section_title\": \"Conclusion\",\n      \"content\": \"Summarizes the liberal perspectives on addressing the challenges and opportunities presented by Elon Musk.\"\n    }\n  ],\n  \"section_subheadings\": {\n    \"Introduction\": [\n      \"Elon Musk's Background\",\n      \"Need for a Dialogue\"\n    ],\n    \"Musk's Impact on Technology\": [\n      \"Electric Vehicles Revolution\",\n      \"SpaceX and Beyond\"\n    ],\n    \"The Case for Regulation\": [\n      \"Addressing Monopolistic Practices\",\n      \"Consumer Protection\"\n    ],\n    \"Promoting Equity and Access\": [\n      \"Bridging the Digital Divide\",\n      \"Affordable Innovations\"\n    ],\n    \"Sustainability and Ethical Innovation\": [\n      \"Green Technology Initiatives\",\n      \"Corporate Responsibility\"\n    ],\n    \"Conclusion\": [\n      \"Summary of Liberal Responses\",\n      \"Future Directions\"\n    ]\n  },\n  \"reasoning\": \"This analysis provides a comprehensive view of how liberal ideologies can address the complexities introduced by Elon Musk's innovations, emphasizing the importance of regulation, equity, and sustainability in the tech landscape.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 515,
+            "completion_tokens": 438,
+            "total_tokens": 953,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_06737a9306"
+        }
+  recorded_at: Sun, 16 Mar 2025 12:40:20 GMT
+recorded_with: VCR 6.3.1

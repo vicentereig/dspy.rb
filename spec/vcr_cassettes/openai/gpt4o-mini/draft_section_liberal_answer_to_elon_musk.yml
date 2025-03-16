@@ -1,0 +1,238 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\nreasoning: String\n\nIf one of the fields is ''answer'', make sure
+        it contains the precise, concise final answer.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 16 Mar 2025 12:49:12 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '1136'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199911'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 26ms
+      X-Request-Id:
+      - req_c223c29be3cd7a100728c5dfcc3fd357
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=q49v4KgFfJ_t5zucxhFU0zhLpb34AMKq9HmlDvemKaA-1742129352-1.0.1.1-MPjJQIUrEQHOML3MHxGJIYbsI4tIV53RJKVRuM7GG3xa8J7yp7TMvqM1KlCPxxtM31OyaaCNsNFG1RU.JhHcXZIXjOhPfFBIIYvzqUcqMU8;
+        path=/; expires=Sun, 16-Mar-25 13:19:12 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=QaZKl3lpsDKdfoReaSJD_aA6vRgzN9L5V0wEiLZTN_E-1742129352982-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 92145e80ae260f69-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBhiRemKfuN54vmDeOr9M1guiFCk9",
+          "object": "chat.completion",
+          "created": 1742129351,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"content\": \"The Importance of Renewable Energy in Combating Climate Change\",\n  \"reasoning\": \"This section introduces the critical role that renewable energy sources play in reducing greenhouse gas emissions and mitigating the impacts of climate change. It sets the stage for a deeper discussion on various renewable technologies, their benefits, and the urgency of transitioning from fossil fuels.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 68,
+            "completion_tokens": 78,
+            "total_tokens": 146,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sun, 16 Mar 2025 12:49:12 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"You are
+        an AI assistant that responds in JSON format.\n\nDraft a top-level section
+        of an article.\n\nFormat your response as a valid JSON object with these fields:\ncontent:
+        String\nreasoning: String\n\nIf one of the fields is ''answer'', make sure
+        it contains the precise, concise final answer.\n"},{"role":"assistant","content":"```json\n{\n  \"content\":
+        \"The Importance of Renewable Energy in Combating Climate Change\",\n  \"reasoning\":
+        \"This section introduces the critical role that renewable energy sources
+        play in reducing greenhouse gas emissions and mitigating the impacts of climate
+        change. It sets the stage for a deeper discussion on various renewable technologies,
+        their benefits, and the urgency of transitioning from fossil fuels.\"\n}\n```"},{"role":"user","content":"Please
+        analyze the following:\n\ntopic: There Is a Liberal Answer to Elon Musk\nsection_heading:
+        Introduction\nsection_subheadings: []\n\nRespond with JSON only.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 16 Mar 2025 12:49:15 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '1975'
+      Openai-Version:
+      - '2020-10-01'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '199766'
+      X-Ratelimit-Reset-Requests:
+      - 15.716s
+      X-Ratelimit-Reset-Tokens:
+      - 70ms
+      X-Request-Id:
+      - req_6cfba91c47eccde26456e93f7fbae0f3
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=r6zs7Op22S6bhjjIFhAstt8r4wv2cM3vc0mkzVWpQOU-1742129355-1.0.1.1-SArdUhrQ2Psxfzt4.sD9BY31PrfYYVkSXCj9300Gp1G.xy5kZOS878MXWl6MMhAJAk6oKDcUaAFu2VQix6gSPJvKlWJVrB4xcNlmmPRv6u4;
+        path=/; expires=Sun, 16-Mar-25 13:19:15 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=L6dmK3qB7LWKusDxSvm7ZpUX4hUmRngUOzkHPKAQ4Ms-1742129355382-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 92145e8a7aca5e7d-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BBhiTROYzF3FNHv32iQ0yASjONxsh",
+          "object": "chat.completion",
+          "created": 1742129353,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```json\n{\n  \"topic\": \"There Is a Liberal Answer to Elon Musk\",\n  \"section_heading\": \"Introduction\",\n  \"section_subheadings\": [],\n  \"analysis\": {\n    \"main_idea\": \"The introduction serves as a preamble to exploring how liberal ideologies can provide responses to the business practices and technological innovations led by Elon Musk.\",\n    \"purpose\": \"To establish the context for the discussion on how liberal perspectives can address the challenges and opportunities presented by Musk's ventures in technology and space exploration.\",\n    \"tone\": \"Analytical and thought-provoking, aiming to engage readers with differing viewpoints on the implications of Musk's influence in contemporary society.\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 185,
+            "completion_tokens": 141,
+            "total_tokens": 326,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_3267753c5d"
+        }
+  recorded_at: Sun, 16 Mar 2025 12:49:15 GMT
+recorded_with: VCR 6.3.1

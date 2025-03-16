@@ -6,7 +6,7 @@ class Outline < DSPy::Signature
     input :topic, String
     output :title, String
     # TODO: gonna need json schemas here
-    output :sections, Array
+    output :sections, Array[String]
     output :section_subheadings, Hash, desc: "mapping from section headings to subheadings"
   end
 
@@ -64,6 +64,39 @@ class Outline < DSPy::Signature
 
 RSpec.describe DraftArticle do
 
+  it 'drafts the outline about There Is a Liberal Answer to Elon Musk' do
+    VCR.use_cassette('openai/gpt4o-mini/draft_outline_liberal_answer_to_elon_musk') do
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      DSPy.configure(lm: lm)
+
+      outliner = DSPy::ChainOfThought.new(Outline)
+      
+      outline = outliner.call(topic: "There Is a Liberal Answer to Elon Musk")
+      expect(outline).to be_a(Outline)
+      expect(outline.title).to be_a(String)
+      expect(outline.sections).to be_a(Array)
+      expect(outline.section_subheadings).to be_a(Hash)
+    end
+  end
+
+  it 'drafts a section about There Is a Liberal Answer to Elon Musk' do
+    VCR.use_cassette('openai/gpt4o-mini/draft_section_liberal_answer_to_elon_musk') do
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      DSPy.configure(lm: lm)
+
+      drafter = DSPy::ChainOfThought.new(DraftSection)
+      section = drafter.call(
+        topic: "There Is a Liberal Answer to Elon Musk",
+        section_heading: "Introduction",
+        section_subheadings: []
+      )
+
+      expect(section).to be_a(DraftSection)
+      expect(section.content).to be_a(String)
+
+    end
+  end
+
   it 'drafts an article about World Cup 2002' do
     VCR.use_cassette('openai/gpt4o-mini/draft_article_worldcup') do
       lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
@@ -72,9 +105,22 @@ RSpec.describe DraftArticle do
       draft_article = ArticleDrafter.new
       
       article = draft_article.call("World Cup 2002")
-      
       expect(article).to be_a(DraftArticle)
       expect(article.title).to be_a(String)
+    end
+  end
+
+  it 'draft sections are POROs' do
+    VCR.use_cassette('openai/gpt4o-mini/draft_article_worldcup') do
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      DSPy.configure(lm: lm)
+
+      drafter = ArticleDrafter.new
+      draft_article = drafter.call("World Cup 2002")
+
+      draft_section = draft_article.sections.first
+      expect(draft_section).to be_a(DraftSection)
+      expect(draft_section.content).to be_a(String)
     end
   end
 end 
