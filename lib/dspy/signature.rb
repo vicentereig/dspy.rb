@@ -14,11 +14,17 @@ module DSPy
       end
       
       def input(name, type, desc: nil)
+        class_eval do
+          attr_accessor name.to_sym          
+        end
         @input_fields ||= {}
         @input_fields[name] = InputField.new(name, type, desc: desc)
       end
       
       def output(name, type, desc: nil)
+        class_eval do
+          attr_accessor name.to_sym          
+        end
         @output_fields ||= {}
         @output_fields[name] = OutputField.new(name, type, desc: desc)
       end
@@ -30,19 +36,6 @@ module DSPy
         end
         instance
       end
-    end
-    
-    # Allow getting field values via methods
-    def method_missing(name, *args, &block)
-      if instance_variable_defined?(:"@#{name}")
-        instance_variable_get(:"@#{name}")
-      else
-        super
-      end
-    end
-    
-    def respond_to_missing?(name, include_private = false)
-      instance_variable_defined?(:"@#{name}") || super
     end
   end
 end 
