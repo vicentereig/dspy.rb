@@ -27,6 +27,8 @@ Describing Inference Frameworks
 - [ ] Modules: Adaptative Graph of Thoughts with Tools
 
 ### Features
+- [ ] Otel instrumentation
+- [ ] Logging
 - [ ] Thread safety
 - [ ] Retries without sleeping
 - [ ] Streaming
