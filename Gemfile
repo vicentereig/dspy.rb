@@ -11,3 +11,5 @@ group :development, :test do
 end 
 
 gem "dry-schema", "~> 1.14"
+
+gem "faraday", "~> 2.12"

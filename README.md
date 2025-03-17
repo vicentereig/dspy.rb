@@ -17,10 +17,10 @@ Actually program LLMs instead of prompting them.
 ### First Release
 First release targeting Composability with baseline prompts.
 
-- [ ] Responses are mostly hashes now, turn them into Dry Poros
+- [ ] :fire: Responses are mostly hashes now, turn them into Dry Poros - tons of footguns here.
 - [x] Modules: Signatures using JSON Schemas
 - [x] Modules: Predict
-- [ ] Modules: RAG
+- [x] Modules: RAG
 - [x] Modules: Chain Of Thought
 - [ ] Modules: ReAct
 - [x] Modules: Multiple Stage Pipelines

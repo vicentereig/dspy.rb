@@ -103,6 +103,7 @@ DEPENDENCIES
   dotenv (~> 2.8)
   dry-schema (~> 1.14)
   dspy!
+  faraday (~> 2.12)
   rspec (~> 3.12)
   vcr (~> 6.2)
   webmock (~> 3.18)
