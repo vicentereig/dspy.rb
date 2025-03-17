@@ -8,30 +8,36 @@ A port of the DSPy library to Ruby.
 gem install dspy
 ```
 
-## Roadmap
+# Roadmap
 
 Actually program LLMs instead of prompting them.
 
-- First release targeting Composability with baseline prompts.
-- Upcoming releases in evaluating and optimizing propmts.
+- Upcoming releases in evaluating and optimizing propmts
+
+### First Release
+First release targeting Composability with baseline prompts.
+
+- [x] Modules: Signatures using JSON Schemas
+- [x] Modules: Predict
+- [ ] Modules: RAG
+- [x] Modules: Chain Of Thought
+- [ ] Modules: ReAct
+- [x] Modules: Multiple Stage Pipelines
+- [ ] Otel instrumentation
+- [ ] Logging
+- [ ] Streaming
+- [ ] Thread safety
+
+## Backlog
 
 ### Modules
 Describing Inference Frameworks
 - [ ] Responses are mostly hashes now, turn them into Dry Poros
-- [x] Modules: Signatures using JSON Schemas
-- [x] Modules: Predict 
-- [ ] Modules: RAG
-- [x] Modules: Chain Of Thought 
-- [ ] Modules: ReAct
-- [x] Modules: Multiple Stage Pipelines
 - [ ] Modules: Adaptative Graph of Thoughts with Tools
 
 ### Features
-- [ ] Otel instrumentation
-- [ ] Logging
-- [ ] Thread safety
-- [ ] Retries without sleeping
-- [ ] Streaming
+- [x] Retries without sleeping
+
 - [ ] Support for multiple LM Providers
 - [ ] Support for reasoning providers
 
@@ -61,19 +67,24 @@ end
 - [ ] Needs to be thread safe
 
 ```ruby
-    class Classify < DSPy::Signature
-          description "Classify sentiment of a given sentence."
-          
-          input :sentence, String
-          output :sentiment, [:positive, :negative, :neutral]
-          output :confidence, Float
+    class SentimentClassifier < DSPy::Signature
+      description "Classify sentiment of a given sentence."
+    
+      input do
+        required(:sentence).value(:string) #.description('The sentence whose sentiment you are analyzing')
+      end
+      output do
+        required(:sentiment).value(included_in?: [:positive, :negative, :neutral])
+        #.description('The allowed values to classify sentences')
+        required(:confidence).value(:float) #.description('The confidence score for the classification')
+      end
     end
 
-    classify_with_openai = DSPy::Predict.new(Classify) do |c|
-        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+    classify_with_openai = DSPy::Predict.new(SentimentClassifier) do |c|
+      c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
     end
 
-    classify_with_anthropic = DSPy::Predict.new(Classify) do |c|
+    classify_with_anthropic = DSPy::Predict.new(SentimentClassifier) do |c|
         c.lm = DSPy::LM.new('anthropic/claude-3-5-sonnet-20240620', api_key: ENV['ANTHROPIC_API_KEY'])
     end
 
