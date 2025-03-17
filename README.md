@@ -17,6 +17,7 @@ Actually program LLMs instead of prompting them.
 ### First Release
 First release targeting Composability with baseline prompts.
 
+- [ ] Responses are mostly hashes now, turn them into Dry Poros
 - [x] Modules: Signatures using JSON Schemas
 - [x] Modules: Predict
 - [ ] Modules: RAG
@@ -27,12 +28,12 @@ First release targeting Composability with baseline prompts.
 - [ ] Logging
 - [ ] Streaming
 - [ ] Thread safety
+- [ ] Documentation
 
 ## Backlog
 
 ### Modules
 Describing Inference Frameworks
-- [ ] Responses are mostly hashes now, turn them into Dry Poros
 - [ ] Modules: Adaptative Graph of Thoughts with Tools
 
 ### Features

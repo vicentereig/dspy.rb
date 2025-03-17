@@ -1,18 +1,18 @@
 example_id                                    | status | run_time        |
 --------------------------------------------- | ------ | --------------- |
-./spec/dspy/chain_of_thought_spec.rb[1:1:1]   | passed | 0.02735 seconds |
-./spec/dspy/chain_of_thought_spec.rb[1:1:2]   | passed | 0.00631 seconds |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:1]   | passed | 0.00175 seconds |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:2]   | passed | 0.00007 seconds |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:3]   | passed | 0.00128 seconds |
+./spec/dspy/chain_of_thought_spec.rb[1:1:1]   | passed | 0.02401 seconds |
+./spec/dspy/chain_of_thought_spec.rb[1:1:2]   | passed | 0.00568 seconds |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:1]   | passed | 0.00172 seconds |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:2]   | passed | 0.00006 seconds |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:3]   | passed | 0.00108 seconds |
 ./spec/dspy/ext/dry_schema_ext_spec.rb[1:4]   | passed | 0.00008 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:1] | passed | 0.00218 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:2] | passed | 0.0016 seconds  |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:3] | passed | 0.00425 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:4] | passed | 0.00366 seconds |
-./spec/dspy/predict_spec.rb[1:1:1]            | passed | 0.00328 seconds |
-./spec/dspy/predict_spec.rb[1:1:2]            | passed | 0.00171 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:1] | passed | 0.00185 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:2] | passed | 0.00146 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:3] | passed | 0.00348 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:4] | passed | 0.00317 seconds |
+./spec/dspy/predict_spec.rb[1:1:1]            | passed | 0.00279 seconds |
+./spec/dspy/predict_spec.rb[1:1:2]            | passed | 0.00141 seconds |
 ./spec/dspy/signature_spec.rb[1:1]            | passed | 0.00006 seconds |
-./spec/dspy/signature_spec.rb[1:2]            | passed | 0.00007 seconds |
-./spec/dspy_spec.rb[1:1:1]                    | passed | 0.0004 seconds  |
-./spec/dspy_spec.rb[1:1:2]                    | passed | 0.00004 seconds |
+./spec/dspy/signature_spec.rb[1:2]            | passed | 0.00005 seconds |
+./spec/dspy_spec.rb[1:1:1]                    | passed | 0.00033 seconds |
+./spec/dspy_spec.rb[1:1:2]                    | passed | 0.00003 seconds |
