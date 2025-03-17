@@ -48,15 +48,8 @@ module DSPy
     end
 
     def forward(**input_values)
-      signature = @signature_class.new
-      # validate inputs
       @signature_class.input_schema.call(input_values)
-      # build prompt
       DSPy.lm.chat(self, input_values)
-
-      # invoke LM
-      # validate ouputs
-      # return them
     end
   end
 end

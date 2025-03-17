@@ -3,7 +3,8 @@
 module DSPy
   class Signature
     class << self
-      attr_reader :input_schema, :output_schema
+      attr_reader :input_schema
+      attr_accessor :output_schema
 
       def description(text = nil)
         if text

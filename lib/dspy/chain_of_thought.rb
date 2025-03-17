@@ -3,26 +3,14 @@
 module DSPy
   # Enhances prediction by encouraging step-by-step reasoning
   # before providing a final answer.
-  class ChainOfThought
-    attr_reader :signature_class, :instance
+  class ChainOfThought < Predict
 
     def initialize(signature_class)
       @signature_class = signature_class
-
-      prompt_with_reasoning = <<~PROMPT
-      Reasoning: Let's think step by step in order to #{@signature_class.description}
-      
-      PROMPT
-
-      @signature_class.class_eval do
-        output :reasoning, String, desc: prompt_with_reasoning
+      chain_of_thought_schema = Dry::Schema.JSON do
+        required(:reasoning).value(:string).meta(description: "Reasoning: Let's think step by step in order to #{signature_class.description}")
       end
-    end
-
-    def call(**input_values)
-      predictor = DSPy::Predict.new(signature_class)
-
-      predictor.call(**input_values)
+      @signature_class.output_schema = Dry::Schema.JSON(parent: [@signature_class.output_schema, chain_of_thought_schema])
     end
   end
 end
