@@ -4,7 +4,7 @@ require 'ruby_llm'
 module DSPy
   class LM
     attr_reader :model_id, :api_key, :model, :provider
-    
+
     def initialize(model_id, api_key: nil)
       @model_id = model_id
       @api_key = api_key
@@ -25,88 +25,44 @@ module DSPy
         raise ArgumentError, "Unsupported model provider: #{model_id}"
       end
     end
-    
-    def generate(prompt, signature)
-      chat = RubyLLM.chat(model: model)
-      
-      # Generate a system message that explains the task
-      system_message = generate_system_prompt(signature)
-      chat.ask(system_message)
-      
-      # Send the user prompt
-      chat.ask(generate_user_prompt(prompt, signature))
 
-      # Parse the response into the expected structure
-      parse_response(chat.messages.last, signature)
+    def chat(inference_module, input_values)
+      signature = inference_module.signature_class
+      chat = RubyLLM.chat(model: model)
+      system_prompt = inference_module.system_signature
+      user_prompt = inference_module.user_signature(input_values)
+      chat.add_message role: :system, content: system_prompt
+      chat.ask(user_prompt)
+
+      parse_response(chat.messages.last, input_values, signature)
     end
-    
+
     private
-    
-    def generate_system_prompt(signature)
-      instructions = signature.class.description
-    
-      
-      output_fields_desc = signature.class.output_fields.map do |name, field|
-        type_desc = field.type.is_a?(Array) ? field.type.join(', ') : field.type
-        "#{name}: #{type_desc}"
-      end.join("\n")
-      
-      <<~PROMPT
-        You are an AI assistant that responds in JSON format.
-        
-        #{instructions}
-        
-        Format your response as a valid JSON object with these fields:
-        #{output_fields_desc}
-        
-        If one of the fields is 'answer', make sure it contains the precise, concise final answer.
-      PROMPT
-    end
-    
-    def generate_user_prompt(input_values, signature)
-      # Format the input values as a message
-      input_desc = input_values.map { |k, v| "#{k}: #{v}" }.join("\n")
-      
-      <<~PROMPT
-        Please analyze the following:
-        
-        #{input_desc}
-        
-        Respond with JSON only.
-      PROMPT
-    end
-    
-    def parse_response(response, signature)
+    def parse_response(response, input_values, signature)
       # Try to parse the response as JSON
       content = response.content
-      
+
       # Extract JSON if it's in a code block
       if content.include?('```json')
         content = content.split('```json').last.split('```').first.strip
       elsif content.include?('```')
         content = content.split('```').last.split('```').first.strip
       end
-      
+
       begin
-        parsed = JSON.parse(content)
-        
-        # Convert keys to symbols
-        parsed = parsed.transform_keys(&:to_sym)
-        
-        # Type conversion for specific output fields
-        signature.class.output_fields.each do |name, field|
-          if field.type == Float && parsed[name].is_a?(String)
-            parsed[name] = parsed[name].to_f
-          elsif field.type.is_a?(Array) && parsed[name].is_a?(String)
-            parsed[name] = parsed[name].downcase.to_sym
-          end
-        end
-        
-        # Create a new instance with the parsed values
-        signature.class.new_from_hash(parsed)
+        json_payload = JSON.parse(content)
+
+        output = signature.output_schema.call(json_payload)
+
+        result_schema = Dry::Schema.JSON(parent: [signature.input_schema, signature.output_schema])
+        result = output.to_h.merge(input_values)
+        # create an instance with input and output schema
+        poro_result = result_schema.call(result)
+
+        poro_result.to_h
       rescue JSON::ParserError
         raise "Failed to parse LLM response as JSON: #{content}"
       end
     end
   end
-end 
+end

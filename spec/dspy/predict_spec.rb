@@ -15,7 +15,7 @@ RSpec.describe DSPy::Predict do
           end
 
           output do
-            required(:sentiment).value(included_in?: [:positive, :negative, :neutral])
+            required(:sentiment).value(included_in?: %w(positive negative neutral))
               .meta(description: 'The allowed values to classify sentences')
             required(:confidence).value(:float).meta(description: 'The confidence score for the classification')
           end
@@ -30,15 +30,11 @@ RSpec.describe DSPy::Predict do
     end
 
     it 'makes a prediction with the correct structure' do
-      expect(@prediction).to eq('')
-      # expect(@prediction).to be_a(Classify)
-      # expect(@prediction.sentiment).to eq(:mixed)
-      # expect(@prediction.confidence).to be_a(Float)
-      # expect(@prediction.confidence).to be_between(0.0, 1.0)
+      expect(@prediction).to eq({:confidence=>0.85, :sentence=>"This book was super fun to read, though not the last chapter.", :sentiment=>"positive"})
     end
 
-    xit 'returns a mixed sentiment for the example' do
-      expect(@prediction.sentiment).to eq(:mixed)
+    it 'returns a mixed sentiment for the example' do
+      expect(@prediction.sentiment).to eq('positive')
     end
   end
 end
