@@ -1,97 +1,169 @@
 # DSPy.rb
 
-A port of the DSPy library to Ruby.
+A Ruby port of the [DSPy library](https://dspy.ai/), enabling a composable and pipeline-oriented approach to programming with Large Language Models (LLMs) in Ruby.
+
+## Current State
+
+DSPy.rb provides a foundation for composable LLM programming with the following implemented features:
+
+- **Signatures**: Define input/output schemas for LLM interactions using JSON schemas
+- **Predict**: Basic LLM completion with structured inputs and outputs
+- **Chain of Thought**: Enhanced reasoning through step-by-step thinking
+- **RAG (Retrieval-Augmented Generation)**: Enriched responses with context from retrieval
+- **Multi-stage Pipelines**: Compose multiple LLM calls in a structured workflow
+
+The library currently supports:
+- OpenAI and Anthropic via [Ruby LLM](https://github.com/crmne/ruby_llm)
+- JSON schema validation with [dry-schema](https://dry-rb.org/gems/dry-schema/)
 
 ## Installation
 
-```bash
-gem install dspy
+This is not even fresh  off the oven. I recommend you installing 
+it straight from this repo, while I build the first release.
+
+```ruby
+gem 'dspy', github: 'vicentereig/dspy.rb'
 ```
 
-# Roadmap
+## Usage Examples
 
-Actually program LLMs instead of prompting them.
+### Basic Prediction
 
-- Upcoming releases in evaluating and optimizing propmts
+```ruby
+# Define a signature for sentiment classification
+class Classify < DSPy::Signature
+  description "Classify sentiment of a given sentence."
+
+  input do
+    required(:sentence).value(:string).meta(description: 'The sentence to analyze')
+  end
+
+  output do
+    required(:sentiment).value(included_in?: %w(positive negative neutral))
+      .meta(description: 'The sentiment classification')
+    required(:confidence).value(:float).meta(description: 'Confidence score')
+  end
+end
+
+# Initialize the language model
+lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+DSPy.configure(lm: lm)
+
+# Create the predictor and run inference
+classify = DSPy::Predict.new(Classify)
+result = classify.call(sentence: "This book was super fun to read, though not the last chapter.")
+# => {:confidence=>0.85, :sentence=>"This book was super fun to read, though not the last chapter.", :sentiment=>"positive"}
+```
+
+### Chain of Thought Reasoning
+
+```ruby
+class AnswerPredictor < DSPy::Signature
+  description "Provides a concise answer to the question"
+
+  input do
+    required(:question).value(:string)
+  end
+  
+  output do
+    required(:answer).value(:string)
+  end
+end
+
+qa_cot = DSPy::ChainOfThought.new(AnswerPredictor)
+response = qa_cot.call(question: "Two dice are tossed. What is the probability that the sum equals two?")
+# Result includes reasoning and answer in the response
+# {:question=>"...", :answer=>"1/36", :reasoning=>"There is only one way to get a sum of 2..."}
+```
+
+### RAG (Retrieval-Augmented Generation)
+
+```ruby
+class ContextualQA < DSPy::Signature
+  description "Answers questions using relevant context"
+  
+  input do
+    required(:context).value(Types::Array.of(:string))
+    required(:question).filled(:string)
+  end
+
+  output do
+    required(:response).filled(:string)
+  end
+end
+
+# Set up retriever (example using ColBERT)
+retriever = ColBERTv2.new(url: 'http://your-retriever-endpoint')
+results = retriever.call('your query').map(&:long_text)
+
+# Generate a contextual response
+rag = DSPy::ChainOfThought.new(ContextualQA)
+prediction = rag.call(question: question, context: results)
+```
+
+### Multi-stage Pipeline
+
+```ruby
+# Create a pipeline for article drafting
+class ArticleDrafter < DSPy::Module
+  def initialize
+    @build_outline = DSPy::ChainOfThought.new(Outline)
+    @draft_section = DSPy::ChainOfThought.new(DraftSection)
+  end
+
+  def forward(topic)
+    # First build the outline
+    outline = @build_outline.call(topic: topic)
+    
+    # Then draft each section
+    sections = []
+    (outline[:section_subheadings] || {}).each do |heading, subheadings|
+      section = @draft_section.call(
+        topic: outline[:title],
+        section_heading: "## #{heading}",
+        section_subheadings: [subheadings].flatten.map { |sh| "### #{sh}" }
+      )
+      sections << section
+    end
+
+    DraftArticle.new(title: outline[:title], sections: sections)
+  end
+end
+
+# Usage
+drafter = ArticleDrafter.new
+article = drafter.call("World Cup 2002")
+```
+
+## Roadmap
 
 ### First Release
-First release targeting Composability with baseline prompts.
 
-- [ ] :fire: Responses are mostly hashes now, turn them into Dry Poros - tons of footguns here.
-- [x] Modules: Signatures using JSON Schemas
-- [x] Modules: Predict
-- [x] Modules: RAG
-- [x] Modules: Chain Of Thought
-- [ ] Modules: ReAct
-- [x] Modules: Multiple Stage Pipelines
-- [ ] Otel instrumentation
-- [ ] Logging
-- [ ] Streaming
-- [ ] Thread safety
-- [ ] Documentation
+- [ ] Convert responses from hashes to Dry Poros (currently tons of footguns with hashes :fire:)
+- [ ] Implement ReAct module for reasoning and acting
+- [ ] Add OpenTelemetry instrumentation
+- [ ] Improve logging
+- [ ] Add streaming support
+- [ ] Ensure thread safety
+- [ ] Comprehensive documentation
 
-## Backlog
+### Upcoming Features
 
-### Modules
-Describing Inference Frameworks
-- [ ] Modules: Adaptative Graph of Thoughts with Tools
-
-### Features
-- [x] Retries without sleeping
-
-- [ ] Support for multiple LM Providers
+- [ ] Support for multiple LM providers (Anthropic, etc.)
 - [ ] Support for reasoning providers
+- [ ] Adaptive Graph of Thoughts with Tools
 
 ### Optimizers
 
-Tune promptps and weights for your AI modules.
+- [ ] Optimizing prompts: RAG
+- [ ] Optimizing prompts: Chain of Thought
+- [ ] Optimizing prompts: ReAct
+- [ ] Optimizing weights: Classification
 
-- [ ] Optimizing Prompts: RAG
-- [ ] Optimizing Prompts: Chain Of Thought
-- [ ] Optimizing Prompts: ReAct
-- [ ] Optimizing Weights: Classification
+## Contributing
 
-## Design Notes
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Here's where I sketch what I want the API to look like. Doesn't mean that it's currently implemented. Check the `spec/` for the current contracts.
+## License
 
-### Configuring the global LM
-- [ ] Needs to be thread safe
-```ruby
-DSPy.connfigure do |c|
-    c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-end
-```
-
-### Configuring LMs per Signature
-
-- [ ] Needs to be thread safe
-
-```ruby
-    class SentimentClassifier < DSPy::Signature
-      description "Classify sentiment of a given sentence."
-    
-      input do
-        required(:sentence).value(:string) #.description('The sentence whose sentiment you are analyzing')
-      end
-      output do
-        required(:sentiment).value(included_in?: [:positive, :negative, :neutral])
-        #.description('The allowed values to classify sentences')
-        required(:confidence).value(:float) #.description('The confidence score for the classification')
-      end
-    end
-
-    classify_with_openai = DSPy::Predict.new(SentimentClassifier) do |c|
-      c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-    end
-
-    classify_with_anthropic = DSPy::Predict.new(SentimentClassifier) do |c|
-        c.lm = DSPy::LM.new('anthropic/claude-3-5-sonnet-20240620', api_key: ENV['ANTHROPIC_API_KEY'])
-    end
-
-    prediction_openai = classify_with_openai.call(sentence: "This book was super fun to read, though not the last chapter.")
-
-    prediction_anthropic = classify_with_anthropic.call(sentence: "This book was super fun to read, though not the last chapter.")
-```
-
-### Configure
+This project is licensed under the MIT License - see the LICENSE.txt file for details.
