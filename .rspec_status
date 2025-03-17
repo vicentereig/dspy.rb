@@ -6,10 +6,10 @@ example_id                                    | status  | run_time        |
 ./spec/dspy/ext/dry_schema_ext_spec.rb[1:2]   | passed  | 0.00008 seconds |
 ./spec/dspy/ext/dry_schema_ext_spec.rb[1:3]   | passed  | 0.00102 seconds |
 ./spec/dspy/ext/dry_schema_ext_spec.rb[1:4]   | passed  | 0.00008 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:1] | passed  | 0.03429 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:2] | failed  | 0.0449 seconds  |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:3] | failed  | 0.01519 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:4] | unknown |                 |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:1] | passed  | 0.03246 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:2] | passed  | 0.00196 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:3] | passed  | 0.00515 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:4] | passed  | 0.00371 seconds |
 ./spec/dspy/predict_spec.rb[1:1:1]            | passed  | 0.04531 seconds |
 ./spec/dspy/predict_spec.rb[1:1:2]            | pending | 0.00001 seconds |
 ./spec/dspy/signature_spec.rb[1:1]            | passed  | 0.00054 seconds |

@@ -12,12 +12,16 @@ gem install dspy
 
 Actually program LLMs instead of prompting them.
 
+- First release targeting Composability with baseline prompts.
+- Upcoming releases in evaluating and optimizing propmts.
+
 ### Modules
 Describing Inference Frameworks
-- [ ] Modules: Signatures using JSON Schemas (?)
+- [ ] Responses are mostly hashes now, turn them into Dry Poros
+- [x] Modules: Signatures using JSON Schemas
 - [x] Modules: Predict 
 - [ ] Modules: RAG
-- [x] Modules: Chain Of Thought
+- [x] Modules: Chain Of Thought 
 - [ ] Modules: ReAct
 - [x] Modules: Multiple Stage Pipelines
 - [ ] Modules: Adaptative Graph of Thoughts with Tools
