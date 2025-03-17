@@ -138,14 +138,17 @@ article = drafter.call("World Cup 2002")
 ## Roadmap
 
 ### First Release
-
+- [x] Signatures and Predict module
+- [x] RAG examples
+- [x] Multi-Stage Pipelines
+- [x] Validate inputs and outputs with JSON Schema
 - [ ] Convert responses from hashes to Dry Poros (currently tons of footguns with hashes :fire:)
 - [ ] Implement ReAct module for reasoning and acting
 - [ ] Add OpenTelemetry instrumentation
 - [ ] Improve logging
 - [ ] Add streaming support
 - [ ] Ensure thread safety
-- [ ] Comprehensive documentation
+- [ ] Comprehensive initial documentation
 
 ### Upcoming Features
 
