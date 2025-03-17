@@ -34,7 +34,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 17 Mar 2025 10:34:50 GMT
+      - Mon, 17 Mar 2025 10:57:40 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -46,7 +46,7 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1811'
+      - '1521'
       Openai-Version:
       - '2020-10-01'
       X-Ratelimit-Limit-Requests:
@@ -54,47 +54,47 @@ http_interactions:
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9996'
       X-Ratelimit-Remaining-Tokens:
-      - '199638'
+      - '199637'
       X-Ratelimit-Reset-Requests:
-      - 15.304s
+      - 29.048s
       X-Ratelimit-Reset-Tokens:
       - 108ms
       X-Request-Id:
-      - req_9f8892e409d6792d1988326a062917a4
+      - req_8ef6ebbcb659a07d8f794aff4a26c9ea
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=RuUR1tODCB2FTR6XW8c8KW3yDFXP25P4yqrCCs57Lr4-1742207690-1.0.1.1-VvyRyVvzcoIgKMYzR8cm4Xh.vkxKyuquziw4cg2W8saXyR6P14Dy9LyUZIItFqwflOrN5tawvPL6.NJuoHam8j08xcClGWbBdnsV_iJ14WE;
-        path=/; expires=Mon, 17-Mar-25 11:04:50 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=12hbMhj52WJd9dNG2EIcLNbE8trpU5k_WLPBpOaSKcI-1742209060-1.0.1.1-Kr6la1Or8NTAFpiZKeKz2V3ufjSmjsSB8VYDOM3.GPz.Pz..FlG_bt1awmr2_RXEWXT6Sg0Hzgbyn0rEWhKZmAjOzx44tnw8ZQ_lwnd9Okg;
+        path=/; expires=Mon, 17-Mar-25 11:27:40 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=TbPOxvqa2YPLfO9tvY3B7mMBUmIHgvx5zpaUYrONNvc-1742207690617-0.0.1.1-604800000;
+      - _cfuvid=IBATp9_wjaWLwDhf.zeoxMCkZo5GF18vIduhKPa1kQE-1742209060539-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 921bd7069e120f77-EWR
+      - 921bf87a99159a1a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BC25wHHnODD7EwQaXmXJ0q9IinUjr",
+          "id": "chatcmpl-BC2S3Lc1YkD75qRIoxjpCb6t5o3Og",
           "object": "chat.completion",
-          "created": 1742207688,
+          "created": 1742209059,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"content\": \"In recent years, Elon Musk has emerged as one of the most influential figures in technology and business. His ventures, from electric cars to space exploration, have sparked both admiration and controversy. While many view Musk as a symbol of innovation and progress, others criticize his approach to capitalism and labor relations. This article explores the liberal perspective on Musk's impact and the potential for a more equitable future in the industries he influences.\",\n  \"reasoning\": \"The introduction sets the stage for a discussion about Elon Musk's multifaceted role in modern society, highlighting both the admiration and criticism he receives. It aims to frame the liberal perspective as a counterbalance to the prevailing narratives surrounding Musk, suggesting that there is a viable alternative to his approach that prioritizes equity and social responsibility.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"content\": \"In recent years, Elon Musk has become a polarizing figure, often associated with innovation and disruption in technology and business. However, his actions and statements frequently spark debate about the implications of his influence on society. This article explores how liberal perspectives can provide a framework for understanding and responding to Musk's endeavors. By examining the intersection of technology, ethics, and social responsibility, we aim to highlight the liberal values that can guide us in a rapidly changing world driven by figures like Musk.\",\n  \"reasoning\": \"The introduction sets the stage for the discussion by acknowledging Musk's impact and the controversies surrounding him. It establishes a liberal lens as a means to critically analyze his contributions and the broader implications for society. This approach is essential for framing the subsequent arguments in a way that resonates with readers who seek a balanced view on the topic.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -104,8 +104,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 300,
-            "completion_tokens": 169,
-            "total_tokens": 469,
+            "completion_tokens": 182,
+            "total_tokens": 482,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -120,5 +120,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_06737a9306"
         }
-  recorded_at: Mon, 17 Mar 2025 10:34:50 GMT
+  recorded_at: Mon, 17 Mar 2025 10:57:40 GMT
 recorded_with: VCR 6.3.1

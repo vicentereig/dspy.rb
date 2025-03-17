@@ -34,7 +34,7 @@ RSpec.describe DSPy::Predict do
     end
 
     it 'returns a mixed sentiment for the example' do
-      expect(@prediction.sentiment).to eq('positive')
+      expect(@prediction[:sentiment]).to eq('positive')
     end
   end
 end

@@ -6,8 +6,11 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentence\":{\"type\":\"string\"}},\"required\":[\"sentence\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentiment\":{\"enum\":[\"positive\",\"negative\",\"neutral\"]},\"confidence\":{\"type\":\"number\"}},\"required\":[\"sentiment\",\"confidence\"]}\n        ````\n      All
+        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentence\":{\"type\":\"string\",\"description\":\"The
+        sentence whose sentiment you are analyzing\"}},\"required\":[\"sentence\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentiment\":{\"enum\":[\"positive\",\"negative\",\"neutral\"],\"description\":\"The
+        allowed values to classify sentences\"},\"confidence\":{\"type\":\"number\",\"description\":\"The
+        confidence score for the classification\"}},\"required\":[\"sentiment\",\"confidence\"]}\n        ````\n      All
         interactions will be structured in the following way, with the appropriate
         values filled in.\n\n      ## Input values\n        ```json\n          {input_values}\n        ```  \n      ##
         Output values\n      Respond exclusively with the output schema fields in
@@ -34,7 +37,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 17 Mar 2025 08:24:08 GMT
+      - Mon, 17 Mar 2025 10:57:52 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -46,7 +49,7 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '984'
+      - '460'
       Openai-Version:
       - '2020-10-01'
       X-Ratelimit-Limit-Requests:
@@ -54,40 +57,40 @@ http_interactions:
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9994'
       X-Ratelimit-Remaining-Tokens:
-      - '199671'
+      - '199626'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 51.051s
       X-Ratelimit-Reset-Tokens:
-      - 98ms
+      - 111ms
       X-Request-Id:
-      - req_3c8885fe73909f6351bbc663eba7ff40
+      - req_b93e5949e99a74f7e5a5ba9837af7a51
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=ep81p.LXzDHeBDHcABiRrldbo6GshxRft5mPoYcrdgA-1742199848-1.0.1.1-QfSrbsWZe8Ff5ZmQCwxxUbAVFE7E9EV9aVCKr.YnWlEQEFFwKJDKiFTkP4aP7rs5dZHkdqu1t1lweAtgczJtnueGmNPYlUFSy8zMqkwYRT4;
-        path=/; expires=Mon, 17-Mar-25 08:54:08 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=_1wEZmKSLp0s8TCPrJgMcbvBY6pWU7Dh6zP6sjsUjrw-1742209072-1.0.1.1-tNMH8THPDys7kRkLAKJ2j4ll7UM_9Go8cR50jA6AjtF31tSxZtrUS_whSWZ5BHx6aBkfB1S8fu2HaQhjL5H_p.9c5hWom6tFSdXGF4F2xLY;
+        path=/; expires=Mon, 17-Mar-25 11:27:52 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=ZkRB.sBZ1FuWXQPD7oskgVFifDK7vLCwt1Bum2hb2mo-1742199848119-0.0.1.1-604800000;
+      - _cfuvid=RsN.Z7BBznbT1MP7XWYDVviiR7ePk8xhUjy6ZPn_VF0-1742209072038-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 921b17906b615e82-EWR
+      - 921bf8c8dee341de-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BC03TYNOtOjzKh7FISgu9c18R6HS9",
+          "id": "chatcmpl-BC2SFUU7ZxdUmncfhJfQ9ZEnCPGuG",
           "object": "chat.completion",
-          "created": 1742199847,
+          "created": 1742209071,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -103,9 +106,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 266,
+            "prompt_tokens": 295,
             "completion_tokens": 21,
-            "total_tokens": 287,
+            "total_tokens": 316,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -120,5 +123,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_06737a9306"
         }
-  recorded_at: Mon, 17 Mar 2025 08:24:07 GMT
+  recorded_at: Mon, 17 Mar 2025 10:57:51 GMT
 recorded_with: VCR 6.3.1

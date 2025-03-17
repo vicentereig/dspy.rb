@@ -1,5 +1,4 @@
-require 'dry-schema'
-
+Dry::Schema.load_extensions(:json_schema)
 # Monkey patch Macros::Core to add meta method
 module Dry
   module Schema
@@ -87,4 +86,3 @@ module Dry
   end
 end
 
-Dry::Schema.load_extensions(:json_schema)

@@ -1,8 +1,10 @@
 require 'byebug'
-require 'dspy'
 require 'dotenv/load'
 require 'vcr'
 require 'webmock/rspec'
+
+require 'dspy'
+
 
 VCR.configure do |config|
   config.cassette_library_dir = "spec/vcr_cassettes"

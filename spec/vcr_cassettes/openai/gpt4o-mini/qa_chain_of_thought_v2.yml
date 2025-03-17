@@ -34,7 +34,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 17 Mar 2025 10:11:37 GMT
+      - Mon, 17 Mar 2025 10:57:34 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -46,7 +46,7 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1134'
+      - '1123'
       Openai-Version:
       - '2020-10-01'
       X-Ratelimit-Limit-Requests:
@@ -56,45 +56,45 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '199677'
+      - '199678'
       X-Ratelimit-Reset-Requests:
       - 8.64s
       X-Ratelimit-Reset-Tokens:
       - 96ms
       X-Request-Id:
-      - req_c1f2879a86769dc94e7ff87ec703c246
+      - req_5541a0014778ee0cc46b530b18ff76f9
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=tkQMFJR2JH.xnbbgAYdbw7N3qSc42RJbFQ6ktJUrxvg-1742206297-1.0.1.1-hknSeIfpNz8HU_OBew_F6vQgJ1TekB4WVAR.lQqj4q.zk4Tu.WsBytX4MOV6laPC1ElAYZGWw4YHUJbD7FAp4B0CWSbALUVNfLc3Nn4w0ho;
-        path=/; expires=Mon, 17-Mar-25 10:41:37 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=YRLv5D46SNAFH0t6_tTVpvRy.yIKJ48p8QUisC2UYjo-1742209054-1.0.1.1-vQO1ZCxsleDz0pAebUvu49Z.p5J6BBO3XGQOh_9M8rNceWGo1W3J4PHJ902WuJ0g0jq5Xsb6UXUbo9vdYlGCKPx5qJKQRhlM_1Tlht3zb.4;
+        path=/; expires=Mon, 17-Mar-25 11:27:34 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=nO4ZAHI8UYVgkrh488Nj1upBu6S0F9oW0SG3fg6FTFM-1742206297912-0.0.1.1-604800000;
+      - _cfuvid=vFc3ZFiURArX0ZiCj811DMIzhSRYuE6Admk_LaFIBuE-1742209054640-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 921bb50a8c998c17-EWR
+      - 921bf855e8d9eeee-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BC1jUZyDJOAapWZR5qtWcLxStKBYx",
+          "id": "chatcmpl-BC2Rxgn0didmT6CItQe61ylY4YRiX",
           "object": "chat.completion",
-          "created": 1742206296,
+          "created": 1742209053,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": \"1/36\",\n  \"reasoning\": \"There is only one combination of the two dice that results in a sum of two, which is (1,1). Since there are a total of 36 possible outcomes when tossing two dice (6 sides on the first die times 6 sides on the second die), the probability is 1/36.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"1/36\",\n  \"reasoning\": \"There is only one way to get a sum of two when tossing two dice: both dice must show a 1 (1+1=2). Since there are a total of 36 possible outcomes when rolling two dice (6 sides on the first die multiplied by 6 sides on the second die), the probability is 1 out of 36.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -104,8 +104,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 263,
-            "completion_tokens": 88,
-            "total_tokens": 351,
+            "completion_tokens": 97,
+            "total_tokens": 360,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -120,5 +120,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_06737a9306"
         }
-  recorded_at: Mon, 17 Mar 2025 10:11:37 GMT
+  recorded_at: Mon, 17 Mar 2025 10:57:34 GMT
 recorded_with: VCR 6.3.1

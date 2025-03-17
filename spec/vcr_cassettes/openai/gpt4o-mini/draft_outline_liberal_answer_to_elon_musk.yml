@@ -34,7 +34,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 17 Mar 2025 10:34:48 GMT
+      - Mon, 17 Mar 2025 10:57:38 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -46,7 +46,7 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1397'
+      - '1495'
       Openai-Version:
       - '2020-10-01'
       X-Ratelimit-Limit-Requests:
@@ -54,47 +54,47 @@ http_interactions:
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9997'
       X-Ratelimit-Remaining-Tokens:
       - '199623'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 22.409s
       X-Ratelimit-Reset-Tokens:
       - 112ms
       X-Request-Id:
-      - req_c575e9a558912c729e9ca9ab0347dc78
+      - req_218ce803215728363f7dfee596f15d4a
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=_C9koKmsjrzNW_dMS3aDcsPSbbDFfPjL84WEnq90rkM-1742207688-1.0.1.1-pKiaRqwIQOWsb8SA.0_TWTCwrScFV83XUabz1t94Hi5KKyO1oezXAdfHD1FRwqasV8VMFBfzZmnB48gMkArB1EM81g_Z6hPKkKRnXI0mmxQ;
-        path=/; expires=Mon, 17-Mar-25 11:04:48 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=n7I5BOEbq06U8io7fhrWWa8L3RzpdBo9r4EcxjwH5lw-1742209058-1.0.1.1-rnn3KbG2V_vyaxLorlkqhanGt3lLkej.Pnl0f6qU4wvNE90KPG8A9nfnQ5hqokiix3LuEj6gHofHSPRkXJ6NiKtXMw_6bi7SdGIIDshNYls;
+        path=/; expires=Mon, 17-Mar-25 11:27:38 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=wwg45D4ASf8FXzQex8ibA3Utg41LrmBsR1hB4iWmyjA-1742207688232-0.0.1.1-604800000;
+      - _cfuvid=vT9jhKwEzGhPkh9zITKqb5PUcdmmMktTlEPtrPi3qO0-1742209058522-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 921bd6fa4a99433a-EWR
+      - 921bf86e086342a0-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BC25ukdxvLVDsjgRcfK5KamXVSzgn",
+          "id": "chatcmpl-BC2S1K8nEgAbtQQoNnOykW6oaC8AM",
           "object": "chat.completion",
-          "created": 1742207686,
+          "created": 1742209057,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"title\": \"Exploring the Liberal Perspective on Elon Musk's Influence\",\n  \"sections\": [\n    \"Introduction to Elon Musk\",\n    \"Musk's Impact on Technology and Society\",\n    \"The Liberal Response to Musk's Business Practices\",\n    \"Environmental Considerations and Musk's Ventures\",\n    \"Conclusion: Balancing Innovation with Ethical Responsibility\"\n  ],\n  \"section_subheadings\": {\n    \"section\": \"Musk's Impact on Technology and Society\",\n    \"subheading\": [\n      \"Innovations in Electric Vehicles\",\n      \"Space Exploration and Its Implications\",\n      \"The Role of Social Media in Shaping Public Discourse\"\n    ]\n  },\n  \"reasoning\": \"A liberal answer to Elon Musk examines his role as a transformative figure in technology while addressing the ethical implications of his business practices, environmental responsibilities, and societal impacts. This perspective advocates for a balanced approach that promotes innovation without compromising ethical standards or environmental sustainability.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"title\": \"Exploring the Liberal Perspective on Elon Musk's Influence\",\n  \"sections\": [\n    \"Introduction\",\n    \"Musk's Innovations and Their Impact\",\n    \"Liberal Critiques and Support\",\n    \"Policy Implications and Future Directions\",\n    \"Conclusion\"\n  ],\n  \"section_subheadings\": {\n    \"section\": \"Musk's Innovations and Their Impact\",\n    \"subheading\": [\n      \"SpaceX and Commercial Space Travel\",\n      \"Tesla and Renewable Energy\",\n      \"Neuralink and Bioethics\"\n    ]\n  },\n  \"reasoning\": \"This outline aims to explore the multifaceted relationship between Elon Musk's ventures and liberal ideology, highlighting the innovations and the corresponding critiques that arise within the framework of liberal values.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -104,8 +104,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 316,
-            "completion_tokens": 203,
-            "total_tokens": 519,
+            "completion_tokens": 167,
+            "total_tokens": 483,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -120,5 +120,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_06737a9306"
         }
-  recorded_at: Mon, 17 Mar 2025 10:34:48 GMT
+  recorded_at: Mon, 17 Mar 2025 10:57:38 GMT
 recorded_with: VCR 6.3.1

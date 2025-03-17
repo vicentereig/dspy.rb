@@ -6,11 +6,6 @@ end
 
 ClassifierSchema = Dry::Schema.JSON do
   required(:sentiment).value(included_in?: [:positive, :negative, :neutral])
-  required(:confidence).value(:float)
-end
-
-ChainOfThoughtSchema = Dry::Schema.JSON do
-  required(:reasoning).value(:string)
   optional(:confidence).value(:float)
 end
 
@@ -41,21 +36,14 @@ RSpec.describe 'Adding descriptions to JSON Schema fields' do
 
 
   it 'supports dumping JSON Schema' do
-    expected_json_schema = {
-      "$schema": "http://json-schema.org/draft-06/schema#",
-      type: "object",
-      properties: {
-        reasoning: {
-          type: "string",
-        },
-        confidence: {
-          type: "number",
-        }
-      },
-      required: ["reasoning"]
+    expected_json_schema = {:$schema => "http://json-schema.org/draft-06/schema#",
+                            :properties => {
+                              :confidence => {:type => "number"},
+                              :sentiment => {:enum => [:positive, :negative, :neutral]}},
+                            :required => ["sentiment"], :type => "object"
     }
 
-    result = ChainOfThoughtSchema.json_schema
+    result = ClassifierSchema.json_schema
     expect(result).to include(expected_json_schema)
   end
 
