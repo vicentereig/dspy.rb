@@ -87,8 +87,11 @@ RSpec.describe 'RAG: ColBERTv2' do
 
   it 'rags stuff' do
     VCR.use_cassette('openai/gpt4o-mini/colbert_rag_with_gen') do
-      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-      DSPy.configure(lm: lm)
+
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      end
+
       rag = DSPy::ChainOfThought.new(ContextualQA)
 
       retriever = ColBERTv2.new(url: 'http://20.102.90.50:2017/wiki17_abstracts')

@@ -47,9 +47,13 @@ module DSPy
       PROMPT
     end
 
+    def lm
+      DSPy.config.lm
+    end
+
     def forward(**input_values)
       @signature_class.input_schema.call(input_values)
-      DSPy.lm.chat(self, input_values)
+      lm.chat(self, input_values)
     end
   end
 end

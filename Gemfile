@@ -8,8 +8,6 @@ group :development, :test do
   gem 'vcr', '~> 6.2'
   gem 'webmock', '~> 3.18'
   gem "byebug", "~> 11.1"
-end 
-
-gem "dry-schema", "~> 1.14"
+end
 
 gem "faraday", "~> 2.12"

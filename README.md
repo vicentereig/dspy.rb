@@ -46,9 +46,27 @@ class Classify < DSPy::Signature
 end
 
 # Initialize the language model
-lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-DSPy.configure(lm: lm)
+class SentimentClassifierWithDescriptions < DSPy::Signature
+  description "Classify sentiment of a given sentence."
 
+  input do
+    required(:sentence)
+      .value(:string)
+      .meta(description: 'The sentence whose sentiment you are analyzing')
+  end
+
+  output do
+    required(:sentiment)
+      .value(included_in?: [:positive, :negative, :neutral])
+      .meta(description: 'The allowed values to classify sentences')
+
+    required(:confidence).value(:float)
+                         .meta(description:'The confidence score for the classification')
+  end
+end
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+end
 # Create the predictor and run inference
 classify = DSPy::Predict.new(Classify)
 result = classify.call(sentence: "This book was super fun to read, though not the last chapter.")
@@ -68,6 +86,10 @@ class AnswerPredictor < DSPy::Signature
   output do
     required(:answer).value(:string)
   end
+end
+
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
 end
 
 qa_cot = DSPy::ChainOfThought.new(AnswerPredictor)
@@ -92,13 +114,15 @@ class ContextualQA < DSPy::Signature
   end
 end
 
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+end
+
 # Set up retriever (example using ColBERT)
 retriever = ColBERTv2.new(url: 'http://your-retriever-endpoint')
-results = retriever.call('your query').map(&:long_text)
-
 # Generate a contextual response
 rag = DSPy::ChainOfThought.new(ContextualQA)
-prediction = rag.call(question: question, context: results)
+prediction = rag.call(question: question, context: retriever.call('your query').map(&:long_text))
 ```
 
 ### Multi-stage Pipeline
@@ -130,6 +154,9 @@ class ArticleDrafter < DSPy::Module
   end
 end
 
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+end
 # Usage
 drafter = ArticleDrafter.new
 article = drafter.call("World Cup 2002")
@@ -142,6 +169,7 @@ article = drafter.call("World Cup 2002")
 - [x] RAG examples
 - [x] Multi-Stage Pipelines
 - [x] Validate inputs and outputs with JSON Schema
+- [x] thread-safe global config
 - [ ] Convert responses from hashes to Dry Poros (currently tons of footguns with hashes :fire:)
 - [ ] Implement ReAct module for reasoning and acting
 - [ ] Add OpenTelemetry instrumentation
@@ -150,7 +178,7 @@ article = drafter.call("World Cup 2002")
 - [ ] Ensure thread safety
 - [ ] Comprehensive initial documentation
 
-### Upcoming Features
+#### Backburner
 
 - [ ] Support for multiple LM providers (Anthropic, etc.)
 - [ ] Support for reasoning providers

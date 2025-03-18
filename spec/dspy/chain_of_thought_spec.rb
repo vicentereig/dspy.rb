@@ -12,12 +12,15 @@ class AnswerPredictor < DSPy::Signature
 end
 
 RSpec.describe DSPy::Signature do
+  before do
+    DSPy.configure do |c|
+      c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+    end
+  end
+
   describe 'QA with chain of thought' do
     it 'answers the question' do
       VCR.use_cassette('openai/gpt4o-mini/qa_chain_of_thought_v2') do
-        lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-        DSPy.configure(lm: lm)
-
         qa_cod = DSPy::ChainOfThought.new(AnswerPredictor)
 
         qa = qa_cod.call(question: "Two dice are tossed. What is the probability that the sum equals two?")
@@ -28,8 +31,6 @@ RSpec.describe DSPy::Signature do
 
     it 'includes the reasoning' do
       VCR.use_cassette('openai/gpt4o-mini/qa_chain_of_thought_with_reasoning_v2') do
-        lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-        DSPy.configure(lm: lm)
 
         qa_cod = DSPy::ChainOfThought.new(AnswerPredictor)
 

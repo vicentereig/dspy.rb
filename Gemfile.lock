@@ -2,6 +2,8 @@ PATH
   remote: .
   specs:
     dspy (0.1.0)
+      dry-configurable (~> 1.0)
+      dry-schema (~> 1.14)
       ruby_llm (~> 1.0)
 
 GEM
@@ -101,7 +103,6 @@ PLATFORMS
 DEPENDENCIES
   byebug (~> 11.1)
   dotenv (~> 2.8)
-  dry-schema (~> 1.14)
   dspy!
   faraday (~> 2.12)
   rspec (~> 3.12)

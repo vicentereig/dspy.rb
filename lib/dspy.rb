@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 require 'ruby_llm'
 require 'dry-schema'
+require 'dry-configurable'
 require_relative 'dspy/ext/dry_schema'
 
 module DSPy
-  class << self
-    attr_accessor :lm
-
-    def configure(lm: nil)
-      @lm = lm
-    end
-  end
+  extend Dry::Configurable
+  setting :lm
 end
 
 require_relative 'dspy/module'
