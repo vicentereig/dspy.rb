@@ -170,12 +170,13 @@ article = drafter.call("World Cup 2002")
 - [x] Multi-Stage Pipelines
 - [x] Validate inputs and outputs with JSON Schema
 - [x] thread-safe global config
-- [ ] Convert responses from hashes to Dry Poros (currently tons of footguns with hashes :fire:)
+- [x] Convert responses from hashes to Dry Poros (currently tons of footguns with hashes :fire:)
+- [ ] Cover unhappy paths: validation errors 
 - [ ] Implement ReAct module for reasoning and acting
 - [ ] Add OpenTelemetry instrumentation
 - [ ] Improve logging
-- [ ] Add streaming support
-- [ ] Ensure thread safety
+- [ ] Add streaming support (?)
+- [x] Ensure thread safety
 - [ ] Comprehensive initial documentation
 
 #### Backburner

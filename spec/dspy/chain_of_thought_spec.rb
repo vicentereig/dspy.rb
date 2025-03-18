@@ -24,7 +24,7 @@ RSpec.describe DSPy::Signature do
         qa_cod = DSPy::ChainOfThought.new(AnswerPredictor)
 
         qa = qa_cod.call(question: "Two dice are tossed. What is the probability that the sum equals two?")
-        expect(qa.keys).to eq([:question, :answer, :reasoning])
+        expect(qa.to_h.keys).to eq([:question, :answer, :reasoning])
       end
     end
 

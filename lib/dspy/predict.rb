@@ -52,8 +52,14 @@ module DSPy
     end
 
     def forward(**input_values)
-      @signature_class.input_schema.call(input_values)
-      lm.chat(self, input_values)
+      result = @signature_class.input_schema.call(input_values)
+      if result.success?
+        output_attributes = lm.chat(self, input_values)
+        poro_class = Struct.new(*output_attributes.keys)
+        return poro_class.new(*output_attributes.values)
+      end
+
+      raise result.errors
     end
   end
 end

@@ -9,6 +9,7 @@ module DSPy
   setting :lm
 end
 
+require_relative 'dspy/types'
 require_relative 'dspy/module'
 require_relative 'dspy/field' # gonna begone
 require_relative 'dspy/signature'

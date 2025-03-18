@@ -1,20 +1,20 @@
 example_id                                    | status | run_time        |
 --------------------------------------------- | ------ | --------------- |
-./spec/dspy/chain_of_thought_spec.rb[1:1:1]   | passed | 0.0265 seconds  |
-./spec/dspy/chain_of_thought_spec.rb[1:1:2]   | passed | 0.00159 seconds |
-./spec/dspy/colbertv2_rag_spec.rb[1:1]        | passed | 0.00074 seconds |
-./spec/dspy/colbertv2_rag_spec.rb[1:2]        | passed | 0.00219 seconds |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:1]   | passed | 0.00071 seconds |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:2]   | passed | 0.00007 seconds |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:3]   | passed | 0.00077 seconds |
+./spec/dspy/chain_of_thought_spec.rb[1:1:1]   | passed | 0.03328 seconds |
+./spec/dspy/chain_of_thought_spec.rb[1:1:2]   | passed | 0.00204 seconds |
+./spec/dspy/colbertv2_rag_spec.rb[1:1]        | passed | 0.00093 seconds |
+./spec/dspy/colbertv2_rag_spec.rb[1:2]        | passed | 0.00308 seconds |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:1]   | passed | 0.001 seconds   |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:2]   | passed | 0.00008 seconds |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:3]   | passed | 0.00103 seconds |
 ./spec/dspy/ext/dry_schema_ext_spec.rb[1:4]   | passed | 0.00007 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:1] | passed | 0.00142 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:2] | passed | 0.00259 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:3] | passed | 0.00335 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:4] | passed | 0.00303 seconds |
-./spec/dspy/predict_spec.rb[1:1:1]            | passed | 0.00119 seconds |
-./spec/dspy/predict_spec.rb[1:1:2]            | passed | 0.00225 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:1] | passed | 0.00164 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:2] | passed | 0.00139 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:3] | passed | 0.005 seconds   |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:4] | passed | 0.00336 seconds |
+./spec/dspy/predict_spec.rb[1:1:1]            | passed | 0.00153 seconds |
+./spec/dspy/predict_spec.rb[1:1:2]            | passed | 0.00115 seconds |
 ./spec/dspy/signature_spec.rb[1:1]            | passed | 0.00006 seconds |
-./spec/dspy/signature_spec.rb[1:2]            | passed | 0.00005 seconds |
-./spec/dspy_spec.rb[1:1:1]                    | passed | 0.00023 seconds |
-./spec/dspy_spec.rb[1:1:2]                    | passed | 0.00003 seconds |
+./spec/dspy/signature_spec.rb[1:2]            | passed | 0.00006 seconds |
+./spec/dspy_spec.rb[1:1:1]                    | passed | 0.00031 seconds |
+./spec/dspy_spec.rb[1:1:2]                    | passed | 0.00004 seconds |

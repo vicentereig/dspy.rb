@@ -13,7 +13,7 @@ RSpec.describe DraftArticle do
       outliner = DSPy::ChainOfThought.new(Outline)
 
       outline = outliner.call(topic: "There Is a Liberal Answer to Elon Musk")
-      expect(outline.keys).to eq([:topic, :title, :sections, :section_subheadings, :reasoning])
+      expect(outline.to_h.keys).to eq([:topic, :title, :sections, :section_subheadings, :reasoning])
     end
   end
 
@@ -26,7 +26,7 @@ RSpec.describe DraftArticle do
         section_subheadings: []
       )
 
-      expect(section.keys).to eq([:topic, :section_heading, :section_subheadings, :content, :reasoning])
+      expect(section.to_h.keys).to eq([:topic, :section_heading, :section_subheadings, :content, :reasoning])
     end
   end
 
@@ -46,7 +46,7 @@ RSpec.describe DraftArticle do
       draft_article = drafter.call("World Cup 2002")
 
       draft_section = draft_article.sections.first
-      expect(draft_section.keys).to eq([:topic, :section_heading, :section_subheadings, :content, :reasoning])
+      expect(draft_section.to_h.keys).to eq([:topic, :section_heading, :section_subheadings, :content, :reasoning])
     end
   end
 end

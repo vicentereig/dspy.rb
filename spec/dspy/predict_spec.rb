@@ -6,6 +6,7 @@ RSpec.describe DSPy::Predict do
       c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
     end
   end
+
   describe 'sentiment classification example' do
     before do
       VCR.use_cassette('openai/gpt4o-mini/classify_sentiment_v2') do
@@ -32,7 +33,7 @@ RSpec.describe DSPy::Predict do
     end
 
     it 'makes a prediction with the correct structure' do
-      expect(@prediction).to eq({:confidence=>0.85, :sentence=>"This book was super fun to read, though not the last chapter.", :sentiment=>"positive"})
+      expect(@prediction.to_h).to eq({:confidence=>0.85, :sentence=>"This book was super fun to read, though not the last chapter.", :sentiment=>"positive"})
     end
 
     it 'returns a mixed sentiment for the example' do
