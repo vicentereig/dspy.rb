@@ -2,11 +2,17 @@
 require 'ruby_llm'
 require 'dry-schema'
 require 'dry-configurable'
+require 'dry/logger'
 require_relative 'dspy/ext/dry_schema'
 
 module DSPy
   extend Dry::Configurable
   setting :lm
+  setting :logger, default: Dry.Logger(:dspy, formatter: :string)
+
+  def self.logger
+    config.logger
+  end
 end
 
 require_relative 'dspy/types'

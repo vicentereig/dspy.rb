@@ -9,6 +9,7 @@ RSpec.describe DSPy::Predict do
 
   describe 'sentiment classification example' do
     before do
+
       VCR.use_cassette('openai/gpt4o-mini/classify_sentiment_v2') do
         class Classify < DSPy::Signature
           description "Classify sentiment of a given sentence."
@@ -23,7 +24,6 @@ RSpec.describe DSPy::Predict do
             required(:confidence).value(:float).meta(description: 'The confidence score for the classification')
           end
         end
-
         # Create the predictor
         @classify = DSPy::Predict.new(Classify)
 

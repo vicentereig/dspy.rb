@@ -52,6 +52,7 @@ module DSPy
     end
 
     def forward(**input_values)
+      DSPy.logger.info( module: self.class.to_s, **input_values)
       result = @signature_class.input_schema.call(input_values)
       if result.success?
         output_attributes = lm.chat(self, input_values)

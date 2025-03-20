@@ -1,3 +1,9 @@
+require 'dry/schema/version'
+
+if Dry::Schema::VERSION > Gem::Version.new('1.15')
+  raise 'Double check this monkey path before upgrading drys-schema.'
+end
+
 Dry::Schema.load_extensions(:json_schema)
 # Monkey patch Macros::Core to add meta method
 module Dry

@@ -5,6 +5,9 @@ require 'webmock/rspec'
 
 require 'dspy'
 
+DSPy.configure do |c|
+  c.logger = Dry.Logger(:dspy, formatter: :string) { |s| s.add_backend(stream: "log/test.log") }
+end
 
 VCR.configure do |config|
   config.cassette_library_dir = "spec/vcr_cassettes"

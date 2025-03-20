@@ -25,5 +25,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "ruby_llm", "~> 1.0"
   spec.add_dependency "dry-schema", "~> 1.14"
   spec.add_dependency "dry-configurable", "~> 1.0"
+  spec.add_dependency "dry-logger", "~> 1.0"
   # Development dependencies are already specified in the Gemfile
 end
