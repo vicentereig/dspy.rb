@@ -55,13 +55,13 @@ class ArticleDrafter < DSPy::Module
     # Then, draft each section
     sections = []
 
-    (outline[:section_subheadings] || {}).each do |heading, subheadings|
+    (outline.section_subheadings || {}).each do |heading, subheadings|
       section_heading = "## #{heading}"
       formatted_subheadings = [subheadings].flatten.map { |subheading| "### #{subheading}" }
 
       # Draft this section
       section = @draft_section.call(
-        topic: outline[:title],
+        topic: outline.title,
         section_heading: section_heading,
         section_subheadings: formatted_subheadings
       )
@@ -69,6 +69,6 @@ class ArticleDrafter < DSPy::Module
       sections << section
     end
 
-    DraftArticle.new(title: outline[:title], sections: sections)
+    DraftArticle.new(title: outline.title, sections: sections)
   end
 end

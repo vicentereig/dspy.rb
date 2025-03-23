@@ -56,7 +56,7 @@ module DSPy
       result = @signature_class.input_schema.call(input_values)
       if result.success?
         output_attributes = lm.chat(self, input_values)
-        poro_class = Struct.new(*output_attributes.keys)
+        poro_class = Data.define(*output_attributes.keys)
         return poro_class.new(*output_attributes.values)
       end
 
