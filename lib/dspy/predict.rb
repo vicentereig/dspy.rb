@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 module DSPy
+  class PredictionInvalidError < RuntimeError
+    attr_accessor :errors
+    def initialize(errors)
+      @errors = errors
+      super("Prediction invalid")
+    end
+  end
   class Predict < DSPy::Module
     attr_reader :signature_class
 
@@ -59,8 +66,7 @@ module DSPy
         poro_class = Data.define(*output_attributes.keys)
         return poro_class.new(*output_attributes.values)
       end
-
-      raise result.errors
+      raise PredictionInvalidError, result.errors
     end
   end
 end
