@@ -17,9 +17,13 @@ end
 
 require_relative 'dspy/types'
 require_relative 'dspy/module'
-require_relative 'dspy/field' # gonna begone
+require_relative 'dspy/field'
 require_relative 'dspy/signature'
 require_relative 'dspy/lm'
 require_relative 'dspy/predict'
 require_relative 'dspy/chain_of_thought'
+require_relative 'dspy/tool'
+require_relative 'dspy/react'
+require_relative 'dspy/chat_adapter'
+require_relative 'dspy/tools'
 

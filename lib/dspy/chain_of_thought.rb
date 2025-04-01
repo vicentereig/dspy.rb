@@ -8,9 +8,15 @@ module DSPy
     def initialize(signature_class)
       @signature_class = signature_class
       chain_of_thought_schema = Dry::Schema.JSON do
-        required(:reasoning).value(:string).meta(description: "Reasoning: Let's think step by step in order to #{signature_class.description}")
+        required(:reasoning).
+          value(:string).
+          meta(description: "Reasoning: Let's think step by step in order to #{signature_class.description}")
       end
-      @signature_class.output_schema = Dry::Schema.JSON(parent: [@signature_class.output_schema, chain_of_thought_schema])
+      @signature_class.output_schema = Dry::Schema.JSON(parent:
+                                                          [
+                                                            @signature_class.output_schema,
+                                                            chain_of_thought_schema
+                                                          ])
     end
   end
 end

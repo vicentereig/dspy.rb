@@ -5,6 +5,7 @@ PATH
       dry-configurable (~> 1.0)
       dry-logger (~> 1.0)
       dry-schema (~> 1.14)
+      ruby-openai (~> 8.0)
       ruby_llm (~> 1.0)
 
 GEM
@@ -83,6 +84,10 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.2)
+    ruby-openai (8.0.0)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
     ruby_llm (1.0.0)
       event_stream_parser (~> 1)
       faraday (~> 2)

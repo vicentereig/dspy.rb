@@ -1,21 +1,29 @@
-example_id                                    | status | run_time        |
---------------------------------------------- | ------ | --------------- |
-./spec/dspy/chain_of_thought_spec.rb[1:1:1]   | passed | 0.02183 seconds |
-./spec/dspy/chain_of_thought_spec.rb[1:1:2]   | passed | 0.00196 seconds |
-./spec/dspy/colbertv2_rag_spec.rb[1:1]        | passed | 0.00097 seconds |
-./spec/dspy/colbertv2_rag_spec.rb[1:2]        | passed | 0.0029 seconds  |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:1]   | passed | 0.00101 seconds |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:2]   | passed | 0.00006 seconds |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:3]   | passed | 0.00104 seconds |
-./spec/dspy/ext/dry_schema_ext_spec.rb[1:4]   | passed | 0.00009 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:1] | passed | 0.00361 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:2] | passed | 0.00173 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:3] | passed | 0.00429 seconds |
-./spec/dspy/multi_stage_pipeline_spec.rb[1:4] | passed | 0.00631 seconds |
-./spec/dspy/predict_spec.rb[1:1:1]            | passed | 0.00183 seconds |
-./spec/dspy/predict_spec.rb[1:1:2]            | passed | 0.00318 seconds |
-./spec/dspy/predict_validation_spec.rb[1:1:1] | passed | 0.00302 seconds |
-./spec/dspy/signature_spec.rb[1:1]            | passed | 0.00006 seconds |
-./spec/dspy/signature_spec.rb[1:2]            | passed | 0.00005 seconds |
-./spec/dspy_spec.rb[1:1:1]                    | passed | 0.00031 seconds |
-./spec/dspy_spec.rb[1:1:2]                    | passed | 0.00003 seconds |
+example_id                                           | status | run_time        |
+---------------------------------------------------- | ------ | --------------- |
+./spec/dspy/chain_of_thought_spec.rb[1:1:1]          | passed | 0.02183 seconds |
+./spec/dspy/chain_of_thought_spec.rb[1:1:2]          | passed | 0.00196 seconds |
+./spec/dspy/colbertv2_rag_spec.rb[1:1]               | passed | 0.00097 seconds |
+./spec/dspy/colbertv2_rag_spec.rb[1:2]               | passed | 0.0029 seconds  |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:1]          | passed | 0.00101 seconds |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:2]          | passed | 0.00006 seconds |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:3]          | passed | 0.00104 seconds |
+./spec/dspy/ext/dry_schema_ext_spec.rb[1:4]          | passed | 0.00009 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:1]        | passed | 0.00361 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:2]        | passed | 0.00173 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:3]        | passed | 0.00429 seconds |
+./spec/dspy/multi_stage_pipeline_spec.rb[1:4]        | passed | 0.00631 seconds |
+./spec/dspy/predict_spec.rb[1:1:1]                   | passed | 0.00183 seconds |
+./spec/dspy/predict_spec.rb[1:1:2]                   | passed | 0.00318 seconds |
+./spec/dspy/predict_validation_spec.rb[1:1:1]        | passed | 0.00302 seconds |
+./spec/dspy/react_spec.rb[1:1:1]                     | failed | 0.01513 seconds |
+./spec/dspy/react_spec.rb[1:1:2]                     | failed | 0.00056 seconds |
+./spec/dspy/react_spec.rb[1:1:3]                     | failed | 0.00055 seconds |
+./spec/dspy/react_spec.rb[1:2:1]                     | failed | 0.00052 seconds |
+./spec/dspy/react_spec.rb[1:2:2]                     | failed | 0.0006 seconds  |
+./spec/dspy/react_spec.rb[1:3:1]                     | failed | 0.00066 seconds |
+./spec/dspy/react_spec.rb[1:4:1]                     | failed | 0.0006 seconds  |
+./spec/dspy/signature_spec.rb[1:1]                   | passed | 0.00006 seconds |
+./spec/dspy/signature_spec.rb[1:2]                   | passed | 0.00005 seconds |
+./spec/dspy/streaming_structured_ouputs_spec.rb[1:1] | passed | 1.89 seconds    |
+./spec/dspy_spec.rb[1:1:1]                           | passed | 0.00031 seconds |
+./spec/dspy_spec.rb[1:1:2]                           | passed | 0.00003 seconds |

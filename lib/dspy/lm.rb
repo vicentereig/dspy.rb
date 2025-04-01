@@ -26,13 +26,13 @@ module DSPy
       end
     end
 
-    def chat(inference_module, input_values)
+    def chat(inference_module, input_values, &block)
       signature = inference_module.signature_class
       chat = RubyLLM.chat(model: model)
       system_prompt = inference_module.system_signature
       user_prompt = inference_module.user_signature(input_values)
       chat.add_message role: :system, content: system_prompt
-      chat.ask(user_prompt)
+      chat.ask(user_prompt, &block)
 
       parse_response(chat.messages.last, input_values, signature)
     end
