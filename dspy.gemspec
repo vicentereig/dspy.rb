@@ -27,5 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-logger", "~> 1.0"
   spec.add_dependency "ruby-openai", "~> 8.0"
+  spec.add_dependency "async", "~> 2.23"
   # Development dependencies are already specified in the Gemfile
 end

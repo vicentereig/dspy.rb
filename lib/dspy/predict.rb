@@ -34,7 +34,7 @@ module DSPy
       ## Output values
       Respond exclusively with the output schema fields in the json block below.
         ```json
-          {ouput_values}
+          {output_values}
         ```
       
       In adhering to this structure, your objective is: #{@signature_class.description}
