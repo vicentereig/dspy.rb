@@ -42,32 +42,35 @@ RSpec.describe 'DSPy::ReAct' do
       expect(result).to respond_to(:history)
     end
 
-    it 'has history as a string' do
-      expect(result.history).to be_a(String)
+    it 'has history as an array of hashes' do
+      expect(result.history).to be_an(Array)
+      expect(result.history).not_to be_empty
+      result.history.each do |entry|
+        expect(entry).to be_a(Hash)
+        expect(entry).to have_key(:step)
+        expect(entry[:step]).to be_an(Integer)
+      end
     end
 
     it 'history includes the first thought' do
-      expect(result.history).to include("Thought 1:")
+      first_entry = result.history.find { |entry| entry[:step] == 1 }
+      expect(first_entry).not_to be_nil
+      expect(first_entry[:thought]).to match(/what 42 plus 58 is/i) # More flexible matching for thought
     end
 
-    it 'history includes the add_numbers action' do
-      expect(result.history).to include("Action: add_numbers")
+    it 'history includes the add_numbers action and its details' do
+      add_action_entry = result.history.find { |entry| entry[:action]&.downcase == "add_numbers" }
+      expect(add_action_entry).not_to be_nil
+      expect(add_action_entry[:action]).to eq("add_numbers")
+      expect(add_action_entry[:action_input]).to match(/42\s*,\s*58/) # Flexible for spacing
+      expect(add_action_entry[:observation]).to match(/100(\.0)?/) # Allow for 100 or 100.0
     end
 
-    it 'history includes the input for add_numbers action' do
-      expect(result.history).to include("Action Input: 42, 58") # Or similar, depending on LM's exact phrasing
-    end
-
-    it 'history includes the observation from add_numbers' do
-      expect(result.history).to include("Observation: 100.0") # Or 100
-    end
-
-    it 'history includes the finish action' do
-      expect(result.history).to include("Action: finish")
-    end
-
-    it 'history includes the action input for the finish action' do
-      expect(result.history).to include("Action Input: 100")
+    it 'history includes the finish action and its input' do
+      finish_action_entry = result.history.find { |entry| entry[:action]&.downcase == "finish" }
+      expect(finish_action_entry).not_to be_nil
+      expect(finish_action_entry[:action]).to eq("finish")
+      expect(finish_action_entry[:action_input]).to match(/100(\.0)?/) # Allow for 100 or 100.0
     end
 
     it 'responds to :iterations' do
