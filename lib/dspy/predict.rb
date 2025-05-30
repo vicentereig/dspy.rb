@@ -5,7 +5,7 @@ module DSPy
     attr_accessor :errors
     def initialize(errors)
       @errors = errors
-      super("Prediction invalid")
+      super("Prediction invalid: #{errors.to_h}")
     end
   end
   class Predict < DSPy::Module
@@ -66,7 +66,7 @@ module DSPy
         poro_class = Data.define(*output_attributes.keys)
         return poro_class.new(*output_attributes.values)
       end
-      raise PredictionInvalidError, result.errors
+      raise PredictionInvalidError.new(result.errors)
     end
   end
 end
