@@ -16,7 +16,7 @@ example_id                                           | status | run_time        
 ./spec/dspy/predict_spec.rb[1:1:1]                   | passed | 0.0016 seconds  |
 ./spec/dspy/predict_spec.rb[1:1:2]                   | passed | 0.0013 seconds  |
 ./spec/dspy/predict_validation_spec.rb[1:1:1]        | passed | 0.00278 seconds |
-./spec/dspy/react_spec.rb[1:1]                       | passed | 0.03497 seconds |
+./spec/dspy/react_spec.rb[1:1]                       | passed | 0.03406 seconds |
 ./spec/dspy/signature_spec.rb[1:1]                   | passed | 0.00006 seconds |
 ./spec/dspy/signature_spec.rb[1:2]                   | passed | 0.00005 seconds |
 ./spec/dspy/streaming_structured_ouputs_spec.rb[1:1] | passed | 0.00005 seconds |
