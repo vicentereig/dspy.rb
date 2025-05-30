@@ -238,7 +238,7 @@ end
 # Expected output (will vary based on LLM's reasoning):
 # Question: What is 5 plus 7?
 # Answer: 12
-# Iterations: 2 (or similar)
+# Iterations: 2 
 # History:
 #   Step 1:
 #     Thought: I need to calculate 5 plus 7. I have a calculator tool that can do this.
@@ -339,6 +339,7 @@ result.history.each_with_index do |entry, index|
   # For brevity, not printing full thought/observation here.
 end
 # The answer and history will depend on the LLM's reasoning and live search results.
+```
 
 ## Roadmap
 
