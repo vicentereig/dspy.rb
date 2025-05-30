@@ -5,14 +5,14 @@ module DSPy
 
     input do
       required(:question).value(:string).meta(description: 'The question to answer')
-      required(:history).value(:string).meta(description: 'Previous thoughts and actions')
-      required(:available_tools).value(:string).meta(description: 'List of available tools and their descriptions')
+      required(:history).value(:string).meta(description: 'Previous thoughts and actions, including observations from tools. The agent MUST use information from the history to inform its actions and final answer.')
+      required(:available_tools).value(:string).meta(description: 'List of available tools and their descriptions. The agent MUST choose an action from this list or use "finish".')
     end
 
     output do
-      required(:thought).value(:string).meta(description: 'Reasoning about what to do next')
-      required(:action).value(:string).meta(description: 'The action to take: either a tool name or "finish"')
-      required(:action_input).value(:string).meta(description: 'Input for the action. If action is "finish", this MUST be the final answer to the original question.')
+      required(:thought).value(:string).meta(description: 'Reasoning about what to do next, considering the history and observations.')
+      required(:action).value(:string).meta(description: 'The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string "finish" to provide the final answer.')
+      required(:action_input).value(:string).meta(description: 'Input for the chosen action. If action is "finish", this field MUST contain the final answer to the original question. This answer MUST be directly taken from the relevant Observation in the history if available. For example, if an observation showed "Observation: 100.0", and you are finishing, this field MUST be "100.0". Do not leave empty if finishing with an observed answer.')
     end
   end
 
@@ -34,15 +34,24 @@ module DSPy
 
   # ReAct Agent Module
   class ReAct < DSPy::Module
-    attr_reader :signature_class, :tools, :max_iterations
+    attr_reader :signature_class, :internal_output_schema, :tools, :max_iterations
 
     def initialize(signature_class, tools: [], max_iterations: 5)
       super()
-      @signature_class = signature_class
+      @signature_class = signature_class # User's original signature class
       @thought_generator = DSPy::ChainOfThought.new(ReActThought)
       @observation_processor = DSPy::Predict.new(ReActObservation)
       @tools = tools.map { |tool| [tool.name.downcase, tool] }.to_h # Ensure tool names are stored lowercased for lookup
       @max_iterations = max_iterations
+
+      # Define the schema for fields automatically added by ReAct
+      react_added_output_schema = Dry::Schema.JSON do
+        optional(:history).value(:string).meta(description: 'The ReAct trajectory of thoughts and actions.')
+        optional(:iterations).value(:integer).meta(description: 'Number of iterations taken by the ReAct agent.')
+      end
+
+      # Create the augmented internal output schema by combining user's output schema and ReAct's added fields
+      @internal_output_schema = Dry::Schema.JSON(parent: [signature_class.output_schema, react_added_output_schema])
     end
 
     def forward(**input_values)
@@ -75,22 +84,50 @@ module DSPy
 
         thought = thought_result.thought
         action = thought_result.action
-        action_input = thought_result.action_input
+        current_action_input = thought_result.action_input # What LM provided
 
-        # Add thought to history
+        if action.downcase == "finish"
+          # If LM says 'finish' but gives empty input, try to use last observation
+          if current_action_input.nil? || current_action_input.strip.empty?
+            last_obs_idx = history.rindex("\nObservation: ")
+            if last_obs_idx
+              obs_text_start = last_obs_idx + "\nObservation: ".length
+              # Find end of this observation (start of next Thought/Action/Observation or end of history)
+              next_marker_idx = history.index(/\n(?:Thought \d+:|Action:|Observation:)/, obs_text_start)
+              obs_text_block = next_marker_idx ? history[obs_text_start...next_marker_idx] : history[obs_text_start..]
+              
+              last_observation_value = obs_text_block.strip
+              if last_observation_value && !last_observation_value.empty?
+                DSPy.logger.info(
+                  module: "ReAct",
+                  status: "Finish action had empty input. Overriding with last observation.",
+                  original_input: current_action_input,
+                  derived_input: last_observation_value
+                )
+                current_action_input = last_observation_value # Override
+              else
+                DSPy.logger.warn(module: "ReAct", status: "Finish action had empty input, last observation also empty/not found cleanly.", original_input: current_action_input)
+              end
+            else
+              DSPy.logger.warn(module: "ReAct", status: "Finish action had empty input, no prior Observation found in history.", original_input: current_action_input)
+            end
+          end
+          final_answer = current_action_input # Set final answer from (potentially overridden) input
+        end
+
+        # Add thought to history using current_action_input, which might have been overridden for 'finish'
         history += "\nThought #{i + 1}: #{thought}\n"
         history += "Action: #{action}\n"
-        history += "Action Input: #{action_input}\n"
+        history += "Action Input: #{current_action_input}\n"
 
-        # Check if we should finish
+        # Check if we should finish (using the original action from LM)
         if action.downcase == "finish"
-          DSPy.logger.info(module: "ReAct", status: "Finishing directly after thought", action: action, action_input: action_input, question: question)
-          final_answer = action_input
+          DSPy.logger.info(module: "ReAct", status: "Finishing loop after thought", action: action, final_answer: final_answer, question: question)
           break
         end
 
         # Execute the action
-        observation = execute_action(action, action_input)
+        observation = execute_action(action, current_action_input) # current_action_input is original for non-finish
         history += "Observation: #{observation}\n"
 
         # Process the observation
@@ -109,10 +146,43 @@ module DSPy
             available_tools: available_tools_desc
           )
           DSPy.logger.info(module: "ReAct", status: "Finishing after observation and final thought", final_action: final_thought_result.action, final_action_input: final_thought_result.action_input, question: question)
-          # Ensure this final thought is geared towards providing the answer
-          # The prompt for ReActThought might need adjustment if it's not always producing a final answer in action_input
-          # when action is 'finish'. For now, we assume action_input is the answer.
-          final_answer = final_thought_result.action_input
+          
+          final_thought_action = final_thought_result.action
+          final_thought_action_input_val = final_thought_result.action_input # LM provided
+
+          if final_thought_action.downcase == "finish"
+            if final_thought_action_input_val.nil? || final_thought_action_input_val.strip.empty?
+              # History here includes the observation that triggered this 'finish' path
+              last_obs_idx_ft = history.rindex("\nObservation: ")
+              if last_obs_idx_ft
+                obs_text_start_ft = last_obs_idx_ft + "\nObservation: ".length
+                next_marker_idx_ft = history.index(/\n(?:Thought \d+:|Action:|Observation:)/, obs_text_start_ft)
+                obs_text_block_ft = next_marker_idx_ft ? history[obs_text_start_ft...next_marker_idx_ft] : history[obs_text_start_ft..]
+                
+                last_observation_value_ft = obs_text_block_ft.strip
+                if last_observation_value_ft && !last_observation_value_ft.empty?
+                  DSPy.logger.info(
+                    module: "ReAct",
+                    status: "Final thought 'finish' action had empty input. Overriding with last observation.",
+                    original_input: final_thought_action_input_val,
+                    derived_input: last_observation_value_ft
+                  )
+                  final_thought_action_input_val = last_observation_value_ft # Override
+                else
+                   DSPy.logger.warn(module: "ReAct", status: "Final thought 'finish' action had empty input, last observation also empty/not found cleanly.", original_input: final_thought_action_input_val)
+                end
+              else
+                DSPy.logger.warn(module: "ReAct", status: "Final thought 'finish' action had empty input, no prior Observation found in history.", original_input: final_thought_action_input_val)
+              end
+            end
+          end
+          
+          # Append the final thought, action, and action_input to history
+          history += "\nThought #{iterations_count + 1}: #{final_thought_result.thought}\n"
+          history += "Action: #{final_thought_action}\n"
+          history += "Action Input: #{final_thought_action_input_val}\n" # Use (potentially overridden) value
+
+          final_answer = final_thought_action_input_val # Use (potentially overridden) value
           break
         end
       end
@@ -120,32 +190,28 @@ module DSPy
       final_answer ||= "Unable to find answer within #{@max_iterations} iterations"
       DSPy.logger.info(module: "ReAct", status: "Final answer determined", final_answer: final_answer, question: question) if final_answer.empty? || final_answer == "Unable to find answer within #{@max_iterations} iterations"
 
-      # Prepare output based on signature_class.output_schema
+      # Prepare output data
       output_data = {}
-      # Assuming the primary output field is named 'answer' or is the first one.
-      # A more robust way would be to iterate through output_schema fields.
-      output_field_name = @signature_class.output_schema.key_map.first.name.to_sym
-      output_data[output_field_name] = final_answer
 
-      # Include other potential fields if defined in the output schema and available
-      # For example, if :history or :iterations are in output_schema
-      if @signature_class.output_schema.key_map.any? { |k| k.name.to_sym == :history }
-        output_data[:history] = history
-      end
-      if @signature_class.output_schema.key_map.any? { |k| k.name.to_sym == :iterations }
-        output_data[:iterations] = iterations_count
-      end
+      # Populate the primary answer field from the user's original signature
+      # This assumes the first defined output field in the user's signature is the main answer field.
+      user_primary_output_field = @signature_class.output_schema.key_map.first.name.to_sym
+      output_data[user_primary_output_field] = final_answer
 
-      # Validate and create PORO for the output
-      output_validation_result = @signature_class.output_schema.call(output_data)
+      # Add ReAct-specific fields
+      output_data[:history] = history
+      output_data[:iterations] = iterations_count
+
+      # Validate and create PORO using the augmented internal_output_schema
+      output_validation_result = @internal_output_schema.call(output_data)
       unless output_validation_result.success?
-        # This case should ideally be handled carefully, perhaps by logging
-        # or attempting to coerce, as the agent itself is producing this data.
-        # For now, we'll raise if the self-generated output doesn't match its own schema.
+        DSPy.logger.error(module: "ReAct", status: "Internal output validation failed", errors: output_validation_result.errors.to_h, data: output_data)
         raise DSPy::PredictionInvalidError.new(output_validation_result.errors)
       end
 
-      poro_class = Data.define(*output_validation_result.to_h.keys)
+      # Create PORO with all fields (user's + ReAct's)
+      # Sorting keys for Data.define ensures a consistent order for the PORO attributes.
+      poro_class = Data.define(*output_validation_result.to_h.keys.sort)
       poro_class.new(**output_validation_result.to_h)
     end
 
