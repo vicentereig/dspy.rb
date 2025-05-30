@@ -3,7 +3,22 @@
 require 'spec_helper'
 
 RSpec.describe 'DSPy::ReAct' do
-  it 'answers a question' do
+  # Define the DeepQA Signature as requested by the user
+  class DeepQA < DSPy::Signature
+    description "Given a question finds the answer"
+
+    input do
+      required(:question).value(:string).meta(description: 'the question we want to answer')
+    end
+
+    output do
+      required(:answer).value(:string).meta(description: 'The actual answer')
+      optional(:history).value(:string).meta(description: 'The ReAct trajectory')
+      optional(:iterations).value(:integer).meta(description: 'Number of iterations taken')
+    end
+  end
+
+  it 'answers a question using a signature' do
     # Configure DSPy
     DSPy.configure do |c|
       c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
@@ -43,11 +58,13 @@ RSpec.describe 'DSPy::ReAct' do
 
     # Create agent and ask questions
     result = nil
-    VCR.use_cassette('openai/gpt4o-mini/react_agent_answers_question') do
-      agent = DSPy::ReActAgent.new(tools: [date_tool, add_tool])
-      result = agent.forward("What is 42 plus 58?")
+    VCR.use_cassette('openai/gpt4o-mini/react_agent_answers_question_with_signature') do
+      agent = DSPy::ReAct.new(DeepQA, tools: [date_tool, add_tool])
+      result = agent.forward(question: "What is 42 plus 58?")
     end
 
-    expect(result[:answer]).to eq("100")
+    expect(result.answer).to eq("100")
+    expect(result.history).to include("Action: add_numbers")
+    expect(result.iterations).to be > 0
   end
 end
