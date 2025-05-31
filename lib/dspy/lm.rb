@@ -27,18 +27,18 @@ module DSPy
     end
 
     def chat(inference_module, input_values, &block)
-      signature = inference_module.signature_class
+      signature_class = inference_module.signature_class
       chat = RubyLLM.chat(model: model)
       system_prompt = inference_module.system_signature
       user_prompt = inference_module.user_signature(input_values)
       chat.add_message role: :system, content: system_prompt
       chat.ask(user_prompt, &block)
 
-      parse_response(chat.messages.last, input_values, signature)
+      parse_response(chat.messages.last, input_values, signature_class)
     end
 
     private
-    def parse_response(response, input_values, signature)
+    def parse_response(response, input_values, signature_class)
       # Try to parse the response as JSON
       content = response.content
 
@@ -52,14 +52,22 @@ module DSPy
       begin
         json_payload = JSON.parse(content)
 
-        output = signature.output_schema.call(json_payload)
+        # Handle different signature types
+        if signature_class < DSPy::SorbetSignature
+          # For Sorbet signatures, just return the parsed JSON
+          # The SorbetPredict will handle validation
+          json_payload
+        else
+          # Original dry-schema based handling
+          output = signature_class.output_schema.call(json_payload)
 
-        result_schema = Dry::Schema.JSON(parent: [signature.input_schema, signature.output_schema])
-        result = output.to_h.merge(input_values)
-        # create an instance with input and output schema
-        poro_result = result_schema.call(result)
+          result_schema = Dry::Schema.JSON(parent: [signature_class.input_schema, signature_class.output_schema])
+          result = output.to_h.merge(input_values)
+          # create an instance with input and output schema
+          poro_result = result_schema.call(result)
 
-        poro_result.to_h
+          poro_result.to_h
+        end
       rescue JSON::ParserError
         raise "Failed to parse LLM response as JSON: #{content}"
       end
