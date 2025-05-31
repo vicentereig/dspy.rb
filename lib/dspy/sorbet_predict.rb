@@ -150,6 +150,12 @@ module DSPy
           if enum_class
             # Deserialize enum value
             [key, enum_class.deserialize(value)]
+          elsif prop_type == Float || (prop_type.is_a?(T::Types::Simple) && prop_type.raw_type == Float)
+            # Coerce to Float
+            [key, value.to_f]
+          elsif prop_type == Integer || (prop_type.is_a?(T::Types::Simple) && prop_type.raw_type == Integer)
+            # Coerce to Integer
+            [key, value.to_i]
           else
             [key, value]
           end
