@@ -9,6 +9,7 @@ DSPy.rb provides a foundation for composable LLM programming with the following 
 - **Signatures**: Define input/output schemas for LLM interactions using JSON schemas
 - **Predict**: Basic LLM completion with structured inputs and outputs
 - **Chain of Thought**: Enhanced reasoning through step-by-step thinking
+- **ReAct**: Compose multiple LLM calls in a structured workflow using tools.
 - **RAG (Retrieval-Augmented Generation)**: Enriched responses with context from retrieval
 - **Multi-stage Pipelines**: Compose multiple LLM calls in a structured workflow
 
