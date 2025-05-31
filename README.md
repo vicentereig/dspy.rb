@@ -377,4 +377,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE.txt file for details.
+`dspy.rb` is released under the [MIT License](LICENSE).
