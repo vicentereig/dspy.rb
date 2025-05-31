@@ -1,0 +1,95 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
+        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"problem\":{\"type\":\"string\"}},\"required\":[\"problem\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"answer\":{\"type\":\"number\"},\"unit\":{\"type\":\"string\"},\"reasoning\":{\"type\":\"string\"}},\"required\":[\"answer\",\"unit\",\"reasoning\"]}\n        ````\n      \n      For
+        example, based on the schemas above, a valid interaction would be:\n      ##
+        Input values\n        ```json\n          {\"problem\":\"example\"}\n        ```\n      ##
+        Output values\n        ```json\n          {\"answer\":\"example\",\"unit\":\"example\",\"reasoning\":\"Let
+        me think through this step by step...\"}\n        ```\n      \n      All interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
+        Output values\n      Respond exclusively with the output schema fields in
+        the json block below.\n        ```json\n          {output_values}\n        ```\n      \n      In
+        adhering to this structure, your objective is: Solve a math word problem Think
+        step by step.\n\n"},{"role":"user","content":"        ## Input Values\n        ```json\n        {\"problem\":\"If
+        a train travels 60 miles per hour for 2.5 hours, how far does it travel?\"}\n        ```     \n        \n        Respond
+        with the corresponding output schema fields wrapped in a ```json ``` block,
+        \n         starting with the heading `## Output values`.\n"}],"temperature":0.7,"stream":false}'
+    headers:
+      User-Agent:
+      - Faraday v2.12.2
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 31 May 2025 19:04:59 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '1864'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1869'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199601'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 119ms
+      X-Request-Id:
+      - req_e664b48f83894931a20c6e4bd8560de7
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=vaukJTPxU39OEEmjNIdETxLtkzzQp7xBZqbJNQdYAPM-1748718299-1.0.1.1-oqCmon18up27TEiBb5B9iY50bQAmkHhebAMUnwaWQihZnm2gJ0qN4OkQe5NvSeDyXiinDumitqkY7Qn7qgfqWeTSbGy.egx2jKG4mTyv8ds;
+        path=/; expires=Sat, 31-May-25 19:34:59 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=WZO4xeD75KJpwmXoMitQXF83r_vcljw8VjOol2.FpMY-1748718299310-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9488bd6e4900ec89-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1CZExubDN5ZGlrd0xZN1VZYkdZdXhWWWpaeFdheCIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc0ODcxODI5NywKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxNTAsXG4gIFwidW5pdFwiOiBcIm1pbGVzXCIsXG4gIFwicmVhc29uaW5nXCI6IFwiVG8gZmluZCB0aGUgZGlzdGFuY2UgdHJhdmVsZWQsIHdlIHVzZSB0aGUgZm9ybXVsYTogRGlzdGFuY2UgPSBTcGVlZCDDlyBUaW1lLiBUaGUgc3BlZWQgb2YgdGhlIHRyYWluIGlzIDYwIG1pbGVzIHBlciBob3VyIGFuZCB0aGUgdGltZSBpcyAyLjUgaG91cnMuIFNvLCBEaXN0YW5jZSA9IDYwIG1pbGVzL2hvdXIgw5cgMi41IGhvdXJzID0gMTUwIG1pbGVzLlwiXG59XG5gYGAiLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAibG9ncHJvYnMiOiBudWxsLAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiAzNDksCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiA4OCwKICAgICJ0b3RhbF90b2tlbnMiOiA0MzcsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6ICJmcF8zNGE1NGFlOTNjIgp9Cg==
+  recorded_at: Sat, 31 May 2025 19:04:59 GMT
+recorded_with: VCR 6.3.1
