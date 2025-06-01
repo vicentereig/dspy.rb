@@ -5,7 +5,7 @@ module DSPy
 
     input do
       required(:question).value(:string).meta(description: 'The question to answer')
-      required(:history).value(:string).meta(description: 'Previous thoughts and actions, including observations from tools. The agent MUST use information from the history to inform its actions and final answer.')
+      required(:history).value(:array).meta(description: 'Previous thoughts and actions, including observations from tools. The agent MUST use information from the history to inform its actions and final answer. Each entry is a hash representing a step in the reasoning process.')
       required(:available_tools).value(:string).meta(description: 'List of available tools and their descriptions. The agent MUST choose an action from this list or use "finish".')
     end
 
@@ -22,7 +22,7 @@ module DSPy
 
     input do
       required(:question).value(:string).meta(description: 'The original question')
-      required(:history).value(:string).meta(description: 'Previous thoughts, actions, and observations')
+      required(:history).value(:array).meta(description: 'Previous thoughts, actions, and observations. Each entry is a hash representing a step in the reasoning process.')
       required(:observation).value(:string).meta(description: 'The result from the last action')
     end
 
@@ -38,13 +38,14 @@ module DSPy
 
     # Defines the structure for each entry in the ReAct history
     HistoryEntry = Struct.new(:step, :thought, :action, :action_input, :observation, keyword_init: true) do
-      def to_s
-        s = ""
-        s += "Thought #{step}: #{thought}\n" if thought
-        s += "Action: #{action}\n" if action
-        s += "Action Input: #{action_input}\n" if action_input
-        s += "Observation: #{observation}\n" if observation
-        s
+      def to_h
+        {
+          step: step,
+          thought: thought,
+          action: action,
+          action_input: action_input,
+          observation: observation
+        }
       end
     end
 
@@ -85,7 +86,7 @@ module DSPy
       question_field_name = @signature_class.input_schema.key_map.first.name.to_sym
       question = input_values[question_field_name]
 
-      history = [] # Initialize history as an array
+      history = [] # Initialize history as an array of HistoryEntry objects
       available_tools_desc = @tools.map { |name, tool| "- #{name}: #{tool.description}" }.join("\n")
 
       final_answer = nil
@@ -98,7 +99,7 @@ module DSPy
         # Generate thought and action
         thought_result = @thought_generator.call(
           question: question,
-          history: format_history_for_lm(history),
+          history: history.map(&:to_h),
           available_tools: available_tools_desc
         )
 
@@ -112,26 +113,18 @@ module DSPy
         if action.downcase == "finish"
           # If LM says 'finish' but gives empty input, try to use last observation
           if current_action_input.nil? || current_action_input.strip.empty?
-            # History here includes the observation that triggered this 'finish' path
-            last_obs_idx = history.rindex("\nObservation: ")
-            if last_obs_idx
-              obs_text_start = last_obs_idx + "\nObservation: ".length
-              # Find end of this observation (start of next Thought/Action/Observation or end of history)
-              next_marker_idx = history.index(/\n(?:Thought \d+:|Action:|Observation:)/, obs_text_start)
-              obs_text_block = next_marker_idx ? history[obs_text_start...next_marker_idx] : history[obs_text_start..]
-
-              last_observation_value = obs_text_block.strip
-              if last_observation_value && !last_observation_value.empty?
-                DSPy.logger.info(
-                  module: "ReAct",
-                  status: "Finish action had empty input. Overriding with last observation.",
-                  original_input: current_action_input,
-                  derived_input: last_observation_value
-                )
-                current_action_input = last_observation_value # Override
-              else
-                DSPy.logger.warn(module: "ReAct", status: "Finish action had empty input, last observation also empty/not found cleanly.", original_input: current_action_input)
-              end
+            # Try to find the last observation in history
+            last_entry_with_observation = history.reverse.find { |entry| entry.observation && !entry.observation.strip.empty? }
+            
+            if last_entry_with_observation
+              last_observation_value = last_entry_with_observation.observation.strip
+              DSPy.logger.info(
+                module: "ReAct",
+                status: "Finish action had empty input. Overriding with last observation.",
+                original_input: current_action_input,
+                derived_input: last_observation_value
+              )
+              current_action_input = last_observation_value # Override
             else
               DSPy.logger.warn(module: "ReAct", status: "Finish action had empty input, no prior Observation found in history.", original_input: current_action_input)
             end
@@ -152,18 +145,17 @@ module DSPy
         # Execute the action
         observation_text = execute_action(action, current_action_input) # current_action_input is original for non-finish
         current_step_history[:observation] = observation_text
-        # history += "Observation: #{observation}\n"
         history << HistoryEntry.new(**current_step_history) # Add completed step to history
 
         # Process the observation
         obs_result = @observation_processor.call(
           question: question,
-          history: format_history_for_lm(history),
+          history: history.map(&:to_h),
           observation: observation_text
         )
 
         if obs_result.next_step.downcase == "finish"
-          DSPy.logger.info(module: "ReAct", status: "Observation processor suggests finish. Generating final thought.", question: question, history_before_final_thought: format_history_for_lm(history))
+          DSPy.logger.info(module: "ReAct", status: "Observation processor suggests finish. Generating final thought.", question: question, history_before_final_thought: history.map(&:to_h))
           # Generate final thought/answer if observation processor decides to finish
 
           # Create a new history entry for this final thought sequence
@@ -171,7 +163,7 @@ module DSPy
 
           final_thought_result = @thought_generator.call(
             question: question,
-            history: format_history_for_lm(history), # history now includes the last observation
+            history: history.map(&:to_h), # history now includes the last observation
             available_tools: available_tools_desc
           )
           DSPy.logger.info(module: "ReAct", status: "Finishing after observation and final thought", final_action: final_thought_result.action, final_action_input: final_thought_result.action_input, question: question)
@@ -184,10 +176,11 @@ module DSPy
 
           if final_thought_action.downcase == "finish"
             if final_thought_action_input_val.nil? || final_thought_action_input_val.strip.empty?
-              # History here includes the observation that triggered this 'finish' path
-              # The last observation is in the last entry of the 'history' array
-              last_observation_value_ft = history.last&.observation&.strip
-              if last_observation_value_ft && !last_observation_value_ft.empty?
+              # Find the last observation in the history array
+              last_entry_with_observation = history.reverse.find { |entry| entry.observation && !entry.observation.strip.empty? }
+              
+              if last_entry_with_observation
+                last_observation_value_ft = last_entry_with_observation.observation.strip
                 DSPy.logger.info(
                   module: "ReAct",
                   status: "Final thought 'finish' action had empty input. Overriding with last observation.",
@@ -196,11 +189,11 @@ module DSPy
                 )
                 final_thought_action_input_val = last_observation_value_ft # Override
               else
-                 DSPy.logger.warn(module: "ReAct", status: "Final thought 'finish' action had empty input, last observation also empty/not found cleanly.", original_input: final_thought_action_input_val)
+                DSPy.logger.warn(module: "ReAct", status: "Final thought 'finish' action had empty input, last observation also empty/not found cleanly.", original_input: final_thought_action_input_val)
               end
             else
               # This case is if LM provides 'finish' but no observation to fall back on in history array (should be rare if history is populated correctly)
-              DSPy.logger.warn(module: "ReAct", status: "Final thought 'finish' action had empty input, no prior Observation found in history array.", original_input: final_thought_action_input_val) if (history.empty? || history.last&.observation.nil?)
+              DSPy.logger.warn(module: "ReAct", status: "Final thought 'finish' action had empty input, no prior Observation found in history array.", original_input: final_thought_action_input_val) if (history.empty? || !history.any? { |entry| entry.observation && !entry.observation.strip.empty? })
             end
           end
 
@@ -242,10 +235,6 @@ module DSPy
     end
 
     private
-
-    def format_history_for_lm(history_array)
-      history_array.map(&:to_s).join("\n")
-    end
 
     def execute_action(action, action_input)
       tool = @tools[action.downcase] # Lookup with downcased action name
