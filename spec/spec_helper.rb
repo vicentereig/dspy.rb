@@ -5,6 +5,9 @@ require 'webmock/rspec'
 
 require 'dspy'
 
+# Load support files and tools
+Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |f| require f }
+
 DSPy.configure do |c|
   c.logger = Dry.Logger(:dspy, formatter: :string) { |s| s.add_backend(stream: "log/test.log") }
 end
