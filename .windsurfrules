@@ -1,1 +1,2 @@
 - when writing rspec tests, aim at one expectation per it test case.
+- When writing markdown keep the lines around 80 characters long.

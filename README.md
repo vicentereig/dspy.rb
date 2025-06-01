@@ -17,6 +17,19 @@ The library currently supports:
 - OpenAI and Anthropic via [Ruby LLM](https://github.com/crmne/ruby_llm)
 - JSON schema validation with [dry-schema](https://dry-rb.org/gems/dry-schema/)
 
+## Experimental Sorbet API
+
+ **New**: I am developing an experimental Sorbet-based API that provides 
+ enhanced type safety and IDE integration. 
+ Check out the [**EXPERIMENTAL.md**](EXPERIMENTAL.md) for the latest 
+ Sorbet-based usage examples and features.
+
+The experimental API offers:
+- Runtime type checking with T::Struct
+- Enhanced IDE support and autocomplete  
+- Better LLM prompting through field descriptions
+- Type-safe tool definitions for ReAct agents
+
 ## Installation
 
 This is not even fresh  off the oven. I recommend you installing 
