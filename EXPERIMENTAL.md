@@ -24,14 +24,22 @@ Define structured inputs and outputs for LLM interactions using T::Struct-based 
 class SentimentSignature < DSPy::SorbetSignature
   description "Classify sentiment of a given sentence."
 
+  class Sentiment < T::Enum
+    enums do
+      Positive = new('positive')
+      Negative = new('negative')
+      Neutral = new('neutral')
+    end
+  end
+
   input do
     const :sentence, String,
       description: 'The sentence to analyze'
   end
 
   output do
-    const :sentiment, String,
-      description: 'The sentiment classification (positive, negative, or neutral)'
+    const :sentiment, Sentiment,
+      description: 'The sentiment classification'
     const :confidence, Float,
       description: 'Confidence score between 0.0 and 1.0'
   end
@@ -53,7 +61,7 @@ classifier = DSPy::SorbetPredict.new(SentimentSignature)
 result = classifier.call(sentence: "This book was super fun to read!")
 
 # result is a properly typed T::Struct instance
-puts result.sentiment    # => "positive"
+puts result.sentiment    # => #<Sentiment::Positive>
 puts result.confidence   # => 0.85
 ```
 
@@ -298,7 +306,7 @@ class ArticlePipeline < DSPy::SorbetModule
   end
   
   sig { params(content: String).returns(T.untyped) }
-  def forward_untyped(content:)
+  def forward(content:)
     # Extract topic
     topic_result = @topic_extractor.call(content: content)
     
@@ -382,13 +390,21 @@ classifier = DSPy::Predict.new(Classify)
 class SentimentSignature < DSPy::SorbetSignature
   description "Classify sentiment"
 
+  class Sentiment < T::Enum
+    enums do
+      Positive = new('positive')
+      Negative = new('negative')
+      Neutral = new('neutral')
+    end
+  end
+
   input do
     const :sentence, String,
       description: 'Text to analyze'
   end
 
   output do
-    const :sentiment, String,
+    const :sentiment, Sentiment,
       description: 'Sentiment: positive, negative, or neutral'
     const :confidence, Float,
       description: 'Confidence score'
