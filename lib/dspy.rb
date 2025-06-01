@@ -24,3 +24,9 @@ require_relative 'dspy/predict'
 require_relative 'dspy/chain_of_thought'
 require_relative 'dspy/re_act'
 require_relative 'dspy/tools'
+
+# Sorbet implementation
+require_relative 'dspy/sorbet_signature'
+require_relative 'dspy/sorbet_module'
+require_relative 'dspy/sorbet_predict'
+require_relative 'dspy/sorbet_chain_of_thought'

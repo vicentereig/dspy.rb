@@ -1,19 +1,20 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
+require_relative 'sorbet_module'
 
 module DSPy
-  class SorbetPredict < DSPy::Module
+  class SorbetPredict < DSPy::SorbetModule
     extend T::Sig
-    
+
     sig { returns(T.class_of(SorbetSignature)) }
     attr_reader :signature_class
-    
+
     sig { params(signature_class: T.class_of(SorbetSignature)).void }
     def initialize(signature_class)
       @signature_class = signature_class
     end
-    
+
     sig { returns(String) }
     def system_signature
       <<-PROMPT
@@ -52,7 +53,7 @@ module DSPy
 
       PROMPT
     end
-    
+
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def generate_example_input
       example = {}
@@ -71,7 +72,7 @@ module DSPy
       end
       example
     end
-    
+
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def generate_example_output
       example = {}
@@ -95,7 +96,7 @@ module DSPy
       end
       example
     end
-    
+
     sig { params(input_values: T::Hash[Symbol, T.untyped]).returns(String) }
     def user_signature(input_values)
       <<-PROMPT
@@ -108,33 +109,34 @@ module DSPy
          starting with the heading `## Output values`.
       PROMPT
     end
-    
+
     sig { returns(DSPy::LM) }
     def lm
       DSPy.config.lm
     end
-    
+
     sig { params(input_values: T.untyped).returns(T.untyped) }
-    def forward(**input_values)
+    def forward_untyped(**input_values)
       DSPy.logger.info(module: self.class.to_s, **input_values)
-      
+
       # Validate input using T::Struct
       begin
-        input_struct = @signature_class.input_struct_class.new(**input_values)
+        _input_struct = @signature_class.input_struct_class.new(**input_values)
       rescue ArgumentError => e
         raise PredictionInvalidError.new({ input: e.message })
       end
-      
-      # Get output from LM
+
+      # Use the original input_values since input_struct.to_h may not be available
+      # The input has already been validated through the struct instantiation
       output_attributes = lm.chat(self, input_values)
-      
+
       # Debug: log what we got from LM
       DSPy.logger.info("LM returned: #{output_attributes.inspect}")
       DSPy.logger.info("Output attributes class: #{output_attributes.class}")
-      
+
       # Convert string keys to symbols
       output_attributes = output_attributes.transform_keys(&:to_sym)
-      
+
       # Handle enum deserialization
       output_props = @signature_class.output_struct_class.props
       output_attributes = output_attributes.map do |key, value|
@@ -146,7 +148,7 @@ module DSPy
                        elsif prop_type.is_a?(T::Types::Simple) && prop_type.raw_type < T::Enum
                          prop_type.raw_type
                        end
-          
+
           if enum_class
             # Deserialize enum value
             [key, enum_class.deserialize(value)]
@@ -163,7 +165,7 @@ module DSPy
           [key, value]
         end
       end.to_h
-      
+
       # Create output struct with validation
       begin
         output_struct = @signature_class.output_struct_class.new(**output_attributes)
@@ -173,11 +175,6 @@ module DSPy
       rescue TypeError => e
         raise PredictionInvalidError.new({ output: e.message })
       end
-    end
-    
-    sig { params(input_values: T.untyped).returns(T.untyped) }
-    def call(**input_values)
-      forward(**input_values)
     end
   end
 end
