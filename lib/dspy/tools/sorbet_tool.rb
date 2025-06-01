@@ -140,6 +140,18 @@ module DSPy
         self.class.tool_description_value || "Tool: #{name}"
       end
       
+      # Get the JSON schema string for the tool, formatted for LLM consumption
+      sig { returns(String) }
+      def schema
+        schema_obj = self.class.call_schema
+        tool_info = {
+          name: name,
+          description: description,
+          parameters: schema_obj
+        }
+        JSON.pretty_generate(tool_info)
+      end
+      
       # Dynamic call method for ReAct agent - parses JSON arguments and calls the typed method
       sig { params(args_json: T.untyped).returns(T.untyped) }
       def dynamic_call(args_json)

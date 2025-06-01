@@ -11,18 +11,21 @@ http_interactions:
         thoughts and actions, including observations from tools. The agent MUST use
         information from the history to inform its actions and final answer. Each
         entry is a hash representing a step in the reasoning process.\"},\"available_tools\":{\"type\":\"string\",\"description\":\"List
-        of available tools and their descriptions. The agent MUST choose an action
-        from this list or use \\\"finish\\\".\"}},\"required\":[\"question\",\"history\",\"available_tools\"]}\n        ```\n      Your
+        of available tools and their JSON schemas. The agent MUST choose an action
+        from this list or use \\\"finish\\\". For each tool, use the name exactly
+        as specified and provide action_input as a JSON object matching the tool''s
+        schema.\"}},\"required\":[\"question\",\"history\",\"available_tools\"]}\n        ```\n      Your
         output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"thought\":{\"type\":\"string\",\"description\":\"Reasoning
         about what to do next, considering the history and observations.\"},\"action\":{\"type\":\"string\",\"description\":\"The
         action to take. MUST be one of the tool names listed in `available_tools`
         input, or the literal string \\\"finish\\\" to provide the final answer.\"},\"action_input\":{\"type\":\"string\",\"description\":\"Input
-        for the chosen action. If action is \\\"finish\\\", this field MUST contain
-        the final answer to the original question. This answer MUST be directly taken
-        from the relevant Observation in the history if available. For example, if
-        an observation showed \\\"Observation: 100.0\\\", and you are finishing, this
-        field MUST be \\\"100.0\\\". Do not leave empty if finishing with an observed
-        answer.\"}},\"required\":[\"thought\",\"action\",\"action_input\"]}\n        ````\n      \n      For
+        for the chosen action. If action is a tool name, this MUST be a JSON object
+        matching the tool''s schema. If action is \\\"finish\\\", this field MUST
+        contain the final answer to the original question. This answer MUST be directly
+        taken from the relevant Observation in the history if available. For example,
+        if an observation showed \\\"Observation: 100.0\\\", and you are finishing,
+        this field MUST be \\\"100.0\\\". Do not leave empty if finishing with an
+        observed answer.\"}},\"required\":[\"thought\",\"action\",\"action_input\"]}\n        ````\n      \n      For
         example, based on the schemas above, a valid interaction would be:\n      ##
         Input values\n        ```json\n          {\"question\":\"example\",\"history\":\"example\",\"available_tools\":\"example\"}\n        ```\n      ##
         Output values\n        ```json\n          {\"thought\":\"example\",\"action\":\"example\",\"action_input\":\"example\"}\n        ```\n      \n      All
@@ -53,7 +56,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sun, 01 Jun 2025 14:14:54 GMT
+      - Sun, 01 Jun 2025 17:45:39 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -65,57 +68,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1328'
+      - '1696'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1333'
+      - '1698'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '199303'
+      - '199252'
       X-Ratelimit-Reset-Requests:
-      - 14.879s
+      - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 209ms
+      - 224ms
       X-Request-Id:
-      - req_2c5bcc8ead1cf3e24e34cdf15e0ba5c5
+      - req_3bbdb0dfd0eb63d45b9d8c38582574d0
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=NR_yspEkfIAym8brdlHPQSLBYjhFlWr8ayfG.4OjsVw-1748787294-1.0.1.1-oYSRI9d4OO9X3qlwlOFN8GWtx9VtFAfbkvn335qiE.412g119SF0g1O.woYUrnkYo90VZdh7j3hJcUiB_86ajSri5eKNFZu9KInxfgOg_9Q;
-        path=/; expires=Sun, 01-Jun-25 14:44:54 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=4rcPIrdJT_XkClSWDZVUxXObWfTmRL9a9HVHk3yXlt8-1748799939-1.0.1.1-KqBUC0AIqx1b4qggGFTCz.i4v47LNbo_2pKlmIz__YyHupR0nC4d9UB6rt5w5iENGrzyLE3Wn6KFu3_VuEZAPGPuSmA7g1dFfhH.oRmelyE;
+        path=/; expires=Sun, 01-Jun-25 18:15:39 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=EIs1AbTOmwdwwqlHd2MDgGH9hR61K1gAWnUzXgIO_kc-1748787294727-0.0.1.1-604800000;
+      - _cfuvid=Qx8MSySW9Nd.I19WyT6BXcjG4T02V5HIlUaA1ZsAur0-1748799939572-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 948f51e6fa526666-MAD
+      - 9490869aac3f2fca-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BddkbNPJJiP0qB3fpUi7A58XTE0Yl",
+          "id": "chatcmpl-Bdh2XuLUzCsvlfrHJXUCiU2rLwBm4",
           "object": "chat.completion",
-          "created": 1748787293,
+          "created": 1748799937,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find a way to check the current weather since there are no previous observations in the history.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I cannot provide the weather information without access to tools.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history or available tools provided, I cannot answer the question about today's weather directly. I need to gather more information or use a specific tool to retrieve weather data.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I cannot provide an answer as there is no information available.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -124,9 +127,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 574,
-            "completion_tokens": 60,
-            "total_tokens": 634,
+            "prompt_tokens": 618,
+            "completion_tokens": 76,
+            "total_tokens": 694,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -139,7 +142,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_62a23a81ef"
+          "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sun, 01 Jun 2025 14:14:54 GMT
+  recorded_at: Sun, 01 Jun 2025 17:45:39 GMT
 recorded_with: VCR 6.3.1
