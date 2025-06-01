@@ -11,6 +11,8 @@ module DSPy
   class SorbetChainOfThought < SorbetPredict
     extend T::Sig
     
+    FieldDescriptor = DSPy::SorbetSignature::FieldDescriptor
+    
     sig { params(signature_class: T.class_of(DSPy::SorbetSignature)).void }
     def initialize(signature_class)
       @original_signature = signature_class
@@ -23,11 +25,22 @@ module DSPy
         # Set the description
         description "#{signature_class.description} Think step by step."
         
-        # Use the same input struct
+        # Use the same input struct and copy field descriptors
         @input_struct_class = signature_class.input_struct_class
+        @input_field_descriptors = signature_class.instance_variable_get(:@input_field_descriptors) || {}
         
-        # Use the enhanced output struct
+        # Use the enhanced output struct and create field descriptors for it
         @output_struct_class = enhanced_output_struct
+        
+        # Create field descriptors for the enhanced output struct
+        @output_field_descriptors = {}
+        
+        # Copy original output field descriptors
+        original_output_descriptors = signature_class.instance_variable_get(:@output_field_descriptors) || {}
+        @output_field_descriptors.merge!(original_output_descriptors)
+        
+        # Add reasoning field descriptor
+        @output_field_descriptors[:reasoning] = FieldDescriptor.new(String, nil)
         
         class << self
           attr_reader :input_struct_class, :output_struct_class

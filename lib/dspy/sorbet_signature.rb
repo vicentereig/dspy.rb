@@ -6,6 +6,53 @@ module DSPy
   class SorbetSignature
     extend T::Sig
     
+    # Container for field type and description
+    class FieldDescriptor
+      extend T::Sig
+      
+      sig { returns(T.untyped) }
+      attr_reader :type
+      
+      sig { returns(T.nilable(String)) }
+      attr_reader :description
+      
+      sig { params(type: T.untyped, description: T.nilable(String)).void }
+      def initialize(type, description = nil)
+        @type = type
+        @description = description
+      end
+    end
+    
+    # DSL helper for building struct classes with field descriptions
+    class StructBuilder
+      extend T::Sig
+      
+      sig { returns(T::Hash[Symbol, FieldDescriptor]) }
+      attr_reader :field_descriptors
+      
+      sig { void }
+      def initialize
+        @field_descriptors = {}
+      end
+      
+      sig { params(name: Symbol, type: T.untyped, description: T.nilable(String), default: T.untyped).void }
+      def const(name, type, description: nil, default: T.let(nil, T.untyped))
+        @field_descriptors[name] = FieldDescriptor.new(type, description)
+        # Store default for future use if needed
+      end
+      
+      sig { returns(T.class_of(T::Struct)) }
+      def build_struct_class
+        descriptors = @field_descriptors
+        Class.new(T::Struct) do
+          extend T::Sig
+          descriptors.each do |name, descriptor|
+            const name, descriptor.type
+          end
+        end
+      end
+    end
+    
     class << self
       extend T::Sig
       
@@ -18,6 +65,12 @@ module DSPy
       sig { returns(T.nilable(T.class_of(T::Struct))) }
       attr_reader :output_struct_class
       
+      sig { returns(T::Hash[Symbol, FieldDescriptor]) }
+      attr_reader :input_field_descriptors
+      
+      sig { returns(T::Hash[Symbol, FieldDescriptor]) }
+      attr_reader :output_field_descriptors
+      
       sig { params(desc: T.nilable(String)).returns(T.nilable(String)) }
       def description(desc = nil)
         if desc.nil?
@@ -29,18 +82,36 @@ module DSPy
       
       sig { params(block: T.proc.void).void }
       def input(&block)
-        @input_struct_class = Class.new(T::Struct) do
-          extend T::Sig
-          class_eval(&block)
+        builder = StructBuilder.new
+        
+        # Check if block expects a parameter (new format) or not (old format)
+        if block.arity > 0
+          # New format: block takes builder parameter
+          block.call(builder)
+        else
+          # Old format: execute in context where const is available
+          builder.instance_eval(&block)
         end
+        
+        @input_field_descriptors = builder.field_descriptors
+        @input_struct_class = builder.build_struct_class
       end
       
       sig { params(block: T.proc.void).void }
       def output(&block)
-        @output_struct_class = Class.new(T::Struct) do
-          extend T::Sig
-          class_eval(&block)
+        builder = StructBuilder.new
+        
+        # Check if block expects a parameter (new format) or not (old format)
+        if block.arity > 0
+          # New format: block takes builder parameter
+          block.call(builder)
+        else
+          # Old format: execute in context where const is available
+          builder.instance_eval(&block)
         end
+        
+        @output_field_descriptors = builder.field_descriptors
+        @output_struct_class = builder.build_struct_class
       end
       
       sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -50,13 +121,15 @@ module DSPy
         properties = {}
         required = []
         
-        @input_struct_class.props.each do |name, prop|
-          properties[name] = type_to_json_schema(prop[:type])
-          required << name.to_s unless prop.key?(:default)
+        @input_field_descriptors&.each do |name, descriptor|
+          schema = type_to_json_schema(descriptor.type)
+          schema["description"] = descriptor.description if descriptor.description
+          properties[name] = schema
+          required << name.to_s
         end
         
         {
-          "$schema": "http://json-schema.org/draft-06/schema#",
+          "$schema" => "http://json-schema.org/draft-06/schema#",
           type: "object",
           properties: properties,
           required: required
@@ -70,13 +143,15 @@ module DSPy
         properties = {}
         required = []
         
-        @output_struct_class.props.each do |name, prop|
-          properties[name] = type_to_json_schema(prop[:type])
-          required << name.to_s unless prop.key?(:default)
+        @output_field_descriptors&.each do |name, descriptor|
+          schema = type_to_json_schema(descriptor.type)
+          schema["description"] = descriptor.description if descriptor.description
+          properties[name] = schema
+          required << name.to_s
         end
         
         {
-          "$schema": "http://json-schema.org/draft-06/schema#",
+          "$schema" => "http://json-schema.org/draft-06/schema#",
           type: "object",
           properties: properties,
           required: required
