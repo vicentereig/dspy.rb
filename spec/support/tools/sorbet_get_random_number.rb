@@ -7,8 +7,8 @@ class SorbetGetRandomNumber < DSPy::Tools::SorbetTool
   tool_name 'get_random_number'
   tool_description 'Generates a random number within a specified range'
 
-  sig { params(min: Numeric, max: Numeric).returns(Numeric) }
-  def call(min: 0, max: 100)
+  sig { params(min: Integer, max: Integer).returns(Integer) }
+  def call(min: 1, max: 100)
     rand(min..max)
   end
 end

@@ -3,21 +3,20 @@
 require 'spec_helper'
 require 'dspy/sorbet_re_act'
 require 'dspy/tools'
+class SorbetDeepQA < DSPy::SorbetSignature
+  description "Answer questions with consideration for the context"
 
-RSpec.describe 'DSPy::SorbetReAct' do
-  # Define the DeepQA Signature using SorbetSignature
-  class SorbetDeepQA < DSPy::SorbetSignature
-    description "Answer questions with consideration for the context"
-
-    input do |builder|
-      builder.const :question, String
-    end
-
-    output do |builder|
-      builder.const :answer, String
-    end
+  input do
+    const :question, String
   end
 
+  output do
+    const :answer, String
+  end
+end
+
+
+RSpec.describe 'DSPy::SorbetReAct' do
   describe 'when answering a question using a Sorbet signature (auto-augmented output)' do
     let(:date_tool) { SorbetGetTodaysDate.new }
     let(:add_tool) { SorbetAddNumbers.new }

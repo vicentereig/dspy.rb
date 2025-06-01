@@ -18,7 +18,7 @@ class SorbetSentimentClassifier < DSPy::SorbetSignature
   end
 
   output do
-    const :sentiment, Sentiment  # We'll use String and validate against enum values
+    const :sentiment, Sentiment
     const :confidence, Float
   end
 end

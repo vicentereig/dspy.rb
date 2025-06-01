@@ -1,3 +1,5 @@
+require 'spec_helper'
+require 'date'
 
 # Test the new Sorbet Tool DSL
 RSpec.describe 'DSPy::Tools::SorbetTool DSL' do
