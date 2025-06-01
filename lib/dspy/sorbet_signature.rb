@@ -16,10 +16,14 @@ module DSPy
       sig { returns(T.nilable(String)) }
       attr_reader :description
       
-      sig { params(type: T.untyped, description: T.nilable(String)).void }
-      def initialize(type, description = nil)
+      sig { returns(T::Boolean) }
+      attr_reader :has_default
+      
+      sig { params(type: T.untyped, description: T.nilable(String), has_default: T::Boolean).void }
+      def initialize(type, description = nil, has_default = false)
         @type = type
         @description = description
+        @has_default = has_default
       end
     end
     
@@ -35,9 +39,11 @@ module DSPy
         @field_descriptors = {}
       end
       
-      sig { params(name: Symbol, type: T.untyped, description: T.nilable(String), default: T.untyped).void }
-      def const(name, type, description: nil, default: T.let(nil, T.untyped))
-        @field_descriptors[name] = FieldDescriptor.new(type, description)
+      sig { params(name: Symbol, type: T.untyped, kwargs: T.untyped).void }
+      def const(name, type, **kwargs)
+        description = kwargs[:description]
+        has_default = kwargs.key?(:default)
+        @field_descriptors[name] = FieldDescriptor.new(type, description, has_default)
         # Store default for future use if needed
       end
       
@@ -123,13 +129,13 @@ module DSPy
         
         @input_field_descriptors&.each do |name, descriptor|
           schema = type_to_json_schema(descriptor.type)
-          schema["description"] = descriptor.description if descriptor.description
+          schema[:description] = descriptor.description if descriptor.description
           properties[name] = schema
-          required << name.to_s
+          required << name.to_s unless descriptor.has_default
         end
         
         {
-          "$schema" => "http://json-schema.org/draft-06/schema#",
+          "$schema": "http://json-schema.org/draft-06/schema#",
           type: "object",
           properties: properties,
           required: required
@@ -145,13 +151,13 @@ module DSPy
         
         @output_field_descriptors&.each do |name, descriptor|
           schema = type_to_json_schema(descriptor.type)
-          schema["description"] = descriptor.description if descriptor.description
+          schema[:description] = descriptor.description if descriptor.description
           properties[name] = schema
-          required << name.to_s
+          required << name.to_s unless descriptor.has_default
         end
         
         {
-          "$schema" => "http://json-schema.org/draft-06/schema#",
+          "$schema": "http://json-schema.org/draft-06/schema#",
           type: "object",
           properties: properties,
           required: required

@@ -140,7 +140,7 @@ RSpec.describe 'DSPy::SorbetReAct' do
     it 'validates required input fields' do
       expect {
         agent.forward(wrong_field: "test")
-      }.to raise_error
+      }.to raise_error(ArgumentError, /Missing required prop/)
     end
 
     it 'accepts valid input' do
