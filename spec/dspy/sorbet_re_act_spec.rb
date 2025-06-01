@@ -90,7 +90,7 @@ RSpec.describe 'DSPy::SorbetReAct' do
     it 'uses tools correctly during reasoning' do
       # Check that the agent used the AddNumbers tool
       used_tools = result.history.map { |entry| entry[:action] }.compact
-      expect(used_tools).to include("addnumbers")
+      expect(used_tools).to include("add_numbers")
     end
 
     it 'reaches a finish action' do
