@@ -50,6 +50,13 @@ module DSPy
     end
   end
 
+  class NextStep < T::Enum
+    enums do
+      Continue = new("continue")
+      Finish = new("finish")
+    end
+  end
+
   # Defines the signature for processing observations and deciding next steps
   class SorbetReActObservation < DSPy::SorbetSignature
     description "Process the observation from a tool and decide what to do next."
@@ -66,8 +73,8 @@ module DSPy
     output do
       const :interpretation, String,
         description: "Interpretation of the observation"
-      const :next_step, String,
-        description: "What to do next: \"continue\" or \"finish\""
+      const :next_step, NextStep,
+        description: "What to do next: '#{NextStep::Continue}' or '#{NextStep::Finish}'"
     end
   end
 
@@ -75,6 +82,7 @@ module DSPy
   class SorbetReAct < SorbetPredict
     extend T::Sig
 
+    FINISH_ACTION = "finish"
     sig { returns(T.class_of(DSPy::SorbetSignature)) }
     attr_reader :original_signature_class
 
@@ -164,22 +172,9 @@ module DSPy
         )
         history << current_entry
 
-        if action.downcase == "finish"
+        if action.downcase == NextStep::Finish.serialize
           # If action is finish, set the final answer
-          final_answer = action_input.to_s
-
-          # If final_answer is empty but we have a last observation, use it
-          if (final_answer.nil? || final_answer.empty?) && last_observation
-            final_answer = last_observation
-            # Update the action_input for consistency by replacing the last entry
-            history.pop
-            history << HistoryEntry.new(
-              step: step,
-              thought: thought,
-              action: action,
-              action_input: final_answer
-            )
-          end
+          final_answer = handle_finish_action(action_input, last_observation, step, thought, action, history)
 
           break
         end
@@ -210,7 +205,7 @@ module DSPy
         next_step = observation_obj.next_step
 
         # If observation processor suggests finish, generate final thought
-        if next_step.downcase == "finish"
+        if next_step == NextStep::Finish
           # Generate final thought/answer
           final_thought_obj = @thought_generator.forward(
             question: question,
@@ -224,8 +219,8 @@ module DSPy
 
           # Force the action to be "finish" since observation processor decided to finish
           # The LM sometimes doesn't follow the finish instruction properly
-          if final_action.downcase != "finish"
-            final_action = "finish"
+          if final_action.downcase != NextStep::Finish.serialize
+            final_action = NextStep::Finish.serialize
             # If action_input was meant for a tool, use last observation as answer instead
             if final_action_input.is_a?(Hash) && last_observation
               final_action_input = last_observation
@@ -244,21 +239,8 @@ module DSPy
           )
           history << final_entry
 
-          # Set final answer, handling empty action_input case
-          final_answer = final_action_input.to_s
-
-          # If final_answer is empty but we have a last observation, use it
-          if (final_answer.nil? || final_answer.empty?) && last_observation
-            final_answer = last_observation
-            # Update the action_input for consistency
-            history.pop
-            history << HistoryEntry.new(
-              step: final_step,
-              thought: final_thought,
-              action: final_action,
-              action_input: final_answer
-            )
-          end
+          # Set final answer
+          final_answer = handle_finish_action(final_action_input, last_observation, final_step, final_thought, final_action, history)
 
           break
         end
@@ -278,7 +260,7 @@ module DSPy
         history << HistoryEntry.new(
           step: step,
           thought: "I've reached the maximum number of iterations and will provide the answer based on the tools I've used.",
-          action: "finish",
+          action: NextStep::Finish.serialize,
           action_input: final_answer
         )
       end
@@ -402,6 +384,26 @@ module DSPy
       ]
       example[:iterations] = 1
       example
+    end
+
+    sig { params(action_input: T.untyped, last_observation: T.nilable(String), step: Integer, thought: String, action: String, history: T::Array[HistoryEntry]).returns(String) }
+    def handle_finish_action(action_input, last_observation, step, thought, action, history)
+      final_answer = action_input.to_s
+
+      # If final_answer is empty but we have a last observation, use it
+      if (final_answer.nil? || final_answer.empty?) && last_observation
+        final_answer = last_observation
+        # Update the action_input for consistency by replacing the last entry
+        history.pop
+        history << HistoryEntry.new(
+          step: step,
+          thought: thought,
+          action: action,
+          action_input: final_answer
+        )
+      end
+
+      final_answer
     end
   end
 end

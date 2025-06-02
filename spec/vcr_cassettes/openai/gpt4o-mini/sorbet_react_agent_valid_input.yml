@@ -55,7 +55,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sun, 01 Jun 2025 17:45:41 GMT
+      - Mon, 02 Jun 2025 20:04:36 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -67,57 +67,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1693'
+      - '1292'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1702'
+      - '1297'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9995'
       X-Ratelimit-Remaining-Tokens:
       - '199256'
       X-Ratelimit-Reset-Requests:
-      - 15.26s
+      - 34.715s
       X-Ratelimit-Reset-Tokens:
       - 223ms
       X-Request-Id:
-      - req_3677dfb3e2f8df391a5aaec5376bc207
+      - req_171497b718b4007dd1224d08326f9f38
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=1fGhVqBkVVDoB89HNKr93eHoCNn7DXaW9B89lFM_X64-1748799941-1.0.1.1-Q2l_qe3mGyr8axFMZ2grA1EzvQueUGx9RXG.Gve2r5iqeBriX0kIwwuGjjSIynaoYki37dFgzMPWDZvln1xizfBvkXtoryXU_neT0btyK0Y;
-        path=/; expires=Sun, 01-Jun-25 18:15:41 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=.mTpWsdeWZWxd_ll6zLizhhe1ge3HsOVsRRbsCCQE0A-1748894676-1.0.1.1-Wj9LZ6BEzH8BrQaWJezGGCPO440.BBfdPjia_vsXbWfF6LcwU1aEU2E4IHTYI2KeRsBjB_HXLiWYBcTHkz.MqkEYZOZ3_6ksX5EmTXSNWVE;
+        path=/; expires=Mon, 02-Jun-25 20:34:36 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=LMheMPuj7gqcrThi5mfus.6j1MRJc2SFue2SufiHkbI-1748799941596-0.0.1.1-604800000;
+      - _cfuvid=dlQ7GPzNznEUvFkfYlx6BAj4SYVoJWWGkQeIJWr9ZJw-1748894676789-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 949086a738ab03d9-MAD
+      - 94998f87fc6672a7-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bdh2ZTdTkWJIbJhycuXtNH7WfRXK2",
+          "id": "chatcmpl-Be5gZEVaEDIrIjLiAYyyljpk3kZV9",
           "object": "chat.completion",
-          "created": 1748799939,
+          "created": 1748894675,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history or available tools provided, I cannot perform any actions or provide a specific answer to the question at this time. I need more context or guidance on how to proceed.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I cannot answer the question due to lack of information.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history to inform my decision and no available tools provided, I cannot proceed with any specific action. I should indicate that I cannot provide an answer without more context or tools.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I cannot provide an answer without additional information or tools.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -143,5 +143,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sun, 01 Jun 2025 17:45:41 GMT
+  recorded_at: Mon, 02 Jun 2025 20:04:36 GMT
 recorded_with: VCR 6.3.1

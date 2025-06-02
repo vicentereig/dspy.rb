@@ -146,12 +146,23 @@ RSpec.describe 'DSPy::SorbetReAct' do
     end
 
     it 'accepts valid input' do
-      expect {
-        VCR.use_cassette('openai/gpt4o-mini/sorbet_react_agent_valid_input') do
-          agent.forward(question: "test question")
-        end
-      }.not_to raise_error
+      result = VCR.use_cassette('openai/gpt4o-mini/sorbet_react_agent_valid_input') do
+        agent.forward(question: "test question")
+      end
+      
+      # Verify the result has the expected structure
+      expect(result).to respond_to(:answer)
+      expect(result).to respond_to(:history)
+      expect(result).to respond_to(:iterations)
+      
+      # Verify the types
+      expect(result.answer).to be_a(String)
+      expect(result.history).to be_an(Array)
+      expect(result.iterations).to be_an(Integer)
+      
+      # Verify the content is not empty
+      expect(result.answer).not_to be_empty
+      expect(result.iterations).to be > 0
     end
   end
 end
-

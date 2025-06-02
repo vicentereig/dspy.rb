@@ -56,7 +56,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sun, 01 Jun 2025 17:45:39 GMT
+      - Mon, 02 Jun 2025 20:04:34 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -68,57 +68,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1696'
+      - '1239'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1698'
+      - '1245'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9996'
       X-Ratelimit-Remaining-Tokens:
-      - '199252'
+      - '199253'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 28.119s
       X-Ratelimit-Reset-Tokens:
       - 224ms
       X-Request-Id:
-      - req_3bbdb0dfd0eb63d45b9d8c38582574d0
+      - req_26662fa1d4dce1e449598431beb0ef74
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=4rcPIrdJT_XkClSWDZVUxXObWfTmRL9a9HVHk3yXlt8-1748799939-1.0.1.1-KqBUC0AIqx1b4qggGFTCz.i4v47LNbo_2pKlmIz__YyHupR0nC4d9UB6rt5w5iENGrzyLE3Wn6KFu3_VuEZAPGPuSmA7g1dFfhH.oRmelyE;
-        path=/; expires=Sun, 01-Jun-25 18:15:39 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=Q9sv_y5ny_zIa.lExFhRnDAto.VwD7SHt.X9x9o_ZSI-1748894674-1.0.1.1-Td7AavPolx55snNQokHpzrB0xeVWgQ1CEHIizcjfZMji8If4SC_zKXDeotVNrgo0l91kvg8q9.QOzmNf0FDQXFwRPRiSbiGdzZ8kNlYGQVU;
+        path=/; expires=Mon, 02-Jun-25 20:34:34 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=Qx8MSySW9Nd.I19WyT6BXcjG4T02V5HIlUaA1ZsAur0-1748799939572-0.0.1.1-604800000;
+      - _cfuvid=f9Ia8G1Fm7yw9ZseJEKqEDsO9g3RJIOeJ4WGzhDyPjY-1748894674693-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 9490869aac3f2fca-MAD
+      - 94998f7b096cf3ba-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bdh2XuLUzCsvlfrHJXUCiU2rLwBm4",
+          "id": "chatcmpl-Be5gXbZEpaa73ZFNrPlS0Pv2hU4SM",
           "object": "chat.completion",
-          "created": 1748799937,
+          "created": 1748894673,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history or available tools provided, I cannot answer the question about today's weather directly. I need to gather more information or use a specific tool to retrieve weather data.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I cannot provide an answer as there is no information available.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history to refer to and no available tools to fetch current weather data, I cannot provide an answer to the question about today's weather. I need to either access a weather tool or finish with a response indicating that the information is unavailable.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I do not have access to current weather information.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -128,8 +128,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 618,
-            "completion_tokens": 76,
-            "total_tokens": 694,
+            "completion_tokens": 88,
+            "total_tokens": 706,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -144,5 +144,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sun, 01 Jun 2025 17:45:39 GMT
+  recorded_at: Mon, 02 Jun 2025 20:04:34 GMT
 recorded_with: VCR 6.3.1
