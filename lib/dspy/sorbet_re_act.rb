@@ -50,6 +50,27 @@ module DSPy
     end
   end
 
+  # Defines the signature for processing observations and deciding next steps
+  class SorbetReActObservation < DSPy::SorbetSignature
+    description "Process the observation from a tool and decide what to do next."
+
+    input do
+      const :question, String,
+        description: "The original question"
+      const :history, T::Array[HistoryEntry],
+        description: "Previous thoughts, actions, and observations. Each entry is a hash representing a step in the reasoning process."
+      const :observation, String,
+        description: "The result from the last action"
+    end
+
+    output do
+      const :interpretation, String,
+        description: "Interpretation of the observation"
+      const :next_step, String,
+        description: "What to do next: \"continue\" or \"finish\""
+    end
+  end
+
   # ReAct Agent using Sorbet signatures
   class SorbetReAct < SorbetPredict
     extend T::Sig
@@ -76,6 +97,9 @@ module DSPy
 
       # Create thought generator using SorbetPredict to preserve field descriptions
       @thought_generator = T.let(DSPy::SorbetPredict.new(SorbetThought), DSPy::SorbetPredict)
+
+      # Create observation processor using SorbetPredict to preserve field descriptions
+      @observation_processor = T.let(DSPy::SorbetPredict.new(SorbetReActObservation), DSPy::SorbetPredict)
 
       # Create enhanced output struct with ReAct fields
       @enhanced_output_struct = create_enhanced_output_struct(signature_class)
@@ -115,7 +139,6 @@ module DSPy
       final_answer = T.let(nil, T.nilable(String))
       iterations_count = 0
       last_observation = T.let(nil, T.nilable(String))
-      potential_answer = T.let(nil, T.nilable(String))
 
       while @max_iterations.nil? || iterations_count < @max_iterations
         iterations_count += 1
@@ -144,7 +167,7 @@ module DSPy
         if action.downcase == "finish"
           # If action is finish, set the final answer
           final_answer = action_input.to_s
-          
+
           # If final_answer is empty but we have a last observation, use it
           if (final_answer.nil? || final_answer.empty?) && last_observation
             final_answer = last_observation
@@ -157,13 +180,13 @@ module DSPy
               action_input: final_answer
             )
           end
-          
+
           break
         end
 
         # Execute action and get observation
         observation = execute_action(action, action_input)
-        
+
         # Store the raw observation for potential use as the final answer
         last_observation = observation
 
@@ -176,30 +199,82 @@ module DSPy
           action_input: action_input,
           observation: "Observation: #{observation}"
         )
-        
-        # Special case for add_numbers tool - if the question is about addition and we got a numeric result
-        if action.downcase == "add_numbers" && 
-           question.downcase.include?("plus") &&
-           observation.to_s.match?(/^\d+(\.\d+)?$/)
-          # This looks like it might be the final answer to an addition question
-          potential_answer = observation.to_s
+
+        # Process observation and decide next step
+        observation_obj = @observation_processor.forward(
+          question: question,
+          history: history,
+          observation: observation
+        )
+        interpretation = observation_obj.interpretation
+        next_step = observation_obj.next_step
+
+        # If observation processor suggests finish, generate final thought
+        if next_step.downcase == "finish"
+          # Generate final thought/answer
+          final_thought_obj = @thought_generator.forward(
+            question: question,
+            history: history,
+            available_tools: available_tools_desc
+          )
+
+          final_thought = final_thought_obj.thought
+          final_action = final_thought_obj.action
+          final_action_input = final_thought_obj.action_input
+
+          # Force the action to be "finish" since observation processor decided to finish
+          # The LM sometimes doesn't follow the finish instruction properly
+          if final_action.downcase != "finish"
+            final_action = "finish"
+            # If action_input was meant for a tool, use last observation as answer instead
+            if final_action_input.is_a?(Hash) && last_observation
+              final_action_input = last_observation
+            elsif final_action_input.nil? || final_action_input.to_s.empty?
+              final_action_input = last_observation || "Unable to determine answer"
+            end
+          end
+
+          # Add final thought to history
+          final_step = history.length + 1
+          final_entry = HistoryEntry.new(
+            step: final_step,
+            thought: final_thought,
+            action: final_action,
+            action_input: final_action_input
+          )
+          history << final_entry
+
+          # Set final answer, handling empty action_input case
+          final_answer = final_action_input.to_s
+
+          # If final_answer is empty but we have a last observation, use it
+          if (final_answer.nil? || final_answer.empty?) && last_observation
+            final_answer = last_observation
+            # Update the action_input for consistency
+            history.pop
+            history << HistoryEntry.new(
+              step: final_step,
+              thought: final_thought,
+              action: final_action,
+              action_input: final_answer
+            )
+          end
+
+          break
         end
       end
 
       # If we reached max iterations without a finish action
       if final_answer.nil?
-        # Try to extract answer from special cases we recognized
-        if defined?(potential_answer) && !potential_answer.nil?
-          final_answer = potential_answer
-        # Otherwise use the last observation as fallback
-        elsif last_observation
+        # Use the last observation as fallback
+        if last_observation
           final_answer = last_observation
         else
           final_answer = "I was unable to determine the answer"
         end
-        
+
         # Add a finish step to history
-        step = history.length + 1
+        step = history.size + 1
         history << HistoryEntry.new(
           step: step,
           thought: "I've reached the maximum number of iterations and will provide the answer based on the tools I've used.",
@@ -213,17 +288,17 @@ module DSPy
         begin
           # Get the first output field name from the original signature
           output_field_name = @original_signature_class.output_struct_class.props.keys.first
-          
+
           # Create enhanced output struct with answer and history
           result = @enhanced_output_struct.new(
             "#{output_field_name}": final_answer || "",
             history: history.map(&:to_h),
             iterations: iterations_count
           )
-          
+
           # Run validation
           validate_output_schema!(result)
-          
+
           result
         rescue => e
           puts "Error creating enhanced output: #{e.message}"
@@ -274,7 +349,7 @@ module DSPy
       return "Tool '#{action}' not found. Available tools: #{@tools.keys.join(', ')}" unless tool
 
       begin
-        result = if action_input.nil? || 
+        result = if action_input.nil? ||
                    (action_input.is_a?(String) && action_input.strip.empty?)
           # No input provided
           tool.dynamic_call({})
@@ -288,7 +363,7 @@ module DSPy
         "Error executing tool '#{action}': #{e.message}"
       end
     end
-    
+
     sig { params(output: T.untyped).void }
     def validate_output_schema!(output)
       # Validate that output is an instance of the enhanced output struct
