@@ -1,35 +1,34 @@
-
 # Outline signature for creating article structure
-module Types
-  include Dry.Types()
-end
+require 'sorbet-runtime'
 
-class Outline < DSPy::Signature
+# Use original class name for test compatibility
+class Outline < DSPy::SorbetSignature
   description "Outline a thorough overview of a topic."
-  input do
-    required(:topic).value('string')
+
+  input do |builder|
+    builder.const :topic, String, description: "The topic to outline"
   end
-  output do
-    required(:title).value(:string)
-    required(:sections).value(Types::Array.of(Types::String)).meta(description: 'a list of section titles')
-    required(:section_subheadings).value(Types::Hash.schema(section: Types::String, subheading: Types::Array.of(Types::String))).meta(
-      description: 'mapping from section headings to subheadings'
-    )
+
+  output do |builder|
+    builder.const :title, String, description: "The title of the article"
+    builder.const :sections, T::Array[String], description: "A list of section titles"
+    builder.const :section_subheadings, T::Hash[String, T::Array[String]],
+      description: "Mapping from section headings to subheadings"
   end
 end
 
 # DraftSection signature for creating content for a section
-class DraftSection < DSPy::Signature
+class DraftSection < DSPy::SorbetSignature
   description "Draft a top-level section of an article."
 
-  input do
-    required(:topic).value(:string)
-    required(:section_heading).value(:string)
-    required(:section_subheadings).value(Types::Array.of(Types::String))
+  input do |builder|
+    builder.const :topic, String, description: "The article topic"
+    builder.const :section_heading, String, description: "The section heading"
+    builder.const :section_subheadings, T::Array[String], description: "List of subheadings for this section"
   end
 
-  output do
-    required(:content).value(:string).meta(description: 'markdown-formatted section')
+  output do |builder|
+    builder.const :content, String, description: "Markdown-formatted section content"
   end
 end
 
@@ -43,15 +42,16 @@ class DraftArticle
 end
 
 # DraftArticle module that composes the pipeline
-class ArticleDrafter < DSPy::Module
+class ArticleDrafter < DSPy::SorbetModule
   def initialize
-    @build_outline = DSPy::ChainOfThought.new(Outline)
-    @draft_section = DSPy::ChainOfThought.new(DraftSection)
+    @build_outline = DSPy::SorbetChainOfThought.new(Outline)
+    @draft_section = DSPy::SorbetChainOfThought.new(DraftSection)
   end
 
   def forward(topic)
     # First, build the outline
     outline = @build_outline.call(topic: topic)
+
     # Then, draft each section
     sections = []
 
