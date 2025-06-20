@@ -201,6 +201,26 @@ module DSPy
               { type: "string" }  # Default fallback
             end
           end
+        elsif type.is_a?(T::Types::TypedArray)
+          # Handle arrays properly with nested item type
+          {
+            type: "array",
+            items: type_to_json_schema(type.type)
+          }
+        elsif type.is_a?(T::Types::TypedHash)
+          # Handle hashes as objects with additionalProperties
+          # TypedHash has keys and values methods to access its key and value types
+          key_schema = type_to_json_schema(type.keys)
+          value_schema = type_to_json_schema(type.values)
+          
+          # Create a more descriptive schema for nested structures
+          {
+            type: "object",
+            propertyNames: key_schema,  # Describe key constraints
+            additionalProperties: value_schema,
+            # Add a more explicit description of the expected structure
+            description: "A mapping where keys are #{key_schema[:type]}s and values are #{value_schema[:description] || value_schema[:type]}s"
+          }
         elsif type.is_a?(T::Types::Union)
           # For optional types (T.nilable), just use the non-nil type
           non_nil_types = type.types.reject { |t| t == T::Utils.coerce(NilClass) }

@@ -21,14 +21,14 @@ end
 class DraftSection < DSPy::SorbetSignature
   description "Draft a top-level section of an article."
 
-  input do |builder|
-    builder.const :topic, String, description: "The article topic"
-    builder.const :section_heading, String, description: "The section heading"
-    builder.const :section_subheadings, T::Array[String], description: "List of subheadings for this section"
+  input do
+    const :topic, String, description: "The article topic"
+    const :section_heading, String, description: "The section heading"
+    const :section_subheadings, T::Array[String], description: "List of subheadings for this section"
   end
 
-  output do |builder|
-    builder.const :content, String, description: "Markdown-formatted section content"
+  output do
+    const :content, String, description: "Markdown-formatted section content"
   end
 end
 
@@ -40,7 +40,6 @@ class DraftArticle
     @sections = sections
   end
 end
-
 # DraftArticle module that composes the pipeline
 class ArticleDrafter < DSPy::SorbetModule
   def initialize
@@ -49,8 +48,11 @@ class ArticleDrafter < DSPy::SorbetModule
   end
 
   def forward(topic)
+    # Handle the case where topic might be a hash from the call method
+    topic_str = topic.is_a?(Hash) && topic.key?(:topic) ? topic[:topic] : topic
+    
     # First, build the outline
-    outline = @build_outline.call(topic: topic)
+    outline = @build_outline.call(topic: topic_str)
 
     # Then, draft each section
     sections = []

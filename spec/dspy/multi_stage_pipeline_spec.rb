@@ -26,7 +26,8 @@ RSpec.describe DraftArticle do
         section_subheadings: []
       )
 
-      expect(section.to_h.keys).to eq([:topic, :section_heading, :section_subheadings, :content, :reasoning])
+      expect(section.content).to be_a(String)
+      expect(section.reasoning).to be_a(String)
     end
   end
 

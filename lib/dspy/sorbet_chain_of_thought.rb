@@ -78,6 +78,23 @@ module DSPy
         
         # Add reasoning field
         const :reasoning, String
+        
+        # Add to_h method to serialize the struct to a hash
+        define_method :to_h do
+          hash = {}
+          
+          # Start with input values if available
+          if self.instance_variable_defined?(:@input_values)
+            hash.merge!(self.instance_variable_get(:@input_values))
+          end
+          
+          # Then add output properties
+          self.class.props.keys.each do |key|
+            hash[key] = self.send(key)
+          end
+          
+          hash
+        end
       end
     end
     
