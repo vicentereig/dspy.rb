@@ -64,15 +64,16 @@ class ColBERTv2
   end
 end
 
-class ContextualQA < DSPy::Signature
+class ContextualQA < DSPy::SorbetSignature
   description "Answers the question taking relevant context into account"
-  input do
-    required(:context).value(Types::Array.of(:string)).meta(description: 'the context provided to enrich the answer')
-    required(:question).filled(:string).meta(description: 'the question we want to ultimately answer in the language it is written originally')
+
+  input do |builder|
+    builder.const :context, T::Array[String], description: 'the context provided to enrich the answer'
+    builder.const :question, String, description: 'the question we want to ultimately answer in the language it is written originally'
   end
 
-  output do
-    required(:response).filled(:string).meta(description: 'the answer incorporating the relevant context')
+  output do |builder|
+    builder.const :response, String, description: 'the answer incorporating the relevant context'
   end
 end
 
@@ -92,7 +93,7 @@ RSpec.describe 'RAG: ColBERTv2' do
         c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
       end
 
-      rag = DSPy::ChainOfThought.new(ContextualQA)
+      rag = DSPy::SorbetChainOfThought.new(ContextualQA)
 
       retriever = ColBERTv2.new(url: 'http://20.102.90.50:2017/wiki17_abstracts')
       question = 'hola'
