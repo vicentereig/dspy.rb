@@ -9,6 +9,7 @@ PATH
       openai (~> 0.1.0.pre.alpha.4)
       ruby-openai (~> 8.0)
       ruby_llm (~> 1.0)
+      sorbet-schema (~> 0.8)
 
 GEM
   remote: https://rubygems.org/

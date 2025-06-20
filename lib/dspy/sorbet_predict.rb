@@ -115,19 +115,19 @@ module DSPy
       DSPy.config.lm
     end
 
-    sig { override.params(args: T.untyped, kwargs: T.untyped).returns(T.untyped) }
-    def forward(*args, **kwargs)
+    sig { override.params(kwargs: T.untyped).returns(T.untyped) }
+    def forward(**kwargs)
       # Store the input values to add to the result hash later
       @last_input_values = kwargs.clone
-      
+
       # Call the untyped forward method
       result = forward_untyped(**kwargs)
-      
+
       # Attach the input values to the result object for use in to_h
       if result.is_a?(T::Struct) && !result.instance_variable_defined?(:@input_values)
         result.instance_variable_set(:@input_values, kwargs)
       end
-      
+
       # For type checking in client code
       T.cast(result, T.untyped)
     end

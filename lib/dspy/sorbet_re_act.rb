@@ -133,7 +133,7 @@ module DSPy
       super(enhanced_signature)
     end
 
-    sig { params(kwargs: T.untyped).returns(T.untyped) }
+    sig { params(kwargs: T.untyped).returns(T.untyped).override }
     def forward(**kwargs)
       # Validate input using Sorbet struct validation
       input_struct = @original_signature_class.input_struct_class.new(**kwargs)

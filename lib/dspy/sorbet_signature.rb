@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
+require_relative 'schema_adapters'
 
 module DSPy
   class SorbetSignature
@@ -164,6 +165,11 @@ module DSPy
 
       sig { params(type: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
       def type_to_json_schema(type)
+        # Handle T::Boolean type alias first
+        if type == T::Boolean
+          return { type: "boolean" }
+        end
+
         # Handle raw class types first
         if type.is_a?(Class)
           if type < T::Enum
@@ -176,8 +182,13 @@ module DSPy
             { type: "integer" }
           elsif type == Float
             { type: "number" }
+          elsif type == Numeric
+            { type: "number" }
           elsif [TrueClass, FalseClass].include?(type)
             { type: "boolean" }
+          elsif type < T::Struct
+            # Handle custom T::Struct classes by generating nested object schema
+            generate_struct_schema(type)
           else
             { type: "string" }  # Default fallback
           end
@@ -189,7 +200,11 @@ module DSPy
             { type: "integer" }
           when "Float"
             { type: "number" }
+          when "Numeric"
+            { type: "number" }
           when "TrueClass", "FalseClass"
+            { type: "boolean" }
+          when "T::Boolean"
             { type: "boolean" }
           else
             # Check if it's an enum
@@ -197,6 +212,9 @@ module DSPy
               # Get all enum values
               values = type.raw_type.values.map(&:serialize)
               { type: "string", enum: values }
+            elsif type.raw_type < T::Struct
+              # Handle custom T::Struct classes
+              generate_struct_schema(type.raw_type)
             else
               { type: "string" }  # Default fallback
             end
@@ -226,12 +244,54 @@ module DSPy
           non_nil_types = type.types.reject { |t| t == T::Utils.coerce(NilClass) }
           if non_nil_types.size == 1
             type_to_json_schema(non_nil_types.first)
+          elsif non_nil_types.size > 1
+            # Handle complex unions with oneOf for better JSON schema compliance
+            {
+              oneOf: non_nil_types.map { |t| type_to_json_schema(t) },
+              description: "Union of multiple types"
+            }
           else
             { type: "string" }  # Fallback for complex unions
           end
+        elsif type.is_a?(T::Types::ClassOf)
+          # Handle T.class_of() types
+          {
+            type: "string",
+            description: "Class name (T.class_of type)"
+          }
         else
           { type: "string" }  # Default fallback
         end
+      end
+
+      private
+
+      # Generate JSON schema for custom T::Struct classes
+      sig { params(struct_class: T.class_of(T::Struct)).returns(T::Hash[Symbol, T.untyped]) }
+      def generate_struct_schema(struct_class)
+        return { type: "string", description: "Struct (schema introspection not available)" } unless struct_class.respond_to?(:props)
+
+        properties = {}
+        required = []
+
+        struct_class.props.each do |prop_name, prop_info|
+          prop_type = prop_info[:type_object] || prop_info[:type]
+          properties[prop_name] = type_to_json_schema(prop_type)
+          
+          # A field is required if it's not fully optional
+          # fully_optional is true for nilable prop fields
+          # immutable const fields are required unless nilable
+          unless prop_info[:fully_optional]
+            required << prop_name.to_s
+          end
+        end
+
+        {
+          type: "object",
+          properties: properties,
+          required: required,
+          description: "#{struct_class.name} struct"
+        }
       end
     end
   end
