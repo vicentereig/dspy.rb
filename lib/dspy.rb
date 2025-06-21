@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 require 'ruby_llm'
-require 'dry-schema'
+require 'sorbet-runtime'
 require 'dry-configurable'
 require 'dry/logger'
-require_relative 'dspy/ext/dry_schema'
 
 module DSPy
   extend Dry::Configurable
@@ -15,7 +14,6 @@ module DSPy
   end
 end
 
-require_relative 'dspy/types'
 require_relative 'dspy/module'
 require_relative 'dspy/field'
 require_relative 'dspy/signature'
@@ -24,9 +22,3 @@ require_relative 'dspy/predict'
 require_relative 'dspy/chain_of_thought'
 require_relative 'dspy/re_act'
 require_relative 'dspy/tools'
-
-# Sorbet implementation
-require_relative 'dspy/sorbet_signature'
-require_relative 'dspy/sorbet_module'
-require_relative 'dspy/sorbet_predict'
-require_relative 'dspy/sorbet_chain_of_thought'

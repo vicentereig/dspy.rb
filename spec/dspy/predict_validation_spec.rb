@@ -9,7 +9,7 @@ class ValidationSentimentType < T::Enum
   end
 end
 
-class ValidationClassify < DSPy::SorbetSignature
+class ValidationClassify < DSPy::Signature
   description "Classify sentiment of a given sentence."
 
   input do
@@ -22,7 +22,7 @@ class ValidationClassify < DSPy::SorbetSignature
   end
 end
 
-RSpec.describe DSPy::SorbetPredict do
+RSpec.describe DSPy::Predict do
   before do
     DSPy.configure do |c|
       c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
@@ -33,7 +33,7 @@ RSpec.describe DSPy::SorbetPredict do
     it 'raises an exception when sending wrong params' do
       VCR.use_cassette('openai/gpt4o-mini/predict_validation') do
         # Create the predictor
-        @classify = DSPy::SorbetPredict.new(ValidationClassify)
+        @classify = DSPy::Predict.new(ValidationClassify)
 
         # Test with wrong type - passing integer instead of string
         expect { @classify.call(sentence: 1337) }.to raise_error(TypeError)

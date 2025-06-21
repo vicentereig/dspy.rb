@@ -4,10 +4,10 @@ class AnswerPredictor < DSPy::Signature
   description "Provides a concise answer to the question"
 
   input do
-    required(:question).value(:string)
+    const :question, String
   end
   output do
-    required(:answer).value(:string)
+    const :answer, String
   end
 end
 

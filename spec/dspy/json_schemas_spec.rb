@@ -57,7 +57,7 @@ end
 # AI Agentic Signature Examples demonstrating comprehensive type coverage
 RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
   describe 'Basic Type Coverage' do
-    class BasicTypeSignature < DSPy::SorbetSignature
+    class BasicTypeSignature < DSPy::Signature
       description "Demonstrates basic Sorbet type coverage including new additions"
 
       input do
@@ -99,7 +99,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
   end
 
   describe 'Complex Union Types with oneOf' do
-    class UnionTypeSignature < DSPy::SorbetSignature
+    class UnionTypeSignature < DSPy::Signature
       description "AI agent with flexible input/output types"
 
       input do
@@ -133,7 +133,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
   end
 
   describe 'Enum Types for AI Agent Classification' do
-    class ClassificationSignature < DSPy::SorbetSignature
+    class ClassificationSignature < DSPy::Signature
       description "AI content classifier with priority and confidence"
 
       input do
@@ -164,7 +164,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
   end
 
   describe 'Nested T::Struct Types for Complex AI Data' do
-    class AgentWorkflowSignature < DSPy::SorbetSignature
+    class AgentWorkflowSignature < DSPy::Signature
       description "AI agent workflow with nested structured data"
 
       input do
@@ -208,7 +208,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
   end
 
   describe 'Advanced Array and Hash Types for AI Data Processing' do
-    class DataProcessingSignature < DSPy::SorbetSignature
+    class DataProcessingSignature < DSPy::Signature
       description "AI data processor with complex collection types"
 
       input do
@@ -261,7 +261,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
       prop :metadata, T.nilable(T::Hash[String, T.untyped])
     end
 
-    class MultiAgentSignature < DSPy::SorbetSignature
+    class MultiAgentSignature < DSPy::Signature
       description "Multi-agent system communication handler"
 
       input do
@@ -295,7 +295,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
   end
 
   describe 'T.class_of and Class Types' do
-    class ClassTypeSignature < DSPy::SorbetSignature
+    class ClassTypeSignature < DSPy::Signature
       description "AI signature with class type parameters"
 
       input do
@@ -331,7 +331,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
         prop :metadata, T.nilable(T::Hash[String, T.untyped])
       end
 
-      class RAGSignature < DSPy::SorbetSignature
+      class RAGSignature < DSPy::Signature
         description "RAG agent for document retrieval and synthesis"
 
         input do
@@ -369,7 +369,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
         const :style_preferences, T::Hash[String, T.untyped]
       end
 
-      class CodeGenSignature < DSPy::SorbetSignature
+      class CodeGenSignature < DSPy::Signature
         description "AI code generation agent"
 
         input do

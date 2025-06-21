@@ -2,7 +2,7 @@
 require 'sorbet-runtime'
 
 # Use original class name for test compatibility
-class Outline < DSPy::SorbetSignature
+class Outline < DSPy::Signature
   description "Outline a thorough overview of a topic."
 
   input do |builder|
@@ -18,7 +18,7 @@ class Outline < DSPy::SorbetSignature
 end
 
 # DraftSection signature for creating content for a section
-class DraftSection < DSPy::SorbetSignature
+class DraftSection < DSPy::Signature
   description "Draft a top-level section of an article."
 
   input do
@@ -41,10 +41,10 @@ class DraftArticle
   end
 end
 # DraftArticle module that composes the pipeline
-class ArticleDrafter < DSPy::SorbetModule
+class ArticleDrafter < DSPy::Module
   def initialize
-    @build_outline = DSPy::SorbetChainOfThought.new(Outline)
-    @draft_section = DSPy::SorbetChainOfThought.new(DraftSection)
+    @build_outline = DSPy::ChainOfThought.new(Outline)
+    @draft_section = DSPy::ChainOfThought.new(DraftSection)
   end
 
   def forward(topic)

@@ -2,10 +2,6 @@ require 'spec_helper'
 require 'faraday'
 require 'json'
 
-module Types
-  include Dry.Types()
-end
-
 # Simple PORO to store result attributes
 class ColBERTResult
   attr_reader :text, :long_text, :score, :pid, :metadata
@@ -64,7 +60,7 @@ class ColBERTv2
   end
 end
 
-class ContextualQA < DSPy::SorbetSignature
+class ContextualQA < DSPy::Signature
   description "Answers the question taking relevant context into account"
 
   input do |builder|
@@ -93,7 +89,7 @@ RSpec.describe 'RAG: ColBERTv2' do
         c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
       end
 
-      rag = DSPy::SorbetChainOfThought.new(ContextualQA)
+      rag = DSPy::ChainOfThought.new(ContextualQA)
 
       retriever = ColBERTv2.new(url: 'http://20.102.90.50:2017/wiki17_abstracts')
       question = 'hola'

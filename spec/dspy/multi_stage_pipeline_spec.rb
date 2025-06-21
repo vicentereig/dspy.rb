@@ -10,7 +10,7 @@ RSpec.describe DraftArticle do
 
   it 'drafts the outline about There Is a Liberal Answer to Elon Musk' do
     VCR.use_cassette('openai/gpt4o-mini/draft_outline_liberal_answer_to_elon_musk') do
-      outliner = DSPy::SorbetChainOfThought.new(Outline)
+      outliner = DSPy::ChainOfThought.new(Outline)
 
       outline = outliner.call(topic: "There Is a Liberal Answer to Elon Musk")
       expect(outline.to_h.keys).to eq([:topic, :title, :sections, :section_subheadings, :reasoning])
@@ -19,7 +19,7 @@ RSpec.describe DraftArticle do
 
   it 'drafts a section about There Is a Liberal Answer to Elon Musk' do
     VCR.use_cassette('openai/gpt4o-mini/draft_section_liberal_answer_to_elon_musk') do
-      drafter = DSPy::SorbetChainOfThought.new(DraftSection)
+      drafter = DSPy::ChainOfThought.new(DraftSection)
       section = drafter.call(
         topic: "There Is a Liberal Answer to Elon Musk",
         section_heading: "Introduction",

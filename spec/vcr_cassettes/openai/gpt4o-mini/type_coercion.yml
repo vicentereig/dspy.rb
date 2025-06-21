@@ -6,8 +6,8 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"}},\"required\":[\"text\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"integer_value\":{\"type\":\"integer\"},\"float_value\":{\"type\":\"number\"}},\"required\":[\"integer_value\",\"float_value\"]}\n        ````\n      \n      For
+        input schema fields are:\n        ```json\n         {\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"}},\"required\":[\"text\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"type\":\"object\",\"properties\":{\"integer_value\":{\"type\":\"integer\"},\"float_value\":{\"type\":\"number\"}},\"required\":[\"integer_value\",\"float_value\"]}\n        ````\n      \n      For
         example, based on the schemas above, a valid interaction would be:\n      ##
         Input values\n        ```json\n          {\"text\":\"example\"}\n        ```\n      ##
         Output values\n        ```json\n          {\"integer_value\":\"example\",\"float_value\":\"example\"}\n        ```\n      \n      All
@@ -37,7 +37,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 31 May 2025 18:55:20 GMT
+      - Fri, 20 Jun 2025 23:50:03 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -49,50 +49,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '641'
+      - '517'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '648'
+      - '524'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '199632'
+      - '199658'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 16.124s
       X-Ratelimit-Reset-Tokens:
-      - 110ms
+      - 102ms
       X-Request-Id:
-      - req_c0a73f7f59a380a38ccb2cd5a1f9d393
+      - req_e37dd45a57949c3cc1afbb4f6058bf5b
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Fiwg_59wsbmOXcrNov4uyxcrwIzVX_iJd.PPdXQZ4ao-1748717720-1.0.1.1-h6uxnQi.0lzeOMlslwD6ARlQybkoSTP5sSOQV6ZE8oEITBU6EETxOR4uBkDfnkQJvfuCVKUkt87CvuUAubch2BK0GV0B58yshTen3Pwdg8c;
-        path=/; expires=Sat, 31-May-25 19:25:20 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=xYFNV9jjzgZw3HfKG6thIqlz.DGRA05.IgB.NgHSLu4-1750463403-1.0.1.1-Dt12TH7H5ioomDujElMWw_M7Ptcy_zcsKA4kWLn7f1VfrMECj1axGqDXgebp_rc_PtgLgK1ugPhzY3V7NiuEPKHvXRBjuZ_RvmTypnt3UEQ;
+        path=/; expires=Sat, 21-Jun-25 00:20:03 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=gAsKvVwphv6hqED1y2GUKYsYOfO3tsmGEXj0WxFwpyk-1748717720007-0.0.1.1-604800000;
+      - _cfuvid=62Iu1fqKXQFMlHhBlTry2TEu5YPc_ojZwHb3JmXIIRw-1750463403149-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 9488af4fdb1e03eb-MAD
+      - 952f2a86ed941e76-EZE
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BdLeRFjdoyQAaloeww6zx0bYfwkRR",
+          "id": "chatcmpl-BkfmcR88Tdbh7cD0lIgl9GNBzyiej",
           "object": "chat.completion",
-          "created": 1748717719,
+          "created": 1750463402,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -108,9 +108,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 312,
+            "prompt_tokens": 282,
             "completion_tokens": 28,
-            "total_tokens": 340,
+            "total_tokens": 310,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -125,5 +125,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 31 May 2025 18:55:19 GMT
+  recorded_at: Fri, 20 Jun 2025 23:50:03 GMT
 recorded_with: VCR 6.3.1

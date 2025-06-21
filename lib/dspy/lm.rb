@@ -52,22 +52,9 @@ module DSPy
       begin
         json_payload = JSON.parse(content)
 
-        # Handle different signature types
-        if signature_class < DSPy::SorbetSignature
-          # For Sorbet signatures, just return the parsed JSON
-          # The SorbetPredict will handle validation
-          json_payload
-        else
-          # Original dry-schema based handling
-          output = signature_class.output_schema.call(json_payload)
-
-          result_schema = Dry::Schema.JSON(parent: [signature_class.input_schema, signature_class.output_schema])
-          result = output.to_h.merge(input_values)
-          # create an instance with input and output schema
-          poro_result = result_schema.call(result)
-
-          poro_result.to_h
-        end
+        # For Sorbet signatures, just return the parsed JSON
+        # The Predict will handle validation
+        json_payload
       rescue JSON::ParserError
         raise "Failed to parse LLM response as JSON: #{content}"
       end
