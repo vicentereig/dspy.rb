@@ -149,7 +149,7 @@ module DSPy
           description: description,
           parameters: schema_obj
         }
-        JSON.pretty_generate(tool_info)
+        JSON.generate(tool_info)
       end
 
       # Dynamic call method for ReAct agent - parses JSON arguments and calls the typed method

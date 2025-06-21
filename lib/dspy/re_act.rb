@@ -36,8 +36,8 @@ module DSPy
         description: "The question to answer"
       const :history, T::Array[HistoryEntry],
         description: "Previous thoughts and actions, including observations from tools. The agent MUST use information from the history to inform its actions and final answer. Each entry is a hash representing a step in the reasoning process."
-      const :available_tools, String,
-        description: "List of available tools and their JSON schemas. The agent MUST choose an action from this list or use \"finish\". For each tool, use the name exactly as specified and provide action_input as a JSON object matching the tool's schema."
+      const :available_tools, T::Array[T::Hash[String, T.untyped]],
+        description: "Array of available tools with their JSON schemas. The agent MUST choose an action from the tool names in this list or use \"finish\". For each tool, use the name exactly as specified and provide action_input as a JSON object matching the tool's schema."
     end
 
     output do
@@ -142,7 +142,7 @@ module DSPy
       question = T.cast(input_struct.serialize.values.first, String)
 
       history = T.let([], T::Array[HistoryEntry])
-      available_tools_desc = @tools.map { |name, tool| "- #{name}: #{tool.schema}" }.join("\n")
+      available_tools_desc = @tools.map { |name, tool| JSON.parse(tool.schema) }
 
       final_answer = T.let(nil, T.nilable(String))
       iterations_count = 0
