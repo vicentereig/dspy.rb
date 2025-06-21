@@ -26,7 +26,8 @@ RSpec.describe DraftArticle do
         section_subheadings: []
       )
 
-      expect(section.to_h.keys).to eq([:topic, :section_heading, :section_subheadings, :content, :reasoning])
+      expect(section.content).to be_a(String)
+      expect(section.reasoning).to be_a(String)
     end
   end
 
@@ -34,7 +35,7 @@ RSpec.describe DraftArticle do
     VCR.use_cassette('openai/gpt4o-mini/draft_article_worldcup') do
       draft_article = ArticleDrafter.new
 
-      article = draft_article.call("World Cup 2002")
+      article = draft_article.call(topic: "World Cup 2002")
       expect(article).to be_a(DraftArticle)
       expect(article.title).to be_a(String)
     end
@@ -43,7 +44,7 @@ RSpec.describe DraftArticle do
   it 'draft sections are hashes' do
     VCR.use_cassette('openai/gpt4o-mini/draft_article_worldcup') do
       drafter = ArticleDrafter.new
-      draft_article = drafter.call("World Cup 2002")
+      draft_article = drafter.call(topic: "World Cup 2002")
 
       draft_section = draft_article.sections.first
       expect(draft_section.to_h.keys).to eq([:topic, :section_heading, :section_subheadings, :content, :reasoning])

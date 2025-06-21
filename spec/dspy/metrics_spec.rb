@@ -2,24 +2,29 @@ require 'spec_helper'
 
 class QuestionAnswerer < DSPy::Signature
   description "Answer a question."
+  
   input do
-    required(:question).value(:string)
+    const :question, String, description: "The question to answer"
   end
+  
   output do
-    required(:answer).value(:string)
+    const :answer, String, description: "The answer to the question"
   end
 end
 
 class Assess < DSPy::Signature
   description "Assess the quality of a tweet along the specified dimension."
+  
   input do
-    required(:assessed_text).value(:string)
-    required(:assessment_question).value(:string)
+    const :assessed_text, String, description: "The text to assess"
+    const :assessment_question, String, description: "The assessment criteria question"
   end
+  
   output do
-    required(:assessment_answer).value(:bool)
+    const :assessment_answer, T::Boolean, description: "Boolean assessment result"
   end
 end
+
 class Metric
   # Evaluates the engagement and correctness of a predicted answer.
   #
@@ -32,7 +37,7 @@ class Metric
     engagement = engaging.call(assessed_text: pred.answer, assessment_question: "Does the assessed text make for a self-contained, engaging tweet")
 
     correct = DSPy::Predict.new(Assess)
-    correctness = correct.call(assessed_text: pred.answer, assessment_question: "The text should answer `#{pred.question}` with `#{gold.answer}`. Does the assessed text contain this answer")
+    correctness = correct.call(assessed_text: pred.answer, assessment_question: "The text should answer `#{gold.question}` with `#{gold.answer}`. Does the assessed text contain this answer")
 
     score = [engagement.assessment_answer, correctness.assessment_answer].select { |t| t == true && pred.answer.length <= 280}.length
     score / 2.0

@@ -6,8 +6,8 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentence\":{\"type\":\"string\"}},\"required\":[\"sentence\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentiment\":{\"type\":\"string\",\"enum\":[\"positive\",\"negative\",\"neutral\"]},\"confidence\":{\"type\":\"number\"}},\"required\":[\"sentiment\",\"confidence\"]}\n        ````\n      \n      For
+        input schema fields are:\n        ```json\n         {\"type\":\"object\",\"properties\":{\"sentence\":{\"type\":\"string\"}},\"required\":[\"sentence\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"type\":\"object\",\"properties\":{\"sentiment\":{\"type\":\"string\",\"enum\":[\"positive\",\"negative\",\"neutral\"]},\"confidence\":{\"type\":\"number\"}},\"required\":[\"sentiment\",\"confidence\"]}\n        ````\n      \n      For
         example, based on the schemas above, a valid interaction would be:\n      ##
         Input values\n        ```json\n          {\"sentence\":\"example\"}\n        ```\n      ##
         Output values\n        ```json\n          {\"sentiment\":\"example\",\"confidence\":\"example\"}\n        ```\n      \n      All
@@ -37,7 +37,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 31 May 2025 18:50:52 GMT
+      - Fri, 20 Jun 2025 23:50:01 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -49,11 +49,11 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '562'
+      - '440'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '568'
+      - '444'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -61,38 +61,38 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '199612'
+      - '199638'
       X-Ratelimit-Reset-Requests:
       - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 116ms
+      - 108ms
       X-Request-Id:
-      - req_307462ab1d6b20032d0a6b330d7f782c
+      - req_44947d7cff61707a810568e64bcbccec
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=skH_q3MWAQSgI3BKzHGR41xTI75L1KY5mmxrn3Gdmjk-1748717452-1.0.1.1-XYvFpb1vLmmOj7tp6SRZkGEoiNn4o2_ltxQWYGBtm1NOjv_f1.2CVNqf3w5kwNqutoIzROWIJbG9qKsiQkPc2L7FLNk2nQsZdbfpWuZn91s;
-        path=/; expires=Sat, 31-May-25 19:20:52 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=Rylcf0GiTZGuLDSLJtuQYtu.4FmxLWvaqNDT_bSyo34-1750463401-1.0.1.1-fxSTkvqi7y1R2EOXQ.bdDTbzNURFUSSN5eOGxjRT7Lhj6s5kVT.rQgDftxcwiZ7eXLih.noGUFkmfMDuPuKbytF18oU5ZYGWPcCT91c7Ec8;
+        path=/; expires=Sat, 21-Jun-25 00:20:01 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=OsTDR2PlcJILh90Td.aaQs2g8uGw0zJi8WiNd.E7L3Q-1748717452024-0.0.1.1-604800000;
+      - _cfuvid=gdAGLxoqkBFl34uxxyufEOMcgW4xD5Jf1GuKMEVwsEA-1750463401911-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 9488a8c6cdc5660b-MAD
+      - 952f2a7fd8c84831-EZE
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BdLa70GlomrUtNju5V0JUfqp8r3bT",
+          "id": "chatcmpl-BkfmbKTADBG2KnN87YAbIbyj38kPo",
           "object": "chat.completion",
-          "created": 1748717451,
+          "created": 1750463401,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -108,9 +108,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 326,
+            "prompt_tokens": 296,
             "completion_tokens": 20,
-            "total_tokens": 346,
+            "total_tokens": 316,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -125,5 +125,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 31 May 2025 18:50:52 GMT
+  recorded_at: Fri, 20 Jun 2025 23:50:01 GMT
 recorded_with: VCR 6.3.1

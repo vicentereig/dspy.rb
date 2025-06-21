@@ -23,11 +23,15 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies
   spec.add_dependency "ruby_llm", "~> 1.0"
-  spec.add_dependency "dry-schema", "~> 1.14"
   spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-logger", "~> 1.0"
   spec.add_dependency "ruby-openai", "~> 8.0"
   spec.add_dependency "async", "~> 2.23"
   spec.add_dependency "openai", "~> 0.1.0.pre.alpha.4"
+  
+  # Sorbet integration dependencies
+  spec.add_dependency "sorbet-runtime", "~> 0.5"
+  spec.add_dependency "sorbet-schema", "~> 0.3"
+  
   # Development dependencies are already specified in the Gemfile
 end

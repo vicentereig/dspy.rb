@@ -6,7 +6,7 @@ A Ruby port of the [DSPy library](https://dspy.ai/), enabling a composable and p
 
 DSPy.rb provides a foundation for composable LLM programming with the following implemented features:
 
-- **Signatures**: Define input/output schemas for LLM interactions using JSON schemas
+- **Signatures**: Define input/output schemas for LLM interactions using Sorbet types and JSON schemas
 - **Predict**: Basic LLM completion with structured inputs and outputs
 - **Chain of Thought**: Enhanced reasoning through step-by-step thinking
 - **ReAct**: Compose multiple LLM calls in a structured workflow using tools.
@@ -15,24 +15,13 @@ DSPy.rb provides a foundation for composable LLM programming with the following 
 
 The library currently supports:
 - OpenAI and Anthropic via [Ruby LLM](https://github.com/crmne/ruby_llm)
-- JSON schema validation with [dry-schema](https://dry-rb.org/gems/dry-schema/)
-
-## Experimental Sorbet API
-
- **New**: I am developing an experimental Sorbet-based API that provides 
- enhanced type safety and IDE integration. 
- Check out the [**EXPERIMENTAL.md**](EXPERIMENTAL.md) for the latest 
- Sorbet-based usage examples and features.
-
-The experimental API offers:
-- Runtime type checking with T::Struct
-- Enhanced IDE support and autocomplete  
-- Better LLM prompting through field descriptions
+- Runtime type checking with [Sorbet](https://sorbet.org/)
+- Enhanced IDE support and autocomplete
 - Type-safe tool definitions for ReAct agents
 
 ## Installation
 
-This is not even fresh  off the oven. I recommend you installing 
+This is not even fresh off the oven. I recommend you installing 
 it straight from this repo, while I build the first release.
 
 ```ruby
@@ -48,43 +37,36 @@ gem 'dspy', github: 'vicentereig/dspy.rb'
 class Classify < DSPy::Signature
   description "Classify sentiment of a given sentence."
 
+  class Sentiment < T::Enum
+    enums do
+      Positive = new('positive')
+      Negative = new('negative')
+      Neutral = new('neutral')
+    end
+  end
+
   input do
-    required(:sentence).value(:string).meta(description: 'The sentence to analyze')
+    const :sentence, String
   end
 
   output do
-    required(:sentiment).value(included_in?: %w(positive negative neutral))
-      .meta(description: 'The sentiment classification')
-    required(:confidence).value(:float).meta(description: 'Confidence score')
+    const :sentiment, Sentiment
+    const :confidence, Float
   end
 end
 
-# Initialize the language model
-class SentimentClassifierWithDescriptions < DSPy::Signature
-  description "Classify sentiment of a given sentence."
-
-  input do
-    required(:sentence)
-      .value(:string)
-      .meta(description: 'The sentence whose sentiment you are analyzing')
-  end
-
-  output do
-    required(:sentiment)
-      .value(included_in?: [:positive, :negative, :neutral])
-      .meta(description: 'The allowed values to classify sentences')
-
-    required(:confidence).value(:float)
-                         .meta(description:'The confidence score for the classification')
-  end
-end
+# Configure DSPy with your LLM
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
 end
+
 # Create the predictor and run inference
 classify = DSPy::Predict.new(Classify)
 result = classify.call(sentence: "This book was super fun to read, though not the last chapter.")
-# => {:confidence=>0.85, :sentence=>"This book was super fun to read, though not the last chapter.", :sentiment=>"positive"}
+
+# result is a properly typed T::Struct instance
+puts result.sentiment    # => #<Sentiment::Positive>  
+puts result.confidence   # => 0.85
 ```
 
 ### Chain of Thought Reasoning
@@ -94,301 +76,194 @@ class AnswerPredictor < DSPy::Signature
   description "Provides a concise answer to the question"
 
   input do
-    required(:question).value(:string)
+    const :question, String
   end
   
   output do
-    required(:answer).value(:string)
+    const :answer, String
   end
 end
 
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-end
-
+# Chain of thought automatically adds a 'reasoning' field to the output
 qa_cot = DSPy::ChainOfThought.new(AnswerPredictor)
-response = qa_cot.call(question: "Two dice are tossed. What is the probability that the sum equals two?")
-# Result includes reasoning and answer in the response
-# {:question=>"...", :answer=>"1/36", :reasoning=>"There is only one way to get a sum of 2..."}
+result = qa_cot.call(question: "Two dice are tossed. What is the probability that the sum equals two?")
+
+puts result.reasoning  # => "There is only one way to get a sum of 2..."
+puts result.answer     # => "1/36"
 ```
 
-### RAG (Retrieval-Augmented Generation)
+### ReAct Agents with Tools
 
 ```ruby
-class ContextualQA < DSPy::Signature
-  description "Answers questions using relevant context"
-  
+class DeepQA < DSPy::Signature
+  description "Answer questions with consideration for the context"
+
   input do
-    required(:context).value(Types::Array.of(:string))
-    required(:question).filled(:string)
+    const :question, String
   end
 
   output do
-    required(:response).filled(:string)
+    const :answer, String
   end
 end
 
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+# Define tools for the agent
+class CalculatorTool < DSPy::Tools::SorbetTool
+  name "calculator"
+  description "Perform mathematical calculations"
+
+  def call(expression:)
+    begin
+      result = eval(expression) # Note: Use safely in production
+      { result: result.to_s }
+    rescue => e
+      { error: "Invalid expression: #{e.message}" }
+    end
+  end
+
+  def schema
+    {
+      type: "object",
+      properties: {
+        expression: {
+          type: "string",
+          description: "Mathematical expression to evaluate"
+        }
+      },
+      required: ["expression"]
+    }
+  end
 end
 
-# Set up retriever (example using ColBERT)
-retriever = ColBERTv2.new(url: 'http://your-retriever-endpoint')
-# Generate a contextual response
-rag = DSPy::ChainOfThought.new(ContextualQA)
-prediction = rag.call(question: question, context: retriever.call('your query').map(&:long_text))
+# Create ReAct agent with tools
+tools = [CalculatorTool.new]
+agent = DSPy::ReAct.new(DeepQA, tools: tools)
+
+# Run the agent
+result = agent.forward(question: "What is 42 plus 58?")
+puts result.answer    # => "100"
+puts result.history   # => Array of reasoning steps and tool calls
 ```
 
-### Multi-stage Pipeline
+### Multi-stage Pipelines
 
 ```ruby
-# Create a pipeline for article drafting
+class Outline < DSPy::Signature
+  description "Outline a thorough overview of a topic."
+
+  input do
+    const :topic, String
+  end
+
+  output do
+    const :title, String
+    const :sections, T::Array[String]
+  end
+end
+
+class DraftSection < DSPy::Signature
+  description "Draft a section of an article"
+
+  input do
+    const :topic, String
+    const :title, String
+    const :section, String
+  end
+
+  output do
+    const :content, String
+  end
+end
+
 class ArticleDrafter < DSPy::Module
   def initialize
     @build_outline = DSPy::ChainOfThought.new(Outline)
     @draft_section = DSPy::ChainOfThought.new(DraftSection)
   end
 
-  def forward(topic)
-    # First build the outline
+  def forward(topic:)
     outline = @build_outline.call(topic: topic)
     
-    # Then draft each section
-    sections = []
-    (outline[:section_subheadings] || {}).each do |heading, subheadings|
-      section = @draft_section.call(
-        topic: outline[:title],
-        section_heading: "## #{heading}",
-        section_subheadings: [subheadings].flatten.map { |sh| "### #{sh}" }
+    sections = outline.sections.map do |section|
+      @draft_section.call(
+        topic: topic,
+        title: outline.title,
+        section: section
       )
-      sections << section
     end
 
-    DraftArticle.new(title: outline[:title], sections: sections)
+    {
+      title: outline.title,
+      sections: sections.map(&:content)
+    }
   end
 end
 
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-end
-# Usage
+# Use the pipeline
 drafter = ArticleDrafter.new
-article = drafter.call("World Cup 2002")
+article = drafter.forward(topic: "The impact of AI on software development")
 ```
 
-### ReAct: Reasoning and Acting with Tools
-
-The `DSPy::ReAct` module implements the ReAct (Reasoning and Acting) paradigm, allowing LLMs to synergize reasoning with tool usage to answer complex questions or complete tasks. The agent iteratively generates thoughts, chooses actions (either calling a tool or finishing), and observes the results to inform its next step.
-
-**Core Components:**
-
-*   **Signature**: Defines the overall task for the ReAct agent (e.g., answering a question). The output schema of this signature will be augmented by ReAct to include `history` (an array of structured thought/action/observation steps) and `iterations`.
-*   **Tools**: Instances of classes inheriting from `DSPy::Tools::Tool`. Each tool has a `name`, `description` (used by the LLM to decide when to use the tool), and a `call` method that executes the tool's logic.
-*   **LLM**: The ReAct agent internally uses an LLM (configured via `DSPy.configure`) to generate thoughts and decide on actions.
-
-**Example 1: Simple Arithmetic with a Tool**
-
-Let's say we want to answer "What is 5 plus 7?". We can provide the ReAct agent with a simple calculator tool.
+### RAG (Retrieval-Augmented Generation)
 
 ```ruby
-# Define a signature for the task
-class MathQA < DSPy::Signature
-  description "Answers mathematical questions."
+class ContextualQA < DSPy::Signature
+  description "Answers the question taking relevant context into account"
 
   input do
-    required(:question).value(:string).meta(description: 'The math question to solve.')
+    const :context, T::Array[String]
+    const :question, String
   end
 
   output do
-    required(:answer).value(:string).meta(description: 'The numerical answer.')
+    const :response, String
   end
 end
 
-# Define a simple calculator tool
-class CalculatorTool < DSPy::Tools::Tool
-  def initialize
-    super('calculator', 'Calculates the result of a simple arithmetic expression (e.g., "5 + 7"). Input must be a string representing the expression.')
-  end
+# Use with ColBERTv2 for retrieval (example)
+rag = DSPy::ChainOfThought.new(ContextualQA)
 
-  def call(expression_string)
-    # In a real scenario, you might use a more robust expression parser.
-    # For this example, let's assume simple addition for "X + Y" format.
-    if expression_string.match(/(\d+)\s*\+\s*(\d+)/)
-      num1 = $1.to_i
-      num2 = $2.to_i
-      (num1 + num2).to_s
-    else
-      "Error: Could not parse expression. Use format 'number + number'."
-    end
-  rescue StandardError => e
-    "Error: #{e.message}"
-  end
-end
+context = [
+  "DSPy is a framework for programming with language models.",
+  "It provides composable modules for LLM interactions.",
+  "The framework supports multiple reasoning patterns."
+]
 
-# Configure DSPy (if not already done)
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-end
+result = rag.call(
+  context: context,
+  question: "What is DSPy?"
+)
 
-# Initialize ReAct agent with the signature and tool
-calculator = CalculatorTool.new
-react_agent = DSPy::ReAct.new(MathQA, tools: [calculator])
-
-# Ask the question
-question_text = "What is 5 plus 7?"
-result = react_agent.forward(question: question_text)
-
-puts "Question: #{question_text}"
-puts "Answer: #{result.answer}"
-puts "Iterations: #{result.iterations}"
-puts "History:"
-result.history.each do |entry|
-  puts "  Step #{entry[:step]}:"
-  puts "    Thought: #{entry[:thought]}"
-  puts "    Action: #{entry[:action]}"
-  puts "    Action Input: #{entry[:action_input]}"
-  puts "    Observation: #{entry[:observation]}" if entry[:observation]
-end
-# Expected output (will vary based on LLM's reasoning):
-# Question: What is 5 plus 7?
-# Answer: 12
-# Iterations: 2 
-# History:
-#   Step 1:
-#     Thought: I need to calculate 5 plus 7. I have a calculator tool that can do this.
-#     Action: calculator
-#     Action Input: 5 + 7
-#     Observation: 12
-#   Step 2:
-#     Thought: The calculator returned 12, which is the answer to "5 plus 7?". I can now finish.
-#     Action: finish
-#     Action Input: 12
+puts result.response  # => Contextually informed answer
 ```
 
-**Example 2: Web Search with Serper.dev**
+## Framework Overview
 
-For questions requiring up-to-date information or broader knowledge, the ReAct agent can use a web search tool. Here's an example using the `serper.dev` API.
+DSPy.rb enables you to build robust LLM applications by composing reusable modules:
 
-*Note: You'll need a Serper API key, which you can set in the `SERPER_API_KEY` environment variable.* 
+1. **Signatures** define the interface between your program and the LLM
+2. **Modules** like Predict, ChainOfThought, and ReAct implement different reasoning patterns  
+3. **Tools** extend ReAct agents with external capabilities
+4. **Pipelines** compose multiple modules for complex workflows
 
-```ruby
-require 'net/http'
-require 'json'
-require 'uri'
+The framework provides:
+- **Type Safety**: Runtime validation with Sorbet types
+- **IDE Support**: Full autocomplete and type checking
+- **Field Descriptions**: Enhanced LLM prompting through schema metadata
+- **Composability**: Mix and match modules to build sophisticated LLM applications
 
-# Define a signature for web-based QA
-class WebQuestionAnswer < DSPy::Signature
-  description "Answers questions that may require web searches."
+## Legacy API Support
 
-  input do
-    required(:question).value(:string).meta(description: 'The question to answer, potentially requiring a web search.')
-  end
-
-  output do
-    required(:answer).value(:string).meta(description: 'The final answer to the question.')
-  end
-end
-
-# Define the Serper Search Tool
-class SerperSearchTool < DSPy::Tools::Tool
-  def initialize
-    super('web_search', 'Searches the web for a given query and returns the first organic result snippet. Useful for finding current information or answers to general knowledge questions.')
-  end
-
-  def call(query)
-    api_key = ENV['SERPER_API_KEY']
-    unless api_key
-      return "Error: SERPER_API_KEY environment variable not set."
-    end
-
-    uri = URI.parse("https://google.serper.dev/search")
-    request = Net::HTTP::Post.new(uri)
-    request['X-API-KEY'] = api_key
-    request['Content-Type'] = 'application/json'
-    request.body = JSON.dump({ q: query })
-
-    begin
-      response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
-        http.request(request)
-      end
-
-      if response.is_a?(Net::HTTPSuccess)
-        results = JSON.parse(response.body)
-        first_organic_result = results['organic']&.first
-        if first_organic_result && first_organic_result['snippet']
-          return "Source: #{first_organic_result['link']}\nSnippet: #{first_organic_result['snippet']}"
-        elsif first_organic_result && first_organic_result['title']
-          return "Source: #{first_organic_result['link']}\nTitle: #{first_organic_result['title']}"
-        else
-          return "No relevant snippet found in the first result."
-        end
-      else
-        return "Error: Serper API request failed with status #{response.code} - #{response.body}"
-      end
-    rescue StandardError => e
-      return "Error performing web search: #{e.message}"
-    end
-  end
-end
-
-# Configure DSPy (if not already done)
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY']) # Ensure your LM is configured
-end
-
-# Initialize ReAct agent with the signature and search tool
-search_tool = SerperSearchTool.new
-web_qa_agent = DSPy::ReAct.new(WebQuestionAnswer, tools: [search_tool])
-
-# Ask a question requiring web search
-question_text = "What is the latest news about the Mars rover Perseverance?"
-result = web_qa_agent.forward(question: question_text)
-
-puts "Question: #{question_text}"
-puts "Answer: #{result.answer}"
-puts "Iterations: #{result.iterations}"
-puts "History (summary):"
-result.history.each_with_index do |entry, index|
-  puts "  Step #{entry[:step]}: Action: #{entry[:action]}, Input: #{entry[:action_input]&.slice(0, 50)}..."
-  # For brevity, not printing full thought/observation here.
-end
-# The answer and history will depend on the LLM's reasoning and live search results.
-```
-
-## Roadmap
-
-### First Release
-- [x] Signatures and Predict module
-- [x] RAG examples
-- [x] Multi-Stage Pipelines
-- [x] Validate inputs and outputs with JSON Schema
-- [x] thread-safe global config
-- [x] Convert responses from hashes to Dry Poros (currently tons of footguns with hashes :fire:)
-- [ ] Cover unhappy paths: validation errors 
-- [x] Implement ReAct module for reasoning and acting
-- [ ] Add OpenTelemetry instrumentation
-- [ ] Improve logging
-- [ ] Add streaming support (?)
-- [x] Ensure thread safety
-- [ ] Comprehensive initial documentation, LLM friendly.
-
-#### Backburner
-
-- [ ] Support for multiple LM providers (Anthropic, etc.)
-- [ ] Support for reasoning providers
-- [ ] Adaptive Graph of Thoughts with Tools
-
-### Optimizers
-
-- [ ] Optimizing prompts: RAG
-- [ ] Optimizing prompts: Chain of Thought
-- [ ] Optimizing prompts: ReAct
-- [ ] Optimizing weights: Classification
+The original dry-schema-based API is still supported but deprecated. 
+If you're migrating from the old API, check the git history for examples 
+of the previous signature syntax using dry-schema validation rules.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+This library is early stage and evolving rapidly. I welcome contributions, 
+bug reports, and feature requests. Please open an issue or submit a pull request 
+on GitHub.
 
 ## License
 
-`dspy.rb` is released under the [MIT License](LICENSE).
+This project is licensed under the MIT License.

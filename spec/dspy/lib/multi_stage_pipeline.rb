@@ -1,20 +1,19 @@
-
 # Outline signature for creating article structure
-module Types
-  include Dry.Types()
-end
+require 'sorbet-runtime'
 
+# Use original class name for test compatibility
 class Outline < DSPy::Signature
   description "Outline a thorough overview of a topic."
-  input do
-    required(:topic).value('string')
+
+  input do |builder|
+    builder.const :topic, String, description: "The topic to outline"
   end
-  output do
-    required(:title).value(:string)
-    required(:sections).value(Types::Array.of(Types::String)).meta(description: 'a list of section titles')
-    required(:section_subheadings).value(Types::Hash.schema(section: Types::String, subheading: Types::Array.of(Types::String))).meta(
-      description: 'mapping from section headings to subheadings'
-    )
+
+  output do |builder|
+    builder.const :title, String, description: "The title of the article"
+    builder.const :sections, T::Array[String], description: "A list of section titles"
+    builder.const :section_subheadings, T::Hash[String, T::Array[String]],
+      description: "Mapping from section headings to subheadings"
   end
 end
 
@@ -23,13 +22,13 @@ class DraftSection < DSPy::Signature
   description "Draft a top-level section of an article."
 
   input do
-    required(:topic).value(:string)
-    required(:section_heading).value(:string)
-    required(:section_subheadings).value(Types::Array.of(Types::String))
+    const :topic, String, description: "The article topic"
+    const :section_heading, String, description: "The section heading"
+    const :section_subheadings, T::Array[String], description: "List of subheadings for this section"
   end
 
   output do
-    required(:content).value(:string).meta(description: 'markdown-formatted section')
+    const :content, String, description: "Markdown-formatted section content"
   end
 end
 
@@ -41,7 +40,6 @@ class DraftArticle
     @sections = sections
   end
 end
-
 # DraftArticle module that composes the pipeline
 class ArticleDrafter < DSPy::Module
   def initialize
@@ -50,8 +48,12 @@ class ArticleDrafter < DSPy::Module
   end
 
   def forward(topic)
+    # Handle the case where topic might be a hash from the call method
+    topic_str = topic.is_a?(Hash) && topic.key?(:topic) ? topic[:topic] : topic
+    
     # First, build the outline
-    outline = @build_outline.call(topic: topic)
+    outline = @build_outline.call(topic: topic_str)
+
     # Then, draft each section
     sections = []
 
