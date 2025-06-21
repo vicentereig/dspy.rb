@@ -128,7 +128,6 @@ end
 
 # Define tools for the agent
 class CalculatorTool < DSPy::Tools::Base
-  extend T::Sig
 
   tool_name 'calculator'
   tool_description 'Performs basic arithmetic operations'
