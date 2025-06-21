@@ -231,7 +231,7 @@ class Color < T::Enum
   end
 end
 
-class ColorSignature < DSPy::SorbetSignature
+class ColorSignature < DSPy::Signature
   description "Identify the dominant color in a description"
 
   input do
@@ -245,7 +245,7 @@ class ColorSignature < DSPy::SorbetSignature
   end
 end
 
-predictor = DSPy::SorbetPredict.new(ColorSignature)
+predictor = DSPy::Predict.new(ColorSignature)
 result = predictor.call(description: "A red apple on a wooden table")
 puts result.color  # => #<Color::Red>
 ```
@@ -253,7 +253,7 @@ puts result.color  # => #<Color::Red>
 ### Optional Fields and Defaults
 
 ```ruby
-class AnalysisSignature < DSPy::SorbetSignature
+class AnalysisSignature < DSPy::Signature
   description "Analyze text with optional metadata"
 
   input do
