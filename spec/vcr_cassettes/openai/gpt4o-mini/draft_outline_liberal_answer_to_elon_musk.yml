@@ -11,13 +11,9 @@ http_interactions:
         schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\",\"description\":\"The
         title of the article\"},\"sections\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"A
         list of section titles\"},\"section_subheadings\":{\"type\":\"object\",\"propertyNames\":{\"type\":\"string\"},\"additionalProperties\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"description\":\"Mapping
-        from section headings to subheadings\"},\"reasoning\":{\"type\":\"string\"}},\"required\":[\"title\",\"sections\",\"section_subheadings\",\"reasoning\"]}\n        ````\n      \n      For
-        example, based on the schemas above, a valid interaction would be:\n      ##
-        Input values\n        ```json\n          {\"topic\":\"example\"}\n        ```\n      ##
-        Output values\n        ```json\n          {\"title\":\"example\",\"sections\":\"example\",\"section_subheadings\":\"example\",\"reasoning\":\"Let
-        me think through this step by step...\"}\n        ```\n      \n      All interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
+        from section headings to subheadings\"},\"reasoning\":{\"type\":\"string\"}},\"required\":[\"title\",\"sections\",\"section_subheadings\",\"reasoning\"]}\n        ````\n      \n      All
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
         Output values\n      Respond exclusively with the output schema fields in
         the json block below.\n        ```json\n          {output_values}\n        ```\n      \n      In
         adhering to this structure, your objective is: Outline a thorough overview
@@ -43,7 +39,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 20 Jun 2025 18:16:08 GMT
+      - Sat, 21 Jun 2025 19:29:20 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -55,46 +51,81 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '4317'
+      - '4167'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '4714'
+      - '4169'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9995'
       X-Ratelimit-Remaining-Tokens:
-      - '199507'
+      - '199596'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 39.204s
       X-Ratelimit-Reset-Tokens:
-      - 147ms
+      - 121ms
       X-Request-Id:
-      - req_133bf28aa00bc41f5d4f0e094caef831
+      - req_ff98c4d4a357d7c046ae0e55e3fad0ab
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=1_32029DiEV3RRr0aFzozhmxGJVu9UEeqUq4ufPXhtE-1750443368-1.0.1.1-T4Nx3ttCLEFMCpsgj1f3lLu4GPbo9ScQGKGpACELI6W9Nrgr.J.ihIKackxllySy9dnBcNYqjPhssZbv8aD36aOPxL1CedKn87yR2K6sdc4;
-        path=/; expires=Fri, 20-Jun-25 18:46:08 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=QsjiJbXqC.QXbxV8DCiU2e0ilPM31znjawHbAf7TzXU-1750534160-1.0.1.1-g6ZV61LAvQjEGSV4QKkk0Yc6EWG4xr5bYUBv0ov67JastB.30u25XkfKJogQvwUhX.jqpmhdef4zM3EuBlIWsfFQOTJ7LynrWKpjqPIbask;
+        path=/; expires=Sat, 21-Jun-25 19:59:20 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=8EOlFuIR.iVg5.AODosdtc6B6wnovDD8ubogFBP2cnk-1750443368070-0.0.1.1-604800000;
+      - _cfuvid=mAq21RTRON5M4lZOtXU3_2r9pfptj0FtDOS4L1bns88-1750534160280-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 952d41494c0f1c16-OSL
+      - 9535e9ea6fac0b31-OSL
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
-      string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1Ca2FaUEQzeFZ3TnFTTTl4dXlrZ0dTSlhWamFBVSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1MDQ0MzM2MywKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcInRpdGxlXCI6IFwiVGhlcmUgSXMgYSBMaWJlcmFsIEFuc3dlciB0byBFbG9uIE11c2tcIixcbiAgXCJzZWN0aW9uc1wiOiBbXG4gICAgXCJJbnRyb2R1Y3Rpb25cIixcbiAgICBcIlVuZGVyc3RhbmRpbmcgRWxvbiBNdXNrJ3MgSW5mbHVlbmNlXCIsXG4gICAgXCJUaGUgTGliZXJhbCBQZXJzcGVjdGl2ZSBvbiBUZWNobm9sb2d5IGFuZCBJbm5vdmF0aW9uXCIsXG4gICAgXCJCYWxhbmNpbmcgUHJvZml0IGFuZCBTb2NpYWwgUmVzcG9uc2liaWxpdHlcIixcbiAgICBcIlBvbGljeSBSZWNvbW1lbmRhdGlvbnMgZm9yIGEgTGliZXJhbCBBcHByb2FjaFwiLFxuICAgIFwiQ29uY2x1c2lvblwiXG4gIF0sXG4gIFwic2VjdGlvbl9zdWJoZWFkaW5nc1wiOiB7XG4gICAgXCJJbnRyb2R1Y3Rpb25cIjogW10sXG4gICAgXCJVbmRlcnN0YW5kaW5nIEVsb24gTXVzaydzIEluZmx1ZW5jZVwiOiBbXG4gICAgICBcIk11c2sncyBSb2xlIGluIHRoZSBUZWNoIEluZHVzdHJ5XCIsXG4gICAgICBcIlB1YmxpYyBQZXJjZXB0aW9uIG9mIE11c2tcIixcbiAgICAgIFwiSW1wYWN0IG9mIE11c2sncyBWZW50dXJlc1wiXG4gICAgXSxcbiAgICBcIlRoZSBMaWJlcmFsIFBlcnNwZWN0aXZlIG9uIFRlY2hub2xvZ3kgYW5kIElubm92YXRpb25cIjogW1xuICAgICAgXCJFbXBoYXNpemluZyBQdWJsaWMgR29vZFwiLFxuICAgICAgXCJJbm5vdmF0aW9uIHZzLiBSZWd1bGF0aW9uXCIsXG4gICAgICBcIlRoZSBSb2xlIG9mIEdvdmVybm1lbnQgaW4gVGVjaG5vbG9neVwiXG4gICAgXSxcbiAgICBcIkJhbGFuY2luZyBQcm9maXQgYW5kIFNvY2lhbCBSZXNwb25zaWJpbGl0eVwiOiBbXG4gICAgICBcIkNvcnBvcmF0ZSBSZXNwb25zaWJpbGl0eVwiLFxuICAgICAgXCJTdXN0YWluYWJpbGl0eSBJbml0aWF0aXZlc1wiLFxuICAgICAgXCJFdGhpY3MgaW4gQnVzaW5lc3MgUHJhY3RpY2VzXCJcbiAgICBdLFxuICAgIFwiUG9saWN5IFJlY29tbWVuZGF0aW9ucyBmb3IgYSBMaWJlcmFsIEFwcHJvYWNoXCI6IFtcbiAgICAgIFwiRW5jb3VyYWdpbmcgUmVzcG9uc2libGUgSW5ub3ZhdGlvblwiLFxuICAgICAgXCJTdXBwb3J0aW5nIFdvcmtmb3JjZSBEZXZlbG9wbWVudFwiLFxuICAgICAgXCJSZWd1bGF0b3J5IEZyYW1ld29ya3MgZm9yIFRlY2ggQ29tcGFuaWVzXCJcbiAgICBdLFxuICAgIFwiQ29uY2x1c2lvblwiOiBbXVxuICB9LFxuICBcInJlYXNvbmluZ1wiOiBcIlRvIHVuZGVyc3RhbmQgdGhlIGxpYmVyYWwgcmVzcG9uc2UgdG8gRWxvbiBNdXNr4oCZcyBpbXBhY3QsIHdlIG11c3QgZmlyc3QgZXZhbHVhdGUgaGlzIGluZmx1ZW5jZSBpbiB0aGUgdGVjaCBpbmR1c3RyeSBhbmQgdGhlIHB1YmxpYyBkaXNjb3Vyc2Ugc3Vycm91bmRpbmcgaXQuIEJ5IGV4cGxvcmluZyB0aGUgbGliZXJhbCBwZXJzcGVjdGl2ZSBvbiB0ZWNobm9sb2d5LCB3ZSBjYW4gZGV2ZWxvcCBhIGZyYW1ld29yayB0aGF0IHByb21vdGVzIGlubm92YXRpb24gd2hpbGUgZW5zdXJpbmcgc29jaWFsIHJlc3BvbnNpYmlsaXR5IGFuZCBldGhpY2FsIHByYWN0aWNlcy4gVGhpcyBvdXRsaW5lIGFkZHJlc3NlcyB0aGUgbXVsdGlmYWNldGVkIG5hdHVyZSBvZiB0aGUgdG9waWMsIHByb3ZpZGluZyBhIGNvbXByZWhlbnNpdmUgb3ZlcnZpZXcgb2YgcG90ZW50aWFsIGxpYmVyYWwgcmVzcG9uc2VzLlwiXG59XG5gYGAiLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAibG9ncHJvYnMiOiBudWxsLAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA0MjMsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiAzMTcsCiAgICAidG90YWxfdG9rZW5zIjogNzQwLAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfMzRhNTRhZTkzYyIKfQo=
-  recorded_at: Fri, 20 Jun 2025 18:16:08 GMT
+      string: |
+        {
+          "id": "chatcmpl-BkyBoGvGVm9PXcwu6HP3M6ZjYjWZG",
+          "object": "chat.completion",
+          "created": 1750534156,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"title\": \"Exploring a Liberal Perspective on Elon Musk's Influence\",\n  \"sections\": [\n    \"Introduction\",\n    \"Elon Musk: A Brief Overview\",\n    \"The Liberal Perspective on Technology and Innovation\",\n    \"Musk's Impact on the Economy and Labor\",\n    \"Environmental Considerations and Sustainable Practices\",\n    \"Social Responsibility and Ethical Considerations\",\n    \"Conclusion\"\n  ],\n  \"section_subheadings\": {\n    \"Introduction\": [\n      \"Purpose of the Article\",\n      \"Overview of Liberal Ideals\"\n    ],\n    \"Elon Musk: A Brief Overview\": [\n      \"Key Achievements\",\n      \"Controversies\"\n    ],\n    \"The Liberal Perspective on Technology and Innovation\": [\n      \"Role of Government in Innovation\",\n      \"Innovation for the Public Good\"\n    ],\n    \"Musk's Impact on the Economy and Labor\": [\n      \"Job Creation vs. Automation\",\n      \"Fair Labor Practices\"\n    ],\n    \"Environmental Considerations and Sustainable Practices\": [\n      \"Tesla's Role in Climate Action\",\n      \"Challenges of SpaceX and Environmental Impact\"\n    ],\n    \"Social Responsibility and Ethical Considerations\": [\n      \"Corporate Governance\",\n      \"Philanthropy and Community Engagement\"\n    ],\n    \"Conclusion\": [\n      \"Summary of Key Points\",\n      \"The Future of Liberal Thought in Tech\"\n    ]\n  },\n  \"reasoning\": \"This outline provides a structured approach to discussing how a liberal viewpoint can interpret and respond to Elon Musk's significant influence in various sectors, including technology, economy, and ethics. It aims to present a balanced analysis while considering both the positive contributions and the challenges posed by Musk's ventures.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 348,
+            "completion_tokens": 349,
+            "total_tokens": 697,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 21 Jun 2025 19:29:20 GMT
 recorded_with: VCR 6.3.1

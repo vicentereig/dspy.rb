@@ -2,6 +2,11 @@
 
 A Ruby port of the [DSPy library](https://dspy.ai/), enabling a composable and pipeline-oriented approach to programming with Large Language Models (LLMs) in Ruby.
 
+## Contributing
+
+This library is early stage and evolving rapidly. I welcome contributions,
+bug reports, and feature requests. Best way to reach out to me is via email.
+
 ## Current State
 
 DSPy.rb provides a foundation for composable LLM programming with the following implemented features:
@@ -30,7 +35,7 @@ gem 'dspy', github: 'vicentereig/dspy.rb'
 
 ## Usage Examples
 
-### Basic Prediction
+### Simple Prediction
 
 ```ruby
 # Define a signature for sentiment classification
@@ -95,6 +100,7 @@ puts result.answer     # => "1/36"
 ### ReAct Agents with Tools
 
 ```ruby
+
 class DeepQA < DSPy::Signature
   description "Answer questions with consideration for the context"
 
@@ -108,41 +114,33 @@ class DeepQA < DSPy::Signature
 end
 
 # Define tools for the agent
-class CalculatorTool < DSPy::Tools::SorbetTool
-  name "calculator"
-  description "Perform mathematical calculations"
+class CalculatorTool < DSPy::Tools::Base
+  extend T::Sig
 
-  def call(expression:)
-    begin
-      result = eval(expression) # Note: Use safely in production
-      { result: result.to_s }
-    rescue => e
-      { error: "Invalid expression: #{e.message}" }
+  tool_name 'calculator'
+  tool_description 'Performs basic arithmetic operations'
+
+  sig { params(operation: String, num1: Float, num2: Float).returns(T.any(Float, String)) }
+  def call(operation:, num1:, num2:)
+    case operation.downcase
+    when 'add' then num1 + num2
+    when 'subtract' then num1 - num2
+    when 'multiply' then num1 * num2
+    when 'divide'
+      return "Error: Cannot divide by zero" if num2 == 0
+      num1 / num2
+    else
+      "Error: Unknown operation '#{operation}'. Use add, subtract, multiply, or divide"
     end
   end
 
-  def schema
-    {
-      type: "object",
-      properties: {
-        expression: {
-          type: "string",
-          description: "Mathematical expression to evaluate"
-        }
-      },
-      required: ["expression"]
-    }
-  end
-end
-
 # Create ReAct agent with tools
-tools = [CalculatorTool.new]
-agent = DSPy::ReAct.new(DeepQA, tools: tools)
+agent = DSPy::ReAct.new(DeepQA, tools: [CalculatorTool.new])
 
 # Run the agent
 result = agent.forward(question: "What is 42 plus 58?")
-puts result.answer    # => "100"
-puts result.history   # => Array of reasoning steps and tool calls
+puts result.answer # => "100"
+puts result.history # => Array of reasoning steps and tool calls
 ```
 
 ### Multi-stage Pipelines
@@ -205,6 +203,7 @@ article = drafter.forward(topic: "The impact of AI on software development")
 ```
 
 ### RAG (Retrieval-Augmented Generation)
+Augment your predictions with additional context.
 
 ```ruby
 class ContextualQA < DSPy::Signature
@@ -236,33 +235,6 @@ result = rag.call(
 
 puts result.response  # => Contextually informed answer
 ```
-
-## Framework Overview
-
-DSPy.rb enables you to build robust LLM applications by composing reusable modules:
-
-1. **Signatures** define the interface between your program and the LLM
-2. **Modules** like Predict, ChainOfThought, and ReAct implement different reasoning patterns  
-3. **Tools** extend ReAct agents with external capabilities
-4. **Pipelines** compose multiple modules for complex workflows
-
-The framework provides:
-- **Type Safety**: Runtime validation with Sorbet types
-- **IDE Support**: Full autocomplete and type checking
-- **Field Descriptions**: Enhanced LLM prompting through schema metadata
-- **Composability**: Mix and match modules to build sophisticated LLM applications
-
-## Legacy API Support
-
-The original dry-schema-based API is still supported but deprecated. 
-If you're migrating from the old API, check the git history for examples 
-of the previous signature syntax using dry-schema validation rules.
-
-## Contributing
-
-This library is early stage and evolving rapidly. I welcome contributions, 
-bug reports, and feature requests. Please open an issue or submit a pull request 
-on GitHub.
 
 ## License
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Tool that returns the current date in a human-readable format
-class SorbetGetTodaysDate < DSPy::Tools::SorbetTool
+class SorbetGetTodaysDate < DSPy::Tools::Base
   extend T::Sig
 
   tool_name 'get_todays_date'

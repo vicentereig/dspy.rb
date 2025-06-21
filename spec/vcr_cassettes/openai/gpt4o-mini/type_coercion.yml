@@ -6,11 +6,8 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"}},\"required\":[\"text\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"type\":\"object\",\"properties\":{\"integer_value\":{\"type\":\"integer\"},\"float_value\":{\"type\":\"number\"}},\"required\":[\"integer_value\",\"float_value\"]}\n        ````\n      \n      For
-        example, based on the schemas above, a valid interaction would be:\n      ##
-        Input values\n        ```json\n          {\"text\":\"example\"}\n        ```\n      ##
-        Output values\n        ```json\n          {\"integer_value\":\"example\",\"float_value\":\"example\"}\n        ```\n      \n      All
+        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"}},\"required\":[\"text\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"integer_value\":{\"type\":\"integer\"},\"float_value\":{\"type\":\"number\"}},\"required\":[\"integer_value\",\"float_value\"]}\n        ````\n      \n      All
         interactions will be structured in the following way, with the appropriate
         values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
         Output values\n      Respond exclusively with the output schema fields in
@@ -37,7 +34,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 20 Jun 2025 23:50:03 GMT
+      - Sat, 21 Jun 2025 19:30:35 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -49,57 +46,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '517'
+      - '658'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '524'
+      - '659'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9994'
       X-Ratelimit-Remaining-Tokens:
-      - '199658'
+      - '199701'
       X-Ratelimit-Reset-Requests:
-      - 16.124s
+      - 46.96s
       X-Ratelimit-Reset-Tokens:
-      - 102ms
+      - 89ms
       X-Request-Id:
-      - req_e37dd45a57949c3cc1afbb4f6058bf5b
+      - req_d255c84cdccaaef4986a223772d33bd9
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=xYFNV9jjzgZw3HfKG6thIqlz.DGRA05.IgB.NgHSLu4-1750463403-1.0.1.1-Dt12TH7H5ioomDujElMWw_M7Ptcy_zcsKA4kWLn7f1VfrMECj1axGqDXgebp_rc_PtgLgK1ugPhzY3V7NiuEPKHvXRBjuZ_RvmTypnt3UEQ;
-        path=/; expires=Sat, 21-Jun-25 00:20:03 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=EgQYqUoaXt009rd6QxinTWpb0UHXVbvKgQAqK15BLKs-1750534235-1.0.1.1-k7y9SRZJDnVAd10aUn.gtLrWdGZmSAjspZquB5IDTTWfMeuq8qBkHJ4xAMtJXNpHp.c48H4zKEiftXdNSgktl9NUgTWtMC4gUMkdJUh5L84;
+        path=/; expires=Sat, 21-Jun-25 20:00:35 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=62Iu1fqKXQFMlHhBlTry2TEu5YPc_ojZwHb3JmXIIRw-1750463403149-0.0.1.1-604800000;
+      - _cfuvid=.FVf1vQ4RzYGy0q63VV36Wwye1pdto_o8eFRFsEhIiY-1750534235419-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 952f2a86ed941e76-EZE
+      - 9535ebd62ae556b9-OSL
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BkfmcR88Tdbh7cD0lIgl9GNBzyiej",
+          "id": "chatcmpl-BkyD4groc0bMv35cUyfCPPruZv4Hf",
           "object": "chat.completion",
-          "created": 1750463402,
+          "created": 1750534234,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"integer_value\": 42,\n  \"float_value\": 42.5\n}\n```",
+                "content": "## Output values\n```json\n{\"integer_value\":42,\"float_value\":42.5}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -108,9 +105,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 282,
-            "completion_tokens": 28,
-            "total_tokens": 310,
+            "prompt_tokens": 255,
+            "completion_tokens": 21,
+            "total_tokens": 276,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -125,5 +122,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Fri, 20 Jun 2025 23:50:03 GMT
+  recorded_at: Sat, 21 Jun 2025 19:30:35 GMT
 recorded_with: VCR 6.3.1

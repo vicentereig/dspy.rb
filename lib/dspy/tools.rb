@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'tools/sorbet_tool'
+require_relative 'tools/base'
 
 module DSPy
   # Define the tools available to the agent

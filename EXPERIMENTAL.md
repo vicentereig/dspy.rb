@@ -57,7 +57,7 @@ DSPy.configure do |c|
 end
 
 # Create predictor and run inference
-classifier = DSPy::SorbetPredict.new(SentimentSignature)
+classifier = DSPy::Predict.new(SentimentSignature)
 result = classifier.call(sentence: "This book was super fun to read!")
 
 # result is a properly typed T::Struct instance
@@ -97,8 +97,7 @@ puts result.answer     # => "1/36"
 Create type-safe tools for ReAct agents using Sorbet's method signatures:
 
 ```ruby
-class CalculatorTool < DSPy::Tools::SorbetTool
-  extend T::Sig
+class CalculatorTool < DSPy::Tools::Base
 
   tool_name 'calculator'
   tool_description 'Performs basic arithmetic operations'
@@ -106,7 +105,7 @@ class CalculatorTool < DSPy::Tools::SorbetTool
   sig { params(operation: String, num1: Float, num2: Float).returns(T.any(Float, String)) }
   def call(operation:, num1:, num2:)
     case operation.downcase
-    when 'add'      then num1 + num2
+    when 'add' then num1 + num2
     when 'subtract' then num1 - num2
     when 'multiply' then num1 * num2
     when 'divide'
@@ -118,8 +117,7 @@ class CalculatorTool < DSPy::Tools::SorbetTool
   end
 end
 
-class AddNumbersTool < DSPy::Tools::SorbetTool
-  extend T::Sig
+class AddNumbersTool < DSPy::Tools::Base
 
   tool_name 'add_numbers'
   tool_description 'Adds two numbers together'
@@ -131,7 +129,7 @@ class AddNumbersTool < DSPy::Tools::SorbetTool
 end
 ```
 
-### Sorbet ReAct Agent
+### Math ReAct Agent
 
 Reasoning and Acting with type-safe tools:
 

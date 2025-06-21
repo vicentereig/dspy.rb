@@ -271,12 +271,14 @@ module DSPy
           # Get the first output field name from the original signature
           output_field_name = @original_signature_class.output_struct_class.props.keys.first
 
-          # Create enhanced output struct with answer and history
-          result = @enhanced_output_struct.new(
+          # Create enhanced output struct with input fields, answer, and history
+          all_attributes = kwargs.merge({
             "#{output_field_name}": final_answer || "",
             history: history.map(&:to_h),
             iterations: iterations_count
-          )
+          })
+          
+          result = @enhanced_output_struct.new(**all_attributes)
 
           # Run validation
           validate_output_schema!(result)
@@ -297,13 +299,30 @@ module DSPy
 
     sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(T::Struct)) }
     def create_enhanced_output_struct(signature_class)
-      # Get original output props
-      original_props = signature_class.output_struct_class.props
+      # Get original input and output props
+      input_props = signature_class.input_struct_class.props
+      output_props = signature_class.output_struct_class.props
 
-      # Create new struct class with ReAct fields added
+      # Create new struct class with input, output, and ReAct fields
       Class.new(T::Struct) do
-        # Add all original fields
-        original_props.each do |name, prop|
+        # Add all input fields
+        input_props.each do |name, prop|
+          # Extract the type and other options
+          type = prop[:type]
+          options = prop.except(:type, :type_object, :accessor_key, :sensitivity, :redaction)
+
+          # Handle default values
+          if options[:default]
+            const name, type, default: options[:default]
+          elsif options[:factory]
+            const name, type, factory: options[:factory]
+          else
+            const name, type
+          end
+        end
+
+        # Add all output fields
+        output_props.each do |name, prop|
           # Extract the type and other options
           type = prop[:type]
           options = prop.except(:type, :type_object, :accessor_key, :sensitivity, :redaction)

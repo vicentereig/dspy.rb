@@ -58,12 +58,17 @@ RSpec.describe DSPy::Predict do
 
   describe 'sentiment classification example' do
     let(:classify) { DSPy::Predict.new(Classify) }
-    
+
     it 'makes a prediction with the correct structure' do
       VCR.use_cassette('openai/gpt4o-mini/classify_sentiment') do
         prediction = classify.call(sentence: "This book was super fun to read, though not the last chapter.")
+
+        # Check that prediction responds to all expected output fields
+        expect(prediction).to respond_to(:sentiment)
+        expect(prediction).to respond_to(:confidence)
+        # Check that prediction also includes input fields
+        expect(prediction).to respond_to(:sentence)
         
-        expect(prediction).to be_a(Classify.output_struct_class)
         expect([Classify::Sentiment::Positive, Classify::Sentiment::Negative, Classify::Sentiment::Neutral]).to include(prediction.sentiment)
         expect(prediction.confidence).to be_a(Float)
         expect(prediction.confidence).to be_between(0.0, 1.0)
@@ -96,14 +101,24 @@ RSpec.describe DSPy::Predict do
   end
 
   describe 'type coercion' do
-    it 'handles type coercion from LM output' do
+    let(:text) { "The number is forty-two point five" }
+    let(:predictor) { DSPy::Predict.new(NumericSignature) }
+    let(:prediction) do
       VCR.use_cassette('openai/gpt4o-mini/type_coercion') do
-        predictor = DSPy::Predict.new(NumericSignature)
-        result = predictor.call(text: "The number is forty-two point five")
-
-        expect(result.integer_value).to be_a(Integer)
-        expect(result.float_value).to be_a(Float)
+        predictor.call(text: self.text)
       end
+    end
+
+    it 'includes the inputs in the prediction' do
+      expect(prediction.text).to eq(self.text)
+    end
+
+    it 'coerces to integer' do
+      expect(prediction.integer_value).to be_a(Integer)
+    end
+
+    it 'coerces to float' do
+      expect(prediction.float_value).to be_a(Float)
     end
   end
 end

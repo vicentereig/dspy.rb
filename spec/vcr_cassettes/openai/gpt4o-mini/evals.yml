@@ -6,10 +6,12 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"question\":{\"type\":\"string\"}},\"required\":[\"question\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"answer\":{\"type\":\"string\"}},\"required\":[\"answer\"]}\n        ````\n      All
+        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"question\":{\"type\":\"string\",\"description\":\"The
+        question to answer\"}},\"required\":[\"question\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"answer\":{\"type\":\"string\",\"description\":\"The
+        answer to the question\"}},\"required\":[\"answer\"]}\n        ````\n      \n      All
         interactions will be structured in the following way, with the appropriate
-        values filled in.\n\n      ## Input values\n        ```json\n          {input_values}\n        ```  \n      ##
+        values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
         Output values\n      Respond exclusively with the output schema fields in
         the json block below.\n        ```json\n          {output_values}\n        ```\n      \n      In
         adhering to this structure, your objective is: Answer a question.\n\n"},{"role":"user","content":"        ##
@@ -34,7 +36,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 12 Apr 2025 23:26:51 GMT
+      - Sat, 21 Jun 2025 19:29:09 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -46,48 +48,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '441'
+      - '1027'
       Openai-Version:
       - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1035'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9997'
       X-Ratelimit-Remaining-Tokens:
-      - '199718'
+      - '199697'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 20.824s
       X-Ratelimit-Reset-Tokens:
-      - 84ms
+      - 90ms
       X-Request-Id:
-      - req_56aa76a1aca1e81daa394bbd8d2380dc
+      - req_d10c38f1c726d2a346d490d7084538c5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=bAXQT9YfCSGdKnJlSHYtsYKYHBXy7PmRxgbgmahv_6g-1744500411-1.0.1.1-X9J2_pX6cHuTdG41B7GfqDzonoXq95Kbi7DpgF3t13mFysDY4DmUcP.Bfa68cRIYFZJ9D2wn3advvTZmAzfSXNBHRAFlVsPupDVoggBahYU;
-        path=/; expires=Sat, 12-Apr-25 23:56:51 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=mEr.kVYUHSoQfVvahXl8p4MI9rjSxJNxf3fZsF.JgrI-1750534149-1.0.1.1-DJR2GrpzkyoKybcpSdoU74.oODF0kJPyEuUDKUD3gJdfX6tzE_TAarvp.e9wmjwbCKYEDp0L67igytZ9PP02ht1BBtXfLpj8dFzxtNK0ASQ;
+        path=/; expires=Sat, 21-Jun-25 19:59:09 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=kthOe1jX_5LEuYIK03b1WTfZ7.t2C8HZz2wohATp4T4-1744500411210-0.0.1.1-604800000;
+      - _cfuvid=NB2Ez6x8tKI3TMTeJvC8L5GxCn1cGKe5ovcnzHUl8cY-1750534149613-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 92f67daf0c22cd7f-EWR
+      - 9535e9b91c32569c-OSL
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BLeXKJytAeo40TDdg6UNWPWpf71VO",
+          "id": "chatcmpl-BkyBgn475nkmb4nMvjpZrgmLonfz0",
           "object": "chat.completion",
-          "created": 1744500410,
+          "created": 1750534148,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -103,9 +107,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 239,
-            "completion_tokens": 20,
-            "total_tokens": 259,
+            "prompt_tokens": 255,
+            "completion_tokens": 19,
+            "total_tokens": 274,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -118,19 +122,22 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_80cf447eee"
+          "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 12 Apr 2025 23:26:51 GMT
+  recorded_at: Sat, 21 Jun 2025 19:29:09 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"assessed_text\":{\"type\":\"string\"},\"assessment_question\":{\"type\":\"string\"}},\"required\":[\"assessed_text\",\"assessment_question\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"assessment_answer\":{\"type\":\"boolean\"}},\"required\":[\"assessment_answer\"]}\n        ````\n      All
+        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"assessed_text\":{\"type\":\"string\",\"description\":\"The
+        text to assess\"},\"assessment_question\":{\"type\":\"string\",\"description\":\"The
+        assessment criteria question\"}},\"required\":[\"assessed_text\",\"assessment_question\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"assessment_answer\":{\"type\":\"boolean\",\"description\":\"Boolean
+        assessment result\"}},\"required\":[\"assessment_answer\"]}\n        ````\n      \n      All
         interactions will be structured in the following way, with the appropriate
-        values filled in.\n\n      ## Input values\n        ```json\n          {input_values}\n        ```  \n      ##
+        values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
         Output values\n      Respond exclusively with the output schema fields in
         the json block below.\n        ```json\n          {output_values}\n        ```\n      \n      In
         adhering to this structure, your objective is: Assess the quality of a tweet
@@ -157,7 +164,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 12 Apr 2025 23:26:51 GMT
+      - Sat, 21 Jun 2025 19:29:12 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -169,48 +176,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '360'
+      - '349'
       Openai-Version:
       - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '355'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9996'
       X-Ratelimit-Remaining-Tokens:
-      - '199661'
+      - '199627'
       X-Ratelimit-Reset-Requests:
-      - 16.701s
+      - 26.242s
       X-Ratelimit-Reset-Tokens:
-      - 101ms
+      - 111ms
       X-Request-Id:
-      - req_3ea4630a19eef39f69c438791e16c9ba
+      - req_357954316b787351435a8e92ce411fcd
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=2otmTq87XF5vqX78PXMPy0piMbhkSvAQiMsUzBDuJuE-1744500411-1.0.1.1-PXH2Qs2BHgqdWZQ2ZDYyRXUnF0PMT8wAJNhj90ujgRHKsDFhKxMX80ZuBwve4uzAOIy3Ret_HIcldX1VZfWxaL8WCtckN76UO7Z_UA8rTww;
-        path=/; expires=Sat, 12-Apr-25 23:56:51 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=50jkxEiQYVjKRByBgv4GTSwqMQYl6q_4uUc0VMi1WIw-1750534152-1.0.1.1-g8reJTdri44icG5ZuEXVLZiv8YVpVr9CDKdoSd8KBzEbVu3D57vmfQOktpxVejedL7KAd55TCd0plMGhJ5Zbfw6PZ1AQhSaL2e8xAim6aLk;
+        path=/; expires=Sat, 21-Jun-25 19:59:12 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=F5HiBH9inBDQx3PXx6ErLrbQNgXzN6_1t4lLWeNxJrY-1744500411704-0.0.1.1-604800000;
+      - _cfuvid=JrcgfyaAzUHqLQkq49gd_XJSZQBOm8hv68SjX4lE4j0-1750534152149-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 92f67db29e954273-EWR
+      - 9535e9cd0d3fb4f9-OSL
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BLeXLGulsx150K0AjmfaoMK9idv8u",
+          "id": "chatcmpl-BkyBjoy6poMBXKzSJScn9ThaDfAhx",
           "object": "chat.completion",
-          "created": 1744500411,
+          "created": 1750534151,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -226,9 +235,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 280,
-            "completion_tokens": 15,
-            "total_tokens": 295,
+            "prompt_tokens": 301,
+            "completion_tokens": 14,
+            "total_tokens": 315,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -241,19 +250,22 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_80cf447eee"
+          "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 12 Apr 2025 23:26:51 GMT
+  recorded_at: Sat, 21 Jun 2025 19:29:12 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"assessed_text\":{\"type\":\"string\"},\"assessment_question\":{\"type\":\"string\"}},\"required\":[\"assessed_text\",\"assessment_question\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"assessment_answer\":{\"type\":\"boolean\"}},\"required\":[\"assessment_answer\"]}\n        ````\n      All
+        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"assessed_text\":{\"type\":\"string\",\"description\":\"The
+        text to assess\"},\"assessment_question\":{\"type\":\"string\",\"description\":\"The
+        assessment criteria question\"}},\"required\":[\"assessed_text\",\"assessment_question\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"assessment_answer\":{\"type\":\"boolean\",\"description\":\"Boolean
+        assessment result\"}},\"required\":[\"assessment_answer\"]}\n        ````\n      \n      All
         interactions will be structured in the following way, with the appropriate
-        values filled in.\n\n      ## Input values\n        ```json\n          {input_values}\n        ```  \n      ##
+        values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
         Output values\n      Respond exclusively with the output schema fields in
         the json block below.\n        ```json\n          {output_values}\n        ```\n      \n      In
         adhering to this structure, your objective is: Assess the quality of a tweet
@@ -281,7 +293,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 12 Apr 2025 23:26:52 GMT
+      - Sat, 21 Jun 2025 19:29:14 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -293,48 +305,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '393'
+      - '261'
       Openai-Version:
       - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '264'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9996'
       X-Ratelimit-Remaining-Tokens:
-      - '199648'
+      - '199616'
       X-Ratelimit-Reset-Requests:
-      - 24.818s
+      - 32.608s
       X-Ratelimit-Reset-Tokens:
-      - 105ms
+      - 115ms
       X-Request-Id:
-      - req_a528db590e9584d665a2131fcf2a02c8
+      - req_e511dc9efba214cc2757375ca4a5013a
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=xe5WFA3A_VT1wPo16Qy7T1j5R48dHpxh8yFLH1rVG4Q-1744500412-1.0.1.1-n.vapUX006aoSqpJqlTi.bRid6LBnlpkbz7zCiO01n7VZuiqlkvgjUibcdiB5_7yh4IhO_rVCzW3hQp0ZkIPsJ6pmrb1GiSCMJECDnlwXXI;
-        path=/; expires=Sat, 12-Apr-25 23:56:52 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=_XLz0rYw59glZ_HiYGV.ZkkztWZiep52SK3H0gFIBYQ-1750534154-1.0.1.1-nMUGZ1AHUvbmZ3x80gT5V5itHkvMWBBW82mtnnx5QhTHDlsnoy0SCQiIXJtBp7j1t64ELW.DFZ1SCU1Cm07X43_T_1orV2_e4lr6A9HJwFU;
+        path=/; expires=Sat, 21-Jun-25 19:59:14 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=pQWYjRrPpZWODN5YLF9NoEq8M.UCZyPbS5RkWmebXYI-1744500412254-0.0.1.1-604800000;
+      - _cfuvid=o.sw9elbQkgMCRfWkhuHy6eZ9KOxVeWCXhrwUi6MUt0-1750534154333-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 92f67db5ee0741e6-EWR
+      - 9535e9dd6ca17131-OSL
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BLeXLHN5fzjgpokkUxoP4bpvVI6mj",
+          "id": "chatcmpl-BkyBmyBIghtw8p5vcKiJvEJkWfO4A",
           "object": "chat.completion",
-          "created": 1744500411,
+          "created": 1750534154,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -350,9 +364,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 292,
-            "completion_tokens": 15,
-            "total_tokens": 307,
+            "prompt_tokens": 313,
+            "completion_tokens": 14,
+            "total_tokens": 327,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -365,7 +379,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_80cf447eee"
+          "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 12 Apr 2025 23:26:52 GMT
+  recorded_at: Sat, 21 Jun 2025 19:29:14 GMT
 recorded_with: VCR 6.3.1

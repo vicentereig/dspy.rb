@@ -7,13 +7,13 @@ module DSPy
   # Exception raised when prediction fails validation
   class PredictionInvalidError < StandardError
     extend T::Sig
-    
+
     sig { params(errors: T::Hash[T.untyped, T.untyped]).void }
     def initialize(errors)
       @errors = errors
       super("Prediction validation failed: #{errors}")
     end
-    
+
     sig { returns(T::Hash[T.untyped, T.untyped]) }
     attr_reader :errors
   end
@@ -41,16 +41,6 @@ module DSPy
           #{JSON.generate(@signature_class.output_json_schema)}
         ````
       
-      For example, based on the schemas above, a valid interaction would be:
-      ## Input values
-        ```json
-          #{JSON.generate(generate_example_input)}
-        ```
-      ## Output values
-        ```json
-          #{JSON.generate(generate_example_output)}
-        ```
-      
       All interactions will be structured in the following way, with the appropriate values filled in.
 
       ## Input values
@@ -66,49 +56,6 @@ module DSPy
       In adhering to this structure, your objective is: #{@signature_class.description}
 
       PROMPT
-    end
-
-    sig { returns(T::Hash[Symbol, T.untyped]) }
-    def generate_example_input
-      example = {}
-      @signature_class.input_struct_class.props.each do |name, prop|
-        example[name] = case prop[:type]
-        when T::Types::Simple
-          case prop[:type].raw_type.to_s
-          when "String" then "example text"
-          when "Integer" then 42
-          when "Float" then 3.14
-          else "example"
-          end
-        else
-          "example"
-        end
-      end
-      example
-    end
-
-    sig { returns(T::Hash[Symbol, T.untyped]) }
-    def generate_example_output
-      example = {}
-      @signature_class.output_struct_class.props.each do |name, prop|
-        example[name] = case prop[:type]
-        when T::Types::Simple
-          if prop[:type].raw_type < T::Enum
-            # Use the first enum value as example
-            prop[:type].raw_type.values.first.serialize
-          else
-            case prop[:type].raw_type.to_s
-            when "String" then "example result"
-            when "Integer" then 1
-            when "Float" then 0.95
-            else "example"
-            end
-          end
-        else
-          "example"
-        end
-      end
-      example
     end
 
     sig { params(input_values: T::Hash[Symbol, T.untyped]).returns(String) }
@@ -131,18 +78,14 @@ module DSPy
 
     sig { override.params(kwargs: T.untyped).returns(T.type_parameter(:O)) }
     def forward(**kwargs)
-      # Store the input values to add to the result hash later
       @last_input_values = kwargs.clone
 
-      # Call the untyped forward method
       result = forward_untyped(**kwargs)
 
-      # Attach the input values to the result object for use in to_h
       if result.is_a?(T::Struct) && !result.instance_variable_defined?(:@input_values)
         result.instance_variable_set(:@input_values, kwargs)
       end
 
-      # For type checking in client code
       T.cast(result, T.type_parameter(:O))
     end
 
@@ -150,25 +93,19 @@ module DSPy
     def forward_untyped(**input_values)
       DSPy.logger.info(module: self.class.to_s, **input_values)
 
-      # Validate input using T::Struct
       begin
         _input_struct = @signature_class.input_struct_class.new(**input_values)
       rescue ArgumentError => e
         raise PredictionInvalidError.new({ input: e.message })
       end
 
-      # Use the original input_values since input_struct.to_h may not be available
-      # The input has already been validated through the struct instantiation
       output_attributes = lm.chat(self, input_values)
 
-      # Debug: log what we got from LM
       DSPy.logger.info("LM returned: #{output_attributes.inspect}")
       DSPy.logger.info("Output attributes class: #{output_attributes.class}")
 
-      # Convert string keys to symbols
       output_attributes = output_attributes.transform_keys(&:to_sym)
 
-      # Handle enum deserialization
       output_props = @signature_class.output_struct_class.props
       output_attributes = output_attributes.map do |key, value|
         prop_type = output_props[key][:type] if output_props[key]
@@ -181,13 +118,10 @@ module DSPy
                        end
 
           if enum_class
-            # Deserialize enum value
             [key, enum_class.deserialize(value)]
           elsif prop_type == Float || (prop_type.is_a?(T::Types::Simple) && prop_type.raw_type == Float)
-            # Coerce to Float
             [key, value.to_f]
           elsif prop_type == Integer || (prop_type.is_a?(T::Types::Simple) && prop_type.raw_type == Integer)
-            # Coerce to Integer
             [key, value.to_i]
           else
             [key, value]
@@ -197,14 +131,58 @@ module DSPy
         end
       end.to_h
 
-      # Create output struct with validation
+      # Create combined struct with both input and output values
       begin
-        output_struct = @signature_class.output_struct_class.new(**output_attributes)
-        return output_struct
+        combined_struct = create_combined_struct_class
+        all_attributes = input_values.merge(output_attributes)
+        return combined_struct.new(**all_attributes)
       rescue ArgumentError => e
         raise PredictionInvalidError.new({ output: e.message })
       rescue TypeError => e
         raise PredictionInvalidError.new({ output: e.message })
+      end
+    end
+
+    private
+
+    sig { returns(T.class_of(T::Struct)) }
+    def create_combined_struct_class
+      input_props = @signature_class.input_struct_class.props
+      output_props = @signature_class.output_struct_class.props
+      
+      # Create a new struct class that combines input and output fields
+      Class.new(T::Struct) do
+        extend T::Sig
+        
+        # Add input fields
+        input_props.each do |name, prop_info|
+          if prop_info[:rules]&.any? { |rule| rule.is_a?(T::Props::NilableRules) }
+            prop name, prop_info[:type], default: prop_info[:default]
+          else
+            const name, prop_info[:type], default: prop_info[:default]
+          end
+        end
+        
+        # Add output fields  
+        output_props.each do |name, prop_info|
+          if prop_info[:rules]&.any? { |rule| rule.is_a?(T::Props::NilableRules) }
+            prop name, prop_info[:type], default: prop_info[:default]
+          else
+            const name, prop_info[:type], default: prop_info[:default]
+          end
+        end
+        
+        # Add to_h method to serialize the struct to a hash
+        define_method :to_h do
+          hash = {}
+          
+          # Add all properties
+          self.class.props.keys.each do |key|
+            hash[key] = self.send(key)
+          end
+          
+          hash
+        end
       end
     end
   end

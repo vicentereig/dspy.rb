@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Tool that generates a random number within a specified range
-class SorbetGetRandomNumber < DSPy::Tools::SorbetTool
+class SorbetGetRandomNumber < DSPy::Tools::Base
   extend T::Sig
 
   tool_name 'get_random_number'

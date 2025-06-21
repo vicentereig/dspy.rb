@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Tool that adds two numbers together
-class SorbetAddNumbers < DSPy::Tools::SorbetTool
+class SorbetAddNumbers < DSPy::Tools::Base
   extend T::Sig
 
   tool_name 'add_numbers'

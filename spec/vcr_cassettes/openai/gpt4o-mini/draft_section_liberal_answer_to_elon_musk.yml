@@ -11,13 +11,9 @@ http_interactions:
         section heading\"},\"section_subheadings\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"List
         of subheadings for this section\"}},\"required\":[\"topic\",\"section_heading\",\"section_subheadings\"]}\n        ```\n      Your
         output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"content\":{\"type\":\"string\",\"description\":\"Markdown-formatted
-        section content\"},\"reasoning\":{\"type\":\"string\"}},\"required\":[\"content\",\"reasoning\"]}\n        ````\n      \n      For
-        example, based on the schemas above, a valid interaction would be:\n      ##
-        Input values\n        ```json\n          {\"topic\":\"example\",\"section_heading\":\"example\",\"section_subheadings\":\"example\"}\n        ```\n      ##
-        Output values\n        ```json\n          {\"content\":\"example\",\"reasoning\":\"Let
-        me think through this step by step...\"}\n        ```\n      \n      All interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
+        section content\"},\"reasoning\":{\"type\":\"string\"}},\"required\":[\"content\",\"reasoning\"]}\n        ````\n      \n      All
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
         Output values\n      Respond exclusively with the output schema fields in
         the json block below.\n        ```json\n          {output_values}\n        ```\n      \n      In
         adhering to this structure, your objective is: Draft a top-level section of
@@ -43,7 +39,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 20 Jun 2025 18:22:22 GMT
+      - Sat, 21 Jun 2025 19:29:23 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -55,57 +51,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '2836'
+      - '1520'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2838'
+      - '1525'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9995'
       X-Ratelimit-Remaining-Tokens:
-      - '199512'
+      - '199603'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 41.97s
       X-Ratelimit-Reset-Tokens:
-      - 146ms
+      - 119ms
       X-Request-Id:
-      - req_f9a1c2e927aa2b3e89ab43de917c50b9
+      - req_c7fd605b5a84ddd7cd079ad4b15d1842
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=QYEgLr0wh8JPjxWbO5hPaIoFIlNwQeusBE6v64IZERg-1750443742-1.0.1.1-_N9D5ZrFsosJaH1lIzdh16M8l0Tu5mDQCeBAaZYAK_GSrVS_iHO7YaWTjyTLJefsbA5DPUDSPuPpq.JEYKFPHCYLgDb1VufKh0617wmN7Cw;
-        path=/; expires=Fri, 20-Jun-25 18:52:22 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=HuRFdBYCXtFDndIozUHhkTbrQPivic_MnmeWuSyxBpw-1750534163-1.0.1.1-kX.5Qk7SYIMuHHCFTjj7qWNp54AtHb7kxRD1dnpAWb2UEWNNyf0A3y4yPBN5RJ0Km0AD5VwOVa_UyiZCHWzY1UuMShM2O5P5YdYqoAKGcZI;
+        path=/; expires=Sat, 21-Jun-25 19:59:23 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=yv8uRbK9n40y_pmx7U2O7CAZ5SoKrFI9S9K2pBhRjD4-1750443742281-0.0.1.1-604800000;
+      - _cfuvid=7vOKizqTwoM7eRfdfhhlq4h8Mu0h.Sg6gln00hM1DWs-1750534163511-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 952d4a795c19b500-OSL
+      - 9535ea0eeb35b4fa-OSL
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BkafTjm6zgOzR7tKcE1It61EaCGQ1",
+          "id": "chatcmpl-BkyBtDDiQYW4jGrZL7u45FAI45aaz",
           "object": "chat.completion",
-          "created": 1750443739,
+          "created": 1750534161,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"content\": \"# Introduction\\nIn recent years, Elon Musk has emerged as one of the most influential figures in technology and business. As the CEO of companies like Tesla and SpaceX, his innovations have sparked conversations around sustainability, space exploration, and the future of transportation. However, his approach and the political implications of his actions have also drawn criticism, particularly from liberal circles. This article explores how liberal ideologies can provide meaningful answers and critiques in response to Musk's impact on society and the economy.\",\n  \"reasoning\": \"To introduce the topic effectively, it's important to present Elon Musk's significance in today's world alongside the liberal perspective that will be analyzed throughout the article. This sets a clear framework for the reader, outlining the tension between Musk's capitalist ventures and liberal values.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"content\": \"# Introduction\\nIn the rapidly evolving landscape of technology and innovation, figures like Elon Musk often dominate the conversation. However, it's crucial to explore the liberal perspectives and solutions that can arise in response to his influence. This section will delve into the various liberal approaches that could provide answers to the challenges posed by Musk's ventures, including sustainability, equity, and social responsibility.\",\n  \"reasoning\": \"The introduction sets the stage for discussing a liberal response to Elon Musk by framing the conversation around the challenges he presents and highlighting the potential for innovative solutions from a liberal perspective. It establishes a clear context for the reader, inviting them to consider alternative viewpoints.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -114,9 +110,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 413,
-            "completion_tokens": 167,
-            "total_tokens": 580,
+            "prompt_tokens": 337,
+            "completion_tokens": 143,
+            "total_tokens": 480,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -131,5 +127,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Fri, 20 Jun 2025 18:22:22 GMT
+  recorded_at: Sat, 21 Jun 2025 19:29:23 GMT
 recorded_with: VCR 6.3.1

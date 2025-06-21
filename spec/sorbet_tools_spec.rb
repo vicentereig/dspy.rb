@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'date'
 
 # Test the new Sorbet Tool DSL
-RSpec.describe 'DSPy::Tools::SorbetTool DSL' do
+RSpec.describe 'DSPy::Tools::Baseq DSL' do
   describe 'tool_name and tool_description DSL methods' do
     it 'sets and retrieves tool name correctly' do
       expect(SorbetGetTodaysDate.tool_name_value).to eq('get_todays_date')
@@ -16,7 +16,7 @@ RSpec.describe 'DSPy::Tools::SorbetTool DSL' do
 
     it 'falls back to class name when tool_name is not set' do
       # Create a tool class without tool_name DSL
-      temp_tool_class = Class.new(DSPy::Tools::SorbetTool) do
+      temp_tool_class = Class.new(DSPy::Tools::Base) do
         extend T::Sig
         sig { returns(String) }
         def call

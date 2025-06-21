@@ -6,11 +6,8 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"type\":\"object\",\"properties\":{\"sentence\":{\"type\":\"string\"}},\"required\":[\"sentence\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"type\":\"object\",\"properties\":{\"sentiment\":{\"type\":\"string\",\"enum\":[\"positive\",\"negative\",\"neutral\"]},\"confidence\":{\"type\":\"number\"}},\"required\":[\"sentiment\",\"confidence\"]}\n        ````\n      \n      For
-        example, based on the schemas above, a valid interaction would be:\n      ##
-        Input values\n        ```json\n          {\"sentence\":\"example\"}\n        ```\n      ##
-        Output values\n        ```json\n          {\"sentiment\":\"example\",\"confidence\":\"example\"}\n        ```\n      \n      All
+        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentence\":{\"type\":\"string\"}},\"required\":[\"sentence\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentiment\":{\"type\":\"string\",\"enum\":[\"positive\",\"negative\",\"neutral\"]},\"confidence\":{\"type\":\"number\"}},\"required\":[\"sentiment\",\"confidence\"]}\n        ````\n      \n      All
         interactions will be structured in the following way, with the appropriate
         values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
         Output values\n      Respond exclusively with the output schema fields in
@@ -37,7 +34,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 20 Jun 2025 23:50:01 GMT
+      - Sat, 21 Jun 2025 19:30:31 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -49,57 +46,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '440'
+      - '347'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '444'
+      - '350'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9995'
       X-Ratelimit-Remaining-Tokens:
-      - '199638'
+      - '199682'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 41.513s
       X-Ratelimit-Reset-Tokens:
-      - 108ms
+      - 95ms
       X-Request-Id:
-      - req_44947d7cff61707a810568e64bcbccec
+      - req_499bbb51213a13d63fb7ac3085cc18bb
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Rylcf0GiTZGuLDSLJtuQYtu.4FmxLWvaqNDT_bSyo34-1750463401-1.0.1.1-fxSTkvqi7y1R2EOXQ.bdDTbzNURFUSSN5eOGxjRT7Lhj6s5kVT.rQgDftxcwiZ7eXLih.noGUFkmfMDuPuKbytF18oU5ZYGWPcCT91c7Ec8;
-        path=/; expires=Sat, 21-Jun-25 00:20:01 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=5GMKhrw05kmXv2f07rg8S.XHM6dJwuOKkq_juMazUzA-1750534231-1.0.1.1-apP2SmCKsIp9.1.wbh_6PoSyagqqDZxnzM0KZYHnAqymlsHb0AWjJmTpmtSqHGmO1ercGkwdB052AyntQ0t6UhG2Y2HHFgThN2S62JRuwVA;
+        path=/; expires=Sat, 21-Jun-25 20:00:31 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=gdAGLxoqkBFl34uxxyufEOMcgW4xD5Jf1GuKMEVwsEA-1750463401911-0.0.1.1-604800000;
+      - _cfuvid=rMs4knhsEz8j63f2CC.Me9C2xWDjYay7DtNMRtLUoik-1750534231939-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 952f2a7fd8c84831-EZE
+      - 9535ebc1cddd569d-OSL
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BkfmbKTADBG2KnN87YAbIbyj38kPo",
+          "id": "chatcmpl-BkyD1c51o3lYaPd1wDKSNKE0lRCKb",
           "object": "chat.completion",
-          "created": 1750463401,
+          "created": 1750534231,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\"sentiment\":\"neutral\",\"confidence\":0.75}\n```",
+                "content": "## Output values\n```json\n{\"sentiment\":\"positive\",\"confidence\":0.85}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -108,9 +105,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 296,
+            "prompt_tokens": 270,
             "completion_tokens": 20,
-            "total_tokens": 316,
+            "total_tokens": 290,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -125,5 +122,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Fri, 20 Jun 2025 23:50:01 GMT
+  recorded_at: Sat, 21 Jun 2025 19:30:32 GMT
 recorded_with: VCR 6.3.1

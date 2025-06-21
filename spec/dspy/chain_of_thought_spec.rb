@@ -19,24 +19,25 @@ RSpec.describe DSPy::Signature do
   end
 
   describe 'QA with chain of thought' do
-    it 'answers the question' do
+    let(:question) { "Two dice are tossed. What is the probability that the sum equals two?" }
+
+    let(:prediction) do
       VCR.use_cassette('openai/gpt4o-mini/qa_chain_of_thought_v2') do
         qa_cod = DSPy::ChainOfThought.new(AnswerPredictor)
-
-        qa = qa_cod.call(question: "Two dice are tossed. What is the probability that the sum equals two?")
-        expect(qa.to_h.keys).to eq([:question, :answer, :reasoning])
+        qa_cod.call(question: question)
       end
     end
 
-
     it 'includes the reasoning' do
-      VCR.use_cassette('openai/gpt4o-mini/qa_chain_of_thought_with_reasoning_v2') do
+      expect(prediction.reasoning).to start_with "When two dice are tossed"
+    end
 
-        qa_cod = DSPy::ChainOfThought.new(AnswerPredictor)
+    it 'includes the answer' do
+      expect(prediction.answer).to start_with "1/36"
+    end
 
-        qa = qa_cod.call(question: "Two dice are tossed. What is the probability that the sum equals two?")
-        expect(qa.reasoning).to start_with "There is only one way to get a sum"
-      end
+    it 'includes the question' do
+      expect(prediction.question).to eq(question)
     end
   end
 end

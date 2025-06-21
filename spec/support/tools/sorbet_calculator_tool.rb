@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Tool that performs basic arithmetic operations
-class SorbetCalculatorTool < DSPy::Tools::SorbetTool
+class SorbetCalculatorTool < DSPy::Tools::Base
   extend T::Sig
 
   tool_name 'calculator'
