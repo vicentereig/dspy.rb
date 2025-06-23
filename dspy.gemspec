@@ -22,12 +22,16 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Runtime dependencies
-  spec.add_dependency "ruby_llm", "~> 1.0"
   spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-logger", "~> 1.0"
-  spec.add_dependency "ruby-openai", "~> 8.0"
   spec.add_dependency "async", "~> 2.23"
-  spec.add_dependency "openai", "~> 0.1.0.pre.alpha.4"
+  
+  # Official LM provider clients
+  spec.add_dependency "openai", "~> 0.9.0"
+  spec.add_dependency "anthropic", "~> 1.1.0"
+  
+  # Legacy compatibility (optional)
+  spec.add_dependency "ruby_llm", "~> 1.0"
   
   # Sorbet integration dependencies
   spec.add_dependency "sorbet-runtime", "~> 0.5"
