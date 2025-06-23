@@ -27,4 +27,7 @@ jobs:
       run: bundle install
 
     - name: Run tests
-      run: bundle exec rspec 
+      run: bundle exec rspec
+      env:
+        OPENAI_API_KEY: "test-openai-key-for-vcr"
+        ANTHROPIC_API_KEY: "test-anthropic-key-for-vcr"
