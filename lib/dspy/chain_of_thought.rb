@@ -39,8 +39,8 @@ module DSPy
         original_output_descriptors = signature_class.instance_variable_get(:@output_field_descriptors) || {}
         @output_field_descriptors.merge!(original_output_descriptors)
 
-        # Add reasoning field descriptor
-        @output_field_descriptors[:reasoning] = FieldDescriptor.new(String, nil)
+        # Add reasoning field descriptor (ChainOfThought always provides this)
+        @output_field_descriptors[:reasoning] = FieldDescriptor.new(String, "Step by step reasoning process")
 
         class << self
           attr_reader :input_struct_class, :output_struct_class
@@ -76,7 +76,7 @@ module DSPy
           end
         end
 
-        # Add reasoning field
+        # Add reasoning field (ChainOfThought always provides this)
         const :reasoning, String
 
         # Add to_h method to serialize the struct to a hash

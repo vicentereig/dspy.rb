@@ -45,13 +45,11 @@ RSpec.describe DSPy::LM::AnthropicAdapter do
 
     it 'makes successful API call and returns normalized response' do
       expect(mock_messages).to receive(:create).with(
-        parameters: {
-          model: 'claude-3-sonnet',
-          messages: [{ role: 'user', content: 'Hello' }],
-          system: 'You are helpful',
-          max_tokens: 4096,
-          temperature: 0.0
-        }
+        model: 'claude-3-sonnet',
+        messages: [{ role: 'user', content: 'Hello' }],
+        system: 'You are helpful',
+        max_tokens: 4096,
+        temperature: 0.0
       ).and_return(mock_response)
 
       result = adapter.chat(messages: messages)

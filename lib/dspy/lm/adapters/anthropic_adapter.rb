@@ -32,7 +32,7 @@ module DSPy
         begin
           if block_given?
             content = ""
-            @client.messages.stream(parameters: request_params) do |chunk|
+            @client.messages.stream(**request_params) do |chunk|
               if chunk.respond_to?(:delta) && chunk.delta.respond_to?(:text)
                 chunk_text = chunk.delta.text
                 content += chunk_text
@@ -50,7 +50,7 @@ module DSPy
               }
             )
           else
-            response = @client.messages.create(parameters: request_params)
+            response = @client.messages.create(**request_params)
             
             if response.respond_to?(:error) && response.error
               raise AdapterError, "Anthropic API error: #{response.error}"

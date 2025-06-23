@@ -4,6 +4,7 @@ log/*.log
 .env
 *.gem
 notes/
+.rspec_status
 # Environment normalization
 .bundle/
 vendor/bundle
