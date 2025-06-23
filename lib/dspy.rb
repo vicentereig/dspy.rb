@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'ruby_llm'
 require 'sorbet-runtime'
 require 'dry-configurable'
 require 'dry/logger'
