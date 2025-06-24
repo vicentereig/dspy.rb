@@ -26,6 +26,7 @@ module DSPy
 
     sig { params(signature_class: T.class_of(Signature)).void }
     def initialize(signature_class)
+      super()
       @signature_class = signature_class
     end
 
@@ -69,11 +70,6 @@ module DSPy
         Respond with the corresponding output schema fields wrapped in a ```json ``` block, 
          starting with the heading `## Output values`.
       PROMPT
-    end
-
-    sig { returns(DSPy::LM) }
-    def lm
-      DSPy.config.lm
     end
 
     sig { override.params(kwargs: T.untyped).returns(T.type_parameter(:O)) }

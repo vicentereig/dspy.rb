@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
+require 'dry-configurable'
 
 module DSPy
   class Module
     extend T::Sig
     extend T::Generic
+    include Dry::Configurable
+
+    # Per-instance LM configuration
+    setting :lm, default: nil
 
     # The main forward method that users will call is generic and type parameterized
     sig do
@@ -42,6 +47,12 @@ module DSPy
     sig { params(input_values: T.untyped).returns(T.untyped) }
     def call_untyped(**input_values)
       forward_untyped(**input_values)
+    end
+
+    # Get the configured LM for this instance, falling back to global
+    sig { returns(T.untyped) }
+    def lm
+      config.lm || DSPy.config.lm
     end
   end
 end
