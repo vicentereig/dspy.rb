@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'stringio'
 
 class AnswerPredictor < DSPy::Signature
   description "Provides a concise answer to the question"
@@ -38,6 +39,40 @@ RSpec.describe DSPy::Signature do
 
     it 'includes the question' do
       expect(prediction.question).to eq(question)
+    end
+  end
+
+  describe 'logger subscriber integration' do
+    let(:log_output) { StringIO.new }
+    let(:test_logger) { Logger.new(log_output) }
+    
+    before do
+      # Configure DSPy for testing
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      end
+      
+      # Create logger subscriber manually
+      @logger_subscriber = DSPy::Subscribers::LoggerSubscriber.new(logger: test_logger)
+    end
+
+    after do
+      # Clean up
+      @logger_subscriber = nil
+    end
+
+    it 'logs chain of thought events when running actual predictions' do
+      VCR.use_cassette('chain_of_thought_simple') do
+        cot = DSPy::ChainOfThought.new(AnswerPredictor)
+        result = cot.forward(question: "What is the capital of France?")
+
+        log_content = log_output.string
+        
+        # Check that chain of thought, prediction, and LM events are logged
+        expect(log_content).to include("🧠 Chain of Thought [AnswerPredictor] - success")
+        expect(log_content).to include("🔮 Prediction") # Signature might be empty for internal predictions
+        expect(log_content).to include("✅ LM Request [openai/gpt-4o-mini] - success")
+      end
     end
   end
 end

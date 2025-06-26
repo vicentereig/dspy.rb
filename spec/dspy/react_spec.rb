@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'stringio'
 require 'dspy/re_act'
 require 'dspy/tools'
 
@@ -228,7 +229,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has each available_tools element as a hash' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         expect(tool_schema).to be_a(Hash)
       end
@@ -237,7 +238,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has name field in each available_tools element' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         expect(tool_schema).to have_key('name')
       end
@@ -246,7 +247,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has description field in each available_tools element' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         expect(tool_schema).to have_key('description')
       end
@@ -255,7 +256,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has parameters field in each available_tools element' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         expect(tool_schema).to have_key('parameters')
       end
@@ -264,7 +265,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has type field in each tool parameters' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         params = tool_schema['parameters']
         expect(params).to have_key('type')
@@ -274,7 +275,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has properties field in each tool parameters' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         params = tool_schema['parameters']
         expect(params).to have_key('properties')
@@ -284,7 +285,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has required field in each tool parameters' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         params = tool_schema['parameters']
         expect(params).to have_key('required')
@@ -294,7 +295,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has object type in each tool parameters' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         params = tool_schema['parameters']
         expect(params['type']).to eq('object')
@@ -304,7 +305,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has properties as hash in each tool parameters' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         params = tool_schema['parameters']
         expect(params['properties']).to be_a(Hash)
@@ -314,7 +315,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has required as array in each tool parameters' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         params = tool_schema['parameters']
         expect(params['required']).to be_an(Array)
@@ -343,7 +344,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'includes required fields for OpenAI function calling format' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         expect(tool_schema.keys).to include('name', 'description', 'parameters')
       end
@@ -352,7 +353,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has string names in OpenAI format' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         expect(tool_schema['name']).to be_a(String)
       end
@@ -361,7 +362,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has non-empty names in OpenAI format' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         expect(tool_schema['name']).not_to be_empty
       end
@@ -370,7 +371,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has string descriptions in OpenAI format' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         expect(tool_schema['description']).to be_a(String)
       end
@@ -379,7 +380,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has non-empty descriptions in OpenAI format' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         expect(tool_schema['description']).not_to be_empty
       end
@@ -388,7 +389,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has object type for parameters in OpenAI format' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         params = tool_schema['parameters']
         expect(params['type']).to eq('object')
@@ -398,7 +399,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has properties key for parameters in OpenAI format' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         params = tool_schema['parameters']
         expect(params).to have_key('properties')
@@ -408,7 +409,7 @@ RSpec.describe 'DSPy::ReAct' do
     it 'has required key for parameters in OpenAI format' do
       tools_hash = agent.instance_variable_get(:@tools)
       available_tools_array = tools_hash.map { |name, tool| JSON.parse(tool.schema) }
-      
+
       available_tools_array.each do |tool_schema|
         params = tool_schema['parameters']
         expect(params).to have_key('required')
@@ -520,6 +521,43 @@ RSpec.describe 'DSPy::ReAct' do
       tools.each do |tool|
         schema_json = tool.schema
         expect(schema_json).not_to match(/\\\\/)
+      end
+    end
+  end
+
+  describe 'logger subscriber integration' do
+    let(:log_output) { StringIO.new }
+    let(:test_logger) { Logger.new(log_output) }
+    
+    before do
+      # Configure DSPy for testing
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      end
+      
+      # Create logger subscriber manually
+      @logger_subscriber = DSPy::Subscribers::LoggerSubscriber.new(logger: test_logger)
+    end
+
+    after do
+      # Clean up
+      @logger_subscriber = nil
+    end
+
+    it 'logs ReAct agent events when running actual agent operations' do
+      VCR.use_cassette('openai/gpt4o-mini/sorbet_react_agent_auto_augmented_output') do
+        question = "What is 42 plus 58?"
+        tools = [SorbetAddNumbers.new, SorbetCalculatorTool.new]
+        agent = DSPy::ReAct.new(DeepQA, tools: tools)
+        result = agent.forward(question: question)
+
+        log_content = log_output.string
+        
+        # Check that ReAct agent, prediction, and LM events are logged
+        expect(log_content).to include("🤖 ReAct Agent [DeepQA] - success")
+        expect(log_content).to include("🔮 Prediction") # ReAct uses internal signatures
+        expect(log_content).to include("✅ LM Request [openai/gpt-4o-mini] - success")
+        expect(log_content).to include("🔧 Tool Call")
       end
     end
   end

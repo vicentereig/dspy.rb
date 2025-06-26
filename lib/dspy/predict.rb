@@ -2,6 +2,7 @@
 
 require 'sorbet-runtime'
 require_relative 'module'
+require_relative 'instrumentation'
 
 module DSPy
   # Exception raised when prediction fails validation
@@ -75,67 +76,73 @@ module DSPy
     sig { override.params(kwargs: T.untyped).returns(T.type_parameter(:O)) }
     def forward(**kwargs)
       @last_input_values = kwargs.clone
-
-      result = forward_untyped(**kwargs)
-
-      if result.is_a?(T::Struct) && !result.instance_variable_defined?(:@input_values)
-        result.instance_variable_set(:@input_values, kwargs)
-      end
-
-      T.cast(result, T.type_parameter(:O))
+      T.cast(forward_untyped(**kwargs), T.type_parameter(:O))
     end
 
     sig { params(input_values: T.untyped).returns(T.untyped) }
     def forward_untyped(**input_values)
-      DSPy.logger.info(module: self.class.to_s, **input_values)
+      # Prepare instrumentation payload
+      input_fields = input_values.keys.map(&:to_s)
+      
+      Instrumentation.instrument('dspy.predict', {
+        signature_class: @signature_class.name,
+        model: lm.model,
+        provider: lm.provider,
+        input_fields: input_fields
+      }) do
+        # Validate input
+        begin
+          _input_struct = @signature_class.input_struct_class.new(**input_values)
+        rescue ArgumentError => e
+          # Emit validation error event
+          Instrumentation.emit('dspy.predict.validation_error', {
+            signature_class: @signature_class.name,
+            validation_type: 'input',
+            validation_errors: { input: e.message }
+          })
+          raise PredictionInvalidError.new({ input: e.message })
+        end
 
-      begin
-        _input_struct = @signature_class.input_struct_class.new(**input_values)
-      rescue ArgumentError => e
-        raise PredictionInvalidError.new({ input: e.message })
-      end
+        # Call LM
+        output_attributes = lm.chat(self, input_values)
 
-      output_attributes = lm.chat(self, input_values)
+        output_attributes = output_attributes.transform_keys(&:to_sym)
 
-      DSPy.logger.info("LM returned: #{output_attributes.inspect}")
-      DSPy.logger.info("Output attributes class: #{output_attributes.class}")
+        output_props = @signature_class.output_struct_class.props
+        output_attributes = output_attributes.map do |key, value|
+          prop_type = output_props[key][:type] if output_props[key]
+          if prop_type
+            # Check if it's an enum (can be raw Class or T::Types::Simple)
+            enum_class = if prop_type.is_a?(Class) && prop_type < T::Enum
+                           prop_type
+                         elsif prop_type.is_a?(T::Types::Simple) && prop_type.raw_type < T::Enum
+                           prop_type.raw_type
+                         end
 
-      output_attributes = output_attributes.transform_keys(&:to_sym)
-
-      output_props = @signature_class.output_struct_class.props
-      output_attributes = output_attributes.map do |key, value|
-        prop_type = output_props[key][:type] if output_props[key]
-        if prop_type
-          # Check if it's an enum (can be raw Class or T::Types::Simple)
-          enum_class = if prop_type.is_a?(Class) && prop_type < T::Enum
-                         prop_type
-                       elsif prop_type.is_a?(T::Types::Simple) && prop_type.raw_type < T::Enum
-                         prop_type.raw_type
-                       end
-
-          if enum_class
-            [key, enum_class.deserialize(value)]
-          elsif prop_type == Float || (prop_type.is_a?(T::Types::Simple) && prop_type.raw_type == Float)
-            [key, value.to_f]
-          elsif prop_type == Integer || (prop_type.is_a?(T::Types::Simple) && prop_type.raw_type == Integer)
-            [key, value.to_i]
+            if enum_class
+              [key, enum_class.deserialize(value)]
+            elsif prop_type == Float || (prop_type.is_a?(T::Types::Simple) && prop_type.raw_type == Float)
+              [key, value.to_f]
+            elsif prop_type == Integer || (prop_type.is_a?(T::Types::Simple) && prop_type.raw_type == Integer)
+              [key, value.to_i]
+            else
+              [key, value]
+            end
           else
             [key, value]
           end
-        else
-          [key, value]
-        end
-      end.to_h
+        end.to_h
 
-      # Create combined struct with both input and output values
-      begin
-        combined_struct = create_combined_struct_class
-        all_attributes = input_values.merge(output_attributes)
-        return combined_struct.new(**all_attributes)
-      rescue ArgumentError => e
-        raise PredictionInvalidError.new({ output: e.message })
-      rescue TypeError => e
-        raise PredictionInvalidError.new({ output: e.message })
+        # Create combined struct with both input and output values
+        begin
+          combined_struct = create_combined_struct_class
+          all_attributes = input_values.merge(output_attributes)
+          combined_struct.new(**all_attributes)
+        rescue ArgumentError => e
+          raise PredictionInvalidError.new({ output: e.message })
+        rescue TypeError => e
+          raise PredictionInvalidError.new({ output: e.message })
+        end
       end
     end
 

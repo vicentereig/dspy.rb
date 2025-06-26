@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'stringio'
 require 'dspy/predict'
 require 'dspy/signature'
 
@@ -119,6 +120,39 @@ RSpec.describe DSPy::Predict do
 
     it 'coerces to float' do
       expect(prediction.float_value).to be_a(Float)
+    end
+  end
+
+  describe 'logger subscriber integration' do
+    let(:log_output) { StringIO.new }
+    let(:test_logger) { Logger.new(log_output) }
+    
+    before do
+      # Configure DSPy for testing
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      end
+      
+      # Create logger subscriber manually
+      @logger_subscriber = DSPy::Subscribers::LoggerSubscriber.new(logger: test_logger)
+    end
+
+    after do
+      # Clean up
+      @logger_subscriber = nil
+    end
+
+    it 'logs prediction events when running actual predictions' do
+      VCR.use_cassette('predict_simple') do
+        predictor = DSPy::Predict.new(Classify)
+        result = predictor.forward(sentence: "I love this movie!")
+
+        log_content = log_output.string
+        
+        # Check that both LM request and prediction events are logged
+        expect(log_content).to include("✅ LM Request [openai/gpt-4o-mini] - success")
+        expect(log_content).to include("🔮 Prediction [Classify] - success")
+      end
     end
   end
 end

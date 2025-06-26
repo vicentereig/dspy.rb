@@ -51,11 +51,9 @@ RSpec.describe DSPy::LM::OpenAIAdapter do
 
     it 'makes successful API call and returns normalized response' do
       expect(mock_completions).to receive(:create).with(
-        parameters: {
-          model: model,
-          messages: messages,
-          temperature: 0.0
-        }
+        model: model,
+        messages: messages,
+        temperature: 0.0
       ).and_return(mock_response)
 
       result = described_class.new(model: model, api_key: api_key).chat(messages: messages)
@@ -74,7 +72,7 @@ RSpec.describe DSPy::LM::OpenAIAdapter do
       test_block = proc { |chunk| block_called = true }
 
       expect(mock_completions).to receive(:create).with(
-        parameters: hash_including(stream: anything)
+        hash_including(stream: anything)
       ).and_return(mock_response)
 
       described_class.new(model: model, api_key: api_key).chat(messages: messages, &test_block)

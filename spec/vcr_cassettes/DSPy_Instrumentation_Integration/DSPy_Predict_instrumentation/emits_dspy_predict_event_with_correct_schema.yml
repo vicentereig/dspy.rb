@@ -1,0 +1,98 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"parameters":{"model":"gpt-4o-mini","messages":[{"role":"system","content":"      Your
+        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"question\":{\"type\":\"string\",\"description\":\"A
+        question to answer\"}},\"required\":[\"question\"]}\n        ```\n      Your
+        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"answer\":{\"type\":\"string\",\"description\":\"A
+        helpful answer to the question\"}},\"required\":[\"answer\"]}\n        ````\n      \n      All
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
+        Output values\n      Respond exclusively with the output schema fields in
+        the json block below.\n        ```json\n          {output_values}\n        ```\n      \n      In
+        adhering to this structure, your objective is: Answer questions accurately
+        and helpfully\n\n"},{"role":"user","content":"        ## Input Values\n        ```json\n        {\"question\":\"What
+        is 2+2?\"}\n        ```     \n        \n        Respond with the corresponding
+        output schema fields wrapped in a ```json ``` block, \n         starting with
+        the heading `## Output values`.\n"}],"temperature":0.0}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer test-key
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1419'
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Wed, 25 Jun 2025 18:56:28 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '258'
+      Connection:
+      - keep-alive
+      Vary:
+      - Origin
+      X-Request-Id:
+      - req_513eb912017db6711230dff349b4d3f5
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=itwtMKLqccAjv6TqnUiFLFAJDWGW_p4RiTMVWxwWhNo-1750877788-1.0.1.1-vj_VgS8MWEBeZlzZVUwrM7X7_vm_xhgRMRs72XKPOC1siEWaORH1f_UeiW9djDmorOFAv2IysUplj1JEqJCuMvtZtAS0l_.W_qAkdVi65ck;
+        path=/; expires=Wed, 25-Jun-25 19:26:28 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=.hpRGbIODpMfWa94vo0Hcl_YE6HTAQTp3tdh4l0xkRE-1750877788190-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9556af5ebad85699-OSL
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: UTF-8
+      string: |
+        {
+            "error": {
+                "message": "Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.",
+                "type": "invalid_request_error",
+                "param": null,
+                "code": "invalid_api_key"
+            }
+        }
+  recorded_at: Wed, 25 Jun 2025 18:56:27 GMT
+recorded_with: VCR 6.3.1

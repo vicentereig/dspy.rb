@@ -6,6 +6,7 @@ require_relative 'predict'
 require_relative 'signature'
 require_relative 'chain_of_thought'
 require 'json'
+require_relative 'instrumentation'
 
 module DSPy
   # Define a simple struct for history entries with proper type annotations
@@ -135,164 +136,156 @@ module DSPy
 
     sig { params(kwargs: T.untyped).returns(T.untyped).override }
     def forward(**kwargs)
-      # Validate input using Sorbet struct validation
-      input_struct = @original_signature_class.input_struct_class.new(**kwargs)
+      lm = config.lm || DSPy.config.lm
+      # Prepare instrumentation payload
+      input_fields = kwargs.keys.map(&:to_s)
+      available_tools = @tools.keys
 
-      # Get the question (assume first field is the question for now)
-      question = T.cast(input_struct.serialize.values.first, String)
+      # Instrument the entire ReAct agent lifecycle
+      result = Instrumentation.instrument('dspy.react', {
+        signature_class: @original_signature_class.name,
+        model: lm.model,
+        provider: lm.provider,
+        input_fields: input_fields,
+        max_iterations: @max_iterations,
+        available_tools: available_tools
+      }) do
+        # Validate input using Sorbet struct validation
+        input_struct = @original_signature_class.input_struct_class.new(**kwargs)
 
-      history = T.let([], T::Array[HistoryEntry])
-      available_tools_desc = @tools.map { |name, tool| JSON.parse(tool.schema) }
+        # Get the question (assume first field is the question for now)
+        question = T.cast(input_struct.serialize.values.first, String)
 
-      final_answer = T.let(nil, T.nilable(String))
-      iterations_count = 0
-      last_observation = T.let(nil, T.nilable(String))
+        history = T.let([], T::Array[HistoryEntry])
+        available_tools_desc = @tools.map { |name, tool| JSON.parse(tool.schema) }
 
-      while @max_iterations.nil? || iterations_count < @max_iterations
-        iterations_count += 1
+        final_answer = T.let(nil, T.nilable(String))
+        iterations_count = 0
+        last_observation = T.let(nil, T.nilable(String))
+        tools_used = []
 
-        # Get next thought from LM
-        thought_obj = @thought_generator.forward(
-          question: question,
-          history: history,
-          available_tools: available_tools_desc
-        )
+        while @max_iterations.nil? || iterations_count < @max_iterations
+          iterations_count += 1
 
-        thought = thought_obj.thought
-        action = thought_obj.action
-        action_input = thought_obj.action_input
+          # Instrument each iteration
+          iteration_result = Instrumentation.instrument('dspy.react.iteration', {
+            iteration: iterations_count,
+            max_iterations: @max_iterations,
+            history_length: history.length,
+            tools_used_so_far: tools_used.uniq
+          }) do
+            # Get next thought from LM
+            thought_obj = @thought_generator.forward(
+              question: question,
+              history: history,
+              available_tools: available_tools_desc
+            )
+            step = iterations_count
+            thought = thought_obj.thought
+            action = thought_obj.action
+            action_input = thought_obj.action_input
 
-        # Store this step in history
-        step = history.length + 1
-        current_entry = HistoryEntry.new(
-          step: step,
-          thought: thought,
-          action: action,
-          action_input: action_input
-        )
-        history << current_entry
-
-        if action.downcase == NextStep::Finish.serialize
-          # If action is finish, set the final answer
-          final_answer = handle_finish_action(action_input, last_observation, step, thought, action, history)
-
-          break
-        end
-
-        # Execute action and get observation
-        observation = execute_action(action, action_input)
-
-        # Store the raw observation for potential use as the final answer
-        last_observation = observation
-
-        # Update the entry with the observation by replacing it
-        history.pop
-        history << HistoryEntry.new(
-          step: step,
-          thought: thought,
-          action: action,
-          action_input: action_input,
-          observation: "Observation: #{observation}"
-        )
-
-        # Process observation and decide next step
-        observation_obj = @observation_processor.forward(
-          question: question,
-          history: history,
-          observation: observation
-        )
-        interpretation = observation_obj.interpretation
-        next_step = observation_obj.next_step
-
-        # If observation processor suggests finish, generate final thought
-        if next_step == NextStep::Finish
-          # Generate final thought/answer
-          final_thought_obj = @thought_generator.forward(
-            question: question,
-            history: history,
-            available_tools: available_tools_desc
-          )
-
-          final_thought = final_thought_obj.thought
-          final_action = final_thought_obj.action
-          final_action_input = final_thought_obj.action_input
-
-          # Force the action to be "finish" since observation processor decided to finish
-          # The LM sometimes doesn't follow the finish instruction properly
-          if final_action.downcase != NextStep::Finish.serialize
-            final_action = NextStep::Finish.serialize
-            # If action_input was meant for a tool, use last observation as answer instead
-            if final_action_input.is_a?(Hash) && last_observation
-              final_action_input = last_observation
-            elsif final_action_input.nil? || final_action_input.to_s.empty?
-              final_action_input = last_observation || "Unable to determine answer"
+            # Break if finish action
+            if action&.downcase == 'finish'
+              final_answer = handle_finish_action(action_input, last_observation, step, thought, action, history)
+              break
             end
+
+            # Track tools used
+            tools_used << action.downcase if action && @tools[action.downcase]
+
+            # Execute action
+            observation = if action && @tools[action.downcase]
+                            # Instrument tool call
+                            Instrumentation.instrument('dspy.react.tool_call', {
+                              iteration: iterations_count,
+                              tool_name: action.downcase,
+                              tool_input: action_input
+                            }) do
+                              execute_action(action, action_input)
+                            end
+                          else
+                            "Unknown action: #{action}. Available actions: #{@tools.keys.join(', ')}, finish"
+                          end
+
+            last_observation = observation
+
+            # Add to history
+            history << HistoryEntry.new(
+              step: step,
+              thought: thought,
+              action: action,
+              action_input: action_input,
+              observation: observation
+            )
+
+            # Process observation to decide next step
+            if observation && !observation.include?("Unknown action")
+              observation_result = @observation_processor.forward(
+                question: question,
+                history: history,
+                observation: observation
+              )
+
+              # If observation processor suggests finishing, generate final thought
+              if observation_result.next_step == NextStep::Finish
+                final_thought = @thought_generator.forward(
+                  question: question,
+                  history: history,
+                  available_tools: available_tools_desc
+                )
+
+                # Force finish action if observation processor suggests it
+                if final_thought.action&.downcase != 'finish'
+                  forced_answer = if observation_result.interpretation && !observation_result.interpretation.empty?
+                                    observation_result.interpretation
+                                  else
+                                    observation
+                                  end
+                  final_answer = handle_finish_action(forced_answer, last_observation, step + 1, final_thought.thought, 'finish', history)
+                else
+                  final_answer = handle_finish_action(final_thought.action_input, last_observation, step + 1, final_thought.thought, final_thought.action, history)
+                end
+                break
+              end
+            end
+
+            # Emit iteration complete event
+            Instrumentation.emit('dspy.react.iteration_complete', {
+              iteration: iterations_count,
+              thought: thought,
+              action: action,
+              action_input: action_input,
+              observation: observation,
+              tools_used: tools_used.uniq
+            })
           end
 
-          # Add final thought to history
-          final_step = history.length + 1
-          final_entry = HistoryEntry.new(
-            step: final_step,
-            thought: final_thought,
-            action: final_action,
-            action_input: final_action_input
-          )
-          history << final_entry
-
-          # Set final answer
-          final_answer = handle_finish_action(final_action_input, last_observation, final_step, final_thought, final_action, history)
-
-          break
-        end
-      end
-
-      # If we reached max iterations without a finish action
-      if final_answer.nil?
-        # Use the last observation as fallback
-        if last_observation
-          final_answer = last_observation
-        else
-          final_answer = "I was unable to determine the answer"
+          # Check if max iterations reached
+          if iterations_count >= @max_iterations && final_answer.nil?
+            Instrumentation.emit('dspy.react.max_iterations', {
+              iteration_count: iterations_count,
+              max_iterations: @max_iterations,
+              tools_used: tools_used.uniq,
+              final_history_length: history.length
+            })
+          end
         end
 
-        # Add a finish step to history
-        step = history.size + 1
-        history << HistoryEntry.new(
-          step: step,
-          thought: "I've reached the maximum number of iterations and will provide the answer based on the tools I've used.",
-          action: NextStep::Finish.serialize,
-          action_input: final_answer
-        )
+        # Create enhanced output with all ReAct data
+        output_field_name = @original_signature_class.output_struct_class.props.keys.first
+        output_data = kwargs.merge({
+          history: history.map(&:to_h),
+          iterations: iterations_count,
+          tools_used: tools_used.uniq
+        })
+        output_data[output_field_name] = final_answer || "No answer reached within #{@max_iterations} iterations"
+        enhanced_output = @enhanced_output_struct.new(**output_data)
+
+        enhanced_output
       end
-
-      # Create result with enhanced output struct
-      if @enhanced_output_struct
-        begin
-          # Get the first output field name from the original signature
-          output_field_name = @original_signature_class.output_struct_class.props.keys.first
-
-          # Create enhanced output struct with input fields, answer, and history
-          all_attributes = kwargs.merge({
-            "#{output_field_name}": final_answer || "",
-            history: history.map(&:to_h),
-            iterations: iterations_count
-          })
-          
-          result = @enhanced_output_struct.new(**all_attributes)
-
-          # Run validation
-          validate_output_schema!(result)
-
-          result
-        rescue => e
-          puts "Error creating enhanced output: #{e.message}"
-          # Fall back to basic result
-          Struct.new(:answer, :history, :iterations).new(final_answer || "", history, iterations_count)
-        end
-      else
-        # Basic result for compatibility
-        Struct.new(:answer, :history, :iterations).new(final_answer || "", history, iterations_count)
-      end
+      
+      result
     end
 
     private
@@ -340,6 +333,7 @@ module DSPy
         # Add ReAct-specific fields
         prop :history, T::Array[T::Hash[Symbol, T.untyped]]
         prop :iterations, Integer
+        prop :tools_used, T::Array[String]
       end
     end
 
@@ -387,6 +381,10 @@ module DSPy
       unless output.respond_to?(:iterations) && output.iterations.is_a?(Integer)
         raise "Missing or invalid iterations field"
       end
+
+      unless output.respond_to?(:tools_used) && output.tools_used.is_a?(Array)
+        raise "Missing or invalid tools_used field"
+      end
     end
 
     sig { override.returns(T::Hash[Symbol, T.untyped]) }
@@ -402,6 +400,7 @@ module DSPy
         }
       ]
       example[:iterations] = 1
+      example[:tools_used] = ["some_tool"]
       example
     end
 
@@ -412,15 +411,16 @@ module DSPy
       # If final_answer is empty but we have a last observation, use it
       if (final_answer.nil? || final_answer.empty?) && last_observation
         final_answer = last_observation
-        # Update the action_input for consistency by replacing the last entry
-        history.pop
-        history << HistoryEntry.new(
-          step: step,
-          thought: thought,
-          action: action,
-          action_input: final_answer
-        )
       end
+
+      # Always add the finish action to history
+      history << HistoryEntry.new(
+        step: step,
+        thought: thought,
+        action: action,
+        action_input: final_answer,
+        observation: nil  # No observation for finish action
+      )
 
       final_answer
     end
