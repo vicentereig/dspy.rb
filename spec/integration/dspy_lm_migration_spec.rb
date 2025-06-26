@@ -5,20 +5,20 @@ require 'spec_helper'
 RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
   describe 'adapter initialization' do
     it 'creates OpenAI adapter for openai/ prefixed models' do
-      lm = DSPy::LM.new('openai/gpt-4', api_key: 'test-key')
-      
+      lm = DSPy::LM.new('openai/gpt-4', api_key: ENV['OPENAI_API_KEY'])
+
       expect(lm.instance_variable_get(:@adapter)).to be_a(DSPy::LM::OpenAIAdapter)
     end
 
     it 'creates Anthropic adapter for anthropic/ prefixed models' do
-      lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: 'test-key')
-      
+      lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+
       expect(lm.instance_variable_get(:@adapter)).to be_a(DSPy::LM::AnthropicAdapter)
     end
 
     it 'creates RubyLLM adapter for legacy model format' do
-      lm = DSPy::LM.new('gpt-3.5-turbo', api_key: 'test-key')
-      
+      lm = DSPy::LM.new('gpt-3.5-turbo', api_key: ENV['OPENAI_API_KEY'])
+
       expect(lm.instance_variable_get(:@adapter)).to be_a(DSPy::LM::RubyLLMAdapter)
     end
   end
@@ -26,17 +26,17 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
   describe 'API backward compatibility' do
     let(:inference_module) do
       module_double = double('InferenceModule')
-      allow(module_double).to receive(:signature_class).and_return(double('SignatureClass'))
+      allow(module_double).to receive(:signature_class).and_return(double('SignatureClass', name: 'TestSignature'))
       allow(module_double).to receive(:system_signature).and_return('You are a helpful assistant')
       allow(module_double).to receive(:user_signature).with(anything).and_return('Question: What is AI?\nAnswer:')
       module_double
     end
-    
+
     let(:input_values) { { question: 'What is AI?' } }
 
     it 'preserves the original DSPy::LM API interface' do
       lm = DSPy::LM.new('openai/gpt-4', api_key: 'test-key')
-      
+
       # Should respond to the expected public methods
       expect(lm).to respond_to(:chat)
       expect(lm.method(:chat).arity).to eq(2) # accepts 2 arguments (plus optional &block)
@@ -55,10 +55,10 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
 
       expect(lm_openai.instance_variable_get(:@provider)).to eq('openai')
       expect(lm_openai.instance_variable_get(:@model)).to eq('gpt-4')
-      
+
       expect(lm_anthropic.instance_variable_get(:@provider)).to eq('anthropic')
       expect(lm_anthropic.instance_variable_get(:@model)).to eq('claude-3-sonnet')
-      
+
       expect(lm_legacy.instance_variable_get(:@provider)).to eq('ruby_llm')
       expect(lm_legacy.instance_variable_get(:@model)).to eq('gpt-3.5-turbo')
     end
@@ -73,15 +73,15 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
         metadata: { provider: 'openai', model: 'gpt-4' }
       )
     end
-    
+
     let(:inference_module) do
       module_double = double('InferenceModule')
-      allow(module_double).to receive(:signature_class).and_return(double('SignatureClass'))
+      allow(module_double).to receive(:signature_class).and_return(double('SignatureClass', name: 'TestSignature'))
       allow(module_double).to receive(:system_signature).and_return('You are a helpful assistant')
       allow(module_double).to receive(:user_signature).with(anything).and_return('Question: What is AI?\nAnswer:')
       module_double
     end
-    
+
     let(:input_values) { { question: 'What is AI?' } }
 
     before do
@@ -98,13 +98,13 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
 
       lm = DSPy::LM.new('openai/gpt-4', api_key: 'test-key')
       result = lm.chat(inference_module, input_values)
-      
+
       expect(result).to eq({ 'answer' => 'test response' })
     end
 
     it 'supports streaming with block parameter' do
       block = proc { |chunk| puts chunk }
-      
+
       expect(mock_adapter).to receive(:chat) do |**args, &passed_block|
         expect(passed_block).to eq(block)
         expect(args[:messages]).to eq([
@@ -116,7 +116,7 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
 
       lm = DSPy::LM.new('openai/gpt-4', api_key: 'test-key')
       result = lm.chat(inference_module, input_values, &block)
-      
+
       expect(result).to eq({ 'answer' => 'test response' })
     end
   end

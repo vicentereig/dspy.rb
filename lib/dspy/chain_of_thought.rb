@@ -4,6 +4,7 @@
 require 'sorbet-runtime'
 require_relative 'predict'
 require_relative 'signature'
+require_relative 'instrumentation'
 
 module DSPy
   # Enhances prediction by encouraging step-by-step reasoning
@@ -49,9 +50,69 @@ module DSPy
 
       # Call parent constructor with enhanced signature
       super(enhanced_signature)
+      @signature_class = enhanced_signature
+    end
+
+    # Override forward_untyped to add ChainOfThought-specific instrumentation
+    sig { override.params(input_values: T.untyped).returns(T.untyped) }
+    def forward_untyped(**input_values)
+      # Prepare instrumentation payload
+      input_fields = input_values.keys.map(&:to_s)
+      
+      # Instrument ChainOfThought lifecycle
+      result = Instrumentation.instrument('dspy.chain_of_thought', {
+        signature_class: @original_signature.name,
+        model: lm.model,
+        provider: lm.provider,
+        input_fields: input_fields
+      }) do
+        # Call parent prediction logic
+        prediction_result = super(**input_values)
+        
+        # Analyze reasoning if present
+        if prediction_result.respond_to?(:reasoning) && prediction_result.reasoning
+          reasoning_content = prediction_result.reasoning.to_s
+          reasoning_length = reasoning_content.length
+          reasoning_steps = count_reasoning_steps(reasoning_content)
+          
+          # Emit reasoning analysis event
+          Instrumentation.emit('dspy.chain_of_thought.reasoning_complete', {
+            signature_class: @original_signature.name,
+            reasoning_steps: reasoning_steps,
+            reasoning_length: reasoning_length,
+            has_reasoning: !reasoning_content.empty?
+          })
+        end
+        
+        prediction_result
+      end
+      
+      result
     end
 
     private
+
+    # Count reasoning steps by looking for step indicators
+    def count_reasoning_steps(reasoning_text)
+      return 0 if reasoning_text.nil? || reasoning_text.empty?
+      
+      # Look for common step patterns
+      step_patterns = [
+        /step \d+/i,
+        /\d+\./,
+        /first|second|third|then|next|finally/i,
+        /\n\s*-/
+      ]
+      
+      max_count = 0
+      step_patterns.each do |pattern|
+        count = reasoning_text.scan(pattern).length
+        max_count = [max_count, count].max
+      end
+      
+      # Fallback: count sentences if no clear steps
+      max_count > 0 ? max_count : reasoning_text.split(/[.!?]+/).reject(&:empty?).length
+    end
 
     sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(T::Struct)) }
     def create_enhanced_output_struct(signature_class)

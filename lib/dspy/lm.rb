@@ -6,6 +6,10 @@ require_relative 'lm/response'
 require_relative 'lm/adapter'
 require_relative 'lm/adapter_factory'
 
+# Load instrumentation
+require_relative 'instrumentation'
+require_relative 'instrumentation/token_tracker'
+
 # Load adapters
 require_relative 'lm/adapters/openai_adapter'
 require_relative 'lm/adapters/anthropic_adapter'
@@ -32,11 +36,45 @@ module DSPy
       # Build messages from inference module
       messages = build_messages(inference_module, input_values)
       
-      # Call adapter with messages
-      response = adapter.chat(messages: messages, &block)
+      # Calculate input size for monitoring
+      input_text = messages.map { |m| m[:content] }.join(' ')
+      input_size = input_text.length
       
-      # Parse and return response
-      parse_response(response, input_values, signature_class)
+      # Instrument LM request
+      response = Instrumentation.instrument('dspy.lm.request', {
+        gen_ai_operation_name: 'chat',
+        gen_ai_system: provider,
+        gen_ai_request_model: model,
+        signature_class: signature_class.name,
+        provider: provider,
+        adapter_class: adapter.class.name,
+        input_size: input_size
+      }) do
+        adapter.chat(messages: messages, &block)
+      end
+      
+      # Extract actual token usage from response (more accurate than estimation)
+      token_usage = Instrumentation::TokenTracker.extract_token_usage(response, provider)
+      
+      # Emit token usage event if available
+      if token_usage.any?
+        Instrumentation.emit('dspy.lm.tokens', token_usage.merge({
+          gen_ai_system: provider,
+          gen_ai_request_model: model,
+          signature_class: signature_class.name
+        }))
+      end
+      
+      # Instrument response parsing
+      parsed_result = Instrumentation.instrument('dspy.lm.response.parsed', {
+        signature_class: signature_class.name,
+        provider: provider,
+        response_length: response.content&.length || 0
+      }) do
+        parse_response(response, input_values, signature_class)
+      end
+      
+      parsed_result
     end
 
     private

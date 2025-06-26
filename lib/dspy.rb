@@ -11,6 +11,19 @@ module DSPy
   def self.logger
     config.logger
   end
+
+  # Convenient instrumentation configuration
+  def self.configure_instrumentation(&block)
+    require_relative 'dspy/instrumentation'
+    require_relative 'dspy/instrumentation/dry_monitor_bridge'
+    
+    Instrumentation.configure(&block)
+    
+    # Setup dry-monitor bridge for HTTP instrumentation
+    if Instrumentation.config.enabled
+      Instrumentation::DryMonitorBridge.setup!
+    end
+  end
 end
 
 require_relative 'dspy/module'

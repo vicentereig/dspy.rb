@@ -25,7 +25,7 @@ module DSPy
         end
 
         begin
-          response = @client.chat.completions.create(parameters: request_params)
+          response = @client.chat.completions.create(**request_params)
           
           if response.respond_to?(:error) && response.error
             raise AdapterError, "OpenAI API error: #{response.error}"

@@ -374,6 +374,117 @@ puts result.answer      # "Paris"
 puts result.confidence  # 0.95
 ```
 
+## Instrumentation & Observability
+
+DSPy.rb includes built-in instrumentation that captures detailed events and 
+performance metrics from your LLM operations. Perfect for monitoring your 
+applications and integrating with observability tools.
+
+### Quick Setup
+
+Enable instrumentation to start capturing events:
+
+```ruby
+DSPy::Instrumentation.configure do |config|
+  config.enabled = true
+end
+```
+
+### Available Events
+
+Subscribe to these events to monitor different aspects of your LLM operations:
+
+| Event Name | Triggered When | Key Payload Fields |
+|------------|----------------|-------------------|
+| `dspy.lm.request` | LLM API request lifecycle | `gen_ai_system`, `model`, `provider`, `duration_ms`, `status` |
+| `dspy.lm.tokens` | Token usage tracking | `tokens_input`, `tokens_output`, `tokens_total` |
+| `dspy.predict` | Prediction operations | `signature_class`, `input_size`, `duration_ms`, `status` |
+| `dspy.chain_of_thought` | CoT reasoning | `signature_class`, `model`, `duration_ms`, `status` |
+| `dspy.react` | Agent operations | `max_iterations`, `tools_used`, `duration_ms`, `status` |
+| `dspy.react.tool_call` | Tool execution | `tool_name`, `tool_input`, `tool_output`, `duration_ms` |
+
+### Event Payloads
+
+The instrumentation emits events with structured payloads you can process:
+
+```ruby
+# Example event payload for dspy.predict
+{
+  signature_class: "QuestionAnswering",
+  model: "gpt-4o-mini",
+  provider: "openai", 
+  input_size: 45,
+  duration_ms: 1234.56,
+  cpu_time_ms: 89.12,
+  status: "success",
+  timestamp: "2024-01-15T10:30:00Z"
+}
+
+# Example token usage payload
+{
+  tokens_input: 150,
+  tokens_output: 45,
+  tokens_total: 195,
+  gen_ai_system: "openai",
+  signature_class: "QuestionAnswering"
+}
+```
+
+Events are emitted via dry-monitor notifications, giving you flexibility to 
+process them however you need - logging, metrics, alerts, or custom monitoring.
+
+### Token Tracking
+
+Token usage is extracted from actual API responses (OpenAI and Anthropic only), 
+giving you precise cost tracking:
+
+```ruby
+# Token events include:
+{
+  tokens_input: 150,     # From API response
+  tokens_output: 45,     # From API response  
+  tokens_total: 195,     # From API response
+  gen_ai_system: "openai",
+  gen_ai_request_model: "gpt-4o-mini"
+}
+```
+
+### Configuration Options
+
+```ruby
+DSPy::Instrumentation.configure do |config|
+  config.enabled = true
+  config.log_to_stdout = false
+  config.log_file = 'log/dspy.log'
+  config.log_level = :info
+  
+  # Custom payload enrichment
+  config.custom_options = lambda do |event|
+    {
+      timestamp: Time.current.iso8601,
+      hostname: Socket.gethostname,
+      request_id: Thread.current[:request_id]
+    }
+  end
+end
+```
+
+### Integration with Monitoring Tools
+
+Subscribe to events for custom processing:
+
+```ruby
+# Subscribe to all LM events
+DSPy::Instrumentation.subscribe('dspy.lm.*') do |event|
+  puts "#{event.id}: #{event.payload[:duration_ms]}ms"
+end
+
+# Subscribe to specific events
+DSPy::Instrumentation.subscribe('dspy.predict') do |event|
+  MyMetrics.histogram('dspy.predict.duration', event.payload[:duration_ms])
+end
+```
+
 ## License
 
 This project is licensed under the MIT License.

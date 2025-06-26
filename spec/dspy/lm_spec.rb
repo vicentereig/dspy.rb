@@ -40,7 +40,8 @@ RSpec.describe DSPy::LM do
     end
     let(:inference_module) do
       module_double = double('InferenceModule')
-      allow(module_double).to receive(:signature_class).and_return(double('SignatureClass'))
+      signature_class_double = double('SignatureClass', name: 'TestSignature')
+      allow(module_double).to receive(:signature_class).and_return(signature_class_double)
       allow(module_double).to receive(:system_signature).and_return('You are a helpful assistant')
       allow(module_double).to receive(:user_signature).with(anything).and_return('Question: What is AI?\nAnswer:')
       module_double
@@ -110,7 +111,8 @@ RSpec.describe DSPy::LM do
     describe '#build_messages' do
       let(:inference_module) do
         module_double = double('InferenceModule')
-        allow(module_double).to receive(:signature_class).and_return(double('SignatureClass'))
+        signature_class_double = double('SignatureClass', name: 'TestSignature')
+        allow(module_double).to receive(:signature_class).and_return(signature_class_double)
         allow(module_double).to receive(:system_signature).and_return('You are a helpful assistant')
         allow(module_double).to receive(:user_signature).with(anything).and_return('Question: What is AI?\nAnswer:')
         module_double
