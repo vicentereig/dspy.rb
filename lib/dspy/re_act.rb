@@ -139,7 +139,6 @@ module DSPy
       lm = config.lm || DSPy.config.lm
       # Prepare instrumentation payload
       input_fields = kwargs.keys.map(&:to_s)
-      input_size = kwargs.values.join(' ').length
       available_tools = @tools.keys
 
       # Instrument the entire ReAct agent lifecycle
@@ -147,7 +146,6 @@ module DSPy
         signature_class: @original_signature_class.name,
         model: lm.model,
         provider: lm.provider,
-        input_size: input_size,
         input_fields: input_fields,
         max_iterations: @max_iterations,
         available_tools: available_tools
@@ -227,6 +225,41 @@ module DSPy
               observation: observation
             )
 
+            # Process observation to decide next step
+            if observation && !observation.include?("Unknown action")
+              observation_result = @observation_processor.forward(
+                question: question,
+                history: history,
+                observation: observation
+              )
+
+              DSPy.logger.info("#{step}. Observation Analysis: #{observation_result.interpretation}")
+              DSPy.logger.info("#{step}. Next Step: #{observation_result.next_step}")
+
+              # If observation processor suggests finishing, generate final thought
+              if observation_result.next_step == NextStep::Finish
+                final_thought = @thought_generator.forward(
+                  question: question,
+                  history: history,
+                  available_tools: available_tools_desc
+                )
+
+                # Force finish action if observation processor suggests it
+                if final_thought.action&.downcase != 'finish'
+                  DSPy.logger.info("#{step}. Overriding action to 'finish' based on observation analysis")
+                  forced_answer = if observation_result.interpretation && !observation_result.interpretation.empty?
+                                    observation_result.interpretation
+                                  else
+                                    observation
+                                  end
+                  final_answer = handle_finish_action(forced_answer, last_observation, step + 1, final_thought.thought, 'finish', history)
+                else
+                  final_answer = handle_finish_action(final_thought.action_input, last_observation, step + 1, final_thought.thought, final_thought.action, history)
+                end
+                break
+              end
+            end
+
             # Emit iteration complete event
             Instrumentation.emit('dspy.react.iteration_complete', {
               iteration: iterations_count,
@@ -247,23 +280,21 @@ module DSPy
               final_history_length: history.length
             })
           end
-
-          # Create enhanced output with all ReAct data
-          output_field_name = @original_signature_class.output_struct_class.props.keys.first
-          output_data = kwargs.merge({
-            history: history.map(&:to_h),
-            iterations: iterations_count,
-            tools_used: tools_used.uniq
-          })
-          output_data[output_field_name] = final_answer || "No answer reached within #{@max_iterations} iterations"
-          enhanced_output = @enhanced_output_struct.new(**output_data)
-
-          enhanced_output
         end
 
-        result
-      end
+        # Create enhanced output with all ReAct data
+        output_field_name = @original_signature_class.output_struct_class.props.keys.first
+        output_data = kwargs.merge({
+          history: history.map(&:to_h),
+          iterations: iterations_count,
+          tools_used: tools_used.uniq
+        })
+        output_data[output_field_name] = final_answer || "No answer reached within #{@max_iterations} iterations"
+        enhanced_output = @enhanced_output_struct.new(**output_data)
 
+        enhanced_output
+      end
+      
       result
     end
 
@@ -390,15 +421,16 @@ module DSPy
       # If final_answer is empty but we have a last observation, use it
       if (final_answer.nil? || final_answer.empty?) && last_observation
         final_answer = last_observation
-        # Update the action_input for consistency by replacing the last entry
-        history.pop
-        history << HistoryEntry.new(
-          step: step,
-          thought: thought,
-          action: action,
-          action_input: final_answer
-        )
       end
+
+      # Always add the finish action to history
+      history << HistoryEntry.new(
+        step: step,
+        thought: thought,
+        action: action,
+        action_input: final_answer,
+        observation: nil  # No observation for finish action
+      )
 
       final_answer
     end

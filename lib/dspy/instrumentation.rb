@@ -50,14 +50,19 @@ module DSPy
 
     # High-precision timing for performance tracking
     def instrument(event_name, payload = {}, &block)
-      return yield if block_given? && !config.enabled
-      return unless config.enabled
+      # If no block is given, return early
+      return unless block_given?
+      
+      # If instrumentation is disabled, just execute the block without timing/events
+      unless config.enabled
+        return yield
+      end
 
       start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       start_cpu = Process.clock_gettime(Process::CLOCK_PROCESS_CPUTIME_ID)
 
       begin
-        result = block_given? ? yield : nil
+        result = yield
 
         end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         end_cpu = Process.clock_gettime(Process::CLOCK_PROCESS_CPUTIME_ID)
