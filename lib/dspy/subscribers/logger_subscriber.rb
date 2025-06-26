@@ -9,7 +9,7 @@ module DSPy
 
       sig { params(logger: T.nilable(Logger)).void }
       def initialize(logger: nil)
-        @logger = T.let(logger || Logger.new($stdout), Logger)
+        @logger = T.let(logger || DSPy.config.logger, Logger)
         setup_event_subscriptions
       end
 

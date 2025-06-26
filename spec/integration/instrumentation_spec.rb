@@ -20,11 +20,6 @@ RSpec.describe 'DSPy Instrumentation Integration', :vcr do
   end
 
   before do
-    # Enable instrumentation
-    DSPy::Instrumentation.configure do |config|
-      config.enabled = true
-    end
-
     # Capture all events for testing
     DSPy::Instrumentation.subscribe do |event|
       captured_events << event
@@ -38,18 +33,9 @@ RSpec.describe 'DSPy Instrumentation Integration', :vcr do
 
   after do
     captured_events.clear
-
-    # Reset configuration
-    DSPy::Instrumentation.configure do |config|
-      config.enabled = false
-    end
   end
 
   describe 'Core instrumentation functionality' do
-    it 'enables and disables instrumentation correctly' do
-      expect(DSPy::Instrumentation.config.enabled).to be true
-    end
-
     it 'captures timing information in instrumented blocks' do
       captured_events = []
 

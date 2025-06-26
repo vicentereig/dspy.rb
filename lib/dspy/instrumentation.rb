@@ -7,12 +7,8 @@ module DSPy
   # Core instrumentation module using dry-monitor for event emission
   # Provides extension points for logging, Langfuse, New Relic, and custom monitoring
   module Instrumentation
-    extend Dry::Configurable
-    extend self
 
-    # Core instrumentation settings
-    setting :enabled, default: true
-    setting :notifications, default: -> {
+    def self.notifications
       @notifications ||= Dry::Monitor::Notifications.new(:dspy).tap do |n|
         # Register all DSPy events
         n.register_event('dspy.lm.request')
@@ -27,17 +23,12 @@ module DSPy
         n.register_event('dspy.react.iteration_complete')
         n.register_event('dspy.react.max_iterations')
       end
-    }
+    end
 
     # High-precision timing for performance tracking
-    def instrument(event_name, payload = {}, &block)
+    def self.instrument(event_name, payload = {}, &block)
       # If no block is given, return early
       return unless block_given?
-      
-      # If instrumentation is disabled, just execute the block without timing/events
-      unless config.enabled
-        return yield
-      end
 
       start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       start_cpu = Process.clock_gettime(Process::CLOCK_PROCESS_CPUTIME_ID)
@@ -55,7 +46,7 @@ module DSPy
           timestamp: Time.now.iso8601
         )
 
-        emit_event(event_name, enhanced_payload)
+        self.emit_event(event_name, enhanced_payload)
         result
       rescue => error
         end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -70,35 +61,28 @@ module DSPy
           timestamp: Time.now.iso8601
         )
 
-        emit_event(event_name, error_payload)
+        self.emit_event(event_name, error_payload)
         raise
       end
     end
 
     # Emit event without timing (for discrete events)
-    def emit(event_name, payload = {})
-      return unless config.enabled
-
+    def self.emit(event_name, payload = {})
       enhanced_payload = payload.merge(
         timestamp: Time.now.iso8601,
         status: payload[:status] || 'success'
       )
 
-      emit_event(event_name, enhanced_payload)
+      self.emit_event(event_name, enhanced_payload)
     end
 
     # Register additional events dynamically (useful for testing)
     def self.register_event(event_name)
-      notifications = config.notifications.call
       notifications.register_event(event_name)
     end
 
     # Subscribe to DSPy instrumentation events
-    def subscribe(event_pattern = nil, &block)
-      return unless config.enabled
-
-      notifications = config.notifications.is_a?(Proc) ? config.notifications.call : config.notifications
-
+    def self.subscribe(event_pattern = nil, &block)
       if event_pattern
         notifications.subscribe(event_pattern, &block)
       else
@@ -109,12 +93,7 @@ module DSPy
       end
     end
 
-    private
-
-    def emit_event(event_name, payload)
-      return unless config.enabled
-
-      notifications = config.notifications.is_a?(Proc) ? config.notifications.call : config.notifications
+    def self.emit_event(event_name, payload)
       notifications.instrument(event_name, payload)
     end
   end
