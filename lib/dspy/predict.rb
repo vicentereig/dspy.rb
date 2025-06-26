@@ -76,14 +76,7 @@ module DSPy
     sig { override.params(kwargs: T.untyped).returns(T.type_parameter(:O)) }
     def forward(**kwargs)
       @last_input_values = kwargs.clone
-
-      result = forward_untyped(**kwargs)
-
-      if result.is_a?(T::Struct) && !result.instance_variable_defined?(:@input_values)
-        result.instance_variable_set(:@input_values, kwargs)
-      end
-
-      T.cast(result, T.type_parameter(:O))
+      T.cast(forward_untyped(**kwargs), T.type_parameter(:O))
     end
 
     sig { params(input_values: T.untyped).returns(T.untyped) }
@@ -91,15 +84,12 @@ module DSPy
       # Prepare instrumentation payload
       input_fields = input_values.keys.map(&:to_s)
       
-      # Instrument the entire prediction lifecycle
-      result = Instrumentation.instrument('dspy.predict', {
+      Instrumentation.instrument('dspy.predict', {
         signature_class: @signature_class.name,
         model: lm.model,
         provider: lm.provider,
         input_fields: input_fields
       }) do
-        DSPy.logger.info(module: self.class.to_s, **input_values)
-
         # Validate input
         begin
           _input_struct = @signature_class.input_struct_class.new(**input_values)
@@ -115,9 +105,6 @@ module DSPy
 
         # Call LM
         output_attributes = lm.chat(self, input_values)
-
-        DSPy.logger.info("LM returned: #{output_attributes.inspect}")
-        DSPy.logger.info("Output attributes class: #{output_attributes.class}")
 
         output_attributes = output_attributes.transform_keys(&:to_sym)
 
@@ -150,7 +137,7 @@ module DSPy
         begin
           combined_struct = create_combined_struct_class
           all_attributes = input_values.merge(output_attributes)
-          return combined_struct.new(**all_attributes)
+          combined_struct.new(**all_attributes)
         rescue ArgumentError => e
           raise PredictionInvalidError.new({ output: e.message })
         rescue TypeError => e

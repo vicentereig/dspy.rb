@@ -10,8 +10,8 @@ module DSPy
     extend Dry::Configurable
     extend self
 
-    # Configuration settings
-    setting :enabled, default: false
+    # Core instrumentation settings
+    setting :enabled, default: true
     setting :notifications, default: -> {
       @notifications ||= Dry::Monitor::Notifications.new(:dspy).tap do |n|
         # Register all DSPy events
@@ -26,27 +26,8 @@ module DSPy
         n.register_event('dspy.react.tool_call')
         n.register_event('dspy.react.iteration_complete')
         n.register_event('dspy.react.max_iterations')
-
-        # Register pattern-based events for filtering
-        n.register_event('dspy.lm')
-        n.register_event('dspy.predict.validation')
       end
     }
-    setting :logger, default: nil
-    setting :log_level, default: :info
-
-    # Provider-specific settings
-    setting :langfuse do
-      setting :enabled, default: false
-      setting :secret_key, default: nil
-      setting :public_key, default: nil
-      setting :host, default: 'https://cloud.langfuse.com'
-    end
-
-    setting :newrelic do
-      setting :enabled, default: false
-      setting :app_name, default: 'DSPy Application'
-    end
 
     # High-precision timing for performance tracking
     def instrument(event_name, payload = {}, &block)
@@ -135,14 +116,6 @@ module DSPy
 
       notifications = config.notifications.is_a?(Proc) ? config.notifications.call : config.notifications
       notifications.instrument(event_name, payload)
-
-      # Also log if logger is configured
-      config.logger&.public_send(config.log_level, format_log_message(event_name, payload))
-    end
-
-    def format_log_message(event_name, payload)
-      key_values = payload.map { |k, v| "#{k}=#{v}" }.join(' ')
-      "event=#{event_name} #{key_values}"
     end
   end
 end

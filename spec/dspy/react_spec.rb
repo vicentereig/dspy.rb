@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'stringio'
 require 'dspy/re_act'
 require 'dspy/tools'
 
@@ -520,6 +521,43 @@ RSpec.describe 'DSPy::ReAct' do
       tools.each do |tool|
         schema_json = tool.schema
         expect(schema_json).not_to match(/\\\\/)
+      end
+    end
+  end
+
+  describe 'logger subscriber integration' do
+    let(:log_output) { StringIO.new }
+    let(:test_logger) { Logger.new(log_output) }
+    
+    before do
+      # Configure DSPy for testing
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      end
+      
+      # Create logger subscriber manually
+      @logger_subscriber = DSPy::Subscribers::LoggerSubscriber.new(logger: test_logger)
+    end
+
+    after do
+      # Clean up
+      @logger_subscriber = nil
+    end
+
+    it 'logs ReAct agent events when running actual agent operations' do
+      VCR.use_cassette('openai/gpt4o-mini/sorbet_react_agent_auto_augmented_output') do
+        question = "What is 42 plus 58?"
+        tools = [SorbetAddNumbers.new, SorbetCalculatorTool.new]
+        agent = DSPy::ReAct.new(DeepQA, tools: tools)
+        result = agent.forward(question: question)
+
+        log_content = log_output.string
+        
+        # Check that ReAct agent, prediction, and LM events are logged
+        expect(log_content).to include("🤖 ReAct Agent [DeepQA] - success")
+        expect(log_content).to include("🔮 Prediction") # ReAct uses internal signatures
+        expect(log_content).to include("✅ LM Request [openai/gpt-4o-mini] - success")
+        expect(log_content).to include("🔧 Tool Call")
       end
     end
   end

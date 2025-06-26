@@ -185,27 +185,22 @@ module DSPy
             action = thought_obj.action
             action_input = thought_obj.action_input
 
-            DSPy.logger.info("#{step}. Thought: #{thought}")
-            DSPy.logger.info("#{step}. Action: #{action}")
-            DSPy.logger.info("#{step}. Action Input: #{action_input}")
-
-            # Handle finish action
+            # Break if finish action
             if action&.downcase == 'finish'
               final_answer = handle_finish_action(action_input, last_observation, step, thought, action, history)
               break
             end
 
-            # Execute action and instrument tool calls
-            observation = if action && @tools[action.downcase]
-                            tool = @tools[action.downcase]
-                            tools_used << action.downcase
+            # Track tools used
+            tools_used << action.downcase if action && @tools[action.downcase]
 
+            # Execute action
+            observation = if action && @tools[action.downcase]
                             # Instrument tool call
                             Instrumentation.instrument('dspy.react.tool_call', {
                               iteration: iterations_count,
                               tool_name: action.downcase,
-                              tool_input: action_input,
-                              available_tools: available_tools
+                              tool_input: action_input
                             }) do
                               execute_action(action, action_input)
                             end
@@ -213,7 +208,6 @@ module DSPy
                             "Unknown action: #{action}. Available actions: #{@tools.keys.join(', ')}, finish"
                           end
 
-            DSPy.logger.info("#{step}. Observation: #{observation}")
             last_observation = observation
 
             # Add to history
@@ -233,9 +227,6 @@ module DSPy
                 observation: observation
               )
 
-              DSPy.logger.info("#{step}. Observation Analysis: #{observation_result.interpretation}")
-              DSPy.logger.info("#{step}. Next Step: #{observation_result.next_step}")
-
               # If observation processor suggests finishing, generate final thought
               if observation_result.next_step == NextStep::Finish
                 final_thought = @thought_generator.forward(
@@ -246,7 +237,6 @@ module DSPy
 
                 # Force finish action if observation processor suggests it
                 if final_thought.action&.downcase != 'finish'
-                  DSPy.logger.info("#{step}. Overriding action to 'finish' based on observation analysis")
                   forced_answer = if observation_result.interpretation && !observation_result.interpretation.empty?
                                     observation_result.interpretation
                                   else
