@@ -380,16 +380,6 @@ DSPy.rb includes built-in instrumentation that captures detailed events and
 performance metrics from your LLM operations. Perfect for monitoring your 
 applications and integrating with observability tools.
 
-### Quick Setup
-
-Enable instrumentation to start capturing events:
-
-```ruby
-DSPy::Instrumentation.configure do |config|
-  config.enabled = true
-end
-```
-
 ### Available Events
 
 Subscribe to these events to monitor different aspects of your LLM operations:
@@ -447,26 +437,6 @@ giving you precise cost tracking:
   gen_ai_system: "openai",
   gen_ai_request_model: "gpt-4o-mini"
 }
-```
-
-### Configuration Options
-
-```ruby
-DSPy::Instrumentation.configure do |config|
-  config.enabled = true
-  config.log_to_stdout = false
-  config.log_file = 'log/dspy.log'
-  config.log_level = :info
-  
-  # Custom payload enrichment
-  config.custom_options = lambda do |event|
-    {
-      timestamp: Time.current.iso8601,
-      hostname: Socket.gethostname,
-      request_id: Thread.current[:request_id]
-    }
-  end
-end
 ```
 
 ### Integration with Monitoring Tools
