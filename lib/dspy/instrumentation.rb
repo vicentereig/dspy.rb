@@ -7,6 +7,13 @@ module DSPy
   # Core instrumentation module using dry-monitor for event emission
   # Provides extension points for logging, Langfuse, New Relic, and custom monitoring
   module Instrumentation
+    # Get the current logger subscriber instance (lazy initialization)
+    def self.logger_subscriber
+      @logger_subscriber ||= begin
+        require_relative 'subscribers/logger_subscriber'
+        DSPy::Subscribers::LoggerSubscriber.new
+      end
+    end
 
     def self.notifications
       @notifications ||= Dry::Monitor::Notifications.new(:dspy).tap do |n|
@@ -94,7 +101,13 @@ module DSPy
     end
 
     def self.emit_event(event_name, payload)
+      # Ensure logger subscriber is initialized
+      logger_subscriber
       notifications.instrument(event_name, payload)
+    end
+
+    def self.setup_subscribers
+      # Lazy initialization - will be created when first accessed
     end
   end
 end

@@ -54,6 +54,8 @@ RSpec.describe DSPy::Predict do
   before do
     DSPy.configure do |c|
       c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      # Preserve the logger configuration from spec_helper
+      c.logger = Dry.Logger(:dspy, formatter: :string) { |s| s.add_backend(stream: "log/test.log") }
     end
   end
 

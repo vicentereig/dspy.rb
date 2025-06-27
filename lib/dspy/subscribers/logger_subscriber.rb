@@ -7,13 +7,19 @@ module DSPy
     class LoggerSubscriber
       extend T::Sig
 
-      sig { params(logger: T.nilable(Logger)).void }
+      sig { params(logger: T.nilable(T.any(Logger, Dry::Logger::Dispatcher))).void }
       def initialize(logger: nil)
-        @logger = T.let(logger || DSPy.config.logger, Logger)
+        @explicit_logger = T.let(logger, T.nilable(T.any(Logger, Dry::Logger::Dispatcher)))
         setup_event_subscriptions
       end
 
       private
+
+      # Always use the current configured logger or the explicit one
+      sig { returns(T.any(Logger, Dry::Logger::Dispatcher)) }
+      def logger
+        @explicit_logger || DSPy.config.logger
+      end
 
       sig { void }
       def setup_event_subscriptions
@@ -89,10 +95,10 @@ module DSPy
                  end
 
         status_emoji = status == 'success' ? '✅' : '❌'
-        @logger.info("#{status_emoji} LM Request [#{provider}/#{model}] - #{status} (#{duration}ms)#{tokens}")
+        logger.info("#{status_emoji} LM Request [#{provider}/#{model}] - #{status} (#{duration}ms)#{tokens}")
         
         if status == 'error' && payload[:error_message]
-          @logger.error("  Error: #{payload[:error_message]}")
+          logger.error("  Error: #{payload[:error_message]}")
         end
       end
 
@@ -105,11 +111,11 @@ module DSPy
         input_size = payload[:input_size]
 
         status_emoji = status == 'success' ? '🔮' : '❌'
-        @logger.info("#{status_emoji} Prediction [#{signature}] - #{status} (#{duration}ms)")
-        @logger.info("  Input size: #{input_size} chars") if input_size
+        logger.info("#{status_emoji} Prediction [#{signature}] - #{status} (#{duration}ms)")
+        logger.info("  Input size: #{input_size} chars") if input_size
         
         if status == 'error' && payload[:error_message]
-          @logger.error("  Error: #{payload[:error_message]}")
+          logger.error("  Error: #{payload[:error_message]}")
         end
       end
 
@@ -123,12 +129,12 @@ module DSPy
         reasoning_length = payload[:reasoning_length]
 
         status_emoji = status == 'success' ? '🧠' : '❌'
-        @logger.info("#{status_emoji} Chain of Thought [#{signature}] - #{status} (#{duration}ms)")
-        @logger.info("  Reasoning steps: #{reasoning_steps}") if reasoning_steps
-        @logger.info("  Reasoning length: #{reasoning_length} chars") if reasoning_length
+        logger.info("#{status_emoji} Chain of Thought [#{signature}] - #{status} (#{duration}ms)")
+        logger.info("  Reasoning steps: #{reasoning_steps}") if reasoning_steps
+        logger.info("  Reasoning length: #{reasoning_length} chars") if reasoning_length
         
         if status == 'error' && payload[:error_message]
-          @logger.error("  Error: #{payload[:error_message]}")
+          logger.error("  Error: #{payload[:error_message]}")
         end
       end
 
@@ -148,13 +154,13 @@ module DSPy
                        else '❌'
                        end
         
-        @logger.info("#{status_emoji} ReAct Agent [#{signature}] - #{status} (#{duration}ms)")
-        @logger.info("  Iterations: #{iteration_count}") if iteration_count
-        @logger.info("  Tools used: #{tools_used.join(', ')}") if tools_used&.any?
-        @logger.info("  Final answer: #{final_answer}") if final_answer
+        logger.info("#{status_emoji} ReAct Agent [#{signature}] - #{status} (#{duration}ms)")
+        logger.info("  Iterations: #{iteration_count}") if iteration_count
+        logger.info("  Tools used: #{tools_used.join(', ')}") if tools_used&.any?
+        logger.info("  Final answer: #{final_answer}") if final_answer
         
         if status == 'error' && payload[:error_message]
-          @logger.error("  Error: #{payload[:error_message]}")
+          logger.error("  Error: #{payload[:error_message]}")
         end
       end
 
@@ -168,12 +174,12 @@ module DSPy
         status = payload[:status]
 
         status_emoji = status == 'success' ? '🔄' : '❌'
-        @logger.info("#{status_emoji} ReAct Iteration #{iteration} - #{status} (#{duration}ms)")
-        @logger.info("  Thought: #{thought.truncate(100)}") if thought
-        @logger.info("  Action: #{action}") if action
+        logger.info("#{status_emoji} ReAct Iteration #{iteration} - #{status} (#{duration}ms)")
+        logger.info("  Thought: #{thought.truncate(100)}") if thought
+        logger.info("  Action: #{action}") if action
         
         if status == 'error' && payload[:error_message]
-          @logger.error("  Error: #{payload[:error_message]}")
+          logger.error("  Error: #{payload[:error_message]}")
         end
       end
 
@@ -186,10 +192,10 @@ module DSPy
         status = payload[:status]
 
         status_emoji = status == 'success' ? '🔧' : '❌'
-        @logger.info("#{status_emoji} Tool Call [#{tool_name}] (Iteration #{iteration}) - #{status} (#{duration}ms)")
+        logger.info("#{status_emoji} Tool Call [#{tool_name}] (Iteration #{iteration}) - #{status} (#{duration}ms)")
         
         if status == 'error' && payload[:error_message]
-          @logger.error("  Error: #{payload[:error_message]}")
+          logger.error("  Error: #{payload[:error_message]}")
         end
       end
     end
