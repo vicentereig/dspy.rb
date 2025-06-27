@@ -68,10 +68,10 @@ RSpec.describe DSPy::Signature do
 
         log_content = log_output.string
         
-        # Check that chain of thought, prediction, and LM events are logged
-        expect(log_content).to include("🧠 Chain of Thought [AnswerPredictor] - success")
-        expect(log_content).to include("🔮 Prediction") # Signature might be empty for internal predictions
-        expect(log_content).to include("✅ LM Request [openai/gpt-4o-mini] - success")
+        # Check that chain of thought, prediction, and LM events are logged in key-value format
+        expect(log_content).to include("event=chain_of_thought signature=AnswerPredictor status=success")
+        expect(log_content).to include("event=prediction") # Signature might be empty for internal predictions
+        expect(log_content).to include("event=lm_request provider=openai model=gpt-4o-mini status=success")
       end
     end
   end

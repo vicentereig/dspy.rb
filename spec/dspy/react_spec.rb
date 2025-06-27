@@ -553,11 +553,11 @@ RSpec.describe 'DSPy::ReAct' do
 
         log_content = log_output.string
         
-        # Check that ReAct agent, prediction, and LM events are logged
-        expect(log_content).to include("🤖 ReAct Agent [DeepQA] - success")
-        expect(log_content).to include("🔮 Prediction") # ReAct uses internal signatures
-        expect(log_content).to include("✅ LM Request [openai/gpt-4o-mini] - success")
-        expect(log_content).to include("🔧 Tool Call")
+        # Check that ReAct agent, prediction, and LM events are logged in key-value format
+        expect(log_content).to include("event=react signature=DeepQA status=success")
+        expect(log_content).to include("event=prediction") # ReAct uses internal signatures
+        expect(log_content).to include("event=lm_request provider=openai model=gpt-4o-mini status=success")
+        expect(log_content).to include("event=tool_call")
       end
     end
   end

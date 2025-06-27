@@ -88,18 +88,19 @@ module DSPy
         model = payload[:gen_ai_request_model] || payload[:model]
         duration = payload[:duration_ms]&.round(2)
         status = payload[:status]
-        tokens = if payload[:tokens_total]
-                   " (#{payload[:tokens_total]} tokens)"
-                 else
-                   ""
-                 end
+        tokens = payload[:tokens_total]
 
-        status_emoji = status == 'success' ? '✅' : '❌'
-        logger.info("#{status_emoji} LM Request [#{provider}/#{model}] - #{status} (#{duration}ms)#{tokens}")
-        
-        if status == 'error' && payload[:error_message]
-          logger.error("  Error: #{payload[:error_message]}")
-        end
+        log_parts = [
+          "event=lm_request",
+          "provider=#{provider}",
+          "model=#{model}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ]
+        log_parts << "tokens=#{tokens}" if tokens
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
       end
 
       sig { params(event: T.untyped).void }
@@ -110,13 +111,16 @@ module DSPy
         status = payload[:status]
         input_size = payload[:input_size]
 
-        status_emoji = status == 'success' ? '🔮' : '❌'
-        logger.info("#{status_emoji} Prediction [#{signature}] - #{status} (#{duration}ms)")
-        logger.info("  Input size: #{input_size} chars") if input_size
-        
-        if status == 'error' && payload[:error_message]
-          logger.error("  Error: #{payload[:error_message]}")
-        end
+        log_parts = [
+          "event=prediction",
+          "signature=#{signature}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ]
+        log_parts << "input_size=#{input_size}" if input_size
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
       end
 
       sig { params(event: T.untyped).void }
@@ -128,14 +132,17 @@ module DSPy
         reasoning_steps = payload[:reasoning_steps]
         reasoning_length = payload[:reasoning_length]
 
-        status_emoji = status == 'success' ? '🧠' : '❌'
-        logger.info("#{status_emoji} Chain of Thought [#{signature}] - #{status} (#{duration}ms)")
-        logger.info("  Reasoning steps: #{reasoning_steps}") if reasoning_steps
-        logger.info("  Reasoning length: #{reasoning_length} chars") if reasoning_length
-        
-        if status == 'error' && payload[:error_message]
-          logger.error("  Error: #{payload[:error_message]}")
-        end
+        log_parts = [
+          "event=chain_of_thought",
+          "signature=#{signature}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ]
+        log_parts << "reasoning_steps=#{reasoning_steps}" if reasoning_steps
+        log_parts << "reasoning_length=#{reasoning_length}" if reasoning_length
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
       end
 
       sig { params(event: T.untyped).void }
@@ -148,20 +155,18 @@ module DSPy
         tools_used = payload[:tools_used]
         final_answer = payload[:final_answer]
 
-        status_emoji = case status
-                       when 'success' then '🤖'
-                       when 'max_iterations' then '⏰'
-                       else '❌'
-                       end
-        
-        logger.info("#{status_emoji} ReAct Agent [#{signature}] - #{status} (#{duration}ms)")
-        logger.info("  Iterations: #{iteration_count}") if iteration_count
-        logger.info("  Tools used: #{tools_used.join(', ')}") if tools_used&.any?
-        logger.info("  Final answer: #{final_answer}") if final_answer
-        
-        if status == 'error' && payload[:error_message]
-          logger.error("  Error: #{payload[:error_message]}")
-        end
+        log_parts = [
+          "event=react",
+          "signature=#{signature}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ]
+        log_parts << "iterations=#{iteration_count}" if iteration_count
+        log_parts << "tools_used=\"#{tools_used.join(',')}\"" if tools_used&.any?
+        log_parts << "final_answer=\"#{final_answer&.truncate(100)}\"" if final_answer
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
       end
 
       sig { params(event: T.untyped).void }
@@ -173,14 +178,17 @@ module DSPy
         duration = payload[:duration_ms]&.round(2)
         status = payload[:status]
 
-        status_emoji = status == 'success' ? '🔄' : '❌'
-        logger.info("#{status_emoji} ReAct Iteration #{iteration} - #{status} (#{duration}ms)")
-        logger.info("  Thought: #{thought.truncate(100)}") if thought
-        logger.info("  Action: #{action}") if action
-        
-        if status == 'error' && payload[:error_message]
-          logger.error("  Error: #{payload[:error_message]}")
-        end
+        log_parts = [
+          "event=react_iteration",
+          "iteration=#{iteration}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ]
+        log_parts << "thought=\"#{thought&.truncate(100)}\"" if thought
+        log_parts << "action=\"#{action}\"" if action
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
       end
 
       sig { params(event: T.untyped).void }
@@ -191,12 +199,16 @@ module DSPy
         duration = payload[:duration_ms]&.round(2)
         status = payload[:status]
 
-        status_emoji = status == 'success' ? '🔧' : '❌'
-        logger.info("#{status_emoji} Tool Call [#{tool_name}] (Iteration #{iteration}) - #{status} (#{duration}ms)")
-        
-        if status == 'error' && payload[:error_message]
-          logger.error("  Error: #{payload[:error_message]}")
-        end
+        log_parts = [
+          "event=tool_call",
+          "tool=#{tool_name}",
+          "iteration=#{iteration}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ]
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
       end
     end
   end
