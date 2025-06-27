@@ -105,6 +105,12 @@ n.register_event('dspy.optimization.trial_start')
 n.register_event('dspy.optimization.trial_complete')
 ```
 
+**Supporting DSPy References**:
+- [DSPy Evaluation Overview](https://github.com/stanfordnlp/dspy/blob/main/docs/docs/learn/evaluation/overview.md)
+- [DSPy Metrics Documentation](https://github.com/stanfordnlp/dspy/blob/main/docs/docs/learn/evaluation/metrics.md) 
+- [DSPy Teleprompter Base Class](https://github.com/stanfordnlp/dspy/blob/main/dspy/teleprompt/teleprompt.py)
+- [DSPy Evaluate Module](https://github.com/stanfordnlp/dspy/tree/main/dspy/evaluate)
+
 ### Iteration 2: Data Pipeline & Bootstrapping
 
 **What we're doing**: Building the system to generate few-shot examples
@@ -120,6 +126,11 @@ n.register_event('dspy.optimization.trial_complete')
 - `eval_candidate_program()` method  
 - Proper error handling when examples fail
 
+**Supporting DSPy References**:
+- [MIPROv2 Bootstrap Implementation](https://github.com/stanfordnlp/dspy/blob/main/dspy/teleprompt/mipro_optimizer_v2.py#L200-L350)
+- [DSPy Bootstrap Utilities](https://github.com/stanfordnlp/dspy/blob/main/dspy/teleprompt/utils.py)
+- [MIPROv2 Documentation - Bootstrap Process](https://dspy.ai/api/optimizers/MIPROv2/#how-miprov2-works)
+
 ### Iteration 3: Simple Optimizer & Instruction Proposal
 
 **What we're doing**: Making the system that writes better instructions
@@ -130,6 +141,11 @@ n.register_event('dspy.optimization.trial_complete')
 - Integration with our existing signature system
 - Events for tracking what instructions get proposed
 
+**Supporting DSPy References**:
+- [DSPy Grounded Proposer](https://github.com/stanfordnlp/dspy/blob/main/dspy/propose/grounded_proposer.py)
+- [MIPROv2 Instruction Proposal Logic](https://github.com/stanfordnlp/dspy/blob/main/dspy/teleprompt/mipro_optimizer_v2.py#L350-L500)
+- [DSPy Propose Module](https://github.com/stanfordnlp/dspy/tree/main/dspy/propose)
+
 ### Iteration 4: MIPROv2 Core Implementation
 
 **What we're doing**: Putting it all together into the full MIPROv2 system
@@ -139,6 +155,12 @@ n.register_event('dspy.optimization.trial_complete')
 - Auto modes (light: 6 trials, medium: 12, heavy: 18)
 - Full three-phase pipeline working end-to-end
 - Performance tracking throughout
+
+**Supporting DSPy References**:
+- [MIPROv2 Main Implementation](https://github.com/stanfordnlp/dspy/blob/main/dspy/teleprompt/mipro_optimizer_v2.py)
+- [MIPROv2 API Documentation](https://dspy.ai/api/optimizers/MIPROv2/)
+- [MIPROv2 Research Paper](https://arxiv.org/abs/2406.11695)
+- [DSPy Teleprompters Overview](https://deepwiki.com/stanfordnlp/dspy/4.1-teleprompters-and-optimization)
 
 ### Iteration 5: Persistence & Serialization
 
@@ -157,6 +179,11 @@ n.register_event('dspy.storage.load')
 n.register_event('dspy.storage.error')
 ```
 
+**Supporting DSPy References**:
+- [DSPy Program Saving/Loading](https://github.com/stanfordnlp/dspy/blob/main/dspy/primitives/program.py#L150-L200)
+- [DSPy Module Serialization](https://github.com/stanfordnlp/dspy/blob/main/dspy/primitives/module.py)
+- [MIPROv2 State Management](https://github.com/stanfordnlp/dspy/blob/main/dspy/teleprompt/mipro_optimizer_v2.py#L100-L150)
+
 ### Iteration 6: Registry & Version Management
 
 **What we're doing**: Production-ready signature management
@@ -166,6 +193,11 @@ n.register_event('dspy.storage.error')
 - Rollback capability when optimizations go wrong
 - YAML config file support
 - Registry monitoring events
+
+**Supporting DSPy References**:
+- [DSPy Configuration System](https://github.com/stanfordnlp/dspy/blob/main/dspy/utils/dspy_configuration.py)
+- [DSPy Settings Management](https://github.com/stanfordnlp/dspy/blob/main/dspy/dsp/dsp_settings.py)
+- [MIPROv2 Configuration Options](https://dspy.ai/api/optimizers/MIPROv2/#dspy-miprov2)
 
 ### Iteration 7: OTEL & New Relic Integration
 
@@ -217,6 +249,11 @@ n.register_event('dspy.signature.deployed')
 - Use our existing `TokenTracker` to capture token usage during optimization
 - Track costs for each optimization trial
 - Monitor token efficiency improvements from optimization
+
+**Supporting DSPy References**:
+- [DSPy Instrumentation and Logging](https://github.com/stanfordnlp/dspy/blob/main/dspy/utils/logging_utils.py)
+- [MIPROv2 Statistics Tracking](https://github.com/stanfordnlp/dspy/blob/main/dspy/teleprompt/mipro_optimizer_v2.py#L50-L100)
+- [DSPy Cost Tracking Example](https://github.com/stanfordnlp/dspy/blob/main/examples/cost_tracking.py)
 
 ### Iteration 8: Langfuse Integration & Polish
 
