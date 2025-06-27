@@ -9,10 +9,3 @@ group :development, :test do
   gem 'webmock', '~> 3.18'
   gem "byebug", "~> 11.1"
 end
-
-gem "faraday", "~> 2.12"
-
-gem "async-http", "~> 0.88.0"
-
-gem 'sorbet-runtime'
-gem 'sorbet-schema'

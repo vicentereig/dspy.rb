@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = "dspy"
-  spec.version = "0.2.0"
+  spec.version = "0.3.0"
   spec.authors = ["Vicente Reig Rincón de Arellano"]
   spec.email = ["hey@vicente.services"]
 
@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.description = "A Ruby implementation of DSPy, a framework for programming with large language models"
   spec.homepage = "https://github.com/vicentereig/dspy.rb"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.3.0"
 
   # Specify which files should be added to the gem when it is released.
   spec.files = Dir.glob(%w[lib/**/*.rb README.md LICENSE.txt])
@@ -26,17 +26,17 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-logger", "~> 1.0"
   spec.add_dependency "dry-monitor", "~> 1.0"
   spec.add_dependency "async", "~> 2.23"
-  
+
   # Official LM provider clients
   spec.add_dependency "openai", "~> 0.9.0"
   spec.add_dependency "anthropic", "~> 1.1.0"
-  
+
   # Legacy compatibility (optional)
   spec.add_dependency "ruby_llm", "~> 1.0"
-  
+
   # Sorbet integration dependencies
   spec.add_dependency "sorbet-runtime", "~> 0.5"
   spec.add_dependency "sorbet-schema", "~> 0.3"
-  
+
   # Development dependencies are already specified in the Gemfile
 end
