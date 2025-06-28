@@ -1,0 +1,401 @@
+<h1 id="your-first-structured-ai-program">Your First Structured AI Program</h1>
+
+<p><em>From prompt strings to reliable systems in 10 minutes</em></p>
+
+<h2 id="what-were-building">What We’re Building</h2>
+
+<p>Instead of throwing you into complex examples, let’s start with something simple but transformative: a Q&amp;A system that actually works predictably.</p>
+
+<p>By the end of this tutorial, you’ll have built an AI system that:</p>
+<ul>
+  <li>Has a clear, typed interface</li>
+  <li>Returns structured, predictable results</li>
+  <li>Can be tested systematically</li>
+  <li>Handles errors gracefully</li>
+</ul>
+
+<h2 id="setting-up">Setting Up</h2>
+
+<p>First, let’s set up DSPy.rb in your project:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Gemfile</span>
+<span class="n">gem</span> <span class="s1">'dspy'</span>
+
+<span class="c1"># In your code</span>
+<span class="nb">require</span> <span class="s1">'dspy'</span>
+
+<span class="c1"># Configure your language model</span>
+<span class="no">DSPy</span><span class="p">.</span><span class="nf">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">lm</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">LM</span><span class="o">::</span><span class="no">OpenAI</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
+    <span class="ss">api_key: </span><span class="no">ENV</span><span class="p">[</span><span class="s1">'OPENAI_API_KEY'</span><span class="p">],</span>
+    <span class="ss">model: </span><span class="s2">"gpt-4"</span>
+  <span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h2 id="the-old-way-vs-the-new-way">The Old Way vs. The New Way</h2>
+
+<p>Let’s start by seeing the difference between prompt engineering and structured programming:</p>
+
+<h3 id="the-fragile-approach"><strong>The Fragile Approach</strong></h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># What most of us start with</span>
+<span class="k">def</span> <span class="nf">ask_question</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+  <span class="n">prompt</span> <span class="o">=</span> <span class="s2">"Answer this question clearly and concisely: </span><span class="si">#{</span><span class="n">question</span><span class="si">}</span><span class="s2">"</span>
+  <span class="n">response</span> <span class="o">=</span> <span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+  
+  <span class="c1"># Hope it's in the format we expect...</span>
+  <span class="n">response</span><span class="p">.</span><span class="nf">strip</span>
+<span class="k">end</span>
+
+<span class="c1"># Usage - crossing fingers</span>
+<span class="n">answer</span> <span class="o">=</span> <span class="n">ask_question</span><span class="p">(</span><span class="s2">"What is the capital of France?"</span><span class="p">)</span>
+<span class="nb">puts</span> <span class="n">answer</span>  <span class="c1"># "Paris" or "The capital of France is Paris." or "**Paris**" or...</span>
+</code></pre></div></div>
+
+<h3 id="the-structured-approach"><strong>The Structured Approach</strong></h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Define exactly what you want</span>
+<span class="k">class</span> <span class="nc">QuestionAnswering</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Answer questions accurately and concisely"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:question</span><span class="p">,</span> <span class="no">String</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:answer</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"A clear, concise answer"</span>
+    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"How confident are you? (0.0-1.0)"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># Create a reliable system</span>
+<span class="n">qa_system</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">QuestionAnswering</span><span class="p">)</span>
+
+<span class="c1"># Use it predictably</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">qa_system</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"What is the capital of France?"</span><span class="p">)</span>
+<span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">answer</span>      <span class="c1"># "Paris"</span>
+<span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">confidence</span>  <span class="c1"># 0.95</span>
+</code></pre></div></div>
+
+<h2 id="understanding-what-just-happened">Understanding What Just Happened</h2>
+
+<h3 id="1-clear-interface-definition"><strong>1. Clear Interface Definition</strong></h3>
+
+<p>The <code class="highlighter-rouge">DSPy::Signature</code> defines exactly what goes in and what comes out:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">QuestionAnswering</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Answer questions accurately and concisely"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:question</span><span class="p">,</span> <span class="no">String</span>  <span class="c1"># Input is always a string</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:answer</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"A clear, concise answer"</span>
+    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"How confident are you? (0.0-1.0)"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>This signature acts like a contract—the AI system knows exactly what it should produce.</p>
+
+<h3 id="2-predictable-module-creation"><strong>2. Predictable Module Creation</strong></h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">qa_system</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">QuestionAnswering</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">DSPy::Predict</code> takes your signature and creates a module that can reliably execute that reasoning pattern.</p>
+
+<h3 id="3-structured-results"><strong>3. Structured Results</strong></h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">result</span> <span class="o">=</span> <span class="n">qa_system</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"What is the capital of France?"</span><span class="p">)</span>
+
+<span class="c1"># You get structured data back</span>
+<span class="n">result</span><span class="p">.</span><span class="nf">answer</span>      <span class="c1"># Always a string</span>
+<span class="n">result</span><span class="p">.</span><span class="nf">confidence</span>  <span class="c1"># Always a float between 0.0 and 1.0</span>
+</code></pre></div></div>
+
+<h2 id="making-it-more-sophisticated">Making It More Sophisticated</h2>
+
+<p>Let’s enhance our Q&amp;A system to handle different types of questions:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SmartQuestionAnswering</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Answer questions with appropriate depth and context"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:question</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:context</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"Additional context if available"</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:answer</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"A clear, appropriately detailed answer"</span>
+    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"Confidence level (0.0-1.0)"</span>
+    <span class="n">const</span> <span class="ss">:question_type</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">enum: </span><span class="p">[</span><span class="s2">"factual"</span><span class="p">,</span> <span class="s2">"analytical"</span><span class="p">,</span> <span class="s2">"creative"</span><span class="p">,</span> <span class="s2">"unclear"</span><span class="p">]</span>
+    <span class="n">const</span> <span class="ss">:sources_needed</span><span class="p">,</span> <span class="no">T</span><span class="o">::</span><span class="no">Boolean</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"Would this benefit from external sources?"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">smart_qa</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">SmartQuestionAnswering</span><span class="p">)</span>
+
+<span class="c1"># Try different types of questions</span>
+<span class="n">factual_result</span> <span class="o">=</span> <span class="n">smart_qa</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span>
+  <span class="ss">question: </span><span class="s2">"What is the boiling point of water?"</span><span class="p">,</span>
+  <span class="ss">context: </span><span class="s2">""</span>
+<span class="p">)</span>
+
+<span class="n">analytical_result</span> <span class="o">=</span> <span class="n">smart_qa</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span>
+  <span class="ss">question: </span><span class="s2">"Why did the Roman Empire fall?"</span><span class="p">,</span>
+  <span class="ss">context: </span><span class="s2">"We're discussing historical patterns of civilizational decline"</span>
+<span class="p">)</span>
+
+<span class="nb">puts</span> <span class="n">factual_result</span><span class="p">.</span><span class="nf">question_type</span>     <span class="c1"># "factual"</span>
+<span class="nb">puts</span> <span class="n">factual_result</span><span class="p">.</span><span class="nf">sources_needed</span>    <span class="c1"># false</span>
+<span class="nb">puts</span> <span class="n">analytical_result</span><span class="p">.</span><span class="nf">question_type</span>  <span class="c1"># "analytical" </span>
+<span class="nb">puts</span> <span class="n">analytical_result</span><span class="p">.</span><span class="nf">sources_needed</span> <span class="c1"># true</span>
+</code></pre></div></div>
+
+<h2 id="making-it-more-sophisticated-with-advanced-sorbet-types">Making It More Sophisticated with Advanced Sorbet Types</h2>
+
+<p>Let’s enhance our Q&amp;A system to handle different types of questions using more Sorbet types:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SmartQuestionAnswering</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Answer questions with appropriate depth and context"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:question</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:context</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">nilable</span><span class="p">(</span><span class="no">String</span><span class="p">),</span> <span class="ss">desc: </span><span class="s2">"Additional context if available"</span>
+    <span class="n">const</span> <span class="ss">:max_length</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">nilable</span><span class="p">(</span><span class="no">Integer</span><span class="p">),</span> <span class="ss">default: </span><span class="mi">100</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:answer</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"A clear, appropriately detailed answer"</span>
+    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"Confidence level (0.0-1.0)"</span>
+    <span class="n">const</span> <span class="ss">:question_type</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">any</span><span class="p">(</span><span class="no">String</span><span class="p">,</span> <span class="no">Symbol</span><span class="p">),</span> <span class="ss">enum: </span><span class="p">[</span><span class="ss">:factual</span><span class="p">,</span> <span class="ss">:analytical</span><span class="p">,</span> <span class="ss">:creative</span><span class="p">,</span> <span class="ss">:unclear</span><span class="p">]</span>
+    <span class="n">const</span> <span class="ss">:sources_needed</span><span class="p">,</span> <span class="no">T</span><span class="o">::</span><span class="no">Boolean</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"Would this benefit from external sources?"</span>
+    <span class="n">const</span> <span class="ss">:follow_up_questions</span><span class="p">,</span> <span class="no">T</span><span class="o">::</span><span class="no">Array</span><span class="p">[</span><span class="no">String</span><span class="p">],</span> <span class="ss">desc: </span><span class="s2">"Suggested follow-up questions"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">smart_qa</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">SmartQuestionAnswering</span><span class="p">)</span>
+
+<span class="c1"># The Sorbet types provide runtime validation</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">smart_qa</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span>
+  <span class="ss">question: </span><span class="s2">"Why did the Roman Empire fall?"</span><span class="p">,</span>
+  <span class="ss">context: </span><span class="s2">"We're discussing historical patterns of civilizational decline"</span><span class="p">,</span>
+  <span class="ss">max_length: </span><span class="mi">200</span>
+<span class="p">)</span>
+
+<span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">question_type</span>        <span class="c1"># :analytical</span>
+<span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">sources_needed</span>       <span class="c1"># true</span>
+<span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">follow_up_questions</span>  <span class="c1"># ["What were the economic factors?", "How did military issues contribute?"]</span>
+</code></pre></div></div>
+
+<p>Notice how we’re using <strong>idiomatic Ruby with full Sorbet type support</strong>:</p>
+<ul>
+  <li><code class="highlighter-rouge">T.nilable(String)</code> for optional fields</li>
+  <li><code class="highlighter-rouge">T.any(String, Symbol)</code> for flexible types</li>
+  <li><code class="highlighter-rouge">T::Array[String]</code> for typed arrays</li>
+  <li><code class="highlighter-rouge">T::Boolean</code> for boolean validation</li>
+  <li><code class="highlighter-rouge">enum:</code> for constrained values</li>
+  <li><code class="highlighter-rouge">default:</code> for optional parameters</li>
+</ul>
+
+<p>This isn’t just type checking—it’s <strong>runtime validation</strong> that ensures your LLM responses conform to your Ruby interfaces.</p>
+
+<h2 id="building-react-agents-with-ruby-types">Building ReAct Agents with Ruby Types</h2>
+
+<p>DSPy.rb’s ReAct agents also use idiomatic Ruby type definitions for tools:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Define tools with clear Ruby interfaces</span>
+<span class="k">class</span> <span class="nc">WeatherTool</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Tool</span>
+  <span class="n">description</span> <span class="s2">"Get current weather for a location"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:location</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"City name or coordinates"</span>
+    <span class="n">const</span> <span class="ss">:units</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">nilable</span><span class="p">(</span><span class="no">String</span><span class="p">),</span> <span class="ss">enum: </span><span class="p">[</span><span class="s2">"celsius"</span><span class="p">,</span> <span class="s2">"fahrenheit"</span><span class="p">],</span> <span class="ss">default: </span><span class="s2">"celsius"</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:temperature</span><span class="p">,</span> <span class="no">Float</span>
+    <span class="n">const</span> <span class="ss">:condition</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:humidity</span><span class="p">,</span> <span class="no">Float</span>
+    <span class="n">const</span> <span class="ss">:forecast</span><span class="p">,</span> <span class="no">T</span><span class="o">::</span><span class="no">Array</span><span class="p">[</span><span class="no">T</span><span class="p">.</span><span class="nf">untyped</span><span class="p">],</span> <span class="ss">desc: </span><span class="s2">"Next 3 days forecast"</span>
+  <span class="k">end</span>
+  
+  <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">location</span><span class="p">:,</span> <span class="ss">units: </span><span class="s2">"celsius"</span><span class="p">)</span>
+    <span class="c1"># Your weather API logic here</span>
+    <span class="no">WeatherResponse</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
+      <span class="ss">temperature: </span><span class="mf">22.5</span><span class="p">,</span>
+      <span class="ss">condition: </span><span class="s2">"Partly cloudy"</span><span class="p">,</span>
+      <span class="ss">humidity: </span><span class="mf">0.65</span><span class="p">,</span>
+      <span class="ss">forecast: </span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">TravelPlanner</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Plan travel itineraries using available tools"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:destination</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:duration</span><span class="p">,</span> <span class="no">Integer</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"Number of days"</span>
+    <span class="n">const</span> <span class="ss">:budget</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">nilable</span><span class="p">(</span><span class="no">Float</span><span class="p">)</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:itinerary</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:estimated_cost</span><span class="p">,</span> <span class="no">Float</span>
+    <span class="n">const</span> <span class="ss">:weather_considerations</span><span class="p">,</span> <span class="no">String</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># Create a ReAct agent with typed tools</span>
+<span class="n">planner</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">ReAct</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
+  <span class="ss">signature: </span><span class="no">TravelPlanner</span><span class="p">,</span>
+  <span class="ss">tools: </span><span class="p">[</span><span class="no">WeatherTool</span><span class="p">.</span><span class="nf">new</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">planner</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span>
+  <span class="ss">destination: </span><span class="s2">"Tokyo"</span><span class="p">,</span>
+  <span class="ss">duration: </span><span class="mi">5</span><span class="p">,</span>
+  <span class="ss">budget: </span><span class="mf">2000.0</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>The beauty here is that <strong>everything is typed Ruby</strong>—no YAML configs, no JSON schemas, just Ruby classes with Sorbet types that provide both static analysis and runtime validation.</p>
+
+<h2 id="adding-error-handling">Adding Error Handling</h2>
+
+<p>Real systems need to handle edge cases gracefully:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">RobustQuestionAnswering</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Answer questions with error handling and uncertainty"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:question</span><span class="p">,</span> <span class="no">String</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:answer</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"Best available answer"</span>
+    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"Confidence level (0.0-1.0)"</span>
+    <span class="n">const</span> <span class="ss">:status</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">enum: </span><span class="p">[</span><span class="s2">"answered"</span><span class="p">,</span> <span class="s2">"uncertain"</span><span class="p">,</span> <span class="s2">"insufficient_info"</span><span class="p">,</span> <span class="s2">"unclear_question"</span><span class="p">]</span>
+    <span class="n">const</span> <span class="ss">:clarification_needed</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">nilable</span><span class="p">(</span><span class="no">String</span><span class="p">),</span> <span class="ss">desc: </span><span class="s2">"What clarification would help?"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">robust_qa</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">RobustQuestionAnswering</span><span class="p">)</span>
+
+<span class="c1"># Test with a vague question</span>
+<span class="n">vague_result</span> <span class="o">=</span> <span class="n">robust_qa</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"What about that thing?"</span><span class="p">)</span>
+
+<span class="nb">puts</span> <span class="n">vague_result</span><span class="p">.</span><span class="nf">status</span>                 <span class="c1"># "unclear_question"</span>
+<span class="nb">puts</span> <span class="n">vague_result</span><span class="p">.</span><span class="nf">clarification_needed</span>   <span class="c1"># "Could you specify what 'thing' you're referring to?"</span>
+<span class="nb">puts</span> <span class="n">vague_result</span><span class="p">.</span><span class="nf">confidence</span>            <span class="c1"># 0.1</span>
+</code></pre></div></div>
+
+<h2 id="testing-your-system">Testing Your System</h2>
+
+<p>Here’s the beautiful part—you can now test AI behavior systematically:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># spec/qa_system_spec.rb</span>
+<span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="s2">"Question Answering System"</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:qa_system</span><span class="p">)</span> <span class="p">{</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">QuestionAnswering</span><span class="p">)</span> <span class="p">}</span>
+  
+  <span class="n">describe</span> <span class="s2">"factual questions"</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">"answers basic facts confidently"</span> <span class="k">do</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">qa_system</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"What is 2 + 2?"</span><span class="p">)</span>
+      
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">answer</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="s2">"4"</span><span class="p">)</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">confidence</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span> <span class="o">&gt;</span> <span class="mf">0.9</span>
+    <span class="k">end</span>
+    
+    <span class="n">it</span> <span class="s2">"handles mathematical concepts"</span> <span class="k">do</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">qa_system</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"What is the square root of 16?"</span><span class="p">)</span>
+      
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">answer</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="s2">"4"</span><span class="p">)</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">confidence</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span> <span class="o">&gt;</span> <span class="mf">0.8</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  
+  <span class="n">describe</span> <span class="s2">"uncertain questions"</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">"expresses appropriate uncertainty"</span> <span class="k">do</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">qa_system</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"What will happen tomorrow?"</span><span class="p">)</span>
+      
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">confidence</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">answer</span><span class="p">).</span><span class="nf">to</span> <span class="kp">include</span><span class="p">(</span><span class="s2">"uncertain"</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  
+  <span class="n">describe</span> <span class="s2">"invalid questions"</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">"handles nonsensical input gracefully"</span> <span class="k">do</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">qa_system</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"Colorless green ideas sleep furiously"</span><span class="p">)</span>
+      
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">confidence</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span> <span class="o">&lt;</span> <span class="mf">0.3</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h2 id="what-youve-accomplished">What You’ve Accomplished</h2>
+
+<p>In just a few minutes, you’ve:</p>
+
+<ol>
+  <li><strong>Moved from strings to structure</strong> - Clear interfaces instead of prompt manipulation</li>
+  <li><strong>Gained predictability</strong> - Know exactly what format you’ll get back</li>
+  <li><strong>Enabled systematic testing</strong> - Can verify AI behavior like any other code</li>
+  <li><strong>Built error handling</strong> - System degrades gracefully with uncertain inputs</li>
+  <li><strong>Created transparency</strong> - Can see confidence levels and reasoning</li>
+</ol>
+
+<h2 id="reflection-questions">Reflection Questions</h2>
+
+<p>Before moving on, take a moment to think about this transformation:</p>
+
+<p><strong>About Your Current Approach:</strong></p>
+<ul>
+  <li>How much time do you typically spend debugging prompt formatting?</li>
+  <li>What AI systems have you built that feel fragile or unpredictable?</li>
+  <li>How do you currently test AI behavior in your applications?</li>
+</ul>
+
+<p><strong>About This New Approach:</strong></p>
+<ul>
+  <li>What surprises you most about structured AI programming?</li>
+  <li>How might this change your approach to building AI features?</li>
+  <li>What kinds of AI systems would you build if reliability wasn’t a concern?</li>
+</ul>
+
+<h2 id="your-next-steps">Your Next Steps</h2>
+
+<p>You’ve just experienced the foundation of structured AI programming. From here, you can:</p>
+
+<h3 id="-deepen-your-understanding"><strong>🔧 Deepen Your Understanding</strong></h3>
+<p><strong><a href="/foundations/">Core Concepts →</a></strong><br />
+<em>Learn about Chain of Thought, ReAct agents, and module composition</em></p>
+
+<h3 id="️-build-more-complex-systems"><strong>🏗️ Build More Complex Systems</strong></h3>
+<p><strong><a href="/systems/">System Building →</a></strong><br />
+<em>Chain multiple reasoning steps into powerful workflows</em></p>
+
+<h3 id="-create-ai-that-uses-tools"><strong>🤝 Create AI That Uses Tools</strong></h3>
+<p><strong><a href="/collaboration/">Collaboration Patterns →</a></strong><br />
+<em>Build agents that can interact with external systems</em></p>
+
+<h2 id="the-path-forward">The Path Forward</h2>
+
+<p>This simple Q&amp;A system demonstrates the fundamental shift from prompt engineering to AI programming. As you continue learning, you’ll discover how to:</p>
+
+<ul>
+  <li><strong>Chain reasoning steps</strong> for complex problems</li>
+  <li><strong>Build agents</strong> that use tools effectively</li>
+  <li><strong>Create self-improving systems</strong> that optimize over time</li>
+  <li><strong>Compose modules</strong> into sophisticated applications</li>
+</ul>
+
+<p>But the core principle remains the same: <strong>clear interfaces, predictable behavior, systematic testing</strong>.</p>
+
+<hr />
+
+<p><em>“Every complex AI system starts with a simple, reliable foundation. You’ve just built yours.”</em></p>

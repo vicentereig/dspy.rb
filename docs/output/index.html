@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSPy.rb - Build Reliable LLM Applications in Ruby | DSPy.rb Documentation</title>
+  <meta name="description" content="A framework for building predictable LLM applications using composable, type-safe modules">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/styles/index.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="site-title">DSPy.rb Documentation</a>
+      <div class="nav-links">
+        <a href="/getting-started/">Getting Started</a>
+        <a href="/foundations/">Foundations</a>
+        <a href="/systems/">Systems</a>
+        <a href="https://github.com/vicentereig/dspy-rb" target="_blank">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-content">
+    <h1 id="building-llm-applications-that-actually-work">Building LLM Applications That Actually Work</h1>
+
+<p><em>A practical approach to reliable AI programming</em></p>
+
+<h2 id="the-real-problem">The Real Problem</h2>
+
+<p>Most developers I meet are stuck in the same place: their LLM applications work great in demos but fail unpredictably in production.</p>
+
+<p>You’ve probably been there—spending more time debugging prompt edge cases than building features, watching systems that worked perfectly in testing break mysteriously when real users touch them.</p>
+
+<h2 id="what-dspyrb-actually-does">What DSPy.rb Actually Does</h2>
+
+<p>DSPy.rb doesn’t promise to revolutionize how you think about AI. It just gives you tools to build LLM applications that behave predictably:</p>
+
+<ul>
+  <li><strong>Type-safe interfaces</strong> instead of string manipulation</li>
+  <li><strong>Composable modules</strong> instead of monolithic prompts</li>
+  <li><strong>Systematic testing</strong> instead of trial-and-error debugging</li>
+  <li><strong>Clear error handling</strong> instead of mysterious failures</li>
+</ul>
+
+<p>It’s not magic. It’s just better engineering.</p>
+
+<h2 id="where-most-developers-are">Where Most Developers Are</h2>
+
+<p>Based on working with teams building LLM applications, most developers fall into these categories:</p>
+
+<p><strong>🔧 The String Wrangler</strong></p>
+<ul>
+  <li>Everything is prompt engineering</li>
+  <li>Debugging means staring at logs</li>
+  <li>Success feels random</li>
+</ul>
+
+<p><strong>📝 The Template Builder</strong></p>
+<ul>
+  <li>Some structure with string templates</li>
+  <li>Still fragile with edge cases</li>
+  <li>Hard to test systematically</li>
+</ul>
+
+<p><strong>🏗️ The Framework User</strong> <em>(most teams)</em></p>
+<ul>
+  <li>Using AI libraries without understanding internals</li>
+  <li>Copy-pasting examples from docs</li>
+  <li>Unpredictable system behavior</li>
+</ul>
+
+<p><strong>⚙️ The Systems Builder</strong> <em>(where DSPy.rb helps you get)</em></p>
+<ul>
+  <li>Building from composable, tested modules</li>
+  <li>Predictable system behavior</li>
+  <li>Reliable production deployments</li>
+</ul>
+
+<p><strong>🏢 The Production Engineer</strong> <em>(the goal)</em></p>
+<ul>
+  <li>Systems that monitor and improve themselves</li>
+  <li>Clear patterns for common problems</li>
+  <li>Confidence in AI system behavior</li>
+</ul>
+
+<p>Which category describes your current experience?</p>
+
+<h2 id="how-to-get-started">How to Get Started</h2>
+
+<h3 id="-stop-fighting-string-formatting"><strong>🚀 Stop Fighting String Formatting</strong></h3>
+
+<p><strong><a href="/getting-started/">Getting Started →</a></strong><br />
+<em>Your first structured LLM program in 10 minutes</em></p>
+
+<p>See how type-safe signatures eliminate most prompt engineering headaches.</p>
+
+<h3 id="-learn-the-core-patterns"><strong>🔧 Learn the Core Patterns</strong></h3>
+
+<p><strong><a href="/foundations/">Foundations →</a></strong><br />
+<em>The building blocks that actually work in production</em></p>
+
+<p>Understand Signatures, Predict, Chain of Thought, and ReAct—the modules that make LLM applications reliable.</p>
+
+<h3 id="️-build-production-systems"><strong>🏗️ Build Production Systems</strong></h3>
+
+<p><strong><a href="/systems/">System Building →</a></strong><br />
+<em>From proof-of-concept to production-ready</em></p>
+
+<p>Learn to chain reasoning steps, handle errors gracefully, and test LLM systems like any other code.</p>
+
+<h3 id="-use-ai-tools-effectively"><strong>🤖 Use AI Tools Effectively</strong></h3>
+
+<p><strong><a href="/collaboration/">Agent Patterns →</a></strong><br />
+<em>When LLMs need to interact with the real world</em></p>
+
+<p>Build agents that use tools reliably, not just when they feel like it.</p>
+
+<h2 id="why-ruby-for-llm-applications">Why Ruby for LLM Applications?</h2>
+
+<p>Python dominates AI development, but Ruby brings unique advantages:</p>
+
+<ul>
+  <li><strong>Clear, readable code</strong> - LLM logic stays understandable</li>
+  <li><strong>Idiomatic Sorbet types</strong> - Define schemas in Ruby, not JSON or YAML configs</li>
+  <li><strong>Runtime type validation</strong> - Catch interface errors before they hit production</li>
+  <li><strong>Mature testing culture</strong> - Our 226+ specs prove everything works</li>
+  <li><strong>Production-ready ecosystem</strong> - Rails, Sidekiq, etc. for real applications</li>
+</ul>
+
+<p>Here’s what makes DSPy.rb different—<strong>everything is just Ruby</strong>:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Define LLM interfaces using familiar Ruby syntax</span>
+<span class="k">class</span> <span class="nc">EmailClassifier</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:subject</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:body</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:priority</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">nilable</span><span class="p">(</span><span class="no">Symbol</span><span class="p">),</span> <span class="ss">enum: </span><span class="p">[</span><span class="ss">:low</span><span class="p">,</span> <span class="ss">:high</span><span class="p">],</span> <span class="ss">default: :low</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:category</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">enum: </span><span class="p">[</span><span class="s2">"billing"</span><span class="p">,</span> <span class="s2">"technical"</span><span class="p">,</span> <span class="s2">"general"</span><span class="p">]</span>
+    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span>
+    <span class="n">const</span> <span class="ss">:suggested_actions</span><span class="p">,</span> <span class="no">T</span><span class="o">::</span><span class="no">Array</span><span class="p">[</span><span class="no">String</span><span class="p">]</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># ReAct tools also use Ruby types</span>
+<span class="k">class</span> <span class="nc">DatabaseQuery</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Tool</span>
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:query</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:limit</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">nilable</span><span class="p">(</span><span class="no">Integer</span><span class="p">),</span> <span class="ss">default: </span><span class="mi">10</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:results</span><span class="p">,</span> <span class="no">T</span><span class="o">::</span><span class="no">Array</span><span class="p">[</span><span class="no">T</span><span class="o">::</span><span class="no">Hash</span><span class="p">[</span><span class="no">String</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">untyped</span><span class="p">]]</span>
+    <span class="n">const</span> <span class="ss">:execution_time_ms</span><span class="p">,</span> <span class="no">Float</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>No external schema languages. No configuration files. Just Ruby code that’s statically analyzed by Sorbet and validated at runtime.</p>
+
+<p>More importantly: Ruby’s focus on developer productivity extends naturally to building reliable LLM applications.</p>
+
+<h2 id="real-engineering-not-magic">Real Engineering, Not Magic</h2>
+
+<p>This documentation focuses on practical engineering:</p>
+
+<ul>
+  <li><strong>Working examples</strong> from our comprehensive test suite</li>
+  <li><strong>Common failure patterns</strong> and how to avoid them</li>
+  <li><strong>Production debugging</strong> when things go wrong</li>
+  <li><strong>Performance considerations</strong> that actually matter</li>
+</ul>
+
+<p>The goal isn’t philosophical transformation—it’s building LLM applications you can actually deploy with confidence.</p>
+
+<h2 id="the-community">The Community</h2>
+
+<p>Building reliable LLM applications is still a new problem space:</p>
+
+<ul>
+  <li><strong>📚 <a href="/practice/">Learn from Real Examples</a></strong> - Case studies and production stories</li>
+  <li><strong>🛠️ <a href="https://github.com/vicentereig/dspy.rb">Contribute</a></strong> - Help solve common problems</li>
+  <li><strong>💬 <a href="https://github.com/vicentereig/dspy.rb/discussions">Discuss</a></strong> - Share what you’ve learned</li>
+</ul>
+
+<h2 id="ready-to-start">Ready to Start?</h2>
+
+<p>The main question isn’t “How do I use DSPy.rb?” but <strong>“How do I build LLM applications that actually work in production?”</strong></p>
+
+<p>Start with the problems you’re currently facing. Notice where your current approach breaks down. Focus on building systems you can actually trust.</p>
+
+<p><strong><a href="/getting-started/">Start Building →</a></strong></p>
+
+<hr />
+
+<p><em>“LLM applications don’t need to be unreliable. They just need better engineering.”</em></p>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>&copy; 2025 DSPy.rb Documentation</p>
+      <p>Built with <a href="https://bridgetownrb.com/" target="_blank">Bridgetown</a></p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/javascript/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+# Bridgetown Configuration File
+#
+# URL is used by Bridgetown to generate canonical URLs for your site.
+# For localhost/development, you don't need to set this variable.
+url: "" # the base hostname & protocol for your site, e.g. https://domain.com
+title: "DSPy.rb Documentation"
+description: "Structured programming for large language models in Ruby"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Frontend bundling
+frontend_bundling: esbuild
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "default"
+
+# Plugins
+plugins:
+  - bridgetown-builder
+
+# Development settings
+livereload: true
+show_drafts: false
+
+# Source configuration
+source: src
+destination: output
+
+# Exclude files/folders from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .sass-cache
+  - .bridgetown-cache
+  - gemfiles
+  - package.json
+  - package-lock.json
+  - bun.lockb
+  - esbuild.config.js
+  - frontend

@@ -1,3 +1,4 @@
+.claude
 log/*.log
 .idea
 .byebug_history

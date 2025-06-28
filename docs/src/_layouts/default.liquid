@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="{{ '/styles/index.css' | relative_url }}">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{{ '/favicon.ico' | relative_url }}">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="{{ '/' | relative_url }}" class="site-title">{{ site.title }}</a>
+      <div class="nav-links">
+        <a href="{{ '/getting-started/' | relative_url }}">Getting Started</a>
+        <a href="{{ '/foundations/' | relative_url }}">Foundations</a>
+        <a href="{{ '/systems/' | relative_url }}">Systems</a>
+        <a href="https://github.com/vicentereig/dspy-rb" target="_blank">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-content">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>&copy; {{ 'now' | date: '%Y' }} DSPy.rb Documentation</p>
+      <p>Built with <a href="https://bridgetownrb.com/" target="_blank">Bridgetown</a></p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{{ '/javascript/index.js' | relative_url }}"></script>
+</body>
+</html>

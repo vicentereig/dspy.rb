@@ -1,0 +1,17 @@
+{
+  "name": "dspy-rb-docs",
+  "version": "1.0.0",
+  "description": "Documentation site for DSPy.rb",
+  "scripts": {
+    "dev": "bridgetown start",
+    "build": "bridgetown build",
+    "build:js": "bun esbuild.config.js",
+    "watch:js": "bun esbuild.config.js --watch",
+    "clean": "bridgetown clean",
+    "serve": "bridgetown start"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.12"
+  },
+  "private": true
+}

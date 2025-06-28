@@ -1,0 +1,152 @@
+<h1 id="building-your-first-reliable-llm-system">Building Your First Reliable LLM System</h1>
+
+<p><em>Moving from “crossing fingers” to “shipping with confidence”</em></p>
+
+<h2 id="the-problem-most-teams-face">The Problem Most Teams Face</h2>
+
+<p>If you’ve built LLM applications before, you’ve probably hit this wall: your demo works perfectly, but production is a nightmare of edge cases and unpredictable failures.</p>
+
+<p>You’re not alone. Most developers I work with are dealing with:</p>
+<ul>
+  <li>Prompts that work in testing but fail with real user data</li>
+  <li>Hours spent debugging string formatting instead of building features</li>
+  <li>LLM responses that can’t be parsed reliably</li>
+  <li>No systematic way to test AI behavior</li>
+</ul>
+
+<h2 id="what-actually-changes">What Actually Changes</h2>
+
+<p>DSPy.rb doesn’t promise to revolutionize how you think about AI. It just gives you better tools for building LLM applications that work predictably.</p>
+
+<p>Instead of treating LLMs as magic black boxes that respond to strings, you treat them as programmable modules with clear interfaces—just like any other part of your system.</p>
+
+<p>Here’s the shift:</p>
+<ul>
+  <li><strong>Before</strong>: Hope your prompt formatting works</li>
+  <li><strong>After</strong>: Define clear interfaces and let the system handle prompting</li>
+</ul>
+
+<h2 id="your-first-structured-program">Your First Structured Program</h2>
+
+<p>Let’s see this in practice. Here’s how most of us start:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># The fragile approach</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="s2">"You are a helpful assistant. Answer this question: </span><span class="si">#{</span><span class="n">user_question</span><span class="si">}</span><span class="s2">"</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+<span class="c1"># Cross your fingers and hope it parses correctly...</span>
+</code></pre></div></div>
+
+<p>Here’s the same functionality, but structured:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Define what you want clearly</span>
+<span class="k">class</span> <span class="nc">QuestionAnswering</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Answer questions accurately and concisely"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:question</span><span class="p">,</span> <span class="no">String</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:answer</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"A clear, concise answer"</span>
+    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span><span class="p">,</span> <span class="ss">desc: </span><span class="s2">"How confident are you? (0.0-1.0)"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># Create a predictable system</span>
+<span class="n">qa_system</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">QuestionAnswering</span><span class="p">)</span>
+
+<span class="c1"># Use it reliably</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">qa_system</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"What is the capital of France?"</span><span class="p">)</span>
+<span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">answer</span>      <span class="c1"># "Paris"</span>
+<span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">confidence</span>  <span class="c1"># 0.95</span>
+</code></pre></div></div>
+
+<h2 id="what-you-just-gained">What You Just Gained</h2>
+
+<p>This isn’t just different syntax—you solved several real problems:</p>
+
+<ol>
+  <li><strong>Clear Interface</strong>: You defined exactly what goes in and what comes out</li>
+  <li><strong>Type Safety</strong>: The system validates inputs and outputs automatically using Sorbet runtime types</li>
+  <li><strong>Structured Results</strong>: No more parsing unpredictable response formats</li>
+  <li><strong>Systematic Testing</strong>: You can write real tests for this behavior</li>
+</ol>
+
+<p>Notice how the schema definitions use <strong>idiomatic Ruby with Sorbet types</strong>—no JSON schemas or configuration files needed. The <code class="highlighter-rouge">const</code> declarations create runtime type validation that integrates seamlessly with your existing Ruby codebase.</p>
+
+<h2 id="testing-your-llm-system">Testing Your LLM System</h2>
+
+<p>Here’s the part that changes everything—you can now test LLM behavior systematically:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">QuestionAnswering</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:qa_system</span><span class="p">)</span> <span class="p">{</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">QuestionAnswering</span><span class="p">)</span> <span class="p">}</span>
+  
+  <span class="n">it</span> <span class="s2">"answers factual questions confidently"</span> <span class="k">do</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">qa_system</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"What is 2 + 2?"</span><span class="p">)</span>
+    
+    <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">answer</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="s2">"4"</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">confidence</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span> <span class="o">&gt;</span> <span class="mf">0.9</span>
+  <span class="k">end</span>
+  
+  <span class="n">it</span> <span class="s2">"expresses uncertainty for ambiguous questions"</span> <span class="k">do</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">qa_system</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">question: </span><span class="s2">"What's the best programming language?"</span><span class="p">)</span>
+    
+    <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">confidence</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span> <span class="o">&lt;</span> <span class="mf">0.7</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>No more manual testing. No more “hope it works in production.” Just systematic verification like any other code.</p>
+
+<h2 id="common-questions">Common Questions</h2>
+
+<p><strong>“Isn’t this just more complex prompting?”</strong></p>
+
+<p>No—you’re not writing prompts at all. DSPy.rb generates the prompts based on your signature. You focus on interface design instead of string manipulation.</p>
+
+<p><strong>“Does this actually work with real LLMs?”</strong></p>
+
+<p>Yes. Our test suite has 226+ specs running against real language models. The structured approach is more reliable than manual prompting, not less.</p>
+
+<p><strong>“What about complex reasoning tasks?”</strong></p>
+
+<p>That’s where DSPy.rb really shines. You can chain reasoning steps, add tool usage, and build sophisticated workflows—all with the same structured approach.</p>
+
+<h2 id="what-youve-learned">What You’ve Learned</h2>
+
+<p>In 10 minutes, you’ve:</p>
+
+<ul>
+  <li>Moved from string manipulation to structured interfaces</li>
+  <li>Gained the ability to test LLM behavior systematically</li>
+  <li>Built a foundation for more complex reasoning systems</li>
+  <li>Eliminated most prompt engineering headaches</li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>This is just the foundation. From here you can:</p>
+
+<h3 id="-learn-the-core-building-blocks"><strong>🔧 Learn the Core Building Blocks</strong></h3>
+<p><strong><a href="/foundations/">Foundations →</a></strong><br />
+<em>Signatures, Predict, Chain of Thought, and ReAct modules</em></p>
+
+<h3 id="️-build-multi-step-systems"><strong>🏗️ Build Multi-Step Systems</strong></h3>
+<p><strong><a href="/systems/">System Building →</a></strong><br />
+<em>Chain reasoning steps into production workflows</em></p>
+
+<h3 id="-add-tool-usage"><strong>🤖 Add Tool Usage</strong></h3>
+<p><strong><a href="/collaboration/">Agent Patterns →</a></strong><br />
+<em>Build LLMs that interact with external systems</em></p>
+
+<h2 id="the-engineering-reality">The Engineering Reality</h2>
+
+<p>Building reliable LLM applications isn’t about philosophical transformation—it’s about applying good engineering practices to a new type of system.</p>
+
+<p>DSPy.rb gives you the tools. The rest is just software engineering.</p>
+
+<p><strong>Ready to build something that actually works?</strong></p>
+
+<hr />
+
+<p><em>“LLM applications are just software. They should be built like software.”</em></p>

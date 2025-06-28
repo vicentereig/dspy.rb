@@ -1,0 +1,272 @@
+<h1 id="why-prompt-engineering-doesnt-scale">Why Prompt Engineering Doesn’t Scale</h1>
+
+<p><em>And how to build LLM applications that actually work in production</em></p>
+
+<h2 id="the-problem-everyone-faces">The Problem Everyone Faces</h2>
+
+<p>Let’s be honest about something most LLM tutorials don’t mention: <strong>prompt engineering breaks down in production</strong>.</p>
+
+<p>If you’ve built LLM applications before, you’ve probably experienced this cycle:</p>
+<ol>
+  <li>Craft a prompt that works perfectly in testing</li>
+  <li>Deploy it with confidence</li>
+  <li>Watch it fail in weird, unpredictable ways with real user data</li>
+  <li>Spend hours debugging string concatenation instead of building features</li>
+  <li>Add more special cases and hope for the best</li>
+</ol>
+
+<p>This isn’t a skill problem—it’s an approach problem.</p>
+
+<h2 id="why-string-based-development-fails">Why String-Based Development Fails</h2>
+
+<p>When you’re doing prompt engineering, you’re essentially:</p>
+
+<ul>
+  <li><strong>Programming in natural language</strong> (which is ambiguous by design)</li>
+  <li><strong>Debugging without logs</strong> (you can’t see the LLM’s “reasoning”)</li>
+  <li><strong>Testing by running examples</strong> (instead of systematic verification)</li>
+  <li><strong>Scaling by adding complexity</strong> (more edge cases = longer prompts)</li>
+</ul>
+
+<p>It’s like building a web application by concatenating HTML strings instead of using templates and components.</p>
+
+<h2 id="the-engineering-alternative">The Engineering Alternative</h2>
+
+<p>Here’s what changes when you treat LLMs as programmable modules instead of text processors:</p>
+
+<h3 id="from-string-manipulation-to-interfaces"><strong>From String Manipulation to Interfaces</strong></h3>
+
+<p><strong>Prompt Engineering Approach:</strong></p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Fragile string manipulation</span>
+<span class="k">def</span> <span class="nf">analyze_sentiment</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+  <span class="n">prompt</span> <span class="o">=</span> <span class="s2">"Analyze sentiment of: </span><span class="si">#{</span><span class="n">text</span><span class="si">}</span><span class="s2">. Return 'positive', 'negative', or 'neutral'."</span>
+  
+  <span class="n">response</span> <span class="o">=</span> <span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+  <span class="c1"># Hope it formats correctly...</span>
+  <span class="n">parse_sentiment</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>  <span class="c1"># Pray this doesn't crash</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p><strong>Structured Programming Approach:</strong></p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Clear, typed interface</span>
+<span class="k">class</span> <span class="nc">SentimentAnalysis</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Analyze the emotional tone of text"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:text</span><span class="p">,</span> <span class="no">String</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:sentiment</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">enum: </span><span class="p">[</span><span class="s2">"positive"</span><span class="p">,</span> <span class="s2">"negative"</span><span class="p">,</span> <span class="s2">"neutral"</span><span class="p">]</span>
+    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span>
+    <span class="n">const</span> <span class="ss">:reasoning</span><span class="p">,</span> <span class="no">String</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">analyzer</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">SentimentAnalysis</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">analyzer</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">text: </span><span class="s2">"I love Ruby programming!"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="from-hope-to-verification"><strong>From Hope to Verification</strong></h3>
+
+<p><strong>Prompt Engineering:</strong></p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Cross your fingers</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+<span class="c1"># Maybe it worked? Maybe it didn't?</span>
+</code></pre></div></div>
+
+<p><strong>Structured Programming:</strong></p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Systematic verification</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">analyzer</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">text: </span><span class="s2">"..."</span><span class="p">)</span>
+
+<span class="c1"># Type checking happens automatically</span>
+<span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">sentiment</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_in</span><span class="p">([</span><span class="s2">"positive"</span><span class="p">,</span> <span class="s2">"negative"</span><span class="p">,</span> <span class="s2">"neutral"</span><span class="p">])</span>
+<span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">confidence</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_between</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">reasoning</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_a</span><span class="p">(</span><span class="no">String</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="from-manual-testing-to-automated-testing"><strong>From Manual Testing to Automated Testing</strong></h3>
+
+<p><strong>Prompt Engineering:</strong></p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Manual testing only</span>
+<span class="nb">puts</span> <span class="s2">"Testing with: 'Great product!'"</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">analyze_sentiment</span><span class="p">(</span><span class="s2">"Great product!"</span><span class="p">)</span>
+<span class="nb">puts</span> <span class="s2">"Response: </span><span class="si">#{</span><span class="n">response</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># Hope it's what you expect</span>
+</code></pre></div></div>
+
+<p><strong>Structured Programming:</strong></p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Systematic test suites</span>
+<span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">SentimentAnalysis</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:analyzer</span><span class="p">)</span> <span class="p">{</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">SentimentAnalysis</span><span class="p">)</span> <span class="p">}</span>
+  
+  <span class="n">it</span> <span class="s2">"identifies positive sentiment"</span> <span class="k">do</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">analyzer</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">text: </span><span class="s2">"This is excellent!"</span><span class="p">)</span>
+    
+    <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">sentiment</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="s2">"positive"</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">confidence</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span> <span class="o">&gt;</span> <span class="mf">0.7</span>
+  <span class="k">end</span>
+  
+  <span class="n">it</span> <span class="s2">"handles edge cases"</span> <span class="k">do</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">analyzer</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">text: </span><span class="s2">""</span><span class="p">)</span>
+    
+    <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">sentiment</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="s2">"neutral"</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">confidence</span><span class="p">).</span><span class="nf">to</span> <span class="n">be</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h2 id="real-world-example-email-classification">Real-World Example: Email Classification</h2>
+
+<p>Let me show you how this plays out with a real system I helped debug.</p>
+
+<h3 id="the-prompt-engineering-version"><strong>The Prompt Engineering Version</strong></h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">EmailClassifier</span>
+  <span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="o">&lt;&lt;~</span><span class="no">PROMPT</span><span class="sh">
+      Classify this email:
+      
+      Subject: </span><span class="si">#{</span><span class="n">email</span><span class="p">[</span><span class="ss">:subject</span><span class="p">]</span><span class="si">}</span><span class="sh">
+      Body: </span><span class="si">#{</span><span class="n">email</span><span class="p">[</span><span class="ss">:body</span><span class="p">]</span><span class="si">}</span><span class="sh">
+      
+      Categories: billing, technical, general, urgent
+      
+      Respond with just the category name.
+</span><span class="no">    PROMPT</span>
+    
+    <span class="n">response</span> <span class="o">=</span> <span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+    <span class="n">response</span><span class="p">.</span><span class="nf">strip</span><span class="p">.</span><span class="nf">downcase</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p><strong>Production problems we hit:</strong></p>
+<ul>
+  <li>Sometimes returned “Billing” instead of “billing” (case sensitivity)</li>
+  <li>Occasionally returned explanations instead of categories</li>
+  <li>Failed when email content had special characters</li>
+  <li>No confidence scores or reasoning visibility</li>
+  <li>Impossible to test edge cases systematically</li>
+</ul>
+
+<h3 id="the-structured-version"><strong>The Structured Version</strong></h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">EmailClassification</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Classify support emails into appropriate categories"</span>
+  
+  <span class="n">input</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:subject</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:body</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:sender_type</span><span class="p">,</span> <span class="no">String</span>
+  <span class="k">end</span>
+  
+  <span class="n">output</span> <span class="k">do</span>
+    <span class="n">const</span> <span class="ss">:category</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">enum: </span><span class="p">[</span><span class="s2">"billing"</span><span class="p">,</span> <span class="s2">"technical"</span><span class="p">,</span> <span class="s2">"general"</span><span class="p">,</span> <span class="s2">"urgent"</span><span class="p">]</span>
+    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span>
+    <span class="n">const</span> <span class="ss">:reasoning</span><span class="p">,</span> <span class="no">String</span>
+    <span class="n">const</span> <span class="ss">:priority</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">enum: </span><span class="p">[</span><span class="s2">"low"</span><span class="p">,</span> <span class="s2">"medium"</span><span class="p">,</span> <span class="s2">"high"</span><span class="p">]</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">classifier</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">EmailClassification</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>What we gained:</strong></p>
+<ul>
+  <li><strong>Guaranteed format</strong> - Always returns expected structure</li>
+  <li><strong>Type validation</strong> - Categories are checked automatically</li>
+  <li><strong>Confidence tracking</strong> - Know when the system is uncertain</li>
+  <li><strong>Reasoning visibility</strong> - Understand decision making</li>
+  <li><strong>Systematic testing</strong> - Comprehensive test coverage</li>
+  <li><strong>Performance tracking</strong> - Monitor accuracy over time</li>
+</ul>
+
+<h2 id="the-engineering-mindset-shift">The Engineering Mindset Shift</h2>
+
+<p>This isn’t about philosophical transformation—it’s about applying standard software engineering practices to LLM applications:</p>
+
+<h3 id="from-llm-as-magic-to-llm-as-module"><strong>From “LLM as Magic” to “LLM as Module”</strong></h3>
+
+<ul>
+  <li><strong>Before</strong>: LLM behavior feels unpredictable and mysterious</li>
+  <li><strong>After</strong>: LLM behavior follows interfaces you can understand and test</li>
+</ul>
+
+<h3 id="from-debug-by-guessing-to-debug-by-analysis"><strong>From “Debug by Guessing” to “Debug by Analysis”</strong></h3>
+
+<ul>
+  <li><strong>Before</strong>: When something breaks, you tweak prompts randomly</li>
+  <li><strong>After</strong>: When something breaks, you examine inputs, outputs, and logs</li>
+</ul>
+
+<h3 id="from-scale-by-complexity-to-scale-by-composition"><strong>From “Scale by Complexity” to “Scale by Composition”</strong></h3>
+
+<ul>
+  <li><strong>Before</strong>: Complex tasks require increasingly complex prompts</li>
+  <li><strong>After</strong>: Complex tasks are built from simple, composable modules</li>
+</ul>
+
+<h2 id="common-concerns">Common Concerns</h2>
+
+<p><strong>“Doesn’t this add complexity?”</strong></p>
+
+<p>Initially, yes. But complexity that’s structured and testable is manageable complexity. Prompt engineering complexity is chaotic and unmaintainable.</p>
+
+<p><strong>“What about performance?”</strong></p>
+
+<p>Structured approaches are typically faster because you’re not parsing free-form text responses. Type validation happens once, not on every response.</p>
+
+<p><strong>“Does this work with all LLMs?”</strong></p>
+
+<p>Yes. DSPy.rb works with any LLM that can follow instructions. The structured approach is more reliable across different models, not less.</p>
+
+<h2 id="your-current-pain-points">Your Current Pain Points</h2>
+
+<p>Think about your existing LLM applications:</p>
+
+<p><strong>Development Issues:</strong></p>
+<ul>
+  <li>How much time do you spend debugging prompt formatting?</li>
+  <li>How often do parsing errors crash your application?</li>
+  <li>How do you test LLM behavior systematically?</li>
+</ul>
+
+<p><strong>Production Issues:</strong></p>
+<ul>
+  <li>What happens when LLMs return unexpected formats?</li>
+  <li>How do you monitor LLM application performance?</li>
+  <li>How do you debug failures in production?</li>
+</ul>
+
+<p><strong>Scaling Issues:</strong></p>
+<ul>
+  <li>How do you handle new edge cases without breaking existing functionality?</li>
+  <li>How do you coordinate LLM development across a team?</li>
+  <li>How do you maintain consistency as complexity grows?</li>
+</ul>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>Ready to move beyond prompt engineering? Here’s how to start:</p>
+
+<h3 id="-learn-the-fundamentals"><strong>🔧 Learn the Fundamentals</strong></h3>
+<p><strong><a href="/foundations/">Core Concepts →</a></strong><br />
+<em>Master the building blocks of structured LLM programming</em></p>
+
+<h3 id="-build-your-first-system"><strong>💻 Build Your First System</strong></h3>
+<p><strong><a href="/getting-started/first-program">First Program →</a></strong><br />
+<em>Hands-on tutorial building a reliable Q&amp;A system</em></p>
+
+<h3 id="️-scale-to-production"><strong>🏗️ Scale to Production</strong></h3>
+<p><strong><a href="/systems/">System Building →</a></strong><br />
+<em>Chain modules into production-ready workflows</em></p>
+
+<h2 id="the-path-forward">The Path Forward</h2>
+
+<p>You don’t need to abandon everything you know about LLMs. You just need better tools for building applications that work reliably.</p>
+
+<p>DSPy.rb gives you those tools. The rest is just good software engineering.</p>
+
+<hr />
+
+<p><em>“The goal isn’t to stop using LLMs. It’s to start engineering with them.”</em></p>

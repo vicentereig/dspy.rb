@@ -1,0 +1,1 @@
+(()=>{console.log("DSPy.rb documentation site loaded");document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll('a[href^="#"]').forEach(n=>{n.addEventListener("click",function(o){let e=this.getAttribute("href");if(e==="#")return;let t=document.querySelector(e);t&&(o.preventDefault(),t.scrollIntoView({behavior:"smooth"}))})})});})();
