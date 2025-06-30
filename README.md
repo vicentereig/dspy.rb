@@ -62,6 +62,7 @@ These are my goals to release v1.0.
 - ✅ New Relic integration - *Done*
 - ✅ Langfuse integration - *Done*
 - 🚧 Ollama support - *In Progress*
+- Agentic Memory support - *In Progress*
 - Documentation website
 - Performance benchmarks
 
