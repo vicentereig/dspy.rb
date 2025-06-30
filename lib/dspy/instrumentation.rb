@@ -35,6 +35,19 @@ module DSPy
         n.register_event('dspy.evaluation.example')
         n.register_event('dspy.evaluation.batch')
         n.register_event('dspy.evaluation.batch_complete')
+        
+        # Optimization events
+        n.register_event('dspy.optimization.start')
+        n.register_event('dspy.optimization.complete')
+        n.register_event('dspy.optimization.trial_start')
+        n.register_event('dspy.optimization.trial_complete')
+        n.register_event('dspy.optimization.bootstrap_start')
+        n.register_event('dspy.optimization.bootstrap_complete')
+        n.register_event('dspy.optimization.instruction_proposal_start')
+        n.register_event('dspy.optimization.instruction_proposal_complete')
+        n.register_event('dspy.optimization.error')
+        n.register_event('dspy.optimization.save')
+        n.register_event('dspy.optimization.load')
       end
     end
 
