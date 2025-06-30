@@ -50,6 +50,18 @@ module DSPy
         n.register_event('dspy.optimization.error')
         n.register_event('dspy.optimization.save')
         n.register_event('dspy.optimization.load')
+        
+        # Storage events
+        n.register_event('dspy.storage.save_start')
+        n.register_event('dspy.storage.save_complete')
+        n.register_event('dspy.storage.save_error')
+        n.register_event('dspy.storage.load_start')
+        n.register_event('dspy.storage.load_complete')
+        n.register_event('dspy.storage.load_error')
+        n.register_event('dspy.storage.delete')
+        n.register_event('dspy.storage.export')
+        n.register_event('dspy.storage.import')
+        n.register_event('dspy.storage.cleanup')
       end
     end
 

@@ -33,5 +33,7 @@ require_relative 'dspy/teleprompt/mipro_v2'
 require_relative 'dspy/subscribers/logger_subscriber'
 require_relative 'dspy/tools'
 require_relative 'dspy/instrumentation'
+require_relative 'dspy/storage/program_storage'
+require_relative 'dspy/storage/storage_manager'
 
 # LoggerSubscriber will be lazy-initialized when first accessed

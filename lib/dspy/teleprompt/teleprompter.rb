@@ -230,10 +230,26 @@ module DSPy
       # Save optimization results if configured
       sig { params(result: OptimizationResult).void }
       def save_results(result)
-        return unless @config.save_intermediate_results && @config.save_path
+        # Legacy file-based saving
+        if @config.save_intermediate_results && @config.save_path
+          File.open(@config.save_path, 'w') do |f|
+            f.write(JSON.pretty_generate(result.to_h))
+          end
+        end
 
-        File.open(@config.save_path, 'w') do |f|
-          f.write(JSON.pretty_generate(result.to_h))
+        # Modern storage system integration
+        if @config.save_intermediate_results
+          storage_manager = DSPy::Storage::StorageManager.instance
+          storage_manager.save_optimization_result(
+            result,
+            tags: [self.class.name.split('::').last.downcase],
+            description: "Optimization by #{self.class.name}",
+            metadata: {
+              teleprompter_class: self.class.name,
+              config: @config.to_h,
+              optimization_duration: result.metadata[:optimization_duration] || 0
+            }
+          )
         end
       end
 
