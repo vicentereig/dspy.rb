@@ -305,7 +305,7 @@ RSpec.describe 'DSPy Instrumentation Integration', :vcr do
     it 'returns empty hash for unsupported providers' do
       mock_response = double('response')
 
-      tokens = DSPy::Instrumentation::TokenTracker.extract_token_usage(mock_response, 'ruby_llm')
+      tokens = DSPy::Instrumentation::TokenTracker.extract_token_usage(mock_response, 'unsupported_provider')
 
       expect(tokens).to be_empty
     end

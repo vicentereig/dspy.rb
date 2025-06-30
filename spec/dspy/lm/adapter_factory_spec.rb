@@ -18,11 +18,10 @@ RSpec.describe DSPy::LM::AdapterFactory do
       expect(adapter.model).to eq('claude-3-sonnet')
     end
 
-    it 'creates RubyLLM adapter for legacy model format' do
-      adapter = described_class.create('gpt-3.5-turbo', api_key: 'test-key')
-      
-      expect(adapter).to be_a(DSPy::LM::RubyLLMAdapter)
-      expect(adapter.model).to eq('gpt-3.5-turbo')
+    it 'raises error for legacy model format without provider' do
+      expect {
+        described_class.create('gpt-3.5-turbo', api_key: 'test-key')
+      }.to raise_error(ArgumentError, /model_id must include provider/)
     end
 
     it 'raises error for unsupported provider' do

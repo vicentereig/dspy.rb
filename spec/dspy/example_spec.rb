@@ -264,55 +264,6 @@ RSpec.describe DSPy::Example do
     end
   end
 
-  describe '.from_legacy_format' do
-    it 'converts structured legacy format' do
-      legacy_examples = [
-        {
-          input: { problem: "3 + 4", difficulty: "Easy" },
-          expected: { answer: "7", explanation: "Add 3 and 4" }
-        },
-        {
-          "input" => { "problem" => "5 × 3", "difficulty" => "Easy" },
-          "expected" => { "answer" => "15", "explanation" => "Multiply 5 by 3" }
-        }
-      ]
-      
-      examples = DSPy::Example.from_legacy_format(ExampleMath, legacy_examples)
-      
-      expect(examples.length).to eq(2)
-      expect(examples[0].input_values).to eq({ problem: "3 + 4", difficulty: "Easy" })
-      expect(examples[1].expected_values).to eq({ answer: "15", explanation: "Multiply 5 by 3" })
-    end
-
-    it 'converts flat legacy format' do
-      legacy_examples = [
-        {
-          problem: "6 - 2",
-          difficulty: "Easy",
-          answer: "4",
-          explanation: "Subtract 2 from 6"
-        }
-      ]
-      
-      examples = DSPy::Example.from_legacy_format(ExampleMath, legacy_examples)
-      
-      expect(examples.length).to eq(1)
-      expect(examples[0].input_values).to eq({ problem: "6 - 2", difficulty: "Easy" })
-      expect(examples[0].expected_values).to eq({ answer: "4", explanation: "Subtract 2 from 6" })
-    end
-
-    it 'assigns automatic IDs when not provided' do
-      legacy_examples = [
-        { input: { problem: "1 + 1", difficulty: "Easy" }, expected: { answer: "2", explanation: "Add" } },
-        { input: { problem: "2 + 2", difficulty: "Easy" }, expected: { answer: "4", explanation: "Add" } }
-      ]
-      
-      examples = DSPy::Example.from_legacy_format(ExampleMath, legacy_examples)
-      
-      expect(examples[0].id).to eq("example_0")
-      expect(examples[1].id).to eq("example_1")
-    end
-  end
 
   describe '.validate_batch' do
     it 'validates multiple examples successfully' do

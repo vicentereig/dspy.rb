@@ -16,10 +16,10 @@ RSpec.describe DSPy::LM do
       expect(lm.instance_variable_get('@adapter')).to be_a(DSPy::LM::AnthropicAdapter)
     end
 
-    it 'creates RubyLLM adapter for legacy model format' do
-      lm = described_class.new('gpt-3.5-turbo', api_key: 'test-key')
-      
-      expect(lm.instance_variable_get('@adapter')).to be_a(DSPy::LM::RubyLLMAdapter)
+    it 'raises error for legacy model format without provider' do
+      expect {
+        described_class.new('gpt-3.5-turbo', api_key: 'test-key')
+      }.to raise_error(ArgumentError, /model_id must include provider/)
     end
 
     it 'raises error for unsupported provider' do
@@ -95,10 +95,10 @@ RSpec.describe DSPy::LM do
         expect(model).to eq('gpt-4')
       end
 
-      it 'handles legacy format without provider' do
-        provider, model = lm.send(:parse_model_id, 'gpt-3.5-turbo')
-        expect(provider).to eq('ruby_llm')
-        expect(model).to eq('gpt-3.5-turbo')
+      it 'raises error for legacy format without provider' do
+        expect {
+          lm.send(:parse_model_id, 'gpt-3.5-turbo')
+        }.to raise_error(ArgumentError, /model_id must include provider/)
       end
 
       it 'handles complex model names with multiple slashes' do

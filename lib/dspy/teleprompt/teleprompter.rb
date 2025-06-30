@@ -174,22 +174,13 @@ module DSPy
         validate_examples(valset, "validation") if valset && valset.any?
       end
 
-      # Ensure examples are properly typed (convert legacy formats if needed)
+      # Ensure examples are properly typed (only DSPy::Example instances supported)
       sig { params(examples: T::Array[T.untyped], signature_class: T.nilable(T.class_of(Signature))).returns(T::Array[DSPy::Example]) }
       def ensure_typed_examples(examples, signature_class = nil)
         # If examples are already DSPy::Example objects, return as-is
         return examples if examples.all? { |ex| ex.is_a?(DSPy::Example) }
 
-        # Infer signature class if not provided
-        unless signature_class
-          # Try to get signature from program if available
-          signature_class = infer_signature_class(examples)
-        end
-
-        raise ArgumentError, "Cannot determine signature class for examples" unless signature_class
-
-        # Convert legacy examples to DSPy::Example objects
-        DSPy::Example.from_legacy_format(signature_class, examples)
+        raise ArgumentError, "All examples must be DSPy::Example instances. Legacy format support has been removed. Please convert your examples to use the structured format with :input and :expected keys."
       end
 
       # Create evaluator for given examples and metric
@@ -285,44 +276,20 @@ module DSPy
           # Already validated
           return
         when Hash
-          # Check for required structure
+          # Only support structured format with :input and :expected keys
           if example.key?(:input) && example.key?(:expected)
-            # Structured format is valid
             return
           elsif example.key?('input') && example.key?('expected')
-            # String key structured format is valid
             return
-          else
-            # Check if it looks like a flat format with both input and output fields
-            # This is a heuristic - we'll validate properly during conversion
-            return if example.keys.length > 1
           end
         else
           # Check if it's an object with the right methods
           return if example.respond_to?(:input) && example.respond_to?(:expected)
         end
 
-        raise ArgumentError, "Invalid #{context}: must be DSPy::Example, structured hash, or convertible object"
+        raise ArgumentError, "Invalid #{context}: must be DSPy::Example or structured hash with :input and :expected keys. Legacy flat format is no longer supported."
       end
 
-      # Try to infer signature class from examples
-      sig { params(examples: T::Array[T.untyped]).returns(T.nilable(T.class_of(Signature))) }
-      def infer_signature_class(examples)
-        # Look for signature_class in examples
-        examples.each do |example|
-          case example
-          when DSPy::Example
-            return example.signature_class
-          when Hash
-            if example[:signature_class] && example[:signature_class].is_a?(Class)
-              return example[:signature_class]
-            end
-          end
-        end
-
-        # Could not infer
-        nil
-      end
 
       # Create a default metric for examples
       sig { params(examples: T::Array[T.untyped]).returns(T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean))) }

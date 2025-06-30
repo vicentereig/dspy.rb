@@ -214,11 +214,7 @@ module DSPy
       def self.ensure_typed_examples(examples)
         return examples if examples.all? { |ex| ex.is_a?(DSPy::Example) }
         
-        # Try to infer signature class from examples
-        signature_class = infer_signature_class(examples)
-        raise ArgumentError, "Cannot determine signature class for examples" unless signature_class
-        
-        DSPy::Example.from_legacy_format(signature_class, examples)
+        raise ArgumentError, "All examples must be DSPy::Example instances. Legacy format support has been removed. Please convert your examples to use the structured format with :input and :expected keys."
       end
 
       # Generate successful examples through program execution
@@ -330,22 +326,6 @@ module DSPy
         )
       end
 
-      # Try to infer signature class from examples
-      sig { params(examples: T::Array[T.untyped]).returns(T.nilable(T.class_of(DSPy::Signature))) }
-      def self.infer_signature_class(examples)
-        examples.each do |example|
-          case example
-          when DSPy::Example
-            return example.signature_class
-          when Hash
-            if example[:signature_class] && example[:signature_class].is_a?(Class)
-              return example[:signature_class]
-            end
-          end
-        end
-        
-        nil
-      end
 
       # Create default metric for examples
       sig { params(examples: T::Array[T.untyped]).returns(T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean))) }

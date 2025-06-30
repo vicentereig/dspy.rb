@@ -7,8 +7,7 @@ module DSPy
       # Maps provider prefixes to adapter classes
       ADAPTER_MAP = {
         'openai' => 'OpenAIAdapter',
-        'anthropic' => 'AnthropicAdapter',
-        'ruby_llm' => 'RubyLLMAdapter'
+        'anthropic' => 'AnthropicAdapter'
       }.freeze
 
       class << self
@@ -27,13 +26,12 @@ module DSPy
 
         # Parse model_id to determine provider and model
         def parse_model_id(model_id)
-          if model_id.include?('/')
-            provider, model = model_id.split('/', 2)
-            [provider, model]
-          else
-            # Legacy format: assume ruby_llm for backward compatibility
-            ['ruby_llm', model_id]
+          unless model_id.include?('/')
+            raise ArgumentError, "model_id must include provider (e.g., 'openai/gpt-4', 'anthropic/claude-3'). Legacy format without provider is no longer supported."
           end
+          
+          provider, model = model_id.split('/', 2)
+          [provider, model]
         end
 
         def get_adapter_class(provider)

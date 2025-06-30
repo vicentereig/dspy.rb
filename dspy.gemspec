@@ -31,9 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "openai", "~> 0.9.0"
   spec.add_dependency "anthropic", "~> 1.1.0"
 
-  # Legacy compatibility (optional)
-  spec.add_dependency "ruby_llm", "~> 1.0"
-
   # Sorbet integration dependencies
   spec.add_dependency "sorbet-runtime", "~> 0.5"
   spec.add_dependency "sorbet-schema", "~> 0.3"

@@ -13,7 +13,6 @@ require_relative 'instrumentation/token_tracker'
 # Load adapters
 require_relative 'lm/adapters/openai_adapter'
 require_relative 'lm/adapters/anthropic_adapter'
-require_relative 'lm/adapters/ruby_llm_adapter'
 
 module DSPy
   class LM
@@ -80,13 +79,12 @@ module DSPy
     private
 
     def parse_model_id(model_id)
-      if model_id.include?('/')
-        provider, model = model_id.split('/', 2)
-        [provider, model]
-      else
-        # Legacy format: assume ruby_llm for backward compatibility
-        ['ruby_llm', model_id]
+      unless model_id.include?('/')
+        raise ArgumentError, "model_id must include provider (e.g., 'openai/gpt-4', 'anthropic/claude-3'). Legacy format without provider is no longer supported."
       end
+      
+      provider, model = model_id.split('/', 2)
+      [provider, model]
     end
 
     def build_messages(inference_module, input_values)

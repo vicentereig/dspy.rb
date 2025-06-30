@@ -38,7 +38,7 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **Rollback Protection** - Automatic rollback on performance degradation
 
 **Developer Experience:**
-- OpenAI and Anthropic support via [Ruby LLM](https://github.com/crmne/ruby_llm)
+- OpenAI and Anthropic support via official SDKs
 - Runtime type checking with [Sorbet](https://sorbet.org/)
 - Type-safe tool definitions for ReAct agents
 - Comprehensive instrumentation and observability
@@ -398,22 +398,6 @@ puts validation.valid?     # => true
 puts validation.errors     # => []
 ```
 
-### Legacy Format Support
-
-Don't worry about migrating existing training data - DSPy.rb handles legacy formats automatically:
-
-```ruby
-# You can still use hash-based examples
-legacy_examples = [
-  {
-    input: { problem: "What is 2 + 2?" },
-    expected: { answer: 4, explanation: "Add 2 and 2" }
-  }
-]
-
-# DSPy automatically converts them when needed
-DSPy::Example.from_legacy_format(MathWord, legacy_examples)
-```
 
 ## Evaluation Framework
 

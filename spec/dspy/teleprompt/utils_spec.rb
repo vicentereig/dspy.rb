@@ -280,8 +280,8 @@ RSpec.describe DSPy::Teleprompt::Utils do
         expect(result.first).to be_a(DSPy::Example)
       end
 
-      it 'converts legacy hash format' do
-        legacy_examples = [
+      it 'raises error for non-DSPy::Example objects' do
+        non_example_objects = [
           {
             input: { problem: "test problem" },
             expected: { answer: 42, explanation: "test explanation" },
@@ -289,18 +289,17 @@ RSpec.describe DSPy::Teleprompt::Utils do
           }
         ]
 
-        result = DSPy::Teleprompt::Utils.send(:ensure_typed_examples, legacy_examples)
-        
-        expect(result.first).to be_a(DSPy::Example)
-        expect(result.first.signature_class).to eq(BootstrapMath)
+        expect {
+          DSPy::Teleprompt::Utils.send(:ensure_typed_examples, non_example_objects)
+        }.to raise_error(ArgumentError, /All examples must be DSPy::Example instances/)
       end
 
-      it 'raises error when signature cannot be inferred' do
-        legacy_examples = [{ problem: "test", answer: "test" }]
+      it 'raises error for invalid objects' do
+        invalid_examples = [{ problem: "test", answer: "test" }]
         
         expect {
-          DSPy::Teleprompt::Utils.send(:ensure_typed_examples, legacy_examples)
-        }.to raise_error(ArgumentError, /Cannot determine signature class/)
+          DSPy::Teleprompt::Utils.send(:ensure_typed_examples, invalid_examples)
+        }.to raise_error(ArgumentError, /All examples must be DSPy::Example instances/)
       end
     end
 

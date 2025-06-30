@@ -141,58 +141,6 @@ module DSPy
       )
     end
 
-    # Create Examples from legacy hash format for backward compatibility
-    sig do
-      params(
-        signature_class: T.class_of(Signature),
-        legacy_examples: T::Array[T::Hash[Symbol, T.untyped]]
-      ).returns(T::Array[Example])
-    end
-    def self.from_legacy_format(signature_class, legacy_examples)
-      legacy_examples.map.with_index do |example_hash, index|
-        # Determine if it's structured format or flat format
-        if example_hash.key?(:input) && example_hash.key?(:expected)
-          # Structured format
-          new(
-            signature_class: signature_class,
-            input: example_hash[:input],
-            expected: example_hash[:expected],
-            id: example_hash[:id] || "example_#{index}"
-          )
-        elsif example_hash.key?('input') && example_hash.key?('expected')
-          # Structured format with string keys
-          new(
-            signature_class: signature_class,
-            input: example_hash['input'].transform_keys(&:to_sym),
-            expected: example_hash['expected'].transform_keys(&:to_sym),
-            id: example_hash['id'] || "example_#{index}"
-          )
-        else
-          # Flat format - need to split input and expected based on signature
-          input_fields = signature_class.input_struct_class.props.keys
-          expected_fields = signature_class.output_struct_class.props.keys
-          
-          input_data = {}
-          expected_data = {}
-          
-          example_hash.each do |key, value|
-            sym_key = key.to_sym
-            if input_fields.include?(sym_key)
-              input_data[sym_key] = value
-            elsif expected_fields.include?(sym_key)
-              expected_data[sym_key] = value
-            end
-          end
-          
-          new(
-            signature_class: signature_class,
-            input: input_data,
-            expected: expected_data,
-            id: "example_#{index}"
-          )
-        end
-      end
-    end
 
     # Batch validation for multiple examples
     sig do
@@ -207,16 +155,17 @@ module DSPy
       
       examples_data.each_with_index do |example_data, index|
         begin
-          example = if example_data.key?(:input) && example_data.key?(:expected)
-                      new(
-                        signature_class: signature_class,
-                        input: example_data[:input],
-                        expected: example_data[:expected],
-                        id: example_data[:id] || "example_#{index}"
-                      )
-                    else
-                      from_legacy_format(signature_class, [example_data]).first
-                    end
+          # Only support structured format with :input and :expected keys
+          unless example_data.key?(:input) && example_data.key?(:expected)
+            raise ArgumentError, "Example must have :input and :expected keys. Legacy flat format is no longer supported."
+          end
+          
+          example = new(
+            signature_class: signature_class,
+            input: example_data[:input],
+            expected: example_data[:expected],
+            id: example_data[:id] || "example_#{index}"
+          )
           examples << example
         rescue => e
           errors << "Example #{index}: #{e.message}"

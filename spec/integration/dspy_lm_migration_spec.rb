@@ -16,10 +16,10 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
       expect(lm.instance_variable_get(:@adapter)).to be_a(DSPy::LM::AnthropicAdapter)
     end
 
-    it 'creates RubyLLM adapter for legacy model format' do
-      lm = DSPy::LM.new('gpt-3.5-turbo', api_key: ENV['OPENAI_API_KEY'])
-
-      expect(lm.instance_variable_get(:@adapter)).to be_a(DSPy::LM::RubyLLMAdapter)
+    it 'raises error for legacy model format without provider' do
+      expect {
+        DSPy::LM.new('gpt-3.5-turbo', api_key: ENV['OPENAI_API_KEY'])
+      }.to raise_error(ArgumentError, /model_id must include provider/)
     end
   end
 
@@ -42,25 +42,24 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
       expect(lm.method(:chat).arity).to eq(2) # accepts 2 arguments (plus optional &block)
     end
 
-    it 'maintains compatible initialization signature' do
+    it 'maintains compatible initialization signature for supported providers' do
       expect { DSPy::LM.new('openai/gpt-4', api_key: 'test-key') }.not_to raise_error
       expect { DSPy::LM.new('anthropic/claude-3-sonnet', api_key: 'test-key') }.not_to raise_error
-      expect { DSPy::LM.new('gpt-3.5-turbo', api_key: 'test-key') }.not_to raise_error
     end
 
-    it 'maintains model_id parsing compatibility' do
+    it 'raises error for legacy format without provider' do
+      expect { DSPy::LM.new('gpt-3.5-turbo', api_key: 'test-key') }.to raise_error(ArgumentError, /model_id must include provider/)
+    end
+
+    it 'maintains model_id parsing compatibility for supported providers' do
       lm_openai = DSPy::LM.new('openai/gpt-4', api_key: 'test-key')
       lm_anthropic = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: 'test-key')
-      lm_legacy = DSPy::LM.new('gpt-3.5-turbo', api_key: 'test-key')
 
       expect(lm_openai.instance_variable_get(:@provider)).to eq('openai')
       expect(lm_openai.instance_variable_get(:@model)).to eq('gpt-4')
 
       expect(lm_anthropic.instance_variable_get(:@provider)).to eq('anthropic')
       expect(lm_anthropic.instance_variable_get(:@model)).to eq('claude-3-sonnet')
-
-      expect(lm_legacy.instance_variable_get(:@provider)).to eq('ruby_llm')
-      expect(lm_legacy.instance_variable_get(:@model)).to eq('gpt-3.5-turbo')
     end
   end
 

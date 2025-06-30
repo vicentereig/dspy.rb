@@ -236,27 +236,25 @@ RSpec.describe DSPy::Teleprompt::Teleprompter do
       expect(result.first).to be_a(DSPy::Example)
     end
 
-    it 'converts legacy format to DSPy::Example objects' do
-      legacy_examples = [
+    it 'raises error for non-DSPy::Example objects' do
+      non_example_objects = [
         {
           input: { problem: "6 × 2" },
           expected: { answer: "12", explanation: "Multiply 6 by 2" }
         }
       ]
       
-      result = teleprompter.ensure_typed_examples(legacy_examples, TeleprompterMath)
-      
-      expect(result.first).to be_a(DSPy::Example)
-      expect(result.first.signature_class).to eq(TeleprompterMath)
-      expect(result.first.input_values[:problem]).to eq("6 × 2")
+      expect {
+        teleprompter.ensure_typed_examples(non_example_objects, TeleprompterMath)
+      }.to raise_error(ArgumentError, /All examples must be DSPy::Example instances/)
     end
 
-    it 'raises error when signature class cannot be determined' do
-      legacy_examples = [{ problem: "test", answer: "result" }]
+    it 'raises error for invalid objects' do
+      invalid_examples = [{ problem: "test", answer: "result" }]
       
       expect {
-        teleprompter.ensure_typed_examples(legacy_examples)
-      }.to raise_error(ArgumentError, /Cannot determine signature class/)
+        teleprompter.ensure_typed_examples(invalid_examples)
+      }.to raise_error(ArgumentError, /All examples must be DSPy::Example instances/)
     end
   end
 
