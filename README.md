@@ -61,8 +61,9 @@ These are my goals to release v1.0.
 - ✅ OpenTelemetry integration - *Done*
 - ✅ New Relic integration - *Done*
 - ✅ Langfuse integration - *Done*
-- 🚧 Ollama support - *In Progress*
-- Agentic Memory support - *In Progress*
+- 🚧 Ollama support
+- Agentic Memory support
+- MCP Support
 - Documentation website
 - Performance benchmarks
 
