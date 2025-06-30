@@ -5,13 +5,37 @@ require 'dry-configurable'
 
 module DSPy
   # Core instrumentation module using dry-monitor for event emission
-  # Provides extension points for logging, Langfuse, New Relic, and custom monitoring
+  # Provides extension points for logging, OpenTelemetry, New Relic, Langfuse, and custom monitoring
   module Instrumentation
     # Get the current logger subscriber instance (lazy initialization)
     def self.logger_subscriber
       @logger_subscriber ||= begin
         require_relative 'subscribers/logger_subscriber'
         DSPy::Subscribers::LoggerSubscriber.new
+      end
+    end
+
+    # Get the current OpenTelemetry subscriber instance (lazy initialization)
+    def self.otel_subscriber
+      @otel_subscriber ||= begin
+        require_relative 'subscribers/otel_subscriber'
+        DSPy::Subscribers::OtelSubscriber.new
+      end
+    end
+
+    # Get the current New Relic subscriber instance (lazy initialization)
+    def self.newrelic_subscriber
+      @newrelic_subscriber ||= begin
+        require_relative 'subscribers/newrelic_subscriber'
+        DSPy::Subscribers::NewrelicSubscriber.new
+      end
+    end
+
+    # Get the current Langfuse subscriber instance (lazy initialization)
+    def self.langfuse_subscriber
+      @langfuse_subscriber ||= begin
+        require_relative 'subscribers/langfuse_subscriber'
+        DSPy::Subscribers::LangfuseSubscriber.new
       end
     end
 
@@ -62,6 +86,22 @@ module DSPy
         n.register_event('dspy.storage.export')
         n.register_event('dspy.storage.import')
         n.register_event('dspy.storage.cleanup')
+        
+        # Registry events
+        n.register_event('dspy.registry.register_start')
+        n.register_event('dspy.registry.register_complete')
+        n.register_event('dspy.registry.register_error')
+        n.register_event('dspy.registry.deploy_start')
+        n.register_event('dspy.registry.deploy_complete')
+        n.register_event('dspy.registry.deploy_error')
+        n.register_event('dspy.registry.rollback_start')
+        n.register_event('dspy.registry.rollback_complete')
+        n.register_event('dspy.registry.rollback_error')
+        n.register_event('dspy.registry.performance_update')
+        n.register_event('dspy.registry.export')
+        n.register_event('dspy.registry.import')
+        n.register_event('dspy.registry.auto_deployment')
+        n.register_event('dspy.registry.automatic_rollback')
       end
     end
 
@@ -108,6 +148,9 @@ module DSPy
 
     # Emit event without timing (for discrete events)
     def self.emit(event_name, payload = {})
+      # Handle nil payload
+      payload ||= {}
+      
       enhanced_payload = payload.merge(
         timestamp: Time.now.iso8601,
         status: payload[:status] || 'success'
@@ -134,13 +177,38 @@ module DSPy
     end
 
     def self.emit_event(event_name, payload)
-      # Ensure logger subscriber is initialized
+      # Ensure all subscribers are initialized
       logger_subscriber
+      otel_subscriber if ENV['OTEL_EXPORTER_OTLP_ENDPOINT'] || defined?(OpenTelemetry)
+      newrelic_subscriber if defined?(NewRelic)
+      langfuse_subscriber if ENV['LANGFUSE_SECRET_KEY'] || defined?(Langfuse)
+      
       notifications.instrument(event_name, payload)
     end
 
     def self.setup_subscribers
       # Lazy initialization - will be created when first accessed
+      # Force initialization of enabled subscribers
+      logger_subscriber
+      
+      # Only initialize if dependencies are available
+      begin
+        otel_subscriber if ENV['OTEL_EXPORTER_OTLP_ENDPOINT'] || defined?(OpenTelemetry)
+      rescue LoadError
+        # OpenTelemetry not available, skip
+      end
+
+      begin
+        newrelic_subscriber if defined?(NewRelic)
+      rescue LoadError
+        # New Relic not available, skip
+      end
+
+      begin
+        langfuse_subscriber if ENV['LANGFUSE_SECRET_KEY'] || defined?(Langfuse)
+      rescue LoadError
+        # Langfuse not available, skip
+      end
     end
   end
 end

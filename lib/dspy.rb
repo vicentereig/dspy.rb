@@ -35,5 +35,7 @@ require_relative 'dspy/tools'
 require_relative 'dspy/instrumentation'
 require_relative 'dspy/storage/program_storage'
 require_relative 'dspy/storage/storage_manager'
+require_relative 'dspy/registry/signature_registry'
+require_relative 'dspy/registry/registry_manager'
 
 # LoggerSubscriber will be lazy-initialized when first accessed

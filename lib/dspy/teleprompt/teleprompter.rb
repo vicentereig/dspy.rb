@@ -251,6 +251,18 @@ module DSPy
             }
           )
         end
+
+        # Registry system integration for version management
+        if @config.save_intermediate_results
+          registry_manager = DSPy::Registry::RegistryManager.instance
+          registry_manager.register_optimization_result(
+            result,
+            metadata: {
+              teleprompter_class: self.class.name,
+              config: @config.to_h
+            }
+          )
+        end
       end
 
       protected

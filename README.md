@@ -30,6 +30,13 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **MIPROv2 Optimizer** - State-of-the-art automatic prompt optimization
 - **Simple Optimizer** - Random/grid search for quick experimentation
 
+**Enterprise Features:**
+- **Storage System** - Persistent optimization result storage with search and filtering
+- **Registry System** - Version control for optimized signatures with deployment tracking
+- **Multi-Platform Observability** - OpenTelemetry, New Relic, and Langfuse integration
+- **Auto-deployment** - Intelligent deployment based on performance improvements
+- **Rollback Protection** - Automatic rollback on performance degradation
+
 **Developer Experience:**
 - OpenAI and Anthropic support via [Ruby LLM](https://github.com/crmne/ruby_llm)
 - Runtime type checking with [Sorbet](https://sorbet.org/)
@@ -49,9 +56,14 @@ These are my goals to release v1.0.
 - ✅ Evaluation framework - *Done*  
 - ✅ Teleprompter base classes - *Done*
 - ✅ MIPROv2 optimization algorithm - *Done*
-- 🚧 Saving/loading optimized programs - *In Progress*
-- OTel Integration
-- Ollama support
+- ✅ Storage & persistence system - *Done*
+- ✅ Registry & version management - *Done*
+- ✅ OpenTelemetry integration - *Done*
+- ✅ New Relic integration - *Done*
+- ✅ Langfuse integration - *Done*
+- 🚧 Ollama support - *In Progress*
+- Documentation website
+- Performance benchmarks
 
 ## Installation
 
@@ -59,6 +71,25 @@ Skip the gem for now - install straight from this repo while I prep the first re
 ```ruby
 gem 'dspy', github: 'vicentereig/dspy.rb'
 ```
+
+### Optional Observability Dependencies
+
+Add any of these gems for enhanced observability:
+
+```ruby
+# OpenTelemetry (distributed tracing)
+gem 'opentelemetry-api'
+gem 'opentelemetry-sdk'
+gem 'opentelemetry-exporter-otlp'
+
+# New Relic (APM)
+gem 'newrelic_rpm'
+
+# Langfuse (LLM observability) 
+gem 'langfuse'
+```
+
+DSPy automatically detects and integrates with available platforms - no configuration required!
 
 ## Quick Start
 
@@ -698,6 +729,174 @@ DSPy::Instrumentation.subscribe('dspy.optimization.*') do |event|
 end
 ```
 
+## Storage and Persistence
+
+DSPy.rb includes a comprehensive storage system for persisting optimization results, making it easy to save, search, and analyze your optimized programs.
+
+### Automatic Storage
+
+Enable automatic storage to save all optimization results:
+
+```ruby
+# Configure teleprompter with storage
+config = DSPy::Teleprompt::Teleprompter::Config.new
+config.save_intermediate_results = true  # Enable automatic storage
+
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: your_metric, config: config)
+result = optimizer.compile(program, trainset: train, valset: val)
+
+# Results are automatically saved with metadata
+# You can find them in ./optimization_results/ by default
+```
+
+### Storage Configuration
+
+```ruby
+# Customize storage behavior
+storage_config = DSPy::Storage::StorageManager::StorageConfig.new
+storage_config.storage_path = "./my_results"
+storage_config.auto_save = true
+storage_config.compression_enabled = true
+storage_config.max_storage_size_mb = 1000
+
+storage_manager = DSPy::Storage::StorageManager.new(config: storage_config)
+```
+
+### Searching and Loading Results
+
+```ruby
+# Search stored programs by tags, performance, or metadata
+programs = storage_manager.search_programs(
+  tags: ['miprov2', 'qa'],
+  min_score: 0.8,
+  optimizer: 'MIPROv2'
+)
+
+# Load a specific program
+program_id = programs.first.program_id
+loaded_program = storage_manager.load_program(program_id)
+
+# Use the loaded program
+result = loaded_program.call(question: "What is the capital of France?")
+```
+
+### Storage Analytics
+
+```ruby
+# Get storage statistics
+stats = storage_manager.get_statistics
+
+puts "Total programs: #{stats[:total_programs]}"
+puts "Storage size: #{stats[:total_size_mb]}MB"
+puts "Best score: #{stats[:best_score]}"
+
+# Export/import for backups
+storage_manager.export_data('./backup.json')
+storage_manager.import_data('./backup.json')
+```
+
+## Registry and Version Management
+
+The registry system provides version control for your optimized signatures, with deployment tracking and automatic rollback capabilities.
+
+### Automatic Version Registration
+
+```ruby
+# Optimization results are automatically registered
+config = DSPy::Teleprompt::Teleprompter::Config.new
+config.save_intermediate_results = true
+
+# Registry integration is automatic
+optimizer = DSPy::Teleprompt::MIPROv2.new(config: config)
+result = optimizer.compile(program, trainset: train, valset: val)
+
+# Check the registry
+registry = DSPy::Registry::SignatureRegistry.new
+versions = registry.list_versions('YourSignature')
+puts "#{versions.size} versions available"
+```
+
+### Manual Registry Operations
+
+```ruby
+# Register a version manually
+registry = DSPy::Registry::SignatureRegistry.new
+
+version = registry.register_version(
+  'QuestionAnswering',
+  {
+    instruction: 'Answer questions with detailed reasoning',
+    few_shot_examples_count: 3,
+    optimization_metadata: { trials: 20, best_score: 0.87 }
+  },
+  version: 'v1.0.0',  # Optional: auto-generated if not provided
+  metadata: { created_by: 'optimizer', environment: 'production' }
+)
+
+puts "Registered version: #{version.version} with hash: #{version.version_hash}"
+```
+
+### Deployment and Rollback
+
+```ruby
+# Deploy a version
+deployed = registry.deploy_version('QuestionAnswering', 'v1.0.0')
+puts "Deployed version #{deployed.version}"
+
+# Get currently deployed version
+current = registry.get_deployed_version('QuestionAnswering')
+puts "Currently deployed: #{current.version}"
+
+# Monitor performance and auto-rollback
+registry_manager = DSPy::Registry::RegistryManager.new
+
+# This will rollback if performance drops more than 5%
+rollback_needed = registry_manager.monitor_and_rollback(
+  'QuestionAnswering',
+  current_performance_score: 0.75  # Down from 0.87
+)
+
+puts "Rollback performed: #{rollback_needed}"
+```
+
+### Advanced Registry Features
+
+```ruby
+# Compare versions
+comparison = registry.compare_versions('QuestionAnswering', 'v1.0.0', 'v1.1.0')
+puts "Performance difference: #{comparison[:comparison][:performance_difference]}"
+puts "Configuration changes: #{comparison[:comparison][:configuration_changes]}"
+
+# Get performance history with trends
+history = registry.get_performance_history('QuestionAnswering')
+puts "Latest score: #{history[:trends][:latest_score]}"
+puts "Best score: #{history[:trends][:best_score]}"
+puts "Improvement trend: #{history[:trends][:improvement_trend]}%"
+
+# Export/import registry
+registry.export_registry('./registry_backup.yml')
+new_registry = DSPy::Registry::SignatureRegistry.new
+new_registry.import_registry('./registry_backup.yml')
+```
+
+### Deployment Strategies
+
+```ruby
+# Configure automatic deployment
+integration_config = DSPy::Registry::RegistryManager::RegistryIntegrationConfig.new
+integration_config.auto_deploy_best_versions = true
+integration_config.auto_deploy_threshold = 0.1  # 10% improvement required
+integration_config.rollback_on_performance_drop = true
+integration_config.deployment_strategy = "conservative"  # or "aggressive"
+
+registry_manager = DSPy::Registry::RegistryManager.new(
+  integration_config: integration_config
+)
+
+# Automatic deployment will happen during optimization
+# when performance improves by more than 10%
+```
+
 ## Working with Complex Types
 
 ### Enums
@@ -855,105 +1054,224 @@ puts result.answer      # "Paris"
 puts result.confidence  # 0.95
 ```
 
-## Instrumentation & Observability
+## Multi-Platform Observability
 
-DSPy.rb includes built-in instrumentation that captures detailed events and 
-performance metrics from your LLM operations. Perfect for monitoring your 
-applications and integrating with observability tools.
+DSPy.rb provides enterprise-grade observability through multiple integrated platforms: **structured logging**, **OpenTelemetry**, **New Relic**, and **Langfuse**. Get complete visibility into your LLM operations with minimal configuration.
 
-### Available Events
+### Quick Setup
 
-Subscribe to these events to monitor different aspects of your LLM operations:
-
-| Event Name | Triggered When | Key Payload Fields |
-|------------|----------------|-------------------|
-| `dspy.lm.request` | LLM API request lifecycle | `gen_ai_system`, `model`, `provider`, `duration_ms`, `status` |
-| `dspy.lm.tokens` | Token usage tracking | `tokens_input`, `tokens_output`, `tokens_total` |
-| `dspy.predict` | Prediction operations | `signature_class`, `input_size`, `duration_ms`, `status` |
-| `dspy.chain_of_thought` | CoT reasoning | `signature_class`, `model`, `duration_ms`, `status` |
-| `dspy.react` | Agent operations | `max_iterations`, `tools_used`, `duration_ms`, `status` |
-| `dspy.react.tool_call` | Tool execution | `tool_name`, `tool_input`, `tool_output`, `duration_ms` |
-| `dspy.evaluation.start` | Evaluation begins | `total_examples`, `metric_name`, `num_threads` |
-| `dspy.evaluation.example` | Single example evaluated | `example_id`, `prediction`, `passed`, `duration_ms` |
-| `dspy.evaluation.batch_complete` | Batch evaluation finished | `accuracy`, `passed_examples`, `total_examples` |
-| `dspy.optimization.start` | Optimization begins | `teleprompter_class`, `trainset_size`, `valset_size` |
-| `dspy.optimization.complete` | Optimization finished | `best_score`, `total_trials`, `duration_ms` |
-| `dspy.optimization.trial_start` | Individual trial begins | `trial_number`, `candidate_instruction` |
-| `dspy.optimization.trial_complete` | Trial finished | `trial_score`, `trial_passed`, `duration_ms` |
-
-### Event Payloads
-
-The instrumentation emits events with structured payloads you can process:
+All observability platforms work automatically when their dependencies are available:
 
 ```ruby
-# Example event payload for dspy.predict
-{
-  signature_class: "QuestionAnswering",
-  model: "gpt-4o-mini",
-  provider: "openai", 
-  input_size: 45,
-  duration_ms: 1234.56,
-  cpu_time_ms: 89.12,
-  status: "success",
-  timestamp: "2024-01-15T10:30:00Z"
-}
+# Gemfile - add any platforms you want to use
+gem 'opentelemetry-api'       # For OpenTelemetry
+gem 'opentelemetry-sdk'
+gem 'opentelemetry-exporter-otlp'
+gem 'newrelic_rpm'            # For New Relic
+gem 'langfuse'                # For Langfuse
 
-# Example token usage payload
-{
-  tokens_input: 150,
-  tokens_output: 45,
-  tokens_total: 195,
-  gen_ai_system: "openai",
-  signature_class: "QuestionAnswering"
-}
+# Environment variables
+export OTEL_SERVICE_NAME=my-dspy-app
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+export LANGFUSE_SECRET_KEY=sk_your_key
+export LANGFUSE_PUBLIC_KEY=pk_your_key
+
+# That's it! DSPy automatically detects and configures available platforms
 ```
 
-Events are emitted via dry-monitor notifications, giving you flexibility to 
-process them however you need - logging, metrics, alerts, or custom monitoring.
+### Structured Logging (Always Available)
 
-### Token Tracking
-
-Token usage is extracted from actual API responses (OpenAI and Anthropic only), 
-giving you precise cost tracking:
+Every operation is automatically logged with structured data:
 
 ```ruby
-# Token events include:
-{
-  tokens_input: 150,     # From API response
-  tokens_output: 45,     # From API response  
-  tokens_total: 195,     # From API response
-  gen_ai_system: "openai",
-  gen_ai_request_model: "gpt-4o-mini"
-}
+# All DSPy operations generate structured logs
+qa = DSPy::ChainOfThought.new(QuestionAnswering)
+result = qa.call(question: "What is Ruby?")
+
+# Logs output:
+# event=chain_of_thought signature=QuestionAnswering status=success duration_ms=850.5 reasoning_steps=3
+# event=lm_request provider=openai model=gpt-4o-mini status=success duration_ms=750.2 tokens=145
 ```
 
-### Integration with Monitoring Tools
+### OpenTelemetry Integration
 
-Subscribe to events for custom processing:
+Get distributed tracing and metrics automatically:
 
 ```ruby
-# Subscribe to all LM events
-DSPy::Instrumentation.subscribe('dspy.lm.*') do |event|
-  puts "#{event.id}: #{event.payload[:duration_ms]}ms"
-end
+# No code changes needed - traces are automatic
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: accuracy_metric)
+result = optimizer.compile(program, trainset: train, valset: val)
 
-# Subscribe to specific events
-DSPy::Instrumentation.subscribe('dspy.predict') do |event|
-  MyMetrics.histogram('dspy.predict.duration', event.payload[:duration_ms])
-end
+# Automatically creates:
+# - Optimization spans with trial breakdown
+# - LM request spans with timing
+# - Metrics for duration, tokens, costs
+# - Custom attributes for all operations
+```
 
+**Available Metrics:**
+- `dspy.optimization.started` - Counter of optimizations
+- `dspy.optimization.duration` - Histogram of durations  
+- `dspy.optimization.score` - Histogram of best scores
+- `dspy.lm.request.duration` - LM request latency
+- `dspy.lm.tokens.total` - Token usage
+- `dspy.lm.cost` - Request costs
+
+### New Relic Integration
+
+Application performance monitoring with custom dashboards:
+
+```ruby
+# Automatic custom metrics and events
+# Visit New Relic to see:
+# - Custom/DSPy/Optimization/Duration
+# - Custom/DSPy/LM/Tokens/Total  
+# - Custom/DSPy/LM/Cost
+# - DSPyOptimizationComplete events
+# - DSPyTrialComplete events
+```
+
+**Custom Events Created:**
+- `DSPyOptimizationStart` / `DSPyOptimizationComplete`
+- `DSPyTrialComplete` with scores
+- `DSPyLMRequest` with provider/model details
+- `DSPyAutoDeployment` / `DSPyAutoRollback`
+
+### Langfuse Integration
+
+LLM-specific observability with prompt tracking:
+
+```ruby
+# Comprehensive LLM observability
+# Langfuse automatically tracks:
+# - Complete optimization traces with trials
+# - Individual LM requests with prompts/completions
+# - Token usage and costs
+# - Performance scores and trends
+# - Deployment and rollback events
+
+# Control what gets logged
+langfuse_config = DSPy::Subscribers::LangfuseSubscriber::LangfuseConfig.new
+langfuse_config.log_prompts = true      # Log input prompts
+langfuse_config.log_completions = true  # Log LLM outputs
+langfuse_config.calculate_costs = true  # Track costs
+```
+
+### Comprehensive Event Coverage
+
+All DSPy operations emit detailed events across all platforms:
+
+**Optimization Events:**
+- `dspy.optimization.start` - Optimization begins
+- `dspy.optimization.complete` - Optimization finishes  
+- `dspy.optimization.trial_start` - Individual trial
+- `dspy.optimization.trial_complete` - Trial results
+- `dspy.optimization.error` - Optimization failures
+
+**LLM Events:**
+- `dspy.lm.request` - API requests with timing/tokens
+- `dspy.predict` - Prediction operations
+- `dspy.chain_of_thought` - Reasoning operations
+
+**Storage & Registry Events:**
+- `dspy.storage.save_complete` - Program storage
+- `dspy.registry.register_complete` - Version registration
+- `dspy.registry.deploy_complete` - Deployment
+- `dspy.registry.auto_deployment` - Auto-deployments
+- `dspy.registry.automatic_rollback` - Auto-rollbacks
+
+### Custom Event Subscriptions
+
+Add your own processing for any platform:
+
+```ruby
 # Monitor optimization progress
 DSPy::Instrumentation.subscribe('dspy.optimization.*') do |event|
   case event.id
   when 'dspy.optimization.start'
-    puts "Starting optimization with #{event.payload[:trainset_size]} examples"
+    puts "🚀 Starting optimization: #{event.payload[:optimizer]}"
   when 'dspy.optimization.trial_complete'
-    puts "Trial #{event.payload[:trial_number]} scored #{event.payload[:trial_score]}"
+    score = event.payload[:score]
+    puts "   Trial #{event.payload[:trial_number]}: #{score}"
   when 'dspy.optimization.complete'
-    puts "Optimization finished! Best score: #{event.payload[:best_score]}"
+    puts "✅ Best score: #{event.payload[:best_score]}"
+  end
+end
+
+# Track costs across all LM requests
+total_cost = 0
+DSPy::Instrumentation.subscribe('dspy.lm.request') do |event|
+  if event.payload[:cost]
+    total_cost += event.payload[:cost]
+    puts "Total cost so far: $#{total_cost.round(4)}"
+  end
+end
+
+# Monitor deployment events
+DSPy::Instrumentation.subscribe('dspy.registry.*') do |event|
+  case event.id
+  when 'dspy.registry.auto_deployment'
+    puts "🚀 Auto-deployed #{event.payload[:signature_name]} #{event.payload[:version]}"
+  when 'dspy.registry.automatic_rollback'
+    puts "⚠️  Auto-rollback: performance dropped #{event.payload[:performance_drop]}"
   end
 end
 ```
+
+### Configuration and Privacy
+
+Control what data gets collected:
+
+```ruby
+# OpenTelemetry configuration
+otel_config = DSPy::Subscribers::OtelSubscriber::OtelConfig.new
+otel_config.trace_optimization_events = true
+otel_config.trace_lm_events = false          # Disable for privacy
+otel_config.export_metrics = true
+otel_config.sample_rate = 0.1                # Sample 10% of traces
+
+# New Relic configuration  
+newrelic_config = DSPy::Subscribers::NewrelicSubscriber::NewrelicConfig.new
+newrelic_config.record_custom_metrics = true
+newrelic_config.record_custom_events = false  # Disable events
+newrelic_config.metric_prefix = 'Custom/MyApp/DSPy'
+
+# Langfuse configuration
+langfuse_config = DSPy::Subscribers::LangfuseSubscriber::LangfuseConfig.new
+langfuse_config.log_prompts = false          # Disable for sensitive data
+langfuse_config.log_completions = false
+langfuse_config.trace_optimizations = true   # Keep optimization traces
+```
+
+### Production Best Practices
+
+1. **Use sampling** for high-volume applications:
+   ```bash
+   export OTEL_TRACE_SAMPLE_RATE=0.1  # Sample 10%
+   ```
+
+2. **Control sensitive data**:
+   ```ruby
+   langfuse_config.log_prompts = false  # For sensitive prompts
+   ```
+
+3. **Set up cost alerts**:
+   ```ruby
+   DSPy::Instrumentation.subscribe('dspy.lm.request') do |event|
+     cost = event.payload[:cost]
+     alert_if_high_cost(cost) if cost && cost > 0.10
+   end
+   ```
+
+4. **Monitor optimization success rates**:
+   ```ruby
+   # Track failed optimizations
+   DSPy::Instrumentation.subscribe('dspy.optimization.error') do |event|
+     ErrorReporter.notify(event.payload[:error_message])
+   end
+   ```
+
+The observability system is designed to be zero-configuration for development and highly configurable for production environments. See the complete [Observability Guide](./lib/dspy/observability_guide.md) for detailed setup instructions and dashboard examples.
 
 ## License
 

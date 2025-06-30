@@ -1,0 +1,7 @@
+---
+:registry_path: "./dspy_registry"
+:config_file: registry.yml
+:auto_version: true
+:max_versions_per_signature: 10
+:backup_on_deploy: true
+:version_format: v%Y%m%d_%H%M%S
