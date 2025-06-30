@@ -53,6 +53,63 @@ module DSPy
       @signature_class = enhanced_signature
     end
 
+    # Override prompt-based methods to maintain ChainOfThought behavior
+    sig { override.params(new_prompt: Prompt).returns(ChainOfThought) }
+    def with_prompt(new_prompt)
+      # Create a new ChainOfThought with the same original signature
+      instance = self.class.new(@original_signature)
+      
+      # Ensure the instruction includes "Think step by step" if not already present
+      enhanced_instruction = if new_prompt.instruction.include?("Think step by step")
+                               new_prompt.instruction
+                             else
+                               "#{new_prompt.instruction} Think step by step."
+                             end
+      
+      # Create enhanced prompt with ChainOfThought-specific schemas
+      enhanced_prompt = Prompt.new(
+        instruction: enhanced_instruction,
+        input_schema: @signature_class.input_json_schema,
+        output_schema: @signature_class.output_json_schema,
+        few_shot_examples: new_prompt.few_shot_examples,
+        signature_class_name: @signature_class.name
+      )
+      
+      instance.instance_variable_set(:@prompt, enhanced_prompt)
+      instance
+    end
+
+    sig { override.params(instruction: String).returns(ChainOfThought) }
+    def with_instruction(instruction)
+      # Ensure ChainOfThought behavior is preserved
+      cot_instruction = instruction.include?("Think step by step") ? instruction : "#{instruction} Think step by step."
+      super(cot_instruction)
+    end
+
+    sig { override.params(examples: T::Array[FewShotExample]).returns(ChainOfThought) }
+    def with_examples(examples)
+      # Convert examples to include reasoning if they don't have it
+      enhanced_examples = examples.map do |example|
+        if example.reasoning.nil? || example.reasoning.empty?
+          # Try to extract reasoning from the output if it contains a reasoning field
+          reasoning = example.output[:reasoning] || "Step by step reasoning for this example."
+          DSPy::FewShotExample.new(
+            input: example.input,
+            output: example.output,
+            reasoning: reasoning
+          )
+        else
+          example
+        end
+      end
+      
+      super(enhanced_examples)
+    end
+
+    # Access to the original signature for optimization
+    sig { returns(T.class_of(DSPy::Signature)) }
+    attr_reader :original_signature
+
     # Override forward_untyped to add ChainOfThought-specific instrumentation
     sig { override.params(input_values: T.untyped).returns(T.untyped) }
     def forward_untyped(**input_values)
