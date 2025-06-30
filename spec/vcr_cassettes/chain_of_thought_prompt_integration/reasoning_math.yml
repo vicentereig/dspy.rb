@@ -1,0 +1,117 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"explanation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"How the problem was solved\"\n    },\n    \"reasoning\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Step by step reasoning
+        process\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"explanation\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve math problems with clear reasoning. Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 15 × 8?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1603'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 30 Jun 2025 17:11:24 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '2767'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2770'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199658'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 102ms
+      X-Request-Id:
+      - req_d0c32a1f76bf670b01b2c98fe36474e7
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=kjQOZ23AH76CbSZ.DbpaY_McOkeIyXR4P2LF4HVYMnk-1751303484-1.0.1.1-A.44a2zPNLaFogcM2dLXvMcHLgBn.8T1cNQVFcmARFYZX.7uLs0z9TQNHNKy9IvVJLYFk_PpgX1KhJosbI_S4qYzN3owMVQQ4ebQ7AIM964;
+        path=/; expires=Mon, 30-Jun-25 17:41:24 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=xYm5SWEZBH6ZephkjaSpdMsEKm.M1s8M0Z30PFGCKVs-1751303484013-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 957f4842bc3d033d-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1Cb0NLSFh1RVF0Uk0wQk5iY3RrWFZ2QjhnTlFyaiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1MTMwMzQ4MSwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiBcIjEyMFwiLFxuICBcImV4cGxhbmF0aW9uXCI6IFwiVG8gZmluZCB0aGUgcHJvZHVjdCBvZiAxNSBhbmQgOCwgd2UgbXVsdGlwbHkgdGhlIHR3byBudW1iZXJzIHRvZ2V0aGVyLlwiLFxuICBcInJlYXNvbmluZ1wiOiBcIkZpcnN0LCB3ZSB0YWtlIHRoZSBudW1iZXIgMTUgYW5kIG11bHRpcGx5IGl0IGJ5IDguIFRoaXMgY2FuIGJlIGRvbmUgYnkgYnJlYWtpbmcgaXQgZG93bjogMTUgw5cgOCA9IDE1IMOXICg1ICsgMykgPSAoMTUgw5cgNSkgKyAoMTUgw5cgMykuIENhbGN1bGF0aW5nIHRoZXNlIGdpdmVzIHVzIDc1ICsgNDUgPSAxMjAuIFRoZXJlZm9yZSwgdGhlIGZpbmFsIGFuc3dlciBpcyAxMjAuXCJcbn1cbmBgYCIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJsb2dwcm9icyI6IG51bGwsCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDM1NywKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDEyMywKICAgICJ0b3RhbF90b2tlbnMiOiA0ODAsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6ICJmcF8zNGE1NGFlOTNjIgp9Cg==
+  recorded_at: Mon, 30 Jun 2025 17:11:23 GMT
+recorded_with: VCR 6.3.1
