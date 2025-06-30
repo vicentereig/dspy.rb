@@ -79,7 +79,15 @@ GEM
       uri
     openai (0.9.0)
       connection_pool
+    polars-df (0.20.0)
+      bigdecimal
+      rb_sys
+    polars-df (0.20.0-arm64-darwin)
+      bigdecimal
     public_suffix (6.0.1)
+    rake-compiler-dock (1.9.1)
+    rb_sys (0.9.116)
+      rake-compiler-dock (= 1.9.1)
     rexml (3.4.1)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
@@ -128,6 +136,7 @@ DEPENDENCIES
   byebug (~> 11.1)
   dotenv (~> 2.8)
   dspy!
+  polars-df (~> 0.20.0)
   rspec (~> 3.12)
   vcr (~> 6.2)
   webmock (~> 3.18)

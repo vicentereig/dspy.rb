@@ -43,6 +43,8 @@ module DSPy
         n.register_event('dspy.optimization.trial_complete')
         n.register_event('dspy.optimization.bootstrap_start')
         n.register_event('dspy.optimization.bootstrap_complete')
+        n.register_event('dspy.optimization.bootstrap_example')
+        n.register_event('dspy.optimization.minibatch_evaluation')
         n.register_event('dspy.optimization.instruction_proposal_start')
         n.register_event('dspy.optimization.instruction_proposal_complete')
         n.register_event('dspy.optimization.error')

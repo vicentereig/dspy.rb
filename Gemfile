@@ -9,3 +9,5 @@ group :development, :test do
   gem 'webmock', '~> 3.18'
   gem "byebug", "~> 11.1"
 end
+
+gem "polars-df", "~> 0.20.0"
