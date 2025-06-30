@@ -29,6 +29,12 @@ module DSPy
         n.register_event('dspy.react.tool_call')
         n.register_event('dspy.react.iteration_complete')
         n.register_event('dspy.react.max_iterations')
+        
+        # Evaluation events
+        n.register_event('dspy.evaluation.start')
+        n.register_event('dspy.evaluation.example')
+        n.register_event('dspy.evaluation.batch')
+        n.register_event('dspy.evaluation.batch_complete')
       end
     end
 
