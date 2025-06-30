@@ -2,6 +2,7 @@
 
 require 'sorbet-runtime'
 require_relative 'instrumentation'
+require_relative 'example'
 
 module DSPy
   # Core evaluation framework for DSPy programs
@@ -287,6 +288,9 @@ module DSPy
     sig { params(example: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
     def extract_input_values(example)
       case example
+      when DSPy::Example
+        # Preferred format: DSPy::Example object with type safety
+        example.input_values
       when Hash
         # Check if it has an :input key (structured format)
         if example.key?(:input)
@@ -303,6 +307,9 @@ module DSPy
             example
           end
         end
+      when ->(ex) { ex.respond_to?(:input_values) }
+        # Object with input_values method (Example-like)
+        example.input_values
       when ->(ex) { ex.respond_to?(:input) }
         # Object with input method
         input_data = example.input
@@ -331,6 +338,33 @@ module DSPy
         else
           raise ArgumentError, "Cannot extract input values from example: #{example.class}"
         end
+      end
+    end
+
+    # Extract expected values for metric comparison (used internally)
+    sig { params(example: T.untyped).returns(T.nilable(T::Hash[Symbol, T.untyped])) }
+    def extract_expected_values(example)
+      case example
+      when DSPy::Example
+        example.expected_values
+      when Hash
+        if example.key?(:expected)
+          expected_data = example[:expected]
+          expected_data.is_a?(Hash) ? expected_data.transform_keys(&:to_sym) : expected_data
+        elsif example.key?('expected')
+          expected_data = example['expected']
+          expected_data.is_a?(Hash) ? expected_data.transform_keys(&:to_sym) : expected_data
+        else
+          # Legacy format - no separate expected values
+          nil
+        end
+      when ->(ex) { ex.respond_to?(:expected_values) }
+        example.expected_values
+      when ->(ex) { ex.respond_to?(:expected) }
+        expected_data = example.expected
+        expected_data.is_a?(Hash) ? expected_data.transform_keys(&:to_sym) : expected_data
+      else
+        nil
       end
     end
 

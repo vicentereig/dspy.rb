@@ -355,6 +355,71 @@ RSpec.describe DSPy::Evaluate do
     end
   end
 
+  describe 'with DSPy::Example objects' do
+    let(:evaluator) { DSPy::Evaluate.new(mock_program) }
+    
+    it 'works with Example objects' do
+      example = DSPy::Example.new(
+        signature_class: SimpleMath,
+        input: { problem: "3 + 3" },
+        expected: { answer: "6" }
+      )
+      
+      # Update mock to handle this case
+      mock_program.responses["3 + 3"] = "6"
+      
+      result = evaluator.call(example)
+      
+      expect(result.example).to eq(example)
+      expect(result.prediction.answer).to eq("6")
+      expect(result.passed).to be(true)
+    end
+
+    it 'evaluates batch of Example objects' do
+      examples = [
+        DSPy::Example.new(
+          signature_class: SimpleMath,
+          input: { problem: "4 + 4" },
+          expected: { answer: "8" }
+        ),
+        DSPy::Example.new(
+          signature_class: SimpleMath,
+          input: { problem: "5 + 5" },
+          expected: { answer: "10" }
+        )
+      ]
+      
+      # Update mock responses
+      mock_program.responses["4 + 4"] = "8"
+      mock_program.responses["5 + 5"] = "10"
+      
+      # Use built-in matching for Examples
+      evaluator_with_matching = DSPy::Evaluate.new(mock_program, metric: proc { |example, prediction|
+        example.is_a?(DSPy::Example) ? example.matches_prediction?(prediction) : false
+      })
+      
+      result = evaluator_with_matching.evaluate(examples, display_progress: false)
+      
+      expect(result.total_examples).to eq(2)
+      expect(result.passed_examples).to eq(2)
+      expect(result.pass_rate).to eq(1.0)
+    end
+
+    it 'extracts input values correctly from Example objects' do
+      example = DSPy::Example.new(
+        signature_class: SimpleMath,
+        input: { problem: "9 + 1" },
+        expected: { answer: "10" }
+      )
+      
+      mock_program.responses["9 + 1"] = "10"
+      result = evaluator.call(example)
+      
+      expect(result.prediction.problem).to eq("9 + 1")
+      expect(result.prediction.answer).to eq("10")
+    end
+  end
+
   describe 'with real Predict program' do
     let(:predictor) { DSPy::Predict.new(SimpleMath) }
     let(:metric) { DSPy::Metrics.exact_match(field: :answer, case_sensitive: false) }
