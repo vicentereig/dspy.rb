@@ -3,6 +3,7 @@
 require 'sorbet-runtime'
 require_relative 'module'
 require_relative 'instrumentation'
+require_relative 'prompt'
 
 module DSPy
   # Exception raised when prediction fails validation
@@ -25,52 +26,49 @@ module DSPy
     sig { returns(T.class_of(Signature)) }
     attr_reader :signature_class
 
+    sig { returns(Prompt) }
+    attr_reader :prompt
+
     sig { params(signature_class: T.class_of(Signature)).void }
     def initialize(signature_class)
       super()
       @signature_class = signature_class
+      @prompt = Prompt.from_signature(signature_class)
     end
 
+    # Backward compatibility methods - delegate to prompt object
     sig { returns(String) }
     def system_signature
-      <<-PROMPT
-      Your input schema fields are:
-        ```json
-         #{JSON.generate(@signature_class.input_json_schema)}
-        ```
-      Your output schema fields are:
-        ```json
-          #{JSON.generate(@signature_class.output_json_schema)}
-        ````
-      
-      All interactions will be structured in the following way, with the appropriate values filled in.
-
-      ## Input values
-        ```json
-         {input_values}
-        ```  
-      ## Output values
-      Respond exclusively with the output schema fields in the json block below.
-        ```json
-          {output_values}
-        ```
-      
-      In adhering to this structure, your objective is: #{@signature_class.description}
-
-      PROMPT
+      @prompt.render_system_prompt
     end
 
     sig { params(input_values: T::Hash[Symbol, T.untyped]).returns(String) }
     def user_signature(input_values)
-      <<-PROMPT
-        ## Input Values
-        ```json
-        #{JSON.generate(input_values)}
-        ```     
-        
-        Respond with the corresponding output schema fields wrapped in a ```json ``` block, 
-         starting with the heading `## Output values`.
-      PROMPT
+      @prompt.render_user_prompt(input_values)
+    end
+
+    # New prompt-based interface for optimization
+    sig { params(new_prompt: Prompt).returns(Predict) }
+    def with_prompt(new_prompt)
+      # Create a new instance with the same signature but updated prompt
+      instance = self.class.new(@signature_class)
+      instance.instance_variable_set(:@prompt, new_prompt)
+      instance
+    end
+
+    sig { params(instruction: String).returns(Predict) }
+    def with_instruction(instruction)
+      with_prompt(@prompt.with_instruction(instruction))
+    end
+
+    sig { params(examples: T::Array[FewShotExample]).returns(Predict) }
+    def with_examples(examples)
+      with_prompt(@prompt.with_examples(examples))
+    end
+
+    sig { params(examples: T::Array[FewShotExample]).returns(Predict) }
+    def add_examples(examples)
+      with_prompt(@prompt.add_examples(examples))
     end
 
     sig { override.params(kwargs: T.untyped).returns(T.type_parameter(:O)) }
