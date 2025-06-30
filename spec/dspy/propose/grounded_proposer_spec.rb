@@ -21,7 +21,7 @@ class ProposerQA < DSPy::Signature
 end
 
 # Simpler signature for testing
-class SimpleClassify < DSPy::Signature
+class GroundedClassify < DSPy::Signature
   description "Classify the sentiment of text"
 
   input do
@@ -96,12 +96,12 @@ RSpec.describe DSPy::Propose::GroundedProposer do
   let(:simple_examples) do
     [
       DSPy::Example.new(
-        signature_class: SimpleClassify,
+        signature_class: GroundedClassify,
         input: { text: "I love this movie!" },
         expected: { sentiment: "positive" }
       ),
       DSPy::Example.new(
-        signature_class: SimpleClassify,
+        signature_class: GroundedClassify,
         input: { text: "This is terrible." },
         expected: { sentiment: "negative" }
       )
@@ -195,7 +195,7 @@ RSpec.describe DSPy::Propose::GroundedProposer do
     end
 
     it 'generates proposals for simple signatures' do
-      result = proposer.propose_instructions(SimpleClassify, simple_examples)
+      result = proposer.propose_instructions(GroundedClassify, simple_examples)
 
       expect(result).to be_a(DSPy::Propose::GroundedProposer::ProposalResult)
       expect(result.num_candidates).to be > 0
@@ -216,7 +216,7 @@ RSpec.describe DSPy::Propose::GroundedProposer do
       config.max_instruction_length = 50
       
       custom_proposer = DSPy::Propose::GroundedProposer.new(config: config)
-      result = custom_proposer.propose_instructions(SimpleClassify, simple_examples)
+      result = custom_proposer.propose_instructions(GroundedClassify, simple_examples)
 
       expect(result.num_candidates).to be <= 2
       result.candidate_instructions.each do |instruction|
@@ -243,7 +243,7 @@ RSpec.describe DSPy::Propose::GroundedProposer do
       # Mock LLM to raise an error
       allow_any_instance_of(DSPy::Predict).to receive(:call).and_raise("API Error")
 
-      result = proposer.propose_instructions(SimpleClassify, simple_examples)
+      result = proposer.propose_instructions(GroundedClassify, simple_examples)
 
       # Should still return at least a fallback instruction
       expect(result.num_candidates).to be >= 1
@@ -263,7 +263,7 @@ RSpec.describe DSPy::Propose::GroundedProposer do
       end
 
       it 'correctly identifies simple signatures' do
-        analysis = proposer.send(:analyze_task, SimpleClassify, simple_examples, nil)
+        analysis = proposer.send(:analyze_task, GroundedClassify, simple_examples, nil)
         complexity = analysis[:complexity_indicators]
 
         expect(complexity[:num_input_fields]).to eq(1)
@@ -291,7 +291,7 @@ RSpec.describe DSPy::Propose::GroundedProposer do
       it 'identifies mathematical reasoning' do
         math_examples = [
           DSPy::Example.new(
-            signature_class: SimpleClassify,
+            signature_class: GroundedClassify,
             input: { text: "What is 2 + 2 × 3?" },
             expected: { sentiment: "neutral" }
           )

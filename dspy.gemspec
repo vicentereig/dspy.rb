@@ -35,5 +35,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "sorbet-runtime", "~> 0.5"
   spec.add_dependency "sorbet-schema", "~> 0.3"
 
+  # Data processing
+  spec.add_dependency "polars-df", "~> 0.20.0"
+
   # Development dependencies are already specified in the Gemfile
 end

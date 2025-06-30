@@ -15,7 +15,7 @@ class MathQA < DSPy::Signature
   end
 end
 
-class SimpleClassify < DSPy::Signature
+class PromptClassify < DSPy::Signature
   description "Classify text sentiment."
 
   class Sentiment < T::Enum
@@ -282,10 +282,10 @@ RSpec.describe DSPy::Prompt do
     end
 
     it 'extracts input and output schemas' do
-      prompt = DSPy::Prompt.from_signature(SimpleClassify)
+      prompt = DSPy::Prompt.from_signature(PromptClassify)
       
-      expect(prompt.input_schema).to eq(SimpleClassify.input_json_schema)
-      expect(prompt.output_schema).to eq(SimpleClassify.output_json_schema)
+      expect(prompt.input_schema).to eq(PromptClassify.input_json_schema)
+      expect(prompt.output_schema).to eq(PromptClassify.output_json_schema)
     end
 
     it 'starts with empty few-shot examples' do
