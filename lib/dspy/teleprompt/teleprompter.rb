@@ -291,6 +291,13 @@ module DSPy
       end
 
 
+      # Infer signature class from examples
+      sig { params(examples: T::Array[T.untyped]).returns(T.nilable(T.class_of(Signature))) }
+      def infer_signature_class(examples)
+        require_relative 'utils'
+        Utils.infer_signature_class(examples)
+      end
+
       # Create a default metric for examples
       sig { params(examples: T::Array[T.untyped]).returns(T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean))) }
       def default_metric_for_examples(examples)
