@@ -100,6 +100,13 @@ RSpec.describe DSPy::Subscribers::OtelSubscriber do
       config.enabled = true
     end
 
+    after do
+      # Clear notifications to remove event handlers containing RSpec doubles
+      DSPy::Instrumentation.instance_variable_set(:@notifications, nil)
+    end
+
+
+
     describe 'optimization event handling' do
       it 'handles optimization start events' do
         expect(mock_tracer).to receive(:start_span).with(

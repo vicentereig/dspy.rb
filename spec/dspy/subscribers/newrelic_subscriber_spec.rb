@@ -64,6 +64,12 @@ RSpec.describe DSPy::Subscribers::NewrelicSubscriber do
       config.enabled = true
     end
 
+    after do
+      # Clear notifications to remove event handlers containing RSpec doubles
+      DSPy::Instrumentation.instance_variable_set(:@notifications, nil)
+    end
+
+
     describe 'optimization event handling' do
       it 'handles optimization start events' do
         expect(NewRelic::Agent).to receive(:start_transaction).with(

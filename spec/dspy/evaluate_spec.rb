@@ -295,9 +295,34 @@ RSpec.describe DSPy::Evaluate do
     let(:evaluator) { DSPy::Evaluate.new(mock_program, metric: metric) }
 
     it 'evaluates multiple examples successfully' do
-      # Create fresh mock to avoid state pollution
-      fresh_mock = MockMathProgram.new
-      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: metric)
+      # Create completely isolated instances to avoid ANY state pollution
+      isolated_mock_class = Class.new do
+        attr_accessor :responses
+
+        def initialize
+          @responses = {
+            "2 + 3" => "5",
+            "10 - 4" => "6", 
+            "3 × 4" => "12",
+            "15 ÷ 3" => "5",
+            "7 + 8" => "15",
+            "20 - 12" => "8"
+          }
+        end
+
+        def call(problem:)
+          answer = @responses[problem] || "unknown"
+          OpenStruct.new(problem: problem, answer: answer)
+        end
+      end
+      
+      fresh_mock = isolated_mock_class.new
+      fresh_metric = proc do |example, prediction|
+        expected = example[:expected][:answer] 
+        actual = prediction&.answer
+        expected == actual
+      end
+      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
       result = fresh_evaluator.evaluate(math_examples, display_progress: false)
       
       expect(result).to be_a(DSPy::Evaluate::BatchEvaluationResult)
@@ -307,7 +332,35 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'handles mixed success and failure examples' do
-      result = evaluator.evaluate(mixed_quality_examples, display_progress: false)
+      # Create completely isolated instances to avoid ANY state pollution
+      isolated_mock_class = Class.new do
+        attr_accessor :responses
+
+        def initialize
+          @responses = {
+            "2 + 3" => "5",
+            "10 - 4" => "6", 
+            "3 × 4" => "12",
+            "15 ÷ 3" => "5",
+            "7 + 8" => "15",
+            "20 - 12" => "8"
+          }
+        end
+
+        def call(problem:)
+          answer = @responses[problem] || "unknown"
+          OpenStruct.new(problem: problem, answer: answer)
+        end
+      end
+      
+      fresh_mock = isolated_mock_class.new
+      fresh_metric = proc do |example, prediction|
+        expected = example[:expected][:answer] 
+        actual = prediction&.answer
+        expected == actual
+      end
+      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
+      result = fresh_evaluator.evaluate(mixed_quality_examples, display_progress: false)
       
       expect(result.total_examples).to eq(5)
       expect(result.passed_examples).to eq(3)  # 3 should pass, 2 should fail
@@ -315,7 +368,35 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'aggregates metrics correctly' do
-      result = evaluator.evaluate(math_examples, display_progress: false)
+      # Create completely isolated instances to avoid ANY state pollution
+      isolated_mock_class = Class.new do
+        attr_accessor :responses
+
+        def initialize
+          @responses = {
+            "2 + 3" => "5",
+            "10 - 4" => "6", 
+            "3 × 4" => "12",
+            "15 ÷ 3" => "5",
+            "7 + 8" => "15",
+            "20 - 12" => "8"
+          }
+        end
+
+        def call(problem:)
+          answer = @responses[problem] || "unknown"
+          OpenStruct.new(problem: problem, answer: answer)
+        end
+      end
+      
+      fresh_mock = isolated_mock_class.new
+      fresh_metric = proc do |example, prediction|
+        expected = example[:expected][:answer] 
+        actual = prediction&.answer
+        expected == actual
+      end
+      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
+      result = fresh_evaluator.evaluate(math_examples, display_progress: false)
       
       metrics = result.aggregated_metrics
       expect(metrics[:total_examples]).to eq(5)
@@ -390,8 +471,34 @@ RSpec.describe DSPy::Evaluate do
     let(:evaluator) { DSPy::Evaluate.new(mock_program, metric: metric) }
 
     it 'serializes evaluation result to hash' do
+      # Create completely isolated instances to avoid ANY state pollution
+      isolated_mock_class = Class.new do
+        def initialize
+          @responses = {
+            "2 + 3" => "5",
+            "10 - 4" => "6", 
+            "3 × 4" => "12",
+            "15 ÷ 3" => "5",
+            "7 + 8" => "15"
+          }
+        end
+
+        def call(problem:)
+          answer = @responses[problem] || "unknown"
+          OpenStruct.new(problem: problem, answer: answer)
+        end
+      end
+      
+      fresh_mock = isolated_mock_class.new
+      fresh_metric = proc do |example, prediction|
+        expected = example[:expected][:answer] 
+        actual = prediction&.answer
+        expected == actual
+      end
+      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
+      
       example = { input: { problem: "2 + 3" }, expected: { answer: "5" } }
-      result = evaluator.call(example)
+      result = fresh_evaluator.call(example)
       hash = result.to_h
       
       expect(hash[:example]).to eq(example)
@@ -400,7 +507,33 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'serializes batch result to hash' do
-      result = evaluator.evaluate(math_examples.first(2), display_progress: false)
+      # Create completely isolated instances to avoid ANY state pollution
+      isolated_mock_class = Class.new do
+        def initialize
+          @responses = {
+            "2 + 3" => "5",
+            "10 - 4" => "6", 
+            "3 × 4" => "12",
+            "15 ÷ 3" => "5",
+            "7 + 8" => "15"
+          }
+        end
+
+        def call(problem:)
+          answer = @responses[problem] || "unknown"
+          OpenStruct.new(problem: problem, answer: answer)
+        end
+      end
+      
+      fresh_mock = isolated_mock_class.new
+      fresh_metric = proc do |example, prediction|
+        expected = example[:expected][:answer] 
+        actual = prediction&.answer
+        expected == actual
+      end
+      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
+      
+      result = fresh_evaluator.evaluate(math_examples.first(2), display_progress: false)
       hash = result.to_h
       
       expect(hash[:total_examples]).to eq(2)
@@ -421,9 +554,24 @@ RSpec.describe DSPy::Evaluate do
         expected: { answer: "6" }
       )
       
-      # Create a new mock with the needed response
-      test_mock = MockMathProgram.new
-      test_mock.responses["3 + 3"] = "6"
+      # Create completely isolated instances to avoid ANY state pollution
+      isolated_mock_class = Class.new do
+        def initialize
+          @responses = {
+            "3 + 3" => "6",
+            "4 + 4" => "8",
+            "5 + 5" => "10",
+            "9 + 1" => "10"
+          }
+        end
+
+        def call(problem:)
+          answer = @responses[problem] || "unknown"
+          OpenStruct.new(problem: problem, answer: answer)
+        end
+      end
+      
+      test_mock = isolated_mock_class.new
       evaluator = DSPy::Evaluate.new(test_mock)
       
       result = evaluator.call(example)
@@ -447,10 +595,24 @@ RSpec.describe DSPy::Evaluate do
         )
       ]
       
-      # Create a new mock with the needed responses
-      test_mock = MockMathProgram.new
-      test_mock.responses["4 + 4"] = "8"
-      test_mock.responses["5 + 5"] = "10"
+      # Create completely isolated instances to avoid ANY state pollution
+      isolated_mock_class = Class.new do
+        def initialize
+          @responses = {
+            "3 + 3" => "6",
+            "4 + 4" => "8",
+            "5 + 5" => "10",
+            "9 + 1" => "10"
+          }
+        end
+
+        def call(problem:)
+          answer = @responses[problem] || "unknown"
+          OpenStruct.new(problem: problem, answer: answer)
+        end
+      end
+      
+      test_mock = isolated_mock_class.new
       
       # Use built-in matching for Examples
       evaluator_with_matching = DSPy::Evaluate.new(test_mock, metric: proc { |example, prediction|
@@ -471,9 +633,24 @@ RSpec.describe DSPy::Evaluate do
         expected: { answer: "10" }
       )
       
-      # Create a new mock with the needed response
-      test_mock = MockMathProgram.new
-      test_mock.responses["9 + 1"] = "10"
+      # Create completely isolated instances to avoid ANY state pollution
+      isolated_mock_class = Class.new do
+        def initialize
+          @responses = {
+            "3 + 3" => "6",
+            "4 + 4" => "8",
+            "5 + 5" => "10",
+            "9 + 1" => "10"
+          }
+        end
+
+        def call(problem:)
+          answer = @responses[problem] || "unknown"
+          OpenStruct.new(problem: problem, answer: answer)
+        end
+      end
+      
+      test_mock = isolated_mock_class.new
       evaluator = DSPy::Evaluate.new(test_mock)
       result = evaluator.call(example)
       

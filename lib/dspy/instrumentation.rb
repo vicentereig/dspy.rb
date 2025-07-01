@@ -8,36 +8,28 @@ module DSPy
   # Core instrumentation module using dry-monitor for event emission
   # Provides extension points for logging, OpenTelemetry, New Relic, Langfuse, and custom monitoring
   module Instrumentation
-    # Get the current logger subscriber instance (lazy initialization)
+    # Get a logger subscriber instance (creates new instance each time)
     def self.logger_subscriber
-      @logger_subscriber ||= begin
-        require_relative 'subscribers/logger_subscriber'
-        DSPy::Subscribers::LoggerSubscriber.new
-      end
+      require_relative 'subscribers/logger_subscriber'
+      DSPy::Subscribers::LoggerSubscriber.new
     end
 
-    # Get the current OpenTelemetry subscriber instance (lazy initialization)
+    # Get an OpenTelemetry subscriber instance (creates new instance each time)
     def self.otel_subscriber
-      @otel_subscriber ||= begin
-        require_relative 'subscribers/otel_subscriber'
-        DSPy::Subscribers::OtelSubscriber.new
-      end
+      require_relative 'subscribers/otel_subscriber'
+      DSPy::Subscribers::OtelSubscriber.new
     end
 
-    # Get the current New Relic subscriber instance (lazy initialization)
+    # Get a New Relic subscriber instance (creates new instance each time)
     def self.newrelic_subscriber
-      @newrelic_subscriber ||= begin
-        require_relative 'subscribers/newrelic_subscriber'
-        DSPy::Subscribers::NewrelicSubscriber.new
-      end
+      require_relative 'subscribers/newrelic_subscriber'
+      DSPy::Subscribers::NewrelicSubscriber.new
     end
 
-    # Get the current Langfuse subscriber instance (lazy initialization)
+    # Get a Langfuse subscriber instance (creates new instance each time)
     def self.langfuse_subscriber
-      @langfuse_subscriber ||= begin
-        require_relative 'subscribers/langfuse_subscriber'
-        DSPy::Subscribers::LangfuseSubscriber.new
-      end
+      require_relative 'subscribers/langfuse_subscriber'
+      DSPy::Subscribers::LangfuseSubscriber.new
     end
 
     def self.notifications
@@ -178,12 +170,7 @@ module DSPy
     end
 
     def self.emit_event(event_name, payload)
-      # Ensure all subscribers are initialized
-      logger_subscriber
-      otel_subscriber if ENV['OTEL_EXPORTER_OTLP_ENDPOINT'] || defined?(OpenTelemetry)
-      newrelic_subscriber if defined?(NewRelic)
-      langfuse_subscriber if ENV['LANGFUSE_SECRET_KEY'] || defined?(Langfuse)
-      
+      # Only emit events - subscribers self-register when explicitly created
       notifications.instrument(event_name, payload)
     end
 
