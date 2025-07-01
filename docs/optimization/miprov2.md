@@ -1,527 +1,424 @@
 # MIPROv2 Optimizer
 
-MIPROv2 (Multi-prompt Instruction Proposal and Refinement Optimizer v2) is DSPy.rb's state-of-the-art automatic prompt optimization algorithm. It systematically explores the prompt space to find optimal instructions and examples for your signatures.
+MIPROv2 (Multi-stage Instruction Proposal and Refinement Optimizer v2) is the primary optimization algorithm in DSPy.rb. It automatically improves your predictor's performance through a three-phase optimization process: bootstrap training, instruction optimization, and few-shot example refinement.
 
 ## Overview
 
-MIPROv2 optimizes prompts through multiple strategies:
-- **Instruction Generation**: Creates and refines task instructions
-- **Example Selection**: Finds the most effective few-shot examples  
-- **Multi-prompt Ensembling**: Combines multiple optimized prompts
-- **Bootstrapping**: Generates synthetic training data
-- **Bayesian Optimization**: Efficiently explores the optimization space
+MIPROv2 works by:
+- **Bootstrap Phase**: Generating training examples with reasoning traces
+- **Instruction Phase**: Optimizing the system instruction for better performance
+- **Few-shot Phase**: Selecting the best combination of few-shot examples
+
+The optimizer uses a grounded proposer to generate high-quality candidate instructions and sophisticated example selection to create optimal few-shot demonstrations.
 
 ## Basic Usage
 
+### Simple Optimization
+
 ```ruby
-class ClassifySentiment < DSPy::Signature
-  description "Classify the sentiment of customer feedback"
-  
-  class Sentiment < T::Enum
-    enums do
-      Positive = new('positive')
-      Negative = new('negative') 
-      Neutral = new('neutral')
-    end
-  end
+# Define your signature
+class ClassifyText < DSPy::Signature
+  description "Classify the sentiment of the given text"
   
   input do
     const :text, String
   end
   
   output do
-    const :sentiment, Sentiment
+    const :sentiment, String
     const :confidence, Float
   end
 end
 
-# Prepare training examples
-examples = [
-  DSPy::Example.new(
-    inputs: { text: "I love this product!" },
-    outputs: { sentiment: ClassifySentiment::Sentiment::Positive, confidence: 0.9 }
-  ),
-  DSPy::Example.new(
-    inputs: { text: "Terrible customer service" },
-    outputs: { sentiment: ClassifySentiment::Sentiment::Negative, confidence: 0.85 }
-  ),
-  # ... more examples
-]
+# Create optimizer
+optimizer = DSPy::MIPROv2.new(signature: ClassifyText)
 
-# Initialize and run optimizer
+# Run optimization
+result = optimizer.optimize(examples: training_examples) do |predictor, examples|
+  # Your evaluation logic
+  evaluator = DSPy::Evaluate.new(metric: :exact_match)
+  evaluation_result = evaluator.evaluate(examples: examples) do |example|
+    predictor.call(text: example.text)
+  end
+  evaluation_result.score
+end
+
+# Use the optimized predictor
+best_predictor = result.optimized_program
+final_score = result.best_score_value
+
+puts "Optimization complete!"
+puts "Best score: #{final_score}"
+puts "Best instruction: #{best_predictor.prompt.instruction}"
+```
+
+### AutoMode Configuration
+
+MIPROv2 provides preset configurations for different optimization scenarios:
+
+```ruby
+# Light optimization - fastest, good for prototyping
 optimizer = DSPy::MIPROv2.new(
-  signature: ClassifySentiment,
-  metric: DSPy::Metrics::Accuracy.new,
-  num_candidates: 10,
-  init_temperature: 1.0
+  signature: ClassifyText,
+  mode: :light
 )
 
-# Optimize with examples
-result = optimizer.optimize(
-  examples: examples,
-  max_iterations: 20,
-  patience: 3
+# Medium optimization - balanced performance and speed (default)
+optimizer = DSPy::MIPROv2.new(
+  signature: ClassifyText,
+  mode: :medium
 )
 
-# Use optimized predictor
-optimized_predictor = result.best_predictor
-puts optimized_predictor.call(text: "This is amazing!")
+# Heavy optimization - most thorough, best results
+optimizer = DSPy::MIPROv2.new(
+  signature: ClassifyText,
+  mode: :heavy
+)
+```
+
+### Custom Configuration
+
+```ruby
+# Fine-tune optimization parameters
+config = DSPy::MIPROv2::MIPROv2Config.new
+config.bootstrap_examples = 4
+config.max_bootstrap_examples = 8
+config.num_candidate_instructions = 10
+config.instruction_trials = 15
+config.max_few_shot_examples = 6
+config.few_shot_trials = 20
+
+optimizer = DSPy::MIPROv2.new(
+  signature: ClassifyText,
+  config: config
+)
 ```
 
 ## Configuration Options
 
-### Basic Configuration
+### MIPROv2Config Parameters
 
 ```ruby
-optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  metric: DSPy::Metrics::F1Score.new,          # Evaluation metric
-  num_candidates: 15,                          # Number of prompt candidates to generate
-  init_temperature: 0.8,                       # Initial exploration temperature
-  max_examples_per_demo: 5,                   # Max few-shot examples per prompt
-  bootstrap_examples: true,                    # Generate synthetic examples
-  ensemble_size: 3                            # Number of prompts in final ensemble
-)
+config = DSPy::MIPROv2::MIPROv2Config.new
+
+# Bootstrap phase settings
+config.bootstrap_examples = 4          # Examples to generate initially
+config.max_bootstrap_examples = 8      # Maximum examples to collect
+
+# Instruction optimization
+config.num_candidate_instructions = 10 # Instruction variants to try
+config.instruction_trials = 15         # Evaluation trials per instruction
+
+# Few-shot optimization  
+config.max_few_shot_examples = 6       # Max examples in final prompt
+config.few_shot_trials = 20           # Trials for few-shot selection
+
+# Example selection
+config.example_selection_strategy = :random  # or :diverse
+
+# Display options
+config.verbose = true                  # Show optimization progress
 ```
 
-### Advanced Configuration
+### AutoMode Configurations
 
 ```ruby
-optimizer = DSPy::MIPROv2.new(
-  signature: ComplexTask,
-  metric: DSPy::Metrics::CustomMetric.new(
-    accuracy_weight: 0.7,
-    latency_weight: 0.3
-  ),
-  
-  # Instruction optimization
-  instruction_candidates: 20,
-  instruction_refinement_steps: 3,
-  
-  # Example selection
-  example_selection_strategy: :diversity_based,
-  max_bootstrap_examples: 100,
-  
-  # Bayesian optimization
-  acquisition_function: :expected_improvement,
-  exploration_weight: 0.1,
-  
-  # Multi-objective optimization
-  objectives: [:accuracy, :latency, :cost],
-  pareto_front_size: 10,
-  
-  # Resource constraints
-  max_lm_calls: 500,
-  max_optimization_time: 30.minutes
-)
+# Light mode values:
+# - bootstrap_examples: 2
+# - max_bootstrap_examples: 4  
+# - num_candidate_instructions: 5
+# - instruction_trials: 8
+# - max_few_shot_examples: 3
+# - few_shot_trials: 10
+
+# Medium mode values (default):
+# - bootstrap_examples: 4
+# - max_bootstrap_examples: 8
+# - num_candidate_instructions: 10  
+# - instruction_trials: 15
+# - max_few_shot_examples: 6
+# - few_shot_trials: 20
+
+# Heavy mode values:
+# - bootstrap_examples: 8
+# - max_bootstrap_examples: 16
+# - num_candidate_instructions: 20
+# - instruction_trials: 25
+# - max_few_shot_examples: 10
+# - few_shot_trials: 30
 ```
 
-## Optimization Strategies
+## Optimization Phases
 
-### Instruction Generation
+### Phase 1: Bootstrap Training
 
-MIPROv2 automatically generates and refines task instructions:
+The optimizer generates high-quality training examples:
 
 ```ruby
-# The optimizer will generate instruction variants like:
-instructions = [
-  "Carefully analyze the sentiment expressed in the following text",
-  "Determine if the customer feedback is positive, negative, or neutral",
-  "Classify the emotional tone of this customer review",
-  "Evaluate the sentiment conveyed in the provided text"
-]
-
-# Each instruction is tested and refined based on performance
-refined_instruction = optimizer.refine_instruction(
-  base_instruction: "Classify sentiment",
-  examples: training_examples,
-  refinement_steps: 3
+# MIPROv2 automatically handles this, but you can observe the process
+optimizer = DSPy::MIPROv2.new(
+  signature: ClassifyText,
+  config: config
 )
+
+# During optimization, bootstrap examples are generated using
+# Chain of Thought reasoning to create examples with explanations
 ```
 
-### Example Selection and Bootstrapping
+### Phase 2: Instruction Optimization
+
+Multiple instruction candidates are generated and tested:
 
 ```ruby
-# Configure example optimization
-optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  
-  # Example selection strategy
-  example_selection: {
-    strategy: :coverage_based,        # :random, :diversity_based, :coverage_based
-    max_examples: 8,
-    diversity_threshold: 0.7
-  },
-  
-  # Bootstrapping configuration
-  bootstrapping: {
-    enabled: true,
-    target_examples: 200,
-    quality_threshold: 0.8,
-    iterations: 5
-  }
-)
+# The grounded proposer generates instruction variations like:
+# - "Classify the sentiment of the given text as positive, negative, or neutral."
+# - "Analyze the emotional tone of the provided text and categorize it."
+# - "Determine whether the text expresses positive, negative, or neutral sentiment."
 
-# Access selected examples after optimization
-result = optimizer.optimize(examples: examples)
-puts "Selected examples: #{result.selected_examples.size}"
-puts "Generated examples: #{result.bootstrapped_examples.size}"
+# Each instruction is evaluated across multiple trials to find the best one
 ```
 
-### Multi-prompt Ensembling
+### Phase 3: Few-shot Example Selection
+
+The best combination of few-shot examples is selected:
 
 ```ruby
-# Configure ensemble optimization
-optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  
-  # Ensemble configuration
-  ensemble: {
-    size: 5,                          # Number of prompts in ensemble
-    combination_strategy: :weighted,   # :majority_vote, :weighted, :confidence_based
-    diversity_penalty: 0.1            # Encourage diverse prompts
-  }
-)
+# MIPROv2 tests different combinations of bootstrap examples
+# to find the set that maximizes performance on validation data
+```
 
-result = optimizer.optimize(examples: examples)
+## Working with Results
 
-# The result contains an ensemble predictor
-ensemble_predictor = result.ensemble_predictor
+### MIPROv2Result Object
 
-# Individual prompts are also available
-individual_predictors = result.individual_predictors
-individual_predictors.each_with_index do |predictor, i|
-  puts "Prompt #{i} performance: #{predictor.validation_score}"
+```ruby
+result = optimizer.optimize(examples: examples) do |predictor, val_examples|
+  # evaluation logic
+end
+
+# Access optimization results
+puts "Best score: #{result.best_score_value}"
+puts "Score name: #{result.best_score_name}"
+puts "Total trials: #{result.total_trials}"
+
+# Get the optimized predictor
+optimized_predictor = result.optimized_program
+
+# Access optimization history
+result.history[:trials].each do |trial|
+  puts "Trial #{trial[:trial_number]}: #{trial[:score]}"
+end
+
+# Check timing information
+puts "Bootstrap time: #{result.history[:bootstrap_time]}"
+puts "Instruction time: #{result.history[:instruction_time]}" 
+puts "Few-shot time: #{result.history[:few_shot_time]}"
+puts "Total time: #{result.total_time}"
+```
+
+### Best Configuration Access
+
+```ruby
+best_config = result.best_config
+
+puts "Best instruction: #{best_config.instruction}"
+puts "Number of few-shot examples: #{best_config.few_shot_examples.size}"
+
+# Inspect few-shot examples
+best_config.few_shot_examples.each_with_index do |example, i|
+  puts "Example #{i+1}:"
+  puts "  Input: #{example.input}"
+  puts "  Output: #{example.output}"
 end
 ```
 
-## Monitoring Optimization Progress
+## Integration with Storage and Registry
 
-### Progress Callbacks
+### Saving Optimization Results
 
 ```ruby
-optimizer = DSPy::MIPROv2.new(signature: YourSignature)
-
-# Add progress monitoring
-result = optimizer.optimize(
-  examples: examples,
-  callbacks: {
-    on_iteration: ->(iteration, best_score, current_candidate) {
-      puts "Iteration #{iteration}: Best score = #{best_score}"
-      puts "Current candidate performance: #{current_candidate.score}"
-    },
-    
-    on_improvement: ->(old_score, new_score, improvement) {
-      puts "Improvement found: #{old_score} → #{new_score} (+#{improvement})"
-    },
-    
-    on_completion: ->(final_result) {
-      puts "Optimization completed in #{final_result.total_time} seconds"
-      puts "Final score: #{final_result.best_score}"
-    }
+# Save to storage system
+storage = DSPy::Storage::StorageManager.new
+saved_program = storage.save_optimization_result(
+  result,
+  metadata: {
+    signature: 'text_classifier',
+    optimization_method: 'MIPROv2',
+    mode: 'medium'
   }
 )
+
+puts "Saved with ID: #{saved_program.program_id}"
 ```
 
-### Real-time Metrics
+### Integration with Registry
 
 ```ruby
-# Enable detailed metrics collection
-optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  collect_metrics: true,
-  metrics_interval: 5  # Report every 5 iterations
+# Auto-register with registry
+registry_manager = DSPy::Registry::RegistryManager.new
+registry_manager.integration_config.auto_register_optimizations = true
+
+# This will automatically register the result
+version = registry_manager.register_optimization_result(
+  result,
+  signature_name: 'text_classifier'
 )
 
-result = optimizer.optimize(examples: examples)
-
-# Access optimization metrics
-metrics = result.optimization_metrics
-puts "Total LM calls: #{metrics.total_lm_calls}"
-puts "Average iteration time: #{metrics.avg_iteration_time}"
-puts "Convergence iteration: #{metrics.convergence_iteration}"
-
-# Plot optimization progress
-metrics.plot_progress  # Requires plotting library
+puts "Registered as version: #{version.version}"
 ```
 
-## Custom Metrics
+## Advanced Usage
 
-### Define Custom Evaluation Metrics
+### Custom Evaluation Logic
 
 ```ruby
-class BusinessMetric < DSPy::Metrics::Base
-  def initialize(cost_per_error: 10.0, cost_per_call: 0.01)
-    @cost_per_error = cost_per_error
-    @cost_per_call = cost_per_call
-  end
+result = optimizer.optimize(examples: training_examples) do |predictor, val_examples|
+  total_score = 0.0
   
-  def evaluate(predictions, ground_truth)
-    correct = 0
-    total_cost = predictions.size * @cost_per_call
+  val_examples.each do |example|
+    prediction = predictor.call(text: example.text)
     
-    predictions.zip(ground_truth).each do |pred, truth|
-      if pred.matches?(truth)
-        correct += 1
-      else
-        total_cost += @cost_per_error
+    # Custom scoring logic
+    if prediction.sentiment == example.expected_sentiment
+      # Base score for correct classification
+      score = 1.0
+      
+      # Bonus for high confidence on correct predictions
+      if prediction.confidence > 0.8
+        score += 0.2
       end
+      
+      total_score += score
     end
-    
-    accuracy = correct.to_f / predictions.size
-    roi = accuracy / total_cost  # Return on investment
-    
-    {
-      accuracy: accuracy,
-      total_cost: total_cost,
-      roi: roi,
-      score: roi  # Primary optimization target
-    }
   end
-end
-
-# Use custom metric in optimization
-optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  metric: BusinessMetric.new(cost_per_error: 15.0)
-)
-```
-
-### Multi-objective Optimization
-
-```ruby
-class MultiObjectiveMetric < DSPy::Metrics::Base
-  def evaluate(predictions, ground_truth)
-    accuracy = calculate_accuracy(predictions, ground_truth)
-    latency = calculate_average_latency(predictions)
-    cost = calculate_total_cost(predictions)
-    
-    # Normalize metrics to 0-1 scale
-    normalized_accuracy = accuracy
-    normalized_latency = 1.0 - (latency / max_acceptable_latency)
-    normalized_cost = 1.0 - (cost / max_acceptable_cost)
-    
-    # Weighted combination
-    score = (0.5 * normalized_accuracy + 
-             0.3 * normalized_latency + 
-             0.2 * normalized_cost)
-    
-    {
-      accuracy: accuracy,
-      latency: latency,
-      cost: cost,
-      score: score,
-      pareto_metrics: [accuracy, -latency, -cost]  # For Pareto optimization
-    }
-  end
-end
-```
-
-## Advanced Features
-
-### Distributed Optimization
-
-```ruby
-# Configure distributed optimization across multiple workers
-optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
   
-  # Distributed configuration
-  distributed: {
-    enabled: true,
-    num_workers: 4,
-    worker_timeout: 300,
-    coordinator_host: 'localhost:8080'
-  }
-)
-
-# Optimization will automatically distribute across workers
-result = optimizer.optimize(examples: examples)
-```
-
-### Incremental Optimization
-
-```ruby
-# Load previous optimization state
-previous_result = DSPy::Storage.load_optimization_result('optimization_v1')
-
-# Continue optimization from previous state
-optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  warm_start: previous_result  # Start from previous best
-)
-
-# Add new examples and continue optimizing
-new_examples = load_new_training_data
-all_examples = previous_result.training_examples + new_examples
-
-incremental_result = optimizer.optimize(
-  examples: all_examples,
-  max_iterations: 10  # Few additional iterations
-)
-```
-
-### Optimization with Constraints
-
-```ruby
-optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  
-  # Resource constraints
-  constraints: {
-    max_prompt_length: 2000,           # Characters
-    max_examples_per_prompt: 5,        # Few-shot examples
-    max_lm_calls_per_candidate: 10,    # Evaluation budget
-    required_accuracy: 0.85,           # Minimum acceptable accuracy
-    max_latency: 2.0,                  # Seconds
-    max_cost_per_prediction: 0.05      # Dollars
-  }
-)
-
-result = optimizer.optimize(examples: examples)
-
-# Check if constraints were satisfied
-if result.constraints_satisfied?
-  puts "All constraints satisfied!"
-else
-  puts "Constraint violations: #{result.constraint_violations}"
+  total_score / val_examples.size
 end
 ```
 
-## Optimization Results
-
-### Accessing Results
+### Validation Split
 
 ```ruby
-result = optimizer.optimize(examples: examples)
-
-# Best performing predictor
-best_predictor = result.best_predictor
-best_score = result.best_score
-
-# Optimization metadata
-puts "Optimization took #{result.total_time} seconds"
-puts "Explored #{result.candidates_evaluated} candidates"
-puts "Best score: #{result.best_score}"
-
-# Access the optimized prompt
-optimized_prompt = result.best_prompt
-puts "Optimized instruction: #{optimized_prompt.instruction}"
-puts "Selected examples: #{optimized_prompt.examples.size}"
-
-# Performance breakdown
-performance = result.performance_breakdown
-puts "Training accuracy: #{performance[:train_accuracy]}"
-puts "Validation accuracy: #{performance[:validation_accuracy]}"
-puts "Test accuracy: #{performance[:test_accuracy]}"
+# Use separate validation set for unbiased evaluation
+result = optimizer.optimize(
+  examples: training_examples,
+  val_examples: validation_examples
+) do |predictor, val_examples|
+  # Evaluation on held-out validation set
+  evaluator = DSPy::Evaluate.new(metric: :exact_match)
+  evaluator.evaluate(examples: val_examples) do |example|
+    predictor.call(text: example.text)
+  end.score
+end
 ```
 
-### Saving and Loading Results
+### Monitoring Progress
 
 ```ruby
-# Save optimization result
-DSPy::Storage.save_optimization_result(result, 'sentiment_classifier_v2')
+config = DSPy::MIPROv2::MIPROv2Config.new
+config.verbose = true  # Show detailed progress
 
-# Load and use later
-saved_result = DSPy::Storage.load_optimization_result('sentiment_classifier_v2')
-optimized_predictor = saved_result.best_predictor
-
-# Use in production
-production_result = optimized_predictor.call(text: "Customer feedback text")
-```
-
-## Integration with Other Components
-
-### Registry Integration
-
-```ruby
-# Automatically register optimized signatures
 optimizer = DSPy::MIPROv2.new(
-  signature: ClassifySentiment,
-  auto_register: true,
-  registry_name: 'sentiment_classifier_optimized'
+  signature: ClassifyText,
+  config: config
 )
 
-result = optimizer.optimize(examples: examples)
-
-# Optimized signature is automatically registered
-optimized_classifier = DSPy::Registry.get_signature('sentiment_classifier_optimized')
-```
-
-### Evaluation Integration
-
-```ruby
-# Use with evaluation framework
-evaluator = DSPy::Evaluate.new(
-  examples: test_examples,
-  metric: DSPy::Metrics::Accuracy.new
-)
-
-# Evaluate baseline
-baseline_predictor = DSPy::Predict.new(ClassifySentiment)
-baseline_score = evaluator.evaluate(baseline_predictor)
-
-# Optimize and evaluate
-optimizer = DSPy::MIPROv2.new(signature: ClassifySentiment)
-result = optimizer.optimize(examples: train_examples)
-
-optimized_score = evaluator.evaluate(result.best_predictor)
-
-puts "Baseline accuracy: #{baseline_score}"
-puts "Optimized accuracy: #{optimized_score}"
-puts "Improvement: #{optimized_score - baseline_score}"
+# Progress information is printed during optimization:
+# - Bootstrap phase progress
+# - Instruction candidate evaluation
+# - Few-shot selection progress
+# - Best scores and configurations
 ```
 
 ## Best Practices
 
-### 1. Quality Training Data
+### 1. Choose Appropriate Mode
 
 ```ruby
-# Ensure high-quality, diverse examples
-examples = ExampleQualityAssessor.new(YourSignature)
-  .filter_high_quality(raw_examples, threshold: 0.8)
+# For quick experimentation
+optimizer = DSPy::MIPROv2.new(signature: YourSignature, mode: :light)
 
-# Balance across output categories
-balanced_examples = ExampleBalancer.new
-  .balance_by_output(examples, target_per_category: 50)
+# For production optimization
+optimizer = DSPy::MIPROv2.new(signature: YourSignature, mode: :heavy)
 
-optimizer = DSPy::MIPROv2.new(signature: YourSignature)
-result = optimizer.optimize(examples: balanced_examples)
+# For balanced optimization
+optimizer = DSPy::MIPROv2.new(signature: YourSignature, mode: :medium)
 ```
 
-### 2. Iterative Optimization
+### 2. Provide Quality Examples
 
 ```ruby
-# Start with smaller datasets for quick iterations
-initial_examples = examples.sample(100)
-quick_result = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  num_candidates: 5,
-  max_iterations: 10
-).optimize(examples: initial_examples)
-
-# Scale up with promising configuration
-full_result = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  num_candidates: 20,
-  max_iterations: 50,
-  warm_start: quick_result
-).optimize(examples: examples)
+# Use diverse, high-quality training examples
+training_examples = [
+  DSPy::Example.new(
+    text: "I love this product! It's amazing.",
+    expected_sentiment: "positive"
+  ),
+  DSPy::Example.new(
+    text: "This is the worst experience I've ever had.",
+    expected_sentiment: "negative"
+  ),
+  DSPy::Example.new(
+    text: "The product is okay, nothing special.",
+    expected_sentiment: "neutral"
+  )
+  # ... more diverse examples
+]
 ```
 
-### 3. Monitor Resource Usage
+### 3. Robust Evaluation
 
 ```ruby
-# Set reasonable resource limits
-optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  max_lm_calls: 1000,           # Prevent runaway costs
-  max_optimization_time: 1.hour, # Time budget
-  early_stopping: {
-    patience: 5,                # Stop if no improvement
-    min_delta: 0.01            # Minimum improvement threshold
-  }
-)
+result = optimizer.optimize(examples: examples) do |predictor, val_examples|
+  total_correct = 0
+  total_attempted = 0
+  
+  val_examples.each do |example|
+    begin
+      prediction = predictor.call(text: example.text)
+      total_attempted += 1
+      
+      if prediction.sentiment.downcase == example.expected_sentiment.downcase
+        total_correct += 1
+      end
+    rescue => e
+      # Handle prediction errors gracefully
+      puts "Prediction failed: #{e.message}"
+    end
+  end
+  
+  return 0.0 if total_attempted == 0
+  total_correct.to_f / total_attempted
+end
 ```
 
-MIPROv2 is a powerful tool for automatic prompt optimization. Start with simple configurations and gradually explore advanced features as you become familiar with the optimization process.
+### 4. Save Your Results
+
+```ruby
+# Always save successful optimizations
+if result.best_score_value > 0.8  # Your quality threshold
+  storage_manager = DSPy::Storage::StorageManager.new
+  storage_manager.save_optimization_result(
+    result,
+    tags: ['production', 'validated'],
+    metadata: {
+      dataset: 'customer_reviews_v2',
+      optimization_date: Date.current,
+      minimum_score: 0.8
+    }
+  )
+end
+```
+
+## Limitations
+
+The current MIPROv2 implementation has some limitations:
+
+- **Sequential optimization**: Phases run sequentially, not in parallel
+- **Single-objective**: Optimizes one metric at a time
+- **Limited instruction generation**: Uses basic grounded proposer
+- **No distributed optimization**: Runs on single machine only
+- **Fixed algorithm**: Cannot customize the three-phase approach
+- **No warm starts**: Cannot resume from previous optimization runs
+
+For advanced optimization features, multi-objective optimization, or distributed optimization needs, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.

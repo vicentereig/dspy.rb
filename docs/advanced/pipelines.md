@@ -1,679 +1,612 @@
 # Multi-stage Pipelines
 
-Advanced pipeline patterns for building sophisticated DSPy applications that require complex processing workflows, conditional logic, and sophisticated error handling.
+DSPy.rb supports building complex, multi-stage pipelines by composing multiple DSPy modules together. You can create sequential workflows, conditional processing, and reusable pipeline components for sophisticated LLM applications.
 
-## Pipeline Architecture
+## Overview
 
-### Sequential Pipelines
+DSPy.rb enables pipeline creation through:
+- **Module Composition**: Combine multiple DSPy::Module instances
+- **Sequential Processing**: Chain operations in order
+- **Data Flow**: Pass results between pipeline stages
+- **Error Handling**: Graceful failure management
+- **Reusable Components**: Build modular, testable pipelines
+
+## Basic Pipeline Concepts
+
+### Module-Based Architecture
 
 ```ruby
-class DocumentProcessingPipeline < DSPy::Module
+# Individual modules for each stage
+class DocumentClassifier < DSPy::Module
   def initialize
-    @extractor = DSPy::Predict.new(ExtractDocumentInfo)
-    @classifier = DSPy::ChainOfThought.new(ClassifyDocument)
-    @analyzer = DSPy::Predict.new(AnalyzeContent)
-    @summarizer = DSPy::ChainOfThought.new(GenerateSummary)
+    super
+    @signature = DSPy::Signature.define do
+      description "Classify document type"
+      input { const :content, String }
+      output { const :document_type, String }
+    end
+    @predictor = DSPy::Predict.new(@signature)
   end
-  
-  def call(document)
-    # Stage 1: Extract basic information
-    extraction = @extractor.call(text: document)
-    
-    # Stage 2: Classify document type (with reasoning)
-    classification = @classifier.call(
-      text: document,
-      extracted_info: extraction.to_h
-    )
-    
-    # Stage 3: Analyze content based on classification
-    analysis = @analyzer.call(
-      text: document,
-      document_type: classification.type,
-      context: build_analysis_context(extraction, classification)
-    )
-    
-    # Stage 4: Generate summary with all context
-    summary = @summarizer.call(
-      text: document,
-      analysis: analysis.insights,
-      document_type: classification.type
-    )
-    
-    DocumentProcessingResult.new(
-      extraction: extraction,
-      classification: classification,
-      analysis: analysis,
-      summary: summary,
-      pipeline_metadata: capture_pipeline_metadata
-    )
+
+  def forward(content:)
+    @predictor.call(content: content)
+  end
+end
+
+class SummaryGenerator < DSPy::Module
+  def initialize
+    super
+    @signature = DSPy::Signature.define do
+      description "Generate document summary"
+      input { const :content, String }
+      output { const :summary, String }
+    end
+    @predictor = DSPy::Predict.new(@signature)
+  end
+
+  def forward(content:)
+    @predictor.call(content: content)
   end
 end
 ```
 
-### Parallel Pipelines
+### Sequential Pipeline
+
+```ruby
+class DocumentProcessor < DSPy::Module
+  def initialize
+    super
+    @classifier = DocumentClassifier.new
+    @summarizer = SummaryGenerator.new
+  end
+
+  def forward(content:)
+    # Stage 1: Classify document
+    classification = @classifier.call(content: content)
+    
+    # Stage 2: Generate summary
+    summary = @summarizer.call(content: content)
+    
+    # Return combined results
+    {
+      document_type: classification.document_type,
+      summary: summary.summary,
+      original_length: content.length,
+      summary_length: summary.summary.length
+    }
+  end
+end
+
+# Usage
+processor = DocumentProcessor.new
+result = processor.call(content: "Long document content...")
+
+puts "Type: #{result[:document_type]}"
+puts "Summary: #{result[:summary]}"
+```
+
+## Advanced Pipeline Patterns
+
+### Conditional Processing
+
+```ruby
+class AdaptiveDocumentProcessor < DSPy::Module
+  def initialize
+    super
+    @classifier = DocumentClassifier.new
+    @technical_summarizer = TechnicalSummarizer.new
+    @general_summarizer = GeneralSummarizer.new
+    @legal_analyzer = LegalAnalyzer.new
+  end
+
+  def forward(content:)
+    # Stage 1: Classify
+    classification = @classifier.call(content: content)
+    doc_type = classification.document_type
+    
+    # Stage 2: Conditional processing based on type
+    case doc_type.downcase
+    when 'technical'
+      summary = @technical_summarizer.call(content: content)
+      analysis = nil
+    when 'legal'
+      summary = @general_summarizer.call(content: content)
+      analysis = @legal_analyzer.call(content: content)
+    else
+      summary = @general_summarizer.call(content: content)
+      analysis = nil
+    end
+    
+    # Combine results
+    result = {
+      document_type: doc_type,
+      summary: summary.summary
+    }
+    
+    result[:legal_analysis] = analysis if analysis
+    result
+  end
+end
+```
+
+### Pipeline with Error Handling
+
+```ruby
+class RobustPipeline < DSPy::Module
+  def initialize
+    super
+    @stages = [
+      DocumentClassifier.new,
+      SummaryGenerator.new,
+      KeywordExtractor.new
+    ]
+  end
+
+  def forward(content:)
+    results = { input_length: content.length }
+    current_content = content
+    
+    @stages.each_with_index do |stage, index|
+      begin
+        case index
+        when 0 # Classification
+          result = stage.call(content: current_content)
+          results[:document_type] = result.document_type
+        when 1 # Summarization
+          result = stage.call(content: current_content)
+          results[:summary] = result.summary
+          current_content = result.summary # Use summary for next stage
+        when 2 # Keyword extraction
+          result = stage.call(content: current_content)
+          results[:keywords] = result.keywords
+        end
+      rescue => e
+        results[:errors] ||= []
+        results[:errors] << {
+          stage: index,
+          stage_name: stage.class.name,
+          error: e.message
+        }
+        
+        # Continue with original content if stage fails
+        current_content = content
+      end
+    end
+    
+    results
+  end
+end
+```
+
+### Data Transformation Pipeline
+
+```ruby
+class EmailProcessor < DSPy::Module
+  def initialize
+    super
+    @spam_detector = SpamDetector.new
+    @sentiment_analyzer = SentimentAnalyzer.new
+    @priority_classifier = PriorityClassifier.new
+    @response_generator = ResponseGenerator.new
+  end
+
+  def forward(email_content:, sender:)
+    pipeline_data = {
+      content: email_content,
+      sender: sender,
+      processing_steps: []
+    }
+    
+    # Stage 1: Spam detection
+    spam_result = @spam_detector.call(content: email_content)
+    pipeline_data[:is_spam] = spam_result.is_spam
+    pipeline_data[:processing_steps] << "spam_detection"
+    
+    # Skip further processing if spam
+    return pipeline_data if pipeline_data[:is_spam]
+    
+    # Stage 2: Sentiment analysis
+    sentiment_result = @sentiment_analyzer.call(content: email_content)
+    pipeline_data[:sentiment] = sentiment_result.sentiment
+    pipeline_data[:processing_steps] << "sentiment_analysis"
+    
+    # Stage 3: Priority classification
+    priority_result = @priority_classifier.call(
+      content: email_content,
+      sentiment: pipeline_data[:sentiment]
+    )
+    pipeline_data[:priority] = priority_result.priority
+    pipeline_data[:processing_steps] << "priority_classification"
+    
+    # Stage 4: Generate response if high priority
+    if priority_result.priority == "high"
+      response_result = @response_generator.call(
+        content: email_content,
+        sentiment: pipeline_data[:sentiment]
+      )
+      pipeline_data[:suggested_response] = response_result.response
+      pipeline_data[:processing_steps] << "response_generation"
+    end
+    
+    pipeline_data
+  end
+end
+```
+
+## Parallel Processing Simulation
 
 ```ruby
 class ParallelAnalysisPipeline < DSPy::Module
   def initialize
-    @sentiment_analyzer = DSPy::Predict.new(AnalyzeSentiment)
-    @topic_extractor = DSPy::Predict.new(ExtractTopics)
-    @entity_recognizer = DSPy::Predict.new(RecognizeEntities)
-    @language_detector = DSPy::Predict.new(DetectLanguage)
-    @quality_assessor = DSPy::ChainOfThought.new(AssessQuality)
+    super
+    @analyzers = {
+      sentiment: SentimentAnalyzer.new,
+      topics: TopicExtractor.new,
+      entities: EntityExtractor.new,
+      readability: ReadabilityAnalyzer.new
+    }
   end
-  
-  def call(text)
-    # Run independent analyses in parallel
-    Async do |task|
-      sentiment_task = task.async { @sentiment_analyzer.call(text: text) }
-      topics_task = task.async { @topic_extractor.call(text: text) }
-      entities_task = task.async { @entity_recognizer.call(text: text) }
-      language_task = task.async { @language_detector.call(text: text) }
-      
-      # Wait for all parallel tasks
-      sentiment = sentiment_task.wait
-      topics = topics_task.wait
-      entities = entities_task.wait
-      language = language_task.wait
-      
-      # Use parallel results for final quality assessment
-      quality = @quality_assessor.call(
-        text: text,
-        sentiment: sentiment.sentiment,
-        topics: topics.topics,
-        entities: entities.entities,
-        language: language.language
-      )
-      
-      ParallelAnalysisResult.new(
-        sentiment: sentiment,
-        topics: topics,
-        entities: entities,
-        language: language,
-        quality: quality,
-        processing_time: calculate_parallel_time
-      )
-    end
-  end
-end
-```
 
-## Conditional Pipeline Logic
-
-### Dynamic Routing
-
-```ruby
-class AdaptiveProcessingPipeline < DSPy::Module
-  def initialize
-    @complexity_assessor = DSPy::Predict.new(AssessComplexity)
-    @simple_processor = DSPy::Predict.new(SimpleProcessing)
-    @complex_processor = DSPy::ChainOfThought.new(ComplexProcessing)
-    @expert_processor = DSPy::React.new(ExpertProcessing, tools: [ResearchTool.new])
-  end
-  
-  def call(input)
-    # Assess complexity first
-    complexity = @complexity_assessor.call(text: input)
-    
-    # Route based on complexity
-    processor = select_processor(complexity.level)
-    
-    # Add complexity context to processing
-    result = processor.call(
-      text: input,
-      complexity_level: complexity.level,
-      complexity_reasoning: complexity.reasoning
-    )
-    
-    # Post-process based on complexity
-    enhanced_result = enhance_result(result, complexity)
-    
-    AdaptiveProcessingResult.new(
-      result: enhanced_result,
-      complexity_assessment: complexity,
-      processor_used: processor.class.name,
-      confidence: calculate_confidence(result, complexity)
-    )
-  end
-  
-  private
-  
-  def select_processor(complexity_level)
-    case complexity_level
-    when ComplexityLevel::Low
-      @simple_processor
-    when ComplexityLevel::Medium
-      @complex_processor
-    when ComplexityLevel::High
-      @expert_processor
-    else
-      @simple_processor  # Default fallback
-    end
-  end
-end
-```
-
-### Multi-path Processing
-
-```ruby
-class MultiPathPipeline < DSPy::Module
-  def initialize
-    @initial_analyzer = DSPy::Predict.new(InitialAnalysis)
-    
-    # Different processing paths
-    @technical_path = TechnicalProcessingPath.new
-    @business_path = BusinessProcessingPath.new
-    @creative_path = CreativeProcessingPath.new
-    
-    @path_merger = DSPy::ChainOfThought.new(MergePaths)
-  end
-  
-  def call(input)
-    # Initial analysis to determine paths
-    initial = @initial_analyzer.call(text: input)
-    
-    # Determine which paths to execute
-    paths_to_execute = select_paths(initial.characteristics)
-    
-    # Execute selected paths in parallel
-    path_results = Async do |task|
-      paths_to_execute.map do |path_name|
-        task.async do
-          path_processor = instance_variable_get("@#{path_name}_path")
-          {
-            path: path_name,
-            result: path_processor.call(input, context: initial)
-          }
-        end
-      end.map(&:wait)
-    end
-    
-    # Merge results from all paths
-    merged = @path_merger.call(
-      input: input,
-      initial_analysis: initial,
-      path_results: path_results
-    )
-    
-    MultiPathResult.new(
-      initial_analysis: initial,
-      paths_executed: paths_to_execute,
-      path_results: path_results,
-      merged_result: merged
-    )
-  end
-  
-  private
-  
-  def select_paths(characteristics)
-    paths = []
-    
-    paths << :technical if characteristics.include?('technical_content')
-    paths << :business if characteristics.include?('business_context')
-    paths << :creative if characteristics.include?('creative_elements')
-    
-    # Always include at least one path
-    paths << :technical if paths.empty?
-    
-    paths
-  end
-end
-```
-
-## Error Handling and Recovery
-
-### Graceful Degradation
-
-```ruby
-class ResilientPipeline < DSPy::Module
-  def initialize
-    @primary_processors = build_primary_processors
-    @fallback_processors = build_fallback_processors
-    @error_handler = ErrorHandler.new
-  end
-  
-  def call(input)
+  def forward(content:)
+    # Simulate parallel processing with sequential calls
+    # In a real implementation, you might use threads or async processing
     results = {}
     errors = {}
     
-    @primary_processors.each do |stage_name, processor|
+    @analyzers.each do |name, analyzer|
       begin
-        results[stage_name] = execute_with_timeout(processor, input, timeout: 30.seconds)
-      rescue StandardError => e
-        errors[stage_name] = e
+        start_time = Time.now
+        result = analyzer.call(content: content)
+        duration = Time.now - start_time
         
-        # Try fallback processor
-        if fallback = @fallback_processors[stage_name]
-          begin
-            results[stage_name] = execute_with_timeout(fallback, input, timeout: 15.seconds)
-            results["#{stage_name}_fallback_used"] = true
-          rescue StandardError => fallback_error
-            errors["#{stage_name}_fallback"] = fallback_error
-            
-            # Use cached or default result if available
-            results[stage_name] = get_cached_or_default_result(stage_name, input)
-          end
-        end
+        results[name] = {
+          result: result,
+          processing_time: duration
+        }
+      rescue => e
+        errors[name] = e.message
       end
     end
     
-    # Handle partial failures
-    final_result = handle_partial_failures(results, errors, input)
-    
-    ResilientPipelineResult.new(
-      results: results,
+    {
+      content_length: content.length,
+      analysis_results: results,
       errors: errors,
-      success_rate: calculate_success_rate(results, errors),
-      fallbacks_used: count_fallbacks_used(results),
-      final_result: final_result
-    )
-  end
-  
-  private
-  
-  def execute_with_timeout(processor, input, timeout:)
-    Timeout.timeout(timeout) do
-      processor.call(input)
-    end
-  rescue Timeout::Error
-    raise DSPy::TimeoutError, "Processor #{processor.class} timed out after #{timeout} seconds"
-  end
-  
-  def handle_partial_failures(results, errors, input)
-    success_count = results.count { |k, v| !k.to_s.include?('_fallback_used') && v }
-    total_stages = @primary_processors.size
-    
-    if success_count >= total_stages * 0.7  # 70% success threshold
-      combine_successful_results(results)
-    else
-      emergency_fallback_processing(input, results, errors)
-    end
-  end
-end
-```
-
-### Circuit Breaker Pattern
-
-```ruby
-class CircuitBreakerPipeline < DSPy::Module
-  def initialize
-    @processors = build_processors
-    @circuit_breakers = build_circuit_breakers
-  end
-  
-  def call(input)
-    results = {}
-    
-    @processors.each do |stage_name, processor|
-      circuit_breaker = @circuit_breakers[stage_name]
-      
-      begin
-        if circuit_breaker.closed?
-          results[stage_name] = circuit_breaker.call do
-            processor.call(input)
-          end
-        else
-          # Circuit is open, use cached result or skip
-          results[stage_name] = circuit_breaker.fallback_result || 
-                               skip_stage_with_warning(stage_name)
-        end
-      rescue CircuitBreaker::OpenError
-        DSPy.logger.warn "Circuit breaker open for #{stage_name}, using fallback"
-        results[stage_name] = handle_circuit_open(stage_name, input)
-      end
-    end
-    
-    CircuitBreakerResult.new(
-      results: results,
-      circuit_states: @circuit_breakers.transform_values(&:state)
-    )
-  end
-  
-  private
-  
-  def build_circuit_breakers
-    @processors.keys.to_h do |stage_name|
-      [stage_name, CircuitBreaker.new(
-        failure_threshold: 5,
-        timeout: 60.seconds,
-        expected_exceptions: [DSPy::LMError, DSPy::TimeoutError]
-      )]
-    end
-  end
-end
-```
-
-## Data Flow Patterns
-
-### Stream Processing
-
-```ruby
-class StreamProcessingPipeline < DSPy::Module
-  def initialize(batch_size: 10, buffer_timeout: 5.seconds)
-    @batch_size = batch_size
-    @buffer_timeout = buffer_timeout
-    @processor = DSPy::Predict.new(ProcessBatch)
-    @buffer = []
-    @last_flush = Time.current
-  end
-  
-  def process_item(item)
-    @buffer << item
-    
-    if should_flush?
-      flush_buffer
-    else
-      # Return immediately for streaming
-      nil
-    end
-  end
-  
-  def flush_buffer
-    return [] if @buffer.empty?
-    
-    batch = @buffer.dup
-    @buffer.clear
-    @last_flush = Time.current
-    
-    # Process batch
-    result = @processor.call(
-      items: batch,
-      batch_size: batch.size,
-      processing_timestamp: Time.current
-    )
-    
-    # Return individual results
-    result.processed_items
-  end
-  
-  def finalize
-    # Process any remaining items
-    flush_buffer
-  end
-  
-  private
-  
-  def should_flush?
-    @buffer.size >= @batch_size ||
-    Time.current - @last_flush >= @buffer_timeout
-  end
-end
-```
-
-### Map-Reduce Pipelines
-
-```ruby
-class MapReducePipeline < DSPy::Module
-  def initialize(chunk_size: 1000, reducer_type: :summary)
-    @chunk_size = chunk_size
-    @mapper = DSPy::Predict.new(MapOperation)
-    @reducer = select_reducer(reducer_type)
-  end
-  
-  def call(large_dataset)
-    # Map phase: process chunks in parallel
-    chunks = large_dataset.each_slice(@chunk_size).to_a
-    
-    mapped_results = Async do |task|
-      chunks.map.with_index do |chunk, index|
-        task.async do
-          @mapper.call(
-            data_chunk: chunk,
-            chunk_index: index,
-            total_chunks: chunks.size
-          )
-        end
-      end.map(&:wait)
-    end
-    
-    # Reduce phase: combine results
-    final_result = @reducer.call(
-      mapped_results: mapped_results,
-      original_size: large_dataset.size,
-      chunks_processed: chunks.size
-    )
-    
-    MapReduceResult.new(
-      original_size: large_dataset.size,
-      chunks_processed: chunks.size,
-      mapped_results: mapped_results,
-      final_result: final_result,
-      processing_stats: calculate_processing_stats(mapped_results)
-    )
-  end
-  
-  private
-  
-  def select_reducer(type)
-    case type
-    when :summary
-      DSPy::ChainOfThought.new(SummarizeResults)
-    when :aggregation
-      DSPy::Predict.new(AggregateResults)
-    when :synthesis
-      DSPy::ChainOfThought.new(SynthesizeResults)
-    else
-      DSPy::Predict.new(CombineResults)
-    end
+      total_analyzers: @analyzers.size,
+      successful_analyzers: results.size,
+      failed_analyzers: errors.size
+    }
   end
 end
 ```
 
 ## Pipeline Optimization
 
-### Caching Strategies
+### Caching Pipeline Results
 
 ```ruby
 class CachedPipeline < DSPy::Module
-  def initialize(cache_store: Rails.cache)
-    @processors = build_processors
-    @cache = cache_store
-    @cache_config = configure_caching
+  def initialize(base_pipeline)
+    super
+    @base_pipeline = base_pipeline
+    @cache = {}
   end
-  
-  def call(input)
-    cache_key = generate_pipeline_cache_key(input)
+
+  def forward(**inputs)
+    cache_key = generate_cache_key(inputs)
     
-    # Check for complete pipeline cache
-    if cached_result = @cache.read(cache_key)
-      return cached_result.merge(cache_hit: :full)
+    if @cache.key?(cache_key)
+      puts "Cache hit for #{cache_key[0..10]}..."
+      return @cache[cache_key]
     end
     
-    results = {}
+    puts "Cache miss, processing..."
+    result = @base_pipeline.call(**inputs)
     
-    @processors.each do |stage_name, processor|
-      stage_cache_key = generate_stage_cache_key(stage_name, input, results)
-      
-      if @cache_config[stage_name][:enabled]
-        cached_stage_result = @cache.read(stage_cache_key)
-        
-        if cached_stage_result
-          results[stage_name] = cached_stage_result
-          next
-        end
-      end
-      
-      # Execute stage
-      stage_result = processor.call(build_stage_input(input, results))
-      results[stage_name] = stage_result
-      
-      # Cache stage result
-      if @cache_config[stage_name][:enabled]
-        @cache.write(
-          stage_cache_key,
-          stage_result,
-          expires_in: @cache_config[stage_name][:ttl]
-        )
-      end
-    end
-    
-    final_result = combine_stage_results(results)
-    
-    # Cache complete pipeline result
-    @cache.write(cache_key, final_result, expires_in: 1.hour)
-    
-    final_result.merge(cache_hit: :none)
+    # Store in cache (in production, consider cache size limits)
+    @cache[cache_key] = result
+    result
   end
-  
+
   private
-  
-  def configure_caching
-    {
-      extraction: { enabled: true, ttl: 1.hour },
-      classification: { enabled: true, ttl: 30.minutes },
-      analysis: { enabled: false, ttl: nil },  # Always fresh
-      summary: { enabled: true, ttl: 15.minutes }
-    }
+
+  def generate_cache_key(inputs)
+    # Simple cache key generation
+    Digest::SHA256.hexdigest(inputs.to_s)
   end
 end
+
+# Usage
+base_processor = DocumentProcessor.new
+cached_processor = CachedPipeline.new(base_processor)
+
+# First call processes normally
+result1 = cached_processor.call(content: document)
+
+# Second call with same content uses cache
+result2 = cached_processor.call(content: document)
 ```
 
 ### Performance Monitoring
 
 ```ruby
 class MonitoredPipeline < DSPy::Module
-  def initialize
-    @processors = build_processors
-    @performance_tracker = PerformanceTracker.new
-    @bottleneck_detector = BottleneckDetector.new
+  def initialize(base_pipeline)
+    super
+    @base_pipeline = base_pipeline
+    @metrics = {
+      total_calls: 0,
+      total_time: 0.0,
+      errors: 0
+    }
   end
-  
-  def call(input)
-    pipeline_start = Time.current
-    stage_timings = {}
-    results = {}
+
+  def forward(**inputs)
+    @metrics[:total_calls] += 1
+    start_time = Time.now
     
-    @processors.each do |stage_name, processor|
-      stage_start = Time.current
+    begin
+      result = @base_pipeline.call(**inputs)
       
-      # Execute stage with monitoring
-      results[stage_name] = @performance_tracker.track_stage(stage_name) do
-        processor.call(build_stage_input(input, results))
-      end
+      # Add performance metadata
+      duration = Time.now - start_time
+      @metrics[:total_time] += duration
       
-      stage_duration = Time.current - stage_start
-      stage_timings[stage_name] = stage_duration
-      
-      # Check for bottlenecks
-      if @bottleneck_detector.is_bottleneck?(stage_name, stage_duration)
-        DSPy.logger.warn "Bottleneck detected in stage #{stage_name}: #{stage_duration}s"
-      end
-    end
-    
-    total_duration = Time.current - pipeline_start
-    
-    # Record performance metrics
-    record_pipeline_performance(stage_timings, total_duration)
-    
-    MonitoredPipelineResult.new(
-      results: combine_stage_results(results),
-      performance: {
-        total_duration: total_duration,
-        stage_timings: stage_timings,
-        bottlenecks: @bottleneck_detector.detected_bottlenecks,
-        throughput: calculate_throughput(input, total_duration)
+      result_with_metrics = result.dup
+      result_with_metrics[:performance] = {
+        processing_time: duration,
+        average_time: @metrics[:total_time] / @metrics[:total_calls],
+        call_number: @metrics[:total_calls]
       }
-    )
+      
+      result_with_metrics
+    rescue => e
+      @metrics[:errors] += 1
+      duration = Time.now - start_time
+      @metrics[:total_time] += duration
+      
+      raise e
+    end
   end
-  
-  private
-  
-  def record_pipeline_performance(stage_timings, total_duration)
-    DSPy.metrics.histogram('pipeline.total_duration').record(total_duration)
-    
-    stage_timings.each do |stage, duration|
-      DSPy.metrics.histogram("pipeline.stage.#{stage}.duration").record(duration)
-    end
-    
-    # Calculate stage percentages
-    stage_timings.each do |stage, duration|
-      percentage = (duration / total_duration) * 100
-      DSPy.metrics.histogram("pipeline.stage.#{stage}.percentage").record(percentage)
-    end
+
+  def stats
+    {
+      total_calls: @metrics[:total_calls],
+      total_time: @metrics[:total_time],
+      average_time: @metrics[:total_calls] > 0 ? @metrics[:total_time] / @metrics[:total_calls] : 0,
+      error_rate: @metrics[:total_calls] > 0 ? @metrics[:errors].to_f / @metrics[:total_calls] : 0,
+      errors: @metrics[:errors]
+    }
   end
 end
+
+# Usage
+base_pipeline = DocumentProcessor.new
+monitored_pipeline = MonitoredPipeline.new(base_pipeline)
+
+# Process documents
+results = documents.map { |doc| monitored_pipeline.call(content: doc) }
+
+# Check performance
+puts "Pipeline stats: #{monitored_pipeline.stats}"
 ```
 
-## Testing Pipeline Components
-
-### Unit Testing
+## Complex Pipeline Example
 
 ```ruby
-RSpec.describe DocumentProcessingPipeline do
-  let(:pipeline) { described_class.new }
-  
-  describe "#call" do
-    let(:sample_document) { "This is a sample document for testing." }
+class ContentAnalysisPipeline < DSPy::Module
+  def initialize
+    super
     
-    it "processes document through all stages" do
-      result = pipeline.call(sample_document)
-      
-      expect(result.extraction).to be_present
-      expect(result.classification).to be_present
-      expect(result.analysis).to be_present
-      expect(result.summary).to be_present
+    # Initialize all pipeline stages
+    @content_classifier = ContentClassifier.new
+    @language_detector = LanguageDetector.new
+    @sentiment_analyzer = SentimentAnalyzer.new
+    @topic_extractor = TopicExtractor.new
+    @summarizer = ContentSummarizer.new
+    @quality_assessor = QualityAssessor.new
+  end
+
+  def forward(content:, metadata: {})
+    analysis = {
+      timestamp: Time.now,
+      input_metadata: metadata,
+      processing_chain: []
+    }
+
+    # Stage 1: Basic content analysis
+    begin
+      classification = @content_classifier.call(content: content)
+      analysis[:content_type] = classification.content_type
+      analysis[:processing_chain] << :content_classification
+    rescue => e
+      analysis[:errors] ||= []
+      analysis[:errors] << { stage: :content_classification, error: e.message }
     end
-    
-    it "maintains context between stages" do
-      result = pipeline.call(sample_document)
-      
-      # Classification should use extraction context
-      expect(result.classification.context).to include('extracted_info')
-      
-      # Analysis should use classification context
-      expect(result.analysis.context).to include('document_type')
+
+    # Stage 2: Language detection
+    begin
+      language = @language_detector.call(content: content)
+      analysis[:language] = language.language
+      analysis[:language_confidence] = language.confidence
+      analysis[:processing_chain] << :language_detection
+    rescue => e
+      analysis[:errors] ||= []
+      analysis[:errors] << { stage: :language_detection, error: e.message }
+      analysis[:language] = 'unknown'
     end
+
+    # Stage 3: Sentiment analysis (only for certain content types)
+    if ['article', 'review', 'social_post'].include?(analysis[:content_type])
+      begin
+        sentiment = @sentiment_analyzer.call(content: content)
+        analysis[:sentiment] = sentiment.sentiment
+        analysis[:sentiment_score] = sentiment.confidence
+        analysis[:processing_chain] << :sentiment_analysis
+      rescue => e
+        analysis[:errors] ||= []
+        analysis[:errors] << { stage: :sentiment_analysis, error: e.message }
+      end
+    end
+
+    # Stage 4: Topic extraction
+    begin
+      topics = @topic_extractor.call(content: content)
+      analysis[:topics] = topics.topics
+      analysis[:topic_confidence] = topics.confidence
+      analysis[:processing_chain] << :topic_extraction
+    rescue => e
+      analysis[:errors] ||= []
+      analysis[:errors] << { stage: :topic_extraction, error: e.message }
+    end
+
+    # Stage 5: Summarization (for long content)
+    if content.length > 1000
+      begin
+        summary = @summarizer.call(content: content)
+        analysis[:summary] = summary.summary
+        analysis[:summary_ratio] = summary.summary.length.to_f / content.length
+        analysis[:processing_chain] << :summarization
+      rescue => e
+        analysis[:errors] ||= []
+        analysis[:errors] << { stage: :summarization, error: e.message }
+      end
+    end
+
+    # Stage 6: Quality assessment
+    begin
+      quality = @quality_assessor.call(
+        content: content,
+        content_type: analysis[:content_type],
+        language: analysis[:language]
+      )
+      analysis[:quality_score] = quality.score
+      analysis[:quality_issues] = quality.issues
+      analysis[:processing_chain] << :quality_assessment
+    rescue => e
+      analysis[:errors] ||= []
+      analysis[:errors] << { stage: :quality_assessment, error: e.message }
+    end
+
+    # Add processing summary
+    analysis[:processing_summary] = {
+      total_stages: 6,
+      completed_stages: analysis[:processing_chain].size,
+      error_count: analysis[:errors]&.size || 0,
+      processing_time: Time.now - analysis[:timestamp]
+    }
+
+    analysis
   end
 end
+
+# Usage
+pipeline = ContentAnalysisPipeline.new
+
+# Process a single document
+result = pipeline.call(
+  content: "Long article content...",
+  metadata: { source: 'web', author: 'John Doe' }
+)
+
+puts "Content type: #{result[:content_type]}"
+puts "Language: #{result[:language]}"
+puts "Topics: #{result[:topics]}"
+puts "Processing completed #{result[:processing_summary][:completed_stages]}/#{result[:processing_summary][:total_stages]} stages"
 ```
 
-### Integration Testing
+## Best Practices
+
+### 1. Modular Design
 
 ```ruby
-RSpec.describe "Pipeline Integration" do
-  let(:pipeline) { DocumentProcessingPipeline.new }
-  
-  it "handles real-world documents end-to-end" do
-    document = File.read("spec/fixtures/sample_contract.pdf")
-    
-    result = pipeline.call(document)
-    
-    expect(result.classification.type).to eq('legal_document')
-    expect(result.analysis.insights).to include('contract_terms')
-    expect(result.summary.summary).to be_present
-  end
-  
-  it "processes documents within acceptable time limits" do
-    document = "A" * 10000  # 10KB document
-    
-    execution_time = Benchmark.realtime do
-      pipeline.call(document)
-    end
-    
-    expect(execution_time).to be < 10.0  # Should complete within 10 seconds
+# Good: Each stage is a separate, testable module
+class EmailTriagePipeline < DSPy::Module
+  def initialize
+    super
+    @spam_filter = SpamFilter.new      # Focused responsibility
+    @categorizer = EmailCategorizer.new # Single concern
+    @prioritizer = PriorityAssigner.new # Clear purpose
   end
 end
+
+# Good: Reusable components
+urgent_filter = PriorityAssigner.new
+customer_emails = urgent_filter.call(emails: customer_emails)
+support_emails = urgent_filter.call(emails: support_emails)
 ```
 
-### Load Testing
+### 2. Error Recovery
 
 ```ruby
-RSpec.describe "Pipeline Performance" do
-  let(:pipeline) { DocumentProcessingPipeline.new }
-  
-  it "handles concurrent requests efficiently" do
-    documents = Array.new(20) { |i| "Document content #{i}" }
-    
-    results = Async do |task|
-      documents.map do |doc|
-        task.async { pipeline.call(doc) }
-      end.map(&:wait)
-    end
-    
-    expect(results.size).to eq(20)
-    expect(results.all?(&:valid?)).to be true
+def forward_with_fallback(content:)
+  begin
+    # Try primary processing
+    advanced_analysis(content)
+  rescue AdvancedAnalysisError => e
+    # Fall back to basic processing
+    puts "Advanced analysis failed, using basic: #{e.message}"
+    basic_analysis(content)
+  rescue => e
+    # Final fallback
+    puts "All analysis failed: #{e.message}"
+    { error: e.message, content_length: content.length }
   end
 end
 ```
 
-Multi-stage pipelines enable sophisticated processing workflows while maintaining modularity, testability, and performance. Use these patterns to build complex applications that can handle real-world data processing requirements.
+### 3. Pipeline Testing
+
+```ruby
+# Test individual stages
+describe DocumentClassifier do
+  it "classifies technical documents" do
+    classifier = DocumentClassifier.new
+    result = classifier.call(content: "API documentation...")
+    expect(result.document_type).to eq("technical")
+  end
+end
+
+# Test full pipeline
+describe DocumentProcessor do
+  it "processes documents end-to-end" do
+    processor = DocumentProcessor.new
+    result = processor.call(content: sample_document)
+    
+    expect(result).to have_key(:document_type)
+    expect(result).to have_key(:summary)
+    expect(result[:summary]).not_to be_empty
+  end
+end
+```
+
+### 4. Performance Considerations
+
+```ruby
+# Avoid reprocessing
+class EfficientPipeline < DSPy::Module
+  def forward(content:)
+    # Process once, use multiple times
+    base_analysis = analyze_content(content)
+    
+    {
+      classification: classify_from_analysis(base_analysis),
+      sentiment: sentiment_from_analysis(base_analysis),
+      topics: topics_from_analysis(base_analysis)
+    }
+  end
+end
+```
+
+## Limitations
+
+The current pipeline implementation has some limitations:
+
+- **No built-in parallelization**: Sequential processing only
+- **No automatic retries**: Manual error handling required
+- **No pipeline visualization**: No graphical representation of processing flow
+- **No dynamic routing**: Static pipeline structure
+- **No built-in monitoring**: Manual performance tracking
+- **No stream processing**: Batch processing only
+
+For advanced pipeline features, distributed processing, or enterprise workflow management, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.

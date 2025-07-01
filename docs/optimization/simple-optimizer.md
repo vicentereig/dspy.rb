@@ -1,542 +1,346 @@
 # Simple Optimizer
 
-The Simple Optimizer provides lightweight prompt optimization through random search and grid search methods. It's perfect for quick experimentation, prototyping, and scenarios where you need fast optimization with minimal computational resources.
+The Simple Optimizer provides a straightforward approach to optimizing DSPy predictors through random search. It's ideal for quick experimentation, baseline establishment, and scenarios where you need fast results without the complexity of more advanced optimizers.
 
 ## Overview
 
-The Simple Optimizer offers two main strategies:
-- **Random Search**: Randomly samples from the prompt configuration space
-- **Grid Search**: Systematically explores predefined parameter combinations
-- **Hybrid Search**: Combines random and grid search for balanced exploration
+The Simple Optimizer works by:
+- **Random Search**: Generates random variations of instructions and few-shot examples
+- **Trial-based Evaluation**: Tests each candidate configuration
+- **Best Selection**: Returns the configuration with the highest score
+
+Unlike MIPROv2's structured three-phase approach, Simple Optimizer uses a simpler random sampling strategy that can often find good solutions quickly.
 
 ## Basic Usage
 
-### Random Search
+### Quick Optimization
 
 ```ruby
+# Define your signature
 class ClassifyText < DSPy::Signature
-  description "Classify text sentiment"
-  
-  class Sentiment < T::Enum
-    enums do
-      Positive = new('positive')
-      Negative = new('negative')
-      Neutral = new('neutral')
-    end
-  end
+  description "Classify the sentiment of the given text"
   
   input do
     const :text, String
   end
   
   output do
-    const :sentiment, Sentiment
-    const :confidence, Float
+    const :sentiment, String
   end
 end
 
-# Prepare examples
-examples = [
-  DSPy::Example.new(
-    inputs: { text: "I love this!" },
-    outputs: { sentiment: ClassifyText::Sentiment::Positive, confidence: 0.9 }
-  ),
-  # ... more examples
-]
-
-# Initialize simple optimizer with random search
-optimizer = DSPy::SimpleOptimizer.new(
-  signature: ClassifyText,
-  strategy: :random_search,
-  num_trials: 50,
-  metric: DSPy::Metrics::Accuracy.new
-)
+# Create optimizer
+optimizer = DSPy::SimpleOptimizer.new(signature: ClassifyText)
 
 # Run optimization
-result = optimizer.optimize(examples: examples)
+result = optimizer.optimize(examples: training_examples) do |predictor, examples|
+  # Your evaluation logic
+  evaluator = DSPy::Evaluate.new(metric: :exact_match)
+  evaluation_result = evaluator.evaluate(examples: examples) do |example|
+    predictor.call(text: example.text)
+  end
+  evaluation_result.score
+end
 
-# Use optimized predictor
-optimized_predictor = result.best_predictor
-puts optimized_predictor.call(text: "This is great!")
+# Use results
+best_predictor = result.optimized_program
+puts "Best score: #{result.best_score_value}"
+puts "Best instruction: #{best_predictor.prompt.instruction}"
 ```
 
-### Grid Search
+### Custom Configuration
 
 ```ruby
-# Define parameter grid
-parameter_grid = {
-  temperature: [0.0, 0.3, 0.7, 1.0],
-  max_tokens: [50, 100, 200],
-  instruction_style: [:concise, :detailed, :examples_heavy],
-  few_shot_count: [0, 3, 5, 8]
-}
+# Configure optimizer parameters
+config = DSPy::SimpleOptimizer::SimpleOptimizerConfig.new
+config.max_trials = 50              # Number of random trials
+config.initial_instruction_trials = 10  # Instructions to try first
+config.max_few_shot_examples = 8    # Maximum few-shot examples
 
-# Initialize with grid search
 optimizer = DSPy::SimpleOptimizer.new(
   signature: ClassifyText,
-  strategy: :grid_search,
-  parameter_grid: parameter_grid,
-  metric: DSPy::Metrics::F1Score.new
+  config: config
 )
-
-result = optimizer.optimize(examples: examples)
-
-puts "Best parameters: #{result.best_parameters}"
-puts "Best score: #{result.best_score}"
 ```
 
 ## Configuration Options
 
-### Basic Configuration
+### SimpleOptimizerConfig Parameters
 
 ```ruby
-optimizer = DSPy::SimpleOptimizer.new(
-  signature: YourSignature,
-  strategy: :random_search,           # :random_search, :grid_search, :hybrid
-  num_trials: 30,                     # Number of configurations to try
-  metric: DSPy::Metrics::Accuracy.new, # Evaluation metric
-  early_stopping: true,               # Stop early if no improvement
-  patience: 5,                        # Trials without improvement before stopping
-  random_seed: 42                     # For reproducible results
-)
+config = DSPy::SimpleOptimizer::SimpleOptimizerConfig.new
+
+# Trial settings
+config.max_trials = 30                    # Total optimization trials
+config.initial_instruction_trials = 5     # Instruction-only trials first
+config.max_few_shot_examples = 6          # Max few-shot examples to include
+
+# Example selection
+config.example_selection_strategy = :random  # How to select examples
+
+# Display
+config.verbose = true                     # Show trial progress
 ```
 
-### Advanced Configuration
+## How It Works
+
+### Optimization Process
+
+The Simple Optimizer follows this process:
+
+1. **Initial Instruction Trials**: Tests different instruction variations
+2. **Bootstrap Generation**: Creates training examples using Chain of Thought
+3. **Combined Trials**: Tests combinations of instructions and few-shot examples
+4. **Best Selection**: Returns the highest-scoring configuration
+
+### Random Search Strategy
 
 ```ruby
-optimizer = DSPy::SimpleOptimizer.new(
-  signature: ComplexTask,
-  strategy: :hybrid,
-  
-  # Search space configuration
-  search_space: {
-    # LLM parameters
-    temperature: { type: :continuous, range: [0.0, 1.0] },
-    top_p: { type: :continuous, range: [0.8, 1.0] },
-    max_tokens: { type: :discrete, values: [50, 100, 200, 500] },
-    
-    # Prompt parameters
-    instruction_length: { type: :discrete, values: [:short, :medium, :long] },
-    instruction_tone: { type: :categorical, values: [:formal, :casual, :technical] },
-    
-    # Few-shot parameters
-    num_examples: { type: :discrete, values: [0, 2, 4, 6, 8] },
-    example_selection: { type: :categorical, values: [:random, :diverse, :similar] }
-  },
-  
-  # Multi-objective optimization
-  metrics: {
-    primary: DSPy::Metrics::Accuracy.new,
-    secondary: DSPy::Metrics::Latency.new,
-    weights: [0.8, 0.2]  # Weight for combining metrics
-  },
-  
-  # Resource constraints
-  max_time: 30.minutes,
-  max_cost: 10.0,  # Dollars
-  parallel_trials: 4  # Run trials in parallel
-)
+# The optimizer generates variations like:
+
+# Different instructions:
+# - "Classify the sentiment of this text"
+# - "Determine if this text is positive, negative, or neutral"
+# - "Analyze the emotional tone of the given text"
+
+# Different few-shot combinations:
+# - 0-6 randomly selected bootstrap examples
+# - Various orderings of the same examples
 ```
 
-## Search Strategies
+## Working with Results
 
-### Random Search Details
-
-Random search is effective for high-dimensional spaces and unknown parameter relationships:
+### SimpleOptimizerResult Object
 
 ```ruby
-class RandomSearchOptimizer < DSPy::SimpleOptimizer
-  def initialize(signature, search_space: {}, **options)
-    @search_space = search_space
-    super(signature, strategy: :random_search, **options)
-  end
-  
-  def sample_configuration
-    config = {}
-    
-    @search_space.each do |param, space_def|
-      config[param] = case space_def[:type]
-      when :continuous
-        rand * (space_def[:range][1] - space_def[:range][0]) + space_def[:range][0]
-      when :discrete
-        space_def[:values].sample
-      when :categorical
-        space_def[:values].sample
-      end
-    end
-    
-    config
-  end
+result = optimizer.optimize(examples: examples) do |predictor, val_examples|
+  # evaluation logic
 end
 
-# Usage
-optimizer = RandomSearchOptimizer.new(
-  ClassifyText,
-  search_space: {
-    temperature: { type: :continuous, range: [0.0, 1.0] },
-    instruction_style: { type: :categorical, values: [:brief, :detailed, :examples] },
-    few_shot_count: { type: :discrete, values: [0, 3, 5, 8] }
-  },
-  num_trials: 100
-)
-```
+# Access basic results
+puts "Best score: #{result.best_score_value}"
+puts "Total trials: #{result.total_trials}"
+puts "Optimization time: #{result.total_time}"
 
-### Grid Search Details
+# Get the optimized predictor
+optimized_predictor = result.optimized_program
 
-Grid search systematically explores all parameter combinations:
-
-```ruby
-class GridSearchOptimizer < DSPy::SimpleOptimizer
-  def initialize(signature, parameter_grid: {}, **options)
-    @parameter_grid = parameter_grid
-    @all_combinations = generate_combinations(parameter_grid)
-    super(signature, strategy: :grid_search, **options)
-  end
-  
-  def total_combinations
-    @all_combinations.size
-  end
-  
-  private
-  
-  def generate_combinations(grid)
-    keys = grid.keys
-    values = grid.values
-    
-    values.first.product(*values[1..-1]).map do |combination|
-      keys.zip(combination).to_h
-    end
-  end
-end
-
-# Usage with comprehensive grid
-comprehensive_grid = {
-  temperature: [0.0, 0.2, 0.5, 0.8, 1.0],
-  max_tokens: [50, 100, 200],
-  top_p: [0.9, 0.95, 1.0],
-  instruction_format: [:standard, :chain_of_thought, :few_shot],
-  example_count: [0, 2, 4, 6]
-}
-
-optimizer = GridSearchOptimizer.new(
-  ClassifyText,
-  parameter_grid: comprehensive_grid
-)
-
-puts "Total combinations to explore: #{optimizer.total_combinations}"
-```
-
-### Hybrid Search
-
-Combines the efficiency of grid search with the exploration of random search:
-
-```ruby
-optimizer = DSPy::SimpleOptimizer.new(
-  signature: YourSignature,
-  strategy: :hybrid,
-  
-  # Grid search for key parameters
-  core_grid: {
-    temperature: [0.0, 0.5, 1.0],
-    instruction_style: [:brief, :detailed]
-  },
-  
-  # Random search for fine-tuning
-  random_parameters: {
-    top_p: { type: :continuous, range: [0.8, 1.0] },
-    max_tokens: { type: :discrete, values: [50, 75, 100, 150, 200] }
-  },
-  
-  grid_trials_ratio: 0.3  # 30% grid search, 70% random search
-)
-```
-
-## Example Selection Optimization
-
-### Dynamic Example Selection
-
-```ruby
-class ExampleAwareOptimizer < DSPy::SimpleOptimizer
-  def optimize(examples:, **options)
-    # Split examples for selection optimization
-    example_pool, eval_examples = split_examples(examples, ratio: 0.8)
-    
-    best_score = 0.0
-    best_config = nil
-    
-    @num_trials.times do |trial|
-      # Sample configuration
-      config = sample_configuration
-      
-      # Select examples based on configuration
-      selected_examples = select_examples(example_pool, config)
-      
-      # Create predictor with selected examples and config
-      predictor = create_predictor(config, selected_examples)
-      
-      # Evaluate on held-out examples
-      score = evaluate_predictor(predictor, eval_examples)
-      
-      if score > best_score
-        best_score = score
-        best_config = config.merge(selected_examples: selected_examples)
-      end
-    end
-    
-    SimpleOptimizerResult.new(
-      best_configuration: best_config,
-      best_score: best_score,
-      optimization_history: @history
-    )
-  end
-  
-  private
-  
-  def select_examples(pool, config)
-    selection_strategy = config[:example_selection] || :random
-    count = config[:example_count] || 5
-    
-    case selection_strategy
-    when :random
-      pool.sample(count)
-    when :diverse
-      select_diverse_examples(pool, count)
-    when :similar_to_eval
-      select_representative_examples(pool, count)
-    end
-  end
-  
-  def select_diverse_examples(pool, count)
-    # Use clustering or similarity metrics to select diverse examples
-    return pool.sample(count) if pool.size <= count
-    
-    selected = [pool.sample]  # Start with random example
-    remaining = pool - selected
-    
-    (count - 1).times do
-      # Select example most different from already selected
-      next_example = remaining.max_by do |candidate|
-        min_similarity_to_selected = selected.map do |selected_ex|
-          calculate_similarity(candidate, selected_ex)
-        end.min
-        
-        min_similarity_to_selected
-      end
-      
-      selected << next_example
-      remaining -= [next_example]
-    end
-    
-    selected
-  end
+# Access trial history
+result.history[:trials].each do |trial|
+  puts "Trial #{trial[:trial_number]}: #{trial[:score]}"
+  puts "  Instruction: #{trial[:instruction][0..50]}..."
+  puts "  Few-shot examples: #{trial[:few_shot_count]}"
 end
 ```
 
-## Optimization Callbacks and Monitoring
+### Best Configuration Details
+
+```ruby
+best_config = result.best_config
+
+puts "Optimized instruction:"
+puts best_config.instruction
+puts
+puts "Few-shot examples (#{best_config.few_shot_examples.size}):"
+best_config.few_shot_examples.each_with_index do |example, i|
+  puts "#{i+1}. Input: #{example.input}"
+  puts "   Output: #{example.output}"
+end
+```
+
+## Comparison with MIPROv2
+
+### When to Use Simple Optimizer
+
+```ruby
+# Good for:
+# - Quick experimentation and prototyping
+# - Establishing baselines
+# - Time-constrained optimization
+# - Simple tasks with clear patterns
+
+# Use Simple Optimizer when:
+simple_optimizer = DSPy::SimpleOptimizer.new(signature: YourSignature)
+
+# Use MIPROv2 when you need better results:
+mipro_optimizer = DSPy::MIPROv2.new(signature: YourSignature, mode: :heavy)
+```
+
+### Performance Characteristics
+
+```ruby
+# Simple Optimizer:
+# - Faster to run (fewer structured phases)
+# - Good enough for many tasks
+# - Less sophisticated instruction generation
+# - Random search can miss optimal solutions
+
+# MIPROv2:
+# - More thorough optimization
+# - Better instruction generation via grounded proposer
+# - Structured bootstrap and selection phases
+# - Generally better final performance
+```
+
+## Advanced Usage
+
+### Custom Evaluation with Multiple Metrics
+
+```ruby
+result = optimizer.optimize(examples: training_examples) do |predictor, val_examples|
+  accuracy_score = 0.0
+  speed_score = 0.0
+  
+  val_examples.each do |example|
+    start_time = Time.now
+    prediction = predictor.call(text: example.text)
+    duration = Time.now - start_time
+    
+    # Accuracy component
+    if prediction.sentiment == example.expected_sentiment
+      accuracy_score += 1.0
+    end
+    
+    # Speed component (penalty for slow predictions)
+    speed_penalty = [duration - 1.0, 0].max  # Penalty if > 1 second
+    speed_score += (1.0 - speed_penalty * 0.1)
+  end
+  
+  # Combined score (80% accuracy, 20% speed)
+  total_examples = val_examples.size
+  accuracy = accuracy_score / total_examples
+  speed = speed_score / total_examples
+  
+  (accuracy * 0.8) + (speed * 0.2)
+end
+```
+
+### Progressive Optimization
+
+```ruby
+# Start with Simple Optimizer for quick results
+simple_optimizer = DSPy::SimpleOptimizer.new(signature: ClassifyText)
+simple_result = simple_optimizer.optimize(examples: examples) do |predictor, val_examples|
+  # evaluation logic
+end
+
+puts "Simple optimizer result: #{simple_result.best_score_value}"
+
+# If results are promising, use MIPROv2 for refinement
+if simple_result.best_score_value > 0.7
+  mipro_optimizer = DSPy::MIPROv2.new(signature: ClassifyText, mode: :medium)
+  mipro_result = mipro_optimizer.optimize(examples: examples) do |predictor, val_examples|
+    # same evaluation logic
+  end
+  
+  puts "MIPROv2 result: #{mipro_result.best_score_value}"
+  
+  # Use the better result
+  final_result = mipro_result.best_score_value > simple_result.best_score_value ? 
+                 mipro_result : simple_result
+end
+```
+
+### Validation Split Strategy
+
+```ruby
+# Use separate validation for unbiased evaluation
+result = optimizer.optimize(
+  examples: training_examples,
+  val_examples: validation_examples
+) do |predictor, val_examples|
+  # Evaluate on held-out validation set
+  correct = 0
+  val_examples.each do |example|
+    prediction = predictor.call(text: example.text)
+    correct += 1 if prediction.sentiment == example.expected_sentiment
+  end
+  correct.to_f / val_examples.size
+end
+```
+
+## Integration with Storage
+
+### Saving Optimization Results
+
+```ruby
+# Save the result
+storage_manager = DSPy::Storage::StorageManager.new
+saved_program = storage_manager.save_optimization_result(
+  result,
+  tags: ['simple_optimizer', 'baseline'],
+  metadata: {
+    optimizer: 'SimpleOptimizer',
+    trials: result.total_trials,
+    optimization_time: result.total_time
+  }
+)
+
+puts "Saved with ID: #{saved_program.program_id}"
+```
+
+### Comparing with Previous Results
+
+```ruby
+# Load previous optimization results
+previous_results = storage_manager.find_programs(
+  optimizer: 'SimpleOptimizer',
+  signature_class: 'ClassifyText'
+)
+
+current_score = result.best_score_value
+previous_scores = previous_results.map { |r| r[:best_score] }.compact
+
+if previous_scores.any?
+  best_previous = previous_scores.max
+  improvement = current_score - best_previous
+  
+  puts "Current score: #{current_score}"
+  puts "Previous best: #{best_previous}"
+  puts "Improvement: #{improvement > 0 ? '+' : ''}#{improvement.round(3)}"
+else
+  puts "First optimization for this signature"
+end
+```
+
+## Monitoring and Debugging
 
 ### Progress Tracking
 
 ```ruby
+config = DSPy::SimpleOptimizer::SimpleOptimizerConfig.new
+config.verbose = true  # Show detailed progress
+
 optimizer = DSPy::SimpleOptimizer.new(
-  signature: YourSignature,
-  strategy: :random_search,
-  num_trials: 100
+  signature: ClassifyText,
+  config: config
 )
 
-# Track optimization progress
-result = optimizer.optimize(
-  examples: examples,
-  callbacks: {
-    on_trial_start: ->(trial_num, config) {
-      puts "Starting trial #{trial_num} with config: #{config}"
-    },
-    
-    on_trial_complete: ->(trial_num, score, config) {
-      puts "Trial #{trial_num} score: #{score}"
-    },
-    
-    on_improvement: ->(old_best, new_best, improvement) {
-      puts "New best score: #{new_best} (improvement: +#{improvement})"
-    },
-    
-    on_early_stop: ->(trial_num, reason) {
-      puts "Early stopping at trial #{trial_num}: #{reason}"
-    }
-  }
-)
+# Shows progress like:
+# Trial 1/30: Instruction trial, Score: 0.75
+# Trial 2/30: Instruction trial, Score: 0.82
+# Trial 3/30: Bootstrap + Few-shot, Score: 0.79
+# ...
+# Best score so far: 0.89 (Trial 15)
 ```
 
-### Custom Evaluation
+### Result Analysis
 
 ```ruby
-class CustomEvaluationOptimizer < DSPy::SimpleOptimizer
-  def evaluate_configuration(predictor, examples, config)
-    # Standard accuracy evaluation
-    accuracy = super(predictor, examples, config)
-    
-    # Additional custom metrics
-    latency = measure_average_latency(predictor, examples)
-    cost = estimate_cost(config, examples.size)
-    
-    # Combine metrics with weights
-    combined_score = (
-      0.6 * accuracy +
-      0.3 * (1.0 - normalize_latency(latency)) +
-      0.1 * (1.0 - normalize_cost(cost))
-    )
-    
-    {
-      accuracy: accuracy,
-      latency: latency,
-      cost: cost,
-      combined_score: combined_score
-    }
-  end
-  
-  private
-  
-  def measure_average_latency(predictor, examples)
-    latencies = examples.sample(10).map do |example|
-      start_time = Time.current
-      predictor.call(example.inputs)
-      Time.current - start_time
-    end
-    
-    latencies.sum / latencies.size
-  end
-  
-  def estimate_cost(config, num_examples)
-    base_cost = 0.001  # Base cost per call
-    token_multiplier = config[:max_tokens] / 100.0
-    
-    base_cost * token_multiplier * num_examples
-  end
-end
-```
+# Analyze trial results
+trials = result.history[:trials]
 
-## Results Analysis
+# Find instruction-only trials
+instruction_trials = trials.select { |t| t[:few_shot_count] == 0 }
+best_instruction_score = instruction_trials.map { |t| t[:score] }.max
 
-### Accessing Results
+# Find few-shot trials
+few_shot_trials = trials.select { |t| t[:few_shot_count] > 0 }
+best_few_shot_score = few_shot_trials.map { |t| t[:score] }.max
 
-```ruby
-result = optimizer.optimize(examples: examples)
-
-# Best configuration and performance
-puts "Best score: #{result.best_score}"
-puts "Best configuration: #{result.best_configuration}"
-
-# Access optimization history
-result.optimization_history.each_with_index do |trial, i|
-  puts "Trial #{i}: #{trial[:score]} (config: #{trial[:configuration]})"
-end
-
-# Performance analysis
-analysis = result.analyze_performance
-puts "Average score: #{analysis[:average_score]}"
-puts "Score std dev: #{analysis[:score_std_dev]}"
-puts "Best parameters: #{analysis[:best_parameters]}"
-```
-
-### Parameter Importance Analysis
-
-```ruby
-class ParameterImportanceAnalyzer
-  def initialize(optimization_history)
-    @history = optimization_history
-  end
-  
-  def analyze_parameter_importance
-    parameter_effects = {}
-    
-    # Group trials by parameter values
-    @history.group_by { |trial| trial[:configuration] }.each do |config, trials|
-      config.each do |param, value|
-        parameter_effects[param] ||= {}
-        parameter_effects[param][value] ||= []
-        parameter_effects[param][value] += trials.map { |t| t[:score] }
-      end
-    end
-    
-    # Calculate importance scores
-    importance_scores = {}
-    parameter_effects.each do |param, value_scores|
-      scores_by_value = value_scores.transform_values { |scores| scores.sum / scores.size }
-      
-      importance_scores[param] = {
-        variance: calculate_variance(scores_by_value.values),
-        best_value: scores_by_value.max_by { |value, score| score }.first,
-        effect_size: scores_by_value.values.max - scores_by_value.values.min
-      }
-    end
-    
-    importance_scores.sort_by { |param, stats| -stats[:effect_size] }
-  end
-end
-
-# Usage
-analyzer = ParameterImportanceAnalyzer.new(result.optimization_history)
-importance = analyzer.analyze_parameter_importance
-
-puts "Parameter importance (by effect size):"
-importance.each do |param, stats|
-  puts "#{param}: #{stats[:effect_size].round(3)} (best: #{stats[:best_value]})"
-end
-```
-
-## Integration with Other Optimizers
-
-### Warm Start from Simple Optimizer
-
-```ruby
-# Use simple optimizer for quick exploration
-simple_optimizer = DSPy::SimpleOptimizer.new(
-  signature: YourSignature,
-  strategy: :random_search,
-  num_trials: 20
-)
-
-simple_result = simple_optimizer.optimize(examples: examples)
-
-# Use best configuration as starting point for MIPROv2
-advanced_optimizer = DSPy::MIPROv2.new(
-  signature: YourSignature,
-  warm_start_config: simple_result.best_configuration
-)
-
-advanced_result = advanced_optimizer.optimize(examples: examples)
-```
-
-### Ensemble with Multiple Simple Optimizers
-
-```ruby
-class EnsembleSimpleOptimizer
-  def initialize(signature, num_optimizers: 5)
-    @signature = signature
-    @optimizers = num_optimizers.times.map do |i|
-      DSPy::SimpleOptimizer.new(
-        signature: signature,
-        strategy: [:random_search, :grid_search].sample,
-        random_seed: i * 100  # Different seeds for diversity
-      )
-    end
-  end
-  
-  def optimize(examples:)
-    # Run each optimizer
-    results = @optimizers.map do |optimizer|
-      optimizer.optimize(examples: examples)
-    end
-    
-    # Combine best predictors into ensemble
-    best_predictors = results.map(&:best_predictor)
-    
-    EnsembleResult.new(
-      individual_results: results,
-      ensemble_predictor: create_ensemble(best_predictors),
-      diversity_score: calculate_ensemble_diversity(best_predictors)
-    )
-  end
-end
+puts "Best instruction-only score: #{best_instruction_score}"
+puts "Best with few-shot examples: #{best_few_shot_score}"
+puts "Few-shot improvement: #{best_few_shot_score - best_instruction_score}"
 ```
 
 ## Best Practices
@@ -544,56 +348,60 @@ end
 ### 1. Start Simple
 
 ```ruby
-# Begin with broad random search
-initial_optimizer = DSPy::SimpleOptimizer.new(
-  signature: YourSignature,
-  strategy: :random_search,
-  num_trials: 50,
-  search_space: broad_search_space
-)
+# Begin with default settings
+optimizer = DSPy::SimpleOptimizer.new(signature: YourSignature)
 
-initial_result = initial_optimizer.optimize(examples: examples)
-
-# Refine with focused grid search
-refined_optimizer = DSPy::SimpleOptimizer.new(
-  signature: YourSignature,
-  strategy: :grid_search,
-  parameter_grid: create_focused_grid(initial_result.best_configuration)
-)
+# Adjust based on results
+if result.best_score_value < target_score
+  # Try more trials
+  config = DSPy::SimpleOptimizer::SimpleOptimizerConfig.new
+  config.max_trials = 100
+  optimizer = DSPy::SimpleOptimizer.new(signature: YourSignature, config: config)
+end
 ```
 
-### 2. Use Appropriate Search Space
+### 2. Use for Baselines
 
 ```ruby
-# Good: Reasonable ranges
-search_space = {
-  temperature: { type: :continuous, range: [0.0, 1.0] },
-  max_tokens: { type: :discrete, values: [50, 100, 200, 400] },
-  instruction_style: { type: :categorical, values: [:brief, :detailed, :examples] }
-}
+# Establish baseline performance
+baseline_optimizer = DSPy::SimpleOptimizer.new(signature: ClassifyText)
+baseline_result = baseline_optimizer.optimize(examples: examples) do |predictor, val_examples|
+  # evaluation logic
+end
 
-# Bad: Too broad or impractical
-bad_search_space = {
-  temperature: { type: :continuous, range: [-10.0, 10.0] },  # Invalid range
-  max_tokens: { type: :discrete, values: (1..10000).to_a },  # Too many options
-  instruction_style: { type: :categorical, values: [:a, :b, :c, :d, :e, :f] }  # Too many variants
-}
+baseline_score = baseline_result.best_score_value
+puts "Baseline score: #{baseline_score}"
+
+# Set improvement targets for more advanced optimizers
+target_improvement = 0.05  # 5% improvement target
+target_score = baseline_score + target_improvement
 ```
 
-### 3. Monitor Resource Usage
+### 3. Monitor Trial Diversity
 
 ```ruby
-optimizer = DSPy::SimpleOptimizer.new(
-  signature: YourSignature,
-  strategy: :random_search,
-  num_trials: 100,
-  
-  # Set reasonable limits
-  max_time: 30.minutes,
-  max_cost: 5.0,
-  early_stopping: true,
-  patience: 10
-)
+# Check if optimization is exploring diverse configurations
+instructions = result.history[:trials].map { |t| t[:instruction] }.uniq
+few_shot_configs = result.history[:trials].map { |t| t[:few_shot_count] }.uniq
+
+puts "Unique instructions tried: #{instructions.size}"
+puts "Few-shot configurations: #{few_shot_configs.sort}"
+
+# If diversity is low, increase max_trials
+if instructions.size < 10
+  puts "Consider increasing trials for more exploration"
+end
 ```
 
-The Simple Optimizer is perfect for getting started with optimization, prototyping new approaches, and scenarios where you need quick results with minimal computational overhead.
+## Limitations
+
+The current Simple Optimizer implementation has some limitations:
+
+- **Random search only**: No guided search or optimization algorithms
+- **No parameter optimization**: Only optimizes instructions and few-shot examples
+- **Sequential trials**: No parallel execution of trials
+- **Limited instruction generation**: Uses basic grounded proposer like MIPROv2
+- **No adaptive search**: Doesn't learn from trial history
+- **Single-objective**: Optimizes one metric at a time
+
+For advanced optimization algorithms, parameter tuning, or parallel optimization, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.
