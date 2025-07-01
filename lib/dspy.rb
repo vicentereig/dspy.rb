@@ -4,6 +4,11 @@ require 'dry-configurable'
 require 'dry/logger'
 
 require_relative 'dspy/version'
+require_relative 'dspy/configuration/correlation_id_config'
+require_relative 'dspy/configuration/logger_config'
+require_relative 'dspy/configuration/otel_config'
+require_relative 'dspy/configuration/newrelic_config'
+require_relative 'dspy/configuration/langfuse_config'
 require_relative 'dspy/configuration/instrumentation_config'
 
 module DSPy

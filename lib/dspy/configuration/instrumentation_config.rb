@@ -21,6 +21,14 @@ module DSPy
       setting :error_reporting, default: false
       setting :error_service, default: nil
 
+      # Nested configurations
+      setting :correlation_id, default: DSPy::Configuration::CorrelationIdConfig
+      setting :logger, default: DSPy::Configuration::LoggerConfig  
+      setting :otel, default: DSPy::Configuration::OtelConfig
+      setting :newrelic, default: DSPy::Configuration::NewRelicConfig
+      setting :langfuse, default: DSPy::Configuration::LangfuseConfig
+      setting :sampling_rules, default: {}
+
       # Validate settings after configuration
       def self.validate!
         config = self.config

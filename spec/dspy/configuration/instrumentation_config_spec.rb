@@ -16,6 +16,14 @@ RSpec.describe DSPy::Configuration::InstrumentationConfig do
       expect(config.flush_interval).to eq(30)
       expect(config.error_reporting).to eq(false)
       expect(config.error_service).to be_nil
+      
+      # Nested configurations
+      expect(config.correlation_id).to eq(DSPy::Configuration::CorrelationIdConfig)
+      expect(config.logger).to eq(DSPy::Configuration::LoggerConfig)
+      expect(config.otel).to eq(DSPy::Configuration::OtelConfig)
+      expect(config.newrelic).to eq(DSPy::Configuration::NewRelicConfig)
+      expect(config.langfuse).to eq(DSPy::Configuration::LangfuseConfig)
+      expect(config.sampling_rules).to eq({})
     end
   end
 
@@ -90,6 +98,26 @@ RSpec.describe DSPy::Configuration::InstrumentationConfig do
       end
       
       expect(described_class.config.error_service).to eq(:sentry)
+    end
+
+    it 'allows configuring nested settings' do
+      # Configure nested logger settings
+      described_class.config.logger.configure do |logger_config|
+        logger_config.level = :debug
+        logger_config.include_payloads = false
+      end
+
+      expect(described_class.config.logger.config.level).to eq(:debug)
+      expect(described_class.config.logger.config.include_payloads).to eq(false)
+
+      # Configure nested correlation ID settings
+      described_class.config.correlation_id.configure do |corr_config|
+        corr_config.enabled = true
+        corr_config.header = 'X-Custom-ID'
+      end
+
+      expect(described_class.config.correlation_id.config.enabled).to eq(true)
+      expect(described_class.config.correlation_id.config.header).to eq('X-Custom-ID')
     end
   end
 
