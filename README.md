@@ -25,7 +25,7 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **MIPROv2 Optimizer** - State-of-the-art automatic prompt optimization
 - **Simple Optimizer** - Random/grid search for quick experimentation
 
-**Enterprise Features:**
+**Production Features:**
 - **Storage System** - Persistent optimization result storage with search and filtering
 - **Registry System** - Version control for optimized signatures with deployment tracking
 - **Multi-Platform Observability** - OpenTelemetry, New Relic, and Langfuse integration
@@ -33,7 +33,9 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **Rollback Protection** - Automatic rollback on performance degradation
 
 **Developer Experience:**
-- OpenAI and Anthropic support via official SDKs
+- LLM provider support using official Ruby clients:
+  - [OpenAI Ruby](https://github.com/alexrudall/ruby-openai)
+  - [Anthropic Ruby](https://github.com/alexrudall/anthropic)
 - Runtime type checking with [Sorbet](https://sorbet.org/)
 - Type-safe tool definitions for ReAct agents
 - Comprehensive instrumentation and observability
@@ -109,7 +111,7 @@ puts result.confidence   # => 0.85
 - **[MIPROv2 Optimizer](docs/optimization/miprov2.md)** - State-of-the-art automatic optimization
 - **[Simple Optimizer](docs/optimization/simple-optimizer.md)** - Quick experimentation with random/grid search
 
-### Enterprise Features
+### Production Features
 - **[Storage System](docs/enterprise/storage.md)** - Persist and search optimization results
 - **[Registry & Versions](docs/enterprise/registry.md)** - Version control with deployment tracking
 - **[Observability](docs/enterprise/observability.md)** - Multi-platform monitoring and metrics
@@ -134,6 +136,7 @@ These are my goals to release v1.0.
 - ✅ New Relic integration - *Done*
 - ✅ Langfuse integration - *Done*
 - 🚧 Ollama support
+- Context Engineering (see [recent research](https://dspy.ai/blog/) on advanced prompting techniques)
 - Agentic Memory support
 - MCP Support
 - Documentation website
