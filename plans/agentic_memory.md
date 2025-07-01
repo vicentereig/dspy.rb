@@ -494,6 +494,498 @@ DSPy.configure do |config|
 end
 ```
 
+## Auto-Compact Feature
+
+### Overview
+
+Auto-compact automatically optimizes memory storage by removing duplicates, consolidating related memories, and pruning less relevant content. This maintains optimal performance while preserving important memories.
+
+### Architecture Integration
+
+```ruby
+DSPy::Memory
+├── MemoryStore          # Storage abstraction layer
+├── EmbeddingEngine      # Vector embedding generation
+├── MemoryManager        # High-level memory operations
+├── ContextEngineer      # Smart context assembly
+├── AutoCompactor        # NEW: Automatic memory optimization
+└── MemoryTools          # Agent-facing tool interface
+```
+
+### Core Components
+
+#### Auto-Compaction Manager
+
+```ruby
+module DSPy
+  class AutoCompactor
+    def initialize(store, config = {})
+      @store = store
+      @config = setup_default_config.merge(config)
+      @triggers = setup_triggers
+      @optimizers = setup_optimizers
+      @last_compact = Time.current
+    end
+    
+    def should_compact?
+      @triggers.any?(&:should_trigger?)
+    end
+    
+    def compact!
+      return unless should_compact?
+      
+      DSPy.logger.info "Starting auto-compact operation"
+      start_time = Time.current
+      
+      memories = @store.list_all
+      original_count = memories.size
+      
+      # Apply optimization strategies in sequence
+      optimized_memories = @optimizers.reduce(memories) do |current_memories, optimizer|
+        optimizer.optimize(current_memories)
+      end
+      
+      # Update storage with optimized memories
+      update_storage(memories, optimized_memories)
+      
+      duration = Time.current - start_time
+      @last_compact = Time.current
+      
+      emit_compact_event(original_count, optimized_memories.size, duration)
+      
+      {
+        original_count: original_count,
+        final_count: optimized_memories.size,
+        removed_count: original_count - optimized_memories.size,
+        duration: duration
+      }
+    end
+    
+    private
+    
+    def setup_triggers
+      [
+        TimeTrigger.new(@config[:compact_interval_hours]),
+        SizeTrigger.new(@config[:max_memories], @config[:size_threshold]),
+        PerformanceTrigger.new(@config[:performance_threshold]),
+        AccessPatternTrigger.new(@config[:unused_memory_threshold])
+      ]
+    end
+    
+    def setup_optimizers
+      [
+        MemoryDeduplicator.new(@config[:deduplication_threshold]),
+        TemporalCompressor.new(@config[:temporal_compression_ratios]),
+        RelevancePruner.new(@config[:relevance_threshold]),
+        ConflictResolver.new(@config[:conflict_resolution_strategy]),
+        HierarchicalSummarizer.new(@config[:summarization_enabled])
+      ]
+    end
+  end
+end
+```
+
+#### Trigger Mechanisms
+
+```ruby
+# Time-based trigger
+class TimeTrigger
+  def initialize(interval_hours)
+    @interval = interval_hours * 3600
+  end
+  
+  def should_trigger?
+    Time.current - DSPy::Memory.last_compact_time >= @interval
+  end
+end
+
+# Size-based trigger
+class SizeTrigger
+  def initialize(max_memories, threshold = 0.8)
+    @max_memories = max_memories
+    @threshold = threshold
+  end
+  
+  def should_trigger?
+    current_count = DSPy::Memory.store.count
+    current_count >= (@max_memories * @threshold)
+  end
+end
+
+# Performance-based trigger
+class PerformanceTrigger
+  def initialize(threshold_ms = 500)
+    @threshold = threshold_ms
+    @recent_times = []
+  end
+  
+  def record_search_time(duration_ms)
+    @recent_times << duration_ms
+    @recent_times = @recent_times.last(100) # Keep last 100 searches
+  end
+  
+  def should_trigger?
+    return false if @recent_times.size < 10
+    
+    avg_time = @recent_times.sum.to_f / @recent_times.size
+    avg_time > @threshold
+  end
+end
+
+# Access pattern trigger
+class AccessPatternTrigger
+  def initialize(unused_threshold_days = 30)
+    @unused_threshold = unused_threshold_days * 24 * 3600
+  end
+  
+  def should_trigger?
+    cutoff_time = Time.current - @unused_threshold
+    unused_count = DSPy::Memory.store.count_unused_since(cutoff_time)
+    unused_count > 50 # Trigger if more than 50 unused memories
+  end
+end
+```
+
+#### Optimization Strategies
+
+```ruby
+# Remove duplicate memories based on content similarity
+class MemoryDeduplicator
+  def initialize(similarity_threshold = 0.95)
+    @threshold = similarity_threshold
+  end
+  
+  def optimize(memories)
+    deduplicated = []
+    content_groups = {}
+    
+    memories.each do |memory|
+      # Group by semantic similarity
+      similar_group = find_similar_group(memory, content_groups)
+      
+      if similar_group
+        # Merge with existing group, keeping the best
+        merge_memories(similar_group, memory)
+      else
+        # Create new group
+        group_key = generate_content_key(memory)
+        content_groups[group_key] = [memory]
+        deduplicated << memory
+      end
+    end
+    
+    deduplicated
+  end
+  
+  private
+  
+  def find_similar_group(memory, groups)
+    groups.values.find do |group|
+      representative = group.first
+      similarity = calculate_similarity(memory, representative)
+      similarity >= @threshold
+    end
+  end
+  
+  def calculate_similarity(memory1, memory2)
+    # Use embedding cosine similarity
+    embedding1 = memory1.embedding
+    embedding2 = memory2.embedding
+    
+    dot_product = embedding1.zip(embedding2).map { |a, b| a * b }.sum
+    norm1 = Math.sqrt(embedding1.map { |x| x * x }.sum)
+    norm2 = Math.sqrt(embedding2.map { |x| x * x }.sum)
+    
+    dot_product / (norm1 * norm2)
+  end
+  
+  def merge_memories(group, new_memory)
+    # Keep the one with higher access count or more recent
+    representative = group.first
+    
+    if should_replace_representative?(representative, new_memory)
+      group[0] = new_memory
+      # Merge metadata from old representative
+      new_memory.metadata.merge!(representative.metadata)
+    end
+  end
+end
+
+# Compress older memories into summaries
+class TemporalCompressor
+  def initialize(compression_ratios = { 30.days => 0.5, 90.days => 0.2 })
+    @compression_ratios = compression_ratios.transform_keys { |k| k.to_i }
+  end
+  
+  def optimize(memories)
+    compressed = []
+    
+    @compression_ratios.each do |age_threshold, ratio|
+      age_cutoff = Time.current - age_threshold
+      
+      old_memories = memories.select { |m| m.created_at < age_cutoff }
+      recent_memories = memories.reject { |m| m.created_at < age_cutoff }
+      
+      # Keep a percentage of old memories (highest scoring)
+      keep_count = (old_memories.size * ratio).ceil
+      kept_old = old_memories.sort_by { |m| relevance_score(m) }
+                            .reverse
+                            .first(keep_count)
+      
+      # Summarize the rest
+      to_summarize = old_memories - kept_old
+      summaries = create_summaries(to_summarize) if to_summarize.any?
+      
+      compressed.concat(kept_old)
+      compressed.concat(summaries || [])
+      memories = recent_memories # Process next age group
+    end
+    
+    compressed.concat(memories) # Add remaining recent memories
+    compressed
+  end
+  
+  private
+  
+  def create_summaries(memories)
+    # Group related memories by topic/user and create summaries
+    grouped = memories.group_by { |m| [m.user_id, extract_topic(m.content)] }
+    
+    grouped.map do |(user_id, topic), group|
+      next if group.size < 3 # Don't summarize small groups
+      
+      summary_content = summarize_memory_group(group)
+      
+      MemoryRecord.new(
+        id: SecureRandom.uuid,
+        content: summary_content,
+        user_id: user_id,
+        metadata: {
+          type: 'summary',
+          original_count: group.size,
+          summarized_at: Time.current,
+          original_ids: group.map(&:id)
+        },
+        embedding: generate_summary_embedding(summary_content),
+        created_at: group.map(&:created_at).min,
+        updated_at: Time.current
+      )
+    end.compact
+  end
+end
+
+# Remove memories with low relevance scores
+class RelevancePruner
+  def initialize(threshold = 0.3)
+    @threshold = threshold
+  end
+  
+  def optimize(memories)
+    memories.select do |memory|
+      relevance = calculate_relevance(memory)
+      relevance >= @threshold
+    end
+  end
+  
+  private
+  
+  def calculate_relevance(memory)
+    # Multi-factor relevance scoring
+    recency_score = calculate_recency_score(memory.created_at)
+    access_score = calculate_access_score(memory.access_count)
+    content_score = calculate_content_score(memory.content)
+    
+    # Weighted combination
+    (recency_score * 0.3) + (access_score * 0.4) + (content_score * 0.3)
+  end
+  
+  def calculate_recency_score(created_at)
+    days_old = (Time.current - created_at) / (24 * 3600)
+    Math.exp(-days_old / 30.0) # Exponential decay over 30 days
+  end
+  
+  def calculate_access_score(access_count)
+    # Logarithmic scaling of access count
+    return 0.0 if access_count.zero?
+    Math.log(access_count + 1) / Math.log(100) # Normalize to 0-1
+  end
+  
+  def calculate_content_score(content)
+    # Simple heuristic: longer, more detailed content is more valuable
+    base_score = [content.length / 1000.0, 1.0].min # Normalize by 1000 chars
+    
+    # Boost for structured content
+    boost = 0.0
+    boost += 0.1 if content.include?('because') # Reasoning indicator
+    boost += 0.1 if content.match?(/\d+/) # Contains numbers/data
+    boost += 0.1 if content.include?('important') # Explicit importance
+    
+    [base_score + boost, 1.0].min
+  end
+end
+
+# Resolve conflicting memories
+class ConflictResolver
+  def optimize(memories)
+    conflicts = detect_conflicts(memories)
+    resolved = memories.dup
+    
+    conflicts.each do |conflict_group|
+      resolution = resolve_conflict(conflict_group)
+      
+      # Remove original conflicting memories
+      resolved.reject! { |m| conflict_group.include?(m) }
+      
+      # Add resolved memory
+      resolved << resolution if resolution
+    end
+    
+    resolved
+  end
+  
+  private
+  
+  def detect_conflicts(memories)
+    # Group memories with conflicting information about the same topic
+    topic_groups = memories.group_by { |m| extract_topic(m.content) }
+    
+    conflicts = []
+    topic_groups.each do |topic, group|
+      next if group.size < 2
+      
+      # Detect contradictory statements
+      if has_contradictions?(group)
+        conflicts << group
+      end
+    end
+    
+    conflicts
+  end
+  
+  def resolve_conflict(conflict_group)
+    # Strategy: Keep the most recent, highest-confidence memory
+    # and note the conflict in metadata
+    
+    best_memory = conflict_group.max_by do |memory|
+      recency_score = (Time.current - memory.created_at) / (24 * 3600)
+      confidence_score = memory.metadata['confidence'] || 0.5
+      access_score = memory.access_count || 0
+      
+      # Weighted scoring favoring recent, confident, accessed memories
+      confidence_score * 0.5 + (1.0 / (recency_score + 1)) * 0.3 + Math.log(access_score + 1) * 0.2
+    end
+    
+    # Add conflict resolution metadata
+    best_memory.metadata['conflict_resolved'] = true
+    best_memory.metadata['conflicting_memory_ids'] = conflict_group.reject { |m| m == best_memory }.map(&:id)
+    best_memory.metadata['resolution_timestamp'] = Time.current
+    
+    best_memory
+  end
+end
+```
+
+### Configuration
+
+```ruby
+# Enhanced configuration with auto-compact settings
+DSPy.configure do |config|
+  config.memory_auto_compact = {
+    enabled: true,
+    
+    # Trigger conditions
+    compact_interval_hours: 24,
+    max_memories: 10000,
+    size_threshold: 0.8,
+    performance_threshold: 500, # ms
+    unused_memory_threshold: 30, # days
+    
+    # Optimization settings
+    deduplication_threshold: 0.95,
+    relevance_threshold: 0.3,
+    temporal_compression_ratios: {
+      30.days => 0.5,  # Keep 50% of memories older than 30 days
+      90.days => 0.2,  # Keep 20% of memories older than 90 days
+      365.days => 0.1  # Keep 10% of memories older than 1 year
+    },
+    
+    # Summarization settings
+    summarization_enabled: true,
+    min_group_size_for_summary: 3,
+    
+    # Conflict resolution
+    conflict_resolution_strategy: :keep_most_recent,
+    
+    # Observability
+    emit_metrics: true,
+    log_operations: true
+  }
+end
+```
+
+### Integration with MemoryManager
+
+```ruby
+class MemoryManager
+  def initialize(store:, embedding_engine:, context_engineer:, auto_compact: true)
+    @store = store
+    @embedding_engine = embedding_engine
+    @context_engineer = context_engineer
+    
+    if auto_compact
+      @auto_compactor = AutoCompactor.new(@store, DSPy.config.memory_auto_compact)
+      schedule_auto_compact
+    end
+  end
+  
+  def store_memory(content, user_id: nil, metadata: {})
+    result = super
+    
+    # Check if compaction should be triggered
+    @auto_compactor&.compact! if @auto_compactor&.should_compact?
+    
+    result
+  end
+  
+  def search_memories(query, user_id: nil, limit: 10)
+    start_time = Time.current
+    result = super
+    search_duration = (Time.current - start_time) * 1000 # Convert to ms
+    
+    # Record search performance for triggers
+    @auto_compactor&.record_search_performance(search_duration)
+    
+    result
+  end
+  
+  private
+  
+  def schedule_auto_compact
+    # Background job to run auto-compact periodically
+    Thread.new do
+      loop do
+        sleep(3600) # Check every hour
+        
+        begin
+          @auto_compactor.compact! if @auto_compactor.should_compact?
+        rescue StandardError => e
+          DSPy.logger.error "Auto-compact failed: #{e.message}"
+        end
+      end
+    end
+  end
+end
+```
+
+### Benefits
+
+1. **Automatic Optimization**: Maintains optimal memory performance without manual intervention
+2. **Configurable Strategies**: Multiple optimization approaches that can be tuned per use case
+3. **Intelligent Triggers**: Multiple trigger mechanisms prevent unnecessary processing
+4. **Conflict Resolution**: Handles contradictory information intelligently
+5. **Observability**: Full logging and metrics for monitoring compaction effectiveness
+6. **Backward Compatibility**: Can be disabled or configured for different deployment scenarios
+
 ## Implementation Phases
 
 ### Phase 1: Core Memory System (2 weeks)
@@ -517,16 +1009,29 @@ end
 
 ### Phase 4: Advanced Backends (2 weeks)
 - [ ] FileStore implementation with JSON serialization
-- [ ] DatabaseStore with PostgreSQL + pgvector
+- [ ] RedisStore with vector similarity search
+- [ ] ActiveRecordStore with PostgreSQL + pgvector integration
 - [ ] OpenAI embedding engine integration
 - [ ] Performance optimization and benchmarking
 
-### Phase 5: Production Features (1 week)
-- [ ] Memory analytics and metrics
+### Phase 5: Auto-Compact System (2 weeks)
+- [ ] Implement AutoCompactor core architecture
+- [ ] Create trigger mechanisms (time, size, performance, access-pattern)
+- [ ] Implement optimization strategies:
+  - [ ] MemoryDeduplicator with semantic similarity
+  - [ ] TemporalCompressor with age-based compression
+  - [ ] RelevancePruner with multi-factor scoring
+  - [ ] ConflictResolver with intelligent conflict detection
+- [ ] Integration with MemoryManager
+- [ ] Background scheduling and job management
+- [ ] Comprehensive test suite for auto-compact functionality
+
+### Phase 6: Production Features (1 week)
+- [ ] Memory analytics and metrics collection
+- [ ] Enhanced observability for auto-compact operations
 - [ ] Logging and error handling
-- [ ] Memory cleanup and archival
-- [ ] Configuration system
-- [ ] Documentation and examples
+- [ ] Production-ready configuration system
+- [ ] Documentation and usage examples
 
 ## Local Embedding Models
 
@@ -798,6 +1303,13 @@ spec.add_dependency "ollama-ai", "~> 1.3"
 # Serialization and utilities
 spec.add_dependency "oj", "~> 3.16"       # Fast JSON processing
 spec.add_dependency "concurrent-ruby", "~> 1.2"  # Thread-safe data structures
+
+# Auto-compact feature dependencies
+# Note: Uses standard library Thread for background processing
+# For production, consider using background job frameworks like:
+# - Sidekiq for Redis-based job processing
+# - Good Job for PostgreSQL-based job processing
+# - Resque for Redis-based job processing
 ```
 
 ## Database Migration for ActiveRecord
