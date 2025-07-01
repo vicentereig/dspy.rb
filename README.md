@@ -33,9 +33,9 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **Rollback Protection** - Automatic rollback on performance degradation
 
 **Developer Experience:**
-- LLM provider support via official APIs:
-  - [OpenAI API](https://platform.openai.com/docs/api-reference)
-  - [Anthropic API](https://docs.anthropic.com/en/api/getting-started)
+- LLM provider support using official Ruby clients:
+  - [OpenAI Ruby](https://github.com/openai/openai-ruby)
+  - [Anthropic Ruby SDK](https://github.com/anthropics/anthropic-sdk-ruby)
 - Runtime type checking with [Sorbet](https://sorbet.org/)
 - Type-safe tool definitions for ReAct agents
 - Comprehensive instrumentation and observability
