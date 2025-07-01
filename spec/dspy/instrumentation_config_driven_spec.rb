@@ -3,29 +3,23 @@
 require 'spec_helper'
 
 RSpec.describe 'Configuration-Driven Instrumentation Setup' do
-  let(:instrumentation_config) { DSPy.config.instrumentation }
-
   before do
     # Reset configuration before each test
-    instrumentation_config.configure do |config|
-      config.enabled = false
-      config.subscribers = []
-      config.sampling_rate = 1.0
-      config.trace_level = :standard
-      config.buffer_size = 1000
-      config.flush_interval = 30
-      config.error_reporting = false
-      config.error_service = nil
-    end
+    DSPy.config.instrumentation.enabled = false
+    DSPy.config.instrumentation.subscribers = []
+    DSPy.config.instrumentation.sampling_rate = 1.0
+    DSPy.config.instrumentation.trace_level = :standard
+    DSPy.config.instrumentation.buffer_size = 1000
+    DSPy.config.instrumentation.flush_interval = 30
+    DSPy.config.instrumentation.error_reporting = false
+    DSPy.config.instrumentation.error_service = nil
   end
 
   describe 'DSPy::Instrumentation.setup_subscribers' do
     context 'when instrumentation is disabled' do
       before do
-        instrumentation_config.configure do |config|
-          config.enabled = false
-          config.subscribers = [:logger]
-        end
+        DSPy.config.instrumentation.enabled = false
+        DSPy.config.instrumentation.subscribers = [:logger]
       end
 
       it 'does not set up any subscribers' do
@@ -39,33 +33,25 @@ RSpec.describe 'Configuration-Driven Instrumentation Setup' do
 
     context 'when instrumentation is enabled' do
       before do
-        instrumentation_config.configure do |config|
-          config.enabled = true
-        end
+        DSPy.config.instrumentation.enabled = true
       end
 
       it 'validates configuration before setup' do
-        instrumentation_config.configure do |config|
-          config.enabled = true
-          config.subscribers = [] # Invalid: enabled but no subscribers
-        end
+        DSPy.config.instrumentation.enabled = true
+        DSPy.config.instrumentation.subscribers = [] # Invalid: enabled but no subscribers
 
         expect { DSPy::Instrumentation.setup_subscribers }.to raise_error(ArgumentError, /Must specify at least one subscriber/)
       end
 
       it 'sets up logger subscriber when configured' do
-        instrumentation_config.configure do |config|
-          config.subscribers = [:logger]
-        end
+        DSPy.config.instrumentation.subscribers = [:logger]
 
         expect(DSPy::Instrumentation).to receive(:setup_logger_subscriber)
         DSPy::Instrumentation.setup_subscribers
       end
 
       it 'sets up multiple subscribers when configured' do
-        instrumentation_config.configure do |config|
-          config.subscribers = [:logger, :otel]
-        end
+        DSPy.config.instrumentation.subscribers = [:logger, :otel]
 
         # Mock dependency availability
         allow(DSPy::Instrumentation).to receive(:otel_available?).and_return(true)
@@ -76,17 +62,13 @@ RSpec.describe 'Configuration-Driven Instrumentation Setup' do
       end
 
       it 'validation catches unknown subscriber types' do
-        instrumentation_config.configure do |config|
-          config.subscribers = [:unknown]
-        end
+        DSPy.config.instrumentation.subscribers = [:unknown]
 
         expect { DSPy::Instrumentation.setup_subscribers }.to raise_error(ArgumentError, /Invalid subscribers: unknown/)
       end
 
       it 'skips subscribers when dependencies are not available' do
-        instrumentation_config.configure do |config|
-          config.subscribers = [:otel]
-        end
+        DSPy.config.instrumentation.subscribers = [:otel]
 
         # Mock dependency check to return false
         allow(DSPy::Instrumentation).to receive(:otel_available?).and_return(false)
@@ -99,19 +81,15 @@ RSpec.describe 'Configuration-Driven Instrumentation Setup' do
 
   describe 'subscriber configuration setup' do
     before do
-      instrumentation_config.configure do |config|
-        config.enabled = true
-        config.subscribers = [:logger]
-      end
+      DSPy.config.instrumentation.enabled = true
+      DSPy.config.instrumentation.subscribers = [:logger]
     end
 
     it 'creates logger subscriber when configured' do
       # Configure nested logger settings
-      instrumentation_config.config.logger.configure do |logger_config|
-        logger_config.level = :debug
-        logger_config.include_payloads = false
-        logger_config.correlation_id = false
-      end
+      DSPy.config.instrumentation.logger.level = :debug
+      DSPy.config.instrumentation.logger.include_payloads = false
+      DSPy.config.instrumentation.logger.correlation_id = false
 
       expect(DSPy::Instrumentation).to receive(:logger_subscriber).and_call_original
 

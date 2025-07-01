@@ -23,27 +23,38 @@ RSpec.describe DSPy do
 
     it 'has instrumentation setting' do
       expect(DSPy.config).to respond_to(:instrumentation)
-      expect(DSPy.config.instrumentation).to eq(DSPy::Configuration::InstrumentationConfig)
+      expect(DSPy.config.instrumentation).to respond_to(:enabled)
+      expect(DSPy.config.instrumentation).to respond_to(:logger)
     end
 
-    it 'allows configuring instrumentation settings' do
-      # Test the configuration API works
-      DSPy.config.instrumentation.configure do |inst_config|
-        inst_config.enabled = true
-        inst_config.subscribers = [:logger]
+    it 'supports clean configuration API' do
+      # Direct property access
+      DSPy.config.instrumentation.enabled = true
+      DSPy.config.instrumentation.subscribers = [:logger]
+      DSPy.config.instrumentation.logger.level = :debug
+
+      expect(DSPy.config.instrumentation.enabled).to eq(true)
+      expect(DSPy.config.instrumentation.subscribers).to eq([:logger])
+      expect(DSPy.config.instrumentation.logger.level).to eq(:debug)
+
+      # Configuration blocks work too
+      DSPy.configure do |config|
+        config.instrumentation.enabled = false
+        config.instrumentation.logger.level = :info
       end
 
-      expect(DSPy.config.instrumentation.config.enabled).to eq(true)
-      expect(DSPy.config.instrumentation.config.subscribers).to eq([:logger])
+      expect(DSPy.config.instrumentation.enabled).to eq(false)
+      expect(DSPy.config.instrumentation.logger.level).to eq(:info)
 
       # Validation should pass
-      expect { DSPy.config.instrumentation.validate! }.not_to raise_error
+      DSPy.config.instrumentation.enabled = true
+      DSPy.config.instrumentation.subscribers = [:logger]
+      expect { DSPy.validate_instrumentation! }.not_to raise_error
 
       # Reset to defaults
-      DSPy.config.instrumentation.configure do |inst_config|
-        inst_config.enabled = false
-        inst_config.subscribers = []
-      end
+      DSPy.config.instrumentation.enabled = false
+      DSPy.config.instrumentation.subscribers = []
+      DSPy.config.instrumentation.logger.level = :info
     end
   end
 end 

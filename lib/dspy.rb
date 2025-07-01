@@ -2,23 +2,94 @@
 require 'sorbet-runtime'
 require 'dry-configurable'
 require 'dry/logger'
+require 'securerandom'
 
 require_relative 'dspy/version'
-require_relative 'dspy/configuration/correlation_id_config'
-require_relative 'dspy/configuration/logger_config'
-require_relative 'dspy/configuration/otel_config'
-require_relative 'dspy/configuration/newrelic_config'
-require_relative 'dspy/configuration/langfuse_config'
-require_relative 'dspy/configuration/instrumentation_config'
 
 module DSPy
   extend Dry::Configurable
+  
   setting :lm
   setting :logger, default: Dry.Logger(:dspy, formatter: :string)
-  setting :instrumentation, default: DSPy::Configuration::InstrumentationConfig
+  
+  # Nested instrumentation configuration using proper dry-configurable syntax
+  setting :instrumentation do
+    # Core settings
+    setting :enabled, default: false
+    setting :subscribers, default: []
+    setting :sampling_rate, default: 1.0
+    setting :trace_level, default: :standard
+    setting :async_processing, default: false
+    setting :buffer_size, default: 1000
+    setting :flush_interval, default: 30
+    setting :error_reporting, default: false
+    setting :error_service, default: nil
+    setting :sampling_rules, default: {}
+
+    # Nested correlation ID configuration
+    setting :correlation_id do
+      setting :enabled, default: false
+      setting :header, default: 'X-Correlation-ID'
+      setting :generator, default: -> { SecureRandom.uuid }
+    end
+
+    # Nested logger configuration
+    setting :logger do
+      setting :level, default: :info
+      setting :include_payloads, default: true
+      setting :correlation_id, default: true
+      setting :sampling, default: {}
+      setting :sampling_conditions, default: {}
+    end
+
+    # Nested OpenTelemetry configuration
+    setting :otel do
+      setting :tracer_name, default: 'dspy-ruby'
+      setting :service_name, default: 'dspy-application'
+      setting :service_version, default: DSPy::VERSION
+      setting :endpoint, default: -> { ENV['OTEL_EXPORTER_OTLP_ENDPOINT'] }
+    end
+
+    # Nested New Relic configuration
+    setting :newrelic do
+      setting :app_name, default: 'DSPy Application'
+      setting :license_key, default: -> { ENV['NEW_RELIC_LICENSE_KEY'] }
+      setting :custom_attributes, default: {}
+    end
+
+    # Nested Langfuse configuration
+    setting :langfuse do
+      setting :public_key, default: -> { ENV['LANGFUSE_PUBLIC_KEY'] }
+      setting :secret_key, default: -> { ENV['LANGFUSE_SECRET_KEY'] }
+      setting :host, default: -> { ENV['LANGFUSE_HOST'] }
+      setting :track_tokens, default: true
+      setting :track_costs, default: true
+      setting :track_prompts, default: true
+    end
+  end
 
   def self.logger
     config.logger
+  end
+
+  # Validation methods for instrumentation configuration
+  def self.validate_instrumentation!
+    config = self.config.instrumentation
+    
+    raise ArgumentError, "Sampling rate must be between 0.0 and 1.0" unless config.sampling_rate.between?(0.0, 1.0)
+    raise ArgumentError, "Buffer size must be positive" unless config.buffer_size > 0
+    raise ArgumentError, "Flush interval must be positive" unless config.flush_interval > 0
+    raise ArgumentError, "Invalid trace level" unless [:minimal, :standard, :detailed].include?(config.trace_level)
+    
+    if config.enabled && config.subscribers.empty?
+      raise ArgumentError, "Must specify at least one subscriber when instrumentation is enabled"
+    end
+    
+    # Validate subscribers are valid symbols
+    invalid_subscribers = config.subscribers - [:logger, :otel, :newrelic, :langfuse]
+    unless invalid_subscribers.empty?
+      raise ArgumentError, "Invalid subscribers: #{invalid_subscribers.join(', ')}"
+    end
   end
 end
 

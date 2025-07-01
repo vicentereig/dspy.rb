@@ -5,49 +5,43 @@ require 'spec_helper'
 RSpec.describe 'Instrumentation Configuration Integration' do
   before do
     # Reset configuration before each test
-    DSPy.config.instrumentation.configure do |config|
-      config.enabled = false
-      config.subscribers = []
-      config.sampling_rate = 1.0
-      config.trace_level = :standard
-    end
+    DSPy.config.instrumentation.enabled = false
+    DSPy.config.instrumentation.subscribers = []
+    DSPy.config.instrumentation.sampling_rate = 1.0
+    DSPy.config.instrumentation.trace_level = :standard
   end
 
   it 'supports the documented configuration API from observability.md' do
     # This test demonstrates the exact API shown in the documentation
     DSPy.configure do |config|
-      config.instrumentation.configure do |inst_config|
-        # Enable instrumentation
-        inst_config.enabled = true
-        
-        # Configure subscribers
-        inst_config.subscribers = [:logger]
-        
-        # Sampling configuration
-        inst_config.sampling_rate = 1.0
-        inst_config.trace_level = :detailed
-      end
+      # Enable instrumentation
+      config.instrumentation.enabled = true
+      
+      # Configure subscribers
+      config.instrumentation.subscribers = [:logger]
+      
+      # Sampling configuration
+      config.instrumentation.sampling_rate = 1.0
+      config.instrumentation.trace_level = :detailed
     end
 
     # Configure nested logger settings
-    DSPy.config.instrumentation.config.logger.configure do |logger_config|
-      logger_config.level = :info
-      logger_config.include_payloads = true
-      logger_config.correlation_id = true
-    end
+    DSPy.config.instrumentation.logger.level = :info
+    DSPy.config.instrumentation.logger.include_payloads = true
+    DSPy.config.instrumentation.logger.correlation_id = true
 
     # Verify configuration was applied
-    expect(DSPy.config.instrumentation.config.enabled).to eq(true)
-    expect(DSPy.config.instrumentation.config.subscribers).to eq([:logger])
-    expect(DSPy.config.instrumentation.config.sampling_rate).to eq(1.0)
-    expect(DSPy.config.instrumentation.config.trace_level).to eq(:detailed)
+    expect(DSPy.config.instrumentation.enabled).to eq(true)
+    expect(DSPy.config.instrumentation.subscribers).to eq([:logger])
+    expect(DSPy.config.instrumentation.sampling_rate).to eq(1.0)
+    expect(DSPy.config.instrumentation.trace_level).to eq(:detailed)
     
-    expect(DSPy.config.instrumentation.config.logger.config.level).to eq(:info)
-    expect(DSPy.config.instrumentation.config.logger.config.include_payloads).to eq(true)
-    expect(DSPy.config.instrumentation.config.logger.config.correlation_id).to eq(true)
+    expect(DSPy.config.instrumentation.logger.level).to eq(:info)
+    expect(DSPy.config.instrumentation.logger.include_payloads).to eq(true)
+    expect(DSPy.config.instrumentation.logger.correlation_id).to eq(true)
 
     # Validation should pass
-    expect { DSPy.config.instrumentation.validate! }.not_to raise_error
+    expect { DSPy.validate_instrumentation! }.not_to raise_error
 
     # Setup should work
     expect { DSPy::Instrumentation.setup_subscribers }.not_to raise_error
@@ -56,29 +50,27 @@ RSpec.describe 'Instrumentation Configuration Integration' do
   it 'supports production configuration pattern' do
     # Simulate production configuration from documentation
     DSPy.configure do |config|
-      config.instrumentation.configure do |inst_config|
-        inst_config.enabled = true
-        
-        # Production subscribers
-        inst_config.subscribers = [:logger]  # Using only logger for this test
-        
-        # Sampling for performance
-        inst_config.sampling_rate = 0.1  # 10% sampling in production
-        inst_config.trace_level = :standard
-        
-        # Performance settings
-        inst_config.async_processing = true
-        inst_config.buffer_size = 1000
-        inst_config.flush_interval = 30
-        
-        # Error handling
-        inst_config.error_reporting = true
-        inst_config.error_service = :sentry
-      end
+      config.instrumentation.enabled = true
+      
+      # Production subscribers
+      config.instrumentation.subscribers = [:logger]  # Using only logger for this test
+      
+      # Sampling for performance
+      config.instrumentation.sampling_rate = 0.1  # 10% sampling in production
+      config.instrumentation.trace_level = :standard
+      
+      # Performance settings
+      config.instrumentation.async_processing = true
+      config.instrumentation.buffer_size = 1000
+      config.instrumentation.flush_interval = 30
+      
+      # Error handling
+      config.instrumentation.error_reporting = true
+      config.instrumentation.error_service = :sentry
     end
 
     # Verify production configuration
-    config = DSPy.config.instrumentation.config
+    config = DSPy.config.instrumentation
     expect(config.enabled).to eq(true)
     expect(config.subscribers).to eq([:logger])
     expect(config.sampling_rate).to eq(0.1)
@@ -90,20 +82,18 @@ RSpec.describe 'Instrumentation Configuration Integration' do
     expect(config.error_service).to eq(:sentry)
 
     # Validation should pass
-    expect { DSPy.config.instrumentation.validate! }.not_to raise_error
+    expect { DSPy.validate_instrumentation! }.not_to raise_error
 
     # Setup should work
     expect { DSPy::Instrumentation.setup_subscribers }.not_to raise_error
   end
 
   it 'supports correlation ID configuration' do
-    DSPy.config.instrumentation.config.correlation_id.configure do |corr_config|
-      corr_config.enabled = true
-      corr_config.header = 'X-Request-ID'
-      corr_config.generator = -> { "custom-#{SecureRandom.hex(8)}" }
-    end
+    DSPy.config.instrumentation.correlation_id.enabled = true
+    DSPy.config.instrumentation.correlation_id.header = 'X-Request-ID'
+    DSPy.config.instrumentation.correlation_id.generator = -> { "custom-#{SecureRandom.hex(8)}" }
 
-    config = DSPy.config.instrumentation.config.correlation_id.config
+    config = DSPy.config.instrumentation.correlation_id
     expect(config.enabled).to eq(true)
     expect(config.header).to eq('X-Request-ID')
     
@@ -114,28 +104,24 @@ RSpec.describe 'Instrumentation Configuration Integration' do
   end
 
   it 'supports OpenTelemetry configuration' do
-    DSPy.config.instrumentation.config.otel.configure do |otel_config|
-      otel_config.tracer_name = 'my-dspy-app'
-      otel_config.service_name = 'my-service'
-      otel_config.service_version = '2.0.0'
-    end
+    DSPy.config.instrumentation.otel.tracer_name = 'my-dspy-app'
+    DSPy.config.instrumentation.otel.service_name = 'my-service'
+    DSPy.config.instrumentation.otel.service_version = '2.0.0'
 
-    config = DSPy.config.instrumentation.config.otel.config
+    config = DSPy.config.instrumentation.otel
     expect(config.tracer_name).to eq('my-dspy-app')
     expect(config.service_name).to eq('my-service')
     expect(config.service_version).to eq('2.0.0')
   end
 
   it 'supports New Relic configuration' do
-    DSPy.config.instrumentation.config.newrelic.configure do |nr_config|
-      nr_config.app_name = 'My DSPy App'
-      nr_config.custom_attributes = {
-        'dspy.version' => DSPy::VERSION,
-        'deployment.environment' => 'test'
-      }
-    end
+    DSPy.config.instrumentation.newrelic.app_name = 'My DSPy App'
+    DSPy.config.instrumentation.newrelic.custom_attributes = {
+      'dspy.version' => DSPy::VERSION,
+      'deployment.environment' => 'test'
+    }
 
-    config = DSPy.config.instrumentation.config.newrelic.config
+    config = DSPy.config.instrumentation.newrelic
     expect(config.app_name).to eq('My DSPy App')
     expect(config.custom_attributes).to eq({
       'dspy.version' => DSPy::VERSION,
@@ -144,13 +130,11 @@ RSpec.describe 'Instrumentation Configuration Integration' do
   end
 
   it 'supports Langfuse configuration' do
-    DSPy.config.instrumentation.config.langfuse.configure do |langfuse_config|
-      langfuse_config.track_tokens = false
-      langfuse_config.track_costs = false
-      langfuse_config.track_prompts = true
-    end
+    DSPy.config.instrumentation.langfuse.track_tokens = false
+    DSPy.config.instrumentation.langfuse.track_costs = false
+    DSPy.config.instrumentation.langfuse.track_prompts = true
 
-    config = DSPy.config.instrumentation.config.langfuse.config
+    config = DSPy.config.instrumentation.langfuse
     expect(config.track_tokens).to eq(false)
     expect(config.track_costs).to eq(false)
     expect(config.track_prompts).to eq(true)
@@ -169,10 +153,8 @@ RSpec.describe 'Instrumentation Configuration Integration' do
       expect(subscriber).to be_a(DSPy::Subscribers::LoggerSubscriber)
 
       # Configuration approach should also work
-      DSPy.config.instrumentation.configure do |config|
-        config.enabled = true
-        config.subscribers = [:logger]
-      end
+      DSPy.config.instrumentation.enabled = true
+      DSPy.config.instrumentation.subscribers = [:logger]
 
       expect { DSPy::Instrumentation.setup_subscribers }.not_to raise_error
     end

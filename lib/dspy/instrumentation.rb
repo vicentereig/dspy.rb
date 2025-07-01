@@ -178,13 +178,13 @@ module DSPy
       config = DSPy.config.instrumentation
       
       # Return early if instrumentation is disabled
-      return unless config.config.enabled
+      return unless config.enabled
       
       # Validate configuration first
-      config.validate!
+      DSPy.validate_instrumentation!
       
       # Setup each configured subscriber
-      config.config.subscribers.each do |subscriber_type|
+      config.subscribers.each do |subscriber_type|
         setup_subscriber(subscriber_type)
       end
     end
