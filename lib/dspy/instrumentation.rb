@@ -9,27 +9,27 @@ module DSPy
   # Provides extension points for logging, OpenTelemetry, New Relic, Langfuse, and custom monitoring
   module Instrumentation
     # Get a logger subscriber instance (creates new instance each time)
-    def self.logger_subscriber
+    def self.logger_subscriber(**options)
       require_relative 'subscribers/logger_subscriber'
-      DSPy::Subscribers::LoggerSubscriber.new
+      DSPy::Subscribers::LoggerSubscriber.new(**options)
     end
 
     # Get an OpenTelemetry subscriber instance (creates new instance each time)
-    def self.otel_subscriber
+    def self.otel_subscriber(**options)
       require_relative 'subscribers/otel_subscriber'
-      DSPy::Subscribers::OtelSubscriber.new
+      DSPy::Subscribers::OtelSubscriber.new(**options)
     end
 
     # Get a New Relic subscriber instance (creates new instance each time)
-    def self.newrelic_subscriber
+    def self.newrelic_subscriber(**options)
       require_relative 'subscribers/newrelic_subscriber'
-      DSPy::Subscribers::NewrelicSubscriber.new
+      DSPy::Subscribers::NewrelicSubscriber.new(**options)
     end
 
     # Get a Langfuse subscriber instance (creates new instance each time)
-    def self.langfuse_subscriber
+    def self.langfuse_subscriber(**options)
       require_relative 'subscribers/langfuse_subscriber'
-      DSPy::Subscribers::LangfuseSubscriber.new
+      DSPy::Subscribers::LangfuseSubscriber.new(**options)
     end
 
     def self.notifications
@@ -175,7 +175,88 @@ module DSPy
     end
 
     def self.setup_subscribers
-      # Lazy initialization - will be created when first accessed
+      config = DSPy.config.instrumentation
+      
+      # Return early if instrumentation is disabled
+      return unless config.config.enabled
+      
+      # Validate configuration first
+      config.validate!
+      
+      # Setup each configured subscriber
+      config.config.subscribers.each do |subscriber_type|
+        setup_subscriber(subscriber_type)
+      end
+    end
+
+    def self.setup_subscriber(subscriber_type)
+      case subscriber_type
+      when :logger
+        setup_logger_subscriber
+      when :otel
+        setup_otel_subscriber if otel_available?
+      when :newrelic
+        setup_newrelic_subscriber if newrelic_available?
+      when :langfuse
+        setup_langfuse_subscriber if langfuse_available?
+      else
+        raise ArgumentError, "Unknown subscriber type: #{subscriber_type}"
+      end
+    rescue LoadError => e
+      DSPy.logger.warn "Failed to setup #{subscriber_type} subscriber: #{e.message}"
+    end
+
+    def self.setup_logger_subscriber
+      # Create subscriber - it will read configuration when handling events
+      logger_subscriber
+    end
+
+    def self.setup_otel_subscriber
+      # Create subscriber - it will read configuration when handling events
+      otel_subscriber
+    end
+
+    def self.setup_newrelic_subscriber
+      # Create subscriber - it will read configuration when handling events
+      newrelic_subscriber
+    end
+
+    def self.setup_langfuse_subscriber
+      # Create subscriber - it will read configuration when handling events
+      langfuse_subscriber
+    end
+
+    # Dependency checking methods
+    def self.otel_available?
+      begin
+        require 'opentelemetry/sdk'
+        true
+      rescue LoadError
+        false
+      end
+    end
+
+    def self.newrelic_available?
+      begin
+        require 'newrelic_rpm'
+        true
+      rescue LoadError
+        false
+      end
+    end
+
+    def self.langfuse_available?
+      begin
+        require 'langfuse'
+        true
+      rescue LoadError
+        false
+      end
+    end
+
+    # Legacy setup method for backward compatibility
+    def self.setup_subscribers_legacy
+      # Legacy initialization - will be created when first accessed
       # Force initialization of enabled subscribers
       logger_subscriber
       
