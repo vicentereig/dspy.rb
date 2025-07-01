@@ -373,15 +373,3 @@ manager.integration_config.auto_deploy_threshold = 0.15  # 15% improvement
 manager.integration_config.deployment_strategy = 'conservative'
 ```
 
-## Limitations
-
-The current registry implementation has some limitations:
-
-- **File-based storage only**: Uses YAML files, no database backend
-- **No access control**: No user permissions or approval workflows
-- **Simple deployment tracking**: No blue-green or canary deployments
-- **Limited monitoring**: Basic performance tracking only
-- **No REST API**: Direct Ruby API only, no HTTP endpoints
-- **Single environment**: No built-in multi-environment support
-
-For advanced deployment features, production monitoring, or enterprise requirements, please contact Vicente Reig at hey@vicente.services for custom solutions or consulting.

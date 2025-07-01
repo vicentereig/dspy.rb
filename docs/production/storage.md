@@ -314,12 +314,3 @@ if iteration % 10 == 0
 end
 ```
 
-## Limitations
-
-The current storage implementation:
-- Uses file-based storage only (no database or cloud backends)
-- Stores programs as JSON (limited serialization capabilities)
-- Does not support automatic versioning or rollback
-- Cannot store the full program state (only metadata and basic structure)
-
-For production deployments requiring more advanced features, consider implementing custom storage adapters or using the registry system for deployment management.

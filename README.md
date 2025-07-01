@@ -14,23 +14,19 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **Signatures** - Define input/output schemas using Sorbet types
 - **Predict** - Basic LLM completion with structured data
 - **Chain of Thought** - Step-by-step reasoning for complex problems
-- **ReAct** - Tool-using agents that can actually get things done
-- **RAG** - Context-enriched responses from your data
-- **Multi-stage Pipelines** - Compose multiple LLM calls into workflows
+- **ReAct** - Tool-using agents with basic tool integration
+- **Manual Composition** - Combine multiple LLM calls into workflows
 
 **Optimization & Evaluation:**
 - **Prompt Objects** - Manipulate prompts as first-class objects instead of strings
 - **Typed Examples** - Type-safe training data with automatic validation
-- **Evaluation Framework** - Systematic testing with built-in metrics
-- **MIPROv2 Optimizer** - State-of-the-art automatic prompt optimization
-- **Simple Optimizer** - Random/grid search for quick experimentation
+- **Evaluation Framework** - Basic testing with simple metrics
+- **Basic Optimization** - Simple prompt optimization techniques
 
 **Production Features:**
-- **Storage System** - Persistent optimization result storage with search and filtering
-- **Registry System** - Version control for optimized signatures with deployment tracking
+- **File-based Storage** - Basic optimization result persistence
 - **Multi-Platform Observability** - OpenTelemetry, New Relic, and Langfuse integration
-- **Auto-deployment** - Intelligent deployment based on performance improvements
-- **Rollback Protection** - Automatic rollback on performance degradation
+- **Basic Instrumentation** - Event tracking and logging
 
 **Developer Experience:**
 - LLM provider support using official Ruby clients:
@@ -106,21 +102,20 @@ puts result.confidence   # => 0.85
 - **[Examples & Validation](docs/core-concepts/examples.md)** - Type-safe training data
 
 ### Optimization
-- **[Evaluation Framework](docs/optimization/evaluation.md)** - Systematic testing with metrics
+- **[Evaluation Framework](docs/optimization/evaluation.md)** - Basic testing with simple metrics
 - **[Prompt Optimization](docs/optimization/prompt-optimization.md)** - Manipulate prompts as objects
-- **[MIPROv2 Optimizer](docs/optimization/miprov2.md)** - State-of-the-art automatic optimization
-- **[Simple Optimizer](docs/optimization/simple-optimizer.md)** - Quick experimentation with random/grid search
+- **[MIPROv2 Optimizer](docs/optimization/miprov2.md)** - Basic automatic optimization
+- **[Simple Optimizer](docs/optimization/simple-optimizer.md)** - Random search experimentation
 
 ### Production Features
-- **[Storage System](docs/production/storage.md)** - Persist and search optimization results
-- **[Registry & Versions](docs/production/registry.md)** - Version control with deployment tracking
+- **[Storage System](docs/production/storage.md)** - Basic file-based persistence
 - **[Observability](docs/production/observability.md)** - Multi-platform monitoring and metrics
 
 ### Advanced Usage
-- **[Complex Types](docs/advanced/complex-types.md)** - Enums, optional fields, and defaults
-- **[Multi-stage Pipelines](docs/advanced/pipelines.md)** - Advanced composition patterns
-- **[RAG Implementation](docs/advanced/rag.md)** - Retrieval Augmented Generation
-- **[Custom Metrics](docs/advanced/custom-metrics.md)** - Domain-specific evaluation logic
+- **[Complex Types](docs/advanced/complex-types.md)** - Basic Sorbet type integration
+- **[Manual Pipelines](docs/advanced/pipelines.md)** - Manual module composition patterns
+- **[RAG Patterns](docs/advanced/rag.md)** - Manual RAG implementation with external services
+- **[Custom Metrics](docs/advanced/custom-metrics.md)** - Proc-based evaluation logic
 
 ## What's Next
 

@@ -410,15 +410,3 @@ if result.best_score_value > 0.8  # Your quality threshold
 end
 ```
 
-## Limitations
-
-The current MIPROv2 implementation has some limitations:
-
-- **Sequential optimization**: Phases run sequentially, not in parallel
-- **Single-objective**: Optimizes one metric at a time
-- **Limited instruction generation**: Uses basic grounded proposer
-- **No distributed optimization**: Runs on single machine only
-- **Fixed algorithm**: Cannot customize the three-phase approach
-- **No warm starts**: Cannot resume from previous optimization runs
-
-For advanced optimization features, multi-objective optimization, or distributed optimization needs, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.

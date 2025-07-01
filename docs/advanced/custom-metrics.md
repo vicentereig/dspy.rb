@@ -507,15 +507,3 @@ customer_satisfaction_metric = ->(example, prediction) do
 end
 ```
 
-## Limitations
-
-The current custom metrics implementation has some limitations:
-
-- **Proc-based only**: No class-based metric system for complex metrics
-- **No built-in aggregation**: Must manually combine multiple metrics
-- **No metric composition**: Cannot easily chain or combine metrics
-- **Limited error handling**: Metric failures can break evaluation
-- **No automatic normalization**: Must manually ensure 0-1 scoring range
-- **No metric validation**: No built-in checks for metric consistency
-
-For advanced metrics frameworks, automated metric validation, or enterprise evaluation systems, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.

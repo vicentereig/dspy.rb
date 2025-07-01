@@ -73,29 +73,38 @@ puts result.reasoning  # => "First, John starts with 15 apples..."
 puts result.solution   # => "20 apples"
 ```
 
-### DSPy::React
+### DSPy::ReAct
 
 Combines reasoning with action - perfect for agents that need to use tools:
 
 ```ruby
 class Calculator < DSPy::Tools::Base
-  def add(a, b)
-    a + b
-  end
+  extend T::Sig
   
-  def multiply(a, b)
-    a * b
+  tool_name "calculator"
+  tool_description "Perform mathematical calculations"
+  
+  sig { params(operation: String, a: Float, b: Float).returns(String) }
+  def call(operation:, a:, b:)
+    case operation
+    when "add"
+      (a + b).to_s
+    when "multiply"
+      (a * b).to_s
+    else
+      "Unknown operation"
+    end
   end
 end
 
 class MathAgent < DSPy::Signature
-  description "Solve complex math problems using available tools."
+  description "Solve math problems using available tools."
   
   input { const :problem, String }
   output { const :answer, String }
 end
 
-agent = DSPy::React.new(MathAgent, tools: [Calculator.new])
+agent = DSPy::ReAct.new(MathAgent, tools: [Calculator.new])
 result = agent.call(problem: "What is (15 + 7) * 3?")
 
 # The agent will reason about the problem and use tools
@@ -133,18 +142,22 @@ Examples provide type-safe training data for optimization:
 ```ruby
 examples = [
   DSPy::Example.new(
-    inputs: { text: "This movie was amazing!" },
-    outputs: { sentiment: ClassifyText::Sentiment::Positive, confidence: 0.9 }
+    signature_class: ClassifyText,
+    input: { text: "This movie was amazing!" },
+    expected: { sentiment: ClassifyText::Sentiment::Positive, confidence: 0.9 }
   ),
   DSPy::Example.new(
-    inputs: { text: "Terrible service, would not recommend." },
-    outputs: { sentiment: ClassifyText::Sentiment::Negative, confidence: 0.95 }
+    signature_class: ClassifyText,
+    input: { text: "Terrible service, would not recommend." },
+    expected: { sentiment: ClassifyText::Sentiment::Negative, confidence: 0.95 }
   )
 ]
 
-# Use examples for optimization
-optimizer = DSPy::MIPROv2.new(signature: ClassifyText)
-optimized_predictor = optimizer.optimize(examples: examples)
+# Use examples for evaluation
+evaluator = DSPy::Evaluate.new(metric: :exact_match)
+results = evaluator.evaluate(examples: examples) do |example|
+  classifier.call(example.input_values)
+end
 ```
 
 ## Configuration: Setting Up Your Environment
@@ -172,12 +185,11 @@ config.lm = DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY'])
 # Anthropic
 config.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
 
-# Different models for different modules
-config.lm = DSPy::LM.new('openai/gpt-4o-mini')
-config.reasoning_lm = DSPy::LM.new('openai/gpt-4o')  # For complex reasoning
-
-# Use reasoning_lm for specific modules
-chain_of_thought = DSPy::ChainOfThought.new(ComplexTask, lm: DSPy.config.reasoning_lm)
+# Per-module language model configuration
+predictor = DSPy::Predict.new(ClassifyText)
+predictor.configure do |config|
+  config.lm = DSPy::LM.new('openai/gpt-4o')  # Override global LM for this instance
+end
 ```
 
 ## Error Handling and Validation
@@ -187,13 +199,11 @@ DSPy provides comprehensive error handling:
 ```ruby
 begin
   result = classifier.call(text: "Sample text")
-rescue DSPy::ValidationError => e
+rescue DSPy::PredictionInvalidError => e
   puts "Validation failed: #{e.message}"
-  puts "Expected: #{e.expected_type}"
-  puts "Received: #{e.actual_value}"
-rescue DSPy::LMError => e
-  puts "Language model error: #{e.message}"
-  puts "Provider: #{e.provider}"
+  puts "Errors: #{e.errors}"
+rescue StandardError => e
+  puts "Unexpected error: #{e.message}"
 end
 ```
 
@@ -210,7 +220,7 @@ basic_classifier = DSPy::Predict.new(ClassifyText)
 reasoning_classifier = DSPy::ChainOfThought.new(ClassifyText)
 
 # Add tools for complex tasks
-agent_classifier = DSPy::React.new(ComplexClassification, tools: [WebSearch.new])
+agent_classifier = DSPy::ReAct.new(ComplexClassification, tools: [WebSearch.new])
 ```
 
 ### 2. Use Clear Descriptions
@@ -310,10 +320,10 @@ end
 class RobustProcessor < DSPy::Module
   def call(input)
     @primary_processor.call(input)
-  rescue DSPy::LMError
+  rescue StandardError
     @fallback_processor.call(input)
   end
 end
 ```
 
-Understanding these core concepts will enable you to build sophisticated, reliable LLM applications with DSPy.rb. The type system keeps you safe, the modular design keeps your code clean, and the optimization tools help you achieve production-ready performance.
+Understanding these core concepts will enable you to build reliable LLM applications with DSPy.rb. The type system keeps you safe, the modular design keeps your code clean, and the optimization tools help you achieve production-ready performance.

@@ -86,17 +86,9 @@ DSPy.configure do |c|
   # LLM Configuration
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
   
-  # Logging Configuration
-  c.logger.level = :info  # :debug, :info, :warn, :error
-  c.logger.destination = STDOUT
-  
-  # Storage Configuration
-  c.storage.auto_save = true
-  c.storage.storage_path = './optimization_results'
-  
-  # Registry Configuration
-  c.registry.auto_register_optimizations = true
-  c.registry.auto_deploy_best_versions = false
+  # Instrumentation Configuration
+  c.instrumentation.enabled = true
+  c.instrumentation.subscribers = ['logger']  # Available: logger, otel, newrelic, langfuse
 end
 ```
 

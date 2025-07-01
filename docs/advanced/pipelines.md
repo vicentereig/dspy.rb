@@ -598,15 +598,3 @@ class EfficientPipeline < DSPy::Module
 end
 ```
 
-## Limitations
-
-The current pipeline implementation has some limitations:
-
-- **No built-in parallelization**: Sequential processing only
-- **No automatic retries**: Manual error handling required
-- **No pipeline visualization**: No graphical representation of processing flow
-- **No dynamic routing**: Static pipeline structure
-- **No built-in monitoring**: Manual performance tracking
-- **No stream processing**: Batch processing only
-
-For advanced pipeline features, distributed processing, or enterprise workflow management, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.

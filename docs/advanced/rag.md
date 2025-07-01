@@ -537,15 +537,3 @@ def call_with_monitoring(question:)
 end
 ```
 
-## Limitations
-
-The current RAG implementation approach has limitations:
-
-- **No built-in vector stores**: Must integrate external services
-- **No embedding models**: Requires external embedding generation
-- **No automatic chunking**: Manual text preprocessing required
-- **No built-in reranking**: Must implement custom reranking logic
-- **Sequential processing**: No parallel retrieval from multiple sources
-- **Manual optimization**: No automatic context length optimization
-
-For production RAG systems, advanced retrieval strategies, or integrated vector databases, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.

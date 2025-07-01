@@ -446,15 +446,3 @@ class EmailClassification < T::Struct
 end
 ```
 
-## Limitations
-
-The current complex types implementation has some limitations:
-
-- **No custom validation**: Cannot define custom validation rules for structs or enums
-- **No default values**: Cannot specify default values in signature fields
-- **No type coercion**: No automatic conversion between compatible types
-- **No generic types**: Cannot create parameterized types like `List<T>`
-- **No inheritance**: Structs cannot inherit from other structs
-- **Basic schema generation**: Limited JSON schema features compared to full specification
-
-For advanced type systems, validation frameworks, or custom schema generation, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.

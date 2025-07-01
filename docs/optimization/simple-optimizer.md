@@ -393,15 +393,3 @@ if instructions.size < 10
 end
 ```
 
-## Limitations
-
-The current Simple Optimizer implementation has some limitations:
-
-- **Random search only**: No guided search or optimization algorithms
-- **No parameter optimization**: Only optimizes instructions and few-shot examples
-- **Sequential trials**: No parallel execution of trials
-- **Limited instruction generation**: Uses basic grounded proposer like MIPROv2
-- **No adaptive search**: Doesn't learn from trial history
-- **Single-objective**: Optimizes one metric at a time
-
-For advanced optimization algorithms, parameter tuning, or parallel optimization, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.

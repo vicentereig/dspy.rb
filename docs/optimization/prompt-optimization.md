@@ -506,14 +506,3 @@ puts "Automatically optimized instruction: #{optimized_prompt.instruction}"
 puts "Automatically selected examples: #{optimized_prompt.few_shot_examples.size}"
 ```
 
-## Limitations
-
-The current prompt optimization capabilities have some limitations:
-
-- **Manual analysis required**: No automatic prompt performance analytics
-- **Limited instruction generation**: Basic grounded proposer for instruction variations
-- **No systematic A/B testing**: Must implement comparison logic manually
-- **No prompt versioning system**: Manual tracking of prompt configurations
-- **No adaptive prompting**: Static prompts, no dynamic adaptation based on input
-
-For advanced prompt optimization features, automated A/B testing, or dynamic prompting capabilities, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.

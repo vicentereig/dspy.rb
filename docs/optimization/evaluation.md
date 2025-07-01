@@ -311,14 +311,3 @@ total_count = results.sum(&:total_count)
 overall_score = total_passed.to_f / total_count
 ```
 
-## Limitations
-
-The current evaluation framework has some limitations:
-
-- **No async evaluation**: Examples are processed sequentially
-- **Limited built-in metrics**: Only basic metrics are provided
-- **No distributed evaluation**: Single-machine only
-- **No automatic retries**: Failed examples are not retried
-- **No streaming results**: Must wait for all examples to complete
-
-For advanced evaluation features, custom metrics implementation, or distributed evaluation needs, please contact Vicente Reig at hey@vicente.services for consulting or custom solutions.
