@@ -54,7 +54,10 @@ class MockMathProgram
     
     answer = @responses[problem] || "unknown"
     # Simulate a struct-like response
-    OpenStruct.new(problem: problem, answer: answer)
+    result = OpenStruct.new(problem: problem, answer: answer)
+    # Add explanation for unknown cases to match test expectation
+    result.explanation = "Cannot solve" if answer == "unknown"
+    result
   end
 end
 
@@ -189,7 +192,8 @@ RSpec.describe DSPy::Evaluate do
         end
       end.new
       
-      inline_metric = lambda { |expected, prediction| 
+      inline_metric = lambda { |example, prediction| 
+        expected = example[:expected] || example['expected']
         expected[:answer] == prediction.answer 
       }
       
@@ -214,8 +218,19 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'handles prediction errors gracefully' do
+      # Create isolated mock that definitely raises an error
+      error_mock = Class.new do
+        def call(problem:)
+          if problem == "error_case"
+            raise "Simulated prediction error"
+          end
+          OpenStruct.new(problem: problem, answer: "unknown")
+        end
+      end.new
+      
+      error_evaluator = DSPy::Evaluate.new(error_mock, metric: metric)
       example = { input: { problem: "error_case" }, expected: { answer: "0" } }
-      result = evaluator.call(example)
+      result = error_evaluator.call(example)
       
       expect(result.passed).to be(false)
       expect(result.prediction).to be_nil
@@ -232,7 +247,17 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'includes traceback when enabled' do
-      evaluator = DSPy::Evaluate.new(mock_program, provide_traceback: true)
+      # Create isolated mock that definitely raises an error
+      error_mock = Class.new do
+        def call(problem:)
+          if problem == "error_case"
+            raise "Simulated prediction error"
+          end
+          OpenStruct.new(problem: problem, answer: "unknown")
+        end
+      end.new
+      
+      evaluator = DSPy::Evaluate.new(error_mock, provide_traceback: true)
       example = { input: { problem: "error_case" }, expected: { answer: "0" } }
       result = evaluator.call(example)
       
@@ -241,7 +266,17 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'excludes traceback when disabled' do
-      evaluator = DSPy::Evaluate.new(mock_program, provide_traceback: false)
+      # Create isolated mock that definitely raises an error
+      error_mock = Class.new do
+        def call(problem:)
+          if problem == "error_case"
+            raise "Simulated prediction error"
+          end
+          OpenStruct.new(problem: problem, answer: "unknown")
+        end
+      end.new
+      
+      evaluator = DSPy::Evaluate.new(error_mock, provide_traceback: false)
       example = { input: { problem: "error_case" }, expected: { answer: "0" } }
       result = evaluator.call(example)
       
@@ -260,7 +295,10 @@ RSpec.describe DSPy::Evaluate do
     let(:evaluator) { DSPy::Evaluate.new(mock_program, metric: metric) }
 
     it 'evaluates multiple examples successfully' do
-      result = evaluator.evaluate(math_examples, display_progress: false)
+      # Create fresh mock to avoid state pollution
+      fresh_mock = MockMathProgram.new
+      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: metric)
+      result = fresh_evaluator.evaluate(math_examples, display_progress: false)
       
       expect(result).to be_a(DSPy::Evaluate::BatchEvaluationResult)
       expect(result.total_examples).to eq(5)
@@ -383,8 +421,10 @@ RSpec.describe DSPy::Evaluate do
         expected: { answer: "6" }
       )
       
-      # Update mock to handle this case
-      mock_program.responses["3 + 3"] = "6"
+      # Create a new mock with the needed response
+      test_mock = MockMathProgram.new
+      test_mock.responses["3 + 3"] = "6"
+      evaluator = DSPy::Evaluate.new(test_mock)
       
       result = evaluator.call(example)
       
@@ -407,12 +447,13 @@ RSpec.describe DSPy::Evaluate do
         )
       ]
       
-      # Update mock responses
-      mock_program.responses["4 + 4"] = "8"
-      mock_program.responses["5 + 5"] = "10"
+      # Create a new mock with the needed responses
+      test_mock = MockMathProgram.new
+      test_mock.responses["4 + 4"] = "8"
+      test_mock.responses["5 + 5"] = "10"
       
       # Use built-in matching for Examples
-      evaluator_with_matching = DSPy::Evaluate.new(mock_program, metric: proc { |example, prediction|
+      evaluator_with_matching = DSPy::Evaluate.new(test_mock, metric: proc { |example, prediction|
         example.is_a?(DSPy::Example) ? example.matches_prediction?(prediction) : false
       })
       
@@ -430,7 +471,10 @@ RSpec.describe DSPy::Evaluate do
         expected: { answer: "10" }
       )
       
-      mock_program.responses["9 + 1"] = "10"
+      # Create a new mock with the needed response
+      test_mock = MockMathProgram.new
+      test_mock.responses["9 + 1"] = "10"
+      evaluator = DSPy::Evaluate.new(test_mock)
       result = evaluator.call(example)
       
       expect(result.prediction.problem).to eq("9 + 1")
