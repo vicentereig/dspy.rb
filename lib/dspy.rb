@@ -4,11 +4,13 @@ require 'dry-configurable'
 require 'dry/logger'
 
 require_relative 'dspy/version'
+require_relative 'dspy/configuration/instrumentation_config'
 
 module DSPy
   extend Dry::Configurable
   setting :lm
   setting :logger, default: Dry.Logger(:dspy, formatter: :string)
+  setting :instrumentation, default: DSPy::Configuration::InstrumentationConfig
 
   def self.logger
     config.logger
