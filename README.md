@@ -33,9 +33,9 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **Rollback Protection** - Automatic rollback on performance degradation
 
 **Developer Experience:**
-- LLM provider support using official Ruby clients:
-  - [OpenAI Ruby](https://github.com/alexrudall/ruby-openai)
-  - [Anthropic Ruby](https://github.com/alexrudall/anthropic)
+- LLM provider support via official APIs:
+  - [OpenAI API](https://platform.openai.com/docs/api-reference)
+  - [Anthropic API](https://docs.anthropic.com/en/api/getting-started)
 - Runtime type checking with [Sorbet](https://sorbet.org/)
 - Type-safe tool definitions for ReAct agents
 - Comprehensive instrumentation and observability
@@ -136,7 +136,7 @@ These are my goals to release v1.0.
 - ✅ New Relic integration - *Done*
 - ✅ Langfuse integration - *Done*
 - 🚧 Ollama support
-- Context Engineering (see [recent research](https://dspy.ai/blog/) on advanced prompting techniques)
+- Context Engineering (see recent research: [How Contexts Fail](https://www.dbreunig.com/2025/06/22/how-contexts-fail-and-how-to-fix-them.html), [How to Fix Your Context](https://www.dbreunig.com/2025/06/26/how-to-fix-your-context.html), [Context Engineering](https://simonwillison.net/2025/Jun/27/context-engineering/))
 - Agentic Memory support
 - MCP Support
 - Documentation website
