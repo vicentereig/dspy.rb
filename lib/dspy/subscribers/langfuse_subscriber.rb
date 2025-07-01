@@ -299,7 +299,7 @@ module DSPy
           name: "trial_started",
           metadata: {
             trial_number: payload[:trial_number],
-            instruction_preview: payload[:instruction]&.truncate(100)
+            instruction_preview: payload[:instruction]&.slice(0, 100)
           }
         )
       end
@@ -626,6 +626,8 @@ module DSPy
         
         usage
       end
+
+      public
 
       # Public API for manual tracing
       sig { returns(T.nilable(T.untyped)) }

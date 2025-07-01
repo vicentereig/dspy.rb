@@ -43,8 +43,23 @@ RSpec.describe DSPy::Subscribers::NewrelicSubscriber do
 
   context 'when New Relic is available' do
     before do
-      stub_const('NewRelic', double('NewRelic'))
-      stub_const('NewRelic::Agent', double('Agent'))
+      # Create proper module structure for NewRelic
+      newrelic_module = Module.new
+      agent_module = Module.new
+      
+      stub_const('NewRelic', newrelic_module)
+      stub_const('NewRelic::Agent', agent_module)
+      
+      # Mock the agent methods we need
+      allow(agent_module).to receive(:start_transaction)
+      allow(agent_module).to receive(:record_custom_event)
+      allow(agent_module).to receive(:record_custom_metric)
+      allow(agent_module).to receive(:add_custom_attributes)
+      allow(agent_module).to receive(:current_transaction).and_return(double('Transaction', 
+        :name= => nil, 
+        :add_custom_attributes => nil,
+        :finish => nil
+      ))
       
       config.enabled = true
     end
@@ -395,6 +410,24 @@ RSpec.describe DSPy::Subscribers::NewrelicSubscriber do
 
   describe 'event subscription' do
     it 'subscribes to optimization events when enabled' do
+      # Setup NewRelic mocking for this test
+      newrelic_module = Module.new
+      agent_module = Module.new
+      
+      stub_const('NewRelic', newrelic_module)
+      stub_const('NewRelic::Agent', agent_module)
+      
+      # Mock the agent methods we need
+      allow(agent_module).to receive(:start_transaction)
+      allow(agent_module).to receive(:record_custom_event)
+      allow(agent_module).to receive(:record_custom_metric)
+      allow(agent_module).to receive(:add_custom_attributes)
+      allow(agent_module).to receive(:current_transaction).and_return(double('Transaction', 
+        :name= => nil, 
+        :add_custom_attributes => nil,
+        :finish => nil
+      ))
+      
       config.enabled = true
       config.trace_optimization_events = true
       
@@ -421,6 +454,24 @@ RSpec.describe DSPy::Subscribers::NewrelicSubscriber do
     end
 
     it 'subscribes to LM events when enabled' do
+      # Setup NewRelic mocking for this test
+      newrelic_module = Module.new
+      agent_module = Module.new
+      
+      stub_const('NewRelic', newrelic_module)
+      stub_const('NewRelic::Agent', agent_module)
+      
+      # Mock the agent methods we need
+      allow(agent_module).to receive(:start_transaction)
+      allow(agent_module).to receive(:record_custom_event)
+      allow(agent_module).to receive(:record_custom_metric)
+      allow(agent_module).to receive(:add_custom_attributes)
+      allow(agent_module).to receive(:current_transaction).and_return(double('Transaction', 
+        :name= => nil, 
+        :add_custom_attributes => nil,
+        :finish => nil
+      ))
+      
       config.enabled = true
       config.trace_lm_events = true
       
@@ -460,9 +511,16 @@ RSpec.describe DSPy::Subscribers::NewrelicSubscriber do
       config.enabled = true
       config.record_custom_metrics = false
       
-      # Mock New Relic
-      stub_const('NewRelic', double('NewRelic'))
-      stub_const('NewRelic::Agent', double('Agent'))
+      # Mock New Relic with proper module structure
+      newrelic_module = Module.new
+      agent_module = Module.new
+      
+      stub_const('NewRelic', newrelic_module)
+      stub_const('NewRelic::Agent', agent_module)
+      
+      # Mock the agent methods we need
+      allow(agent_module).to receive(:record_metric)
+      allow(agent_module).to receive(:record_custom_event)
       
       expect(NewRelic::Agent).not_to receive(:record_metric)
       expect(NewRelic::Agent).to receive(:record_custom_event) # Events should still work
@@ -482,9 +540,16 @@ RSpec.describe DSPy::Subscribers::NewrelicSubscriber do
       config.enabled = true
       config.record_custom_events = false
       
-      # Mock New Relic
-      stub_const('NewRelic', double('NewRelic'))
-      stub_const('NewRelic::Agent', double('Agent'))
+      # Mock New Relic with proper module structure
+      newrelic_module = Module.new
+      agent_module = Module.new
+      
+      stub_const('NewRelic', newrelic_module)
+      stub_const('NewRelic::Agent', agent_module)
+      
+      # Mock the agent methods we need
+      allow(agent_module).to receive(:record_metric)
+      allow(agent_module).to receive(:record_custom_event)
       
       expect(NewRelic::Agent).to receive(:record_metric).at_least(:once) # Metrics should still work
       expect(NewRelic::Agent).not_to receive(:record_custom_event)

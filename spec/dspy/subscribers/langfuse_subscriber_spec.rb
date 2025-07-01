@@ -25,10 +25,14 @@ RSpec.describe DSPy::Subscribers::LangfuseSubscriber do
       end
 
       it 'respects environment variables' do
-        allow(ENV).to receive(:[]).with('LANGFUSE_PUBLIC_KEY').and_return('pk_test_123')
-        allow(ENV).to receive(:[]).with('LANGFUSE_SECRET_KEY').and_return('sk_test_456')
-        allow(ENV).to receive(:[]).with('LANGFUSE_HOST').and_return('https://custom.langfuse.com')
-        allow(ENV).to receive(:[]).with(anything).and_call_original
+        # Create a mock ENV object that returns specific values
+        mock_env = ENV.to_h.merge({
+          'LANGFUSE_PUBLIC_KEY' => 'pk_test_123',
+          'LANGFUSE_SECRET_KEY' => 'sk_test_456',
+          'LANGFUSE_HOST' => 'https://custom.langfuse.com'
+        })
+        
+        stub_const('ENV', mock_env)
 
         config = DSPy::Subscribers::LangfuseSubscriber::LangfuseConfig.new
         

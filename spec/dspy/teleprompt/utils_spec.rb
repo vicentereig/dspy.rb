@@ -355,8 +355,8 @@ RSpec.describe DSPy::Teleprompt::Utils do
         metric = DSPy::Teleprompt::Utils.send(:default_metric_for_examples, examples)
         
         expect(metric).to be_a(Proc)
-        # Use the exact expected values from the example
-        expected_prediction = { answer: 1, explanation: "Test explanation for test" }
+        # Use the exact expected values from the example (matches "Unknown problem" for "test")
+        expected_prediction = { answer: 1, explanation: "Unknown problem" }
         expect(metric.call(examples.first, expected_prediction)).to be(true)
       end
 
@@ -380,6 +380,12 @@ RSpec.describe DSPy::Teleprompt::Utils do
         hash_including(trainset_size: 1)
       ).and_call_original
 
+      # Allow bootstrap example events for each example
+      allow(DSPy::Instrumentation).to receive(:emit).with(
+        'dspy.optimization.bootstrap_example',
+        anything
+      )
+
       expect(DSPy::Instrumentation).to receive(:emit).with(
         'dspy.optimization.bootstrap_complete',
         hash_including(:successful_count, :success_rate)
@@ -396,10 +402,22 @@ RSpec.describe DSPy::Teleprompt::Utils do
   private
 
   def create_test_example(problem, answer)
+    # Create expected explanation that matches what MockMathPredictor returns
+    explanation = case problem
+    when "2 + 3"
+      "Add 2 and 3 to get 5"
+    when "10 - 4"
+      "Subtract 4 from 10 to get 6"
+    when "3 × 7"
+      "Multiply 3 by 7 to get 21"
+    else
+      "Unknown problem"
+    end
+
     DSPy::Example.new(
       signature_class: BootstrapMath,
       input: { problem: problem },
-      expected: { answer: answer, explanation: "Test explanation for #{problem}" },
+      expected: { answer: answer, explanation: explanation },
       id: "test_#{problem.gsub(/\W/, '_')}"
     )
   end

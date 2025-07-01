@@ -307,7 +307,7 @@ module DSPy
             duration_ms: payload[:duration_ms],
             score: payload[:score],
             status: status,
-            instruction: payload[:instruction]&.truncate(100),
+            instruction: payload[:instruction]&.slice(0, 100),
             timestamp: Time.now.to_f
           })
         end

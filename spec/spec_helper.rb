@@ -32,4 +32,27 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+  
+  # Store and restore DSPy configuration to prevent test interference
+  config.before(:each) do |example|
+    # Save original configuration before each test
+    @original_dspy_config = if defined?(DSPy) && DSPy.respond_to?(:config) && DSPy.config
+                             {
+                               lm: DSPy.config.lm,
+                               logger: DSPy.config.logger
+                             }
+                           else
+                             nil
+                           end
+  end
+  
+  config.after(:each) do |example|
+    # Restore original configuration after each test unless it's an integration test
+    if @original_dspy_config && !example.metadata[:vcr]
+      DSPy.configure do |config|
+        config.lm = @original_dspy_config[:lm] if @original_dspy_config[:lm]
+        config.logger = @original_dspy_config[:logger] if @original_dspy_config[:logger]
+      end
+    end
+  end
 end

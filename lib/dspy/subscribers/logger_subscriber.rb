@@ -47,6 +47,27 @@ module DSPy
         DSPy::Instrumentation.subscribe('dspy.react.tool_call') do |event|
           log_react_tool_call(event)
         end
+
+        # Subscribe to optimization events
+        DSPy::Instrumentation.subscribe('dspy.optimization.start') do |event|
+          log_optimization_start(event)
+        end
+
+        DSPy::Instrumentation.subscribe('dspy.optimization.complete') do |event|
+          log_optimization_complete(event)
+        end
+
+        DSPy::Instrumentation.subscribe('dspy.optimization.trial_start') do |event|
+          log_optimization_trial_start(event)
+        end
+
+        DSPy::Instrumentation.subscribe('dspy.optimization.trial_complete') do |event|
+          log_optimization_trial_complete(event)
+        end
+
+        DSPy::Instrumentation.subscribe('dspy.optimization.error') do |event|
+          log_optimization_error(event)
+        end
       end
 
       # Callback methods for different event types
@@ -207,6 +228,105 @@ module DSPy
           "duration_ms=#{duration}"
         ]
         log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
+      end
+
+      # Optimization event logging methods
+      sig { params(event: T.untyped).void }
+      def log_optimization_start(event)
+        payload = event.payload
+        optimization_id = payload[:optimization_id]
+        optimizer = payload[:optimizer]
+        trainset_size = payload[:trainset_size]
+        valset_size = payload[:valset_size]
+
+        log_parts = [
+          "event=optimization_start",
+          "optimization_id=#{optimization_id}",
+          "optimizer=#{optimizer}",
+          "trainset_size=#{trainset_size}"
+        ]
+        log_parts << "valset_size=#{valset_size}" if valset_size
+
+        logger.info(log_parts.join(' '))
+      end
+
+      sig { params(event: T.untyped).void }
+      def log_optimization_complete(event)
+        payload = event.payload
+        optimization_id = payload[:optimization_id]
+        optimizer = payload[:optimizer]
+        duration = payload[:duration_ms]&.round(2)
+        best_score = payload[:best_score]
+        trials_count = payload[:trials_count]
+
+        log_parts = [
+          "event=optimization_complete",
+          "optimization_id=#{optimization_id}",
+          "optimizer=#{optimizer}",
+          "duration_ms=#{duration}"
+        ]
+        log_parts << "best_score=#{best_score}" if best_score
+        log_parts << "trials_count=#{trials_count}" if trials_count
+
+        logger.info(log_parts.join(' '))
+      end
+
+      sig { params(event: T.untyped).void }
+      def log_optimization_trial_start(event)
+        payload = event.payload
+        optimization_id = payload[:optimization_id]
+        trial_number = payload[:trial_number]
+        instruction = payload[:instruction]
+
+        log_parts = [
+          "event=optimization_trial_start",
+          "optimization_id=#{optimization_id}",
+          "trial_number=#{trial_number}"
+        ]
+        log_parts << "instruction=\"#{instruction&.slice(0, 100)}\"" if instruction
+
+        logger.info(log_parts.join(' '))
+      end
+
+      sig { params(event: T.untyped).void }
+      def log_optimization_trial_complete(event)
+        payload = event.payload
+        optimization_id = payload[:optimization_id]
+        trial_number = payload[:trial_number]
+        duration = payload[:duration_ms]&.round(2)
+        score = payload[:score]
+        status = payload[:status]
+
+        log_parts = [
+          "event=optimization_trial_complete",
+          "optimization_id=#{optimization_id}",
+          "trial_number=#{trial_number}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ]
+        log_parts << "score=#{score}" if score
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
+      end
+
+      sig { params(event: T.untyped).void }
+      def log_optimization_error(event)
+        payload = event.payload
+        optimization_id = payload[:optimization_id]
+        optimizer = payload[:optimizer]
+        error_message = payload[:error_message]
+        error_type = payload[:error_type]
+
+        log_parts = [
+          "event=optimization_error",
+          "optimization_id=#{optimization_id}",
+          "optimizer=#{optimizer}",
+          "error_type=#{error_type}"
+        ]
+        log_parts << "error=\"#{error_message}\"" if error_message
 
         logger.info(log_parts.join(' '))
       end

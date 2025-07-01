@@ -2,6 +2,7 @@
 
 require 'dry-monitor'
 require 'dry-configurable'
+require 'time'
 
 module DSPy
   # Core instrumentation module using dry-monitor for event emission

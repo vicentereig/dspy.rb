@@ -267,7 +267,7 @@ module DSPy
         span.set_attribute('dspy.optimization.duration_ms', payload[:duration_ms])
         span.set_attribute('dspy.optimization.best_score', payload[:best_score])
         span.set_attribute('dspy.optimization.trials_count', payload[:trials_count])
-        span.set_attribute('dspy.optimization.final_instruction', payload[:final_instruction]&.truncate(500))
+        span.set_attribute('dspy.optimization.final_instruction', payload[:final_instruction]&.slice(0, 500))
 
         span.finish
 
@@ -305,7 +305,7 @@ module DSPy
             'dspy.operation' => 'optimization_trial',
             'dspy.trial.id' => trial_id,
             'dspy.trial.number' => payload[:trial_number],
-            'dspy.trial.instruction' => payload[:instruction]&.truncate(200),
+            'dspy.trial.instruction' => payload[:instruction]&.slice(0, 200),
             'dspy.trial.examples_count' => payload[:examples_count]
           }
         )

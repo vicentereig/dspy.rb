@@ -3,6 +3,8 @@ require 'sorbet-runtime'
 require 'dry-configurable'
 require 'dry/logger'
 
+require_relative 'dspy/version'
+
 module DSPy
   extend Dry::Configurable
   setting :lm

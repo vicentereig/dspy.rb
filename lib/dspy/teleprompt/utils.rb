@@ -359,6 +359,22 @@ module DSPy
           timestamp: Time.now.iso8601
         })
       end
+
+      # Infer signature class from examples
+      sig { params(examples: T::Array[T.untyped]).returns(T.nilable(T.class_of(Signature))) }
+      def self.infer_signature_class(examples)
+        return nil if examples.empty?
+
+        first_example = examples.first
+        
+        if first_example.is_a?(DSPy::Example)
+          first_example.signature_class
+        elsif first_example.is_a?(Hash) && first_example[:signature_class]
+          first_example[:signature_class]
+        else
+          nil
+        end
+      end
     end
   end
 end

@@ -22,12 +22,16 @@ RSpec.describe DSPy::Subscribers::OtelSubscriber do
       end
 
       it 'respects environment variables' do
-        allow(ENV).to receive(:[]).with('OTEL_SERVICE_NAME').and_return('test-service')
-        allow(ENV).to receive(:[]).with('OTEL_SERVICE_VERSION').and_return('2.0.0')
-        allow(ENV).to receive(:[]).with('OTEL_EXPORTER_OTLP_ENDPOINT').and_return('http://localhost:4318')
-        allow(ENV).to receive(:[]).with('OTEL_EXPORTER_OTLP_HEADERS').and_return('api-key=test123,x-custom=value')
-        allow(ENV).to receive(:[]).with('OTEL_TRACE_SAMPLE_RATE').and_return('0.5')
-        allow(ENV).to receive(:[]).with(anything).and_call_original
+        # Create a mock ENV object that returns specific values
+        mock_env = ENV.to_h.merge({
+          'OTEL_SERVICE_NAME' => 'test-service',
+          'OTEL_SERVICE_VERSION' => '2.0.0',
+          'OTEL_EXPORTER_OTLP_ENDPOINT' => 'http://localhost:4318',
+          'OTEL_EXPORTER_OTLP_HEADERS' => 'api-key=test123,x-custom=value',
+          'OTEL_TRACE_SAMPLE_RATE' => '0.5'
+        })
+        
+        stub_const('ENV', mock_env)
 
         config = DSPy::Subscribers::OtelSubscriber::OtelConfig.new
         
@@ -65,9 +69,33 @@ RSpec.describe DSPy::Subscribers::OtelSubscriber do
     let(:mock_histogram) { double('Histogram') }
 
     before do
-      stub_const('OpenTelemetry', double('OpenTelemetry'))
-      allow(OpenTelemetry).to receive_message_chain(:tracer_provider, :tracer).and_return(mock_tracer)
-      allow(OpenTelemetry).to receive_message_chain(:meter_provider, :meter).and_return(mock_meter)
+      # Create a module that behaves like OpenTelemetry  
+      opentelemetry_module = Module.new
+      sdk_module = Module.new
+      trace_module = Module.new
+      status_module = Module.new
+      tracer_provider_mock = double('TracerProvider')
+      meter_provider_mock = double('MeterProvider')
+      
+      allow(opentelemetry_module).to receive(:tracer_provider).and_return(tracer_provider_mock)
+      allow(opentelemetry_module).to receive(:meter_provider).and_return(meter_provider_mock)
+      allow(tracer_provider_mock).to receive(:tracer).and_return(mock_tracer)
+      allow(meter_provider_mock).to receive(:meter).and_return(mock_meter)
+      
+      # Mock SDK configuration
+      allow(sdk_module).to receive(:configure).and_yield(double('Config', 
+        :service_name= => nil, 
+        :service_version= => nil, 
+        :add_span_processor => nil
+      ))
+      
+      # Mock Trace::Status
+      allow(status_module).to receive(:error).and_return(double('Status'))
+      
+      stub_const('OpenTelemetry', opentelemetry_module)
+      stub_const('OpenTelemetry::SDK', sdk_module)
+      stub_const('OpenTelemetry::Trace', trace_module)
+      stub_const('OpenTelemetry::Trace::Status', status_module)
       
       config.enabled = true
     end
@@ -103,6 +131,8 @@ RSpec.describe DSPy::Subscribers::OtelSubscriber do
         expect(mock_span).to receive(:set_attribute).with('dspy.optimization.status', 'success')
         expect(mock_span).to receive(:set_attribute).with('dspy.optimization.duration_ms', 5000.0)
         expect(mock_span).to receive(:set_attribute).with('dspy.optimization.best_score', 0.85)
+        expect(mock_span).to receive(:set_attribute).with('dspy.optimization.trials_count', 10)
+        expect(mock_span).to receive(:set_attribute).with('dspy.optimization.final_instruction', nil)
         expect(mock_span).to receive(:finish)
 
         expect(mock_meter).to receive(:create_histogram).with(
@@ -269,8 +299,37 @@ RSpec.describe DSPy::Subscribers::OtelSubscriber do
 
   describe 'event subscription' do
     it 'subscribes to optimization events when enabled' do
-      config.enabled = true
-      config.trace_optimization_events = true
+      # Setup OpenTelemetry mocking for this test
+      opentelemetry_module = Module.new
+      sdk_module = Module.new
+      trace_module = Module.new
+      status_module = Module.new
+      tracer_provider_mock = double('TracerProvider')
+      meter_provider_mock = double('MeterProvider')
+      test_tracer = double('Tracer')
+      test_meter = double('Meter')
+      
+      allow(opentelemetry_module).to receive(:tracer_provider).and_return(tracer_provider_mock)
+      allow(opentelemetry_module).to receive(:meter_provider).and_return(meter_provider_mock)
+      allow(tracer_provider_mock).to receive(:tracer).and_return(test_tracer)
+      allow(meter_provider_mock).to receive(:meter).and_return(test_meter)
+      
+      allow(sdk_module).to receive(:configure).and_yield(double('Config', 
+        :service_name= => nil, 
+        :service_version= => nil, 
+        :add_span_processor => nil
+      ))
+      
+      allow(status_module).to receive(:error).and_return(double('Status'))
+      
+      stub_const('OpenTelemetry', opentelemetry_module)
+      stub_const('OpenTelemetry::SDK', sdk_module)
+      stub_const('OpenTelemetry::Trace', trace_module)
+      stub_const('OpenTelemetry::Trace::Status', status_module)
+      
+      test_config = DSPy::Subscribers::OtelSubscriber::OtelConfig.new
+      test_config.enabled = true
+      test_config.trace_optimization_events = true
       
       expect(DSPy::Instrumentation).to receive(:subscribe).with('dspy.optimization.start')
       expect(DSPy::Instrumentation).to receive(:subscribe).with('dspy.optimization.complete')
@@ -289,12 +348,41 @@ RSpec.describe DSPy::Subscribers::OtelSubscriber do
       allow(DSPy::Instrumentation).to receive(:subscribe).with('dspy.registry.deploy_start')
       allow(DSPy::Instrumentation).to receive(:subscribe).with('dspy.registry.rollback_start')
 
-      DSPy::Subscribers::OtelSubscriber.new(config: config)
+      DSPy::Subscribers::OtelSubscriber.new(config: test_config)
     end
 
     it 'subscribes to LM events when enabled' do
-      config.enabled = true
-      config.trace_lm_events = true
+      # Setup OpenTelemetry mocking for this test
+      opentelemetry_module = Module.new
+      sdk_module = Module.new
+      trace_module = Module.new
+      status_module = Module.new
+      tracer_provider_mock = double('TracerProvider')
+      meter_provider_mock = double('MeterProvider')
+      test_tracer = double('Tracer')
+      test_meter = double('Meter')
+      
+      allow(opentelemetry_module).to receive(:tracer_provider).and_return(tracer_provider_mock)
+      allow(opentelemetry_module).to receive(:meter_provider).and_return(meter_provider_mock)
+      allow(tracer_provider_mock).to receive(:tracer).and_return(test_tracer)
+      allow(meter_provider_mock).to receive(:meter).and_return(test_meter)
+      
+      allow(sdk_module).to receive(:configure).and_yield(double('Config', 
+        :service_name= => nil, 
+        :service_version= => nil, 
+        :add_span_processor => nil
+      ))
+      
+      allow(status_module).to receive(:error).and_return(double('Status'))
+      
+      stub_const('OpenTelemetry', opentelemetry_module)
+      stub_const('OpenTelemetry::SDK', sdk_module)
+      stub_const('OpenTelemetry::Trace', trace_module)
+      stub_const('OpenTelemetry::Trace::Status', status_module)
+      
+      test_config = DSPy::Subscribers::OtelSubscriber::OtelConfig.new
+      test_config.enabled = true
+      test_config.trace_lm_events = true
       
       expect(DSPy::Instrumentation).to receive(:subscribe).with('dspy.lm.request')
       expect(DSPy::Instrumentation).to receive(:subscribe).with('dspy.predict')
@@ -313,7 +401,7 @@ RSpec.describe DSPy::Subscribers::OtelSubscriber do
       allow(DSPy::Instrumentation).to receive(:subscribe).with('dspy.registry.deploy_start')
       allow(DSPy::Instrumentation).to receive(:subscribe).with('dspy.registry.rollback_start')
 
-      DSPy::Subscribers::OtelSubscriber.new(config: config)
+      DSPy::Subscribers::OtelSubscriber.new(config: test_config)
     end
 
     it 'does not subscribe when disabled' do

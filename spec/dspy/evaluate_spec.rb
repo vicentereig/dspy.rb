@@ -176,9 +176,27 @@ RSpec.describe DSPy::Evaluate do
     end
     let(:evaluator) { DSPy::Evaluate.new(mock_program, metric: metric) }
 
-    it 'evaluates successful example' do
+    it 'evaluates successful example', :aggregate_failures do
+      # Use a completely inline mock to avoid any state pollution
+      inline_program = Class.new do
+        def call(problem:)
+          case problem
+          when "2 + 3"
+            OpenStruct.new(problem: problem, answer: "5")
+          else
+            OpenStruct.new(problem: problem, answer: "unknown")
+          end
+        end
+      end.new
+      
+      inline_metric = lambda { |expected, prediction| 
+        expected[:answer] == prediction.answer 
+      }
+      
+      inline_evaluator = DSPy::Evaluate.new(inline_program, metric: inline_metric)
+      
       example = { input: { problem: "2 + 3" }, expected: { answer: "5" } }
-      result = evaluator.call(example)
+      result = inline_evaluator.call(example)
       
       expect(result).to be_a(DSPy::Evaluate::EvaluationResult)
       expect(result.example).to eq(example)
