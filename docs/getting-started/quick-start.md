@@ -181,4 +181,4 @@ end
 - Learn about [Core Concepts](core-concepts.md)
 - Explore [Signatures & Types](../core-concepts/signatures.md)
 - Try [Prompt Optimization](../optimization/prompt-optimization.md)
-- Set up [Observability](../enterprise/observability.md)
+- Set up [Observability](../production/observability.md)

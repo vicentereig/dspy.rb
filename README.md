@@ -112,9 +112,9 @@ puts result.confidence   # => 0.85
 - **[Simple Optimizer](docs/optimization/simple-optimizer.md)** - Quick experimentation with random/grid search
 
 ### Production Features
-- **[Storage System](docs/enterprise/storage.md)** - Persist and search optimization results
-- **[Registry & Versions](docs/enterprise/registry.md)** - Version control with deployment tracking
-- **[Observability](docs/enterprise/observability.md)** - Multi-platform monitoring and metrics
+- **[Storage System](docs/production/storage.md)** - Persist and search optimization results
+- **[Registry & Versions](docs/production/registry.md)** - Version control with deployment tracking
+- **[Observability](docs/production/observability.md)** - Multi-platform monitoring and metrics
 
 ### Advanced Usage
 - **[Complex Types](docs/advanced/complex-types.md)** - Enums, optional fields, and defaults
