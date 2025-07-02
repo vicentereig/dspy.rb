@@ -101,7 +101,7 @@ module DSPy
     attr_reader :max_iterations
 
 
-    sig { params(signature_class: T.class_of(DSPy::Signature), tools: T::Array[T.untyped], max_iterations: Integer).void }
+    sig { params(signature_class: T.class_of(DSPy::Signature), tools: T::Array[DSPy::Tools::Base], max_iterations: Integer).void }
     def initialize(signature_class, tools: [], max_iterations: 5)
       @original_signature_class = signature_class
       @tools = T.let({}, T::Hash[String, T.untyped])
@@ -142,7 +142,7 @@ module DSPy
     def forward(**kwargs)
       lm = config.lm || DSPy.config.lm
       available_tools = @tools.keys
-      
+
       # Instrument the entire ReAct agent lifecycle
       result = instrument_prediction('dspy.react', @original_signature_class, kwargs, {
         max_iterations: @max_iterations,
@@ -151,14 +151,14 @@ module DSPy
         # Validate input and extract question
         input_struct = @original_signature_class.input_struct_class.new(**kwargs)
         question = T.cast(input_struct.serialize.values.first, String)
-        
+
         # Execute ReAct reasoning loop
         reasoning_result = execute_react_reasoning_loop(question)
-        
+
         # Create enhanced output with all ReAct data
         create_enhanced_result(kwargs, reasoning_result)
       end
-      
+
       result
     end
 
@@ -176,23 +176,23 @@ module DSPy
 
       while should_continue_iteration?(iterations_count, final_answer)
         iterations_count += 1
-        
+
         iteration_result = execute_single_iteration(
           question, history, available_tools_desc, iterations_count, tools_used, last_observation
         )
-        
+
         if iteration_result[:should_finish]
           final_answer = iteration_result[:final_answer]
           break
         end
-        
+
         history = iteration_result[:history]
         tools_used = iteration_result[:tools_used]
         last_observation = iteration_result[:last_observation]
       end
-      
+
       handle_max_iterations_if_needed(iterations_count, final_answer, tools_used, history)
-      
+
       {
         history: history,
         iterations: iterations_count,
@@ -217,44 +217,44 @@ module DSPy
           history: history,
           available_tools: available_tools_desc
         )
-        
+
         # Process thought result
         if finish_action?(thought_obj.action)
           final_answer = handle_finish_action(
-            thought_obj.action_input, last_observation, iteration, 
+            thought_obj.action_input, last_observation, iteration,
             thought_obj.thought, thought_obj.action, history
           )
           return { should_finish: true, final_answer: final_answer }
         end
-        
+
         # Execute tool action
         observation = execute_tool_with_instrumentation(
           thought_obj.action, thought_obj.action_input, iteration
         )
-        
+
         # Track tools used
         tools_used << thought_obj.action.downcase if valid_tool?(thought_obj.action)
-        
+
         # Add to history
         history << create_history_entry(
-          iteration, thought_obj.thought, thought_obj.action, 
+          iteration, thought_obj.thought, thought_obj.action,
           thought_obj.action_input, observation
         )
-        
+
         # Process observation and decide next step
         observation_decision = process_observation_and_decide_next_step(
           question, history, observation, available_tools_desc, iteration
         )
-        
+
         if observation_decision[:should_finish]
           return { should_finish: true, final_answer: observation_decision[:final_answer] }
         end
-        
+
         emit_iteration_complete_event(
-          iteration, thought_obj.thought, thought_obj.action, 
+          iteration, thought_obj.thought, thought_obj.action,
           thought_obj.action_input, observation, tools_used
         )
-        
+
         {
           should_finish: false,
           history: history,
@@ -269,7 +269,7 @@ module DSPy
     def create_enhanced_output_struct(signature_class)
       input_props = signature_class.input_struct_class.props
       output_props = signature_class.output_struct_class.props
-      
+
       build_enhanced_struct(
         { input: input_props, output: output_props },
         {
@@ -284,14 +284,14 @@ module DSPy
     sig { params(input_kwargs: T::Hash[Symbol, T.untyped], reasoning_result: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
     def create_enhanced_result(input_kwargs, reasoning_result)
       output_field_name = @original_signature_class.output_struct_class.props.keys.first
-      
+
       output_data = input_kwargs.merge({
         history: reasoning_result[:history].map(&:to_h),
         iterations: reasoning_result[:iterations],
         tools_used: reasoning_result[:tools_used]
       })
       output_data[output_field_name] = reasoning_result[:final_answer]
-      
+
       @enhanced_output_struct.new(**output_data)
     end
 
@@ -340,19 +340,19 @@ module DSPy
     sig { params(question: String, history: T::Array[HistoryEntry], observation: String, available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
     def process_observation_and_decide_next_step(question, history, observation, available_tools_desc, iteration)
       return { should_finish: false } if observation.include?("Unknown action")
-      
+
       observation_result = @observation_processor.forward(
         question: question,
         history: history,
         observation: observation
       )
-      
+
       return { should_finish: false } unless observation_result.next_step == NextStep::Finish
-      
+
       final_answer = generate_forced_final_answer(
         question, history, available_tools_desc, observation_result, iteration
       )
-      
+
       { should_finish: true, final_answer: final_answer }
     end
 
@@ -363,7 +363,7 @@ module DSPy
         history: history,
         available_tools: available_tools_desc
       )
-      
+
       if final_thought.action&.downcase != FINISH_ACTION
         forced_answer = if observation_result.interpretation && !observation_result.interpretation.empty?
                           observation_result.interpretation
