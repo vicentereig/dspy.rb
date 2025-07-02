@@ -7,6 +7,8 @@ require_relative 'signature'
 require_relative 'chain_of_thought'
 require 'json'
 require_relative 'instrumentation'
+require_relative 'mixins/struct_builder'
+require_relative 'mixins/instrumentation_helpers'
 
 module DSPy
   # Define a simple struct for history entries with proper type annotations
@@ -82,6 +84,8 @@ module DSPy
   # ReAct Agent using Sorbet signatures
   class ReAct < Predict
     extend T::Sig
+    include Mixins::StructBuilder
+    include Mixins::InstrumentationHelpers
 
     FINISH_ACTION = "finish"
     sig { returns(T.class_of(DSPy::Signature)) }
@@ -137,152 +141,22 @@ module DSPy
     sig { params(kwargs: T.untyped).returns(T.untyped).override }
     def forward(**kwargs)
       lm = config.lm || DSPy.config.lm
-      # Prepare instrumentation payload
-      input_fields = kwargs.keys.map(&:to_s)
       available_tools = @tools.keys
-
+      
       # Instrument the entire ReAct agent lifecycle
-      result = Instrumentation.instrument('dspy.react', {
-        signature_class: @original_signature_class.name,
-        model: lm.model,
-        provider: lm.provider,
-        input_fields: input_fields,
+      result = instrument_prediction('dspy.react', @original_signature_class, kwargs, {
         max_iterations: @max_iterations,
         available_tools: available_tools
       }) do
-        # Validate input using Sorbet struct validation
+        # Validate input and extract question
         input_struct = @original_signature_class.input_struct_class.new(**kwargs)
-
-        # Get the question (assume first field is the question for now)
         question = T.cast(input_struct.serialize.values.first, String)
-
-        history = T.let([], T::Array[HistoryEntry])
-        available_tools_desc = @tools.map { |name, tool| JSON.parse(tool.schema) }
-
-        final_answer = T.let(nil, T.nilable(String))
-        iterations_count = 0
-        last_observation = T.let(nil, T.nilable(String))
-        tools_used = []
-
-        while @max_iterations.nil? || iterations_count < @max_iterations
-          iterations_count += 1
-
-          # Instrument each iteration
-          iteration_result = Instrumentation.instrument('dspy.react.iteration', {
-            iteration: iterations_count,
-            max_iterations: @max_iterations,
-            history_length: history.length,
-            tools_used_so_far: tools_used.uniq
-          }) do
-            # Get next thought from LM
-            thought_obj = @thought_generator.forward(
-              question: question,
-              history: history,
-              available_tools: available_tools_desc
-            )
-            step = iterations_count
-            thought = thought_obj.thought
-            action = thought_obj.action
-            action_input = thought_obj.action_input
-
-            # Break if finish action
-            if action&.downcase == 'finish'
-              final_answer = handle_finish_action(action_input, last_observation, step, thought, action, history)
-              break
-            end
-
-            # Track tools used
-            tools_used << action.downcase if action && @tools[action.downcase]
-
-            # Execute action
-            observation = if action && @tools[action.downcase]
-                            # Instrument tool call
-                            Instrumentation.instrument('dspy.react.tool_call', {
-                              iteration: iterations_count,
-                              tool_name: action.downcase,
-                              tool_input: action_input
-                            }) do
-                              execute_action(action, action_input)
-                            end
-                          else
-                            "Unknown action: #{action}. Available actions: #{@tools.keys.join(', ')}, finish"
-                          end
-
-            last_observation = observation
-
-            # Add to history
-            history << HistoryEntry.new(
-              step: step,
-              thought: thought,
-              action: action,
-              action_input: action_input,
-              observation: observation
-            )
-
-            # Process observation to decide next step
-            if observation && !observation.include?("Unknown action")
-              observation_result = @observation_processor.forward(
-                question: question,
-                history: history,
-                observation: observation
-              )
-
-              # If observation processor suggests finishing, generate final thought
-              if observation_result.next_step == NextStep::Finish
-                final_thought = @thought_generator.forward(
-                  question: question,
-                  history: history,
-                  available_tools: available_tools_desc
-                )
-
-                # Force finish action if observation processor suggests it
-                if final_thought.action&.downcase != 'finish'
-                  forced_answer = if observation_result.interpretation && !observation_result.interpretation.empty?
-                                    observation_result.interpretation
-                                  else
-                                    observation
-                                  end
-                  final_answer = handle_finish_action(forced_answer, last_observation, step + 1, final_thought.thought, 'finish', history)
-                else
-                  final_answer = handle_finish_action(final_thought.action_input, last_observation, step + 1, final_thought.thought, final_thought.action, history)
-                end
-                break
-              end
-            end
-
-            # Emit iteration complete event
-            Instrumentation.emit('dspy.react.iteration_complete', {
-              iteration: iterations_count,
-              thought: thought,
-              action: action,
-              action_input: action_input,
-              observation: observation,
-              tools_used: tools_used.uniq
-            })
-          end
-
-          # Check if max iterations reached
-          if iterations_count >= @max_iterations && final_answer.nil?
-            Instrumentation.emit('dspy.react.max_iterations', {
-              iteration_count: iterations_count,
-              max_iterations: @max_iterations,
-              tools_used: tools_used.uniq,
-              final_history_length: history.length
-            })
-          end
-        end
-
+        
+        # Execute ReAct reasoning loop
+        reasoning_result = execute_react_reasoning_loop(question)
+        
         # Create enhanced output with all ReAct data
-        output_field_name = @original_signature_class.output_struct_class.props.keys.first
-        output_data = kwargs.merge({
-          history: history.map(&:to_h),
-          iterations: iterations_count,
-          tools_used: tools_used.uniq
-        })
-        output_data[output_field_name] = final_answer || "No answer reached within #{@max_iterations} iterations"
-        enhanced_output = @enhanced_output_struct.new(**output_data)
-
-        enhanced_output
+        create_enhanced_result(kwargs, reasoning_result)
       end
       
       result
@@ -290,53 +164,248 @@ module DSPy
 
     private
 
-    sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(T::Struct)) }
-    def create_enhanced_output_struct(signature_class)
-      # Get original input and output props
-      input_props = signature_class.input_struct_class.props
-      output_props = signature_class.output_struct_class.props
+    # Executes the main ReAct reasoning loop
+    sig { params(question: String).returns(T::Hash[Symbol, T.untyped]) }
+    def execute_react_reasoning_loop(question)
+      history = T.let([], T::Array[HistoryEntry])
+      available_tools_desc = @tools.map { |name, tool| JSON.parse(tool.schema) }
+      final_answer = T.let(nil, T.nilable(String))
+      iterations_count = 0
+      last_observation = T.let(nil, T.nilable(String))
+      tools_used = []
 
-      # Create new struct class with input, output, and ReAct fields
-      Class.new(T::Struct) do
-        # Add all input fields
-        input_props.each do |name, prop|
-          # Extract the type and other options
-          type = prop[:type]
-          options = prop.except(:type, :type_object, :accessor_key, :sensitivity, :redaction)
-
-          # Handle default values
-          if options[:default]
-            const name, type, default: options[:default]
-          elsif options[:factory]
-            const name, type, factory: options[:factory]
-          else
-            const name, type
-          end
+      while should_continue_iteration?(iterations_count, final_answer)
+        iterations_count += 1
+        
+        iteration_result = execute_single_iteration(
+          question, history, available_tools_desc, iterations_count, tools_used, last_observation
+        )
+        
+        if iteration_result[:should_finish]
+          final_answer = iteration_result[:final_answer]
+          break
         end
+        
+        history = iteration_result[:history]
+        tools_used = iteration_result[:tools_used]
+        last_observation = iteration_result[:last_observation]
+      end
+      
+      handle_max_iterations_if_needed(iterations_count, final_answer, tools_used, history)
+      
+      {
+        history: history,
+        iterations: iterations_count,
+        tools_used: tools_used.uniq,
+        final_answer: final_answer || default_no_answer_message
+      }
+    end
 
-        # Add all output fields
-        output_props.each do |name, prop|
-          # Extract the type and other options
-          type = prop[:type]
-          options = prop.except(:type, :type_object, :accessor_key, :sensitivity, :redaction)
-
-          # Handle default values
-          if options[:default]
-            const name, type, default: options[:default]
-          elsif options[:factory]
-            const name, type, factory: options[:factory]
-          else
-            const name, type
-          end
+    # Executes a single iteration of the ReAct loop
+    sig { params(question: String, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer, tools_used: T::Array[String], last_observation: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
+    def execute_single_iteration(question, history, available_tools_desc, iteration, tools_used, last_observation)
+      # Instrument each iteration
+      Instrumentation.instrument('dspy.react.iteration', {
+        iteration: iteration,
+        max_iterations: @max_iterations,
+        history_length: history.length,
+        tools_used_so_far: tools_used.uniq
+      }) do
+        # Generate thought and action
+        thought_obj = @thought_generator.forward(
+          question: question,
+          history: history,
+          available_tools: available_tools_desc
+        )
+        
+        # Process thought result
+        if finish_action?(thought_obj.action)
+          final_answer = handle_finish_action(
+            thought_obj.action_input, last_observation, iteration, 
+            thought_obj.thought, thought_obj.action, history
+          )
+          return { should_finish: true, final_answer: final_answer }
         end
-
-        # Add ReAct-specific fields
-        prop :history, T::Array[T::Hash[Symbol, T.untyped]]
-        prop :iterations, Integer
-        prop :tools_used, T::Array[String]
+        
+        # Execute tool action
+        observation = execute_tool_with_instrumentation(
+          thought_obj.action, thought_obj.action_input, iteration
+        )
+        
+        # Track tools used
+        tools_used << thought_obj.action.downcase if valid_tool?(thought_obj.action)
+        
+        # Add to history
+        history << create_history_entry(
+          iteration, thought_obj.thought, thought_obj.action, 
+          thought_obj.action_input, observation
+        )
+        
+        # Process observation and decide next step
+        observation_decision = process_observation_and_decide_next_step(
+          question, history, observation, available_tools_desc, iteration
+        )
+        
+        if observation_decision[:should_finish]
+          return { should_finish: true, final_answer: observation_decision[:final_answer] }
+        end
+        
+        emit_iteration_complete_event(
+          iteration, thought_obj.thought, thought_obj.action, 
+          thought_obj.action_input, observation, tools_used
+        )
+        
+        {
+          should_finish: false,
+          history: history,
+          tools_used: tools_used,
+          last_observation: observation
+        }
       end
     end
 
+    # Creates enhanced output struct with ReAct-specific fields
+    sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(T::Struct)) }
+    def create_enhanced_output_struct(signature_class)
+      input_props = signature_class.input_struct_class.props
+      output_props = signature_class.output_struct_class.props
+      
+      build_enhanced_struct(
+        { input: input_props, output: output_props },
+        {
+          history: [T::Array[T::Hash[Symbol, T.untyped]], "ReAct execution history"],
+          iterations: [Integer, "Number of iterations executed"],
+          tools_used: [T::Array[String], "List of tools used during execution"]
+        }
+      )
+    end
+
+    # Creates enhanced result struct
+    sig { params(input_kwargs: T::Hash[Symbol, T.untyped], reasoning_result: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+    def create_enhanced_result(input_kwargs, reasoning_result)
+      output_field_name = @original_signature_class.output_struct_class.props.keys.first
+      
+      output_data = input_kwargs.merge({
+        history: reasoning_result[:history].map(&:to_h),
+        iterations: reasoning_result[:iterations],
+        tools_used: reasoning_result[:tools_used]
+      })
+      output_data[output_field_name] = reasoning_result[:final_answer]
+      
+      @enhanced_output_struct.new(**output_data)
+    end
+
+    # Helper methods for ReAct logic
+    sig { params(iterations_count: Integer, final_answer: T.nilable(String)).returns(T::Boolean) }
+    def should_continue_iteration?(iterations_count, final_answer)
+      final_answer.nil? && (@max_iterations.nil? || iterations_count < @max_iterations)
+    end
+
+    sig { params(action: T.nilable(String)).returns(T::Boolean) }
+    def finish_action?(action)
+      action&.downcase == FINISH_ACTION
+    end
+
+    sig { params(action: T.nilable(String)).returns(T::Boolean) }
+    def valid_tool?(action)
+      !!(action && @tools[action.downcase])
+    end
+
+    sig { params(action: T.nilable(String), action_input: T.untyped, iteration: Integer).returns(String) }
+    def execute_tool_with_instrumentation(action, action_input, iteration)
+      if action && @tools[action.downcase]
+        Instrumentation.instrument('dspy.react.tool_call', {
+          iteration: iteration,
+          tool_name: action.downcase,
+          tool_input: action_input
+        }) do
+          execute_action(action, action_input)
+        end
+      else
+        "Unknown action: #{action}. Available actions: #{@tools.keys.join(', ')}, finish"
+      end
+    end
+
+    sig { params(step: Integer, thought: String, action: String, action_input: T.untyped, observation: String).returns(HistoryEntry) }
+    def create_history_entry(step, thought, action, action_input, observation)
+      HistoryEntry.new(
+        step: step,
+        thought: thought,
+        action: action,
+        action_input: action_input,
+        observation: observation
+      )
+    end
+
+    sig { params(question: String, history: T::Array[HistoryEntry], observation: String, available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
+    def process_observation_and_decide_next_step(question, history, observation, available_tools_desc, iteration)
+      return { should_finish: false } if observation.include?("Unknown action")
+      
+      observation_result = @observation_processor.forward(
+        question: question,
+        history: history,
+        observation: observation
+      )
+      
+      return { should_finish: false } unless observation_result.next_step == NextStep::Finish
+      
+      final_answer = generate_forced_final_answer(
+        question, history, available_tools_desc, observation_result, iteration
+      )
+      
+      { should_finish: true, final_answer: final_answer }
+    end
+
+    sig { params(question: String, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], observation_result: T.untyped, iteration: Integer).returns(String) }
+    def generate_forced_final_answer(question, history, available_tools_desc, observation_result, iteration)
+      final_thought = @thought_generator.forward(
+        question: question,
+        history: history,
+        available_tools: available_tools_desc
+      )
+      
+      if final_thought.action&.downcase != FINISH_ACTION
+        forced_answer = if observation_result.interpretation && !observation_result.interpretation.empty?
+                          observation_result.interpretation
+                        else
+                          history.last&.observation || "No answer available"
+                        end
+        handle_finish_action(forced_answer, history.last&.observation, iteration + 1, final_thought.thought, FINISH_ACTION, history)
+      else
+        handle_finish_action(final_thought.action_input, history.last&.observation, iteration + 1, final_thought.thought, final_thought.action, history)
+      end
+    end
+
+    sig { params(iteration: Integer, thought: String, action: String, action_input: T.untyped, observation: String, tools_used: T::Array[String]).void }
+    def emit_iteration_complete_event(iteration, thought, action, action_input, observation, tools_used)
+      Instrumentation.emit('dspy.react.iteration_complete', {
+        iteration: iteration,
+        thought: thought,
+        action: action,
+        action_input: action_input,
+        observation: observation,
+        tools_used: tools_used.uniq
+      })
+    end
+
+    sig { params(iterations_count: Integer, final_answer: T.nilable(String), tools_used: T::Array[String], history: T::Array[HistoryEntry]).void }
+    def handle_max_iterations_if_needed(iterations_count, final_answer, tools_used, history)
+      if iterations_count >= @max_iterations && final_answer.nil?
+        Instrumentation.emit('dspy.react.max_iterations', {
+          iteration_count: iterations_count,
+          max_iterations: @max_iterations,
+          tools_used: tools_used.uniq,
+          final_history_length: history.length
+        })
+      end
+    end
+
+    sig { returns(String) }
+    def default_no_answer_message
+      "No answer reached within #{@max_iterations} iterations"
+    end
+
+    # Tool execution method
     sig { params(action: String, action_input: T.untyped).returns(String) }
     def execute_action(action, action_input)
       tool_name = action.downcase

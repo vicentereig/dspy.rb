@@ -5,49 +5,22 @@ require 'sorbet-runtime'
 require_relative 'predict'
 require_relative 'signature'
 require_relative 'instrumentation'
+require_relative 'mixins/struct_builder'
 
 module DSPy
   # Enhances prediction by encouraging step-by-step reasoning
   # before providing a final answer using Sorbet signatures.
   class ChainOfThought < Predict
     extend T::Sig
+    include Mixins::StructBuilder
 
     FieldDescriptor = DSPy::Signature::FieldDescriptor
 
     sig { params(signature_class: T.class_of(DSPy::Signature)).void }
     def initialize(signature_class)
       @original_signature = signature_class
-
-      # Create enhanced output struct with reasoning
-      enhanced_output_struct = create_enhanced_output_struct(signature_class)
-
-      # Create enhanced signature class
-      enhanced_signature = Class.new(DSPy::Signature) do
-        # Set the description
-        description "#{signature_class.description} Think step by step."
-
-        # Use the same input struct and copy field descriptors
-        @input_struct_class = signature_class.input_struct_class
-        @input_field_descriptors = signature_class.instance_variable_get(:@input_field_descriptors) || {}
-
-        # Use the enhanced output struct and create field descriptors for it
-        @output_struct_class = enhanced_output_struct
-
-        # Create field descriptors for the enhanced output struct
-        @output_field_descriptors = {}
-
-        # Copy original output field descriptors
-        original_output_descriptors = signature_class.instance_variable_get(:@output_field_descriptors) || {}
-        @output_field_descriptors.merge!(original_output_descriptors)
-
-        # Add reasoning field descriptor (ChainOfThought always provides this)
-        @output_field_descriptors[:reasoning] = FieldDescriptor.new(String, "Step by step reasoning process")
-
-        class << self
-          attr_reader :input_struct_class, :output_struct_class
-        end
-      end
-
+      enhanced_signature = build_enhanced_signature(signature_class)
+      
       # Call parent constructor with enhanced signature
       super(enhanced_signature)
       @signature_class = enhanced_signature
@@ -81,9 +54,8 @@ module DSPy
 
     sig { override.params(instruction: String).returns(ChainOfThought) }
     def with_instruction(instruction)
-      # Ensure ChainOfThought behavior is preserved
-      cot_instruction = instruction.include?("Think step by step") ? instruction : "#{instruction} Think step by step."
-      super(cot_instruction)
+      enhanced_instruction = ensure_chain_of_thought_instruction(instruction)
+      super(enhanced_instruction)
     end
 
     sig { override.params(examples: T::Array[FewShotExample]).returns(ChainOfThought) }
@@ -113,43 +85,96 @@ module DSPy
     # Override forward_untyped to add ChainOfThought-specific instrumentation
     sig { override.params(input_values: T.untyped).returns(T.untyped) }
     def forward_untyped(**input_values)
-      # Prepare instrumentation payload
-      input_fields = input_values.keys.map(&:to_s)
-      
-      # Instrument ChainOfThought lifecycle
-      result = Instrumentation.instrument('dspy.chain_of_thought', {
-        signature_class: @original_signature.name,
-        model: lm.model,
-        provider: lm.provider,
-        input_fields: input_fields
-      }) do
+      instrument_prediction('dspy.chain_of_thought', @original_signature, input_values) do
         # Call parent prediction logic
         prediction_result = super(**input_values)
         
         # Analyze reasoning if present
-        if prediction_result.respond_to?(:reasoning) && prediction_result.reasoning
-          reasoning_content = prediction_result.reasoning.to_s
-          reasoning_length = reasoning_content.length
-          reasoning_steps = count_reasoning_steps(reasoning_content)
-          
-          # Emit reasoning analysis event
-          Instrumentation.emit('dspy.chain_of_thought.reasoning_complete', {
-            signature_class: @original_signature.name,
-            reasoning_steps: reasoning_steps,
-            reasoning_length: reasoning_length,
-            has_reasoning: !reasoning_content.empty?
-          })
-        end
+        analyze_reasoning(prediction_result)
         
         prediction_result
       end
-      
-      result
     end
 
     private
 
+    # Builds enhanced signature with reasoning capabilities
+    sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(DSPy::Signature)) }
+    def build_enhanced_signature(signature_class)
+      enhanced_output_struct = create_enhanced_output_struct(signature_class)
+      create_signature_class(signature_class, enhanced_output_struct)
+    end
+
+    # Creates signature class with enhanced description and reasoning field
+    sig { params(signature_class: T.class_of(DSPy::Signature), enhanced_output_struct: T.class_of(T::Struct)).returns(T.class_of(DSPy::Signature)) }
+    def create_signature_class(signature_class, enhanced_output_struct)
+      Class.new(DSPy::Signature) do
+        description "#{signature_class.description} Think step by step."
+
+        # Use the same input struct and copy field descriptors
+        @input_struct_class = signature_class.input_struct_class
+        @input_field_descriptors = signature_class.instance_variable_get(:@input_field_descriptors) || {}
+
+        # Use the enhanced output struct and create field descriptors for it
+        @output_struct_class = enhanced_output_struct
+
+        # Create field descriptors for the enhanced output struct
+        @output_field_descriptors = {}
+
+        # Copy original output field descriptors
+        original_output_descriptors = signature_class.instance_variable_get(:@output_field_descriptors) || {}
+        @output_field_descriptors.merge!(original_output_descriptors)
+
+        # Add reasoning field descriptor (ChainOfThought always provides this)
+        @output_field_descriptors[:reasoning] = FieldDescriptor.new(String, "Step by step reasoning process")
+
+        class << self
+          attr_reader :input_struct_class, :output_struct_class
+        end
+      end
+    end
+
+    # Creates enhanced output struct with reasoning field
+    sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(T::Struct)) }
+    def create_enhanced_output_struct(signature_class)
+      output_props = signature_class.output_struct_class.props
+      
+      build_enhanced_struct(
+        { output: output_props },
+        { reasoning: [String, "Step by step reasoning process"] }
+      )
+    end
+
+    # Ensures instruction includes chain of thought prompt
+    sig { params(instruction: String).returns(String) }
+    def ensure_chain_of_thought_instruction(instruction)
+      instruction.include?("Think step by step") ? instruction : "#{instruction} Think step by step."
+    end
+
+    # Analyzes reasoning in prediction result and emits instrumentation events
+    sig { params(prediction_result: T.untyped).void }
+    def analyze_reasoning(prediction_result)
+      return unless prediction_result.respond_to?(:reasoning) && prediction_result.reasoning
+      
+      reasoning_content = prediction_result.reasoning.to_s
+      return if reasoning_content.empty?
+      
+      emit_reasoning_analysis(reasoning_content)
+    end
+
+    # Emits reasoning analysis instrumentation event
+    sig { params(reasoning_content: String).void }
+    def emit_reasoning_analysis(reasoning_content)
+      Instrumentation.emit('dspy.chain_of_thought.reasoning_complete', {
+        signature_class: @original_signature.name,
+        reasoning_steps: count_reasoning_steps(reasoning_content),
+        reasoning_length: reasoning_content.length,
+        has_reasoning: true
+      })
+    end
+
     # Count reasoning steps by looking for step indicators
+    sig { params(reasoning_text: String).returns(Integer) }
     def count_reasoning_steps(reasoning_text)
       return 0 if reasoning_text.nil? || reasoning_text.empty?
       
@@ -169,51 +194,6 @@ module DSPy
       
       # Fallback: count sentences if no clear steps
       max_count > 0 ? max_count : reasoning_text.split(/[.!?]+/).reject(&:empty?).length
-    end
-
-    sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(T::Struct)) }
-    def create_enhanced_output_struct(signature_class)
-      # Get original output props
-      original_props = signature_class.output_struct_class.props
-
-      # Create new struct class with reasoning added
-      Class.new(T::Struct) do
-        # Add all original fields
-        original_props.each do |name, prop|
-          # Extract the type and other options
-          type = prop[:type]
-          options = prop.except(:type, :type_object, :accessor_key, :sensitivity, :redaction)
-
-          # Handle default values
-          if options[:default]
-            const name, type, default: options[:default]
-          elsif options[:factory]
-            const name, type, factory: options[:factory]
-          else
-            const name, type
-          end
-        end
-
-        # Add reasoning field (ChainOfThought always provides this)
-        const :reasoning, String
-
-        # Add to_h method to serialize the struct to a hash
-        define_method :to_h do
-          hash = {}
-
-          # Start with input values if available
-          if self.instance_variable_defined?(:@input_values)
-            hash.merge!(self.instance_variable_get(:@input_values))
-          end
-
-          # Then add output properties
-          self.class.props.keys.each do |key|
-            hash[key] = self.send(key)
-          end
-
-          hash
-        end
-      end
     end
   end
 end

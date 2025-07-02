@@ -4,6 +4,11 @@ This document provides essential context and instructions for working with the D
 I want you to have a clear understanding of the library's architecture, dependencies, and how to work with it effectively.
 I encourage you to apply a skeptical and honest approach to making decisions based on this information.
 
+## Important: Developer Documentation
+DSPy.rb is targeted towards developers so the user documentation under docs/*.md is the primary source of information.
+When making changes make sure the developer docs are in sync with the changes.
+Make sure the developer docs do not over promise or under promise the user.
+
 ## Important: Library Documentation
 
 When working with external libraries in this codebase, **ALWAYS check the documentation for the specific version** used in the gemspec. This is critical because:
