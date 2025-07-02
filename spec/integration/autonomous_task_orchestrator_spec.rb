@@ -73,11 +73,15 @@ end
 
 # Autonomous Task Orchestrator class that coordinates the entire research workflow
 class AutonomousTaskOrchestrator
-  def initialize(lm)
-    @lm = lm
+  def initialize(opus_lm, sonnet_lm)
     @decomposer = DSPy::ChainOfThought.new(TaskDecomposition)
+    @decomposer.configure { |config| config.lm = opus_lm }
+    
     @researcher = DSPy::ChainOfThought.new(ResearchExecution)
+    @researcher.configure { |config| config.lm = sonnet_lm }
+    
     @synthesizer = DSPy::ChainOfThought.new(ResearchSynthesis)
+    @synthesizer.configure { |config| config.lm = sonnet_lm }
   end
 
   def orchestrate_research(topic:, context: "", objectives: "")
@@ -164,15 +168,19 @@ class AutonomousTaskOrchestrator
 end
 
 RSpec.describe 'Autonomous Task Orchestrator with Claude 4', type: :integration do
-  let(:claude_lm) do
+  let(:opus_lm) do
+    DSPy::LM.new('anthropic/claude-opus-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
+  end
+
+  let(:sonnet_lm) do
     DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
   end
 
-  let(:orchestrator) { AutonomousTaskOrchestrator.new(claude_lm) }
+  let(:orchestrator) { AutonomousTaskOrchestrator.new(opus_lm, sonnet_lm) }
 
   before do
     DSPy.configure do |c|
-      c.lm = claude_lm
+      c.lm = sonnet_lm
     end
   end
 

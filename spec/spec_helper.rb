@@ -10,7 +10,14 @@ Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |f| 
 
 DSPy.configure do |c|
   c.logger = Dry.Logger(:dspy, formatter: :string) { |s| s.add_backend(stream: "log/test.log") }
+  
+  # Enable instrumentation for tests
+  c.instrumentation.enabled = true
+  c.instrumentation.subscribers = [:logger]
 end
+
+# Setup instrumentation subscribers
+DSPy::Instrumentation.setup_subscribers
 
 VCR.configure do |config|
   config.cassette_library_dir = "spec/vcr_cassettes"
