@@ -32,6 +32,9 @@ DSPy.configure do |config|
   # Sampling configuration
   config.instrumentation.sampling_rate = 1.0  # 100% in development
   config.instrumentation.trace_level = :detailed
+  
+  # Timestamp format for OpenTelemetry compliance
+  config.instrumentation.timestamp_format = DSPy::TimestampFormat::ISO8601
 end
 ```
 
@@ -56,7 +59,95 @@ DSPy.configure do |config|
   # Error handling
   config.instrumentation.error_reporting = true
   config.instrumentation.error_service = :sentry
+  
+  # Timestamp format for production monitoring
+  config.instrumentation.timestamp_format = DSPy::TimestampFormat::UNIX_NANO
 end
+```
+
+## Event Consolidation
+
+DSPy.rb provides configurable event consolidation to reduce instrumentation noise while maintaining observability. Three trace levels are available:
+
+### Trace Levels
+
+#### `:minimal` - Minimal Event Emission
+Only emits top-level events for high-level operations like ChainOfThought and ReAct. Ideal for production environments where noise reduction is critical.
+
+```ruby
+DSPy.configure do |config|
+  config.instrumentation.trace_level = :minimal
+end
+
+# For a ChainOfThought operation, only emits:
+# - dspy.chain_of_thought
+```
+
+#### `:standard` - Consolidated Events (Default)
+Emits consolidated events by skipping nested instrumentation when higher-level events are already being emitted. Provides good balance between observability and noise reduction.
+
+```ruby
+DSPy.configure do |config|
+  config.instrumentation.trace_level = :standard  # Default
+end
+
+# For a ChainOfThought operation, emits:
+# - dspy.chain_of_thought (includes LM details in payload)
+# 
+# For a direct Predict call, emits:
+# - dspy.predict
+# - dspy.lm.request
+# - dspy.lm.tokens
+```
+
+#### `:detailed` - Full Event Emission
+Emits all instrumentation events including nested ones. Useful for debugging and development.
+
+```ruby
+DSPy.configure do |config|
+  config.instrumentation.trace_level = :detailed
+end
+
+# For a ChainOfThought operation, emits all events:
+# - dspy.chain_of_thought
+# - dspy.predict
+# - dspy.lm.request
+# - dspy.lm.tokens
+# - dspy.lm.response.parsed
+```
+
+### Token Reporting Standardization
+
+All providers now report tokens using standardized field names for consistency:
+
+```ruby
+# Standardized token event payload
+{
+  "event": "dspy.lm.tokens",
+  "input_tokens": 123,
+  "output_tokens": 456,
+  "total_tokens": 579,
+  "provider": "openai",
+  "model": "gpt-4o-mini"
+}
+```
+
+### Timestamp Formats
+
+Configure timestamp formats for different monitoring platforms:
+
+```ruby
+# ISO8601 format (default)
+config.instrumentation.timestamp_format = DSPy::TimestampFormat::ISO8601
+# Output: "2025-07-04T15:22:33Z"
+
+# RFC3339 with nanosecond precision
+config.instrumentation.timestamp_format = DSPy::TimestampFormat::RFC3339_NANO
+# Output: "2025-07-04T15:22:33.123456789+0000"
+
+# Unix nanoseconds for high-precision monitoring
+config.instrumentation.timestamp_format = DSPy::TimestampFormat::UNIX_NANO
+# Output: timestamp_ns: 1720104153123456789
 ```
 
 ## Distributed Tracing
@@ -138,8 +229,9 @@ DSPy automatically collects performance and accuracy metrics:
 - dspy.prediction.token_usage
 - dspy.prediction.cost
 - dspy.lm.request.duration
-- dspy.lm.request.tokens_input
-- dspy.lm.request.tokens_output
+- dspy.lm.request.input_tokens
+- dspy.lm.request.output_tokens
+- dspy.lm.request.total_tokens
 
 # Accuracy metrics (when ground truth available)
 - dspy.prediction.accuracy
@@ -337,9 +429,9 @@ class LangfuseDSPySubscriber < DSPy::Subscribers::LangfuseSubscriber
       output: event.payload[:response],
       end_time: event.payload[:end_time],
       usage: {
-        input_tokens: event.payload[:usage][:input_tokens],
-        output_tokens: event.payload[:usage][:output_tokens],
-        total_tokens: event.payload[:usage][:total_tokens]
+        input_tokens: event.payload[:input_tokens],
+        output_tokens: event.payload[:output_tokens],
+        total_tokens: event.payload[:total_tokens]
       },
       level: event.payload[:success] ? 'INFO' : 'ERROR'
     )

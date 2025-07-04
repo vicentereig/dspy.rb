@@ -28,6 +28,10 @@ module DSPy
           log_lm_request(event)
         end
 
+        DSPy::Instrumentation.subscribe('dspy.lm.tokens') do |event|
+          log_lm_tokens(event)
+        end
+
         DSPy::Instrumentation.subscribe('dspy.predict') do |event|
           log_prediction(event)
         end
@@ -109,17 +113,40 @@ module DSPy
         model = payload[:gen_ai_request_model] || payload[:model]
         duration = payload[:duration_ms]&.round(2)
         status = payload[:status]
-        tokens = payload[:tokens_total]
+        timestamp = format_timestamp(payload)
 
         log_parts = [
           "event=lm_request",
+          timestamp,
           "provider=#{provider}",
           "model=#{model}",
           "status=#{status}",
           "duration_ms=#{duration}"
-        ]
-        log_parts << "tokens=#{tokens}" if tokens
+        ].compact
         log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
+      end
+
+      sig { params(event: T.untyped).void }
+      def log_lm_tokens(event)
+        payload = event.payload
+        provider = payload[:gen_ai_system] || payload[:provider]
+        model = payload[:gen_ai_request_model] || payload[:model]
+        input_tokens = payload[:input_tokens]
+        output_tokens = payload[:output_tokens]
+        total_tokens = payload[:total_tokens]
+        timestamp = format_timestamp(payload)
+
+        log_parts = [
+          "event=lm_tokens",
+          timestamp,
+          "provider=#{provider}",
+          "model=#{model}"
+        ].compact
+        log_parts << "input_tokens=#{input_tokens}" if input_tokens
+        log_parts << "output_tokens=#{output_tokens}" if output_tokens
+        log_parts << "total_tokens=#{total_tokens}" if total_tokens
 
         logger.info(log_parts.join(' '))
       end
@@ -131,13 +158,15 @@ module DSPy
         duration = payload[:duration_ms]&.round(2)
         status = payload[:status]
         input_size = payload[:input_size]
+        timestamp = format_timestamp(payload)
 
         log_parts = [
           "event=prediction",
+          timestamp,
           "signature=#{signature}",
           "status=#{status}",
           "duration_ms=#{duration}"
-        ]
+        ].compact
         log_parts << "input_size=#{input_size}" if input_size
         log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
 
@@ -152,13 +181,15 @@ module DSPy
         status = payload[:status]
         reasoning_steps = payload[:reasoning_steps]
         reasoning_length = payload[:reasoning_length]
+        timestamp = format_timestamp(payload)
 
         log_parts = [
           "event=chain_of_thought",
+          timestamp,
           "signature=#{signature}",
           "status=#{status}",
           "duration_ms=#{duration}"
-        ]
+        ].compact
         log_parts << "reasoning_steps=#{reasoning_steps}" if reasoning_steps
         log_parts << "reasoning_length=#{reasoning_length}" if reasoning_length
         log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
@@ -329,6 +360,30 @@ module DSPy
         log_parts << "error=\"#{error_message}\"" if error_message
 
         logger.info(log_parts.join(' '))
+      end
+
+      # Format timestamp based on configured format
+      sig { params(payload: T::Hash[Symbol, T.untyped]).returns(T.nilable(String)) }
+      def format_timestamp(payload)
+        case DSPy.config.instrumentation.timestamp_format
+        when DSPy::TimestampFormat::ISO8601
+          if timestamp = payload[:timestamp]
+            "timestamp=#{timestamp}"
+          end
+        when DSPy::TimestampFormat::RFC3339_NANO
+          if timestamp = payload[:timestamp]
+            "timestamp=#{timestamp}"
+          end
+        when DSPy::TimestampFormat::UNIX_NANO
+          if timestamp_ns = payload[:timestamp_ns]
+            "timestamp_ns=#{timestamp_ns}"
+          end
+        else
+          # Fallback to timestamp if available
+          if timestamp = payload[:timestamp]
+            "timestamp=#{timestamp}"
+          end
+        end
       end
     end
   end

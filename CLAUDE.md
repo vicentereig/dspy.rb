@@ -40,6 +40,7 @@ When working with external libraries in this codebase, **ALWAYS check the docume
 - **openai** (~> 0.9.0) - OpenAI API client
   - Docs: https://github.com/alexrudall/ruby-openai/tree/v0.9.0
   - Used for: ChatGPT/GPT-4 API integration
+  - **IMPORTANT**: alexrudall/ruby-openai is not the official Ruby SDK. The official SDK is: https://github.com/openai/openai-ruby
 
 - **anthropic** (~> 1.1.0) - Anthropic API client
   - Docs: https://github.com/anthropics/anthropic-sdk-ruby/tree/v1.1.0
@@ -241,3 +242,18 @@ class ChainOfThought < DSPy::Module
     # 50 lines mixing prompt construction, API calls, parsing, and error handling
   end
 end
+
+```
+
+## Project Management
+
+### GitHub Issues
+- Add GH issues to th DSPy.rb 1.0 Project and assign them to me
+
+## Issue Writing Guidelines
+- When writing issues write the title from the perspective of the user.
+
+## Development Best Practices
+
+### GitHub Issue References
+- Follow GitHub good practices with issues, i.e., when working on issues make a reference in the commit message that way GitHub can link it in the web UI

@@ -284,9 +284,9 @@ RSpec.describe 'DSPy Instrumentation Integration', :vcr do
 
       tokens = DSPy::Instrumentation::TokenTracker.extract_token_usage(mock_response, 'openai')
 
-      expect(tokens[:tokens_input]).to eq(150)
-      expect(tokens[:tokens_output]).to eq(45)
-      expect(tokens[:tokens_total]).to eq(195)
+      expect(tokens[:input_tokens]).to eq(150)
+      expect(tokens[:output_tokens]).to eq(45)
+      expect(tokens[:total_tokens]).to eq(195)
     end
 
     it 'extracts Anthropic token usage correctly' do
@@ -297,9 +297,9 @@ RSpec.describe 'DSPy Instrumentation Integration', :vcr do
 
       tokens = DSPy::Instrumentation::TokenTracker.extract_token_usage(mock_response, 'anthropic')
 
-      expect(tokens[:tokens_input]).to eq(100)
-      expect(tokens[:tokens_output]).to eq(50)
-      expect(tokens[:tokens_total]).to eq(150)
+      expect(tokens[:input_tokens]).to eq(100)
+      expect(tokens[:output_tokens]).to eq(50)
+      expect(tokens[:total_tokens]).to eq(150)
     end
 
     it 'returns empty hash for unsupported providers' do

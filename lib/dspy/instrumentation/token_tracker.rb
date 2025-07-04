@@ -28,9 +28,9 @@ module DSPy
         return {} unless usage.is_a?(Hash)
         
         {
-          tokens_input: usage[:prompt_tokens] || usage['prompt_tokens'],
-          tokens_output: usage[:completion_tokens] || usage['completion_tokens'],
-          tokens_total: usage[:total_tokens] || usage['total_tokens']
+          input_tokens: usage[:prompt_tokens] || usage['prompt_tokens'],
+          output_tokens: usage[:completion_tokens] || usage['completion_tokens'],
+          total_tokens: usage[:total_tokens] || usage['total_tokens']
         }
       end
 
@@ -44,9 +44,9 @@ module DSPy
         output_tokens = usage[:output_tokens] || usage['output_tokens'] || 0
         
         {
-          tokens_input: input_tokens,
-          tokens_output: output_tokens,
-          tokens_total: input_tokens + output_tokens
+          input_tokens: input_tokens,
+          output_tokens: output_tokens,
+          total_tokens: input_tokens + output_tokens
         }
       end
     end

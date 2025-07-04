@@ -115,9 +115,8 @@ module DSPy
         enhanced_payload = payload.merge(
           duration_ms: ((end_time - start_time) * 1000).round(2),
           cpu_time_ms: ((end_cpu - start_cpu) * 1000).round(2),
-          status: 'success',
-          timestamp: Time.now.iso8601
-        )
+          status: 'success'
+        ).merge(generate_timestamp)
 
         self.emit_event(event_name, enhanced_payload)
         result
@@ -130,9 +129,8 @@ module DSPy
           cpu_time_ms: ((end_cpu - start_cpu) * 1000).round(2),
           status: 'error',
           error_type: error.class.name,
-          error_message: error.message,
-          timestamp: Time.now.iso8601
-        )
+          error_message: error.message
+        ).merge(generate_timestamp)
 
         self.emit_event(event_name, error_payload)
         raise
@@ -145,9 +143,8 @@ module DSPy
       payload ||= {}
       
       enhanced_payload = payload.merge(
-        timestamp: Time.now.iso8601,
         status: payload[:status] || 'success'
-      )
+      ).merge(generate_timestamp)
 
       self.emit_event(event_name, enhanced_payload)
     end
@@ -251,6 +248,20 @@ module DSPy
         true
       rescue LoadError
         false
+      end
+    end
+
+    # Generate timestamp in the configured format
+    def self.generate_timestamp
+      case DSPy.config.instrumentation.timestamp_format
+      when DSPy::TimestampFormat::ISO8601
+        { timestamp: Time.now.iso8601 }
+      when DSPy::TimestampFormat::RFC3339_NANO
+        { timestamp: Time.now.strftime('%Y-%m-%dT%H:%M:%S.%9N%z') }
+      when DSPy::TimestampFormat::UNIX_NANO
+        { timestamp_ns: (Time.now.to_f * 1_000_000_000).to_i }
+      else
+        { timestamp: Time.now.iso8601 }  # Fallback to iso8601
       end
     end
 
