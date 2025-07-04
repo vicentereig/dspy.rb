@@ -116,4 +116,152 @@ RSpec.describe DSPy::LM::AnthropicAdapter do
       expect(user_msgs).to eq(messages)
     end
   end
+
+  describe '#extract_json_from_response' do
+    context 'when Claude returns JSON wrapped in ```json blocks' do
+      it 'extracts JSON content correctly' do
+        response = "Here's the output:\n\n```json\n{\"answer\": \"Paris\", \"reasoning\": \"Paris is the capital\"}\n```"
+        
+        result = adapter.send(:extract_json_from_response, response)
+        
+        expect(result).to eq('{"answer": "Paris", "reasoning": "Paris is the capital"}')
+      end
+
+      it 'handles multiline JSON' do
+        response = "```json\n{\n  \"subtasks\": [\n    \"Research AI ethics\",\n    \"Analyze implications\"\n  ],\n  \"complexity\": \"high\"\n}\n```"
+        
+        result = adapter.send(:extract_json_from_response, response)
+        
+        expect(result).to include('"subtasks"')
+        expect(result).to include('"Research AI ethics"')
+        expect(result).to include('"complexity": "high"')
+      end
+    end
+
+    context 'when Claude returns JSON with ## Output values header' do
+      it 'extracts JSON after the header' do
+        response = "Let me analyze this request.\n\n## Output values\n```json\n{\"result\": \"success\"}\n```"
+        
+        result = adapter.send(:extract_json_from_response, response)
+        
+        expect(result).to eq('{"result": "success"}')
+      end
+
+      it 'handles complex responses with explanations' do
+        response = "I'll help you with that task.\n\n## Output values\n```json\n{\"task_types\": [\"analysis\", \"synthesis\"], \"priority\": \"high\"}\n```\n\nThat's my analysis."
+        
+        result = adapter.send(:extract_json_from_response, response)
+        
+        expect(result).to eq('{"task_types": ["analysis", "synthesis"], "priority": "high"}')
+      end
+    end
+
+    context 'when Claude returns JSON in generic code blocks' do
+      it 'extracts JSON-like content from generic blocks' do
+        response = "Here's the data:\n\n```\n{\"status\": \"complete\", \"count\": 42}\n```"
+        
+        result = adapter.send(:extract_json_from_response, response)
+        
+        expect(result).to eq('{"status": "complete", "count": 42}')
+      end
+
+      it 'ignores non-JSON code blocks' do
+        response = "Here's some code:\n\n```\nfunction test() { return 'hello'; }\n```"
+        
+        result = adapter.send(:extract_json_from_response, response)
+        
+        # Should return original content since it doesn't look like JSON
+        expect(result).to include("function test()")
+      end
+    end
+
+    context 'when Claude returns plain JSON' do
+      it 'returns the content as-is' do
+        response = '{"answer": "42", "question": "What is the meaning of life?"}'
+        
+        result = adapter.send(:extract_json_from_response, response)
+        
+        expect(result).to eq('{"answer": "42", "question": "What is the meaning of life?"}')
+      end
+
+      it 'handles JSON with whitespace' do
+        response = "  \n  {\"clean\": true}  \n  "
+        
+        result = adapter.send(:extract_json_from_response, response)
+        
+        expect(result).to eq('{"clean": true}')
+      end
+    end
+
+    context 'edge cases' do
+      it 'handles nil content' do
+        result = adapter.send(:extract_json_from_response, nil)
+        expect(result).to be_nil
+      end
+
+      it 'handles empty content' do
+        result = adapter.send(:extract_json_from_response, '')
+        expect(result).to eq('')
+      end
+
+      it 'handles malformed markdown blocks gracefully' do
+        response = "```json\n{\"incomplete\": true"
+        
+        result = adapter.send(:extract_json_from_response, response)
+        
+        # Should return original content when extraction fails
+        expect(result).to include("```json")
+      end
+    end
+  end
+
+  describe 'model detection methods' do
+    context 'with Claude models' do
+      let(:claude_adapter) { described_class.new(model: 'claude-3-5-sonnet', api_key: 'test-key') }
+
+      it 'detects Claude models for prefilling support' do
+        expect(claude_adapter.send(:supports_prefilling?)).to be true
+      end
+
+      it 'detects Claude models that tend to wrap JSON' do
+        expect(claude_adapter.send(:tends_to_wrap_json?)).to be true
+      end
+    end
+
+    context 'with non-Claude models' do
+      let(:other_adapter) { described_class.new(model: 'some-other-model', api_key: 'test-key') }
+
+      it 'does not detect non-Claude models for prefilling' do
+        expect(other_adapter.send(:supports_prefilling?)).to be false
+      end
+
+      it 'does not detect non-Claude models as JSON wrappers' do
+        expect(other_adapter.send(:tends_to_wrap_json?)).to be false
+      end
+    end
+  end
+
+  describe '#looks_like_json?' do
+    it 'identifies object-like JSON' do
+      expect(adapter.send(:looks_like_json?, '{"key": "value"}')).to be true
+      expect(adapter.send(:looks_like_json?, '  {"nested": {"object": true}}  ')).to be true
+    end
+
+    it 'identifies array-like JSON' do
+      expect(adapter.send(:looks_like_json?, '["item1", "item2"]')).to be true
+      expect(adapter.send(:looks_like_json?, '[{"id": 1}, {"id": 2}]')).to be true
+    end
+
+    it 'rejects non-JSON strings' do
+      expect(adapter.send(:looks_like_json?, 'function test() {}')).to be false
+      expect(adapter.send(:looks_like_json?, 'plain text')).to be false
+      expect(adapter.send(:looks_like_json?, 'SELECT * FROM table')).to be false
+    end
+
+    it 'handles edge cases' do
+      expect(adapter.send(:looks_like_json?, nil)).to be false
+      expect(adapter.send(:looks_like_json?, '')).to be false
+      expect(adapter.send(:looks_like_json?, '   ')).to be false
+    end
+  end
 end
