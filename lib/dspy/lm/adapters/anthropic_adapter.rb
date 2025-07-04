@@ -77,6 +77,44 @@ module DSPy
 
       private
 
+      # Enhanced JSON extraction specifically for Claude models
+      # Handles multiple patterns of markdown-wrapped JSON responses
+      def extract_json_from_response(content)
+        return content if content.nil? || content.empty?
+        
+        # Pattern 1: ```json blocks
+        if content.include?('```json')
+          extracted = content[/```json\s*\n(.*?)\n```/m, 1]
+          return extracted.strip if extracted
+        end
+        
+        # Pattern 2: ## Output values header
+        if content.include?('## Output values')
+          extracted = content.split('## Output values').last
+                            .gsub(/```json\s*\n/, '')
+                            .gsub(/\n```.*/, '')
+                            .strip
+          return extracted if extracted && !extracted.empty?
+        end
+        
+        # Pattern 3: Generic code blocks (check if it looks like JSON)
+        if content.include?('```')
+          extracted = content[/```\s*\n(.*?)\n```/m, 1]
+          return extracted.strip if extracted && looks_like_json?(extracted)
+        end
+        
+        # Pattern 4: Already valid JSON or fallback
+        content.strip
+      end
+
+      # Simple heuristic to check if content looks like JSON
+      def looks_like_json?(str)
+        return false if str.nil? || str.empty?
+        trimmed = str.strip
+        (trimmed.start_with?('{') && trimmed.end_with?('}')) ||
+        (trimmed.start_with?('[') && trimmed.end_with?(']'))
+      end
+
       def extract_system_message(messages)
         system_message = nil
         user_messages = []
