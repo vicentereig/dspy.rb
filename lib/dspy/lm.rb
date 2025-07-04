@@ -139,11 +139,16 @@ module DSPy
       # Try to parse the response as JSON
       content = response.content
 
-      # Extract JSON if it's in a code block
-      if content.include?('```json')
-        content = content.split('```json').last.split('```').first.strip
-      elsif content.include?('```')
-        content = content.split('```').last.split('```').first.strip
+      # Let adapters handle their own extraction logic if available
+      if adapter && adapter.respond_to?(:extract_json_from_response, true)
+        content = adapter.send(:extract_json_from_response, content)
+      else
+        # Fallback: Extract JSON if it's in a code block (legacy behavior)
+        if content.include?('```json')
+          content = content.split('```json').last.split('```').first.strip
+        elsif content.include?('```')
+          content = content.split('```').last.split('```').first.strip
+        end
       end
 
       begin
@@ -152,8 +157,17 @@ module DSPy
         # For Sorbet signatures, just return the parsed JSON
         # The Predict will handle validation
         json_payload
-      rescue JSON::ParserError
-        raise "Failed to parse LLM response as JSON: #{content}"
+      rescue JSON::ParserError => e
+        # Enhanced error message with debugging information
+        error_details = {
+          original_content: response.content,
+          extracted_content: content,
+          provider: provider,
+          model: model
+        }
+        
+        DSPy.logger.debug("JSON parsing failed: #{error_details}")
+        raise "Failed to parse LLM response as JSON: #{e.message}. Original content length: #{response.content&.length || 0} chars"
       end
     end
   end
