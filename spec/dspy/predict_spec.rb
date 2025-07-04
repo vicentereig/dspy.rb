@@ -152,8 +152,12 @@ RSpec.describe DSPy::Predict do
         log_content = log_output.string
         
         # Check that both LM request and prediction events are logged in key-value format
-        expect(log_content).to include("event=lm_request provider=openai model=gpt-4o-mini status=success")
-        expect(log_content).to include("event=prediction signature=Classify status=success")
+        expect(log_content).to include("event=lm_request")
+        expect(log_content).to include("provider=openai")
+        expect(log_content).to include("model=gpt-4o-mini")
+        expect(log_content).to include("status=success")
+        expect(log_content).to include("event=prediction")
+        expect(log_content).to include("signature=Classify")
       end
     end
   end

@@ -8,7 +8,6 @@ RSpec.describe 'Configuration-Driven Instrumentation Setup' do
     DSPy.config.instrumentation.enabled = false
     DSPy.config.instrumentation.subscribers = []
     DSPy.config.instrumentation.sampling_rate = 1.0
-    DSPy.config.instrumentation.trace_level = :standard
     DSPy.config.instrumentation.buffer_size = 1000
     DSPy.config.instrumentation.flush_interval = 30
     DSPy.config.instrumentation.error_reporting = false

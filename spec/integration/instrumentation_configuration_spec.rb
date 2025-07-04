@@ -8,7 +8,6 @@ RSpec.describe 'Instrumentation Configuration Integration' do
     DSPy.config.instrumentation.enabled = false
     DSPy.config.instrumentation.subscribers = []
     DSPy.config.instrumentation.sampling_rate = 1.0
-    DSPy.config.instrumentation.trace_level = :standard
   end
 
   it 'supports the documented configuration API from observability.md' do
@@ -22,7 +21,6 @@ RSpec.describe 'Instrumentation Configuration Integration' do
       
       # Sampling configuration
       config.instrumentation.sampling_rate = 1.0
-      config.instrumentation.trace_level = :detailed
     end
 
     # Configure nested logger settings
@@ -34,7 +32,6 @@ RSpec.describe 'Instrumentation Configuration Integration' do
     expect(DSPy.config.instrumentation.enabled).to eq(true)
     expect(DSPy.config.instrumentation.subscribers).to eq([:logger])
     expect(DSPy.config.instrumentation.sampling_rate).to eq(1.0)
-    expect(DSPy.config.instrumentation.trace_level).to eq(:detailed)
     
     expect(DSPy.config.instrumentation.logger.level).to eq(:info)
     expect(DSPy.config.instrumentation.logger.include_payloads).to eq(true)
@@ -57,7 +54,6 @@ RSpec.describe 'Instrumentation Configuration Integration' do
       
       # Sampling for performance
       config.instrumentation.sampling_rate = 0.1  # 10% sampling in production
-      config.instrumentation.trace_level = :standard
       
       # Performance settings
       config.instrumentation.async_processing = true
@@ -74,7 +70,6 @@ RSpec.describe 'Instrumentation Configuration Integration' do
     expect(config.enabled).to eq(true)
     expect(config.subscribers).to eq([:logger])
     expect(config.sampling_rate).to eq(0.1)
-    expect(config.trace_level).to eq(:standard)
     expect(config.async_processing).to eq(true)
     expect(config.buffer_size).to eq(1000)
     expect(config.flush_interval).to eq(30)

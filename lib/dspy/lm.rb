@@ -39,15 +39,12 @@ module DSPy
       input_text = messages.map { |m| m[:content] }.join(' ')
       input_size = input_text.length
       
-      # Check trace level to decide instrumentation strategy
-      trace_level = DSPy.config.instrumentation.trace_level
-      
-      # Extract token usage and prepare consolidated payload
+      # Use smart consolidation: emit LM events only when not in nested context
       response = nil
       token_usage = {}
       
-      if should_emit_lm_events?(trace_level)
-        # Detailed mode: emit all LM events as before
+      if should_emit_lm_events?
+        # Emit all LM events when not in nested context
         response = Instrumentation.instrument('dspy.lm.request', {
           gen_ai_operation_name: 'chat',
           gen_ai_system: provider,
@@ -92,19 +89,10 @@ module DSPy
 
     private
 
-    # Determines if LM-level events should be emitted based on trace level
-    def should_emit_lm_events?(trace_level)
-      case trace_level
-      when :minimal
-        false  # Never emit LM events in minimal mode
-      when :standard
-        # In standard mode, emit LM events only if we're not in a nested context
-        !is_nested_context?
-      when :detailed
-        true  # Always emit LM events in detailed mode
-      else
-        true
-      end
+    # Determines if LM-level events should be emitted using smart consolidation
+    def should_emit_lm_events?
+      # Emit LM events only if we're not in a nested context (smart consolidation)
+      !is_nested_context?
     end
 
     # Determines if we're in a nested context where higher-level events are being emitted

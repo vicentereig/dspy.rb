@@ -29,10 +29,8 @@ module DSPy
         base_payload = prepare_base_instrumentation_payload(signature_class, input_values)
         full_payload = base_payload.merge(additional_payload)
         
-        # Check if we should emit this event based on trace level
-        trace_level = DSPy.config.instrumentation.trace_level
-        
-        if should_emit_event?(event_name, trace_level)
+        # Use smart consolidation: skip nested events when higher-level events are being emitted
+        if should_emit_event?(event_name)
           Instrumentation.instrument(event_name, full_payload) do
             yield
           end
@@ -61,27 +59,15 @@ module DSPy
         }.merge(additional_data))
       end
 
-      # Determines if an event should be emitted based on trace level
-      sig { params(event_name: String, trace_level: Symbol).returns(T::Boolean) }
-      def should_emit_event?(event_name, trace_level)
-        case trace_level
-        when :minimal
-          # Only emit the highest-level events (chain_of_thought, react, etc.)
+      # Determines if an event should be emitted using smart consolidation
+      sig { params(event_name: String).returns(T::Boolean) }
+      def should_emit_event?(event_name)
+        # Smart consolidation: skip nested events when higher-level events are being emitted
+        if is_nested_context?
+          # If we're in a nested context, only emit higher-level events
           event_name.match?(/^dspy\.(chain_of_thought|react)$/)
-        when :standard
-          # Emit consolidated events - skip nested events when a higher-level event is being emitted
-          # This is the key change: detect if we're in a nested context and skip lower-level events
-          if is_nested_context?
-            # If we're in a nested context, only emit higher-level events
-            event_name.match?(/^dspy\.(chain_of_thought|react)$/)
-          else
-            # If we're not in a nested context, emit all events normally
-            true
-          end
-        when :detailed
-          # Emit all events with additional correlation information
-          true
         else
+          # If we're not in a nested context, emit all events normally
           true
         end
       end

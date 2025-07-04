@@ -68,10 +68,14 @@ RSpec.describe DSPy::Signature do
 
         log_content = log_output.string
         
-        # Check that chain of thought, prediction, and LM events are logged in key-value format
-        expect(log_content).to include("event=chain_of_thought signature=AnswerPredictor status=success")
-        expect(log_content).to include("event=prediction") # Signature might be empty for internal predictions
-        expect(log_content).to include("event=lm_request provider=openai model=gpt-4o-mini status=success")
+        # With smart consolidation, ChainOfThought only emits the top-level event
+        expect(log_content).to include("event=chain_of_thought")
+        expect(log_content).to include("signature=AnswerPredictor")
+        expect(log_content).to include("status=success")
+        
+        # Nested events should not be present due to smart consolidation
+        expect(log_content).not_to include("event=prediction")
+        expect(log_content).not_to include("event=lm_request")
       end
     end
   end

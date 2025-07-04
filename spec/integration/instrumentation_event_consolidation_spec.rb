@@ -35,52 +35,19 @@ RSpec.describe 'Instrumentation Event Consolidation', :vcr do
     captured_events.clear
   end
 
-  describe 'event consolidation behavior' do
-    it 'emits fewer events in standard mode compared to detailed mode for ChainOfThought', :vcr do
-      # Test with detailed mode first
-      DSPy.config.instrumentation.trace_level = :detailed
-      cot_detailed = DSPy::ChainOfThought.new(TestEventConsolidation)
+  describe 'smart consolidation behavior' do
+    it 'emits only top-level events for ChainOfThought (nested context)', :vcr do
+      cot = DSPy::ChainOfThought.new(TestEventConsolidation)
       
-      cot_detailed.forward(question: "What is 2+2?") rescue nil
-      detailed_events = captured_events.map(&:id)
-      captured_events.clear
+      cot.forward(question: "What is 2+2?") rescue nil
+      events = captured_events.map(&:id)
       
-      # Test with standard mode
-      DSPy.config.instrumentation.trace_level = :standard
-      cot_standard = DSPy::ChainOfThought.new(TestEventConsolidation)
-      
-      cot_standard.forward(question: "What is 2+2?") rescue nil
-      standard_events = captured_events.map(&:id)
-      captured_events.clear
-      
-      # Test with minimal mode
-      DSPy.config.instrumentation.trace_level = :minimal
-      cot_minimal = DSPy::ChainOfThought.new(TestEventConsolidation)
-      
-      cot_minimal.forward(question: "What is 2+2?") rescue nil
-      minimal_events = captured_events.map(&:id)
-      
-      # Verify event consolidation is working
-      expect(detailed_events.size).to be > standard_events.size
-      expect(standard_events.size).to be >= minimal_events.size  # Can be equal for top-level calls
-      
-      # Detailed mode should have all events
-      expect(detailed_events).to include('dspy.chain_of_thought', 'dspy.predict', 'dspy.lm.request')
-      
-      # Standard mode should skip nested events for ChainOfThought
-      expect(standard_events).to include('dspy.chain_of_thought')
-      expect(standard_events).not_to include('dspy.predict', 'dspy.lm.request')
-      
-      # Minimal mode should only have top-level events
-      expect(minimal_events).to include('dspy.chain_of_thought')
-      expect(minimal_events).not_to include('dspy.predict', 'dspy.lm.request')
-      
-      # Both standard and minimal should emit the same events for ChainOfThought
-      expect(standard_events).to eq(minimal_events)
+      # Smart consolidation should only emit the top-level event
+      expect(events).to include('dspy.chain_of_thought')
+      expect(events).not_to include('dspy.predict', 'dspy.lm.request')
     end
 
-    it 'emits all events in standard mode for direct Predict calls', :vcr do
-      DSPy.config.instrumentation.trace_level = :standard
+    it 'emits all events for direct Predict calls (not nested)', :vcr do
       predict = DSPy::Predict.new(TestEventConsolidation)
       
       predict.forward(question: "What is 2+2?") rescue nil

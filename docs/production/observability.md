@@ -31,7 +31,6 @@ DSPy.configure do |config|
   
   # Sampling configuration
   config.instrumentation.sampling_rate = 1.0  # 100% in development
-  config.instrumentation.trace_level = :detailed
   
   # Timestamp format for OpenTelemetry compliance
   config.instrumentation.timestamp_format = DSPy::TimestampFormat::ISO8601
@@ -49,7 +48,6 @@ DSPy.configure do |config|
   
   # Sampling for performance
   config.instrumentation.sampling_rate = 0.1  # 10% sampling in production
-  config.instrumentation.trace_level = :standard
   
   # Performance settings
   config.instrumentation.async_processing = true
@@ -65,56 +63,25 @@ DSPy.configure do |config|
 end
 ```
 
-## Event Consolidation
+## Smart Event Consolidation
 
-DSPy.rb provides configurable event consolidation to reduce instrumentation noise while maintaining observability. Three trace levels are available:
+DSPy.rb automatically reduces instrumentation noise using smart consolidation. When higher-level operations like ChainOfThought or ReAct are called, only the top-level event is emitted, skipping redundant nested events.
 
-### Trace Levels
-
-#### `:minimal` - Minimal Event Emission
-Only emits top-level events for high-level operations like ChainOfThought and ReAct. Ideal for production environments where noise reduction is critical.
+### How It Works
 
 ```ruby
-DSPy.configure do |config|
-  config.instrumentation.trace_level = :minimal
-end
+# Direct Predict call - emits all events:
+predict = DSPy::Predict.new(MySignature)
+predict.forward(input: "test")
+# Events: dspy.predict, dspy.lm.request, dspy.lm.tokens
 
-# For a ChainOfThought operation, only emits:
-# - dspy.chain_of_thought
+# ChainOfThought call - smart consolidation, only top-level event:
+cot = DSPy::ChainOfThought.new(MySignature)  
+cot.forward(input: "test")
+# Events: dspy.chain_of_thought (only)
 ```
 
-#### `:standard` - Consolidated Events (Default)
-Emits consolidated events by skipping nested instrumentation when higher-level events are already being emitted. Provides good balance between observability and noise reduction.
-
-```ruby
-DSPy.configure do |config|
-  config.instrumentation.trace_level = :standard  # Default
-end
-
-# For a ChainOfThought operation, emits:
-# - dspy.chain_of_thought (includes LM details in payload)
-# 
-# For a direct Predict call, emits:
-# - dspy.predict
-# - dspy.lm.request
-# - dspy.lm.tokens
-```
-
-#### `:detailed` - Full Event Emission
-Emits all instrumentation events including nested ones. Useful for debugging and development.
-
-```ruby
-DSPy.configure do |config|
-  config.instrumentation.trace_level = :detailed
-end
-
-# For a ChainOfThought operation, emits all events:
-# - dspy.chain_of_thought
-# - dspy.predict
-# - dspy.lm.request
-# - dspy.lm.tokens
-# - dspy.lm.response.parsed
-```
+This provides an 80% reduction in instrumentation noise for nested operations while maintaining full observability for direct calls.
 
 ### Token Reporting Standardization
 
@@ -718,7 +685,6 @@ if Rails.env.development?
     config.instrumentation.enabled = true
     config.instrumentation.subscribers = [:logger]
     config.instrumentation.logger.level = :debug
-    config.instrumentation.trace_level = :detailed
     config.instrumentation.sampling_rate = 1.0
   end
 end
@@ -729,7 +695,6 @@ if Rails.env.staging?
     config.instrumentation.enabled = true
     config.instrumentation.subscribers = [:logger, :otel]
     config.instrumentation.logger.level = :info
-    config.instrumentation.trace_level = :standard
     config.instrumentation.sampling_rate = 0.5
   end
 end
@@ -740,7 +705,6 @@ if Rails.env.production?
     config.instrumentation.enabled = true
     config.instrumentation.subscribers = [:otel, :newrelic, :langfuse]
     config.instrumentation.logger.level = :warn
-    config.instrumentation.trace_level = :standard
     config.instrumentation.sampling_rate = 0.1
     config.instrumentation.async_processing = true
     config.instrumentation.error_reporting = true

@@ -27,7 +27,6 @@ module DSPy
     setting :enabled, default: false
     setting :subscribers, default: []
     setting :sampling_rate, default: 1.0
-    setting :trace_level, default: :standard
     setting :async_processing, default: false
     setting :buffer_size, default: 1000
     setting :flush_interval, default: 30
@@ -89,7 +88,6 @@ module DSPy
     raise ArgumentError, "Sampling rate must be between 0.0 and 1.0" unless config.sampling_rate.between?(0.0, 1.0)
     raise ArgumentError, "Buffer size must be positive" unless config.buffer_size > 0
     raise ArgumentError, "Flush interval must be positive" unless config.flush_interval > 0
-    raise ArgumentError, "Invalid trace level" unless [:minimal, :standard, :detailed].include?(config.trace_level)
     raise ArgumentError, "Invalid timestamp format" unless config.timestamp_format.is_a?(TimestampFormat)
     
     if config.enabled && config.subscribers.empty?
