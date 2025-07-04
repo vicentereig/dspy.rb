@@ -65,39 +65,33 @@ end
 
 ## Smart Event Consolidation
 
-DSPy.rb automatically reduces instrumentation noise using smart consolidation. When higher-level operations like ChainOfThought or ReAct are called, only the top-level event is emitted, skipping redundant nested events.
+DSPy.rb automatically reduces instrumentation noise by detecting when you're using higher-level modules like ChainOfThought or ReAct. Instead of emitting redundant nested events, it only logs the top-level operation.
 
-### How It Works
+### Real Examples
 
-```ruby
-# Direct Predict call - emits all events:
-predict = DSPy::Predict.new(MySignature)
-predict.forward(input: "test")
-# Events: dspy.predict, dspy.lm.request, dspy.lm.tokens
-
-# ChainOfThought call - smart consolidation, only top-level event:
-cot = DSPy::ChainOfThought.new(MySignature)  
-cot.forward(input: "test")
-# Events: dspy.chain_of_thought (only)
+**Direct Predict call** emits detailed events:
+```
+event=lm_request timestamp=2025-07-04T13:46:24+02:00 provider=openai model=gpt-4o-mini status=success duration_ms=3.82
+event=lm_tokens timestamp=2025-07-04T13:46:24+02:00 provider=openai model=gpt-4o-mini input_tokens=290 output_tokens=23 total_tokens=313
+event=prediction timestamp=2025-07-04T13:46:24+02:00 signature=TestEventConsolidation status=success duration_ms=5.13
 ```
 
-This provides an 80% reduction in instrumentation noise for nested operations while maintaining full observability for direct calls.
+**ChainOfThought call** emits only the consolidated event:
+```
+event=chain_of_thought timestamp=2025-07-04T13:46:24+02:00 signature=TestQuestionAnswering status=success duration_ms=2.44
+```
+
+This cuts instrumentation noise significantly for nested operations while keeping full detail for direct calls.
 
 ### Token Reporting Standardization
 
-All providers now report tokens using standardized field names for consistency:
+Both OpenAI and Anthropic providers report tokens using consistent field names:
 
-```ruby
-# Standardized token event payload
-{
-  "event": "dspy.lm.tokens",
-  "input_tokens": 123,
-  "output_tokens": 456,
-  "total_tokens": 579,
-  "provider": "openai",
-  "model": "gpt-4o-mini"
-}
 ```
+event=lm_tokens timestamp=2025-07-04T13:46:24+02:00 provider=openai model=gpt-4o-mini input_tokens=290 output_tokens=23 total_tokens=313
+```
+
+The token fields are standardized as `input_tokens`, `output_tokens`, and `total_tokens` regardless of provider.
 
 ### Timestamp Formats
 
@@ -106,15 +100,15 @@ Configure timestamp formats for different monitoring platforms:
 ```ruby
 # ISO8601 format (default)
 config.instrumentation.timestamp_format = DSPy::TimestampFormat::ISO8601
-# Output: "2025-07-04T15:22:33Z"
+# Example: timestamp=2025-07-04T13:46:24+02:00
 
 # RFC3339 with nanosecond precision
 config.instrumentation.timestamp_format = DSPy::TimestampFormat::RFC3339_NANO
-# Output: "2025-07-04T15:22:33.123456789+0000"
+# Example: timestamp=2025-07-04T13:46:24.367503000+0200
 
 # Unix nanoseconds for high-precision monitoring
 config.instrumentation.timestamp_format = DSPy::TimestampFormat::UNIX_NANO
-# Output: timestamp_ns: 1720104153123456789
+# Example: timestamp_ns=1751629584365840896
 ```
 
 ## Distributed Tracing
