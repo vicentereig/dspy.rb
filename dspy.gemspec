@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require_relative "lib/dspy/version"
+
 Gem::Specification.new do |spec|
   spec.name = "dspy"
-  spec.version = "0.4.0"
+  spec.version = DSPy::VERSION
   spec.authors = ["Vicente Reig Rincón de Arellano"]
   spec.email = ["hey@vicente.services"]
 
