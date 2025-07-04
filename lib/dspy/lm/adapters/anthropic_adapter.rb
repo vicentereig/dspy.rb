@@ -121,15 +121,17 @@ module DSPy
       # Prepare messages for JSON output by adding prefilling and strong instructions
       def prepare_messages_for_json(user_messages, system_message)
         return user_messages unless requires_json_output?(user_messages, system_message)
-        
-        # Check if prefilling is enabled (default: true)
-        return user_messages unless prefilling_enabled?
+        return user_messages unless tends_to_wrap_json?
         
         # Add strong JSON instruction to the last user message if not already present
         enhanced_messages = enhance_json_instructions(user_messages)
         
-        # Add assistant prefill to guide Claude to start with JSON
-        add_json_prefill(enhanced_messages)
+        # Only add prefill for models that support it and temporarily disable for testing
+        if false # supports_prefilling? - temporarily disabled
+          add_json_prefill(enhanced_messages)
+        else
+          enhanced_messages
+        end
       end
 
       # Detect if the conversation requires JSON output
@@ -144,10 +146,16 @@ module DSPy
         end
       end
 
-      # Check if prefilling is enabled in configuration
-      def prefilling_enabled?
-        # Default to true, can be configured later
-        true
+      # Check if this is a Claude model that benefits from prefilling
+      def supports_prefilling?
+        # Claude models that work well with JSON prefilling
+        model.downcase.include?('claude')
+      end
+
+      # Check if this is a Claude model that tends to wrap JSON in markdown
+      def tends_to_wrap_json?
+        # All Claude models have this tendency, especially Opus variants
+        model.downcase.include?('claude')
       end
 
       # Enhance the last user message with strong JSON instructions
@@ -159,7 +167,9 @@ module DSPy
         
         # Only add instruction if not already present
         unless last_message[:content].include?('ONLY valid JSON')
+          # Use smart default instruction for Claude models
           json_instruction = "\n\nIMPORTANT: Respond with ONLY valid JSON. No markdown formatting, no code blocks, no explanations. Start your response with '{' and end with '}'."
+          
           last_message = last_message.dup
           last_message[:content] = last_message[:content] + json_instruction
           enhanced_messages[-1] = last_message
