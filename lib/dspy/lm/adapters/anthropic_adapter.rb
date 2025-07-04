@@ -14,6 +14,9 @@ module DSPy
         # Anthropic requires system message to be separate from messages
         system_message, user_messages = extract_system_message(normalize_messages(messages))
         
+        # Apply JSON prefilling if needed for better Claude JSON compliance
+        user_messages = prepare_messages_for_json(user_messages, system_message)
+        
         request_params = {
           model: model,
           messages: user_messages,
@@ -113,6 +116,61 @@ module DSPy
         trimmed = str.strip
         (trimmed.start_with?('{') && trimmed.end_with?('}')) ||
         (trimmed.start_with?('[') && trimmed.end_with?(']'))
+      end
+
+      # Prepare messages for JSON output by adding prefilling and strong instructions
+      def prepare_messages_for_json(user_messages, system_message)
+        return user_messages unless requires_json_output?(user_messages, system_message)
+        
+        # Check if prefilling is enabled (default: true)
+        return user_messages unless prefilling_enabled?
+        
+        # Add strong JSON instruction to the last user message if not already present
+        enhanced_messages = enhance_json_instructions(user_messages)
+        
+        # Add assistant prefill to guide Claude to start with JSON
+        add_json_prefill(enhanced_messages)
+      end
+
+      # Detect if the conversation requires JSON output
+      def requires_json_output?(user_messages, system_message)
+        # Check for JSON-related keywords in messages
+        all_content = [system_message] + user_messages.map { |m| m[:content] }
+        all_content.compact.any? do |content|
+          content.downcase.include?('json') || 
+          content.include?('```') ||
+          content.include?('{') ||
+          content.include?('output')
+        end
+      end
+
+      # Check if prefilling is enabled in configuration
+      def prefilling_enabled?
+        # Default to true, can be configured later
+        true
+      end
+
+      # Enhance the last user message with strong JSON instructions
+      def enhance_json_instructions(user_messages)
+        return user_messages if user_messages.empty?
+        
+        enhanced_messages = user_messages.dup
+        last_message = enhanced_messages.last
+        
+        # Only add instruction if not already present
+        unless last_message[:content].include?('ONLY valid JSON')
+          json_instruction = "\n\nIMPORTANT: Respond with ONLY valid JSON. No markdown formatting, no code blocks, no explanations. Start your response with '{' and end with '}'."
+          last_message = last_message.dup
+          last_message[:content] = last_message[:content] + json_instruction
+          enhanced_messages[-1] = last_message
+        end
+        
+        enhanced_messages
+      end
+
+      # Add assistant message prefill to guide Claude
+      def add_json_prefill(user_messages)
+        user_messages + [{ role: "assistant", content: "{" }]
       end
 
       def extract_system_message(messages)
