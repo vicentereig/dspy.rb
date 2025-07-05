@@ -204,10 +204,13 @@ class ResearchAssistant < DSPy::Module
       end
     end
     
-    # Define available tools (basic tool support)
-    @tools = [
-      # Tool instances would go here
-    ]
+    # Create individual tools
+    calculator = DSPy::Tools::CalculatorTool.new
+    
+    # Or use a toolset (multiple tools from one class)
+    memory_tools = DSPy::Tools::MemoryToolset.to_tools
+    
+    @tools = [calculator, *memory_tools]
     
     @predictor = DSPy::ReAct.new(@signature, tools: @tools)
   end
@@ -217,6 +220,8 @@ class ResearchAssistant < DSPy::Module
   end
 end
 ```
+
+For more details on creating tools and toolsets, see the [Toolsets documentation](toolsets.md).
 
 ## Language Model Configuration
 
