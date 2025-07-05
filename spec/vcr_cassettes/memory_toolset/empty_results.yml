@@ -135,7 +135,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:08:21 GMT
+      - Sat, 05 Jul 2025 01:13:57 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -147,50 +147,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1040'
+      - '838'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1045'
+      - '842'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9971'
+      - '9941'
       X-Ratelimit-Remaining-Tokens:
-      - '198043'
+      - '198042'
       X-Ratelimit-Reset-Requests:
-      - 4m7.818s
+      - 8m28.385s
       X-Ratelimit-Reset-Tokens:
       - 587ms
       X-Request-Id:
-      - req_5c89f22d1288aac66bf1ff35a915f132
+      - req_88c6ae577d8cb31263cbf38db6804dbf
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=sin1Zi10LBIzvdfjEyQL38r_4B_C5JyDK3UqqGzrmgY-1751677701-1.0.1.1-whvl9X1LhOb7SmZKTuRpGQuk9MoMJYdRDzLyJrCr6Dh4c7m9F2CeBK4xATRN8.ThcJAX6nS57f3TAXwA0MSQuiq_Nas1Cc884i.icihCXD4;
-        path=/; expires=Sat, 05-Jul-25 01:38:21 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=adVWPDPxmAkZsUcAz9JU4BqaKvc_FfoKgqsjnY27Kkc-1751678037-1.0.1.1-p9iGFWtWG4PwpK.xq22dmYlHu6wNcYypXHG38MVFdV06HdSeWIJ32AfUPaTSMva_JXYzhHx1RasZCxxiQHI75IyISfpSqpniKF1fj0DBImE;
+        path=/; expires=Sat, 05-Jul-25 01:43:57 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=r0mBr590Vay5fnpfWjVQi1fnwYm7a2pqWXUsoSbhXmE-1751677701432-0.0.1.1-604800000;
+      - _cfuvid=auNx5AVa36.pvXpIfSEyyXbEHFvv0vGO3z2CCkhtBEY-1751678037872-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f87b0ddf4397-EWR
+      - 95a300b2f86142d1-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplg4rD2IcVhanFtQXLrJGFHovKWy",
+          "id": "chatcmpl-BpllVL4Hv1fTp6yoWNrS8QoUZdZhr",
           "object": "chat.completion",
-          "created": 1751677700,
+          "created": 1751678037,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -210,7 +210,7 @@ http_interactions:
             "completion_tokens": 69,
             "total_tokens": 1809,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1664,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -223,7 +223,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:08:21 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:57 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -261,7 +261,7 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Clear all your memories.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001491d2690>\"\n  ],\n  \"observation\":
+        \"Clear all your memories.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115e80150>\"\n  ],\n  \"observation\":
         \"Cleared 0 memories\"\n}\n```\n\nRespond with the corresponding output schema
         fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
         values`."}],"temperature":0.0}'
@@ -302,7 +302,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:08:22 GMT
+      - Sat, 05 Jul 2025 01:13:58 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -314,50 +314,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '893'
+      - '786'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '895'
+      - '789'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9970'
+      - '9940'
       X-Ratelimit-Remaining-Tokens:
       - '199245'
       X-Ratelimit-Reset-Requests:
-      - 4m15.194s
+      - 8m34.946s
       X-Ratelimit-Reset-Tokens:
       - 226ms
       X-Request-Id:
-      - req_b2b9766878d9998268c52114790fdecc
+      - req_6f8e7e1fb936d98a5e25d1158eab96fc
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Rr6pLkjykcT7onqETzGHpdAPWMt9iROZgo6y8dMPx8Q-1751677702-1.0.1.1-00Vz5.KRXKuCugkqj7vkHLC19xdMhEtoe_Yw2nn8_0sXPyEBnYmSjVuuQzujIysRH0M462Sb_qRleKfv_nE_KGbiL6UE4QSt8ngboLDJoK0;
-        path=/; expires=Sat, 05-Jul-25 01:38:22 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=vT8Uo46JF9em6.8dIr.3ojr6eE1gQyV1t_k00jpf6ZM-1751678038-1.0.1.1-bR88L1mMQOKr8HVZ_LXTdLAmruUDCNIH7utQ9ulJk.qZX2TEsboOGOSQiNX6c9neuAcFWso1hn5szRdMQybk4RoDTLmNpO1QJAIMcuTBNIo;
+        path=/; expires=Sat, 05-Jul-25 01:43:58 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=mttwOdSt7bJYfWR7CDkDGN0IdLl6rkr83saGalvOwOM-1751677702548-0.0.1.1-604800000;
+      - _cfuvid=Z3AxrnBFQ.7mMvGaHBJ67wqzO1HDIC4YlLDFkPjpbk4-1751678038851-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f8830d124397-EWR
+      - 95a300b97d7b42d1-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplg52AiZnPjmze3uvn4WWqCupkF6",
+          "id": "chatcmpl-BpllWUIpEIKTaGxAMJiS4kMuvzys3",
           "object": "chat.completion",
-          "created": 1751677701,
+          "created": 1751678038,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -390,7 +390,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:08:22 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:58 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -447,7 +447,7 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Clear all your memories.\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x00000001491d2690>\"\n  ],\n  \"available_tools\":
+        [\n    \"#<DSPy::HistoryEntry:0x0000000115e80150>\"\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -527,7 +527,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:08:23 GMT
+      - Sat, 05 Jul 2025 01:14:00 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -539,50 +539,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '753'
+      - '1250'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '756'
+      - '1253'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9969'
+      - '9939'
       X-Ratelimit-Remaining-Tokens:
       - '198030'
       X-Ratelimit-Reset-Requests:
-      - 4m22.755s
+      - 8m42.617s
       X-Ratelimit-Reset-Tokens:
       - 591ms
       X-Request-Id:
-      - req_cf38e10d59359c0a82ff02156940b6b1
+      - req_eea3f1bd6bf3b9e819f13a12b06b101f
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Z8L_7xt0BftF8jlawlhKoejzDXtz9_xTXduxhF6aR4Y-1751677703-1.0.1.1-62Dq_kcpHufgl7P5pUrjPltvS.yaaDk.5vrmuzGGGAZ0drAdp2aRdH0A93SNQkyOqx2rpLP9fpYwkyMs0RzeXgjsutLOZ1mF2erGwBPQ5HU;
-        path=/; expires=Sat, 05-Jul-25 01:38:23 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=fY1O0i0BcwFiyIP2Ig1clYiLhiGlaB7u4beyynGuPic-1751678040-1.0.1.1-mBC0nZlA3BSd2QwdM01m7VV4amPya9FC7YFIFnm3BTUpfyEtkw8U7yX8gUMx_F3ezH_5A0mAitZJ6Z8bDfVremwcmIOEgh9hBSTD8kUsk8Q;
+        path=/; expires=Sat, 05-Jul-25 01:44:00 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=FWe3U2GW.GDC_l9VexuI8PqPYB76q9y4cAOi9hXITco-1751677703486-0.0.1.1-604800000;
+      - _cfuvid=d0U3lw7mr6BuX6YjOu9MQAR9SSCKd9.gNdqW2b7ICYI-1751678040271-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f889ab074397-EWR
+      - 95a300bf9a5f42d1-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplg6575S5V8OJVfEqPNMzbKalIWf",
+          "id": "chatcmpl-BpllXROlV4xrgffqBXnCXH3ykXzEc",
           "object": "chat.completion",
-          "created": 1751677702,
+          "created": 1751678039,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -615,7 +615,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:08:23 GMT
+  recorded_at: Sat, 05 Jul 2025 01:14:00 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -751,7 +751,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:08:25 GMT
+      - Sat, 05 Jul 2025 01:14:01 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -763,57 +763,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1315'
+      - '959'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1318'
+      - '961'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9968'
+      - '9938'
       X-Ratelimit-Remaining-Tokens:
       - '198041'
       X-Ratelimit-Reset-Requests:
-      - 4m30.944s
+      - 8m49.801s
       X-Ratelimit-Reset-Tokens:
       - 587ms
       X-Request-Id:
-      - req_3e00fb5d01cc136b76fc82d112ae998b
+      - req_7c2048ea1ec72e8c243cc439108a94e4
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=sTvVQv2RDii5DGvFl4Rvh6kGXOVXQ.Syamu42YqtKGI-1751677705-1.0.1.1-ywyVpXZuOcQK1iiAkk5zn9BIMDMh0aIv20B_qRitKEdO4THAWEEY6NnTF83tLGNI_lk8SmKHFvkj6pOLY0WE6gyPWWijWOXkYNWYAx2I1og;
-        path=/; expires=Sat, 05-Jul-25 01:38:25 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=cG8uhP6Y61lB9xTRI2kmaiuWYOHJYyVv9zDvMX42.Sw-1751678041-1.0.1.1-fWR.XZmqyGGXh8FgasHQ1hoXAv_vmJjah0RSW4vJ5TsRjfSSFGKVxfGvqTdbs4bT8zAkjse5qX.7vI5F2Kgbl4g0eT9rMfjJZ5eqlPd0Wt8;
+        path=/; expires=Sat, 05-Jul-25 01:44:01 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=BhQM00rqJpYYbStDYoN9cUWPk.cNQ69QGCgotnvM0Z4-1751677705546-0.0.1.1-604800000;
+      - _cfuvid=0gn1fhWMuYmLjC_E2sVL.IH_GOeh1fflR06_bqZT4EQ-1751678041449-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f89018e44397-EWR
+      - 95a300c879b542d1-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplg8xv72EaiovsqgtBoCykqDhdvx",
+          "id": "chatcmpl-BpllY110Pyk5UM16c8zF9rp2BJ1qM",
           "object": "chat.completion",
-          "created": 1751677704,
+          "created": 1751678040,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there are no memories stored yet, I need to first check if there are any keys available in memory. This will help me understand what memories I can list about the user. I will use the 'memory_list' tool to retrieve all stored memory keys.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there are no memories stored yet, I need to first check how many memories exist. This will help me determine if I can list any memories about the user. I will use the 'memory_count' tool to get the count of stored memories.\",\n  \"action\": \"memory_count\",\n  \"action_input\": {}\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -823,10 +823,10 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1742,
-            "completion_tokens": 81,
-            "total_tokens": 1823,
+            "completion_tokens": 79,
+            "total_tokens": 1821,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1664,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -839,7 +839,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:08:25 GMT
+  recorded_at: Sat, 05 Jul 2025 01:14:01 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -877,8 +877,8 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"List all your memories about me.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000129bf94e0>\"\n  ],\n  \"observation\":
-        \"[]\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        \"List all your memories about me.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115b27760>\"\n  ],\n  \"observation\":
+        \"0\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
         in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
     headers:
       Accept-Encoding:
@@ -910,14 +910,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3424'
+      - '3423'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:08:26 GMT
+      - Sat, 05 Jul 2025 01:14:02 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -929,57 +929,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '656'
+      - '819'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '659'
+      - '823'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9967'
+      - '9937'
       X-Ratelimit-Remaining-Tokens:
-      - '199247'
+      - '199246'
       X-Ratelimit-Reset-Requests:
-      - 4m36.902s
+      - 8m57.293s
       X-Ratelimit-Reset-Tokens:
       - 225ms
       X-Request-Id:
-      - req_a755f65c019dac5cc6abbcdefc96c92d
+      - req_30b6e8dd61a43c654e619e29999fe281
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=DUO24IqykBkbeLVcBEdmIaVn35dtI0tIDZ8GZv00fhc-1751677706-1.0.1.1-HB.SigpVyC9x3LvXwEzbMuBTSDeLzHgqdtZbmrWcbC4oxGy8KxWVzdNH3gKqMubQDht57ztoeu.P.cZUt70_.Sxi.ga1WNtx4F8miItTO3I;
-        path=/; expires=Sat, 05-Jul-25 01:38:26 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=ll5Ik2m_Uiy4Qaj0lzEw409tE8w5zMQ9_.tLr8Q4j8s-1751678042-1.0.1.1-LDJQuohOEeDXjzFVr9EqhjK4de.7KEKRzbU324eBaf8Tc879zWzacHQ65ucUXbuGQM8_zv3fMGEt0UUky_v.lqN4Rirw4XFUz46T.eYDKCY;
+        path=/; expires=Sat, 05-Jul-25 01:44:02 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=dgyCRHN8ba2scfoJ5t_mKZEh95r.9k.gfMfQD4etc.g-1751677706524-0.0.1.1-604800000;
+      - _cfuvid=cAFhGs1vw_Pu.S5liSPsZ7uaTY6pCtRqDIdATapiUnA-1751678042447-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f89d3ec04397-EWR
+      - 95a300cfdfd742d1-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplg9Gi2qOp3MvXBdG445mbWuMp5V",
+          "id": "chatcmpl-BpllZbkLc2cOaG733SzPEvmtSbhxj",
           "object": "chat.completion",
-          "created": 1751677705,
+          "created": 1751678041,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that there are no memories available about the user.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation '0' indicates that there are no memories available about the user.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -988,9 +988,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 706,
-            "completion_tokens": 37,
-            "total_tokens": 743,
+            "prompt_tokens": 705,
+            "completion_tokens": 40,
+            "total_tokens": 745,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1005,7 +1005,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:08:26 GMT
+  recorded_at: Sat, 05 Jul 2025 01:14:02 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1062,7 +1062,7 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"List all your memories about me.\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x0000000129bf94e0>\"\n  ],\n  \"available_tools\":
+        [\n    \"#<DSPy::HistoryEntry:0x0000000115b27760>\"\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -1142,7 +1142,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:08:27 GMT
+      - Sat, 05 Jul 2025 01:14:04 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1154,57 +1154,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1133'
+      - '1529'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1136'
+      - '1533'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9966'
+      - '9936'
       X-Ratelimit-Remaining-Tokens:
       - '198027'
       X-Ratelimit-Reset-Requests:
-      - 4m45.718s
+      - 9m4.939s
       X-Ratelimit-Reset-Tokens:
       - 591ms
       X-Request-Id:
-      - req_a1b8586972621185d0d42a77f7297e91
+      - req_4e60c9c6314835bede1550802abde2ed
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=dxhZx.OAeptJXa9W1O62E94DEQTMvPq3Vj6hjDbakaI-1751677707-1.0.1.1-KdwwQnWd8q49Q9pD6eaISyxTEXLMhIVL4qFCZbHK19jpnuB_SpMDG1WL.n3MwCsI.qvOVymxvuCeTgdqg36aHPPnZKndJKVOrdosXMWCfZI;
-        path=/; expires=Sat, 05-Jul-25 01:38:27 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=O7aikRPtOPh4KjsopKF5s38shle6jwV1n3TnQJzw8mU-1751678044-1.0.1.1-NFVqFXjaF9s8h3oMuxutHvGT_Q.Fwk.6ydXA6H3SwEJB8RMQazanysedLl3N4ywtwiq2g4GNr1qg_oxL9myR4C6WV9DNgYxIsWuYNb5Y.GY;
+        path=/; expires=Sat, 05-Jul-25 01:44:04 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=XoKgIFWru4eHErgwkSSXxluSTC.kIFuJrbTgNP8uVJU-1751677707871-0.0.1.1-604800000;
+      - _cfuvid=uCEIA_QE6CUREtZ4TR.F4cHmQal2Xn0D.b83kkutkII-1751678044170-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f8a2bc794397-EWR
+      - 95a300d61d3242d1-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplgAkvrlhBcEtSo1eDBFb2LqEPYX",
+          "id": "chatcmpl-BpllaUzG9ovq1c453uUC1Xl9xc1JX",
           "object": "chat.completion",
-          "created": 1751677706,
+          "created": 1751678042,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about listing all memories, I should first retrieve the keys of all stored memories. This will allow me to gather the relevant information about you. I will use the 'memory_list' tool to get all the memory keys.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about listing all memories, I should first retrieve the keys of all stored memories. This will allow me to gather the relevant information about you. I will use the 'memory_list' tool to get all memory keys.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1213,9 +1213,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1764,
-            "completion_tokens": 77,
-            "total_tokens": 1841,
+            "prompt_tokens": 1763,
+            "completion_tokens": 76,
+            "total_tokens": 1839,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1230,5 +1230,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:08:27 GMT
+  recorded_at: Sat, 05 Jul 2025 01:14:03 GMT
 recorded_with: VCR 6.3.1

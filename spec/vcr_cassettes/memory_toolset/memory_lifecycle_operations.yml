@@ -135,7 +135,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:07:51 GMT
+      - Sat, 05 Jul 2025 01:13:09 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -147,50 +147,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '822'
+      - '962'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '826'
+      - '2951'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9989'
+      - '9974'
       X-Ratelimit-Remaining-Tokens:
       - '198038'
       X-Ratelimit-Reset-Requests:
-      - 1m27.141s
+      - 3m40.421s
       X-Ratelimit-Reset-Tokens:
       - 588ms
       X-Request-Id:
-      - req_ac6df57ad8c99a5664ec30af471fd1fc
+      - req_8a36b9dd554fd0ba68f53b798f226dca
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=9UJp8F9dINJ.mHjMhgzfZN.bLg.2AVhNJVaHjqxZI_0-1751677671-1.0.1.1-EN.wTk51ox5lFFgWX6Er9bnn9VuS1SYEHQwP4AoYQ3DVbs6ZauMKW8IIiyQV4sKsLhAp614sr68U2ouVR76AatkcqQ0VuhwiYm0PQWdmTms;
-        path=/; expires=Sat, 05-Jul-25 01:37:51 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=jUlG7yQFF52H0IyqVvH5fqA651_0x.vFBctvHMM5Z1I-1751677989-1.0.1.1-_VdYJrybj.CsDdYK01zvOxsX0nV56YMhBH9VaAKTn9es7QSzeHMovYnxF528CIiYeWU9BLUrLXZPqg66UJYkuvRDPEEosk6i9NYl1iqR8qg;
+        path=/; expires=Sat, 05-Jul-25 01:43:09 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=smnCss8VfZ1Sr8ZSpshdYWMDAkFvTEOk1q0MXlkcCfM-1751677671802-0.0.1.1-604800000;
+      - _cfuvid=6msFvnfAMN9nxmo8f4U1DuC.kH5Wxs2iYaCn7znK4zU-1751677989927-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f7c34e36d123-EWR
+      - 95a2ff7a5fcc7c6a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplfbBZdQcSNpGwzonEeXLbxm7qeD",
+          "id": "chatcmpl-Bplkj9PP4gqnU46LSJA8enSAX7KA6",
           "object": "chat.completion",
-          "created": 1751677671,
+          "created": 1751677989,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -210,7 +210,7 @@ http_interactions:
             "completion_tokens": 72,
             "total_tokens": 1814,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1664,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -223,7 +223,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:07:51 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:09 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -261,7 +261,7 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Remember that my hometown is Seattle.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x000000011f5c1dc0>\"\n  ],\n  \"observation\":
+        \"Remember that my hometown is Seattle.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115a82260>\"\n  ],\n  \"observation\":
         \"Stored memory ''hometown'' successfully\"\n}\n```\n\nRespond with the corresponding
         output schema fields wrapped in a ```json ``` block,\nstarting with the heading
         `## Output values`."}],"temperature":0.0}'
@@ -302,7 +302,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:07:52 GMT
+      - Sat, 05 Jul 2025 01:13:10 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -314,57 +314,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '810'
+      - '733'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '813'
+      - '736'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9989'
+      - '9973'
       X-Ratelimit-Remaining-Tokens:
       - '199237'
       X-Ratelimit-Reset-Requests:
-      - 1m34.794s
+      - 3m45.813s
       X-Ratelimit-Reset-Tokens:
       - 228ms
       X-Request-Id:
-      - req_4301beb8c0d6ba47cddf1d654cf00126
+      - req_1371f13920263d7be4a53c4fbe81e3bd
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=4WmJlkJG0SprOxzHvjlnQ3NYv0JRaRma7vj5.26qAvU-1751677672-1.0.1.1-CtE2d.dkMwrjQ795iH4cpsMxoYu64NijO7DVR2HZJtQ5tmpex_ud8svlOuawiGeXwvANUcmqgiEFhBvkEaJtuJFuOmBuClpF0SYuwfiyFX8;
-        path=/; expires=Sat, 05-Jul-25 01:37:52 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=hJRtvGwnklnwXLjNOmmz.jqqgVq_qeKEKtwGSrCobKs-1751677990-1.0.1.1-Qu.RQB_s1PHb9bXqN9.Vane7ZINcZkhQ2O1bZpZ9.j6eBT8aQJsH.NF._RYruS8kR2hdReu.BYRsMlIqqh01H8FDLZ8Ost0d1wGSa9HI0_s;
+        path=/; expires=Sat, 05-Jul-25 01:43:10 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=VcWty81OCLruuUja6Ty0vuMDJiEk.KwLS05JonXVY9s-1751677672773-0.0.1.1-604800000;
+      - _cfuvid=JjZt_YFTLDRvJ5cF_FG3Z1Y51zrRsYOCpRcG2fTp9wA-1751677990971-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f7c98ac2d123-EWR
+      - 95a2ff8de9777c6a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplfbtcGMgedxXZ7d9N7KXnbh0mRI",
+          "id": "chatcmpl-BplkkAWNA29iHJdWhOhShxPzWu2EG",
           "object": "chat.completion",
-          "created": 1751677671,
+          "created": 1751677990,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The memory of the hometown has been successfully stored, indicating that the system can now recall this information in future interactions.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The memory of the hometown has been successfully stored, indicating that the system can recall this information in the future.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -373,9 +373,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 713,
-            "completion_tokens": 47,
-            "total_tokens": 760,
+            "prompt_tokens": 711,
+            "completion_tokens": 46,
+            "total_tokens": 757,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -390,7 +390,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:07:52 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:10 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -447,7 +447,7 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Remember that my hometown is Seattle.\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x000000011f5c1dc0>\"\n  ],\n  \"available_tools\":
+        [\n    \"#<DSPy::HistoryEntry:0x0000000115a82260>\"\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -527,7 +527,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:07:53 GMT
+      - Sat, 05 Jul 2025 01:13:12 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -539,50 +539,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '919'
+      - '804'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '926'
+      - '807'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9988'
+      - '9972'
       X-Ratelimit-Remaining-Tokens:
       - '198027'
       X-Ratelimit-Reset-Requests:
-      - 1m42.44s
+      - 3m53.484s
       X-Ratelimit-Reset-Tokens:
       - 591ms
       X-Request-Id:
-      - req_8b43162841685676477af200ae4cc3ba
+      - req_e4f92e0ffe839d8df5d9f27d103c4608
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=f8zZRDQ_pnqXsB8bOYzcf295bWVml.rvkcmV6jwA4pA-1751677673-1.0.1.1-V84eFY2yp_4O4k1VtQU2pQ0DISzbHnzaMHYHVGMttZ_LbhjtqoSkFezc695jDtWsl.zVT5KkGCQWtTviAGfjiV.SBZfX4rRKb1pbevGnvbg;
-        path=/; expires=Sat, 05-Jul-25 01:37:53 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=bJKYeE1wGPysc3b9OVnpRYgKff0IyErqcRVwquCwMBk-1751677992-1.0.1.1-jsLJF0.hQULYt5ofX3gtL1b_plR5W5a62QJKvGDnM7hB2M3aJx6HX0MtDgAKCv.Y8FIqc7clJ6MTx4qMqppaI3K9IZMq6qIr54MzH18dhYs;
+        path=/; expires=Sat, 05-Jul-25 01:43:12 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=pxUh401Ft36cwBxcmLJ4b9RzkugT1b6srMlPdycV8JY-1751677673888-0.0.1.1-604800000;
+      - _cfuvid=j_XooG5PFpRyO45OKkUUw42fFTmTMcyGwDF6YVjuJz8-1751677992015-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f7cf9883d123-EWR
+      - 95a2ff949c837c6a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplfd12JSGKXyVWQa0szTqQKVXVhw",
+          "id": "chatcmpl-BplkloQ2UCoRDHuNkhjHSz9HUarqW",
           "object": "chat.completion",
-          "created": 1751677673,
+          "created": 1751677991,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -598,9 +598,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1765,
+            "prompt_tokens": 1763,
             "completion_tokens": 72,
-            "total_tokens": 1837,
+            "total_tokens": 1835,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -615,7 +615,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:07:53 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:11 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -752,7 +752,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:07:55 GMT
+      - Sat, 05 Jul 2025 01:13:13 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -764,50 +764,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1500'
+      - '1031'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1503'
+      - '1034'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9987'
+      - '9972'
       X-Ratelimit-Remaining-Tokens:
       - '198033'
       X-Ratelimit-Reset-Requests:
-      - 1m49.971s
+      - 4m1.077s
       X-Ratelimit-Reset-Tokens:
       - 589ms
       X-Request-Id:
-      - req_75a879132d489d25c9daf5bef59db56d
+      - req_2de10d398105f9539c997361ab2e594a
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=JZ8OWfZbORkzrOnSAq10VivWhGVLj5PtI_QVaAvEYyc-1751677675-1.0.1.1-xbgzBwnBV3y.gL9Vj6eN.iYNDmcUYTG4ZWH0OMOcQ.SdCwdvIoalwWnrQqiaNhfcYfLSHsOC6JIL8oukI4eSyfe9vG5ikYuZMf.liqwUYPw;
-        path=/; expires=Sat, 05-Jul-25 01:37:55 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=WgRCpvR0a_hk.fY8yI.uzHmAK.6zZJGh4abJx7W17gY-1751677993-1.0.1.1-sLxzUp09lycdqUOg7lKI2MSgnjaNdhTxKjlg_M.0_uqQgGEpbvHwe8zKMoMjERTMW7UiEQt3vzCqQEbJYUmNRpT1k7CEE1j0JMQh72yndS8;
+        path=/; expires=Sat, 05-Jul-25 01:43:13 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=taI_XnY7zuEPFpQfvgyINgWK2CCOQKpIt9H1q3iu15Q-1751677675585-0.0.1.1-604800000;
+      - _cfuvid=iP3tFA7ocV08OIA.Gem3mFoSeQRRLXVpmpnio2OpF5Q-1751677993271-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f7d69e84d123-EWR
+      - 95a2ff9af8757c6a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplfe0JbhoFvXAVmp0Gu0FQ7cS2Nl",
+          "id": "chatcmpl-BplkmCzMp6DQXHnC8kcawBQaEbAHU",
           "object": "chat.completion",
-          "created": 1751677674,
+          "created": 1751677992,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -827,7 +827,7 @@ http_interactions:
             "completion_tokens": 89,
             "total_tokens": 1835,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1664,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -840,7 +840,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:07:55 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:13 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -879,7 +879,7 @@ http_interactions:
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
         \"Actually, update my hometown to Portland instead of Seattle.\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x00000001490b8570>\"\n  ],\n  \"observation\":
+        [\n    \"#<DSPy::HistoryEntry:0x0000000115c29578>\"\n  ],\n  \"observation\":
         \"Updated memory ''hometown'' successfully\"\n}\n```\n\nRespond with the corresponding
         output schema fields wrapped in a ```json ``` block,\nstarting with the heading
         `## Output values`."}],"temperature":0.0}'
@@ -920,7 +920,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:07:56 GMT
+      - Sat, 05 Jul 2025 01:13:14 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -932,57 +932,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '752'
+      - '639'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '786'
+      - '643'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9986'
+      - '9971'
       X-Ratelimit-Remaining-Tokens:
       - '199231'
       X-Ratelimit-Reset-Requests:
-      - 1m56.712s
+      - 4m8.52s
       X-Ratelimit-Reset-Tokens:
       - 230ms
       X-Request-Id:
-      - req_50e8003d7be6004735ac5621c96dfdc2
+      - req_95c4d9faa8d6bf0833d5249361a011fc
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=wdWpKSFOt2zqWgLAlrmLT9kOM4w0t_O8loc37X_9Sfs-1751677676-1.0.1.1-08FWqeXUkmFeawvQb1nF2qVTjUbs8CiRsOoH41BVOEuZbD.iixeEJ13qaZRv9UQFVhvreWKgP9r6qlr1NM4NdMu6Trsv6qPo2Upn0USlfKU;
-        path=/; expires=Sat, 05-Jul-25 01:37:56 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=umvz1uBDEd_bo07g91i4thK5l5Abq72rDhrhXyU7xiE-1751677994-1.0.1.1-mYcJJvz_0TyDY4lQpKcvcHhvlK6jRKrbb.7GUG.Q5rfVbglOs6MNE6l2MfgdKhhIMbVd8v1ie4VYAsKaHwgtXFlhMZR2wlnHcJfOL6ZWvjs;
+        path=/; expires=Sat, 05-Jul-25 01:43:14 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=W9SFqgLo7azS8fHngKdp6T0rEjGF8k4z7RnBevgul70-1751677676758-0.0.1.1-604800000;
+      - _cfuvid=gPi6u9meaA2p6kKKp8dW4G_mL1xgTEFLWG123WkI7lU-1751677994105-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f7e27dc1d123-EWR
+      - 95a2ffa2cc7e7c6a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplfgXjOO2mGmRFT1pOBHuBE33lCS",
+          "id": "chatcmpl-Bplkn8bdyS0bRGNefCVqMTpmEOw7i",
           "object": "chat.completion",
-          "created": 1751677676,
+          "created": 1751677993,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The hometown has been successfully updated to Portland, indicating that the action was executed correctly.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the update to the hometown was successful.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -992,8 +992,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 715,
-            "completion_tokens": 41,
-            "total_tokens": 756,
+            "completion_tokens": 36,
+            "total_tokens": 751,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1008,7 +1008,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:07:56 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:13 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1065,7 +1065,7 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Actually, update my hometown to
-        Portland instead of Seattle.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001490b8570>\"\n  ],\n  \"available_tools\":
+        Portland instead of Seattle.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115c29578>\"\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -1145,7 +1145,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:07:58 GMT
+      - Sat, 05 Jul 2025 01:13:15 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1157,57 +1157,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1133'
+      - '1026'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1136'
+      - '1029'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9985'
+      - '9970'
       X-Ratelimit-Remaining-Tokens:
       - '198021'
       X-Ratelimit-Reset-Requests:
-      - 2m4.307s
+      - 4m16.314s
       X-Ratelimit-Reset-Tokens:
       - 593ms
       X-Request-Id:
-      - req_2331925fae3d075d8ab1005dd39e29dd
+      - req_422038d9968efe6fdd6927c6454bf23e
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=9gX3f9ZGdvJxds.Ix.CtGiTzSipbGmO2sZmxsNmN9N0-1751677678-1.0.1.1-nweCkWFUFH6nJwb6c6nABn6iL7C71GvhlPjFSlVw68YZtOTOsPTZYaRP0yjc6Ip.mMLI6fVFE6wFCBDor9NsDFIW9nj8jsDRS3NOBMtTy5M;
-        path=/; expires=Sat, 05-Jul-25 01:37:58 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=PXDMmxZQgPTc7AjyzbgfH.nErC5AJ6k19S1vDRaLYQ4-1751677995-1.0.1.1-S712ux63YD.bgeCb.JhS4gysE7sppoVNwTvpfOlOdEOA4YB.hpT405hZ7.mvUPqaK0s2._Eotw39xrH3gUTeBQRS8AF3kwa4mYw.T_5ZMcM;
+        path=/; expires=Sat, 05-Jul-25 01:43:15 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=xlCz6nmMIZZe7r._EIt63lrzinR2qmxP31W_Z28ygkg-1751677678155-0.0.1.1-604800000;
+      - _cfuvid=GfHKla5VfifVlzFoq.WZRoy.GpnvKVmRf5aoyoXV1IE-1751677995313-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f7e90af0d123-EWR
+      - 95a2ffa7ff4e7c6a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplfhUB37HPyRgQdUdnCI0ZlIBS6a",
+          "id": "chatcmpl-Bplko1j4KKe2czNXMHN7YtsqixTCM",
           "object": "chat.completion",
-          "created": 1751677677,
+          "created": 1751677994,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To update the hometown from Seattle to Portland, I need to use the 'memory_update' tool to change the existing memory value associated with the hometown key. I will first check if there is a memory entry for the hometown to ensure I am updating the correct value.\",\n  \"action\": \"memory_update\",\n  \"action_input\": {\n    \"key\": \"hometown\",\n    \"value\": \"Portland\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to update the memory entry for the user's hometown from Seattle to Portland. Since the action is to update an existing memory, I will use the 'memory_update' tool with the appropriate key and new value.\",\n  \"action\": \"memory_update\",\n  \"action_input\": {\n    \"key\": \"hometown\",\n    \"value\": \"Portland\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1217,8 +1217,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1767,
-            "completion_tokens": 100,
-            "total_tokens": 1867,
+            "completion_tokens": 90,
+            "total_tokens": 1857,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1233,7 +1233,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:07:57 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:15 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1369,7 +1369,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:07:59 GMT
+      - Sat, 05 Jul 2025 01:13:16 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1381,50 +1381,50 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1623'
+      - '1031'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1628'
+      - '1038'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9984'
+      - '9969'
       X-Ratelimit-Remaining-Tokens:
       - '198043'
       X-Ratelimit-Reset-Requests:
-      - 2m11.636s
+      - 4m23.735s
       X-Ratelimit-Reset-Tokens:
       - 586ms
       X-Request-Id:
-      - req_f732e0183e33050893410fdf13d3c31f
+      - req_5cda9e6b8593a2a19389f0991fa24e68
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=g80zdWkt.a0O2Jp9XwKd9wnFIujYHLah8qcBZJo6WTA-1751677679-1.0.1.1-hzl8dslZJ90r0KTRLW1XkjyyAX4yp8Kxr1P4.rT_Yc6gMqaXHzfNpiI.CpFCCD45vBC0NgYAa4wNpCdG.UOGmvqnFWkpPDff4zzh.TOYwkU;
-        path=/; expires=Sat, 05-Jul-25 01:37:59 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=qK45w7FYapLLztmO.Qpvxa_sH3.PHcQNof.9K7JucAU-1751677996-1.0.1.1-PKjgQM4jvE.Ff76gmFzjR8ICtQamT9xI46.3EExxDGK3mQE1lydUM5hyc1ZP5wCMjJWfCRP2uU38xIc6vvTy9ws2KI73WGScQzhzmEj6FE4;
+        path=/; expires=Sat, 05-Jul-25 01:43:16 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=3jfuL0Bv2eNqWOUJrChB7VxUdD6AZ77dwhEXvHTmc4g-1751677679949-0.0.1.1-604800000;
+      - _cfuvid=V07v2u483cw41qXRCJ1RgJBA_s5Wf.evMtQjLAp9w7w-1751677996547-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f7f14bd8d123-EWR
+      - 95a2ffaf8b387c6a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplfiMiCwFcrnT8D5plN9rOfIXH9r",
+          "id": "chatcmpl-BplkpfwwLBlhoKntapPatgJZuNxaY",
           "object": "chat.completion",
-          "created": 1751677678,
+          "created": 1751677995,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -1444,7 +1444,7 @@ http_interactions:
             "completion_tokens": 93,
             "total_tokens": 1833,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1664,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -1457,7 +1457,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:07:59 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:16 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1495,7 +1495,7 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"What is my hometown?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x000000014927f700>\"\n  ],\n  \"observation\":
+        \"What is my hometown?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115d606a8>\"\n  ],\n  \"observation\":
         \"Stored memory ''hometown'' successfully\"\n}\n```\n\nRespond with the corresponding
         output schema fields wrapped in a ```json ``` block,\nstarting with the heading
         `## Output values`."}],"temperature":0.0}'
@@ -1536,7 +1536,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:08:00 GMT
+      - Sat, 05 Jul 2025 01:13:17 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1548,57 +1548,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '770'
+      - '969'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '773'
+      - '972'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9983'
+      - '9968'
       X-Ratelimit-Remaining-Tokens:
       - '199241'
       X-Ratelimit-Reset-Requests:
-      - 2m18.456s
+      - 4m31.137s
       X-Ratelimit-Reset-Tokens:
       - 227ms
       X-Request-Id:
-      - req_4e30c9527790d98c1dd7bc30d1bf39d3
+      - req_d1759fe0da007121721702290ad24079
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=ca95d2TU5B6r8cv_JZZiowR6YXWuP7m6UT4I4tJhT9k-1751677680-1.0.1.1-5cUjRMFbXp5.inC1M7oTVCvhZfz9OuMlqMxqm3QuXL4OGC.GvgXdERoZ55ePswjssqdlxz_QpIxeVV3WFOWdJAIbsgpeeDrjHEx6eO5vexg;
-        path=/; expires=Sat, 05-Jul-25 01:38:00 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=GF6Zdo1zWKZb5BhyvIVyD.gUlc5SZe4bbCy_gxSrxYA-1751677997-1.0.1.1-gRvaBVz8W05UjdopXp_bTLspuS9kYjh1FVu4JtEWxHQkn0nxRmQcG9v5ABoIOpnsgkqqz.OCKuk_MDoOVquDxriWMB9EQ21lSJlovMBP0j0;
+        path=/; expires=Sat, 05-Jul-25 01:43:17 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=HjEtu6Uv_iXtSGNY_8LIRjPWTg.GFSiFyOlUW9F50fw-1751677680915-0.0.1.1-604800000;
+      - _cfuvid=LlxtB3NLwcfwu0AHt.P3S.KRJye7GEXBzw0fXTMy_5o-1751677997711-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f7fcab19d123-EWR
+      - 95a2ffb73f097c6a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplfkj2gKy9vEJDrtTwOpKHMwirql",
+          "id": "chatcmpl-Bplkq29vV0XPxwOtyyi0qylZBrwFE",
           "object": "chat.completion",
-          "created": 1751677680,
+          "created": 1751677996,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the hometown has been successfully stored in memory, suggesting that the system can now recall this information when needed.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the hometown has been successfully stored in memory, suggesting that the previous action was successful.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1607,9 +1607,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 708,
-            "completion_tokens": 49,
-            "total_tokens": 757,
+            "prompt_tokens": 710,
+            "completion_tokens": 45,
+            "total_tokens": 755,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1624,7 +1624,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:08:00 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:17 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1681,7 +1681,7 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"What is my hometown?\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x000000014927f700>\"\n  ],\n  \"available_tools\":
+        [\n    \"#<DSPy::HistoryEntry:0x0000000115d606a8>\"\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -1761,7 +1761,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:08:02 GMT
+      - Sat, 05 Jul 2025 01:13:18 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1773,57 +1773,57 @@ http_interactions:
       Openai-Organization:
       - user-ftp1nrq85er9xnlu0la8snte
       Openai-Processing-Ms:
-      - '1570'
+      - '1003'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1573'
+      - '1006'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9983'
+      - '9967'
       X-Ratelimit-Remaining-Tokens:
       - '198031'
       X-Ratelimit-Reset-Requests:
-      - 2m26.138s
+      - 4m38.62s
       X-Ratelimit-Reset-Tokens:
       - 590ms
       X-Request-Id:
-      - req_fafec6c2d0571f1e738917814b2cd583
+      - req_511a3d99d1d751104f186be22f908f07
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=uNcPyWat4mE7QRKehmCCLfM6Qukw1tEKkq.iN3bdZbM-1751677682-1.0.1.1-atwvWOPyajNE_KGlhsR0y.t2BrltabHNzxtIDz9AUIvpEsVBsqvU9S33TS7nBLNJV2K2LroTdIrtCbLAtxJk3ZzlhgFEpl0Y51FtKYfoB_0;
-        path=/; expires=Sat, 05-Jul-25 01:38:02 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=ekmoiK9vsSTYrBWmE64FL.t_3iTrPwU18bi07lflVuo-1751677998-1.0.1.1-jdbSCTyyFy3RUaghmY2zdsrKGMdBXRf.KBwnQ6RcXMc0BVryJCj6tugB9x._RhLngX4a3Rbz3iFCKvHRrJkQdUVLpCPJj_1DvbKefGabkrs;
+        path=/; expires=Sat, 05-Jul-25 01:43:18 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=8WF9yAaS5I5vDisqGtGA.584LCvrgVOhOt814F8mdHo-1751677682686-0.0.1.1-604800000;
+      - _cfuvid=d002TNRZBxZNrTjJYro1JsZ4GgEiF.jYPCvwQ01qfpE-1751677998913-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2f8028eb3d123-EWR
+      - 95a2ffbe8a697c6a-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplflYmZ5dbHrs0IQnHXFbQgA1eu4",
+          "id": "chatcmpl-Bplkr8dwKCMouI3Nx4XABxgNuAjJp",
           "object": "chat.completion",
-          "created": 1751677681,
+          "created": 1751677997,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about my hometown, I need to check if I have any stored memories related to it. I can use the 'memory_search' tool to look for any memories that might contain information about my hometown.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"hometown\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to determine what my hometown is. Since the history is empty, I should check if there are any stored memories that might contain this information. I will use the 'memory_search' tool to look for any memories related to 'hometown'.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"hometown\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1832,9 +1832,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1760,
-            "completion_tokens": 83,
-            "total_tokens": 1843,
+            "prompt_tokens": 1762,
+            "completion_tokens": 90,
+            "total_tokens": 1852,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1849,5 +1849,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:08:02 GMT
+  recorded_at: Sat, 05 Jul 2025 01:13:18 GMT
 recorded_with: VCR 6.3.1

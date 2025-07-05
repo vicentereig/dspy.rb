@@ -37,7 +37,7 @@ module DSPy
     input do
       const :question, String,
         description: "The question to answer"
-      const :history, T::Array[HistoryEntry],
+      const :history, T::Array[T::Hash[Symbol, T.untyped]],
         description: "Previous thoughts and actions, including observations from tools. The agent MUST use information from the history to inform its actions and final answer. Each entry is a hash representing a step in the reasoning process."
       const :available_tools, T::Array[T::Hash[String, T.untyped]],
         description: "Array of available tools with their JSON schemas. The agent MUST choose an action from the tool names in this list or use \"finish\". For each tool, use the name exactly as specified and provide action_input as a JSON object matching the tool's schema."
@@ -67,7 +67,7 @@ module DSPy
     input do
       const :question, String,
         description: "The original question"
-      const :history, T::Array[HistoryEntry],
+      const :history, T::Array[T::Hash[Symbol, T.untyped]],
         description: "Previous thoughts, actions, and observations. Each entry is a hash representing a step in the reasoning process."
       const :observation, String,
         description: "The result from the last action"
@@ -214,7 +214,7 @@ module DSPy
         # Generate thought and action
         thought_obj = @thought_generator.forward(
           question: question,
-          history: history,
+          history: history.map(&:to_h),
           available_tools: available_tools_desc
         )
 
@@ -343,7 +343,7 @@ module DSPy
 
       observation_result = @observation_processor.forward(
         question: question,
-        history: history,
+        history: history.map(&:to_h),
         observation: observation
       )
 
@@ -360,7 +360,7 @@ module DSPy
     def generate_forced_final_answer(question, history, available_tools_desc, observation_result, iteration)
       final_thought = @thought_generator.forward(
         question: question,
-        history: history,
+        history: history.map(&:to_h),
         available_tools: available_tools_desc
       )
 
