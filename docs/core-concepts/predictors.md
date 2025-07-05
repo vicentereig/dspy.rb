@@ -252,6 +252,149 @@ service_agent = DSPy::ReAct.new(
 )
 ```
 
+## DSPy::CodeAct
+
+CodeAct enables agents to write and execute Ruby code dynamically to solve complex tasks. Unlike ReAct which uses predefined tools, CodeAct generates executable Ruby code that can perform calculations, data manipulation, and complex operations.
+
+### When to Use CodeAct
+
+- Mathematical computations and data analysis
+- Complex data transformations
+- Dynamic algorithm implementation
+- Tasks requiring control flow and variable storage
+- Scenarios where predefined tools are insufficient
+
+### Basic Usage
+
+```ruby
+class DataAnalysis < DSPy::Signature
+  description "Analyze data using Ruby code"
+  
+  input do
+    const :task, String
+  end
+  
+  output do
+    const :solution, String
+  end
+end
+
+analyzer = DSPy::CodeAct.new(DataAnalysis, max_iterations: 5)
+result = analyzer.call(task: "Calculate the average of numbers 1 through 100")
+
+puts result.solution
+# => "50.5"
+
+# Access the execution history
+puts result.history
+# => Array showing step-by-step code execution
+
+puts result.iterations     # => 2
+puts result.execution_context  # => Variables and results from execution
+```
+
+### Code Execution Flow
+
+```ruby
+class MathSolver < DSPy::Signature
+  description "Solve mathematical problems with Ruby code"
+  
+  input do
+    const :problem, String
+  end
+  
+  output do
+    const :answer, String
+  end
+end
+
+solver = DSPy::CodeAct.new(MathSolver, max_iterations: 10)
+
+result = solver.call(
+  problem: "Find the sum of all prime numbers less than 100"
+)
+
+# The agent will:
+# 1. Think: "I need to find prime numbers less than 100"
+# 2. Code: def is_prime?(n); ...; end
+# 3. Execute: Method defined successfully
+# 4. Think: "Now I'll find all primes and sum them"
+# 5. Code: primes = (2...100).select { |n| is_prime?(n) }; primes.sum
+# 6. Execute: 1060
+# 7. Finish: Return the result
+
+puts result.answer      # => "1060"
+puts result.iterations  # => 3
+
+# Examine the code execution history
+result.history.each_with_index do |entry, i|
+  puts "Step #{entry[:step]}:"
+  puts "  Thought: #{entry[:thought]}"
+  puts "  Code: #{entry[:ruby_code]}"
+  puts "  Result: #{entry[:execution_result]}"
+  puts "  Error: #{entry[:error_message]}" if entry[:error_message]
+end
+```
+
+### Error Handling and Recovery
+
+```ruby
+class RobustCalculator < DSPy::Signature
+  description "Perform calculations with error recovery"
+  
+  input do
+    const :expression, String
+  end
+  
+  output do
+    const :result, String
+  end
+end
+
+calculator = DSPy::CodeAct.new(RobustCalculator, max_iterations: 5)
+
+result = calculator.call(expression: "Calculate factorial of 10")
+
+# If the agent writes incorrect code, it can:
+# 1. Detect the error from execution feedback
+# 2. Analyze the error message
+# 3. Write corrected code
+# 4. Successfully complete the task
+
+puts result.result   # => "3628800"
+```
+
+### Complex Data Processing
+
+```ruby
+class DataProcessor < DSPy::Signature
+  description "Process and analyze data structures"
+  
+  input do
+    const :data_task, String
+  end
+  
+  output do
+    const :processed_result, String
+  end
+end
+
+processor = DSPy::CodeAct.new(DataProcessor, max_iterations: 8)
+
+result = processor.call(
+  data_task: "Create a hash mapping letters to their ASCII values for 'HELLO'"
+)
+
+# The agent can:
+# - Create complex data structures
+# - Iterate through collections
+# - Apply transformations
+# - Format output appropriately
+
+puts result.processed_result
+# => "{'H' => 72, 'E' => 69, 'L' => 76, 'L' => 76, 'O' => 79}"
+```
+
 ## Predictor Comparison
 
 ### Performance Characteristics
@@ -260,7 +403,8 @@ service_agent = DSPy::ReAct.new(
 |-----------|-------|----------|-------------|
 | **Predict** | Fastest | Simple classification, extraction | Low |
 | **ChainOfThought** | Moderate | Complex reasoning, analysis | Medium-High |
-| **ReAct** | Slowest | Multi-step tasks, tool usage | High |
+| **ReAct** | Slower | Multi-step tasks, tool usage | High |
+| **CodeAct** | Slowest | Dynamic programming, calculations | Very High |
 
 ### Choosing the Right Predictor
 
@@ -273,6 +417,9 @@ analyst = DSPy::ChainOfThought.new(ComplexAnalysis)
 
 # Multi-step tasks with external data
 agent = DSPy::ReAct.new(AgentTask, tools: [tool1, tool2])
+
+# Dynamic programming and calculations
+programmer = DSPy::CodeAct.new(ProgrammingTask, max_iterations: 10)
 ```
 
 ## Error Handling
@@ -433,6 +580,7 @@ end
 # - dspy.predict
 # - dspy.chain_of_thought  
 # - dspy.react
+# - dspy.codeact (includes code_execution events)
 
 # Enable logging to see events
 DSPy.configure do |config|

@@ -223,6 +223,57 @@ end
 
 For more details on creating tools and toolsets, see the [Toolsets documentation](toolsets.md).
 
+### Module Using CodeAct for Dynamic Programming
+
+```ruby
+class DataAnalyst < DSPy::Module
+  def initialize
+    super
+    
+    @signature = Class.new(DSPy::Signature) do
+      description "Analyze data using Ruby code execution"
+      
+      input do
+        const :dataset_description, String
+        const :analysis_task, String
+      end
+      
+      output do
+        const :analysis_result, String
+      end
+    end
+    
+    @predictor = DSPy::CodeAct.new(@signature, max_iterations: 8)
+  end
+
+  def forward_untyped(dataset_description:, analysis_task:)
+    # Combine inputs for the code execution agent
+    task = "Dataset: #{dataset_description}\nTask: #{analysis_task}"
+    
+    result = @predictor.call(task: task)
+    
+    # CodeAct provides additional execution context
+    {
+      analysis_result: result.solution,
+      execution_steps: result.history.length,
+      code_executed: result.history.map { |h| h[:ruby_code] }.compact
+    }
+  end
+end
+
+# Usage
+analyst = DataAnalyst.new
+result = analyst.call(
+  dataset_description: "Array of sales data: [100, 150, 200, 300, 250]",
+  analysis_task: "Calculate the average and identify the highest sale"
+)
+
+puts result[:analysis_result]
+# => "Average: 200, Highest: 300"
+puts result[:execution_steps]
+# => 3
+```
+
 ## Language Model Configuration
 
 ### Using Custom Language Model
