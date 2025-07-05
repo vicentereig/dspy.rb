@@ -13,12 +13,12 @@ module DSPy
       extend T::Sig
 
       # Default models supported by informers
-      DEFAULT_MODEL = 'sentence-transformers/all-MiniLM-L6-v2'
+      DEFAULT_MODEL = 'Xenova/all-MiniLM-L6-v2'
       SUPPORTED_MODELS = [
-        'sentence-transformers/all-MiniLM-L6-v2',
-        'sentence-transformers/all-MiniLM-L12-v2',
-        'sentence-transformers/multi-qa-MiniLM-L6-cos-v1',
-        'sentence-transformers/paraphrase-MiniLM-L6-v2'
+        'Xenova/all-MiniLM-L6-v2',
+        'Xenova/all-MiniLM-L12-v2',
+        'Xenova/multi-qa-MiniLM-L6-cos-v1',
+        'Xenova/paraphrase-MiniLM-L6-v2'
       ].freeze
 
       sig { returns(String) }

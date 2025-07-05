@@ -1,0 +1,65 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/onnx/model_quantized.onnx
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - informers/1.2.1;
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      Content-Type:
+      - text/plain; charset=utf-8
+      Content-Length:
+      - '15'
+      Connection:
+      - keep-alive
+      Date:
+      - Sat, 05 Jul 2025 01:06:28 GMT
+      Etag:
+      - W/"f-mY2VvLxuxB7KhsoOdQTlMTccuAQ"
+      X-Powered-By:
+      - huggingface-moon
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      X-Request-Id:
+      - Root=1-68687a94-01736e7c616304e671e495b4
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Vary:
+      - Origin
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Set-Cookie:
+      - token=; Domain=huggingface.co; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;
+        Secure; SameSite=Lax
+      - token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=None
+      X-Error-Code:
+      - EntryNotFound
+      X-Error-Message:
+      - Entry not found
+      X-Cache:
+      - Error from cloudfront
+      Via:
+      - 1.1 4d89e7f6870714b602988e2ed1135996.cloudfront.net (CloudFront)
+      X-Amz-Cf-Pop:
+      - IAD55-P8
+      X-Amz-Cf-Id:
+      - 3HQm39y-3T0UkF4J81IdVHVCDcQxpeYxpVM161PW7jUM26XU85XgiQ==
+    body:
+      encoding: UTF-8
+      string: Entry not found
+  recorded_at: Sat, 05 Jul 2025 01:06:28 GMT
+recorded_with: VCR 6.3.1

@@ -399,24 +399,17 @@ RSpec.describe DSPy::Memory::MemoryManager do
   describe 'integration with different embedding engines' do
     context 'when using LocalEmbeddingEngine' do
       it 'works with local embedding engine' do
-        # Disable VCR and WebMock for model downloads from Hugging Face
-        VCR.turned_off do
-          WebMock.allow_net_connect!
+        VCR.use_cassette('memory/local_embedding_engine_usage') do
+          local_engine = DSPy::Memory::LocalEmbeddingEngine.new
+          local_manager = described_class.new(store: store, embedding_engine: local_engine)
           
-          begin
-            local_engine = DSPy::Memory::LocalEmbeddingEngine.new
-            local_manager = described_class.new(store: store, embedding_engine: local_engine)
-            
-            record = local_manager.store_memory("Test with local embeddings")
-            expect(record.embedding).to be_a(Array)
-            expect(record.embedding.length).to be > 0
-            
-            # Should be able to search semantically
-            results = local_manager.search_memories("test embeddings")
-            expect(results).to include(record)
-          ensure
-            WebMock.disable_net_connect!
-          end
+          record = local_manager.store_memory("Test with local embeddings")
+          expect(record.embedding).to be_a(Array)
+          expect(record.embedding.length).to be > 0
+          
+          # Should be able to search semantically
+          results = local_manager.search_memories("test embeddings")
+          expect(results).to include(record)
         end
       end
     end

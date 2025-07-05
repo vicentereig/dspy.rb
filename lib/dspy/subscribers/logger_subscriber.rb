@@ -236,7 +236,7 @@ module DSPy
           "status=#{status}",
           "duration_ms=#{duration}"
         ]
-        log_parts << "thought=\"#{thought&.truncate(100)}\"" if thought
+        log_parts << "thought=\"#{thought && thought.length > 100 ? thought[0..97] + '...' : thought}\"" if thought
         log_parts << "action=\"#{action}\"" if action
         log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
 

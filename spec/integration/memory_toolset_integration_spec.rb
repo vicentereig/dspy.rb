@@ -28,9 +28,9 @@ RSpec.describe 'Memory Toolset Integration with ReAct Agent', type: :integration
   
   let(:agent) do
     DSPy::ReAct.new(
-      signature: MemoryQA,
+      MemoryQA,
       tools: memory_tools,
-      max_retries: 3
+      max_iterations: 3
     )
   end
 

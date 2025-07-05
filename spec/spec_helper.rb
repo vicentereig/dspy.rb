@@ -19,6 +19,29 @@ end
 # Setup instrumentation subscribers
 DSPy::Instrumentation.setup_subscribers
 
+# Pre-download embedding model for tests
+begin
+  require 'dspy/memory/local_embedding_engine'
+  
+  # Allow HTTP connections temporarily to download the model
+  original_allow_setting = WebMock.net_connect_allowed?
+  WebMock.allow_net_connect!
+  
+  # Pre-download the model so it's available for tests
+  DSPy::Memory::LocalEmbeddingEngine.new
+  
+  puts "✓ Embedding model pre-downloaded successfully"
+rescue => e
+  puts "⚠ Could not pre-download embedding model: #{e.message}"
+ensure
+  # Restore original WebMock settings
+  if original_allow_setting
+    WebMock.allow_net_connect!
+  else
+    WebMock.disable_net_connect!
+  end
+end
+
 VCR.configure do |config|
   config.cassette_library_dir = "spec/vcr_cassettes"
   config.hook_into :webmock
