@@ -40,5 +40,8 @@ Gem::Specification.new do |spec|
   # Data processing
   spec.add_dependency "polars-df", "~> 0.20.0"
 
+  # Local embeddings
+  spec.add_dependency "informers", "~> 1.2"
+
   # Development dependencies are already specified in the Gemfile
 end
