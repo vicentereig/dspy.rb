@@ -61,7 +61,13 @@ module DSPy
         
         # Extract and normalize embeddings
         results.map do |result|
-          embedding = result.to_a
+          # Handle both single embeddings and batch results
+          embedding = case result
+                     when Array
+                       result.flatten  # Flatten in case of nested arrays
+                     else
+                       result.to_a.flatten
+                     end
           normalize_vector(embedding)
         end
       end

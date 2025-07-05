@@ -5,6 +5,7 @@ require_relative 'memory/memory_store'
 require_relative 'memory/in_memory_store'
 require_relative 'memory/embedding_engine'
 require_relative 'memory/local_embedding_engine'
+require_relative 'memory/memory_compactor'
 require_relative 'memory/memory_manager'
 
 module DSPy

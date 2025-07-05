@@ -1,0 +1,153 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The topic to outline\"\n    }\n  },\n  \"required\": [\n    \"topic\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The title of the article\"\n    },\n    \"sections\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"A list of section titles\"\n    },\n    \"section_subheadings\": {\n      \"type\":
+        \"object\",\n      \"propertyNames\": {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"array\",\n        \"items\": {\n          \"type\":
+        \"string\"\n        }\n      },\n      \"description\": \"Mapping from section
+        headings to subheadings\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"sections\",\n    \"section_subheadings\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Outline a thorough overview of a topic. Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"topic\": \"There Is a Liberal Answer to Elon
+        Musk\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2047'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 07:14:36 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '5983'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '5985'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9990'
+      X-Ratelimit-Remaining-Tokens:
+      - '199561'
+      X-Ratelimit-Reset-Requests:
+      - 1m23.387s
+      X-Ratelimit-Reset-Tokens:
+      - 131ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a510db6a125f74-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BprOQfOZozM9VUkDRXgmPYrCASrYw",
+          "object": "chat.completion",
+          "created": 1751699670,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"title\": \"Exploring the Liberal Perspective on Elon Musk's Influence\",\n  \"sections\": [\n    \"Introduction\",\n    \"Elon Musk: A Brief Overview\",\n    \"The Liberal Perspective on Innovation\",\n    \"Musk's Contributions to Technology and Society\",\n    \"Critiques from a Liberal Standpoint\",\n    \"Potential Solutions and Alternatives\",\n    \"Conclusion\"\n  ],\n  \"section_subheadings\": {\n    \"Introduction\": [\n      \"Purpose of the Article\",\n      \"Importance of the Topic\"\n    ],\n    \"Elon Musk: A Brief Overview\": [\n      \"Background and Achievements\",\n      \"Current Ventures\"\n    ],\n    \"The Liberal Perspective on Innovation\": [\n      \"Definition of Liberalism\",\n      \"Innovation as a Public Good\"\n    ],\n    \"Musk's Contributions to Technology and Society\": [\n      \"SpaceX and Space Exploration\",\n      \"Tesla and Sustainable Energy\",\n      \"Neuralink and the Future of Technology\"\n    ],\n    \"Critiques from a Liberal Standpoint\": [\n      \"Wealth Inequality\",\n      \"Corporate Influence on Politics\",\n      \"Environmental Concerns\"\n    ],\n    \"Potential Solutions and Alternatives\": [\n      \"Regulatory Frameworks\",\n      \"Public-Private Partnerships\",\n      \"Encouraging Ethical Innovation\"\n    ],\n    \"Conclusion\": [\n      \"Summary of Key Points\",\n      \"The Way Forward\"\n    ]\n  },\n  \"reasoning\": \"This outline begins with an introduction that sets the stage for discussing Elon Musk's impact from a liberal viewpoint. It provides a brief overview of Musk's background and achievements to contextualize the discussion. The liberal perspective on innovation is explored to frame the conversation around Musk's contributions. Each section delves into specific aspects of Musk's work, followed by critiques that highlight concerns from a liberal standpoint. Finally, the outline suggests potential solutions and alternatives to address these critiques, culminating in a conclusion that summarizes the discussion and suggests a way forward.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 454,
+            "completion_tokens": 405,
+            "total_tokens": 859,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 07:14:36 GMT
+recorded_with: VCR 6.3.1

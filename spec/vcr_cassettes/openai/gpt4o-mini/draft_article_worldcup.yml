@@ -1,0 +1,1052 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The topic to outline\"\n    }\n  },\n  \"required\": [\n    \"topic\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The title of the article\"\n    },\n    \"sections\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"A list of section titles\"\n    },\n    \"section_subheadings\": {\n      \"type\":
+        \"object\",\n      \"propertyNames\": {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"array\",\n        \"items\": {\n          \"type\":
+        \"string\"\n        }\n      },\n      \"description\": \"Mapping from section
+        headings to subheadings\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"sections\",\n    \"section_subheadings\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Outline a thorough overview of a topic. Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"topic\": \"World Cup 2002\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2023'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 07:14:46 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3699'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3705'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9989'
+      X-Ratelimit-Remaining-Tokens:
+      - '199567'
+      X-Ratelimit-Reset-Requests:
+      - 1m28.348s
+      X-Ratelimit-Reset-Tokens:
+      - 129ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a511285dc18ce0-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BprOc2YDVg4Ov7qu7nAsqQlSxPmBw",
+          "object": "chat.completion",
+          "created": 1751699682,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"title\": \"Overview of the 2002 FIFA World Cup\",\n  \"sections\": [\n    \"Introduction\",\n    \"Host Countries\",\n    \"Tournament Format\",\n    \"Key Matches\",\n    \"Final Match\",\n    \"Impact and Legacy\"\n  ],\n  \"section_subheadings\": {\n    \"Introduction\": [\n      \"Significance of the World Cup\",\n      \"Historical Context\"\n    ],\n    \"Host Countries\": [\n      \"South Korea\",\n      \"Japan\",\n      \"Joint Hosting\"\n    ],\n    \"Tournament Format\": [\n      \"Group Stage\",\n      \"Knockout Stage\",\n      \"Number of Teams\"\n    ],\n    \"Key Matches\": [\n      \"Quarter-finals\",\n      \"Semi-finals\",\n      \"Controversial Decisions\"\n    ],\n    \"Final Match\": [\n      \"Teams Involved\",\n      \"Match Summary\",\n      \"Key Players\"\n    ],\n    \"Impact and Legacy\": [\n      \"Cultural Impact\",\n      \"Economic Effects\",\n      \"Future Tournaments\"\n    ]\n  },\n  \"reasoning\": \"The 2002 FIFA World Cup was a significant event in football history, being the first World Cup held in Asia and co-hosted by two countries. The outline begins with an introduction to the tournament's importance and historical context. It then details the host countries, South Korea and Japan, and discusses the unique joint hosting arrangement. The tournament format is explained, covering the group and knockout stages. Key matches are highlighted, including memorable quarter-finals and semi-finals, along with any controversial decisions that occurred. The final match is analyzed, focusing on the teams involved, a summary of the match, and standout players. Finally, the impact and legacy of the tournament are explored, including its cultural significance, economic effects on the host nations, and implications for future World Cups.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 451,
+            "completion_tokens": 375,
+            "total_tokens": 826,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 07:14:46 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The article topic\"\n    },\n    \"section_heading\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The section heading\"\n    },\n    \"section_subheadings\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"List of subheadings for this section\"\n    }\n  },\n  \"required\": [\n    \"topic\",\n    \"section_heading\",\n    \"section_subheadings\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"content\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Markdown-formatted section content\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Step by step reasoning process\"\n    }\n  },\n  \"required\":
+        [\n    \"content\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Draft a top-level section of
+        an article. Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"topic\":
+        \"Overview of the 2002 FIFA World Cup\",\n  \"section_heading\": \"## Introduction\",\n  \"section_subheadings\":
+        [\n    \"### Significance of the World Cup\",\n    \"### Historical Context\"\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2006'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 07:14:51 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '5018'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '5025'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9989'
+      X-Ratelimit-Remaining-Tokens:
+      - '199567'
+      X-Ratelimit-Reset-Requests:
+      - 1m33.023s
+      X-Ratelimit-Reset-Tokens:
+      - 129ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a511410a1b8ce0-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BprOgP8sX2koaX0zG3wPfimA7GOXw",
+          "object": "chat.completion",
+          "created": 1751699686,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"content\": \"## Introduction\\n\\nThe 2002 FIFA World Cup, co-hosted by South Korea and Japan, marked a significant milestone in the history of football. It was the first World Cup held in Asia and the first to be jointly hosted by two countries. This tournament not only showcased the global passion for football but also highlighted the growing influence of Asian nations in the sport.\\n\\n### Significance of the World Cup\\n\\nThe 2002 World Cup was pivotal for several reasons. It brought together 32 teams from around the world, uniting fans and cultures in a celebration of sport. The tournament was notable for its high level of competition and the emergence of new footballing powers, particularly South Korea, which reached the semi-finals, a historic achievement for an Asian team. The event also served as a platform for promoting tourism and cultural exchange between the host nations.\\n\\n### Historical Context\\n\\nPrior to 2002, the World Cup had been dominated by European and South American teams. The tournament's history dates back to 1930, and over the decades, it has evolved into the most prestigious event in international football. The 2002 edition followed the 1998 World Cup in France, where the host nation claimed victory. The 2002 tournament was a response to the growing globalization of football, with increasing participation from diverse regions, reflecting the sport's universal appeal.\",\n  \"reasoning\": \"To draft the section, I began by outlining the main points that would be relevant to the introduction of the 2002 FIFA World Cup. I included the significance of the event, emphasizing its historical importance as the first World Cup in Asia and the joint hosting by South Korea and Japan. I then elaborated on the significance of the World Cup, discussing its role in uniting nations and showcasing emerging football powers. Finally, I provided historical context to frame the 2002 tournament within the broader narrative of World Cup history, highlighting its evolution and the changing dynamics of international football.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 446,
+            "completion_tokens": 415,
+            "total_tokens": 861,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 07:14:51 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The article topic\"\n    },\n    \"section_heading\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The section heading\"\n    },\n    \"section_subheadings\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"List of subheadings for this section\"\n    }\n  },\n  \"required\": [\n    \"topic\",\n    \"section_heading\",\n    \"section_subheadings\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"content\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Markdown-formatted section content\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Step by step reasoning process\"\n    }\n  },\n  \"required\":
+        [\n    \"content\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Draft a top-level section of
+        an article. Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"topic\":
+        \"Overview of the 2002 FIFA World Cup\",\n  \"section_heading\": \"## Host
+        Countries\",\n  \"section_subheadings\": [\n    \"### South Korea\",\n    \"###
+        Japan\",\n    \"### Joint Hosting\"\n  ]\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2005'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 07:14:58 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '6469'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '6473'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9988'
+      X-Ratelimit-Remaining-Tokens:
+      - '199568'
+      X-Ratelimit-Reset-Requests:
+      - 1m36.435s
+      X-Ratelimit-Reset-Tokens:
+      - 129ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a51161cfa08ce0-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BprOl5dWl9N8sZpyEpZzPboOgisXq",
+          "object": "chat.completion",
+          "created": 1751699691,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"content\": \"## Host Countries\\n\\nThe 2002 FIFA World Cup was a historic event as it was the first World Cup to be co-hosted by two nations: South Korea and Japan. This collaboration marked a significant moment in the tournament's history, showcasing the ability of neighboring countries to unite for a common goal.\\n\\n### South Korea\\n\\nSouth Korea played a pivotal role in the tournament, not only as a host but also as a surprising contender. The nation invested heavily in infrastructure and facilities, leading to a successful event that left a lasting legacy in sports.\\n\\n### Japan\\n\\nJapan, alongside South Korea, embraced the World Cup with enthusiasm. The country showcased its culture and hospitality, making the event memorable for fans and players alike. The Japanese cities that hosted matches were well-prepared, contributing to the overall success of the tournament.\\n\\n### Joint Hosting\\n\\nThe joint hosting of the World Cup by South Korea and Japan set a precedent for future tournaments. It demonstrated that collaboration between countries could enhance the experience for fans and players, and it opened the door for more co-hosting opportunities in international sports events.\",\n  \"reasoning\": \"To draft the section on 'Host Countries' for the 2002 FIFA World Cup, I began by introducing the significance of the event being co-hosted by South Korea and Japan. I then elaborated on each country, highlighting their contributions and experiences during the tournament. The subheadings were used to structure the content clearly, allowing for a focused discussion on each host nation and the concept of joint hosting. This approach ensures that readers understand the importance of both countries in the context of the World Cup.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 448,
+            "completion_tokens": 349,
+            "total_tokens": 797,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 07:14:58 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The article topic\"\n    },\n    \"section_heading\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The section heading\"\n    },\n    \"section_subheadings\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"List of subheadings for this section\"\n    }\n  },\n  \"required\": [\n    \"topic\",\n    \"section_heading\",\n    \"section_subheadings\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"content\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Markdown-formatted section content\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Step by step reasoning process\"\n    }\n  },\n  \"required\":
+        [\n    \"content\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Draft a top-level section of
+        an article. Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"topic\":
+        \"Overview of the 2002 FIFA World Cup\",\n  \"section_heading\": \"## Tournament
+        Format\",\n  \"section_subheadings\": [\n    \"### Group Stage\",\n    \"###
+        Knockout Stage\",\n    \"### Number of Teams\"\n  ]\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2019'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 07:15:03 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '4649'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '4652'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9988'
+      X-Ratelimit-Remaining-Tokens:
+      - '199566'
+      X-Ratelimit-Reset-Requests:
+      - 1m38.392s
+      X-Ratelimit-Reset-Tokens:
+      - 130ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a5118b7e828ce0-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BprOsLJf5G6OFrcOYzRO01YRXgpIl",
+          "object": "chat.completion",
+          "created": 1751699698,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"content\": \"## Tournament Format\\n\\nThe 2002 FIFA World Cup featured a unique tournament format that included a group stage followed by a knockout stage, allowing teams to compete for the prestigious title.\\n\\n### Group Stage\\n\\nIn the group stage, 32 teams were divided into eight groups of four. Each team played three matches, one against each of the other teams in their group. Points were awarded as follows: three points for a win, one point for a draw, and none for a loss. The top two teams from each group, based on points, advanced to the knockout stage.\\n\\n### Knockout Stage\\n\\nThe knockout stage consisted of four rounds: the Round of 16, Quarter-finals, Semi-finals, and the Final. In this stage, teams played single-elimination matches. If a match ended in a draw after 90 minutes, it proceeded to extra time, and if still tied, a penalty shootout determined the winner.\\n\\n### Number of Teams\\n\\nThe tournament featured a total of 32 teams, which included automatic qualifiers and teams that advanced through regional qualifying tournaments. This format allowed for a diverse representation of countries from around the world, showcasing global talent on the biggest stage in football.\",\r\n  \"reasoning\": \"To draft the section on the tournament format for the 2002 FIFA World Cup, I first outlined the main components of the format: the group stage, knockout stage, and the number of teams. I provided a brief description of each subheading, ensuring clarity and conciseness. The group stage explanation included the structure and point system, while the knockout stage detailed the elimination process. Finally, I mentioned the total number of teams to give context to the tournament's scale. The content was formatted in Markdown to align with the specified output requirements.\"\r\n}\r\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 451,
+            "completion_tokens": 378,
+            "total_tokens": 829,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 07:15:02 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The article topic\"\n    },\n    \"section_heading\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The section heading\"\n    },\n    \"section_subheadings\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"List of subheadings for this section\"\n    }\n  },\n  \"required\": [\n    \"topic\",\n    \"section_heading\",\n    \"section_subheadings\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"content\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Markdown-formatted section content\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Step by step reasoning process\"\n    }\n  },\n  \"required\":
+        [\n    \"content\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Draft a top-level section of
+        an article. Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"topic\":
+        \"Overview of the 2002 FIFA World Cup\",\n  \"section_heading\": \"## Key
+        Matches\",\n  \"section_subheadings\": [\n    \"### Quarter-finals\",\n    \"###
+        Semi-finals\",\n    \"### Controversial Decisions\"\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2021'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 07:15:08 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '5367'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '5369'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9988'
+      X-Ratelimit-Remaining-Tokens:
+      - '199565'
+      X-Ratelimit-Reset-Requests:
+      - 1m42.186s
+      X-Ratelimit-Reset-Tokens:
+      - 130ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a511a9ec828ce0-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BprOxBXKmZvUWZ16kUW1KCER9FBS5",
+          "object": "chat.completion",
+          "created": 1751699703,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"content\": \"## Key Matches\\n\\n### Quarter-finals\\nThe quarter-finals of the 2002 FIFA World Cup featured some thrilling encounters, including the match between Brazil and Belgium, where Brazil secured a 2-0 victory, showcasing their attacking prowess. Another notable match was the clash between England and Brazil, which ended in a dramatic 2-1 win for Brazil, thanks to a stunning free-kick from Rivaldo and a goal from Ronaldinho.\\n\\n### Semi-finals\\nIn the semi-finals, Brazil faced Turkey, winning 1-0 with a goal from Ronaldo, who was in exceptional form throughout the tournament. The other semi-final saw Germany take on South Korea, where Germany triumphed 1-0, advancing to the final and continuing their quest for a fourth World Cup title.\\n\\n### Controversial Decisions\\nThe tournament was not without its controversies, particularly in the knockout stages. One of the most debated moments was the disallowed goal for Spain against South Korea in the quarter-finals, which many believed should have stood. Additionally, the refereeing decisions in the match between Italy and South Korea sparked outrage, leading to discussions about the need for video technology in football.\",\n  \"reasoning\": \"To draft the section on 'Key Matches' for the 2002 FIFA World Cup, I first identified the main subheadings provided: 'Quarter-finals', 'Semi-finals', and 'Controversial Decisions'. I then summarized key matches from each of these stages, highlighting significant outcomes and performances. For the quarter-finals, I included Brazil's victories and the dramatic England vs. Brazil match. In the semi-finals, I focused on Brazil's and Germany's wins, emphasizing Ronaldo's impact. Finally, I addressed the controversies surrounding refereeing decisions, which were significant talking points during the tournament. This structured approach ensures that the section is informative and engaging.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 451,
+            "completion_tokens": 391,
+            "total_tokens": 842,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 07:15:08 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The article topic\"\n    },\n    \"section_heading\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The section heading\"\n    },\n    \"section_subheadings\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"List of subheadings for this section\"\n    }\n  },\n  \"required\": [\n    \"topic\",\n    \"section_heading\",\n    \"section_subheadings\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"content\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Markdown-formatted section content\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Step by step reasoning process\"\n    }\n  },\n  \"required\":
+        [\n    \"content\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Draft a top-level section of
+        an article. Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"topic\":
+        \"Overview of the 2002 FIFA World Cup\",\n  \"section_heading\": \"## Final
+        Match\",\n  \"section_subheadings\": [\n    \"### Teams Involved\",\n    \"###
+        Match Summary\",\n    \"### Key Players\"\n  ]\n}\n```\n\nRespond with the
+        corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2011'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 07:15:13 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '4785'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '4787'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9987'
+      X-Ratelimit-Remaining-Tokens:
+      - '199568'
+      X-Ratelimit-Reset-Requests:
+      - 1m45.252s
+      X-Ratelimit-Reset-Tokens:
+      - 129ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a511cccb098ce0-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BprP2vWyheCOP0SzFSQFbDyuSU3Od",
+          "object": "chat.completion",
+          "created": 1751699708,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"content\": \"## Final Match\\n\\n### Teams Involved\\nThe final match of the 2002 FIFA World Cup was contested between Brazil and Germany. This match took place on June 30, 2002, at the International Stadium Yokohama in Yokohama, Japan.\\n\\n### Match Summary\\nBrazil emerged victorious with a score of 2-0, securing their fifth World Cup title. The match was marked by a strong performance from Brazil, with Ronaldo scoring both goals, showcasing his exceptional skill and determination. The game was tightly contested, but Brazil's tactical superiority and individual brilliance ultimately led them to triumph.\\n\\n### Key Players\\nRonaldo was undoubtedly the standout player of the final, having scored both goals that sealed the victory for Brazil. His performance throughout the tournament was remarkable, as he finished as the top scorer with eight goals. Other notable players included Rivaldo, who played a crucial role in the team's attacking strategy, and Cafu, the captain, who provided leadership and experience on the field.\",\n  \"reasoning\": \"To draft the content for the 'Final Match' section of the article on the 2002 FIFA World Cup, I first identified the main components based on the provided subheadings. I began with 'Teams Involved' to introduce the finalists, followed by a concise 'Match Summary' that highlights the outcome and key moments of the game. Finally, I included 'Key Players' to emphasize the contributions of standout athletes, particularly focusing on Ronaldo's pivotal role in the match and the tournament overall. This structure ensures a comprehensive overview while maintaining clarity and engagement.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 450,
+            "completion_tokens": 339,
+            "total_tokens": 789,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 07:15:13 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The article topic\"\n    },\n    \"section_heading\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The section heading\"\n    },\n    \"section_subheadings\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"List of subheadings for this section\"\n    }\n  },\n  \"required\": [\n    \"topic\",\n    \"section_heading\",\n    \"section_subheadings\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"content\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Markdown-formatted section content\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Step by step reasoning process\"\n    }\n  },\n  \"required\":
+        [\n    \"content\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Draft a top-level section of
+        an article. Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"topic\":
+        \"Overview of the 2002 FIFA World Cup\",\n  \"section_heading\": \"## Impact
+        and Legacy\",\n  \"section_subheadings\": [\n    \"### Cultural Impact\",\n    \"###
+        Economic Effects\",\n    \"### Future Tournaments\"\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2028'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 07:15:19 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '5668'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '5672'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9987'
+      X-Ratelimit-Remaining-Tokens:
+      - '199563'
+      X-Ratelimit-Reset-Requests:
+      - 1m48.904s
+      X-Ratelimit-Reset-Tokens:
+      - 130ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a511ebea068ce0-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BprP7feTiMHPsZruhualGFr5fKpIz",
+          "object": "chat.completion",
+          "created": 1751699713,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"content\": \"## Impact and Legacy\\n\\nThe 2002 FIFA World Cup, co-hosted by South Korea and Japan, left a profound impact on the world of football and beyond. This section explores the cultural, economic, and future implications of the tournament.\\n\\n### Cultural Impact\\nThe 2002 World Cup was significant in promoting football in Asia, showcasing the region's ability to host major international events. It fostered a sense of unity and pride among the Asian nations, as well as increased interest in football across the continent. The tournament also highlighted the cultural exchange between the host nations and the rest of the world, as fans experienced local traditions and hospitality.\\n\\n### Economic Effects\\nEconomically, the World Cup provided a substantial boost to both South Korea and Japan. Infrastructure improvements, such as stadiums and transportation systems, were made, which had lasting benefits for both countries. The event also stimulated tourism, with millions of visitors attending matches and exploring the host nations, leading to increased revenue in various sectors.\\n\\n### Future Tournaments\\nThe success of the 2002 World Cup set a precedent for future tournaments, demonstrating that countries outside of Europe and South America could successfully host the event. This opened the door for FIFA to consider a wider range of host nations, influencing the selection process for subsequent World Cups and encouraging global participation in the sport.\",\n  \"reasoning\": \"To draft the section on 'Impact and Legacy' of the 2002 FIFA World Cup, I began by outlining the main themes based on the provided subheadings. I first addressed the cultural impact, emphasizing the significance of the tournament for Asian football and cultural exchange. Next, I discussed the economic effects, highlighting the infrastructure improvements and tourism boost. Finally, I concluded with the implications for future tournaments, noting how the success of the event influenced FIFA's host selection process. This structured approach ensures that each subheading is thoroughly covered while maintaining a cohesive narrative.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 451,
+            "completion_tokens": 405,
+            "total_tokens": 856,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 07:15:19 GMT
+recorded_with: VCR 6.3.1

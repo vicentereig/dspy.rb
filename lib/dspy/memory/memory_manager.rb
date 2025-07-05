@@ -6,6 +6,7 @@ require_relative 'memory_store'
 require_relative 'in_memory_store'
 require_relative 'embedding_engine'
 require_relative 'local_embedding_engine'
+require_relative 'memory_compactor'
 
 module DSPy
   module Memory
@@ -19,10 +20,14 @@ module DSPy
       sig { returns(EmbeddingEngine) }
       attr_reader :embedding_engine
 
-      sig { params(store: T.nilable(MemoryStore), embedding_engine: T.nilable(EmbeddingEngine)).void }
-      def initialize(store: nil, embedding_engine: nil)
+      sig { returns(MemoryCompactor) }
+      attr_reader :compactor
+
+      sig { params(store: T.nilable(MemoryStore), embedding_engine: T.nilable(EmbeddingEngine), compactor: T.nilable(MemoryCompactor)).void }
+      def initialize(store: nil, embedding_engine: nil, compactor: nil)
         @store = store || InMemoryStore.new
         @embedding_engine = embedding_engine || create_default_embedding_engine
+        @compactor = compactor || MemoryCompactor.new
       end
 
       # Store a memory with automatic embedding generation
@@ -43,6 +48,9 @@ module DSPy
         # Store in backend
         success = @store.store(record)
         raise "Failed to store memory" unless success
+        
+        # Check if compaction is needed after storing
+        compact_if_needed!(user_id)
         
         record
       end
@@ -153,6 +161,9 @@ module DSPy
         # Store all records
         results = @store.store_batch(records)
         
+        # Compact after batch operation
+        compact_if_needed!(user_id)
+        
         # Return only successfully stored records
         records.select.with_index { |_, idx| results[idx] }
       end
@@ -188,7 +199,38 @@ module DSPy
       def import_memories(memories_data)
         records = memories_data.map { |data| MemoryRecord.from_h(data) }
         results = @store.store_batch(records)
+        
+        # Compact after batch import
+        user_ids = records.map(&:user_id).compact.uniq
+        user_ids.each { |user_id| compact_if_needed!(user_id) }
+        
         results.count(true)
+      end
+
+      # Trigger memory compaction if needed
+      sig { params(user_id: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
+      def compact_if_needed!(user_id = nil)
+        @compactor.compact_if_needed!(@store, @embedding_engine, user_id: user_id)
+      end
+
+      # Force memory compaction (useful for testing or manual cleanup)
+      sig { params(user_id: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
+      def force_compact!(user_id = nil)
+        DSPy::Instrumentation.instrument('dspy.memory.compaction_complete', { 
+          user_id: user_id, 
+          forced: true 
+        }) do
+          results = {}
+          
+          # Run all compaction strategies regardless of thresholds
+          results[:size_compaction] = @compactor.send(:perform_size_compaction!, @store, user_id)
+          results[:age_compaction] = @compactor.send(:perform_age_compaction!, @store, user_id)
+          results[:deduplication] = @compactor.send(:perform_deduplication!, @store, @embedding_engine, user_id)
+          results[:relevance_pruning] = @compactor.send(:perform_relevance_pruning!, @store, user_id)
+          
+          results[:total_compacted] = results.values.sum { |r| r.is_a?(Hash) ? r[:removed_count] || 0 : 0 }
+          results
+        end
       end
 
       private
