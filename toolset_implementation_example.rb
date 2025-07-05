@@ -10,7 +10,7 @@ module DSPy
       extend T::Sig
       
       class << self
-        def expose_tool(method_name, tool_name: nil, description: nil)
+        def tool(method_name, tool_name: nil, description: nil)
           @exposed_tools ||= {}
           @exposed_tools[method_name] = {
             tool_name: tool_name || "#{toolset_name}_#{method_name}",
@@ -80,11 +80,11 @@ module DSPy
     class KnowledgeBaseToolset < Toolset
       toolset_name "kb"
       
-      expose_tool :add_fact, description: "Add a new fact to the knowledge base"
-      expose_tool :query, description: "Query facts by topic"
-      expose_tool :update_fact, description: "Update an existing fact"
-      expose_tool :list_topics, description: "List all topics in the knowledge base"
-      expose_tool :export, tool_name: "kb_export_json", description: "Export knowledge base as JSON"
+      tool :add_fact, description: "Add a new fact to the knowledge base"
+      tool :query, description: "Query facts by topic"
+      tool :update_fact, description: "Update an existing fact"
+      tool :list_topics, description: "List all topics in the knowledge base"
+      tool :export, tool_name: "kb_export_json", description: "Export knowledge base as JSON"
       
       def initialize
         @facts = {}

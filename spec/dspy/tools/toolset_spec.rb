@@ -10,8 +10,8 @@ RSpec.describe DSPy::Tools::Toolset do
       Class.new(DSPy::Tools::Toolset) do
         toolset_name "test"
         
-        expose_tool :action_one, description: "First action"
-        expose_tool :action_two, tool_name: "custom_action", description: "Second action"
+        tool :action_one, description: "First action"
+        tool :action_two, tool_name: "custom_action", description: "Second action"
         
         def action_one(input:)
           "Action one: #{input}"

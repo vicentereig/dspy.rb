@@ -19,7 +19,7 @@ module DSPy
 
         # DSL method to expose a method as a tool
         sig { params(method_name: Symbol, tool_name: T.nilable(String), description: T.nilable(String)).void }
-        def expose_tool(method_name, tool_name: nil, description: nil)
+        def tool(method_name, tool_name: nil, description: nil)
           @exposed_tools ||= {}
           @exposed_tools[method_name] = {
             tool_name: tool_name || "#{toolset_name}_#{method_name}",

@@ -13,15 +13,15 @@ module DSPy
       toolset_name "memory"
 
       # Expose methods as tools with descriptions
-      expose_tool :store, description: "Store a key-value pair in memory with optional tags"
-      expose_tool :retrieve, description: "Retrieve a value by key from memory"
-      expose_tool :search, description: "Search memories by pattern in keys and/or values"
-      expose_tool :list_keys, tool_name: "memory_list", description: "List all stored memory keys"
-      expose_tool :update, description: "Update an existing memory value"
-      expose_tool :delete, description: "Delete a memory by key"
-      expose_tool :clear, description: "Clear all stored memories"
-      expose_tool :count, description: "Get the count of stored memories"
-      expose_tool :get_metadata, description: "Get metadata for a specific memory"
+      tool :store, description: "Store a key-value pair in memory with optional tags"
+      tool :retrieve, description: "Retrieve a value by key from memory"
+      tool :search, description: "Search memories by pattern in keys and/or values"
+      tool :list_keys, tool_name: "memory_list", description: "List all stored memory keys"
+      tool :update, description: "Update an existing memory value"
+      tool :delete, description: "Delete a memory by key"
+      tool :clear, description: "Clear all stored memories"
+      tool :count, description: "Get the count of stored memories"
+      tool :get_metadata, description: "Get metadata for a specific memory"
 
       sig { void }
       def initialize

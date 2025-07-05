@@ -28,7 +28,7 @@ module DSPy
         
         # DSL to expose methods as tools
         sig { params(method_name: Symbol, tool_name: T.nilable(String), description: T.nilable(String)).void }
-        def expose_tool(method_name, tool_name: nil, description: nil)
+        def tool(method_name, tool_name: nil, description: nil)
           @exposed_tools ||= {}
           @exposed_tools[method_name] = {
             tool_name: tool_name || "#{toolset_name}_#{method_name}",
@@ -131,11 +131,11 @@ module DSPy
       toolset_name "memory"
       
       # Expose methods as tools with optional custom names
-      expose_tool :store, description: "Store a key-value pair in memory"
-      expose_tool :retrieve, description: "Retrieve a value by key from memory"
-      expose_tool :list_keys, tool_name: "memory_list", description: "List all stored keys"
-      expose_tool :clear, description: "Clear all stored memories"
-      expose_tool :search, description: "Search memories by pattern"
+      tool :store, description: "Store a key-value pair in memory"
+      tool :retrieve, description: "Retrieve a value by key from memory"
+      tool :list_keys, tool_name: "memory_list", description: "List all stored keys"
+      tool :clear, description: "Clear all stored memories"
+      tool :search, description: "Search memories by pattern"
       
       sig { void }
       def initialize
@@ -282,7 +282,7 @@ class AutoMemoryToolset < Toolset
     super
     subclass.instance_methods(false).each do |method_name|
       next if method_name.to_s.start_with?('_')
-      subclass.expose_tool(method_name)
+      subclass.tool(method_name)
     end
   end
 end
@@ -299,7 +299,7 @@ end
 
 ### 8. Implementation Steps
 
-1. Create the `Toolset` base class with `expose_tool` DSL
+1. Create the `Toolset` base class with `tool` DSL
 2. Implement the `ToolProxy` wrapper class
 3. Update `ReAct` agent to handle arrays of tools from `to_tools`
 4. Add tests for multi-method toolsets

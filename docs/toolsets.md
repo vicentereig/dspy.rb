@@ -17,8 +17,8 @@ Use toolsets when you have related operations that share state or logic:
 class MyToolset < DSPy::Tools::Toolset
   toolset_name "my_tools"
   
-  expose_tool :operation_one, description: "Does something"
-  expose_tool :operation_two, description: "Does something else"
+  tool :operation_one, description: "Does something"
+  tool :operation_two, description: "Does something else"
   
   def operation_one(input:)
     # Implementation
@@ -78,16 +78,16 @@ Sets the prefix for generated tool names:
 class DatabaseToolset < DSPy::Tools::Toolset
   toolset_name "db"
   
-  expose_tool :query  # Creates tool named "db_query"
+  tool :query  # Creates tool named "db_query"
 end
 ```
 
-### `expose_tool(method_name, options)`
+### `tool(method_name, options)`
 
 Exposes a method as a tool:
 
 ```ruby
-expose_tool :search, 
+tool :search, 
   tool_name: "custom_search",  # Override default name
   description: "Search for items"
 ```
@@ -186,7 +186,7 @@ But those features don't exist yet. For now, you get in-memory storage with the 
 
 ## Design Decisions
 
-**Explicit Tool Exposure**: The `expose_tool` DSL requires explicit method declaration rather than auto-exposing all public methods. This ensures:
+**Explicit Tool Exposure**: The `tool` DSL requires explicit method declaration rather than auto-exposing all public methods. This ensures:
 - Clear documentation for each tool via the `description` parameter
 - Intentional tool interface design
 - Proper schema descriptions for LLM consumption
