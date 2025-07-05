@@ -183,3 +183,11 @@ The toolset pattern is designed to support the planned memory system in issue #2
 - Auto-compaction for memory optimization
 
 But those features don't exist yet. For now, you get in-memory storage with the operations listed above.
+
+## Design Decisions
+
+**Explicit Tool Exposure**: The `expose_tool` DSL requires explicit method declaration rather than auto-exposing all public methods. This ensures:
+- Clear documentation for each tool via the `description` parameter
+- Intentional tool interface design
+- Proper schema descriptions for LLM consumption
+- Type safety through Sorbet signatures
