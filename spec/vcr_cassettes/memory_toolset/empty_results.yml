@@ -135,7 +135,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:57 GMT
+      - Sat, 05 Jul 2025 01:28:38 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -145,52 +145,49 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '838'
+      - '1414'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '842'
+      - '1417'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9941'
+      - '9955'
       X-Ratelimit-Remaining-Tokens:
       - '198042'
       X-Ratelimit-Reset-Requests:
-      - 8m28.385s
+      - 6m22.949s
       X-Ratelimit-Reset-Tokens:
       - 587ms
       X-Request-Id:
-      - req_88c6ae577d8cb31263cbf38db6804dbf
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=adVWPDPxmAkZsUcAz9JU4BqaKvc_FfoKgqsjnY27Kkc-1751678037-1.0.1.1-p9iGFWtWG4PwpK.xq22dmYlHu6wNcYypXHG38MVFdV06HdSeWIJ32AfUPaTSMva_JXYzhHx1RasZCxxiQHI75IyISfpSqpniKF1fj0DBImE;
-        path=/; expires=Sat, 05-Jul-25 01:43:57 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=auNx5AVa36.pvXpIfSEyyXbEHFvv0vGO3z2CCkhtBEY-1751678037872-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300b2f86142d1-EWR
+      - 95a3162d1a31de95-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllVL4Hv1fTp6yoWNrS8QoUZdZhr",
+          "id": "chatcmpl-Bplzgg2RPZUcrQ7XyED7aP1uLcFKe",
           "object": "chat.completion",
-          "created": 1751678037,
+          "created": 1751678916,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -210,7 +207,7 @@ http_interactions:
             "completion_tokens": 69,
             "total_tokens": 1809,
             "prompt_tokens_details": {
-              "cached_tokens": 1664,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -223,7 +220,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:57 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:37 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -261,10 +258,14 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Clear all your memories.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115e80150>\"\n  ],\n  \"observation\":
-        \"Cleared 0 memories\"\n}\n```\n\nRespond with the corresponding output schema
-        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
-        values`."}],"temperature":0.0}'
+        \"Clear all your memories.\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"To clear all memories, I should use the ''memory_clear'' action, which is
+        specifically designed for this purpose. Since there are no previous memories
+        to consider, I can proceed directly with this action.\",\n      \"action\":
+        \"memory_clear\",\n      \"action_input\": {},\n      \"observation\": \"Cleared
+        0 memories\"\n    }\n  ],\n  \"observation\": \"Cleared 0 memories\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -295,14 +296,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3432'
+      - '3757'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:58 GMT
+      - Sat, 05 Jul 2025 01:28:40 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -312,59 +313,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '786'
+      - '1492'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '789'
+      - '2069'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9940'
+      - '9954'
       X-Ratelimit-Remaining-Tokens:
-      - '199245'
+      - '199168'
       X-Ratelimit-Reset-Requests:
-      - 8m34.946s
+      - 6m29.99s
       X-Ratelimit-Reset-Tokens:
-      - 226ms
+      - 249ms
       X-Request-Id:
-      - req_6f8e7e1fb936d98a5e25d1158eab96fc
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=vT8Uo46JF9em6.8dIr.3ojr6eE1gQyV1t_k00jpf6ZM-1751678038-1.0.1.1-bR88L1mMQOKr8HVZ_LXTdLAmruUDCNIH7utQ9ulJk.qZX2TEsboOGOSQiNX6c9neuAcFWso1hn5szRdMQybk4RoDTLmNpO1QJAIMcuTBNIo;
-        path=/; expires=Sat, 05-Jul-25 01:43:58 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=Z3AxrnBFQ.7mMvGaHBJ67wqzO1HDIC4YlLDFkPjpbk4-1751678038851-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300b97d7b42d1-EWR
+      - 95a31636fc56de95-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllWUIpEIKTaGxAMJiS4kMuvzys3",
+          "id": "chatcmpl-BplzivFCzUFSorjHeE9oRWsVDTmw6",
           "object": "chat.completion",
-          "created": 1751678038,
+          "created": 1751678918,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The action to clear memories did not result in any memories being cleared, indicating that there were no memories to clear.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The action to clear memories was executed, but there were no memories to clear. This indicates that the memory clearing process was successful, but there was nothing to remove.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -373,9 +371,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 707,
-            "completion_tokens": 47,
-            "total_tokens": 754,
+            "prompt_tokens": 770,
+            "completion_tokens": 57,
+            "total_tokens": 827,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -390,7 +388,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:58 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:40 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -447,7 +445,11 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Clear all your memories.\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x0000000115e80150>\"\n  ],\n  \"available_tools\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To clear all memories,
+        I should use the ''memory_clear'' action, which is specifically designed for
+        this purpose. Since there are no previous memories to consider, I can proceed
+        directly with this action.\",\n      \"action\": \"memory_clear\",\n      \"action_input\":
+        {},\n      \"observation\": \"Cleared 0 memories\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -520,14 +522,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8818'
+      - '9143'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:00 GMT
+      - Sat, 05 Jul 2025 01:28:41 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -537,59 +539,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1250'
+      - '804'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1253'
+      - '808'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9939'
+      - '9954'
       X-Ratelimit-Remaining-Tokens:
-      - '198030'
+      - '197953'
       X-Ratelimit-Reset-Requests:
-      - 8m42.617s
+      - 6m36.293s
       X-Ratelimit-Reset-Tokens:
-      - 591ms
+      - 613ms
       X-Request-Id:
-      - req_eea3f1bd6bf3b9e819f13a12b06b101f
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=fY1O0i0BcwFiyIP2Ig1clYiLhiGlaB7u4beyynGuPic-1751678040-1.0.1.1-mBC0nZlA3BSd2QwdM01m7VV4amPya9FC7YFIFnm3BTUpfyEtkw8U7yX8gUMx_F3ezH_5A0mAitZJ6Z8bDfVremwcmIOEgh9hBSTD8kUsk8Q;
-        path=/; expires=Sat, 05-Jul-25 01:44:00 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=d0U3lw7mr6BuX6YjOu9MQAR9SSCKd9.gNdqW2b7ICYI-1751678040271-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300bf9a5f42d1-EWR
+      - 95a31645aeb0de95-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllXROlV4xrgffqBXnCXH3ykXzEc",
+          "id": "chatcmpl-BplzkQmMWjU8qwOAAJBJ1iAZ2B57c",
           "object": "chat.completion",
-          "created": 1751678039,
+          "created": 1751678920,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To clear all memories, I should use the 'memory_clear' action, which is specifically designed for this purpose. This action does not require any additional input parameters.\",\n  \"action\": \"memory_clear\",\n  \"action_input\": {}\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since I have already executed the 'memory_clear' action and cleared 0 memories, I can confirm that there are no memories to clear. Therefore, I will finish my response.\",\n  \"action\": \"finish\",\n  \"action_input\": \"Cleared 0 memories\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -598,9 +597,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1761,
-            "completion_tokens": 62,
-            "total_tokens": 1823,
+            "prompt_tokens": 1824,
+            "completion_tokens": 70,
+            "total_tokens": 1894,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -615,7 +614,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:00 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:41 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -751,7 +750,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:01 GMT
+      - Sat, 05 Jul 2025 01:28:43 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -761,59 +760,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '959'
+      - '1329'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '961'
+      - '1333'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9938'
+      - '9953'
       X-Ratelimit-Remaining-Tokens:
       - '198041'
       X-Ratelimit-Reset-Requests:
-      - 8m49.801s
+      - 6m43.862s
       X-Ratelimit-Reset-Tokens:
       - 587ms
       X-Request-Id:
-      - req_7c2048ea1ec72e8c243cc439108a94e4
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=cG8uhP6Y61lB9xTRI2kmaiuWYOHJYyVv9zDvMX42.Sw-1751678041-1.0.1.1-fWR.XZmqyGGXh8FgasHQ1hoXAv_vmJjah0RSW4vJ5TsRjfSSFGKVxfGvqTdbs4bT8zAkjse5qX.7vI5F2Kgbl4g0eT9rMfjJZ5eqlPd0Wt8;
-        path=/; expires=Sat, 05-Jul-25 01:44:01 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=0gn1fhWMuYmLjC_E2sVL.IH_GOeh1fflR06_bqZT4EQ-1751678041449-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300c879b542d1-EWR
+      - 95a3164c6a37de95-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllY110Pyk5UM16c8zF9rp2BJ1qM",
+          "id": "chatcmpl-Bplzl7mdWPIZyTi5eAx4I7d7tQu1Y",
           "object": "chat.completion",
-          "created": 1751678040,
+          "created": 1751678921,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there are no memories stored yet, I need to first check how many memories exist. This will help me determine if I can list any memories about the user. I will use the 'memory_count' tool to get the count of stored memories.\",\n  \"action\": \"memory_count\",\n  \"action_input\": {}\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there are no memories stored yet, I need to first check if there are any keys available in memory. This will help me understand what memories I can retrieve or list. I will use the 'memory_list' tool to get all stored memory keys.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -823,10 +819,10 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1742,
-            "completion_tokens": 79,
-            "total_tokens": 1821,
+            "completion_tokens": 80,
+            "total_tokens": 1822,
             "prompt_tokens_details": {
-              "cached_tokens": 1664,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -839,7 +835,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:01 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:42 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -877,9 +873,14 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"List all your memories about me.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115b27760>\"\n  ],\n  \"observation\":
-        \"0\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+        \"List all your memories about me.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"Since there are no memories stored yet, I need to
+        first check if there are any keys available in memory. This will help me understand
+        what memories I can retrieve or list. I will use the ''memory_list'' tool
+        to get all stored memory keys.\",\n      \"action\": \"memory_list\",\n      \"action_input\":
+        {},\n      \"observation\": \"[]\"\n    }\n  ],\n  \"observation\": \"[]\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -910,14 +911,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3423'
+      - '3766'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:02 GMT
+      - Sat, 05 Jul 2025 01:28:44 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -927,59 +928,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '819'
+      - '780'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '823'
+      - '784'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9937'
+      - '9952'
       X-Ratelimit-Remaining-Tokens:
-      - '199246'
+      - '199166'
       X-Ratelimit-Reset-Requests:
-      - 8m57.293s
+      - 6m50.955s
       X-Ratelimit-Reset-Tokens:
-      - 225ms
+      - 250ms
       X-Request-Id:
-      - req_30b6e8dd61a43c654e619e29999fe281
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=ll5Ik2m_Uiy4Qaj0lzEw409tE8w5zMQ9_.tLr8Q4j8s-1751678042-1.0.1.1-LDJQuohOEeDXjzFVr9EqhjK4de.7KEKRzbU324eBaf8Tc879zWzacHQ65ucUXbuGQM8_zv3fMGEt0UUky_v.lqN4Rirw4XFUz46T.eYDKCY;
-        path=/; expires=Sat, 05-Jul-25 01:44:02 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=cAFhGs1vw_Pu.S5liSPsZ7uaTY6pCtRqDIdATapiUnA-1751678042447-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300cfdfd742d1-EWR
+      - 95a316561b36de95-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllZbkLc2cOaG733SzPEvmtSbhxj",
+          "id": "chatcmpl-BplznC4kHxrsjemsqC2eJuiVwIDaa",
           "object": "chat.completion",
-          "created": 1751678041,
+          "created": 1751678923,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation '0' indicates that there are no memories available about the user.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"There are no memories stored about the user, as indicated by the empty observation from the memory_list action.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -988,9 +986,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 705,
-            "completion_tokens": 40,
-            "total_tokens": 745,
+            "prompt_tokens": 775,
+            "completion_tokens": 45,
+            "total_tokens": 820,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1005,7 +1003,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:02 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:43 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1062,7 +1060,11 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"List all your memories about me.\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x0000000115b27760>\"\n  ],\n  \"available_tools\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"Since there are no memories
+        stored yet, I need to first check if there are any keys available in memory.
+        This will help me understand what memories I can retrieve or list. I will
+        use the ''memory_list'' tool to get all stored memory keys.\",\n      \"action\":
+        \"memory_list\",\n      \"action_input\": {},\n      \"observation\": \"[]\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -1135,14 +1137,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8826'
+      - '9168'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:04 GMT
+      - Sat, 05 Jul 2025 01:28:46 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1152,59 +1154,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1529'
+      - '1102'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1533'
+      - '1106'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9936'
+      - '9951'
       X-Ratelimit-Remaining-Tokens:
-      - '198027'
+      - '197947'
       X-Ratelimit-Reset-Requests:
-      - 9m4.939s
+      - 6m57.51s
       X-Ratelimit-Reset-Tokens:
-      - 591ms
+      - 615ms
       X-Request-Id:
-      - req_4e60c9c6314835bede1550802abde2ed
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=O7aikRPtOPh4KjsopKF5s38shle6jwV1n3TnQJzw8mU-1751678044-1.0.1.1-NFVqFXjaF9s8h3oMuxutHvGT_Q.Fwk.6ydXA6H3SwEJB8RMQazanysedLl3N4ywtwiq2g4GNr1qg_oxL9myR4C6WV9DNgYxIsWuYNb5Y.GY;
-        path=/; expires=Sat, 05-Jul-25 01:44:04 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=uCEIA_QE6CUREtZ4TR.F4cHmQal2Xn0D.b83kkutkII-1751678044170-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300d61d3242d1-EWR
+      - 95a3165cae3dde95-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllaUzG9ovq1c453uUC1Xl9xc1JX",
+          "id": "chatcmpl-Bplzp6GP5M7TcRNaQ6P133lHlfxZd",
           "object": "chat.completion",
-          "created": 1751678042,
+          "created": 1751678925,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about listing all memories, I should first retrieve the keys of all stored memories. This will allow me to gather the relevant information about you. I will use the 'memory_list' tool to get all memory keys.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have already checked for stored memories and found that there are none. Since the memory_list tool confirmed that there are no keys available, I cannot retrieve any memories. I should consider storing a new memory or providing a response indicating that there are no memories to list.\",\n  \"action\": \"finish\",\n  \"action_input\": \"There are no memories stored about you.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1213,9 +1212,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1763,
-            "completion_tokens": 76,
-            "total_tokens": 1839,
+            "prompt_tokens": 1833,
+            "completion_tokens": 89,
+            "total_tokens": 1922,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1230,5 +1229,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:03 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:46 GMT
 recorded_with: VCR 6.3.1

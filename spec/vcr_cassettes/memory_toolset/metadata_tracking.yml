@@ -135,7 +135,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:05 GMT
+      - Sat, 05 Jul 2025 01:28:48 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -145,59 +145,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1087'
+      - '1432'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1090'
+      - '1435'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9936'
+      - '9950'
       X-Ratelimit-Remaining-Tokens:
       - '198038'
       X-Ratelimit-Reset-Requests:
-      - 9m11.416s
+      - 7m4.296s
       X-Ratelimit-Reset-Tokens:
       - 588ms
       X-Request-Id:
-      - req_985bc95ad50bf8ec242df0bf1df53242
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Wpm7myouL_u9ZGCbFz9YBlmW6_EumZQhdPygSdTLUYI-1751678045-1.0.1.1-0hvGtaA.YdLD_PvvhBTlrzu2atRMNuZCjf3SmdUf18XC.mcghdRJuZ9.gIALVHVcmWjSNmk0J0TddUW7u7dAKX7r2.VTXYd8gNKEhdQ5RLA;
-        path=/; expires=Sat, 05-Jul-25 01:44:05 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=qMLVdzj7AQO.bEWPQPwDYU9mCA8ok.mqiZ0dTLLf7GY-1751678045874-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300e398da423e-EWR
+      - 95a3166e8f37b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllcCdvR9k5wxV3hl1faLPeSrwrf",
+          "id": "chatcmpl-BplzroN33wT8abaM0nxjss6nSAyh7",
           "object": "chat.completion",
-          "created": 1751678044,
+          "created": 1751678927,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the user's birthday in memory since they want me to remember it. I will use the 'memory_store' tool to save the birthday with the key 'birthday' and the value 'June'.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"birthday\",\n    \"value\": \"June\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the information about the user's birthday in June in memory so that it can be retrieved later. The appropriate action is to use the 'memory_store' tool to save this key-value pair.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"birthday\",\n    \"value\": \"June\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -207,10 +204,10 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1743,
-            "completion_tokens": 88,
-            "total_tokens": 1831,
+            "completion_tokens": 86,
+            "total_tokens": 1829,
             "prompt_tokens_details": {
-              "cached_tokens": 1664,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -223,7 +220,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:05 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:48 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -261,7 +258,12 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Remember that my birthday is in June.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000106d1ff68>\"\n  ],\n  \"observation\":
+        \"Remember that my birthday is in June.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to store the information about the user''s
+        birthday in June in memory so that it can be retrieved later. The appropriate
+        action is to use the ''memory_store'' tool to save this key-value pair.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"birthday\",\n        \"value\":
+        \"June\"\n      },\n      \"observation\": \"Stored memory ''birthday'' successfully\"\n    }\n  ],\n  \"observation\":
         \"Stored memory ''birthday'' successfully\"\n}\n```\n\nRespond with the corresponding
         output schema fields wrapped in a ```json ``` block,\nstarting with the heading
         `## Output values`."}],"temperature":0.0}'
@@ -295,14 +297,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3464'
+      - '3871'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:06 GMT
+      - Sat, 05 Jul 2025 01:28:49 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -312,59 +314,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '665'
+      - '750'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '685'
+      - '753'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9935'
+      - '9950'
       X-Ratelimit-Remaining-Tokens:
-      - '199236'
+      - '199142'
       X-Ratelimit-Reset-Requests:
-      - 9m19.779s
+      - 7m11.099s
       X-Ratelimit-Reset-Tokens:
-      - 228ms
+      - 257ms
       X-Request-Id:
-      - req_ed3da9a8d46aedeb2665e3e6923b15d0
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=DwUk3s0mtgHswDQuHIiYyZHBZza5txrCfz.2unUo.Hc-1751678046-1.0.1.1-Znfq5V7ErqPKZtlB6rB.koXXWLjKk4KaBpyTc993kHIcukNP.O9F8fMNe0gwziNg2id_K5Q5F5kwjlwlGbA3.FFgy1SWVii5FWj8RMDH65E;
-        path=/; expires=Sat, 05-Jul-25 01:44:06 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=AmmDLxQH9XgExMO92JwBvgasKC_5GsEx1ZK86t7WnCQ-1751678046804-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300ebe8c4423e-EWR
+      - 95a3167a2edeb295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplleFOS4Xvmq1xremKnCE0wkRQBT",
+          "id": "chatcmpl-Bplzt9evJmxMdZ0DQs2TPRFNeF4z9",
           "object": "chat.completion",
-          "created": 1751678046,
+          "created": 1751678929,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The memory of the birthday has been successfully stored.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The user's birthday has been successfully stored in memory.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -373,9 +372,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 712,
+            "prompt_tokens": 792,
             "completion_tokens": 34,
-            "total_tokens": 746,
+            "total_tokens": 826,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -390,7 +389,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:06 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:49 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -447,7 +446,12 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Remember that my birthday is in
-        June.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000106d1ff68>\"\n  ],\n  \"available_tools\":
+        June.\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"I need to store the information about the user''s birthday in June in memory
+        so that it can be retrieved later. The appropriate action is to use the ''memory_store''
+        tool to save this key-value pair.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"birthday\",\n        \"value\": \"June\"\n      },\n      \"observation\":
+        \"Stored memory ''birthday'' successfully\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -520,14 +524,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8831'
+      - '9238'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:08 GMT
+      - Sat, 05 Jul 2025 01:28:50 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -537,59 +541,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1074'
+      - '738'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1080'
+      - '741'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9934'
+      - '9949'
       X-Ratelimit-Remaining-Tokens:
-      - '198027'
+      - '197932'
       X-Ratelimit-Reset-Requests:
-      - 9m26.475s
+      - 7m18.658s
       X-Ratelimit-Reset-Tokens:
-      - 591ms
+      - 620ms
       X-Request-Id:
-      - req_efa82b973e950d829de94a6649618b80
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=QhT57amH_GNVNpGjdKXrKMKlJsxY1k_q_ftw5nhPV74-1751678048-1.0.1.1-zfnOoLMB.KHzkXtkOk2zeahDLlseOqHXPa_fcyKWZyushNWTqbz6UIOK1D8ZKvqEq4sFdDBR47ZG5MYXCFqBbyXUYWRiO53_42gpOTKFdXk;
-        path=/; expires=Sat, 05-Jul-25 01:44:08 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=HjW.Z4hrtRA0qfRwrcw5YRD6oDiBjZMdqkADwtEs6xY-1751678048094-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300f15d7d423e-EWR
+      - 95a31680df13b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllfGFyPDRizqvoBxkElByMANHj4",
+          "id": "chatcmpl-BplzuUdigYtUt8qKB5Ec3lAw8eJ44",
           "object": "chat.completion",
-          "created": 1751678047,
+          "created": 1751678930,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the information about the user's birthday in June in memory so that I can recall it later. I will use the 'memory_store' tool to save this information.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"birthday\",\n    \"value\": \"June\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"The user's birthday has been successfully stored in memory. Since the question is a reminder about the birthday being in June, I can finish my task by confirming this observation.\",\n  \"action\": \"finish\",\n  \"action_input\": \"June\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -598,9 +599,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1765,
-            "completion_tokens": 81,
-            "total_tokens": 1846,
+            "prompt_tokens": 1845,
+            "completion_tokens": 63,
+            "total_tokens": 1908,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -615,7 +616,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:07 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:50 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -751,7 +752,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:11 GMT
+      - Sat, 05 Jul 2025 01:28:52 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -761,59 +762,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '3266'
+      - '1182'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '3414'
+      - '1184'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9933'
+      - '9948'
       X-Ratelimit-Remaining-Tokens:
       - '198043'
       X-Ratelimit-Reset-Requests:
-      - 9m33.834s
+      - 7m26.28s
       X-Ratelimit-Reset-Tokens:
       - 586ms
       X-Request-Id:
-      - req_f531e050dae2e34852f93536a347f117
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=cS6SMtb1yq8xxwwrJsNgfaSRtIKcgeUqzaqdADXitv8-1751678051-1.0.1.1-UwdYPip6FxViBwos9h43ywxzXOlZaK937wam346BcqtFAYdDF0m5OnCY.8y4CaK8ZIT_I6VcK8XP8Z9YSN7h2_7RcZb9cEx.VFQFsRD4Avg;
-        path=/; expires=Sat, 05-Jul-25 01:44:11 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=S_BlMRnPe3fBeUR2xHvLlmu1ZMKszv1N2Hd7g4yg8q0-1751678051695-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300f97c59423e-EWR
+      - 95a316874d29b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpllg1Vzm4kd1SpXbJgoZzxA3rPAo",
+          "id": "chatcmpl-Bplzvhe3p22jHYITkuOcPaDcUG5EP",
           "object": "chat.completion",
-          "created": 1751678048,
+          "created": 1751678931,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find out when the user's birthday is. Since there is no history available, I can either ask the user directly or check if there is any stored memory related to their birthday. I will start by searching the memory for any relevant information about the user's birthday.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"birthday\",\n    \"in_keys\": true,\n    \"in_values\": true\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find out when the user's birthday is. Since there is no history available, I can either retrieve it from memory if it has been stored before or ask the user to provide it. I will first check if there are any stored memories related to the birthday.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"birthday\",\n    \"in_keys\": true,\n    \"in_values\": true\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -826,7 +824,7 @@ http_interactions:
             "completion_tokens": 106,
             "total_tokens": 1846,
             "prompt_tokens_details": {
-              "cached_tokens": 1664,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -839,7 +837,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:11 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:52 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -877,7 +875,13 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"When is my birthday?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000106195648>\"\n  ],\n  \"observation\":
+        \"When is my birthday?\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"I need to find out when the user''s birthday is. Since there is no history
+        available, I can either retrieve it from memory if it has been stored before
+        or ask the user to provide it. I will first check if there are any stored
+        memories related to the birthday.\",\n      \"action\": \"memory_search\",\n      \"action_input\":
+        {\n        \"pattern\": \"birthday\",\n        \"in_keys\": true,\n        \"in_values\":
+        true\n      },\n      \"observation\": \"[{:key=>\\\"birthday\\\", :value=>\\\"June\\\"}]\"\n    }\n  ],\n  \"observation\":
         \"[{:key=>\\\"birthday\\\", :value=>\\\"June\\\"}]\"\n}\n```\n\nRespond with
         the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":0.0}'
@@ -911,14 +915,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3458'
+      - '3971'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:12 GMT
+      - Sat, 05 Jul 2025 01:28:53 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -928,59 +932,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '575'
+      - '641'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '578'
+      - '644'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9933'
+      - '9947'
       X-Ratelimit-Remaining-Tokens:
-      - '199240'
+      - '199122'
       X-Ratelimit-Reset-Requests:
-      - 9m38.869s
+      - 7m33.536s
       X-Ratelimit-Reset-Tokens:
-      - 228ms
+      - 263ms
       X-Request-Id:
-      - req_aa55a8a603ad9a06282b0595f4901c9d
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=5_HWRWJ87qIvD4HA_FeuwZRnciDhbx7RWiqInqJBmXI-1751678052-1.0.1.1-40L1IUW5wqAzfP7O9uS3qjClNLKq3n46BMI_YEq.xawwBjoB_eLnafF4W6vDEpI4G8EGQwiaVYmIwdeHzckYr7yN3K_Fb4yB7sFKonv6xC4;
-        path=/; expires=Sat, 05-Jul-25 01:44:12 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=J8hVfDEe2k6fXqoWMF2y5HiL1JSRQpxCBoILo6Tl_po-1751678052473-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a3010ff87e423e-EWR
+      - 95a3168fbe4ab295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplljcABdzpHbfVXigMN6dUT5NzvU",
+          "id": "chatcmpl-BplzwuxlYfghacAChmkUtSclbM70p",
           "object": "chat.completion",
-          "created": 1751678051,
+          "created": 1751678932,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the birthday is in June.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The user's birthday is in June.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -989,9 +990,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 714,
-            "completion_tokens": 34,
-            "total_tokens": 748,
+            "prompt_tokens": 823,
+            "completion_tokens": 31,
+            "total_tokens": 854,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1006,7 +1007,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:12 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:53 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1063,15 +1064,20 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"When is my birthday?\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x0000000106195648>\"\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
-        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
-        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to find out when
+        the user''s birthday is. Since there is no history available, I can either
+        retrieve it from memory if it has been stored before or ask the user to provide
+        it. I will first check if there are any stored memories related to the birthday.\",\n      \"action\":
+        \"memory_search\",\n      \"action_input\": {\n        \"pattern\": \"birthday\",\n        \"in_keys\":
+        true,\n        \"in_values\": true\n      },\n      \"observation\": \"[{:key=>\\\"birthday\\\",
+        :value=>\\\"June\\\"}]\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
         \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
         memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
@@ -1136,14 +1142,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8814'
+      - '9327'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:13 GMT
+      - Sat, 05 Jul 2025 01:28:54 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1153,59 +1159,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1279'
+      - '1148'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1282'
+      - '1151'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9932'
+      - '9946'
       X-Ratelimit-Remaining-Tokens:
-      - '198031'
+      - '197912'
       X-Ratelimit-Reset-Requests:
-      - 9m46.738s
+      - 7m41.331s
       X-Ratelimit-Reset-Tokens:
-      - 590ms
+      - 626ms
       X-Request-Id:
-      - req_55dec66326fedcd61e2363c8a399b897
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Vnjo7e2kMZXcogKoh8e6y8_I7ROceaX48LCEhUkvuwo-1751678053-1.0.1.1-9TAsAPNaPa8BETqMh2060lwEmDvfNMIiCISq28Suwa7VEEq9F6Jm_d_AYlnbJM31LTRtMbn0CqmvVxE13c99kuYVTu34zFkyalI6O25BpEY;
-        path=/; expires=Sat, 05-Jul-25 01:44:13 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=_7ORBM3FdL.zY.XVtJ_SzmFGXjKiViNWajp2nVK2sCg-1751678053946-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a30114cca0423e-EWR
+      - 95a316952a5bb295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllkBSHlstwjHH8ZiBCVfsOueJOP",
+          "id": "chatcmpl-Bplzxe4EZZLCO7KsdqZXP2l56MneD",
           "object": "chat.completion",
-          "created": 1751678052,
+          "created": 1751678933,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to retrieve the stored memory related to the user's birthday. Since the history does not provide any specific information about the birthday, I will use the 'memory_retrieve' tool to check if there is a memory key associated with the birthday.\",\n  \"action\": \"memory_retrieve\",\n  \"action_input\": {\n    \"key\": \"birthday\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"The memory search returned that the user's birthday is in June. However, I need to confirm the exact date. I can either ask the user directly for the specific date or check if there are more detailed memories stored. Since I already have a partial answer, I will ask the user for the complete date.\",\n  \"action\": \"finish\",\n  \"action_input\": \"Please provide the exact date in June for your birthday.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1214,9 +1217,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1760,
-            "completion_tokens": 88,
-            "total_tokens": 1848,
+            "prompt_tokens": 1869,
+            "completion_tokens": 100,
+            "total_tokens": 1969,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1231,7 +1234,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:13 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:54 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1367,7 +1370,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:15 GMT
+      - Sat, 05 Jul 2025 01:28:55 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1377,59 +1380,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1786'
+      - '1018'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1788'
+      - '1021'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9931'
+      - '9945'
       X-Ratelimit-Remaining-Tokens:
       - '198041'
       X-Ratelimit-Reset-Requests:
-      - 9m53.914s
+      - 7m48.514s
       X-Ratelimit-Reset-Tokens:
       - 587ms
       X-Request-Id:
-      - req_649cfff59c67f8b7e5290d4732f01217
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=o4y0WzQjqyiCRQzwhQ0Z02YKvIow.yvHd0WW7wSC6a0-1751678055-1.0.1.1-9_1qrqECsZ9Lt4vpJFoLhVsic.O4g7ozMhMgERWw.5JJiFZQ1hccQtTWhnggpvsHWOEyz3LnS5f98V1HCCfvplBQJhzuY8gc9BxIN1MB2qo;
-        path=/; expires=Sat, 05-Jul-25 01:44:15 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=ubMdrsspN46WE_3x4XzyaRVOaXs_6ly2LOwm.BMRcaM-1751678055921-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a3011decfd423e-EWR
+      - 95a3169e3d10b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllmbyVTdnDDx9L6odgkB28myEYF",
+          "id": "chatcmpl-BplzyfExlTTtijlwFZPnVM3leZH7O",
           "object": "chat.completion",
-          "created": 1751678054,
+          "created": 1751678934,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find out what month the user's birthday is in. Since there is no history, I should store this information in memory for future reference. I will ask the user for their birthday month and then store it using the 'memory_store' tool.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"birthday_month\",\n    \"value\": \"Please provide your birthday month.\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find out what month the user's birthday is in. Since there is no history, I should store this information in memory for future reference. I will ask the user for their birthday month and then store it using the 'memory_store' tool.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"birthday_month\",\n    \"value\": \"unknown\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1439,10 +1439,10 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1742,
-            "completion_tokens": 101,
-            "total_tokens": 1843,
+            "completion_tokens": 97,
+            "total_tokens": 1839,
             "prompt_tokens_details": {
-              "cached_tokens": 1664,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -1455,7 +1455,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:15 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:55 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1493,7 +1493,13 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"What month is my birthday in?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115fabe58>\"\n  ],\n  \"observation\":
+        \"What month is my birthday in?\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to find out what month the user''s birthday
+        is in. Since there is no history, I should store this information in memory
+        for future reference. I will ask the user for their birthday month and then
+        store it using the ''memory_store'' tool.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"birthday_month\",\n        \"value\": \"unknown\"\n      },\n      \"observation\":
+        \"Stored memory ''birthday_month'' successfully\"\n    }\n  ],\n  \"observation\":
         \"Stored memory ''birthday_month'' successfully\"\n}\n```\n\nRespond with
         the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":0.0}'
@@ -1527,14 +1533,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3462'
+      - '3929'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:17 GMT
+      - Sat, 05 Jul 2025 01:28:56 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1544,59 +1550,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '922'
+      - '706'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '929'
+      - '720'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9930'
+      - '9944'
       X-Ratelimit-Remaining-Tokens:
-      - '199237'
+      - '199128'
       X-Ratelimit-Reset-Requests:
-      - 10m0.556s
+      - 7m55.924s
       X-Ratelimit-Reset-Tokens:
-      - 228ms
+      - 261ms
       X-Request-Id:
-      - req_cb0af223eadea9daf7b14431d51fc6d5
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=h6S83Kg3qT71EYRn5T08mKbyOwnK.Z17On0UUujS1cI-1751678057-1.0.1.1-YmPs7cMFxvC824qW2kZVGjyCOAXHodBg13S_X9wQ9_dLmTirlDMtkECU2eMgduuM.ts5ToBRLSEDe.sok.HCf1ARLYmdm.BxKJc4URiZ_0g;
-        path=/; expires=Sat, 05-Jul-25 01:44:17 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=wHo4A6RjFFBJkPzCXvEY7pEDVGev6say3ojdzLdrBDQ-1751678057061-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a3012a5f1d423e-EWR
+      - 95a316a5ecf0b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllorVgMMDUut3uHHXfVUr0x2JuE",
+          "id": "chatcmpl-Bpm00Ia3wDJVeuzak6aG5Nk2XE4bn",
           "object": "chat.completion",
-          "created": 1751678056,
+          "created": 1751678936,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the birthday month has been successfully stored in memory, suggesting that we can now retrieve it when needed.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The memory for the user's birthday month has been successfully stored, but the actual month is still unknown.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1605,9 +1608,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 711,
-            "completion_tokens": 48,
-            "total_tokens": 759,
+            "prompt_tokens": 804,
+            "completion_tokens": 44,
+            "total_tokens": 848,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1622,7 +1625,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:16 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:56 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1679,15 +1682,20 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"What month is my birthday in?\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x0000000115fabe58>\"\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
-        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
-        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to find out what
+        month the user''s birthday is in. Since there is no history, I should store
+        this information in memory for future reference. I will ask the user for their
+        birthday month and then store it using the ''memory_store'' tool.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"birthday_month\",\n        \"value\":
+        \"unknown\"\n      },\n      \"observation\": \"Stored memory ''birthday_month''
+        successfully\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
         \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
         memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
@@ -1752,14 +1760,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8823'
+      - '9290'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:18 GMT
+      - Sat, 05 Jul 2025 01:28:58 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1769,59 +1777,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1475'
+      - '1321'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1477'
+      - '1324'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9929'
+      - '9944'
       X-Ratelimit-Remaining-Tokens:
-      - '198028'
+      - '197920'
       X-Ratelimit-Reset-Requests:
-      - 10m8.073s
+      - 8m3.657s
       X-Ratelimit-Reset-Tokens:
-      - 591ms
+      - 624ms
       X-Request-Id:
-      - req_252bf36d3b3dc3a3e6a0f603b6914db5
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=3gZ19KySF7gx9J9nWg6EP06HvvP8w8YyPtwyQnxDpKY-1751678058-1.0.1.1-FQgNiyXQbiwK6DJ70M5nMCyyPe9L3mTYfn0llUNFYirvkb28dnu7sf_iA5LxdW30nGmbYno_PGbPykEGwyS5ehb7VrM.AaMxQz2H5nS.jpM;
-        path=/; expires=Sat, 05-Jul-25 01:44:18 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=Ldn669z7DxGxiS0Vyrp._fr7tJob1eXgFyMkFW4A3zU-1751678058719-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a301317d3a423e-EWR
+      - 95a316abb944b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpllp4WcPZVZhbf5cbUwhPEluK3LR",
+          "id": "chatcmpl-Bpm01Zx2sM7L9cJjNQRpzmHb03Lix",
           "object": "chat.completion",
-          "created": 1751678057,
+          "created": 1751678937,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find out what month the user's birthday is in. Since there is no specific information in the history, I should check if there are any stored memories related to the user's birthday. I will use the 'memory_search' tool to look for any memories that might contain the word 'birthday'.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"birthday\",\n    \"in_keys\": true,\n    \"in_values\": true\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to ask the user for their birthday month since I currently have it stored as 'unknown'. This will help me provide a direct answer to the question about their birthday month.\",\n  \"action\": \"memory_update\",\n  \"action_input\": {\n    \"key\": \"birthday_month\",\n    \"value\": \"Please tell me your birthday month.\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1830,9 +1835,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1763,
-            "completion_tokens": 113,
-            "total_tokens": 1876,
+            "prompt_tokens": 1856,
+            "completion_tokens": 87,
+            "total_tokens": 1943,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1847,7 +1852,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:18 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:58 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1885,401 +1890,20 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"What month is my birthday in?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115fabe58>\",\n    \"#<DSPy::HistoryEntry:0x0000000115cc3c18>\"\n  ],\n  \"observation\":
-        \"[{:key=>\\\"birthday\\\", :value=>\\\"June\\\"}, {:key=>\\\"birthday_month\\\",
-        :value=>\\\"Please provide your birthday month.\\\"}]\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '3603'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 05 Jul 2025 01:14:19 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
-      Openai-Processing-Ms:
-      - '836'
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '839'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9928'
-      X-Ratelimit-Remaining-Tokens:
-      - '199207'
-      X-Ratelimit-Reset-Requests:
-      - 10m16.102s
-      X-Ratelimit-Reset-Tokens:
-      - 237ms
-      X-Request-Id:
-      - req_1d5b3481a5e4ee4286dc4cd51f6464ee
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=KtGYwA2vyR9MzK0_Mpz.3sTvExtOU5InMpAVK1zMAPE-1751678059-1.0.1.1-qcHSNlO9DPzMWGSaRjEhcOHcp7x66B_qqn7qjfGZ3T5vUtMn9A2FjKw4Krseo2cdiuSo26THRpaEfLOEgH07UJeq.esc6dpmqxjr1IRw21I;
-        path=/; expires=Sat, 05-Jul-25 01:44:19 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=g7cD4DXrjJ7JCNV04xRxYkhDtOMOdX3AzdZQo8FD56w-1751678059750-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a3013bccf6423e-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-BpllqUe8CKEW6OIajj2rnH5pCP6zZ",
-          "object": "chat.completion",
-          "created": 1751678058,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the birthday month is June, but it also requests confirmation or additional information about the birthday month.\",\n  \"next_step\": \"continue\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 755,
-            "completion_tokens": 47,
-            "total_tokens": 802,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 01:14:19 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools. The agent MUST use
-        information from the history to inform its actions and final answer. Each
-        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
-        \"Array of available tools with their JSON schemas. The agent MUST choose
-        an action from the tool names in this list or use \\\"finish\\\". For each
-        tool, use the name exactly as specified and provide action_input as a JSON
-        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
-        MUST be one of the tool names listed in `available_tools` input, or the literal
-        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final answer to the original question. This answer MUST be
-        directly taken from the relevant Observation in the history if available.
-        For example, if an observation showed \\\"Observation: 100.0\\\", and you
-        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
-        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"question\": \"What month is my birthday in?\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x0000000115fabe58>\",\n    \"#<DSPy::HistoryEntry:0x0000000115cc3c18>\"\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
-        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
-        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
-        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"memory_search\",\n      \"description\": \"Search memories by pattern in
-        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
-        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
-        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
-        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
-        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '8874'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 05 Jul 2025 01:14:21 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
-      Openai-Processing-Ms:
-      - '1312'
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1316'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9927'
-      X-Ratelimit-Remaining-Tokens:
-      - '198017'
-      X-Ratelimit-Reset-Requests:
-      - 10m22.678s
-      X-Ratelimit-Reset-Tokens:
-      - 594ms
-      X-Request-Id:
-      - req_eaa8bbd0f8f6569e5945b993815d089c
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=_NnfjBDS5FxqWhzxSJ1KJr1gCEwpDAlkCH6ELYB3BxY-1751678061-1.0.1.1-MD7llXXihzADw5fAURSrq7e4uh1ShIRZSIG9vljMRsa1UOY2H9_FYZuK3f3SiTowIqkFSQxdNbIFikEbfSlzeWM8LSCVthLURYC3a7S5_8c;
-        path=/; expires=Sat, 05-Jul-25 01:44:21 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=WgaVU9NZJqrYKD9tbbPN68jBWT1QJrjQ0koKeMm8u_M-1751678061234-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a3014239c1423e-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-Bpllr0e1z3nXkVQqlt4xK28vtKLyn",
-          "object": "chat.completion",
-          "created": 1751678059,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find out what month the user's birthday is in. Since I don't have that information in the history, I should retrieve it from memory if it has been stored previously. I will use the 'memory_retrieve' tool to check if there is a stored memory related to the user's birthday.\",\n  \"action\": \"memory_retrieve\",\n  \"action_input\": {\n    \"key\": \"birthday_month\"\n  }\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 1783,
-            "completion_tokens": 100,
-            "total_tokens": 1883,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 01:14:21 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts, actions, and observations. Each entry is a hash representing a step
-        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
-        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
-        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
-        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
-        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
-        adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"What month is my birthday in?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000115fabe58>\",\n    \"#<DSPy::HistoryEntry:0x0000000115cc3c18>\",\n    \"#<DSPy::HistoryEntry:0x0000000115969518>\"\n  ],\n  \"observation\":
-        \"Please provide your birthday month.\"\n}\n```\n\nRespond with the corresponding
+        \"What month is my birthday in?\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to find out what month the user''s birthday
+        is in. Since there is no history, I should store this information in memory
+        for future reference. I will ask the user for their birthday month and then
+        store it using the ''memory_store'' tool.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"birthday_month\",\n        \"value\": \"unknown\"\n      },\n      \"observation\":
+        \"Stored memory ''birthday_month'' successfully\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"I need to ask the user for their birthday month since
+        I currently have it stored as ''unknown''. This will help me provide a direct
+        answer to the question about their birthday month.\",\n      \"action\": \"memory_update\",\n      \"action_input\":
+        {\n        \"key\": \"birthday_month\",\n        \"value\": \"Please tell
+        me your birthday month.\"\n      },\n      \"observation\": \"Updated memory
+        ''birthday_month'' successfully\"\n    }\n  ],\n  \"observation\": \"Updated
+        memory ''birthday_month'' successfully\"\n}\n```\n\nRespond with the corresponding
         output schema fields wrapped in a ```json ``` block,\nstarting with the heading
         `## Output values`."}],"temperature":0.0}'
     headers:
@@ -2312,14 +1936,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3556'
+      - '4417'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:22 GMT
+      - Sat, 05 Jul 2025 01:28:59 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2329,59 +1953,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '717'
+      - '820'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '722'
+      - '823'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9927'
+      - '9943'
       X-Ratelimit-Remaining-Tokens:
-      - '199215'
+      - '199015'
       X-Ratelimit-Reset-Requests:
-      - 10m29.818s
+      - 8m10.778s
       X-Ratelimit-Reset-Tokens:
-      - 235ms
+      - 295ms
       X-Request-Id:
-      - req_ed814d156b65c7346d1ba1250f50f011
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=i5KU.TecYV_n_4WjRKk1Bu0u32RCX1qsaqdR7McYCHI-1751678062-1.0.1.1-HQcqtg7weLemm3nxMeWrCNjr.RThx19L.XM0pCfQErMQiGAo4iH5Y2nlnmFpjSEmiRh.zW_YpS3hHaVEwZPfCZZ8BuRFcNryCU85yA7Ccag;
-        path=/; expires=Sat, 05-Jul-25 01:44:22 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=LIhb7moTfXCJwvHDq0Hcbg4gfplAyaB.2BgIF0kbfGo-1751678062147-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a3014b8940423e-EWR
+      - 95a316b51cebb295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplltF6yfZkA32EDyBZujlEXYo65m",
+          "id": "chatcmpl-Bpm02EgfJjo307OJMh4NplK8xh40s",
           "object": "chat.completion",
-          "created": 1751678061,
+          "created": 1751678938,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the user has not provided their birthday month yet and is being asked to do so.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The memory for the birthday month has been successfully updated, but I still need the user's input to know the actual month.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -2390,9 +2011,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 747,
-            "completion_tokens": 45,
-            "total_tokens": 792,
+            "prompt_tokens": 906,
+            "completion_tokens": 48,
+            "total_tokens": 954,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -2407,7 +2028,423 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:22 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:59 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"What month is my birthday in?\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to find out what
+        month the user''s birthday is in. Since there is no history, I should store
+        this information in memory for future reference. I will ask the user for their
+        birthday month and then store it using the ''memory_store'' tool.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"birthday_month\",\n        \"value\":
+        \"unknown\"\n      },\n      \"observation\": \"Stored memory ''birthday_month''
+        successfully\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"I
+        need to ask the user for their birthday month since I currently have it stored
+        as ''unknown''. This will help me provide a direct answer to the question
+        about their birthday month.\",\n      \"action\": \"memory_update\",\n      \"action_input\":
+        {\n        \"key\": \"birthday_month\",\n        \"value\": \"Please tell
+        me your birthday month.\"\n      },\n      \"observation\": \"Updated memory
+        ''birthday_month'' successfully\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9777'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:29:00 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1170'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1174'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9942'
+      X-Ratelimit-Remaining-Tokens:
+      - '197807'
+      X-Ratelimit-Reset-Requests:
+      - 8m18.353s
+      X-Ratelimit-Reset-Tokens:
+      - 657ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a316bba97bb295-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bpm030qBICVdwVpqZXWwfEEJ27X7Z",
+          "object": "chat.completion",
+          "created": 1751678939,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have asked the user to provide their birthday month, but I still need to wait for their response. Since I cannot proceed without this information, I will continue to prompt the user for their birthday month until I receive a valid answer.\",\n  \"action\": \"memory_update\",\n  \"action_input\": {\n    \"key\": \"birthday_month\",\n    \"value\": \"Please tell me your birthday month.\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1958,
+            "completion_tokens": 98,
+            "total_tokens": 2056,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:29:00 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations. Each entry is a hash representing a step
+        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What month is my birthday in?\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to find out what month the user''s birthday
+        is in. Since there is no history, I should store this information in memory
+        for future reference. I will ask the user for their birthday month and then
+        store it using the ''memory_store'' tool.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"birthday_month\",\n        \"value\": \"unknown\"\n      },\n      \"observation\":
+        \"Stored memory ''birthday_month'' successfully\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"I need to ask the user for their birthday month since
+        I currently have it stored as ''unknown''. This will help me provide a direct
+        answer to the question about their birthday month.\",\n      \"action\": \"memory_update\",\n      \"action_input\":
+        {\n        \"key\": \"birthday_month\",\n        \"value\": \"Please tell
+        me your birthday month.\"\n      },\n      \"observation\": \"Updated memory
+        ''birthday_month'' successfully\"\n    },\n    {\n      \"step\": 3,\n      \"thought\":
+        \"I have asked the user to provide their birthday month, but I still need
+        to wait for their response. Since I cannot proceed without this information,
+        I will continue to prompt the user for their birthday month until I receive
+        a valid answer.\",\n      \"action\": \"memory_update\",\n      \"action_input\":
+        {\n        \"key\": \"birthday_month\",\n        \"value\": \"Please tell
+        me your birthday month.\"\n      },\n      \"observation\": \"Updated memory
+        ''birthday_month'' successfully\"\n    }\n  ],\n  \"observation\": \"Updated
+        memory ''birthday_month'' successfully\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4964'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:29:01 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '915'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '920'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9941'
+      X-Ratelimit-Remaining-Tokens:
+      - '198887'
+      X-Ratelimit-Reset-Requests:
+      - 8m25.657s
+      X-Ratelimit-Reset-Tokens:
+      - 333ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a316c42b8ab295-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bpm04GsTqZQV34kreLvrhxRjy6h5N",
+          "object": "chat.completion",
+          "created": 1751678940,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The system is still waiting for the user's response regarding their birthday month, as the memory update indicates a repeated prompt for the user to provide this information.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1019,
+            "completion_tokens": 54,
+            "total_tokens": 1073,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:29:01 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2544,7 +2581,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:23 GMT
+      - Sat, 05 Jul 2025 01:29:03 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2554,59 +2591,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1114'
+      - '1123'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1117'
+      - '1126'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9926'
+      - '9940'
       X-Ratelimit-Remaining-Tokens:
-      - '198033'
+      - '198032'
       X-Ratelimit-Reset-Requests:
-      - 10m37.508s
+      - 8m33.186s
       X-Ratelimit-Reset-Tokens:
       - 590ms
       X-Request-Id:
-      - req_9a0fc3a07e66180114df8b44936cf6b5
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=.Dsrgg_CFwPDOucpcZPGeXS8umBfqcN40oGzT4knFNs-1751678063-1.0.1.1-o2UqRX8wOISBdO.H66VTxpVnm.8Zu49lf8_2SR4ZJo78KgrSvJl7isnPoNu59M2nMlMTm6eNhfLQTRteih8VBgwoenRqH7abVLJFE2X74do;
-        path=/; expires=Sat, 05-Jul-25 01:44:23 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=0GXexdLT6JqgyKSP3NJVx2sHY9FakK6ZeJtQlvipYWM-1751678063491-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a301517e61423e-EWR
+      - 95a316cb09e0b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplluqybGCI4B033DtwBPWUQrQDrj",
+          "id": "chatcmpl-Bpm06Gb1UdsPHYdVKbMiaGzDoINSO",
           "object": "chat.completion",
-          "created": 1751678062,
+          "created": 1751678942,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about the metadata for birthday information, I need to first check if there is any stored memory related to birthday information. Since the history is empty, I should use the 'memory_search' tool to look for any memories that might contain relevant data about birthdays.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"birthday\",\n    \"in_keys\": true,\n    \"in_values\": true\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about the metadata for birthday information, I need to first check if there is any stored memory related to birthday information. Since the history is empty, I should use the 'memory_search' tool to look for any relevant memories that might contain this information.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"birthday\",\n    \"in_keys\": true,\n    \"in_values\": true\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -2616,8 +2650,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1747,
-            "completion_tokens": 107,
-            "total_tokens": 1854,
+            "completion_tokens": 106,
+            "total_tokens": 1853,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -2632,7 +2666,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:23 GMT
+  recorded_at: Sat, 05 Jul 2025 01:29:02 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2671,9 +2705,16 @@ http_interactions:
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
         \"Can you tell me about the metadata for my birthday information?\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x0000000106d5c530>\"\n  ],\n  \"observation\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To answer the question
+        about the metadata for birthday information, I need to first check if there
+        is any stored memory related to birthday information. Since the history is
+        empty, I should use the ''memory_search'' tool to look for any relevant memories
+        that might contain this information.\",\n      \"action\": \"memory_search\",\n      \"action_input\":
+        {\n        \"pattern\": \"birthday\",\n        \"in_keys\": true,\n        \"in_values\":
+        true\n      },\n      \"observation\": \"[{:key=>\\\"birthday\\\", :value=>\\\"June\\\"},
+        {:key=>\\\"birthday_month\\\", :value=>\\\"Please tell me your birthday month.\\\"}]\"\n    }\n  ],\n  \"observation\":
         \"[{:key=>\\\"birthday\\\", :value=>\\\"June\\\"}, {:key=>\\\"birthday_month\\\",
-        :value=>\\\"Please provide your birthday month.\\\"}]\"\n}\n```\n\nRespond
+        :value=>\\\"Please tell me your birthday month.\\\"}]\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":0.0}'
     headers:
@@ -2706,14 +2747,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3586'
+      - '4215'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:24 GMT
+      - Sat, 05 Jul 2025 01:29:04 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2723,59 +2764,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '700'
+      - '792'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '706'
+      - '794'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9925'
+      - '9939'
       X-Ratelimit-Remaining-Tokens:
-      - '199210'
+      - '199065'
       X-Ratelimit-Reset-Requests:
-      - 10m44.822s
+      - 8m40.53s
       X-Ratelimit-Reset-Tokens:
-      - 237ms
+      - 280ms
       X-Request-Id:
-      - req_bf46b4344bb0ef8cc5e7190c14737c10
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Y59y8caIw.NuA.ni_MlRhVnvRCHoDw_gWeMCHJlXUec-1751678064-1.0.1.1-NwO_SLyuKAiBG.PWtHhZwT4haYcdv_Fnc5b9gSJ8XnUfT3xPr4cnGggwVeQ3lrW73j7sGSTpEGzElKKfZLN6gxs7ddbLr3t36ZpaerIDuDE;
-        path=/; expires=Sat, 05-Jul-25 01:44:24 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=a2gUQ.wsJOLZzEYDovLZRdq230D8gzGOf6XreFIi7ss-1751678064411-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a30159acf3423e-EWR
+      - 95a316d33943b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllvtcQQfpJcDyNkIw75bVf8vTyL",
+          "id": "chatcmpl-Bpm07tbTHxnwPLRV1BbwScKxO3HVS",
           "object": "chat.completion",
-          "created": 1751678063,
+          "created": 1751678943,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation provides metadata related to the birthday information, indicating that the birthday month is requested.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that there is metadata related to the birthday information, specifically that the birthday is in June and there is a prompt for the birthday month.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -2784,9 +2822,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 741,
-            "completion_tokens": 42,
-            "total_tokens": 783,
+            "prompt_tokens": 868,
+            "completion_tokens": 54,
+            "total_tokens": 922,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -2801,7 +2839,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:24 GMT
+  recorded_at: Sat, 05 Jul 2025 01:29:03 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2858,15 +2896,22 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Can you tell me about the metadata
-        for my birthday information?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000106d5c530>\"\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
-        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
-        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        for my birthday information?\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"To answer the question about the metadata for birthday
+        information, I need to first check if there is any stored memory related to
+        birthday information. Since the history is empty, I should use the ''memory_search''
+        tool to look for any relevant memories that might contain this information.\",\n      \"action\":
+        \"memory_search\",\n      \"action_input\": {\n        \"pattern\": \"birthday\",\n        \"in_keys\":
+        true,\n        \"in_values\": true\n      },\n      \"observation\": \"[{:key=>\\\"birthday\\\",
+        :value=>\\\"June\\\"}, {:key=>\\\"birthday_month\\\", :value=>\\\"Please tell
+        me your birthday month.\\\"}]\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
         \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
         memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
@@ -2931,14 +2976,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8857'
+      - '9486'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:26 GMT
+      - Sat, 05 Jul 2025 01:29:05 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2948,59 +2993,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1656'
+      - '1407'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1662'
+      - '1409'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9924'
+      - '9938'
       X-Ratelimit-Remaining-Tokens:
-      - '198020'
+      - '197875'
       X-Ratelimit-Reset-Requests:
-      - 10m52.571s
+      - 8m48.184s
       X-Ratelimit-Reset-Tokens:
-      - 594ms
+      - 637ms
       X-Request-Id:
-      - req_41fcd1db8a93df558fb94afe07670326
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=FyT8QwwPOYdFjkWkNnZIMTGlkawAywzPn_aHfg86smY-1751678066-1.0.1.1-sos085DUSTYTQuFafpK_QJPFv_vgK8JlMqUGbEkZYMmV_Y4_lorjZzjE9JOYmNdoZVhceQpxD1fP8iSoJujqyV4ld3UqvZYO8X1Mh2kRe40;
-        path=/; expires=Sat, 05-Jul-25 01:44:26 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=koMFxLKCv7QPZrhrQEOHkTPXXbOSyRutPFohW8gIrRk-1751678066245-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a3015f6a10423e-EWR
+      - 95a316d95d65b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpllw5jxxTW9HStIaPRINGEanwhTx",
+          "id": "chatcmpl-Bpm08qwOwWzgbXYOQjWRLPUl1cK2W",
           "object": "chat.completion",
-          "created": 1751678064,
+          "created": 1751678944,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about the metadata for birthday information, I need to retrieve the relevant memory key that stores this information. Since the history does not provide any specific details about the key, I will use the 'memory_search' tool to look for any memories related to 'birthday'. This will help me identify the correct key to retrieve the metadata.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"birthday\",\n    \"in_keys\": true,\n    \"in_values\": true\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have found some birthday-related information in the observation, including a key-value pair for 'birthday' and a prompt for the birthday month. To provide metadata about this information, I should use the 'memory_get_metadata' tool to retrieve the metadata for the 'birthday' key.\",\n  \"action\": \"memory_get_metadata\",\n  \"action_input\": {\n    \"key\": \"birthday\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -3009,9 +3051,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1769,
-            "completion_tokens": 121,
-            "total_tokens": 1890,
+            "prompt_tokens": 1895,
+            "completion_tokens": 95,
+            "total_tokens": 1990,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -3026,7 +3068,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:26 GMT
+  recorded_at: Sat, 05 Jul 2025 01:29:05 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -3065,11 +3107,27 @@ http_interactions:
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
         \"Can you tell me about the metadata for my birthday information?\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x0000000106d5c530>\",\n    \"#<DSPy::HistoryEntry:0x0000000106938f80>\"\n  ],\n  \"observation\":
-        \"[{:key=>\\\"birthday\\\", :value=>\\\"June\\\"}, {:key=>\\\"birthday_month\\\",
-        :value=>\\\"Please provide your birthday month.\\\"}]\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To answer the question
+        about the metadata for birthday information, I need to first check if there
+        is any stored memory related to birthday information. Since the history is
+        empty, I should use the ''memory_search'' tool to look for any relevant memories
+        that might contain this information.\",\n      \"action\": \"memory_search\",\n      \"action_input\":
+        {\n        \"pattern\": \"birthday\",\n        \"in_keys\": true,\n        \"in_values\":
+        true\n      },\n      \"observation\": \"[{:key=>\\\"birthday\\\", :value=>\\\"June\\\"},
+        {:key=>\\\"birthday_month\\\", :value=>\\\"Please tell me your birthday month.\\\"}]\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"I have found some birthday-related information in
+        the observation, including a key-value pair for ''birthday'' and a prompt
+        for the birthday month. To provide metadata about this information, I should
+        use the ''memory_get_metadata'' tool to retrieve the metadata for the ''birthday''
+        key.\",\n      \"action\": \"memory_get_metadata\",\n      \"action_input\":
+        {\n        \"key\": \"birthday\"\n      },\n      \"observation\": \"{:created_at=>2025-07-05
+        03:28:48.698118 +0200, :updated_at=>2025-07-05 03:28:48.698118 +0200, :access_count=>0,
+        :last_accessed_at=>nil, :tags=>[], :value_length=>4}\"\n    }\n  ],\n  \"observation\":
+        \"{:created_at=>2025-07-05 03:28:48.698118 +0200, :updated_at=>2025-07-05
+        03:28:48.698118 +0200, :access_count=>0, :last_accessed_at=>nil, :tags=>[],
+        :value_length=>4}\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`."}],"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -3100,14 +3158,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3637'
+      - '4896'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:27 GMT
+      - Sat, 05 Jul 2025 01:29:06 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -3117,59 +3175,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '997'
+      - '1131'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1004'
+      - '1135'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9923'
+      - '9938'
       X-Ratelimit-Remaining-Tokens:
-      - '199198'
+      - '198897'
       X-Ratelimit-Reset-Requests:
-      - 10m59.226s
+      - 8m55.236s
       X-Ratelimit-Reset-Tokens:
-      - 240ms
+      - 330ms
       X-Request-Id:
-      - req_2f3ae6a3ca38effc7aa7317778c6cc5d
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=_lKty0Q_roveFWGVJX7ymEw3PZUQpyrIC25_9WubbME-1751678067-1.0.1.1-OlRpM8S_snWolrX4xtdTOkDtx_QEi_RwHXyXMSIbpWRAc_fNv7V4rqfP.0XSjFoZ9owwSy_2MlwuimOnOXopfh0USOeMSl5QTRSSeXvfczo;
-        path=/; expires=Sat, 05-Jul-25 01:44:27 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=.R.4URMofFmN4nMq5leotB6TN8dCaWu9ubJifC77UAg-1751678067586-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a3016bbcbc423e-EWR
+      - 95a316e35f28b295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpllyjpwffjy8tcGnZLnbFUabLbxR",
+          "id": "chatcmpl-Bpm09mJGd2ItVj4gVjDRdadg07Jxt",
           "object": "chat.completion",
-          "created": 1751678066,
+          "created": 1751678945,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the metadata for the birthday information includes a key for 'birthday' with a value of 'June' and a request for the specific birthday month. This suggests that further clarification or input is needed regarding the exact date.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation provides metadata for the 'birthday' key, indicating it was created and updated on July 5, 2025, has not been accessed yet, and has a value length of 4 characters. This suggests that the birthday information is stored but has not been interacted with frequently.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -3178,9 +3233,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 760,
-            "completion_tokens": 71,
-            "total_tokens": 831,
+            "prompt_tokens": 1077,
+            "completion_tokens": 82,
+            "total_tokens": 1159,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -3195,7 +3250,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:27 GMT
+  recorded_at: Sat, 05 Jul 2025 01:29:06 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -3252,15 +3307,30 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Can you tell me about the metadata
-        for my birthday information?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000106d5c530>\",\n    \"#<DSPy::HistoryEntry:0x0000000106938f80>\"\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
-        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
-        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        for my birthday information?\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"To answer the question about the metadata for birthday
+        information, I need to first check if there is any stored memory related to
+        birthday information. Since the history is empty, I should use the ''memory_search''
+        tool to look for any relevant memories that might contain this information.\",\n      \"action\":
+        \"memory_search\",\n      \"action_input\": {\n        \"pattern\": \"birthday\",\n        \"in_keys\":
+        true,\n        \"in_values\": true\n      },\n      \"observation\": \"[{:key=>\\\"birthday\\\",
+        :value=>\\\"June\\\"}, {:key=>\\\"birthday_month\\\", :value=>\\\"Please tell
+        me your birthday month.\\\"}]\"\n    },\n    {\n      \"step\": 2,\n      \"thought\":
+        \"I have found some birthday-related information in the observation, including
+        a key-value pair for ''birthday'' and a prompt for the birthday month. To
+        provide metadata about this information, I should use the ''memory_get_metadata''
+        tool to retrieve the metadata for the ''birthday'' key.\",\n      \"action\":
+        \"memory_get_metadata\",\n      \"action_input\": {\n        \"key\": \"birthday\"\n      },\n      \"observation\":
+        \"{:created_at=>2025-07-05 03:28:48.698118 +0200, :updated_at=>2025-07-05
+        03:28:48.698118 +0200, :access_count=>0, :last_accessed_at=>nil, :tags=>[],
+        :value_length=>4}\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
         \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
         memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
@@ -3325,14 +3395,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8908'
+      - '10135'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:14:29 GMT
+      - Sat, 05 Jul 2025 01:29:08 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -3342,59 +3412,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1361'
+      - '1636'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1365'
+      - '1639'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9922'
+      - '9937'
       X-Ratelimit-Remaining-Tokens:
-      - '198007'
+      - '197720'
       X-Ratelimit-Reset-Requests:
-      - 11m6.633s
+      - 9m2.568s
       X-Ratelimit-Reset-Tokens:
-      - 597ms
+      - 684ms
       X-Request-Id:
-      - req_eaaa85f82626e75e17d66dc4de8ea6b0
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=H9t0MZ7hrZ_urg3dURzrmV.Yk1aNbqmYkLHHGeUvK4s-1751678069-1.0.1.1-KXWyPtp70.pLwXLs10XzBMSj8WuO6D_eBweKwpMqKhWRAZ1MW2Kv93amDDHPQP1fio2ijkGqWLyQyJeHayMy8jEL7BUyj7lRku_o9iwfQsw;
-        path=/; expires=Sat, 05-Jul-25 01:44:29 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=UMA8tsLBHxoEBm2S7bEuPVx7ecccyf8zm.626w6HvDk-1751678069179-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a301735b0e423e-EWR
+      - 95a316eb6edbb295-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpllzDJw750DkMq16TPaobUphSbea",
+          "id": "chatcmpl-Bpm0BeS03YncxdPjhv5TdNxUKF9js",
           "object": "chat.completion",
-          "created": 1751678067,
+          "created": 1751678947,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about the metadata for birthday information, I need to retrieve the relevant memory key that stores this information. I will use the 'memory_get_metadata' tool to get the metadata for the specific key related to birthday information. First, I should check if I have the key stored in memory or if I need to search for it.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"birthday\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have successfully retrieved the metadata for the 'birthday' key, which includes information such as creation date, update date, access count, and value length. Now, I can finish by providing this metadata as the final answer to the question about the metadata for birthday information.\",\n  \"action\": \"finish\",\n  \"action_input\": \"{:created_at=>2025-07-05 03:28:48.698118 +0200, :updated_at=>2025-07-05 03:28:48.698118 +0200, :access_count=>0, :last_accessed_at=>nil, :tags=>[], :value_length=>4}\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -3403,11 +3470,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1788,
-            "completion_tokens": 107,
-            "total_tokens": 1895,
+            "prompt_tokens": 2067,
+            "completion_tokens": 152,
+            "total_tokens": 2219,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1024,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -3420,174 +3487,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:14:29 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts, actions, and observations. Each entry is a hash representing a step
-        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
-        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
-        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
-        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
-        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
-        adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Can you tell me about the metadata for my birthday information?\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x0000000106d5c530>\",\n    \"#<DSPy::HistoryEntry:0x0000000106938f80>\",\n    \"#<DSPy::HistoryEntry:0x0000000104ee44e0>\"\n  ],\n  \"observation\":
-        \"[{:key=>\\\"birthday\\\", :value=>\\\"June\\\"}, {:key=>\\\"birthday_month\\\",
-        :value=>\\\"Please provide your birthday month.\\\"}]\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '3688'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 05 Jul 2025 01:14:30 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
-      Openai-Processing-Ms:
-      - '775'
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '777'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9922'
-      X-Ratelimit-Remaining-Tokens:
-      - '199186'
-      X-Ratelimit-Reset-Requests:
-      - 11m13.72s
-      X-Ratelimit-Reset-Tokens:
-      - 244ms
-      X-Request-Id:
-      - req_8f3ada2c8e9f5dce689d5281aaf0b169
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=hgQwh5mn3PFBy_Y.I4PVtlBZtnB_Ky8yvCgwlQnnTTQ-1751678070-1.0.1.1-GeCsKV_bs1Q3OayCQ3x7O44268K5j1Xc4sAxOjHWmcDFergwC9PbziReTRTh4fPSDdif4GnEB6mwtgp1Ldv60NQa2J3qP2M2bcFfXhat33A;
-        path=/; expires=Sat, 05-Jul-25 01:44:30 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=2LCx9.pGn_zkQ871sRFK1Qp0jwUAurgSQuaPeRxrwp4-1751678070137-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a3017d2b3e423e-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-Bplm1G8q4Ovcj1mDlmIOaDo7RC1b4",
-          "object": "chat.completion",
-          "created": 1751678069,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation provides metadata related to the birthday information, indicating that the birthday is in June and requesting the specific month of the birthday.\",\n  \"next_step\": \"continue\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 780,
-            "completion_tokens": 50,
-            "total_tokens": 830,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 01:14:29 GMT
+  recorded_at: Sat, 05 Jul 2025 01:29:08 GMT
 recorded_with: VCR 6.3.1

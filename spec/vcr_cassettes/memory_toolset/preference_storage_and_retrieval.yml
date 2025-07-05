@@ -136,7 +136,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:12:47 GMT
+      - Sat, 05 Jul 2025 01:27:22 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -146,59 +146,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '919'
+      - '1079'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '921'
+      - '1082'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9988'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
       - '198028'
       X-Ratelimit-Reset-Requests:
-      - 1m43.021s
+      - 8.64s
       X-Ratelimit-Reset-Tokens:
       - 591ms
       X-Request-Id:
-      - req_d2b37904f26b864112cb0ef17a1a52bb
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=H8wwZmvShN4iWnrdzpRYq9NBlvKPUdCH7sqJFJT1rug-1751677967-1.0.1.1-Vbx0DZQ_ma1nNrKNHGLCjDougDqQmvomoQyPA.ME3iIKqb5Mb.sEKJCcffk1QXolLwht2agbh_7KockABHSsuFM03T4nW2vggjHH.lfnkRc;
-        path=/; expires=Sat, 05-Jul-25 01:42:47 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=uzLYZgy6LPxvCq3_FyTDxSA6smbjeWW7cb1UypfgINo-1751677967065-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2fef80fea33d5-EWR
+      - 95a314588fdfa0f4-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplkM9XlBEaFL9JX0TkpSIJUt0rjA",
+          "id": "chatcmpl-BplyTqIklfinobXQNXOTEFyxScQag",
           "object": "chat.completion",
-          "created": 1751677966,
+          "created": 1751678841,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the user's favorite color and their preference for dark mode in memory. This will allow me to remember these preferences for future interactions.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"favorite_color\",\n    \"value\": \"blue\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the user's favorite color and their preference for dark mode in memory. The best action to take is to use the 'memory_store' tool to save these preferences as key-value pairs.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"favorite_color\",\n    \"value\": \"blue\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -208,10 +205,10 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1752,
-            "completion_tokens": 75,
-            "total_tokens": 1827,
+            "completion_tokens": 86,
+            "total_tokens": 1838,
             "prompt_tokens_details": {
-              "cached_tokens": 1664,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -224,7 +221,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:12:47 GMT
+  recorded_at: Sat, 05 Jul 2025 01:27:22 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -263,7 +260,12 @@ http_interactions:
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
         \"Please remember that my favorite color is blue and I prefer dark mode for
-        UIs.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000106894070>\"\n  ],\n  \"observation\":
+        UIs.\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\": \"I
+        need to store the user''s favorite color and their preference for dark mode
+        in memory. The best action to take is to use the ''memory_store'' tool to
+        save these preferences as key-value pairs.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"favorite_color\",\n        \"value\": \"blue\"\n      },\n      \"observation\":
+        \"Stored memory ''favorite_color'' successfully\"\n    }\n  ],\n  \"observation\":
         \"Stored memory ''favorite_color'' successfully\"\n}\n```\n\nRespond with
         the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":0.0}'
@@ -297,14 +299,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3511'
+      - '3925'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:12:48 GMT
+      - Sat, 05 Jul 2025 01:27:24 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -314,59 +316,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '650'
+      - '716'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '655'
+      - '721'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9987'
+      - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '199225'
+      - '199128'
       X-Ratelimit-Reset-Requests:
-      - 1m50.307s
+      - 15.638s
       X-Ratelimit-Reset-Tokens:
-      - 232ms
+      - 261ms
       X-Request-Id:
-      - req_cc8988e2139a8cd49d7449dae6de921e
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=ga0dyjuDkmf52wsSOPWH9NI2VHIsJKjgIlzmwf4ky3I-1751677968-1.0.1.1-D8RwjA0O.S7TjrRsgM_NYoDhnjgzjWT6Fcfw18tBUAcHfOT9VqxKcw_5leIYCvi0IkC_dyiQ6yAAtppoKnq3b37auZDJOH6XNqSBj1crayQ;
-        path=/; expires=Sat, 05-Jul-25 01:42:48 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=Q1kVbPncJetRaRE0V2Uxxc3d7VEElt6F3xCk7l_YO8M-1751677968156-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ff0068d333d5-EWR
+      - 95a31460cfe0a0f4-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplkNdiJtJJLKyWKxJxaJuLunTqN6",
+          "id": "chatcmpl-BplyVd9XxDh6n4kKw0HtnQzBZsk5b",
           "object": "chat.completion",
-          "created": 1751677967,
+          "created": 1751678843,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the user's preference for the favorite color has been successfully stored in memory.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The user's favorite color has been successfully stored in memory.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -375,9 +374,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 720,
-            "completion_tokens": 42,
-            "total_tokens": 762,
+            "prompt_tokens": 803,
+            "completion_tokens": 35,
+            "total_tokens": 838,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -392,7 +391,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:12:48 GMT
+  recorded_at: Sat, 05 Jul 2025 01:27:23 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -449,7 +448,420 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Please remember that my favorite
-        color is blue and I prefer dark mode for UIs.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x0000000106894070>\"\n  ],\n  \"available_tools\":
+        color is blue and I prefer dark mode for UIs.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to store the user''s favorite color and their
+        preference for dark mode in memory. The best action to take is to use the
+        ''memory_store'' tool to save these preferences as key-value pairs.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"favorite_color\",\n        \"value\":
+        \"blue\"\n      },\n      \"observation\": \"Stored memory ''favorite_color''
+        successfully\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9286'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:25 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1067'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1071'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '197921'
+      X-Ratelimit-Reset-Requests:
+      - 23.29s
+      X-Ratelimit-Reset-Tokens:
+      - 623ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a31468af23a0f4-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyWhUWPuss0h180XKqBQGGjszAm",
+          "object": "chat.completion",
+          "created": 1751678844,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the user's preference for dark mode in memory as well. The next action should be to use the 'memory_store' tool again to save this preference.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"ui_preference\",\n    \"value\": \"dark mode\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1855,
+            "completion_tokens": 82,
+            "total_tokens": 1937,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:25 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations. Each entry is a hash representing a step
+        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"Please remember that my favorite color is blue and I prefer dark mode for
+        UIs.\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\": \"I
+        need to store the user''s favorite color and their preference for dark mode
+        in memory. The best action to take is to use the ''memory_store'' tool to
+        save these preferences as key-value pairs.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"favorite_color\",\n        \"value\": \"blue\"\n      },\n      \"observation\":
+        \"Stored memory ''favorite_color'' successfully\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"I need to store the user''s preference for dark mode
+        in memory as well. The next action should be to use the ''memory_store'' tool
+        again to save this preference.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"ui_preference\",\n        \"value\": \"dark mode\"\n      },\n      \"observation\":
+        \"Stored memory ''ui_preference'' successfully\"\n    }\n  ],\n  \"observation\":
+        \"Stored memory ''ui_preference'' successfully\"\n}\n```\n\nRespond with the
+        corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4359'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:26 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '931'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '935'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9996'
+      X-Ratelimit-Remaining-Tokens:
+      - '199028'
+      X-Ratelimit-Reset-Requests:
+      - 30.598s
+      X-Ratelimit-Reset-Tokens:
+      - 291ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314713b9da0f4-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyXo0DRAK9lv331V7NUt1gDqiJf",
+          "object": "chat.completion",
+          "created": 1751678845,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The user's preferences for favorite color and UI mode have been successfully stored in memory.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 902,
+            "completion_tokens": 40,
+            "total_tokens": 942,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:26 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Please remember that my favorite
+        color is blue and I prefer dark mode for UIs.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to store the user''s favorite color and their
+        preference for dark mode in memory. The best action to take is to use the
+        ''memory_store'' tool to save these preferences as key-value pairs.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"favorite_color\",\n        \"value\":
+        \"blue\"\n      },\n      \"observation\": \"Stored memory ''favorite_color''
+        successfully\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"I
+        need to store the user''s preference for dark mode in memory as well. The
+        next action should be to use the ''memory_store'' tool again to save this
+        preference.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"ui_preference\",\n        \"value\": \"dark mode\"\n      },\n      \"observation\":
+        \"Stored memory ''ui_preference'' successfully\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -522,14 +934,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8872'
+      - '9721'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:12:49 GMT
+      - Sat, 05 Jul 2025 01:27:27 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -539,59 +951,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '786'
+      - '1040'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '788'
+      - '1044'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9986'
+      - '9995'
       X-Ratelimit-Remaining-Tokens:
-      - '198017'
+      - '197821'
       X-Ratelimit-Reset-Requests:
-      - 1m57.898s
+      - 38.114s
       X-Ratelimit-Reset-Tokens:
-      - 594ms
+      - 653ms
       X-Request-Id:
-      - req_f940ed1e83b16eada90ede9fe67cb534
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=a7D6DEKjt40JtjMvzZT3VqwSmTjuDWkrHWdn1ZXMku0-1751677969-1.0.1.1-pfsb5fwxA_OsDYroHU53L5ONjx33hFEqOQfvoi8nOwhcZtzAsgNbRcG_b.cIf0dFAV9qrPXMradhgkTNVYcKas3Zu1qAcnsHMyfACJZT84g;
-        path=/; expires=Sat, 05-Jul-25 01:42:49 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=BivvnbsRA8uMGc0aBZoeBipJcy_CuyvUk5JA8Fuj_80-1751677969340-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ff071e3733d5-EWR
+      - 95a314784a84a0f4-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplkOOZJZhRUpRpNo6P6DBHwnaqYy",
+          "id": "chatcmpl-BplyYCiKOLRMju7bygxDjKKUZWLNK",
           "object": "chat.completion",
-          "created": 1751677968,
+          "created": 1751678846,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the user's favorite color and their preference for dark mode in memory. This will allow me to remember these preferences for future interactions.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"favorite_color\",\n    \"value\": \"blue\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have successfully stored the user's favorite color and their UI preference in memory. Since the question is about remembering these preferences, I can finish my task by confirming that I have stored this information correctly.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I have remembered that your favorite color is blue and you prefer dark mode for UIs.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -600,11 +1009,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1772,
-            "completion_tokens": 75,
-            "total_tokens": 1847,
+            "prompt_tokens": 1953,
+            "completion_tokens": 85,
+            "total_tokens": 2038,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1024,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -617,7 +1026,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:12:49 GMT
+  recorded_at: Sat, 05 Jul 2025 01:27:27 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -753,7 +1162,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:12:50 GMT
+      - Sat, 05 Jul 2025 01:27:29 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -763,59 +1172,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '927'
+      - '1134'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '930'
+      - '1138'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9985'
+      - '9994'
       X-Ratelimit-Remaining-Tokens:
       - '198038'
       X-Ratelimit-Reset-Requests:
-      - 2m5.468s
+      - 45.526s
       X-Ratelimit-Reset-Tokens:
       - 588ms
       X-Request-Id:
-      - req_cd925ad94ef5f2f6d8454dd75fb279aa
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Nh8zMkssneKcZla0kNAyeJBZe2yQ9JWhTd0srW_A7pc-1751677970-1.0.1.1-k4CZAYgsNNMPVXdb8c3wKAFv1_97Crz3F1DUam4JMKqeb5zer8z0w_mMwUJElCJRLlZY0c1kemZddOYe3EjR5zHJkjVW0MTQasdTNCvG0JI;
-        path=/; expires=Sat, 05-Jul-25 01:42:50 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=EZ_JS.hszZmDrcmmRKk9WY1wfeONYjADZMWWQn0NSGs-1751677970550-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ff0dcc7f33d5-EWR
+      - 95a3147ffa3da0f4-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplkPLzLJ5XHFEmakFM3nC8ovH6iF",
+          "id": "chatcmpl-BplyaC26u62FkEcAwzxiejo0c70Bk",
           "object": "chat.completion",
-          "created": 1751677969,
+          "created": 1751678848,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history of previous UI preferences mentioned, I should search the memory for any stored preferences related to UI. This will help me retrieve any relevant information that might answer the question.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"UI\",\n    \"in_keys\": true,\n    \"in_values\": true\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history of previous UI preferences mentioned, I should search the memory for any stored preferences related to UI. This will help me retrieve any relevant information that might answer the question.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"UI preferences\",\n    \"in_keys\": true,\n    \"in_values\": true\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -825,10 +1231,10 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1742,
-            "completion_tokens": 90,
-            "total_tokens": 1832,
+            "completion_tokens": 91,
+            "total_tokens": 1833,
             "prompt_tokens_details": {
-              "cached_tokens": 1664,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -841,7 +1247,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:12:50 GMT
+  recorded_at: Sat, 05 Jul 2025 01:27:29 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -879,7 +1285,13 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"What UI preferences have I mentioned?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001063b7408>\"\n  ],\n  \"observation\":
+        \"What UI preferences have I mentioned?\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"Since there is no history of previous UI preferences
+        mentioned, I should search the memory for any stored preferences related to
+        UI. This will help me retrieve any relevant information that might answer
+        the question.\",\n      \"action\": \"memory_search\",\n      \"action_input\":
+        {\n        \"pattern\": \"UI preferences\",\n        \"in_keys\": true,\n        \"in_values\":
+        true\n      },\n      \"observation\": \"[]\"\n    }\n  ],\n  \"observation\":
         \"[]\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
         in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
     headers:
@@ -912,14 +1324,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3429'
+      - '3860'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:12:51 GMT
+      - Sat, 05 Jul 2025 01:27:30 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -929,59 +1341,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '653'
+      - '1261'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '657'
+      - '1264'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9984'
+      - '9993'
       X-Ratelimit-Remaining-Tokens:
-      - '199246'
+      - '199146'
       X-Ratelimit-Reset-Requests:
-      - 2m13s
+      - 52.862s
       X-Ratelimit-Reset-Tokens:
-      - 226ms
+      - 256ms
       X-Request-Id:
-      - req_1890b608d9e07b86fac0fec3e60e9c10
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=3iS9MgKUaYEE4wzsCuwj8UZwAUVWx_5mshOwoKGFm14-1751677971-1.0.1.1-wdlIRwIppcCM0BC2KKSCWsY3rT43AkFD5RpU6sk1ZTt.RO.YepdiJ7UIXI_eCoM.0Iz.tnDPdRv5.kxVJsaNO5eFZaMJ8V.lIFrq2axfmE8;
-        path=/; expires=Sat, 05-Jul-25 01:42:51 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=KmeSH.0XRgUOGDEl5IWq0XvIgJ0BchSc6oOldlWwMYc-1751677971370-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ff14bb9933d5-EWR
+      - 95a314882b70a0f4-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplkQdCRbBboFrYX4xDMPvDhc9Fis",
+          "id": "chatcmpl-BplybLDhA16vdEB5Llaayp6JotShx",
           "object": "chat.completion",
-          "created": 1751677970,
+          "created": 1751678849,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that there are no UI preferences mentioned so far.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that there are no UI preferences stored in memory, as both the search for preferences and the final observation returned empty arrays.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -990,9 +1399,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 705,
-            "completion_tokens": 37,
-            "total_tokens": 742,
+            "prompt_tokens": 786,
+            "completion_tokens": 51,
+            "total_tokens": 837,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1007,7 +1416,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:12:51 GMT
+  recorded_at: Sat, 05 Jul 2025 01:27:30 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1064,7 +1473,12 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"What UI preferences have I mentioned?\",\n  \"history\":
-        [\n    \"#<DSPy::HistoryEntry:0x00000001063b7408>\"\n  ],\n  \"available_tools\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"Since there is no history
+        of previous UI preferences mentioned, I should search the memory for any stored
+        preferences related to UI. This will help me retrieve any relevant information
+        that might answer the question.\",\n      \"action\": \"memory_search\",\n      \"action_input\":
+        {\n        \"pattern\": \"UI preferences\",\n        \"in_keys\": true,\n        \"in_values\":
+        true\n      },\n      \"observation\": \"[]\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
         a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
         \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
@@ -1137,14 +1551,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8831'
+      - '9262'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:12:52 GMT
+      - Sat, 05 Jul 2025 01:27:33 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1154,59 +1568,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1322'
+      - '2709'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1326'
+      - '2714'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9983'
+      - '9993'
       X-Ratelimit-Remaining-Tokens:
-      - '198027'
+      - '197927'
       X-Ratelimit-Reset-Requests:
-      - 2m20.807s
+      - 59.929s
       X-Ratelimit-Reset-Tokens:
-      - 591ms
+      - 621ms
       X-Request-Id:
-      - req_78928429021cc2124cec37888ed4e150
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=GG047ny0B38li41kKxFuSQ5Js7iimXbN8S7XD.GCyTE-1751677972-1.0.1.1-S8ldTIcyzD9yg47zNvkwuPmoqPchIwZjtuR.oXr.0WWxYCc_M.ibFrSBj794wSYaSEnE3IWVAUATaYyKIEG_tx2buMboKyawE8D1kPpM7.g;
-        path=/; expires=Sat, 05-Jul-25 01:42:52 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=vaWy0ut1EcWMAg4AEd_8EFqH.X9oWU426MCZR.LXClk-1751677972892-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ff19eed533d5-EWR
+      - 95a31491deb1a0f4-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplkRWKbtk8D2HIy1sa8BgMA16MpN",
+          "id": "chatcmpl-BplydlCwl2LtgeH6EowVH6omVduQE",
           "object": "chat.completion",
-          "created": 1751677971,
+          "created": 1751678851,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about UI preferences, I need to retrieve any previously stored memories related to UI preferences. I will use the 'memory_search' tool to look for any relevant entries that might contain this information.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"UI preferences\",\n    \"in_keys\": true,\n    \"in_values\": true\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since the memory search returned no results for UI preferences, I should consider storing a new UI preference if I have any to add. Alternatively, I could list all stored memory keys to see if there are any related preferences that I might have forgotten about.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1215,9 +1626,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1763,
-            "completion_tokens": 95,
-            "total_tokens": 1858,
+            "prompt_tokens": 1844,
+            "completion_tokens": 79,
+            "total_tokens": 1923,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1232,5 +1643,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:12:52 GMT
+  recorded_at: Sat, 05 Jul 2025 01:27:33 GMT
 recorded_with: VCR 6.3.1

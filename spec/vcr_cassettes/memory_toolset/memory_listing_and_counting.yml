@@ -135,7 +135,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:20 GMT
+      - Sat, 05 Jul 2025 01:28:01 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -145,59 +145,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1351'
+      - '1083'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1354'
+      - '1086'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9966'
+      - '9976'
       X-Ratelimit-Remaining-Tokens:
       - '198038'
       X-Ratelimit-Reset-Requests:
-      - 4m45.701s
+      - 3m23.246s
       X-Ratelimit-Reset-Tokens:
       - 588ms
       X-Request-Id:
-      - req_027d4cb1ba88a8cdc16bbde5b7fc1782
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=qITOS4qA92Ku4_eD7jOo5Y0PxsHM0UdllPoewAGv74k-1751678000-1.0.1.1-JrL5wJ5HJa9ihpD0jmWd_pl9oVGuqVvK9iU4rbX5c1VVac3.UwGwZIj3T9yqqkhZqOpXX5JPC6Nooslvqwtyglu8PRHEa1ujZoV1hhS.IJ0;
-        path=/; expires=Sat, 05-Jul-25 01:43:20 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=ox5fDUFy2x1NXyNFE1D4m99mh1hkCQoa6Dup1ScXb.A-1751678000811-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ffc83df243a6-EWR
+      - 95a3154a189743cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplktqgj7thyNtPtDRPNkwiixpRPe",
+          "id": "chatcmpl-Bplz6AQ1hEICWWtxM09XEIiq7fQc9",
           "object": "chat.completion",
-          "created": 1751677999,
+          "created": 1751678880,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the user's preference for coffee in the morning in memory so that it can be retrieved later if needed.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"coffee_preference\",\n    \"value\": \"like coffee in the morning\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the user's preference for coffee in the morning in memory so that it can be retrieved later if needed. I will use the 'memory_store' tool to save this information.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"coffee_preference\",\n    \"value\": \"like coffee in the morning\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -207,10 +204,10 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1744,
-            "completion_tokens": 75,
-            "total_tokens": 1819,
+            "completion_tokens": 89,
+            "total_tokens": 1833,
             "prompt_tokens_details": {
-              "cached_tokens": 1664,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -223,7 +220,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:20 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:01 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -261,7 +258,13 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Remember that I like coffee in the morning.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001168d63c0>\"\n  ],\n  \"observation\":
+        \"Remember that I like coffee in the morning.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to store the user''s preference for coffee
+        in the morning in memory so that it can be retrieved later if needed. I will
+        use the ''memory_store'' tool to save this information.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"coffee_preference\",\n        \"value\":
+        \"like coffee in the morning\"\n      },\n      \"observation\": \"Stored
+        memory ''coffee_preference'' successfully\"\n    }\n  ],\n  \"observation\":
         \"Stored memory ''coffee_preference'' successfully\"\n}\n```\n\nRespond with
         the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":0.0}'
@@ -295,14 +298,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3479'
+      - '3909'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:21 GMT
+      - Sat, 05 Jul 2025 01:28:02 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -312,52 +315,49 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '671'
+      - '703'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '673'
+      - '706'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9966'
+      - '9975'
       X-Ratelimit-Remaining-Tokens:
-      - '199232'
+      - '199132'
       X-Ratelimit-Reset-Requests:
-      - 4m52.771s
+      - 3m30.623s
       X-Ratelimit-Reset-Tokens:
-      - 230ms
+      - 260ms
       X-Request-Id:
-      - req_89837c1c1cc2337e485b265694e9a286
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=IfqbS_anzyhIC7nOMbCgx061hJ8gtwMkKtsTv7aqWq8-1751678001-1.0.1.1-ShDFqAKdagadqjldyZe_KtZN_D6S.o0oiYfe8Fw2IvUHs4XteklYJ6hmUkFy1IP_.daFKyXaT3tyEAtpuunTE39enz.PXGN56HdkTv2_plk;
-        path=/; expires=Sat, 05-Jul-25 01:43:21 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=P2Tah2jLkOv5uWU2oC.zcL_kPNYstKJqKbViXVa1IDA-1751678001709-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ffd2184a43a6-EWR
+      - 95a315521d1143cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplkvs4IwsdXVZsavwk5PVyDbBXsu",
+          "id": "chatcmpl-Bplz7wdg92PuKX975pJe87r4u347y",
           "object": "chat.completion",
-          "created": 1751678001,
+          "created": 1751678881,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -373,9 +373,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 715,
+            "prompt_tokens": 800,
             "completion_tokens": 39,
-            "total_tokens": 754,
+            "total_tokens": 839,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -390,7 +390,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:21 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:02 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -447,15 +447,20 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Remember that I like coffee in
-        the morning.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001168d63c0>\"\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
-        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
-        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        the morning.\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"I need to store the user''s preference for coffee in the morning in memory
+        so that it can be retrieved later if needed. I will use the ''memory_store''
+        tool to save this information.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"coffee_preference\",\n        \"value\": \"like coffee
+        in the morning\"\n      },\n      \"observation\": \"Stored memory ''coffee_preference''
+        successfully\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
         \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
         memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
@@ -520,14 +525,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8837'
+      - '9267'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:23 GMT
+      - Sat, 05 Jul 2025 01:28:03 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -537,59 +542,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1489'
+      - '1003'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1493'
+      - '1006'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9965'
+      - '9974'
       X-Ratelimit-Remaining-Tokens:
-      - '198025'
+      - '197926'
       X-Ratelimit-Reset-Requests:
-      - 5m0.14s
+      - 3m38.393s
       X-Ratelimit-Reset-Tokens:
-      - 592ms
+      - 622ms
       X-Request-Id:
-      - req_407665a04f101df744faffe70f170f6b
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=WTsqYdzSXJjTBbRrLKjgSgADc.18KRyjLB3NpuOZGwE-1751678003-1.0.1.1-VyDWkv5mo7Fnu8DVAJRUfKv.E9nAaqyOhny3YbLu02JmyhavKTDWovqzTUOBbaOe2R.g2akRJdlCAeEMNpGrQuepQz8sXfJFZpf_ZQFLifQ;
-        path=/; expires=Sat, 05-Jul-25 01:43:23 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=5TShK_0VtrvQDbOfvEy3waYtryxxa9U0bdyVh43H.1g-1751678003791-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ffd9efb343a6-EWR
+      - 95a31557988a43cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplkwrpBBfk1Nlj7btsfD5M9V7VbS",
+          "id": "chatcmpl-Bplz8C7g1W65tUep75mIX5JPfeS69",
           "object": "chat.completion",
-          "created": 1751678002,
+          "created": 1751678882,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the user's preference for coffee in the morning in memory so that it can be recalled later. This will help in personalizing future interactions.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"coffee_preference\",\n    \"value\": \"like coffee in the morning\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since I have successfully stored the user's coffee preference in memory, I can now retrieve this information if needed. However, the current question is simply a reminder of their preference. I should consider whether to take any further action or just acknowledge the reminder.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I remember that you like coffee in the morning.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -598,9 +600,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1766,
-            "completion_tokens": 82,
-            "total_tokens": 1848,
+            "prompt_tokens": 1851,
+            "completion_tokens": 87,
+            "total_tokens": 1938,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -615,7 +617,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:23 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:03 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -751,7 +753,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:25 GMT
+      - Sat, 05 Jul 2025 01:28:04 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -761,59 +763,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1129'
+      - '1028'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1132'
+      - '1033'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9964'
+      - '9973'
       X-Ratelimit-Remaining-Tokens:
-      - '198038'
+      - '198037'
       X-Ratelimit-Reset-Requests:
-      - 5m6.901s
+      - 3m45.859s
       X-Ratelimit-Reset-Tokens:
       - 588ms
       X-Request-Id:
-      - req_c5352b55180678b97bf1f3801676dedf
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=KGWmHCIwZ31x.fNaD4BqK4mVWY6T_7pZiWRA21xFFuA-1751678005-1.0.1.1-Bs7CX_sIxuuqJimZvzZDXbtFFzTpv4uGQzKHgjU5qf8EglGVrlYE25uCzlNGhQJY03eD7DJx7NTRtFfuLjH2VCFne839AGCit49skTghcV8;
-        path=/; expires=Sat, 05-Jul-25 01:43:25 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=rT0dd8wCu8aIoi81xH.W.QogyVcz09F10E32_2369uY-1751678005324-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ffe47a4b43a6-EWR
+      - 95a3155eed2443cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BplkyuWWV09GjtkMc74OsZ3j0FH9S",
+          "id": "chatcmpl-Bplz9FxgURdYAlsrwsIZHPRq6LdtT",
           "object": "chat.completion",
-          "created": 1751678004,
+          "created": 1751678883,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the information about exercising on weekends in memory so that it can be retrieved later if needed. This will help in keeping track of important personal habits.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"exercise_schedule\",\n    \"value\": \"I exercise on weekends\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the information about exercising on weekends in memory so that I can recall it later. This will help in keeping track of my exercise routine.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"exercise_schedule\",\n    \"value\": \"I exercise on weekends\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -823,10 +822,10 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1743,
-            "completion_tokens": 82,
-            "total_tokens": 1825,
+            "completion_tokens": 80,
+            "total_tokens": 1823,
             "prompt_tokens_details": {
-              "cached_tokens": 1664,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -839,7 +838,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:25 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:04 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -877,10 +876,15 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Also remember that I exercise on weekends.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x000000011285d2f8>\"\n  ],\n  \"observation\":
-        \"Stored memory ''exercise_schedule'' successfully\"\n}\n```\n\nRespond with
-        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
+        \"Also remember that I exercise on weekends.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to store the information about exercising
+        on weekends in memory so that I can recall it later. This will help in keeping
+        track of my exercise routine.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"exercise_schedule\",\n        \"value\": \"I exercise
+        on weekends\"\n      },\n      \"observation\": \"Stored memory ''exercise_schedule''
+        successfully\"\n    }\n  ],\n  \"observation\": \"Stored memory ''exercise_schedule''
+        successfully\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -911,14 +915,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3478'
+      - '3882'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:26 GMT
+      - Sat, 05 Jul 2025 01:28:05 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -928,59 +932,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '855'
+      - '692'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '857'
+      - '694'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9964'
+      - '9973'
       X-Ratelimit-Remaining-Tokens:
-      - '199232'
+      - '199140'
       X-Ratelimit-Reset-Requests:
-      - 5m5.567s
+      - 3m53.228s
       X-Ratelimit-Reset-Tokens:
-      - 230ms
+      - 258ms
       X-Request-Id:
-      - req_e7a30a10751b4493152c4eb1d427c8c8
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Nw7mxuMt6L9I5CUDhM0dv4a0D4ncYO7JHNJ0XTvcRa8-1751678006-1.0.1.1-M9Q5qet0hgVs_ocKDRG2d_dhYG72AvzITUi9RxTarZ4FQnFCALk4tsJFZMB3BAxeFq207BpcimljEGxviCLthYWrpcxoFjZXdnPFDK1SVHk;
-        path=/; expires=Sat, 05-Jul-25 01:43:26 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=3mbuytc0T0RMaop7eEb7NC68vmuQ0Y0fUzXjBDj3iGE-1751678006374-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2ffee1b7543a6-EWR
+      - 95a31566d9fc43cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplkz1exByytRLx8oq6IxY5cMOzan",
+          "id": "chatcmpl-BplzBhtjQ6tF1mWoqAbIYTDKsSQud",
           "object": "chat.completion",
-          "created": 1751678005,
+          "created": 1751678885,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the exercise schedule has been successfully stored in memory, confirming that the system is now aware of the user's weekend exercise routine.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The information about exercising on weekends has been successfully stored in memory.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -989,9 +990,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 713,
-            "completion_tokens": 52,
-            "total_tokens": 765,
+            "prompt_tokens": 788,
+            "completion_tokens": 37,
+            "total_tokens": 825,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1006,7 +1007,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:26 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:05 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1063,15 +1064,20 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Also remember that I exercise
-        on weekends.\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x000000011285d2f8>\"\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
-        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
-        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        on weekends.\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"I need to store the information about exercising on weekends in memory so
+        that I can recall it later. This will help in keeping track of my exercise
+        routine.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"exercise_schedule\",\n        \"value\": \"I exercise
+        on weekends\"\n      },\n      \"observation\": \"Stored memory ''exercise_schedule''
+        successfully\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
         \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
         memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
@@ -1136,14 +1142,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8836'
+      - '9240'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:27 GMT
+      - Sat, 05 Jul 2025 01:28:08 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1153,59 +1159,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1069'
+      - '1684'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1073'
+      - '2444'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9962'
+      - '9972'
       X-Ratelimit-Remaining-Tokens:
-      - '198026'
+      - '197931'
       X-Ratelimit-Reset-Requests:
-      - 5m22.874s
+      - 4m0.993s
       X-Ratelimit-Reset-Tokens:
-      - 592ms
+      - 620ms
       X-Request-Id:
-      - req_8a6ff5f4f852cf1d46ce0341eb094ee3
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=6GvxzmxmdY6OyUXt5terESSdMeGKw2gQEhREDHCumo8-1751678007-1.0.1.1-XnZvgCnaHRHTwwm_Rb3OPZ.xq1XVOfcxQ05zQpad9E8gq0_XHDfLQmFayMfhUyFfbdALP6QkPAFdRUSw9JspV4Zv895ZpJ8KU_NgZnEVj0s;
-        path=/; expires=Sat, 05-Jul-25 01:43:27 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=NH6phQSfv4eHPD8.UDHLUnqo0bfc7AY8GP6cnTmiG1M-1751678007613-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2fff4997d43a6-EWR
+      - 95a3156c4d0f43cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpll04B4G74mxIkaInKjpGOc6Oh4W",
+          "id": "chatcmpl-BplzCnIPO7l03gdaYVRjLh2EtHBtr",
           "object": "chat.completion",
-          "created": 1751678006,
+          "created": 1751678886,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the information about exercising on weekends in memory so that it can be retrieved later. This will help in recalling this detail when needed.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"exercise_schedule\",\n    \"value\": \"I exercise on weekends\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have successfully stored the information about exercising on weekends. Since the question is a reminder, I should consider retrieving this information to confirm it is stored correctly or to provide a summary of my exercise routine if needed.\",\n  \"action\": \"memory_retrieve\",\n  \"action_input\": {\n    \"key\": \"exercise_schedule\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1214,9 +1217,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1765,
-            "completion_tokens": 79,
-            "total_tokens": 1844,
+            "prompt_tokens": 1840,
+            "completion_tokens": 82,
+            "total_tokens": 1922,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1231,7 +1234,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:27 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:08 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1367,7 +1370,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:28 GMT
+      - Sat, 05 Jul 2025 01:28:09 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1377,59 +1380,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '831'
+      - '1100'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '834'
+      - '1103'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9961'
+      - '9971'
       X-Ratelimit-Remaining-Tokens:
       - '198036'
       X-Ratelimit-Reset-Requests:
-      - 5m30.194s
+      - 4m7.001s
       X-Ratelimit-Reset-Tokens:
       - 589ms
       X-Request-Id:
-      - req_afa4089a6b737286b0f140855e8952a2
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=4VAUfps9CbJt7BumwzI9HeZgQ5MdhpXNJH0LYppU5Rc-1751678008-1.0.1.1-hpvhY1g_S2H4cuRhUmjSixWRhyZIR.XzMzYhhSX.nGbj9SG2HTSr6xAQs7ntBKTByP6BIZQkrpRT79c_uFVIgS1_SJjZ_HIgI0TI19n9ljE;
-        path=/; expires=Sat, 05-Jul-25 01:43:28 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=KFXzNaYtt6Dm0eTlB3Fe1dTiy7_9N58hwpqq_t6ID5M-1751678008694-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a2fffcb8fb43a6-EWR
+      - 95a3157cbddb43cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpll11U2NJYjlH5cVPdOLGuK1Is2e",
+          "id": "chatcmpl-BplzEEcnvb5y4mHBw8HXzLaQIPrlU",
           "object": "chat.completion",
-          "created": 1751678007,
+          "created": 1751678888,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history of previous interactions or memories stored, I need to first check if there are any stored memory keys that I can retrieve information from. I will use the 'memory_list' tool to see what memories are available.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history of previous interactions or memories stored, I need to first check if there are any stored memories that I can retrieve. I will use the 'memory_list' tool to see if there are any keys available that I can reference to answer the question about what I remember.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1439,8 +1439,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 1746,
-            "completion_tokens": 76,
-            "total_tokens": 1822,
+            "completion_tokens": 87,
+            "total_tokens": 1833,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1455,7 +1455,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:28 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:09 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1493,7 +1493,13 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Can you list all the things you remember about me?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001168d38f0>\"\n  ],\n  \"observation\":
+        \"Can you list all the things you remember about me?\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"Since there is no history of previous interactions
+        or memories stored, I need to first check if there are any stored memories
+        that I can retrieve. I will use the ''memory_list'' tool to see if there are
+        any keys available that I can reference to answer the question about what
+        I remember.\",\n      \"action\": \"memory_list\",\n      \"action_input\":
+        {},\n      \"observation\": \"[\\\"coffee_preference\\\", \\\"exercise_schedule\\\"]\"\n    }\n  ],\n  \"observation\":
         \"[\\\"coffee_preference\\\", \\\"exercise_schedule\\\"]\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":0.0}'
@@ -1527,14 +1533,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3494'
+      - '3938'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:29 GMT
+      - Sat, 05 Jul 2025 01:28:10 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1544,59 +1550,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '697'
+      - '1030'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '701'
+      - '1035'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9960'
+      - '9970'
       X-Ratelimit-Remaining-Tokens:
-      - '199231'
+      - '199127'
       X-Ratelimit-Reset-Requests:
-      - 5m37.789s
+      - 4m14.347s
       X-Ratelimit-Reset-Tokens:
-      - 230ms
+      - 261ms
       X-Request-Id:
-      - req_3f7844525c6d0b99000c53612269b84d
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=tqpNbId.QRMWCdN48bXT3pvGx6wBZ4MnZSgl4CvlzHc-1751678009-1.0.1.1-S77oTUyd2G8Udw_BEghO2aB0GfrJELIcE1hClk9d46tTjylFZiKwdgtSLzBF_cbHvMCiEKqB6x8zqfTr9aQX..hr.6JuDz5G1DILabr8lI0;
-        path=/; expires=Sat, 05-Jul-25 01:43:29 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=nTfvywd04U1a9bDu4MvRQOL1gOawcS_28ymkdqh5p9Q-1751678009608-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300034f7543a6-EWR
+      - 95a31584c99943cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpll2y9kD5USacwLSDZE6aa9WzO7f",
+          "id": "chatcmpl-BplzFxN6xAWkHDgLfnE4xJ73sSYY2",
           "object": "chat.completion",
-          "created": 1751678008,
+          "created": 1751678889,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that I remember your coffee preference and exercise schedule.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that there are two stored memories: 'coffee_preference' and 'exercise_schedule'. I can now provide information about these memories in response to the user's question.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1605,9 +1608,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 718,
-            "completion_tokens": 37,
-            "total_tokens": 755,
+            "prompt_tokens": 802,
+            "completion_tokens": 59,
+            "total_tokens": 861,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1622,7 +1625,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:29 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:11 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1679,15 +1682,20 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Can you list all the things you
-        remember about me?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001168d38f0>\"\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
-        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
-        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        remember about me?\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"Since there is no history of previous interactions or memories stored, I
+        need to first check if there are any stored memories that I can retrieve.
+        I will use the ''memory_list'' tool to see if there are any keys available
+        that I can reference to answer the question about what I remember.\",\n      \"action\":
+        \"memory_list\",\n      \"action_input\": {},\n      \"observation\": \"[\\\"coffee_preference\\\",
+        \\\"exercise_schedule\\\"]\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
         \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
         memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
@@ -1752,14 +1760,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8844'
+      - '9288'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:31 GMT
+      - Sat, 05 Jul 2025 01:28:12 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1769,59 +1777,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1663'
+      - '1427'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1666'
+      - '1430'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9961'
+      - '9969'
       X-Ratelimit-Remaining-Tokens:
-      - '198023'
+      - '197920'
       X-Ratelimit-Reset-Requests:
-      - 5m35.843s
+      - 4m21.394s
       X-Ratelimit-Reset-Tokens:
-      - 592ms
+      - 624ms
       X-Request-Id:
-      - req_e100874ae593620e3c44270ac5b22fb2
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=ZZVKsQEVPyW.1vLrJeFSg1E3F8OQ2Nxgmtp8rEGd1So-1751678011-1.0.1.1-Ph3RQQAK7jhMfElF8ouy0lxVxCxUlN9bL4zdws5eD3X2Uiy31Y9m98AenFCPhzsMUcXo4gRl.6ewrIhUDEKeKXPCkLy1faWl7efPN6SN_qo;
-        path=/; expires=Sat, 05-Jul-25 01:43:31 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=NxSwqu4I9VpLJD_NWI5c7GhWhywF0OoazueFNHA0kao-1751678011468-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a30008dcc943a6-EWR
+      - 95a3158eaeea43cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpll3O60XlPTSUYvY8SzGSeEikQHk",
+          "id": "chatcmpl-BplzH2HNQVyIY9SZvmskQNUxhScPJ",
           "object": "chat.completion",
-          "created": 1751678009,
+          "created": 1751678891,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about what I remember, I should retrieve the stored memories. Since I need to list all the things I remember, using the 'memory_list' tool will allow me to get all the keys of the memories stored. After that, I can retrieve the values associated with those keys to provide a comprehensive answer.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have retrieved the list of memory keys, which includes 'coffee_preference' and 'exercise_schedule'. To answer the question about what I remember, I need to retrieve the values associated with these keys. I will use the 'memory_retrieve' tool for each key to gather the necessary information.\",\n  \"action\": \"memory_retrieve\",\n  \"action_input\": {\n    \"key\": \"coffee_preference\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1830,9 +1835,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1768,
-            "completion_tokens": 94,
-            "total_tokens": 1862,
+            "prompt_tokens": 1852,
+            "completion_tokens": 101,
+            "total_tokens": 1953,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1847,7 +1852,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:31 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:12 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1885,10 +1890,22 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Can you list all the things you remember about me?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001168d38f0>\",\n    \"#<DSPy::HistoryEntry:0x0000000115babb50>\"\n  ],\n  \"observation\":
-        \"[\\\"coffee_preference\\\", \\\"exercise_schedule\\\"]\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
+        \"Can you list all the things you remember about me?\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"Since there is no history of previous interactions
+        or memories stored, I need to first check if there are any stored memories
+        that I can retrieve. I will use the ''memory_list'' tool to see if there are
+        any keys available that I can reference to answer the question about what
+        I remember.\",\n      \"action\": \"memory_list\",\n      \"action_input\":
+        {},\n      \"observation\": \"[\\\"coffee_preference\\\", \\\"exercise_schedule\\\"]\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"I have retrieved the list of memory keys, which includes
+        ''coffee_preference'' and ''exercise_schedule''. To answer the question about
+        what I remember, I need to retrieve the values associated with these keys.
+        I will use the ''memory_retrieve'' tool for each key to gather the necessary
+        information.\",\n      \"action\": \"memory_retrieve\",\n      \"action_input\":
+        {\n        \"key\": \"coffee_preference\"\n      },\n      \"observation\":
+        \"like coffee in the morning\"\n    }\n  ],\n  \"observation\": \"like coffee
+        in the morning\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -1919,14 +1936,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3545'
+      - '4436'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:32 GMT
+      - Sat, 05 Jul 2025 01:28:14 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1936,59 +1953,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '627'
+      - '1024'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '630'
+      - '1028'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9959'
+      - '9968'
       X-Ratelimit-Remaining-Tokens:
-      - '199218'
+      - '199007'
       X-Ratelimit-Reset-Requests:
-      - 5m51.254s
+      - 4m28.414s
       X-Ratelimit-Reset-Tokens:
-      - 234ms
+      - 297ms
       X-Request-Id:
-      - req_8322d45f0dc2ca7425702c58bcd49e7e
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=i_U1yoGgrjUpS3wNiYsMNFuH3PI43dWjnPdUuIHfFGk-1751678012-1.0.1.1-EUkmIP_AgvuVId2oX_OSK1fTzb5lyvNkWibEcm415s06fG9BR1t3cKDIubUU2JoEXjSQGCXuwiAF40p5cVhw_WE3PKeq_k9Xd4fQsaENLMw;
-        path=/; expires=Sat, 05-Jul-25 01:43:32 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=OBTUuuII5sJEegvlI2MoId8JtFNSmHhO7U4PmsIMSTk-1751678012306-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a30014982543a6-EWR
+      - 95a31598cbf943cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpll5FDHEklTaumVPMST67qDxvl5j",
+          "id": "chatcmpl-BplzJ62Kzs5FASZGGcsziwzECDdke",
           "object": "chat.completion",
-          "created": 1751678011,
+          "created": 1751678893,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that I remember your coffee preference and exercise schedule.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the user likes coffee in the morning. However, I still need to retrieve the value for the second memory key, 'exercise_schedule', to provide a complete answer to the question about what I remember.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1997,9 +2011,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 737,
-            "completion_tokens": 37,
-            "total_tokens": 774,
+            "prompt_tokens": 912,
+            "completion_tokens": 68,
+            "total_tokens": 980,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -2014,7 +2028,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:32 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:13 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2071,15 +2085,26 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"question\": \"Can you list all the things you
-        remember about me?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001168d38f0>\",\n    \"#<DSPy::HistoryEntry:0x0000000115babb50>\"\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
-        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
-        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        remember about me?\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"Since there is no history of previous interactions or memories stored, I
+        need to first check if there are any stored memories that I can retrieve.
+        I will use the ''memory_list'' tool to see if there are any keys available
+        that I can reference to answer the question about what I remember.\",\n      \"action\":
+        \"memory_list\",\n      \"action_input\": {},\n      \"observation\": \"[\\\"coffee_preference\\\",
+        \\\"exercise_schedule\\\"]\"\n    },\n    {\n      \"step\": 2,\n      \"thought\":
+        \"I have retrieved the list of memory keys, which includes ''coffee_preference''
+        and ''exercise_schedule''. To answer the question about what I remember, I
+        need to retrieve the values associated with these keys. I will use the ''memory_retrieve''
+        tool for each key to gather the necessary information.\",\n      \"action\":
+        \"memory_retrieve\",\n      \"action_input\": {\n        \"key\": \"coffee_preference\"\n      },\n      \"observation\":
+        \"like coffee in the morning\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
         \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
         memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
@@ -2144,14 +2169,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8895'
+      - '9814'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:33 GMT
+      - Sat, 05 Jul 2025 01:28:16 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2161,59 +2186,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1119'
+      - '2159'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1122'
+      - '2165'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9958'
+      - '9968'
       X-Ratelimit-Remaining-Tokens:
-      - '198012'
+      - '197795'
       X-Ratelimit-Reset-Requests:
-      - 6m0.059s
+      - 4m35.861s
       X-Ratelimit-Reset-Tokens:
-      - 596ms
+      - 661ms
       X-Request-Id:
-      - req_aee9285b17f6e76465e28a82740c73c0
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=WJ1EjW_ZwSr6m9ntzi1y1AOFe69e4MnvvTsrPcF6vRk-1751678013-1.0.1.1-M3YrllW2klFqbPYevg27IE.w9QdeQsIPH8PvZsP80soyVO5Ah8X5lhE93YbbEyhcnL35NeOfLaa2Jjb7rBT3kTYPvi6R9fSSjxsgwEoPZv0;
-        path=/; expires=Sat, 05-Jul-25 01:43:33 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=KQXcpk4o3gLm2RMu0RfWFgLzPBlaFTXrzDCB_s.jplU-1751678013676-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a3001a3d4843a6-EWR
+      - 95a315a0681343cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpll6OgT8nvm3qJgbaflv9F3XdCFf",
+          "id": "chatcmpl-BplzK3Nwy9mmQrEkMuSHl5a1CeJ7e",
           "object": "chat.completion",
-          "created": 1751678012,
+          "created": 1751678894,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about what I remember, I should retrieve the stored memories. I can use the 'memory_list' tool to get all the keys of the memories I have stored. Once I have the keys, I can retrieve the values associated with them to provide a comprehensive list of what I remember about the user.\",\n  \"action\": \"memory_list\",\n  \"action_input\": {}\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have retrieved the coffee preference, which is 'like coffee in the morning'. Now, I need to retrieve the value associated with the 'exercise_schedule' key to complete the list of memories I have about the user. I will use the 'memory_retrieve' tool again for this key.\",\n  \"action\": \"memory_retrieve\",\n  \"action_input\": {\n    \"key\": \"exercise_schedule\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -2222,9 +2244,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1787,
-            "completion_tokens": 93,
-            "total_tokens": 1880,
+            "prompt_tokens": 1966,
+            "completion_tokens": 99,
+            "total_tokens": 2065,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -2239,7 +2261,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:33 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:16 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2277,8 +2299,265 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Can you list all the things you remember about me?\",\n  \"history\": [\n    \"#<DSPy::HistoryEntry:0x00000001168d38f0>\",\n    \"#<DSPy::HistoryEntry:0x0000000115babb50>\",\n    \"#<DSPy::HistoryEntry:0x0000000115b21630>\"\n  ],\n  \"observation\":
-        \"[\\\"coffee_preference\\\", \\\"exercise_schedule\\\"]\"\n}\n```\n\nRespond
+        \"Can you list all the things you remember about me?\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"Since there is no history of previous interactions
+        or memories stored, I need to first check if there are any stored memories
+        that I can retrieve. I will use the ''memory_list'' tool to see if there are
+        any keys available that I can reference to answer the question about what
+        I remember.\",\n      \"action\": \"memory_list\",\n      \"action_input\":
+        {},\n      \"observation\": \"[\\\"coffee_preference\\\", \\\"exercise_schedule\\\"]\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"I have retrieved the list of memory keys, which includes
+        ''coffee_preference'' and ''exercise_schedule''. To answer the question about
+        what I remember, I need to retrieve the values associated with these keys.
+        I will use the ''memory_retrieve'' tool for each key to gather the necessary
+        information.\",\n      \"action\": \"memory_retrieve\",\n      \"action_input\":
+        {\n        \"key\": \"coffee_preference\"\n      },\n      \"observation\":
+        \"like coffee in the morning\"\n    },\n    {\n      \"step\": 3,\n      \"thought\":
+        \"I have retrieved the coffee preference, which is ''like coffee in the morning''.
+        Now, I need to retrieve the value associated with the ''exercise_schedule''
+        key to complete the list of memories I have about the user. I will use the
+        ''memory_retrieve'' tool again for this key.\",\n      \"action\": \"memory_retrieve\",\n      \"action_input\":
+        {\n        \"key\": \"exercise_schedule\"\n      },\n      \"observation\":
+        \"I exercise on weekends\"\n    }\n  ],\n  \"observation\": \"I exercise on
+        weekends\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4931'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:28:17 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '850'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '852'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9967'
+      X-Ratelimit-Remaining-Tokens:
+      - '198892'
+      X-Ratelimit-Reset-Requests:
+      - 4m42.145s
+      X-Ratelimit-Reset-Tokens:
+      - 332ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a315af08c843cb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplzMPRzGzeLSW3V5IxTxOGAJfyY7",
+          "object": "chat.completion",
+          "created": 1751678896,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The user has a coffee preference of liking coffee in the morning and exercises on weekends. I have gathered all the necessary information to answer the question about what I remember.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1022,
+            "completion_tokens": 57,
+            "total_tokens": 1079,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:28:17 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Can you list all the things you
+        remember about me?\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"Since there is no history of previous interactions or memories stored, I
+        need to first check if there are any stored memories that I can retrieve.
+        I will use the ''memory_list'' tool to see if there are any keys available
+        that I can reference to answer the question about what I remember.\",\n      \"action\":
+        \"memory_list\",\n      \"action_input\": {},\n      \"observation\": \"[\\\"coffee_preference\\\",
+        \\\"exercise_schedule\\\"]\"\n    },\n    {\n      \"step\": 2,\n      \"thought\":
+        \"I have retrieved the list of memory keys, which includes ''coffee_preference''
+        and ''exercise_schedule''. To answer the question about what I remember, I
+        need to retrieve the values associated with these keys. I will use the ''memory_retrieve''
+        tool for each key to gather the necessary information.\",\n      \"action\":
+        \"memory_retrieve\",\n      \"action_input\": {\n        \"key\": \"coffee_preference\"\n      },\n      \"observation\":
+        \"like coffee in the morning\"\n    },\n    {\n      \"step\": 3,\n      \"thought\":
+        \"I have retrieved the coffee preference, which is ''like coffee in the morning''.
+        Now, I need to retrieve the value associated with the ''exercise_schedule''
+        key to complete the list of memories I have about the user. I will use the
+        ''memory_retrieve'' tool again for this key.\",\n      \"action\": \"memory_retrieve\",\n      \"action_input\":
+        {\n        \"key\": \"exercise_schedule\"\n      },\n      \"observation\":
+        \"I exercise on weekends\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":0.0}'
     headers:
@@ -2311,14 +2590,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3596'
+      - '10313'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:13:34 GMT
+      - Sat, 05 Jul 2025 01:28:18 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2328,59 +2607,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '656'
+      - '1108'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '659'
+      - '1110'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9957'
+      - '9966'
       X-Ratelimit-Remaining-Tokens:
-      - '199206'
+      - '197677'
       X-Ratelimit-Reset-Requests:
-      - 6m6.35s
+      - 4m49.76s
       X-Ratelimit-Reset-Tokens:
-      - 237ms
+      - 696ms
       X-Request-Id:
-      - req_690ca8e6b5b7d748088cb24410711896
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=N0c1GxbWYwQSEq.J9af9OhiAo3inFWBfoA2YFkhxfEA-1751678014-1.0.1.1-6hJryzrFNkd.hYpheLvjcBMUbWkRDgBhln34NN4A3BuvJj839msAzf1V7ENtKpMO04TlOzLYDh5IIpE_O3L45OKTAz43gI7bs4WLqj4XFbE;
-        path=/; expires=Sat, 05-Jul-25 01:43:34 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=CUPaSScN_SWCpuvAXACs.0HWgzmd6u6pfUHFmczF_YA-1751678014504-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a300224d5543a6-EWR
+      - 95a315b58c6f43cb-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpll7ElHAStq7vaTrfOSIv8crmQ4U",
+          "id": "chatcmpl-BplzNoYKZCZPAg5T8NSPFDYF9o0nH",
           "object": "chat.completion",
-          "created": 1751678013,
+          "created": 1751678897,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that I remember your coffee preference and exercise schedule.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have retrieved all the necessary information about the user's preferences. They like coffee in the morning and exercise on weekends. Now, I can provide a summary of these memories to answer the question about what I remember.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I remember that you like coffee in the morning and you exercise on weekends.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -2389,11 +2665,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 756,
-            "completion_tokens": 37,
-            "total_tokens": 793,
+            "prompt_tokens": 2077,
+            "completion_tokens": 85,
+            "total_tokens": 2162,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1152,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -2406,5 +2682,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 01:13:34 GMT
+  recorded_at: Sat, 05 Jul 2025 01:28:18 GMT
 recorded_with: VCR 6.3.1

@@ -50,6 +50,54 @@ VCR.configure do |config|
   # Filter out sensitive information
   config.filter_sensitive_data('<OPENAI_API_KEY>') { ENV['OPENAI_API_KEY'] }
   config.filter_sensitive_data('<ANTHROPIC_API_KEY>') { ENV['ANTHROPIC_API_KEY'] }
+  
+  # Filter out sensitive headers and response data
+  # Organization IDs in OpenAI responses
+  config.filter_sensitive_data('<OPENAI_ORGANIZATION>') do |interaction|
+    if interaction.response.headers['Openai-Organization']
+      interaction.response.headers['Openai-Organization'].first
+    end
+  end
+  
+  # Organization IDs in Anthropic responses
+  config.filter_sensitive_data('<ANTHROPIC_ORGANIZATION>') do |interaction|
+    if interaction.response.headers['Anthropic-Organization']
+      interaction.response.headers['Anthropic-Organization'].first
+    end
+  end
+  
+  # Request IDs that might be sensitive
+  config.filter_sensitive_data('<REQUEST_ID>') do |interaction|
+    if interaction.response.headers['X-Request-Id']
+      interaction.response.headers['X-Request-Id'].first
+    end
+  end
+  
+  # Filter out cookies - use a more comprehensive approach
+  config.before_record do |interaction|
+    # Redact Set-Cookie headers
+    if interaction.response.headers['Set-Cookie']
+      interaction.response.headers['Set-Cookie'] = interaction.response.headers['Set-Cookie'].map do |cookie|
+        # Keep only the cookie name, redact the value
+        cookie_name = cookie.split('=').first
+        "#{cookie_name}=<REDACTED>"
+      end
+    end
+    
+    # Redact organization IDs (backup approach)
+    if interaction.response.headers['Openai-Organization']
+      interaction.response.headers['Openai-Organization'] = ['<OPENAI_ORGANIZATION>']
+    end
+    
+    if interaction.response.headers['Anthropic-Organization']
+      interaction.response.headers['Anthropic-Organization'] = ['<ANTHROPIC_ORGANIZATION>']
+    end
+    
+    # Redact request IDs
+    if interaction.response.headers['X-Request-Id']
+      interaction.response.headers['X-Request-Id'] = ['<REQUEST_ID>']
+    end
+  end
 end
 
 RSpec.configure do |config|
