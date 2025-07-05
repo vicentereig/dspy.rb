@@ -47,6 +47,13 @@ module DSPy
         n.register_event('dspy.react.iteration_complete')
         n.register_event('dspy.react.max_iterations')
         
+        # CodeAct events
+        n.register_event('dspy.codeact')
+        n.register_event('dspy.codeact.iteration')
+        n.register_event('dspy.codeact.code_execution')
+        n.register_event('dspy.codeact.iteration_complete')
+        n.register_event('dspy.codeact.max_iterations')
+        
         # Evaluation events
         n.register_event('dspy.evaluation.start')
         n.register_event('dspy.evaluation.example')

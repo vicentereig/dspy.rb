@@ -171,19 +171,19 @@ RSpec.describe 'DSPy::CodeAct' do
 
     it 'can execute basic arithmetic operations' do
       result, error = agent.send(:execute_ruby_code_safely, "2 + 2")
-      expect(error).to be_nil
+      expect(error).to eq("")
       expect(result).to eq("4")
     end
 
     it 'can execute variable assignments and retrieval' do
       result, error = agent.send(:execute_ruby_code_safely, "x = 5; x * 2")
-      expect(error).to be_nil
+      expect(error).to eq("")
       expect(result).to eq("10")
     end
 
     it 'captures puts output' do
       result, error = agent.send(:execute_ruby_code_safely, "puts 'Hello World'")
-      expect(error).to be_nil
+      expect(error).to eq("")
       expect(result).to eq("Hello World")
     end
 
@@ -201,7 +201,7 @@ RSpec.describe 'DSPy::CodeAct' do
 
     it 'can execute array and hash operations' do
       result, error = agent.send(:execute_ruby_code_safely, "[1, 2, 3].sum")
-      expect(error).to be_nil
+      expect(error).to eq("")
       expect(result).to eq("6")
     end
 
@@ -212,7 +212,7 @@ RSpec.describe 'DSPy::CodeAct' do
         sum
       RUBY
       result, error = agent.send(:execute_ruby_code_safely, code)
-      expect(error).to be_nil
+      expect(error).to eq("")
       expect(result).to eq("15")
     end
   end
@@ -234,13 +234,13 @@ RSpec.describe 'DSPy::CodeAct' do
         thought: "test thought",
         ruby_code: "2 + 2",
         execution_result: "4",
-        error_message: nil
+        error_message: ""
       )
       expect(entry.step).to eq(1)
       expect(entry.thought).to eq("test thought")
       expect(entry.ruby_code).to eq("2 + 2")
       expect(entry.execution_result).to eq("4")
-      expect(entry.error_message).to be_nil
+      expect(entry.error_message).to eq("")
     end
 
     it 'serializes CodeActHistoryEntry to hash correctly' do
@@ -249,14 +249,15 @@ RSpec.describe 'DSPy::CodeAct' do
         thought: "test thought",
         ruby_code: "2 + 2",
         execution_result: "4",
-        error_message: nil
+        error_message: ""
       )
       hash = entry.to_h
       expect(hash).to eq({
         step: 1,
         thought: "test thought",
         ruby_code: "2 + 2",
-        execution_result: "4"
+        execution_result: "4",
+        error_message: ""
       })
     end
 

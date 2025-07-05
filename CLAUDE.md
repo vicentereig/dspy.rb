@@ -190,7 +190,6 @@ These rules ensure maintainability, safety, and developer velocity for Ruby 3.3 
 
 ### 3 — Testing
 
-- **T-1 (MUST)** For a simple method, colocate unit tests in `*_spec.rb` in same directory as source file.
 - **T-2 (MUST)** For any API change, add/extend integration tests in `spec/integration/*.rb`.
 - **T-3 (MUST)** ALWAYS separate pure-logic unit tests from LLM-touching integration tests.
 - **T-4 (SHOULD)** Prefer integration tests over heavy mocking.  
@@ -214,7 +213,6 @@ These rules ensure maintainability, safety, and developer velocity for Ruby 3.3 
 
 ### 5 — Code Organization
 
-- **O-1 (MUST)** Place code in `lib/dspy/shared` only if used by ≥ 2 modules.
 - **O-2 (SHOULD)** Group related functionality in logical subdirectories (`tools/`, `memory/`, `agents/`).
 
 ---

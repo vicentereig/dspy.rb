@@ -65,7 +65,7 @@ module DSPy
         # Smart consolidation: skip nested events when higher-level events are being emitted
         if is_nested_context?
           # If we're in a nested context, only emit higher-level events
-          event_name.match?(/^dspy\.(chain_of_thought|react)$/)
+          event_name.match?(/^dspy\.(chain_of_thought|react|codeact)$/)
         else
           # If we're not in a nested context, emit all events normally
           true
@@ -103,11 +103,9 @@ module DSPy
         return false if caller_locations.nil?
         
         # Look for higher-level DSPy modules in the call stack
-        # We consider ChainOfThought and ReAct as higher-level modules
+        # We consider ChainOfThought, ReAct, and CodeAct as higher-level modules
         higher_level_modules = caller_locations.select do |loc|
-          loc.path.include?('chain_of_thought') || 
-          loc.path.include?('re_act') ||
-          loc.path.include?('react')
+          loc.path.match?(/(?:chain_of_thought|re_act|react|code_act)/)
         end
         
         # If we have higher-level modules in the call stack, we're in a nested context

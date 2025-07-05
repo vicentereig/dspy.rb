@@ -17,7 +17,7 @@ module DSPy
     prop :thought, T.nilable(String)
     prop :ruby_code, T.nilable(String)
     prop :execution_result, T.nilable(String)
-    prop :error_message, T.nilable(String)
+    prop :error_message, String
 
     # Custom serialization to ensure compatibility with the rest of the code
     def to_h
@@ -72,8 +72,8 @@ module DSPy
         description: "Previous thoughts, code executions, and their results"
       const :execution_result, T.nilable(String),
         description: "The result from executing the Ruby code"
-      const :error_message, T.nilable(String),
-        description: "Error message if the code execution failed"
+      const :error_message, String,
+        description: "Error message if the code execution failed (empty string if no error)"
     end
 
     output do
@@ -287,7 +287,7 @@ module DSPy
       final_answer.nil? && (@max_iterations.nil? || iterations_count < @max_iterations)
     end
 
-    sig { params(ruby_code: String, iteration: Integer).returns([T.nilable(String), T.nilable(String)]) }
+    sig { params(ruby_code: String, iteration: Integer).returns([T.nilable(String), String]) }
     def execute_ruby_code_with_instrumentation(ruby_code, iteration)
       Instrumentation.instrument('dspy.codeact.code_execution', {
         iteration: iteration,
@@ -297,7 +297,7 @@ module DSPy
       end
     end
 
-    sig { params(step: Integer, thought: String, ruby_code: String, execution_result: T.nilable(String), error_message: T.nilable(String)).returns(CodeActHistoryEntry) }
+    sig { params(step: Integer, thought: String, ruby_code: String, execution_result: T.nilable(String), error_message: String).returns(CodeActHistoryEntry) }
     def create_history_entry(step, thought, ruby_code, execution_result, error_message)
       CodeActHistoryEntry.new(
         step: step,
@@ -308,7 +308,7 @@ module DSPy
       )
     end
 
-    sig { params(task: String, history: T::Array[CodeActHistoryEntry], execution_result: T.nilable(String), error_message: T.nilable(String), iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
+    sig { params(task: String, history: T::Array[CodeActHistoryEntry], execution_result: T.nilable(String), error_message: String, iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
     def process_observation_and_decide_next_step(task, history, execution_result, error_message, iteration)
       observation_result = @observation_processor.forward(
         task: task,
@@ -366,7 +366,7 @@ module DSPy
     end
 
     # Safe Ruby code execution method - placeholder for now
-    sig { params(ruby_code: String).returns([T.nilable(String), T.nilable(String)]) }
+    sig { params(ruby_code: String).returns([T.nilable(String), String]) }
     def execute_ruby_code_safely(ruby_code)
       # TODO: Implement proper sandboxing in Phase 2
       # For now, use basic eval with error handling
@@ -387,7 +387,7 @@ module DSPy
         # If there's captured output, use it, otherwise use the eval result
         final_result = output.empty? ? result.to_s : output.chomp
         
-        [final_result, nil]
+        [final_result, ""]
       rescue SyntaxError => e
         [nil, "Error: #{e.message}"]
       rescue => e

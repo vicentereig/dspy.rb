@@ -25,6 +25,9 @@ module DSPy
       sig { params(value: T.untyped, prop_type: T.untyped).returns(T.untyped) }
       def coerce_value_to_type(value, prop_type)
         return value unless prop_type
+        
+        # If value is nil, return it as-is for nilable types
+        return value if value.nil?
 
         case prop_type
         when ->(type) { enum_type?(type) }
