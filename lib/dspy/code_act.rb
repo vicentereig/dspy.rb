@@ -201,53 +201,68 @@ module DSPy
     # Executes a single iteration of the Think-Code-Observe loop
     sig { params(task: String, history: T::Array[CodeActHistoryEntry], context: String, iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
     def execute_single_iteration(task, history, context, iteration)
-      # Instrument each iteration
       Instrumentation.instrument('dspy.codeact.iteration', {
         iteration: iteration,
         max_iterations: @max_iterations,
         history_length: history.length
       }) do
-        # Generate thought and code
-        code_obj = @code_generator.forward(
-          task: task,
-          context: context.empty? ? "No previous context available." : context,
-          history: history
-        )
-
-        # Execute the generated Ruby code
-        execution_result, error_message = execute_ruby_code_with_instrumentation(
-          code_obj.ruby_code, iteration
-        )
-
-        # Add to history
-        history << create_history_entry(
-          iteration, code_obj.thought, code_obj.ruby_code,
-          execution_result, error_message
-        )
-
-        # Process observation and decide next step
+        execution_state = execute_think_code_step(task, context, history, iteration)
+        
         observation_decision = process_observation_and_decide_next_step(
-          task, history, execution_result, error_message, iteration
+          task, execution_state[:history], execution_state[:execution_result], 
+          execution_state[:error_message], iteration
         )
 
         if observation_decision[:should_finish]
           return { should_finish: true, final_answer: observation_decision[:final_answer] }
         end
 
-        # Update context with variables and results
-        new_context = build_context_from_history(history)
-
-        emit_iteration_complete_event(
-          iteration, code_obj.thought, code_obj.ruby_code,
-          execution_result, error_message
-        )
-
-        {
-          should_finish: false,
-          history: history,
-          context: new_context
-        }
+        finalize_iteration(execution_state, iteration)
       end
+    end
+
+    # Executes the Think-Code step: generates code and executes it
+    sig { params(task: String, context: String, history: T::Array[CodeActHistoryEntry], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
+    def execute_think_code_step(task, context, history, iteration)
+      code_obj = @code_generator.forward(
+        task: task,
+        context: context.empty? ? "No previous context available." : context,
+        history: history
+      )
+
+      execution_result, error_message = execute_ruby_code_with_instrumentation(
+        code_obj.ruby_code, iteration
+      )
+
+      history << create_history_entry(
+        iteration, code_obj.thought, code_obj.ruby_code,
+        execution_result, error_message
+      )
+
+      {
+        history: history,
+        thought: code_obj.thought,
+        ruby_code: code_obj.ruby_code,
+        execution_result: execution_result,
+        error_message: error_message
+      }
+    end
+
+    # Finalizes iteration by updating context and emitting events
+    sig { params(execution_state: T::Hash[Symbol, T.untyped], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
+    def finalize_iteration(execution_state, iteration)
+      new_context = build_context_from_history(execution_state[:history])
+
+      emit_iteration_complete_event(
+        iteration, execution_state[:thought], execution_state[:ruby_code],
+        execution_state[:execution_result], execution_state[:error_message]
+      )
+
+      {
+        should_finish: false,
+        history: execution_state[:history],
+        context: new_context
+      }
     end
 
     # Creates enhanced output struct with CodeAct-specific fields

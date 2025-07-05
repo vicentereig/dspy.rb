@@ -286,6 +286,56 @@ RSpec.describe 'DSPy::CodeAct' do
     end
   end
 
+  describe 'private method unit tests' do
+    let(:agent) { DSPy::CodeAct.new(MathProblem, max_iterations: 2) }
+    let(:task) { "Calculate 2 + 2" }
+    let(:history) { [] }
+    let(:context) { "previous calculations available" }
+    let(:iteration) { 1 }
+
+    before do
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      end
+    end
+
+    describe '#execute_think_code_step' do
+      it 'generates code, executes it, and updates history', vcr: { cassette_name: 'openai/gpt4o-mini/codeact_math_problem' } do
+        result = agent.send(:execute_think_code_step, task, context, history, iteration)
+        
+        expect(result).to have_key(:history)
+        expect(result).to have_key(:thought)
+        expect(result).to have_key(:ruby_code)
+        expect(result).to have_key(:execution_result)
+        expect(result).to have_key(:error_message)
+        
+        expect(result[:history].size).to eq(1)
+        expect(result[:thought]).to be_a(String)
+        expect(result[:ruby_code]).to be_a(String)
+      end
+    end
+
+    describe '#finalize_iteration' do
+      it 'builds context and returns continuation state' do
+        execution_state = {
+          history: [DSPy::CodeActHistoryEntry.new(step: 1, thought: "test", ruby_code: "2+2", execution_result: "4", error_message: "")],
+          thought: "test thought",
+          ruby_code: "2 + 2",
+          execution_result: "4", 
+          error_message: ""
+        }
+
+        result = agent.send(:finalize_iteration, execution_state, iteration)
+        
+        expect(result).to eq({
+          should_finish: false,
+          history: execution_state[:history],
+          context: "Step 1 result: 4"
+        })
+      end
+    end
+  end
+
   describe 'logger subscriber integration' do
     let(:log_output) { StringIO.new }
     let(:test_logger) { Logger.new(log_output) }
