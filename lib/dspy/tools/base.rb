@@ -195,7 +195,7 @@ module DSPy
 
       # Subclasses must implement their own call method with their own signature
 
-      private
+      protected
 
       # Convert argument to the expected type based on JSON schema
       sig { params(value: T.untyped, schema: T::Hash[Symbol, T.untyped]).returns(T.untyped) }

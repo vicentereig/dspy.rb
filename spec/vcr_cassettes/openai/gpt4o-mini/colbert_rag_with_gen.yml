@@ -8,7 +8,7 @@ http_interactions:
       string: ''
     headers:
       User-Agent:
-      - Faraday v2.12.2
+      - Faraday v2.13.1
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -19,107 +19,133 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 21 Jun 2025 19:29:02 GMT
+      - Sat, 05 Jul 2025 07:14:21 GMT
       Server:
       - uvicorn
       Content-Length:
-      - '8962'
+      - '8963'
       Content-Type:
       - application/json
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        eyJ0b3BrIjpbeyJ0ZXh0IjoiwqFIb2xhISB8IMKhSG9sYSEgaXMgYSB3ZWVrbHkgU3BhbmlzaC1sYW5ndWFnZSBtYWdhemluZSBzcGVjaWFsaXppbmcgaW4gY2VsZWJyaXR5IG5ld3MsIHB1Ymxpc2hlZCBpbiBNYWRyaWQsIFNwYWluLCBhbmQgaW4gMTUgb3RoZXIgY291bnRyaWVzLCB3aXRoIGxvY2FsIGVkaXRpb25zIGluIEFyZ2VudGluYSwgQnJhemlsLCBCdWxnYXJpYSwgQ2FuYWRhLCBDaGlsZSwgR3JlZWNlLCBJbmRvbmVzaWEsIE1leGljbywgUGVydSwgUGhpbGlwcGluZXMsIFB1ZXJ0byBSaWNvLCBSdXNzaWEsIFRoYWlsYW5kLCBVbml0ZWQgS2luZ2RvbSwgVW5pdGVkIFN0YXRlcyBhbmQgVmVuZXp1ZWxhLiBJdCBpcyB0aGUgc2Vjb25kIG1vc3QgcG9wdWxhciBtYWdhemluZSBpbiBTcGFpbiBhZnRlciB0aGUgXCJQcm9udG9cIi4gVGhlIHRpdGxlIG1lYW5zIFwiSGVsbG8hXCIgaW4gRW5nbGlzaCBhbmQgaXQgaXMgdGhlIHBhcmVudCBtYWdhemluZSBvZiB0aGUgRW5nbGlzaC1sYW5ndWFnZSBcIkhlbGxvISBcIiBhbmQgXCJIZWxsbyEgQ2FuYWRhXCIuIiwicGlkIjozNTE5NjE4LCJyYW5rIjoxLCJzY29yZSI6MjcuNjE0NzgwNDI2MDI1MzksInByb2IiOjAuMTY4MjgzMjUxNTI0Njk5MSwibG9uZ190ZXh0IjoiwqFIb2xhISB8IMKhSG9sYSEgaXMgYSB3ZWVrbHkgU3BhbmlzaC1sYW5ndWFnZSBtYWdhemluZSBzcGVjaWFsaXppbmcgaW4gY2VsZWJyaXR5IG5ld3MsIHB1Ymxpc2hlZCBpbiBNYWRyaWQsIFNwYWluLCBhbmQgaW4gMTUgb3RoZXIgY291bnRyaWVzLCB3aXRoIGxvY2FsIGVkaXRpb25zIGluIEFyZ2VudGluYSwgQnJhemlsLCBCdWxnYXJpYSwgQ2FuYWRhLCBDaGlsZSwgR3JlZWNlLCBJbmRvbmVzaWEsIE1leGljbywgUGVydSwgUGhpbGlwcGluZXMsIFB1ZXJ0byBSaWNvLCBSdXNzaWEsIFRoYWlsYW5kLCBVbml0ZWQgS2luZ2RvbSwgVW5pdGVkIFN0YXRlcyBhbmQgVmVuZXp1ZWxhLiBJdCBpcyB0aGUgc2Vjb25kIG1vc3QgcG9wdWxhciBtYWdhemluZSBpbiBTcGFpbiBhZnRlciB0aGUgXCJQcm9udG9cIi4gVGhlIHRpdGxlIG1lYW5zIFwiSGVsbG8hXCIgaW4gRW5nbGlzaCBhbmQgaXQgaXMgdGhlIHBhcmVudCBtYWdhemluZSBvZiB0aGUgRW5nbGlzaC1sYW5ndWFnZSBcIkhlbGxvISBcIiBhbmQgXCJIZWxsbyEgQ2FuYWRhXCIuIn0seyJ0ZXh0IjoiSG9sYSAoZXRobmljIGdyb3VwKSB8IEhvdWxhIChBcmFiaWM6INmH2YjZhNmH4oCOIOKAjiAsIHNpbmcuIEhvdWxpINmH2YjZhNmKKSBpcyBhIGJsYW5rZXQgdGVybSBkZW5vdGluZyBhbiBldGhuaWNhbGx5IFBlcnNpYW4gU3VubmkgY29tbXVuaXR5IGN1cnJlbnRseSByZXNpZGluZyBpbiB0aGUgR0NDIHdpdGggb3JpZ2lucyBpbiBjaXRpZXMgYW5kIHZpbGxhZ2VzIGx5aW5nIGFsb25nIHRoZSBlYXN0ZXJuIGNvYXN0IG9mIHRoZSBQZXJzaWFuIEd1bGYuIiwicGlkIjoxNzQ2MzkzLCJyYW5rIjoyLCJzY29yZSI6MjcuNDAxODQ3ODM5MzU1NDcsInByb2IiOjAuMTM2MDA4MzEwOTc0NTUwODUsImxvbmdfdGV4dCI6IkhvbGEgKGV0aG5pYyBncm91cCkgfCBIb3VsYSAoQXJhYmljOiDZh9mI2YTZh+KAjiDigI4gLCBzaW5nLiBIb3VsaSDZh9mI2YTZiikgaXMgYSBibGFua2V0IHRlcm0gZGVub3RpbmcgYW4gZXRobmljYWxseSBQZXJzaWFuIFN1bm5pIGNvbW11bml0eSBjdXJyZW50bHkgcmVzaWRpbmcgaW4gdGhlIEdDQyB3aXRoIG9yaWdpbnMgaW4gY2l0aWVzIGFuZCB2aWxsYWdlcyBseWluZyBhbG9uZyB0aGUgZWFzdGVybiBjb2FzdCBvZiB0aGUgUGVyc2lhbiBHdWxmLiJ9LHsidGV4dCI6IkhvbGEgKFZQTikgfCBIb2xhIGlzIGEgZnJlZW1pdW0gd2ViIGFuZCBtb2JpbGUgYXBwbGljYXRpb24gd2hpY2ggY2xhaW1zIHRvIHByb3ZpZGUgYSBmYXN0ZXIsIHByaXZhdGUgYW5kIG1vcmUgc2VjdXJlIEludGVybmV0LiBJdCBwcm92aWRlcyBhIGZvcm0gb2YgdmlydHVhbCBwcml2YXRlIG5ldHdvcmsgc2VydmljZXMgdG8gaXRzIHVzZXJzIHRocm91Z2ggYSBwZWVyLXRvLXBlZXIgbmV0d29yay4gSXQgYWxzbyB1c2VzIHBlZXItdG8tcGVlciBjYWNoaW5nLiBXaGVuIGEgdXNlciBhY2Nlc3NlcyBjZXJ0YWluIGRvbWFpbnMgdGhhdCBhcmUga25vd24gdG8gdXNlIGdlby1ibG9ja2luZywgdGhlIEhvbGEgYXBwbGljYXRpb24gcmVkaXJlY3RzIHRoZSByZXF1ZXN0IHRvIGdvIHRocm91Z2ggdGhlIGNvbXB1dGVycyBhbmQgSW50ZXJuZXQgY29ubmVjdGlvbnMgb2Ygb3RoZXIgdXNlcnMgaW4gbm9uLWJsb2NrZWQgYXJlYXMsIHRoZXJlYnkgY2lyY3VtdmVudGluZyB0aGUgYmxvY2tpbmcuIFRoaXMgYWxzbyBtZWFucyB0aGF0IG90aGVyIHVzZXJzIG1pZ2h0IGFjY2VzcyB0aGUgSW50ZXJuZXQgdGhyb3VnaCBvbmUncyBvd24gY29tcHV0ZXIsIGFuZCB0aGF0IHBhcnQgb2Ygb25lJ3MgdXBsb2FkIGJhbmR3aWR0aCBtaWdodCBiZSB1c2VkIGZvciBzZXJ2aW5nIGNhY2hlZCBkYXRhIHRvIG90aGVyIHVzZXJzLiBQYXlpbmcgdXNlcnMgY2FuIGNob29zZSB0byByZWRpcmVjdCBhbGwgcmVxdWVzdHMgdG8gcGVlcnMgYnV0IGFyZSB0aGVtc2VsdmVzIG5ldmVyIHVzZWQgYXMgcGVlcnMuIiwicGlkIjo0NzUxNDA0LCJyYW5rIjozLCJzY29yZSI6MjcuMzQ0MzUyNzIyMTY3OTcsInByb2IiOjAuMTI4NDA5MDUwNjYxMzQ0MjUsImxvbmdfdGV4dCI6IkhvbGEgKFZQTikgfCBIb2xhIGlzIGEgZnJlZW1pdW0gd2ViIGFuZCBtb2JpbGUgYXBwbGljYXRpb24gd2hpY2ggY2xhaW1zIHRvIHByb3ZpZGUgYSBmYXN0ZXIsIHByaXZhdGUgYW5kIG1vcmUgc2VjdXJlIEludGVybmV0LiBJdCBwcm92aWRlcyBhIGZvcm0gb2YgdmlydHVhbCBwcml2YXRlIG5ldHdvcmsgc2VydmljZXMgdG8gaXRzIHVzZXJzIHRocm91Z2ggYSBwZWVyLXRvLXBlZXIgbmV0d29yay4gSXQgYWxzbyB1c2VzIHBlZXItdG8tcGVlciBjYWNoaW5nLiBXaGVuIGEgdXNlciBhY2Nlc3NlcyBjZXJ0YWluIGRvbWFpbnMgdGhhdCBhcmUga25vd24gdG8gdXNlIGdlby1ibG9ja2luZywgdGhlIEhvbGEgYXBwbGljYXRpb24gcmVkaXJlY3RzIHRoZSByZXF1ZXN0IHRvIGdvIHRocm91Z2ggdGhlIGNvbXB1dGVycyBhbmQgSW50ZXJuZXQgY29ubmVjdGlvbnMgb2Ygb3RoZXIgdXNlcnMgaW4gbm9uLWJsb2NrZWQgYXJlYXMsIHRoZXJlYnkgY2lyY3VtdmVudGluZyB0aGUgYmxvY2tpbmcuIFRoaXMgYWxzbyBtZWFucyB0aGF0IG90aGVyIHVzZXJzIG1pZ2h0IGFjY2VzcyB0aGUgSW50ZXJuZXQgdGhyb3VnaCBvbmUncyBvd24gY29tcHV0ZXIsIGFuZCB0aGF0IHBhcnQgb2Ygb25lJ3MgdXBsb2FkIGJhbmR3aWR0aCBtaWdodCBiZSB1c2VkIGZvciBzZXJ2aW5nIGNhY2hlZCBkYXRhIHRvIG90aGVyIHVzZXJzLiBQYXlpbmcgdXNlcnMgY2FuIGNob29zZSB0byByZWRpcmVjdCBhbGwgcmVxdWVzdHMgdG8gcGVlcnMgYnV0IGFyZSB0aGVtc2VsdmVzIG5ldmVyIHVzZWQgYXMgcGVlcnMuIn0seyJ0ZXh0IjoiSGlzcGFuaWMgT3JnYW5pemF0aW9uIG9mIExhdGluIEFjdG9ycyB8IFRoZSBIaXNwYW5pYyBPcmdhbml6YXRpb24gb2YgTGF0aW4gQWN0b3JzIChIT0xBKSBpcyBhbiBhY3RpdmUgYXJ0cyBzZXJ2aWNlIGFuZCBhZHZvY2FjeSBvcmdhbml6YXRpb24gZm91bmRlZCBpbiAxOTc1LiBJdCBpcyBpbiB0aGUgVW5pdGVkIFN0YXRlcyBhbmQgZGVkaWNhdGVkIHRvIEhpc3BhbmljIGFydGlzdHMsIGFjdG9ycyBhbmQgYWN0cmVzc2VzLiBJdCBpcyBub3QgdG8gYmUgY29uZnVzZWQgd2l0aCBILk8uTC5BLiwgSGVscGluZyBPdXRzdGFuZGluZyBMYXRpbm9zIEFjaGlldmUsIGEgcHJvZ3JhbSB3aW5uaW5nIG51bWVyb3VzIGF3YXJkcyBhbmQgZ3JhbnRzIGFuZCBjcmVhdGVkIGluIDIwMTIgYnkgS2F0ZWx5biBhbmQgTWFkaXNvbiBTaW5naDsgYWx0aG91Z2ggYm90aCBhZHZvY2F0ZSBmb3IgdGhlIHN1Y2Nlc3Mgb2YgTGF0aW5vIHBvcHVsYXRpb25zLiIsInBpZCI6MTk4MDA4NSwicmFuayI6NCwic2NvcmUiOjI3LjIxMDQzMDE0NTI2MzY3MiwicHJvYiI6MC4xMTIzMTM5NzUyNzI1OTkwNCwibG9uZ190ZXh0IjoiSGlzcGFuaWMgT3JnYW5pemF0aW9uIG9mIExhdGluIEFjdG9ycyB8IFRoZSBIaXNwYW5pYyBPcmdhbml6YXRpb24gb2YgTGF0aW4gQWN0b3JzIChIT0xBKSBpcyBhbiBhY3RpdmUgYXJ0cyBzZXJ2aWNlIGFuZCBhZHZvY2FjeSBvcmdhbml6YXRpb24gZm91bmRlZCBpbiAxOTc1LiBJdCBpcyBpbiB0aGUgVW5pdGVkIFN0YXRlcyBhbmQgZGVkaWNhdGVkIHRvIEhpc3BhbmljIGFydGlzdHMsIGFjdG9ycyBhbmQgYWN0cmVzc2VzLiBJdCBpcyBub3QgdG8gYmUgY29uZnVzZWQgd2l0aCBILk8uTC5BLiwgSGVscGluZyBPdXRzdGFuZGluZyBMYXRpbm9zIEFjaGlldmUsIGEgcHJvZ3JhbSB3aW5uaW5nIG51bWVyb3VzIGF3YXJkcyBhbmQgZ3JhbnRzIGFuZCBjcmVhdGVkIGluIDIwMTIgYnkgS2F0ZWx5biBhbmQgTWFkaXNvbiBTaW5naDsgYWx0aG91Z2ggYm90aCBhZHZvY2F0ZSBmb3IgdGhlIHN1Y2Nlc3Mgb2YgTGF0aW5vIHBvcHVsYXRpb25zLiJ9LHsidGV4dCI6IkhvbGEsIEJpYcWCYSBQb2RsYXNrYSBDb3VudHkgfCBIb2xhIChVa3JhaW5pYW46INCT0L7Qu9GPICwgXCJIb2xpYVwiKSBpcyBhIHZpbGxhZ2UgaW4gdGhlIGFkbWluaXN0cmF0aXZlIGRpc3RyaWN0IG9mIEdtaW5hIEJpYcWCYSBQb2RsYXNrYSwgd2l0aGluIEJpYcWCYSBQb2RsYXNrYSBDb3VudHksIEx1YmxpbiBWb2l2b2Rlc2hpcCwgaW4gZWFzdGVybiBQb2xhbmQuIiwicGlkIjoyNDA5MDM4LCJyYW5rIjo1LCJzY29yZSI6MjYuOTU0NDQ2NzkyNjAyNTQsInByb2IiOjAuMDg2OTQ4NDA5Mzg4MDAwNjUsImxvbmdfdGV4dCI6IkhvbGEsIEJpYcWCYSBQb2RsYXNrYSBDb3VudHkgfCBIb2xhIChVa3JhaW5pYW46INCT0L7Qu9GPICwgXCJIb2xpYVwiKSBpcyBhIHZpbGxhZ2UgaW4gdGhlIGFkbWluaXN0cmF0aXZlIGRpc3RyaWN0IG9mIEdtaW5hIEJpYcWCYSBQb2RsYXNrYSwgd2l0aGluIEJpYcWCYSBQb2RsYXNrYSBDb3VudHksIEx1YmxpbiBWb2l2b2Rlc2hpcCwgaW4gZWFzdGVybiBQb2xhbmQuIn0seyJ0ZXh0IjoiSG9sYSwgS2VueWEgfCBIb2xhLCBhbHNvIGtub3duIGFzIEdhbG9sZSwgaXMgYSBzbWFsbCB0b3duIGluIEtlbnlhIG9uIHRoZSBUYW5hIFJpdmVyIHdpdGggYSBwb3B1bGF0aW9uIG9mIDYsOTMyLiBIb2xhIGlzIHRoZSBjYXBpdGFsIG9mIHRoZSBUYW5hIFJpdmVyIENvdW50eS4gSXQgaXMgYSBidXN5IG1hcmtldCB0b3duIGFuZCBhIHBvcnRhbCB0byBHYXJpc3NhIENvdW50eSBhbmQgdGhlIGZvcm1lciBOb3J0aCBFYXN0ZXJuIFByb3ZpbmNlIGJ5IGxvY2FsIGNhbm9lIGZlcnJ5IGFjcm9zcyB0aGUgVGFuYSBSaXZlci4iLCJwaWQiOjE3NzEwNTcsInJhbmsiOjYsInNjb3JlIjoyNi45MDMwOTUyNDUzNjEzMjgsInByb2IiOjAuMDgyNTk2MTc3MzE1NDI3MTEsImxvbmdfdGV4dCI6IkhvbGEsIEtlbnlhIHwgSG9sYSwgYWxzbyBrbm93biBhcyBHYWxvbGUsIGlzIGEgc21hbGwgdG93biBpbiBLZW55YSBvbiB0aGUgVGFuYSBSaXZlciB3aXRoIGEgcG9wdWxhdGlvbiBvZiA2LDkzMi4gSG9sYSBpcyB0aGUgY2FwaXRhbCBvZiB0aGUgVGFuYSBSaXZlciBDb3VudHkuIEl0IGlzIGEgYnVzeSBtYXJrZXQgdG93biBhbmQgYSBwb3J0YWwgdG8gR2FyaXNzYSBDb3VudHkgYW5kIHRoZSBmb3JtZXIgTm9ydGggRWFzdGVybiBQcm92aW5jZSBieSBsb2NhbCBjYW5vZSBmZXJyeSBhY3Jvc3MgdGhlIFRhbmEgUml2ZXIuIn0seyJ0ZXh0IjoiSG9sYSwgV8WCb2Rhd2EgQ291bnR5IHwgSG9sYSBpcyBhIHZpbGxhZ2UgaW4gdGhlIGFkbWluaXN0cmF0aXZlIGRpc3RyaWN0IG9mIEdtaW5hIFN0YXJ5IEJydXMsIHdpdGhpbiBXxYJvZGF3YSBDb3VudHksIEx1YmxpbiBWb2l2b2Rlc2hpcCwgaW4gZWFzdGVybiBQb2xhbmQuIEl0IGxpZXMgYXBwcm94aW1hdGVseSAxMSBrbSBub3J0aC13ZXN0IG9mIFN0YXJ5IEJydXMsIDI2IGttIHdlc3Qgb2YgV8WCb2Rhd2EsIGFuZCA1NSBrbSBub3J0aC1lYXN0IG9mIHRoZSByZWdpb25hbCBjYXBpdGFsIEx1Ymxpbi4iLCJwaWQiOjI3MTE2MTAsInJhbmsiOjcsInNjb3JlIjoyNi44NjM0Mzc2NTI1ODc4OSwicHJvYiI6MC4wNzkzODQ3MTIxMjUwMTcsImxvbmdfdGV4dCI6IkhvbGEsIFfFgm9kYXdhIENvdW50eSB8IEhvbGEgaXMgYSB2aWxsYWdlIGluIHRoZSBhZG1pbmlzdHJhdGl2ZSBkaXN0cmljdCBvZiBHbWluYSBTdGFyeSBCcnVzLCB3aXRoaW4gV8WCb2Rhd2EgQ291bnR5LCBMdWJsaW4gVm9pdm9kZXNoaXAsIGluIGVhc3Rlcm4gUG9sYW5kLiBJdCBsaWVzIGFwcHJveGltYXRlbHkgMTEga20gbm9ydGgtd2VzdCBvZiBTdGFyeSBCcnVzLCAyNiBrbSB3ZXN0IG9mIFfFgm9kYXdhLCBhbmQgNTUga20gbm9ydGgtZWFzdCBvZiB0aGUgcmVnaW9uYWwgY2FwaXRhbCBMdWJsaW4uIn0seyJ0ZXh0IjoiSG9sYSBNb2hhbGxhIHwgSG9sYSBNb2hhbGxhIChQdW5qYWJpOiDgqLngqYvgqLLgqL4g4Kiu4Ki54Kmx4Kiy4Ki+ICwgSGluZGk6IOCkueCli+CksuCkviDgpK7gpYvgpLngpLLgpY3gpLLgpL4gOyBhbHNvIGNhbGxlZCBIb2xhIGlzIGEgb25lLWRheSBTaWtoIGZlc3RpdmFsIHdoaWNoIG1vc3Qgb2Z0ZW4gZmFsbHMgaW4gTWFyY2ggYW5kIHRha2VzIHBsYWNlIG9uIHRoZSBzZWNvbmQgZGF5IG9mIHRoZSBsdW5hciBtb250aCBvZiBDaGV0dCwgYSBkYXkgYWZ0ZXIgdGhlIEhpbmR1IHNwcmluZyBmZXN0aXZhbCBIb2xpLiBIb2xhIE1vaGFsbGEgaXMgYSBiaWcgZmVzdGl2ZSBldmVudCBmb3IgU2lraHMgYXJvdW5kIHRoZSB3b3JsZCBhbmQgYWxzbyBtYXJrcyB0aGUgYmVnaW5uaW5nIG9mIHRoZSBTaWtoIE5ldyBZZWFyLiIsInBpZCI6Mjc3NjEzMiwicmFuayI6OCwic2NvcmUiOjI2Ljc1MjExOTA2NDMzMTA1NSwicHJvYiI6MC4wNzEwMjE4MjQ2MjkyNjE3MiwibG9uZ190ZXh0IjoiSG9sYSBNb2hhbGxhIHwgSG9sYSBNb2hhbGxhIChQdW5qYWJpOiDgqLngqYvgqLLgqL4g4Kiu4Ki54Kmx4Kiy4Ki+ICwgSGluZGk6IOCkueCli+CksuCkviDgpK7gpYvgpLngpLLgpY3gpLLgpL4gOyBhbHNvIGNhbGxlZCBIb2xhIGlzIGEgb25lLWRheSBTaWtoIGZlc3RpdmFsIHdoaWNoIG1vc3Qgb2Z0ZW4gZmFsbHMgaW4gTWFyY2ggYW5kIHRha2VzIHBsYWNlIG9uIHRoZSBzZWNvbmQgZGF5IG9mIHRoZSBsdW5hciBtb250aCBvZiBDaGV0dCwgYSBkYXkgYWZ0ZXIgdGhlIEhpbmR1IHNwcmluZyBmZXN0aXZhbCBIb2xpLiBIb2xhIE1vaGFsbGEgaXMgYSBiaWcgZmVzdGl2ZSBldmVudCBmb3IgU2lraHMgYXJvdW5kIHRoZSB3b3JsZCBhbmQgYWxzbyBtYXJrcyB0aGUgYmVnaW5uaW5nIG9mIHRoZSBTaWtoIE5ldyBZZWFyLiJ9LHsidGV4dCI6IkhvbGEvQ2hhdSB8IEhvbGEvQ2hhdSAoU3BhbmlzaCBmb3IgSGVsbG8vQnllKSwgcmVsZWFzZWQgaW4gMjAwMSwgYXJlIHRoZSB0aGlydGVlbnRoIGFuZCBmb3VydGVlbnRoIGFsYnVtcyBmcm9tIHRoZSBBcmdlbnRpbmUgYmFuZCBMb3MgRmFidWxvc29zIENhZGlsbGFjcy4gVGhlc2UsIHRoZWlyIHNlY29uZCBsaXZlIGFsYnVtIHNldCwgYXJlIHR3aW4gY29uY2VydCBhbGJ1bXMgcmVjb3JkZWQgYXQgdGhlIEVzdGFkaW8gT2JyYXMgU2FuaXRhcmlhcyBpbiBBcmdlbnRpbmEuIFRoZSBjb25jZXJ0IGluY2x1ZGVzIG1vc3Qgb2YgdGhlIGJhbmQncyBoaXRzIGFzIHdlbGwgYXMgYSByZXVuaW9uIHdpdGggc29tZSBvZiB0aGUgZm9ybWVyIG1lbWJlcnMgb2YgdGhlIGJhbmQuIiwicGlkIjoyMzk2NjAwLCJyYW5rIjo5LCJzY29yZSI6MjYuNzIzODMxMTc2NzU3ODEyLCJwcm9iIjowLjA2OTA0MDkxNzE3NTA4Nzk4LCJsb25nX3RleHQiOiJIb2xhL0NoYXUgfCBIb2xhL0NoYXUgKFNwYW5pc2ggZm9yIEhlbGxvL0J5ZSksIHJlbGVhc2VkIGluIDIwMDEsIGFyZSB0aGUgdGhpcnRlZW50aCBhbmQgZm91cnRlZW50aCBhbGJ1bXMgZnJvbSB0aGUgQXJnZW50aW5lIGJhbmQgTG9zIEZhYnVsb3NvcyBDYWRpbGxhY3MuIFRoZXNlLCB0aGVpciBzZWNvbmQgbGl2ZSBhbGJ1bSBzZXQsIGFyZSB0d2luIGNvbmNlcnQgYWxidW1zIHJlY29yZGVkIGF0IHRoZSBFc3RhZGlvIE9icmFzIFNhbml0YXJpYXMgaW4gQXJnZW50aW5hLiBUaGUgY29uY2VydCBpbmNsdWRlcyBtb3N0IG9mIHRoZSBiYW5kJ3MgaGl0cyBhcyB3ZWxsIGFzIGEgcmV1bmlvbiB3aXRoIHNvbWUgb2YgdGhlIGZvcm1lciBtZW1iZXJzIG9mIHRoZSBiYW5kLiJ9LHsidGV4dCI6IkhvbEEgfCBJbiBtb2xlY3VsYXIgYmlvbG9neSwgaG9sQSBpcyBhIGdlbmUgdGhhdCBlbmNvZGVzIHRoZSDOtCAoZGVsdGEpIHN1YnVuaXQgb2YgRE5BIHBvbHltZXJhc2UgSUlJIGluIFwiRS4gY29saVwiIGFuZCBvdGhlciBiYWN0ZXJpYS4gQWxvbmcgd2l0aCB0aGUgzrMsIM60Jywgz4csIGFuZCDPiCBzdWJ1bml0cyB0aGF0IG1ha2UgdXAgdGhlIGNvcmUgcG9seW1lcmFzZSwgYW5kIHRoZSDOsiBhY2Nlc3NvcnkgcHJvdGVpbnMsIHRoZSDOtCBzdWJ1bml0IGlzIHJlc3BvbnNpYmxlIGZvciB0aGUgaGlnaCBzcGVlZCBhbmQgcHJvY2Vzc2l2aXR5IG9mIHBvbElJSS4iLCJwaWQiOjcyNzE2OCwicmFuayI6MTAsInNjb3JlIjoyNi42Nzg2ODYxNDE5Njc3NzMsInByb2IiOjAuMDY1OTkzMzcwOTM0MDEyNTIsImxvbmdfdGV4dCI6IkhvbEEgfCBJbiBtb2xlY3VsYXIgYmlvbG9neSwgaG9sQSBpcyBhIGdlbmUgdGhhdCBlbmNvZGVzIHRoZSDOtCAoZGVsdGEpIHN1YnVuaXQgb2YgRE5BIHBvbHltZXJhc2UgSUlJIGluIFwiRS4gY29saVwiIGFuZCBvdGhlciBiYWN0ZXJpYS4gQWxvbmcgd2l0aCB0aGUgzrMsIM60Jywgz4csIGFuZCDPiCBzdWJ1bml0cyB0aGF0IG1ha2UgdXAgdGhlIGNvcmUgcG9seW1lcmFzZSwgYW5kIHRoZSDOsiBhY2Nlc3NvcnkgcHJvdGVpbnMsIHRoZSDOtCBzdWJ1bml0IGlzIHJlc3BvbnNpYmxlIGZvciB0aGUgaGlnaCBzcGVlZCBhbmQgcHJvY2Vzc2l2aXR5IG9mIHBvbElJSS4ifV0sImxhdGVuY3kiOjk4LjE0MjM4NTQ4Mjc4ODA5fQ==
-  recorded_at: Sat, 21 Jun 2025 19:29:02 GMT
+        eyJ0b3BrIjpbeyJ0ZXh0IjoiwqFIb2xhISB8IMKhSG9sYSEgaXMgYSB3ZWVrbHkgU3BhbmlzaC1sYW5ndWFnZSBtYWdhemluZSBzcGVjaWFsaXppbmcgaW4gY2VsZWJyaXR5IG5ld3MsIHB1Ymxpc2hlZCBpbiBNYWRyaWQsIFNwYWluLCBhbmQgaW4gMTUgb3RoZXIgY291bnRyaWVzLCB3aXRoIGxvY2FsIGVkaXRpb25zIGluIEFyZ2VudGluYSwgQnJhemlsLCBCdWxnYXJpYSwgQ2FuYWRhLCBDaGlsZSwgR3JlZWNlLCBJbmRvbmVzaWEsIE1leGljbywgUGVydSwgUGhpbGlwcGluZXMsIFB1ZXJ0byBSaWNvLCBSdXNzaWEsIFRoYWlsYW5kLCBVbml0ZWQgS2luZ2RvbSwgVW5pdGVkIFN0YXRlcyBhbmQgVmVuZXp1ZWxhLiBJdCBpcyB0aGUgc2Vjb25kIG1vc3QgcG9wdWxhciBtYWdhemluZSBpbiBTcGFpbiBhZnRlciB0aGUgXCJQcm9udG9cIi4gVGhlIHRpdGxlIG1lYW5zIFwiSGVsbG8hXCIgaW4gRW5nbGlzaCBhbmQgaXQgaXMgdGhlIHBhcmVudCBtYWdhemluZSBvZiB0aGUgRW5nbGlzaC1sYW5ndWFnZSBcIkhlbGxvISBcIiBhbmQgXCJIZWxsbyEgQ2FuYWRhXCIuIiwicGlkIjozNTE5NjE4LCJyYW5rIjoxLCJzY29yZSI6MjcuNjE0NzgwNDI2MDI1MzksInByb2IiOjAuMTY4MjgzMjUxNTI0Njk5MSwibG9uZ190ZXh0IjoiwqFIb2xhISB8IMKhSG9sYSEgaXMgYSB3ZWVrbHkgU3BhbmlzaC1sYW5ndWFnZSBtYWdhemluZSBzcGVjaWFsaXppbmcgaW4gY2VsZWJyaXR5IG5ld3MsIHB1Ymxpc2hlZCBpbiBNYWRyaWQsIFNwYWluLCBhbmQgaW4gMTUgb3RoZXIgY291bnRyaWVzLCB3aXRoIGxvY2FsIGVkaXRpb25zIGluIEFyZ2VudGluYSwgQnJhemlsLCBCdWxnYXJpYSwgQ2FuYWRhLCBDaGlsZSwgR3JlZWNlLCBJbmRvbmVzaWEsIE1leGljbywgUGVydSwgUGhpbGlwcGluZXMsIFB1ZXJ0byBSaWNvLCBSdXNzaWEsIFRoYWlsYW5kLCBVbml0ZWQgS2luZ2RvbSwgVW5pdGVkIFN0YXRlcyBhbmQgVmVuZXp1ZWxhLiBJdCBpcyB0aGUgc2Vjb25kIG1vc3QgcG9wdWxhciBtYWdhemluZSBpbiBTcGFpbiBhZnRlciB0aGUgXCJQcm9udG9cIi4gVGhlIHRpdGxlIG1lYW5zIFwiSGVsbG8hXCIgaW4gRW5nbGlzaCBhbmQgaXQgaXMgdGhlIHBhcmVudCBtYWdhemluZSBvZiB0aGUgRW5nbGlzaC1sYW5ndWFnZSBcIkhlbGxvISBcIiBhbmQgXCJIZWxsbyEgQ2FuYWRhXCIuIn0seyJ0ZXh0IjoiSG9sYSAoZXRobmljIGdyb3VwKSB8IEhvdWxhIChBcmFiaWM6INmH2YjZhNmH4oCOIOKAjiAsIHNpbmcuIEhvdWxpINmH2YjZhNmKKSBpcyBhIGJsYW5rZXQgdGVybSBkZW5vdGluZyBhbiBldGhuaWNhbGx5IFBlcnNpYW4gU3VubmkgY29tbXVuaXR5IGN1cnJlbnRseSByZXNpZGluZyBpbiB0aGUgR0NDIHdpdGggb3JpZ2lucyBpbiBjaXRpZXMgYW5kIHZpbGxhZ2VzIGx5aW5nIGFsb25nIHRoZSBlYXN0ZXJuIGNvYXN0IG9mIHRoZSBQZXJzaWFuIEd1bGYuIiwicGlkIjoxNzQ2MzkzLCJyYW5rIjoyLCJzY29yZSI6MjcuNDAxODQ3ODM5MzU1NDcsInByb2IiOjAuMTM2MDA4MzEwOTc0NTUwODUsImxvbmdfdGV4dCI6IkhvbGEgKGV0aG5pYyBncm91cCkgfCBIb3VsYSAoQXJhYmljOiDZh9mI2YTZh+KAjiDigI4gLCBzaW5nLiBIb3VsaSDZh9mI2YTZiikgaXMgYSBibGFua2V0IHRlcm0gZGVub3RpbmcgYW4gZXRobmljYWxseSBQZXJzaWFuIFN1bm5pIGNvbW11bml0eSBjdXJyZW50bHkgcmVzaWRpbmcgaW4gdGhlIEdDQyB3aXRoIG9yaWdpbnMgaW4gY2l0aWVzIGFuZCB2aWxsYWdlcyBseWluZyBhbG9uZyB0aGUgZWFzdGVybiBjb2FzdCBvZiB0aGUgUGVyc2lhbiBHdWxmLiJ9LHsidGV4dCI6IkhvbGEgKFZQTikgfCBIb2xhIGlzIGEgZnJlZW1pdW0gd2ViIGFuZCBtb2JpbGUgYXBwbGljYXRpb24gd2hpY2ggY2xhaW1zIHRvIHByb3ZpZGUgYSBmYXN0ZXIsIHByaXZhdGUgYW5kIG1vcmUgc2VjdXJlIEludGVybmV0LiBJdCBwcm92aWRlcyBhIGZvcm0gb2YgdmlydHVhbCBwcml2YXRlIG5ldHdvcmsgc2VydmljZXMgdG8gaXRzIHVzZXJzIHRocm91Z2ggYSBwZWVyLXRvLXBlZXIgbmV0d29yay4gSXQgYWxzbyB1c2VzIHBlZXItdG8tcGVlciBjYWNoaW5nLiBXaGVuIGEgdXNlciBhY2Nlc3NlcyBjZXJ0YWluIGRvbWFpbnMgdGhhdCBhcmUga25vd24gdG8gdXNlIGdlby1ibG9ja2luZywgdGhlIEhvbGEgYXBwbGljYXRpb24gcmVkaXJlY3RzIHRoZSByZXF1ZXN0IHRvIGdvIHRocm91Z2ggdGhlIGNvbXB1dGVycyBhbmQgSW50ZXJuZXQgY29ubmVjdGlvbnMgb2Ygb3RoZXIgdXNlcnMgaW4gbm9uLWJsb2NrZWQgYXJlYXMsIHRoZXJlYnkgY2lyY3VtdmVudGluZyB0aGUgYmxvY2tpbmcuIFRoaXMgYWxzbyBtZWFucyB0aGF0IG90aGVyIHVzZXJzIG1pZ2h0IGFjY2VzcyB0aGUgSW50ZXJuZXQgdGhyb3VnaCBvbmUncyBvd24gY29tcHV0ZXIsIGFuZCB0aGF0IHBhcnQgb2Ygb25lJ3MgdXBsb2FkIGJhbmR3aWR0aCBtaWdodCBiZSB1c2VkIGZvciBzZXJ2aW5nIGNhY2hlZCBkYXRhIHRvIG90aGVyIHVzZXJzLiBQYXlpbmcgdXNlcnMgY2FuIGNob29zZSB0byByZWRpcmVjdCBhbGwgcmVxdWVzdHMgdG8gcGVlcnMgYnV0IGFyZSB0aGVtc2VsdmVzIG5ldmVyIHVzZWQgYXMgcGVlcnMuIiwicGlkIjo0NzUxNDA0LCJyYW5rIjozLCJzY29yZSI6MjcuMzQ0MzUyNzIyMTY3OTcsInByb2IiOjAuMTI4NDA5MDUwNjYxMzQ0MjUsImxvbmdfdGV4dCI6IkhvbGEgKFZQTikgfCBIb2xhIGlzIGEgZnJlZW1pdW0gd2ViIGFuZCBtb2JpbGUgYXBwbGljYXRpb24gd2hpY2ggY2xhaW1zIHRvIHByb3ZpZGUgYSBmYXN0ZXIsIHByaXZhdGUgYW5kIG1vcmUgc2VjdXJlIEludGVybmV0LiBJdCBwcm92aWRlcyBhIGZvcm0gb2YgdmlydHVhbCBwcml2YXRlIG5ldHdvcmsgc2VydmljZXMgdG8gaXRzIHVzZXJzIHRocm91Z2ggYSBwZWVyLXRvLXBlZXIgbmV0d29yay4gSXQgYWxzbyB1c2VzIHBlZXItdG8tcGVlciBjYWNoaW5nLiBXaGVuIGEgdXNlciBhY2Nlc3NlcyBjZXJ0YWluIGRvbWFpbnMgdGhhdCBhcmUga25vd24gdG8gdXNlIGdlby1ibG9ja2luZywgdGhlIEhvbGEgYXBwbGljYXRpb24gcmVkaXJlY3RzIHRoZSByZXF1ZXN0IHRvIGdvIHRocm91Z2ggdGhlIGNvbXB1dGVycyBhbmQgSW50ZXJuZXQgY29ubmVjdGlvbnMgb2Ygb3RoZXIgdXNlcnMgaW4gbm9uLWJsb2NrZWQgYXJlYXMsIHRoZXJlYnkgY2lyY3VtdmVudGluZyB0aGUgYmxvY2tpbmcuIFRoaXMgYWxzbyBtZWFucyB0aGF0IG90aGVyIHVzZXJzIG1pZ2h0IGFjY2VzcyB0aGUgSW50ZXJuZXQgdGhyb3VnaCBvbmUncyBvd24gY29tcHV0ZXIsIGFuZCB0aGF0IHBhcnQgb2Ygb25lJ3MgdXBsb2FkIGJhbmR3aWR0aCBtaWdodCBiZSB1c2VkIGZvciBzZXJ2aW5nIGNhY2hlZCBkYXRhIHRvIG90aGVyIHVzZXJzLiBQYXlpbmcgdXNlcnMgY2FuIGNob29zZSB0byByZWRpcmVjdCBhbGwgcmVxdWVzdHMgdG8gcGVlcnMgYnV0IGFyZSB0aGVtc2VsdmVzIG5ldmVyIHVzZWQgYXMgcGVlcnMuIn0seyJ0ZXh0IjoiSGlzcGFuaWMgT3JnYW5pemF0aW9uIG9mIExhdGluIEFjdG9ycyB8IFRoZSBIaXNwYW5pYyBPcmdhbml6YXRpb24gb2YgTGF0aW4gQWN0b3JzIChIT0xBKSBpcyBhbiBhY3RpdmUgYXJ0cyBzZXJ2aWNlIGFuZCBhZHZvY2FjeSBvcmdhbml6YXRpb24gZm91bmRlZCBpbiAxOTc1LiBJdCBpcyBpbiB0aGUgVW5pdGVkIFN0YXRlcyBhbmQgZGVkaWNhdGVkIHRvIEhpc3BhbmljIGFydGlzdHMsIGFjdG9ycyBhbmQgYWN0cmVzc2VzLiBJdCBpcyBub3QgdG8gYmUgY29uZnVzZWQgd2l0aCBILk8uTC5BLiwgSGVscGluZyBPdXRzdGFuZGluZyBMYXRpbm9zIEFjaGlldmUsIGEgcHJvZ3JhbSB3aW5uaW5nIG51bWVyb3VzIGF3YXJkcyBhbmQgZ3JhbnRzIGFuZCBjcmVhdGVkIGluIDIwMTIgYnkgS2F0ZWx5biBhbmQgTWFkaXNvbiBTaW5naDsgYWx0aG91Z2ggYm90aCBhZHZvY2F0ZSBmb3IgdGhlIHN1Y2Nlc3Mgb2YgTGF0aW5vIHBvcHVsYXRpb25zLiIsInBpZCI6MTk4MDA4NSwicmFuayI6NCwic2NvcmUiOjI3LjIxMDQzMDE0NTI2MzY3MiwicHJvYiI6MC4xMTIzMTM5NzUyNzI1OTkwNCwibG9uZ190ZXh0IjoiSGlzcGFuaWMgT3JnYW5pemF0aW9uIG9mIExhdGluIEFjdG9ycyB8IFRoZSBIaXNwYW5pYyBPcmdhbml6YXRpb24gb2YgTGF0aW4gQWN0b3JzIChIT0xBKSBpcyBhbiBhY3RpdmUgYXJ0cyBzZXJ2aWNlIGFuZCBhZHZvY2FjeSBvcmdhbml6YXRpb24gZm91bmRlZCBpbiAxOTc1LiBJdCBpcyBpbiB0aGUgVW5pdGVkIFN0YXRlcyBhbmQgZGVkaWNhdGVkIHRvIEhpc3BhbmljIGFydGlzdHMsIGFjdG9ycyBhbmQgYWN0cmVzc2VzLiBJdCBpcyBub3QgdG8gYmUgY29uZnVzZWQgd2l0aCBILk8uTC5BLiwgSGVscGluZyBPdXRzdGFuZGluZyBMYXRpbm9zIEFjaGlldmUsIGEgcHJvZ3JhbSB3aW5uaW5nIG51bWVyb3VzIGF3YXJkcyBhbmQgZ3JhbnRzIGFuZCBjcmVhdGVkIGluIDIwMTIgYnkgS2F0ZWx5biBhbmQgTWFkaXNvbiBTaW5naDsgYWx0aG91Z2ggYm90aCBhZHZvY2F0ZSBmb3IgdGhlIHN1Y2Nlc3Mgb2YgTGF0aW5vIHBvcHVsYXRpb25zLiJ9LHsidGV4dCI6IkhvbGEsIEJpYcWCYSBQb2RsYXNrYSBDb3VudHkgfCBIb2xhIChVa3JhaW5pYW46INCT0L7Qu9GPICwgXCJIb2xpYVwiKSBpcyBhIHZpbGxhZ2UgaW4gdGhlIGFkbWluaXN0cmF0aXZlIGRpc3RyaWN0IG9mIEdtaW5hIEJpYcWCYSBQb2RsYXNrYSwgd2l0aGluIEJpYcWCYSBQb2RsYXNrYSBDb3VudHksIEx1YmxpbiBWb2l2b2Rlc2hpcCwgaW4gZWFzdGVybiBQb2xhbmQuIiwicGlkIjoyNDA5MDM4LCJyYW5rIjo1LCJzY29yZSI6MjYuOTU0NDQ2NzkyNjAyNTQsInByb2IiOjAuMDg2OTQ4NDA5Mzg4MDAwNjUsImxvbmdfdGV4dCI6IkhvbGEsIEJpYcWCYSBQb2RsYXNrYSBDb3VudHkgfCBIb2xhIChVa3JhaW5pYW46INCT0L7Qu9GPICwgXCJIb2xpYVwiKSBpcyBhIHZpbGxhZ2UgaW4gdGhlIGFkbWluaXN0cmF0aXZlIGRpc3RyaWN0IG9mIEdtaW5hIEJpYcWCYSBQb2RsYXNrYSwgd2l0aGluIEJpYcWCYSBQb2RsYXNrYSBDb3VudHksIEx1YmxpbiBWb2l2b2Rlc2hpcCwgaW4gZWFzdGVybiBQb2xhbmQuIn0seyJ0ZXh0IjoiSG9sYSwgS2VueWEgfCBIb2xhLCBhbHNvIGtub3duIGFzIEdhbG9sZSwgaXMgYSBzbWFsbCB0b3duIGluIEtlbnlhIG9uIHRoZSBUYW5hIFJpdmVyIHdpdGggYSBwb3B1bGF0aW9uIG9mIDYsOTMyLiBIb2xhIGlzIHRoZSBjYXBpdGFsIG9mIHRoZSBUYW5hIFJpdmVyIENvdW50eS4gSXQgaXMgYSBidXN5IG1hcmtldCB0b3duIGFuZCBhIHBvcnRhbCB0byBHYXJpc3NhIENvdW50eSBhbmQgdGhlIGZvcm1lciBOb3J0aCBFYXN0ZXJuIFByb3ZpbmNlIGJ5IGxvY2FsIGNhbm9lIGZlcnJ5IGFjcm9zcyB0aGUgVGFuYSBSaXZlci4iLCJwaWQiOjE3NzEwNTcsInJhbmsiOjYsInNjb3JlIjoyNi45MDMwOTUyNDUzNjEzMjgsInByb2IiOjAuMDgyNTk2MTc3MzE1NDI3MTEsImxvbmdfdGV4dCI6IkhvbGEsIEtlbnlhIHwgSG9sYSwgYWxzbyBrbm93biBhcyBHYWxvbGUsIGlzIGEgc21hbGwgdG93biBpbiBLZW55YSBvbiB0aGUgVGFuYSBSaXZlciB3aXRoIGEgcG9wdWxhdGlvbiBvZiA2LDkzMi4gSG9sYSBpcyB0aGUgY2FwaXRhbCBvZiB0aGUgVGFuYSBSaXZlciBDb3VudHkuIEl0IGlzIGEgYnVzeSBtYXJrZXQgdG93biBhbmQgYSBwb3J0YWwgdG8gR2FyaXNzYSBDb3VudHkgYW5kIHRoZSBmb3JtZXIgTm9ydGggRWFzdGVybiBQcm92aW5jZSBieSBsb2NhbCBjYW5vZSBmZXJyeSBhY3Jvc3MgdGhlIFRhbmEgUml2ZXIuIn0seyJ0ZXh0IjoiSG9sYSwgV8WCb2Rhd2EgQ291bnR5IHwgSG9sYSBpcyBhIHZpbGxhZ2UgaW4gdGhlIGFkbWluaXN0cmF0aXZlIGRpc3RyaWN0IG9mIEdtaW5hIFN0YXJ5IEJydXMsIHdpdGhpbiBXxYJvZGF3YSBDb3VudHksIEx1YmxpbiBWb2l2b2Rlc2hpcCwgaW4gZWFzdGVybiBQb2xhbmQuIEl0IGxpZXMgYXBwcm94aW1hdGVseSAxMSBrbSBub3J0aC13ZXN0IG9mIFN0YXJ5IEJydXMsIDI2IGttIHdlc3Qgb2YgV8WCb2Rhd2EsIGFuZCA1NSBrbSBub3J0aC1lYXN0IG9mIHRoZSByZWdpb25hbCBjYXBpdGFsIEx1Ymxpbi4iLCJwaWQiOjI3MTE2MTAsInJhbmsiOjcsInNjb3JlIjoyNi44NjM0Mzc2NTI1ODc4OSwicHJvYiI6MC4wNzkzODQ3MTIxMjUwMTcsImxvbmdfdGV4dCI6IkhvbGEsIFfFgm9kYXdhIENvdW50eSB8IEhvbGEgaXMgYSB2aWxsYWdlIGluIHRoZSBhZG1pbmlzdHJhdGl2ZSBkaXN0cmljdCBvZiBHbWluYSBTdGFyeSBCcnVzLCB3aXRoaW4gV8WCb2Rhd2EgQ291bnR5LCBMdWJsaW4gVm9pdm9kZXNoaXAsIGluIGVhc3Rlcm4gUG9sYW5kLiBJdCBsaWVzIGFwcHJveGltYXRlbHkgMTEga20gbm9ydGgtd2VzdCBvZiBTdGFyeSBCcnVzLCAyNiBrbSB3ZXN0IG9mIFfFgm9kYXdhLCBhbmQgNTUga20gbm9ydGgtZWFzdCBvZiB0aGUgcmVnaW9uYWwgY2FwaXRhbCBMdWJsaW4uIn0seyJ0ZXh0IjoiSG9sYSBNb2hhbGxhIHwgSG9sYSBNb2hhbGxhIChQdW5qYWJpOiDgqLngqYvgqLLgqL4g4Kiu4Ki54Kmx4Kiy4Ki+ICwgSGluZGk6IOCkueCli+CksuCkviDgpK7gpYvgpLngpLLgpY3gpLLgpL4gOyBhbHNvIGNhbGxlZCBIb2xhIGlzIGEgb25lLWRheSBTaWtoIGZlc3RpdmFsIHdoaWNoIG1vc3Qgb2Z0ZW4gZmFsbHMgaW4gTWFyY2ggYW5kIHRha2VzIHBsYWNlIG9uIHRoZSBzZWNvbmQgZGF5IG9mIHRoZSBsdW5hciBtb250aCBvZiBDaGV0dCwgYSBkYXkgYWZ0ZXIgdGhlIEhpbmR1IHNwcmluZyBmZXN0aXZhbCBIb2xpLiBIb2xhIE1vaGFsbGEgaXMgYSBiaWcgZmVzdGl2ZSBldmVudCBmb3IgU2lraHMgYXJvdW5kIHRoZSB3b3JsZCBhbmQgYWxzbyBtYXJrcyB0aGUgYmVnaW5uaW5nIG9mIHRoZSBTaWtoIE5ldyBZZWFyLiIsInBpZCI6Mjc3NjEzMiwicmFuayI6OCwic2NvcmUiOjI2Ljc1MjExOTA2NDMzMTA1NSwicHJvYiI6MC4wNzEwMjE4MjQ2MjkyNjE3MiwibG9uZ190ZXh0IjoiSG9sYSBNb2hhbGxhIHwgSG9sYSBNb2hhbGxhIChQdW5qYWJpOiDgqLngqYvgqLLgqL4g4Kiu4Ki54Kmx4Kiy4Ki+ICwgSGluZGk6IOCkueCli+CksuCkviDgpK7gpYvgpLngpLLgpY3gpLLgpL4gOyBhbHNvIGNhbGxlZCBIb2xhIGlzIGEgb25lLWRheSBTaWtoIGZlc3RpdmFsIHdoaWNoIG1vc3Qgb2Z0ZW4gZmFsbHMgaW4gTWFyY2ggYW5kIHRha2VzIHBsYWNlIG9uIHRoZSBzZWNvbmQgZGF5IG9mIHRoZSBsdW5hciBtb250aCBvZiBDaGV0dCwgYSBkYXkgYWZ0ZXIgdGhlIEhpbmR1IHNwcmluZyBmZXN0aXZhbCBIb2xpLiBIb2xhIE1vaGFsbGEgaXMgYSBiaWcgZmVzdGl2ZSBldmVudCBmb3IgU2lraHMgYXJvdW5kIHRoZSB3b3JsZCBhbmQgYWxzbyBtYXJrcyB0aGUgYmVnaW5uaW5nIG9mIHRoZSBTaWtoIE5ldyBZZWFyLiJ9LHsidGV4dCI6IkhvbGEvQ2hhdSB8IEhvbGEvQ2hhdSAoU3BhbmlzaCBmb3IgSGVsbG8vQnllKSwgcmVsZWFzZWQgaW4gMjAwMSwgYXJlIHRoZSB0aGlydGVlbnRoIGFuZCBmb3VydGVlbnRoIGFsYnVtcyBmcm9tIHRoZSBBcmdlbnRpbmUgYmFuZCBMb3MgRmFidWxvc29zIENhZGlsbGFjcy4gVGhlc2UsIHRoZWlyIHNlY29uZCBsaXZlIGFsYnVtIHNldCwgYXJlIHR3aW4gY29uY2VydCBhbGJ1bXMgcmVjb3JkZWQgYXQgdGhlIEVzdGFkaW8gT2JyYXMgU2FuaXRhcmlhcyBpbiBBcmdlbnRpbmEuIFRoZSBjb25jZXJ0IGluY2x1ZGVzIG1vc3Qgb2YgdGhlIGJhbmQncyBoaXRzIGFzIHdlbGwgYXMgYSByZXVuaW9uIHdpdGggc29tZSBvZiB0aGUgZm9ybWVyIG1lbWJlcnMgb2YgdGhlIGJhbmQuIiwicGlkIjoyMzk2NjAwLCJyYW5rIjo5LCJzY29yZSI6MjYuNzIzODMxMTc2NzU3ODEyLCJwcm9iIjowLjA2OTA0MDkxNzE3NTA4Nzk4LCJsb25nX3RleHQiOiJIb2xhL0NoYXUgfCBIb2xhL0NoYXUgKFNwYW5pc2ggZm9yIEhlbGxvL0J5ZSksIHJlbGVhc2VkIGluIDIwMDEsIGFyZSB0aGUgdGhpcnRlZW50aCBhbmQgZm91cnRlZW50aCBhbGJ1bXMgZnJvbSB0aGUgQXJnZW50aW5lIGJhbmQgTG9zIEZhYnVsb3NvcyBDYWRpbGxhY3MuIFRoZXNlLCB0aGVpciBzZWNvbmQgbGl2ZSBhbGJ1bSBzZXQsIGFyZSB0d2luIGNvbmNlcnQgYWxidW1zIHJlY29yZGVkIGF0IHRoZSBFc3RhZGlvIE9icmFzIFNhbml0YXJpYXMgaW4gQXJnZW50aW5hLiBUaGUgY29uY2VydCBpbmNsdWRlcyBtb3N0IG9mIHRoZSBiYW5kJ3MgaGl0cyBhcyB3ZWxsIGFzIGEgcmV1bmlvbiB3aXRoIHNvbWUgb2YgdGhlIGZvcm1lciBtZW1iZXJzIG9mIHRoZSBiYW5kLiJ9LHsidGV4dCI6IkhvbEEgfCBJbiBtb2xlY3VsYXIgYmlvbG9neSwgaG9sQSBpcyBhIGdlbmUgdGhhdCBlbmNvZGVzIHRoZSDOtCAoZGVsdGEpIHN1YnVuaXQgb2YgRE5BIHBvbHltZXJhc2UgSUlJIGluIFwiRS4gY29saVwiIGFuZCBvdGhlciBiYWN0ZXJpYS4gQWxvbmcgd2l0aCB0aGUgzrMsIM60Jywgz4csIGFuZCDPiCBzdWJ1bml0cyB0aGF0IG1ha2UgdXAgdGhlIGNvcmUgcG9seW1lcmFzZSwgYW5kIHRoZSDOsiBhY2Nlc3NvcnkgcHJvdGVpbnMsIHRoZSDOtCBzdWJ1bml0IGlzIHJlc3BvbnNpYmxlIGZvciB0aGUgaGlnaCBzcGVlZCBhbmQgcHJvY2Vzc2l2aXR5IG9mIHBvbElJSS4iLCJwaWQiOjcyNzE2OCwicmFuayI6MTAsInNjb3JlIjoyNi42Nzg2ODYxNDE5Njc3NzMsInByb2IiOjAuMDY1OTkzMzcwOTM0MDEyNTIsImxvbmdfdGV4dCI6IkhvbEEgfCBJbiBtb2xlY3VsYXIgYmlvbG9neSwgaG9sQSBpcyBhIGdlbmUgdGhhdCBlbmNvZGVzIHRoZSDOtCAoZGVsdGEpIHN1YnVuaXQgb2YgRE5BIHBvbHltZXJhc2UgSUlJIGluIFwiRS4gY29saVwiIGFuZCBvdGhlciBiYWN0ZXJpYS4gQWxvbmcgd2l0aCB0aGUgzrMsIM60Jywgz4csIGFuZCDPiCBzdWJ1bml0cyB0aGF0IG1ha2UgdXAgdGhlIGNvcmUgcG9seW1lcmFzZSwgYW5kIHRoZSDOsiBhY2Nlc3NvcnkgcHJvdGVpbnMsIHRoZSDOtCBzdWJ1bml0IGlzIHJlc3BvbnNpYmxlIGZvciB0aGUgaGlnaCBzcGVlZCBhbmQgcHJvY2Vzc2l2aXR5IG9mIHBvbElJSS4ifV0sImxhdGVuY3kiOjEwMy41MTg5NjI4NjAxMDc0Mn0=
+  recorded_at: Sat, 05 Jul 2025 07:14:21 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"context\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"the
-        context provided to enrich the answer\"},\"question\":{\"type\":\"string\",\"description\":\"the
-        question we want to ultimately answer in the language it is written originally\"}},\"required\":[\"context\",\"question\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"response\":{\"type\":\"string\",\"description\":\"the
-        answer incorporating the relevant context\"},\"reasoning\":{\"type\":\"string\"}},\"required\":[\"response\",\"reasoning\"]}\n        ````\n      \n      All
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"context\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"the context
+        provided to enrich the answer\"\n    },\n    \"question\": {\n      \"type\":
+        \"string\",\n      \"description\": \"the question we want to ultimately answer
+        in the language it is written originally\"\n    }\n  },\n  \"required\": [\n    \"context\",\n    \"question\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"response\": {\n      \"type\": \"string\",\n      \"description\":
+        \"the answer incorporating the relevant context\"\n    },\n    \"reasoning\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Step by step reasoning
+        process\"\n    }\n  },\n  \"required\": [\n    \"response\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
-        values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
-        Output values\n      Respond exclusively with the output schema fields in
-        the json block below.\n        ```json\n          {output_values}\n        ```\n      \n      In
-        adhering to this structure, your objective is: Answers the question taking
-        relevant context into account Think step by step.\n\n"},{"role":"user","content":"        ##
-        Input Values\n        ```json\n        {\"question\":\"hola\",\"context\":[\"¡Hola!
-        | ¡Hola! is a weekly Spanish-language magazine specializing in celebrity news,
-        published in Madrid, Spain, and in 15 other countries, with local editions
-        in Argentina, Brazil, Bulgaria, Canada, Chile, Greece, Indonesia, Mexico,
-        Peru, Philippines, Puerto Rico, Russia, Thailand, United Kingdom, United States
-        and Venezuela. It is the second most popular magazine in Spain after the \\\"Pronto\\\".
-        The title means \\\"Hello!\\\" in English and it is the parent magazine of
-        the English-language \\\"Hello! \\\" and \\\"Hello! Canada\\\".\",\"Hola (ethnic
-        group) | Houla (Arabic: هوله‎ ‎ , sing. Houli هولي) is a blanket term denoting
-        an ethnically Persian Sunni community currently residing in the GCC with origins
-        in cities and villages lying along the eastern coast of the Persian Gulf.\",\"Hola
-        (VPN) | Hola is a freemium web and mobile application which claims to provide
-        a faster, private and more secure Internet. It provides a form of virtual
-        private network services to its users through a peer-to-peer network. It also
-        uses peer-to-peer caching. When a user accesses certain domains that are known
-        to use geo-blocking, the Hola application redirects the request to go through
-        the computers and Internet connections of other users in non-blocked areas,
-        thereby circumventing the blocking. This also means that other users might
-        access the Internet through one''s own computer, and that part of one''s upload
-        bandwidth might be used for serving cached data to other users. Paying users
-        can choose to redirect all requests to peers but are themselves never used
-        as peers.\",\"Hispanic Organization of Latin Actors | The Hispanic Organization
-        of Latin Actors (HOLA) is an active arts service and advocacy organization
-        founded in 1975. It is in the United States and dedicated to Hispanic artists,
-        actors and actresses. It is not to be confused with H.O.L.A., Helping Outstanding
-        Latinos Achieve, a program winning numerous awards and grants and created
-        in 2012 by Katelyn and Madison Singh; although both advocate for the success
-        of Latino populations.\",\"Hola, Biała Podlaska County | Hola (Ukrainian:
-        Голя , \\\"Holia\\\") is a village in the administrative district of Gmina
-        Biała Podlaska, within Biała Podlaska County, Lublin Voivodeship, in eastern
-        Poland.\",\"Hola, Kenya | Hola, also known as Galole, is a small town in Kenya
-        on the Tana River with a population of 6,932. Hola is the capital of the Tana
-        River County. It is a busy market town and a portal to Garissa County and
-        the former North Eastern Province by local canoe ferry across the Tana River.\",\"Hola,
-        Włodawa County | Hola is a village in the administrative district of Gmina
-        Stary Brus, within Włodawa County, Lublin Voivodeship, in eastern Poland.
-        It lies approximately 11 km north-west of Stary Brus, 26 km west of Włodawa,
-        and 55 km north-east of the regional capital Lublin.\",\"Hola Mohalla | Hola
-        Mohalla (Punjabi: ਹੋਲਾ ਮਹੱਲਾ , Hindi: होला मोहल्ला ; also called Hola is a
-        one-day Sikh festival which most often falls in March and takes place on the
-        second day of the lunar month of Chett, a day after the Hindu spring festival
-        Holi. Hola Mohalla is a big festive event for Sikhs around the world and also
-        marks the beginning of the Sikh New Year.\",\"Hola/Chau | Hola/Chau (Spanish
-        for Hello/Bye), released in 2001, are the thirteenth and fourteenth albums
-        from the Argentine band Los Fabulosos Cadillacs. These, their second live
-        album set, are twin concert albums recorded at the Estadio Obras Sanitarias
-        in Argentina. The concert includes most of the band''s hits as well as a reunion
-        with some of the former members of the band.\",\"HolA | In molecular biology,
-        holA is a gene that encodes the δ (delta) subunit of DNA polymerase III in
-        \\\"E. coli\\\" and other bacteria. Along with the γ, δ'', χ, and ψ subunits
-        that make up the core polymerase, and the β accessory proteins, the δ subunit
-        is responsible for the high speed and processivity of polIII.\"]}\n        ```     \n        \n        Respond
-        with the corresponding output schema fields wrapped in a ```json ``` block,
-        \n         starting with the heading `## Output values`.\n"}],"temperature":0.7,"stream":false}'
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Answers the question taking relevant context into account Think
+        step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"hola\",\n  \"context\": [\n    \"¡Hola! | ¡Hola! is a weekly Spanish-language
+        magazine specializing in celebrity news, published in Madrid, Spain, and in
+        15 other countries, with local editions in Argentina, Brazil, Bulgaria, Canada,
+        Chile, Greece, Indonesia, Mexico, Peru, Philippines, Puerto Rico, Russia,
+        Thailand, United Kingdom, United States and Venezuela. It is the second most
+        popular magazine in Spain after the \\\"Pronto\\\". The title means \\\"Hello!\\\"
+        in English and it is the parent magazine of the English-language \\\"Hello!
+        \\\" and \\\"Hello! Canada\\\".\",\n    \"Hola (ethnic group) | Houla (Arabic:
+        هوله‎ ‎ , sing. Houli هولي) is a blanket term denoting an ethnically Persian
+        Sunni community currently residing in the GCC with origins in cities and villages
+        lying along the eastern coast of the Persian Gulf.\",\n    \"Hola (VPN) |
+        Hola is a freemium web and mobile application which claims to provide a faster,
+        private and more secure Internet. It provides a form of virtual private network
+        services to its users through a peer-to-peer network. It also uses peer-to-peer
+        caching. When a user accesses certain domains that are known to use geo-blocking,
+        the Hola application redirects the request to go through the computers and
+        Internet connections of other users in non-blocked areas, thereby circumventing
+        the blocking. This also means that other users might access the Internet through
+        one''s own computer, and that part of one''s upload bandwidth might be used
+        for serving cached data to other users. Paying users can choose to redirect
+        all requests to peers but are themselves never used as peers.\",\n    \"Hispanic
+        Organization of Latin Actors | The Hispanic Organization of Latin Actors (HOLA)
+        is an active arts service and advocacy organization founded in 1975. It is
+        in the United States and dedicated to Hispanic artists, actors and actresses.
+        It is not to be confused with H.O.L.A., Helping Outstanding Latinos Achieve,
+        a program winning numerous awards and grants and created in 2012 by Katelyn
+        and Madison Singh; although both advocate for the success of Latino populations.\",\n    \"Hola,
+        Biała Podlaska County | Hola (Ukrainian: Голя , \\\"Holia\\\") is a village
+        in the administrative district of Gmina Biała Podlaska, within Biała Podlaska
+        County, Lublin Voivodeship, in eastern Poland.\",\n    \"Hola, Kenya | Hola,
+        also known as Galole, is a small town in Kenya on the Tana River with a population
+        of 6,932. Hola is the capital of the Tana River County. It is a busy market
+        town and a portal to Garissa County and the former North Eastern Province
+        by local canoe ferry across the Tana River.\",\n    \"Hola, Włodawa County
+        | Hola is a village in the administrative district of Gmina Stary Brus, within
+        Włodawa County, Lublin Voivodeship, in eastern Poland. It lies approximately
+        11 km north-west of Stary Brus, 26 km west of Włodawa, and 55 km north-east
+        of the regional capital Lublin.\",\n    \"Hola Mohalla | Hola Mohalla (Punjabi:
+        ਹੋਲਾ ਮਹੱਲਾ , Hindi: होला मोहल्ला ; also called Hola is a one-day Sikh festival
+        which most often falls in March and takes place on the second day of the lunar
+        month of Chett, a day after the Hindu spring festival Holi. Hola Mohalla is
+        a big festive event for Sikhs around the world and also marks the beginning
+        of the Sikh New Year.\",\n    \"Hola/Chau | Hola/Chau (Spanish for Hello/Bye),
+        released in 2001, are the thirteenth and fourteenth albums from the Argentine
+        band Los Fabulosos Cadillacs. These, their second live album set, are twin
+        concert albums recorded at the Estadio Obras Sanitarias in Argentina. The
+        concert includes most of the band''s hits as well as a reunion with some of
+        the former members of the band.\",\n    \"HolA | In molecular biology, holA
+        is a gene that encodes the δ (delta) subunit of DNA polymerase III in \\\"E.
+        coli\\\" and other bacteria. Along with the γ, δ'', χ, and ψ subunits that
+        make up the core polymerase, and the β accessory proteins, the δ subunit is
+        responsible for the high speed and processivity of polIII.\"\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
     headers:
-      User-Agent:
-      - Faraday v2.12.2
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      Content-Type:
-      - application/json
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
-      - "*/*"
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '5867'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 21 Jun 2025 19:29:06 GMT
+      - Sat, 05 Jul 2025 07:14:25 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -129,48 +155,45 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1518'
+      - '2684'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1521'
+      - '2687'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9995'
       X-Ratelimit-Remaining-Tokens:
-      - '198630'
+      - '198610'
       X-Ratelimit-Reset-Requests:
-      - 15.783s
+      - 38.869s
       X-Ratelimit-Reset-Tokens:
-      - 411ms
+      - 417ms
       X-Request-Id:
-      - req_ecb64eaadc4d36f87b9cd083367e97e6
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=Y.Ge4c7cdgMgVSNPjNuGcaKcvp_YkYhvx30OqTouYd8-1750534146-1.0.1.1-G7Be43tv8jfPIaSeoYnO81rwRHUZkEvJcQhyLeRX5SnEWxJrHHXOLFb0.Hkis0mKkdgxqJgVgKkjGtJIm8TqllOX0CQlPhxilwjXppO2Fh4;
-        path=/; expires=Sat, 21-Jun-25 19:59:06 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=e9Tgt2vM5hMeI3yAZtTzYArTJOl3vc05HTzB1bROKsw-1750534146495-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 9535e9a0e85b56be-OSL
+      - 95a510ab0de3562b-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1Ca3lCY012eThRTDRWRTZzSFpKalhOVVJoUmFYUiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1MDUzNDE0NCwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcInJlc3BvbnNlXCI6IFwiwqFIb2xhISBpcyBhIFNwYW5pc2gtbGFuZ3VhZ2UgbWFnYXppbmUgcHVibGlzaGVkIGluIE1hZHJpZCBhbmQgb3RoZXIgY291bnRyaWVzLCBzcGVjaWFsaXppbmcgaW4gY2VsZWJyaXR5IG5ld3MuIEl0IGlzIGFsc28gYSBncmVldGluZyBtZWFuaW5nIFxcXCJIZWxsbyFcXFwiLiBBZGRpdGlvbmFsbHksIEhvbGEgcmVmZXJzIHRvIHZhcmlvdXMgZ2VvZ3JhcGhpY2FsIGxvY2F0aW9ucywgYSBWUE4gc2VydmljZSwgYSBTaWtoIGZlc3RpdmFsLCBhbmQgb3RoZXIgZW50aXRpZXMgcmVsYXRlZCB0byB0aGUgdGVybS5cIixcbiAgXCJyZWFzb25pbmdcIjogXCJUaGUgcXVlc3Rpb24gJ2hvbGEnIGlzIGEgZ3JlZXRpbmcgaW4gU3BhbmlzaCwgd2hpY2ggaXMgZGlyZWN0bHkgYWRkcmVzc2VkIGJ5IHRoZSBtYWdhemluZSByZWZlcmVuY2UuIEZ1cnRoZXJtb3JlLCB0aGUgY29udGV4dCBwcm92aWRlZCB2YXJpb3VzIG1lYW5pbmdzIGFuZCByZWZlcmVuY2VzIGZvciAnSG9sYScsIGluY2x1ZGluZyBpdHMgdXNlIGFzIGEgZ3JlZXRpbmcsIGl0cyBjdWx0dXJhbCBzaWduaWZpY2FuY2UsIGFuZCBvdGhlciByZWxldmFudCBlbnRpdGllcyBhc3NvY2lhdGVkIHdpdGggdGhlIHRlcm0uXCJcbn1cbmBgYCIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJsb2dwcm9icyI6IG51bGwsCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDExOTYsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiAxMzAsCiAgICAidG90YWxfdG9rZW5zIjogMTMyNiwKICAgICJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJjYWNoZWRfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAKICAgIH0sCiAgICAiY29tcGxldGlvbl90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgInJlYXNvbmluZ190b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogImZwXzM0YTU0YWU5M2MiCn0K
-  recorded_at: Sat, 21 Jun 2025 19:29:06 GMT
+        ewogICJpZCI6ICJjaGF0Y21wbC1CcHJPSmQ1RnZFWU5TZ1ZtSUdERzlpYXJSbjd5MiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1MTY5OTY2MywKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcInJlc3BvbnNlXCI6IFwiwqFIb2xhISBpcyBhIGNvbW1vbiBTcGFuaXNoIGdyZWV0aW5nIG1lYW5pbmcgXFxcIkhlbGxvIVxcXCIuIEl0IGlzIGFsc28gdGhlIG5hbWUgb2YgYSBwb3B1bGFyIHdlZWtseSBtYWdhemluZSBpbiBTcGFpbiBhbmQgb3RoZXIgY291bnRyaWVzLCBmb2N1c2luZyBvbiBjZWxlYnJpdHkgbmV3cy4gQWRkaXRpb25hbGx5LCBcXFwiSG9sYVxcXCIgY2FuIHJlZmVyIHRvIHZhcmlvdXMgcGxhY2VzLCBvcmdhbml6YXRpb25zLCBhbmQgZXZlbiBhIGdlbmUgaW4gbW9sZWN1bGFyIGJpb2xvZ3kuXCIsXG4gIFwicmVhc29uaW5nXCI6IFwiVGhlIHF1ZXN0aW9uIFxcXCJob2xhXFxcIiBpcyBhIGdyZWV0aW5nIGluIFNwYW5pc2gsIHdoaWNoIGRpcmVjdGx5IHRyYW5zbGF0ZXMgdG8gXFxcIkhlbGxvIVxcXCIgaW4gRW5nbGlzaC4gVGhlIGNvbnRleHQgcHJvdmlkZWQgaW5jbHVkZXMgdmFyaW91cyBtZWFuaW5ncyBhbmQgcmVmZXJlbmNlcyBhc3NvY2lhdGVkIHdpdGggdGhlIHRlcm0gXFxcIkhvbGFcXFwiLiBJIGZpcnN0IGlkZW50aWZpZWQgdGhlIHByaW1hcnkgbWVhbmluZyBhcyBhIGdyZWV0aW5nLCB0aGVuIG5vdGVkIGl0cyBzaWduaWZpY2FuY2UgYXMgYSBtYWdhemluZSwgYW5kIGZpbmFsbHkgbWVudGlvbmVkIG90aGVyIGNvbnRleHRzIHN1Y2ggYXMgZ2VvZ3JhcGhpY2FsIGxvY2F0aW9ucyBhbmQgb3JnYW5pemF0aW9ucy4gVGhpcyBjb21wcmVoZW5zaXZlIGFwcHJvYWNoIGVuc3VyZXMgdGhhdCB0aGUgcmVzcG9uc2UgaXMgaW5mb3JtYXRpdmUgYW5kIHJlbGV2YW50IHRvIHRoZSBxdWVzdGlvbiBhc2tlZC5cIlxufVxuYGBgIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImxvZ3Byb2JzIjogbnVsbCwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogMTI5MiwKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDE2MSwKICAgICJ0b3RhbF90b2tlbnMiOiAxNDUzLAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfMzRhNTRhZTkzYyIKfQo=
+  recorded_at: Sat, 05 Jul 2025 07:14:25 GMT
 recorded_with: VCR 6.3.1

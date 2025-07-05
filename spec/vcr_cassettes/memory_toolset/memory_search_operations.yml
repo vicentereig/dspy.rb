@@ -1,0 +1,1651 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Remember that I work at TechCorp
+        and my role is Senior Developer.\",\n  \"history\": [],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
+        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
+        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '8805'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:35 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1257'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1261'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '198032'
+      X-Ratelimit-Reset-Requests:
+      - 1m5.214s
+      X-Ratelimit-Reset-Tokens:
+      - 590ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314a64c9819cf-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplygdPchxZCZBVSlcz5wzoXb9GTV",
+          "object": "chat.completion",
+          "created": 1751678854,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the information about the user's workplace and role in memory so that it can be retrieved later. The action I will take is to use the 'memory_store' tool to save this information.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"user_work_info\",\n    \"value\": \"TechCorp, Senior Developer\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1749,
+            "completion_tokens": 92,
+            "total_tokens": 1841,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:35 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations. Each entry is a hash representing a step
+        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"Remember that I work at TechCorp and my role is Senior Developer.\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to store the information
+        about the user''s workplace and role in memory so that it can be retrieved
+        later. The action I will take is to use the ''memory_store'' tool to save
+        this information.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"user_work_info\",\n        \"value\": \"TechCorp, Senior
+        Developer\"\n      },\n      \"observation\": \"Stored memory ''user_work_info''
+        successfully\"\n    }\n  ],\n  \"observation\": \"Stored memory ''user_work_info''
+        successfully\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3938'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:36 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '754'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '757'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9991'
+      X-Ratelimit-Remaining-Tokens:
+      - '199126'
+      X-Ratelimit-Reset-Requests:
+      - 1m12.399s
+      X-Ratelimit-Reset-Tokens:
+      - 262ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314aff8ce19cf-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyhTEi0TSStskAXFBulcsvScjvj",
+          "object": "chat.completion",
+          "created": 1751678855,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The information about the user's workplace and role has been successfully stored in memory.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 808,
+            "completion_tokens": 39,
+            "total_tokens": 847,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:36 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Remember that I work at TechCorp
+        and my role is Senior Developer.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to store the information about the user''s
+        workplace and role in memory so that it can be retrieved later. The action
+        I will take is to use the ''memory_store'' tool to save this information.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"user_work_info\",\n        \"value\":
+        \"TechCorp, Senior Developer\"\n      },\n      \"observation\": \"Stored
+        memory ''user_work_info'' successfully\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
+        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
+        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9299'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:38 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1105'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1108'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9990'
+      X-Ratelimit-Remaining-Tokens:
+      - '197917'
+      X-Ratelimit-Reset-Requests:
+      - 1m19.237s
+      X-Ratelimit-Reset-Tokens:
+      - 624ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314b5eb3d19cf-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyjIdsOr7c4Wch2yVxQujAfKjgk",
+          "object": "chat.completion",
+          "created": 1751678857,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have successfully stored the user's workplace and role in memory. Now, I should consider retrieving this information to confirm it has been stored correctly or to use it for future interactions. The action I will take is to use the 'memory_retrieve' tool to get the stored information.\",\n  \"action\": \"memory_retrieve\",\n  \"action_input\": {\n    \"key\": \"user_work_info\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1859,
+            "completion_tokens": 97,
+            "total_tokens": 1956,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:38 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations. Each entry is a hash representing a step
+        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"Remember that I work at TechCorp and my role is Senior Developer.\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to store the information
+        about the user''s workplace and role in memory so that it can be retrieved
+        later. The action I will take is to use the ''memory_store'' tool to save
+        this information.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"user_work_info\",\n        \"value\": \"TechCorp, Senior
+        Developer\"\n      },\n      \"observation\": \"Stored memory ''user_work_info''
+        successfully\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"I
+        have successfully stored the user''s workplace and role in memory. Now, I
+        should consider retrieving this information to confirm it has been stored
+        correctly or to use it for future interactions. The action I will take is
+        to use the ''memory_retrieve'' tool to get the stored information.\",\n      \"action\":
+        \"memory_retrieve\",\n      \"action_input\": {\n        \"key\": \"user_work_info\"\n      },\n      \"observation\":
+        \"TechCorp, Senior Developer\"\n    }\n  ],\n  \"observation\": \"TechCorp,
+        Senior Developer\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4438'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:41 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '916'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '925'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9990'
+      X-Ratelimit-Remaining-Tokens:
+      - '199007'
+      X-Ratelimit-Reset-Requests:
+      - 1m25.192s
+      X-Ratelimit-Reset-Tokens:
+      - 297ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314c3485719cf-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplymMiFGk8xWROhMue2AkfmUdZdp",
+          "object": "chat.completion",
+          "created": 1751678860,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation confirms that the information about the user's workplace and role has been retrieved correctly from memory.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 915,
+            "completion_tokens": 43,
+            "total_tokens": 958,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:41 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Remember that I work at TechCorp
+        and my role is Senior Developer.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to store the information about the user''s
+        workplace and role in memory so that it can be retrieved later. The action
+        I will take is to use the ''memory_store'' tool to save this information.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"user_work_info\",\n        \"value\":
+        \"TechCorp, Senior Developer\"\n      },\n      \"observation\": \"Stored
+        memory ''user_work_info'' successfully\"\n    },\n    {\n      \"step\": 2,\n      \"thought\":
+        \"I have successfully stored the user''s workplace and role in memory. Now,
+        I should consider retrieving this information to confirm it has been stored
+        correctly or to use it for future interactions. The action I will take is
+        to use the ''memory_retrieve'' tool to get the stored information.\",\n      \"action\":
+        \"memory_retrieve\",\n      \"action_input\": {\n        \"key\": \"user_work_info\"\n      },\n      \"observation\":
+        \"TechCorp, Senior Developer\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9816'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:42 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1051'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1055'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9989'
+      X-Ratelimit-Remaining-Tokens:
+      - '197796'
+      X-Ratelimit-Reset-Requests:
+      - 1m32.655s
+      X-Ratelimit-Reset-Tokens:
+      - 661ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314d36e8e19cf-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplynvAdzMWNaACs1Bkgsm5brpGIe",
+          "object": "chat.completion",
+          "created": 1751678861,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have successfully retrieved the user's workplace and role from memory, confirming that the information is stored correctly. Since the question is about remembering this information, I can now finish and provide the retrieved observation as the final answer.\",\n  \"action\": \"finish\",\n  \"action_input\": \"TechCorp, Senior Developer\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1969,
+            "completion_tokens": 77,
+            "total_tokens": 2046,
+            "prompt_tokens_details": {
+              "cached_tokens": 1024,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:42 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Search for anything you remember
+        about my work or job.\",\n  \"history\": [],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"memory_store\",\n      \"description\": \"Store a key-value pair in memory
+        with optional tags\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          },\n          \"value\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter value\"\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"description\": \"Parameter
+        tags (optional)\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '8794'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:43 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1020'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1023'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9988'
+      X-Ratelimit-Remaining-Tokens:
+      - '198035'
+      X-Ratelimit-Reset-Requests:
+      - 1m40.046s
+      X-Ratelimit-Reset-Tokens:
+      - 589ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314db197319cf-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bplyo4862NLvSwVi0tfQEyXM4VgRG",
+          "object": "chat.completion",
+          "created": 1751678862,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no history to refer to, I should use the memory_search tool to look for any memories related to the user's work or job. This will help me gather relevant information to answer the question.\",\n  \"action\": \"memory_search\",\n  \"action_input\": {\n    \"pattern\": \"work\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1746,
+            "completion_tokens": 79,
+            "total_tokens": 1825,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:43 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations. Each entry is a hash representing a step
+        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"Search for anything you remember about my work or job.\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"Since there is no history
+        to refer to, I should use the memory_search tool to look for any memories
+        related to the user''s work or job. This will help me gather relevant information
+        to answer the question.\",\n      \"action\": \"memory_search\",\n      \"action_input\":
+        {\n        \"pattern\": \"work\"\n      },\n      \"observation\": \"[{:key=>\\\"user_work_info\\\",
+        :value=>\\\"TechCorp, Senior Developer\\\"}]\"\n    }\n  ],\n  \"observation\":
+        \"[{:key=>\\\"user_work_info\\\", :value=>\\\"TechCorp, Senior Developer\\\"}]\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3945'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:44 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '785'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '787'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9987'
+      X-Ratelimit-Remaining-Tokens:
+      - '199126'
+      X-Ratelimit-Reset-Requests:
+      - 1m47.48s
+      X-Ratelimit-Reset-Tokens:
+      - 261ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314e2cca119cf-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bplypa7Eybui8DFJGzArHFh6C1c96",
+          "object": "chat.completion",
+          "created": 1751678863,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the user works at TechCorp as a Senior Developer. This information is relevant to the user's job-related inquiries.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 814,
+            "completion_tokens": 50,
+            "total_tokens": 864,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:44 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Search for anything you remember
+        about my work or job.\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"Since there is no history to refer to, I should use the memory_search tool
+        to look for any memories related to the user''s work or job. This will help
+        me gather relevant information to answer the question.\",\n      \"action\":
+        \"memory_search\",\n      \"action_input\": {\n        \"pattern\": \"work\"\n      },\n      \"observation\":
+        \"[{:key=>\\\"user_work_info\\\", :value=>\\\"TechCorp, Senior Developer\\\"}]\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
+        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
+        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9273'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:45 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1020'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1022'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9986'
+      X-Ratelimit-Remaining-Tokens:
+      - '197925'
+      X-Ratelimit-Reset-Requests:
+      - 1m55.128s
+      X-Ratelimit-Reset-Tokens:
+      - 622ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314e8ceeb19cf-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyqavwjI1x0FPVgdj3v4PD3vyoX",
+          "object": "chat.completion",
+          "created": 1751678864,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have retrieved information about the user's work, which is 'TechCorp, Senior Developer'. Since this is relevant to the question, I can now finish and provide this information as the answer.\",\n  \"action\": \"finish\",\n  \"action_input\": \"TechCorp, Senior Developer\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1854,
+            "completion_tokens": 72,
+            "total_tokens": 1926,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:45 GMT
+recorded_with: VCR 6.3.1

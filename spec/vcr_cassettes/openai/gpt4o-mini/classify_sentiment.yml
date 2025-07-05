@@ -5,36 +5,60 @@ http_interactions:
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"developer","content":"      Your
-        input schema fields are:\n        ```json\n         {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentence\":{\"type\":\"string\"}},\"required\":[\"sentence\"]}\n        ```\n      Your
-        output schema fields are:\n        ```json\n          {\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"sentiment\":{\"type\":\"string\",\"enum\":[\"positive\",\"negative\",\"neutral\"]},\"confidence\":{\"type\":\"number\"}},\"required\":[\"sentiment\",\"confidence\"]}\n        ````\n      \n      All
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"sentence\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"sentence\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"sentiment\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"positive\",\n        \"negative\",\n        \"neutral\"\n      ]\n    },\n    \"confidence\":
+        {\n      \"type\": \"number\"\n    }\n  },\n  \"required\": [\n    \"sentiment\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
-        values filled in.\n\n      ## Input values\n        ```json\n         {input_values}\n        ```  \n      ##
-        Output values\n      Respond exclusively with the output schema fields in
-        the json block below.\n        ```json\n          {output_values}\n        ```\n      \n      In
-        adhering to this structure, your objective is: Classify sentiment of a given
-        sentence.\n\n"},{"role":"user","content":"        ## Input Values\n        ```json\n        {\"sentence\":\"This
-        book was super fun to read, though not the last chapter.\"}\n        ```     \n        \n        Respond
-        with the corresponding output schema fields wrapped in a ```json ``` block,
-        \n         starting with the heading `## Output values`.\n"}],"temperature":0.7,"stream":false}'
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Classify sentiment of a given sentence."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"sentence\": \"This book was super fun to read,
+        though not the last chapter.\"\n}\n```\n\nRespond with the corresponding output
+        schema fields wrapped in a ```json ``` block,\nstarting with the heading `##
+        Output values`."}],"temperature":0.0}'
     headers:
-      User-Agent:
-      - Faraday v2.12.2
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      Content-Type:
-      - application/json
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
-      - "*/*"
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1432'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 21 Jun 2025 19:30:31 GMT
+      - Sat, 05 Jul 2025 01:29:45 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -44,59 +68,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '347'
+      - '477'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '350'
+      - '485'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9995'
+      - '9940'
       X-Ratelimit-Remaining-Tokens:
-      - '199682'
+      - '199697'
       X-Ratelimit-Reset-Requests:
-      - 41.513s
+      - 8m33.11s
       X-Ratelimit-Reset-Tokens:
-      - 95ms
+      - 90ms
       X-Request-Id:
-      - req_499bbb51213a13d63fb7ac3085cc18bb
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=5GMKhrw05kmXv2f07rg8S.XHM6dJwuOKkq_juMazUzA-1750534231-1.0.1.1-apP2SmCKsIp9.1.wbh_6PoSyagqqDZxnzM0KZYHnAqymlsHb0AWjJmTpmtSqHGmO1ercGkwdB052AyntQ0t6UhG2Y2HHFgThN2S62JRuwVA;
-        path=/; expires=Sat, 21-Jun-25 20:00:31 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=rMs4knhsEz8j63f2CC.Me9C2xWDjYay7DtNMRtLUoik-1750534231939-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 9535ebc1cddd569d-OSL
+      - 95a317d98b457c93-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BkyD1c51o3lYaPd1wDKSNKE0lRCKb",
+          "id": "chatcmpl-Bpm0nZ057aIjhvm6Ac8oqSbsPXL85",
           "object": "chat.completion",
-          "created": 1750534231,
+          "created": 1751678985,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\"sentiment\":\"positive\",\"confidence\":0.85}\n```",
+                "content": "## Output values\n```json\n{\n  \"sentiment\": \"positive\",\n  \"confidence\": 0.85\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -105,9 +126,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 270,
-            "completion_tokens": 20,
-            "total_tokens": 290,
+            "prompt_tokens": 316,
+            "completion_tokens": 27,
+            "total_tokens": 343,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -122,5 +143,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 21 Jun 2025 19:30:32 GMT
+  recorded_at: Sat, 05 Jul 2025 01:29:45 GMT
 recorded_with: VCR 6.3.1

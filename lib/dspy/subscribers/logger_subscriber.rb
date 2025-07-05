@@ -52,6 +52,18 @@ module DSPy
           log_react_tool_call(event)
         end
 
+        DSPy::Instrumentation.subscribe('dspy.codeact') do |event|
+          log_codeact(event)
+        end
+
+        DSPy::Instrumentation.subscribe('dspy.codeact.iteration_complete') do |event|
+          log_codeact_iteration_complete(event)
+        end
+
+        DSPy::Instrumentation.subscribe('dspy.codeact.code_execution') do |event|
+          log_codeact_code_execution(event)
+        end
+
         # Subscribe to optimization events
         DSPy::Instrumentation.subscribe('dspy.optimization.start') do |event|
           log_optimization_start(event)
@@ -236,7 +248,7 @@ module DSPy
           "status=#{status}",
           "duration_ms=#{duration}"
         ]
-        log_parts << "thought=\"#{thought&.truncate(100)}\"" if thought
+        log_parts << "thought=\"#{thought && thought.length > 100 ? thought[0..97] + '...' : thought}\"" if thought
         log_parts << "action=\"#{action}\"" if action
         log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
 
@@ -258,6 +270,84 @@ module DSPy
           "status=#{status}",
           "duration_ms=#{duration}"
         ]
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
+      end
+
+      sig { params(event: T.untyped).void }
+      def log_codeact(event)
+        payload = event.payload
+        signature = payload[:signature_class]
+        duration = payload[:duration_ms]&.round(2)
+        status = payload[:status]
+        iteration_count = payload[:iteration_count]
+        code_executions = payload[:code_executions]
+        final_answer = payload[:final_answer]
+        timestamp = format_timestamp(payload)
+
+        log_parts = [
+          "event=codeact",
+          timestamp,
+          "signature=#{signature}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ].compact
+        log_parts << "iterations=#{iteration_count}" if iteration_count
+        log_parts << "code_executions=#{code_executions}" if code_executions
+        log_parts << "final_answer=\"#{final_answer&.truncate(100)}\"" if final_answer
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
+      end
+
+      sig { params(event: T.untyped).void }
+      def log_codeact_iteration_complete(event)
+        payload = event.payload
+        iteration = payload[:iteration]
+        thought = payload[:thought]
+        ruby_code = payload[:ruby_code]
+        observation = payload[:observation]
+        duration = payload[:duration_ms]&.round(2)
+        status = payload[:status]
+        timestamp = format_timestamp(payload)
+
+        log_parts = [
+          "event=codeact_iteration",
+          timestamp,
+          "iteration=#{iteration}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ].compact
+        log_parts << "thought=\"#{thought && thought.length > 100 ? thought[0..97] + '...' : thought}\"" if thought
+        log_parts << "code=\"#{ruby_code && ruby_code.length > 100 ? ruby_code[0..97] + '...' : ruby_code}\"" if ruby_code
+        log_parts << "observation=\"#{observation && observation.length > 100 ? observation[0..97] + '...' : observation}\"" if observation
+        log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
+
+        logger.info(log_parts.join(' '))
+      end
+
+      sig { params(event: T.untyped).void }
+      def log_codeact_code_execution(event)
+        payload = event.payload
+        iteration = payload[:iteration]
+        ruby_code = payload[:ruby_code]
+        execution_result = payload[:execution_result]
+        execution_error = payload[:execution_error]
+        duration = payload[:duration_ms]&.round(2)
+        status = payload[:status]
+        timestamp = format_timestamp(payload)
+
+        log_parts = [
+          "event=code_execution",
+          timestamp,
+          "iteration=#{iteration}",
+          "status=#{status}",
+          "duration_ms=#{duration}"
+        ].compact
+        log_parts << "code=\"#{ruby_code && ruby_code.length > 50 ? ruby_code[0..47] + '...' : ruby_code}\"" if ruby_code
+        log_parts << "result=\"#{execution_result && execution_result.length > 100 ? execution_result[0..97] + '...' : execution_result}\"" if execution_result
+        log_parts << "execution_error=\"#{execution_error}\"" if execution_error
         log_parts << "error=\"#{payload[:error_message]}\"" if status == 'error' && payload[:error_message]
 
         logger.info(log_parts.join(' '))

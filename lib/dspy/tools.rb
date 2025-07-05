@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'tools/base'
+require_relative 'tools/toolset'
 
 module DSPy
   # Define the tools available to the agent

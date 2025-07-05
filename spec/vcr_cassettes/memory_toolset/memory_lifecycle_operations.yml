@@ -1,0 +1,2261 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Remember that my hometown is Seattle.\",\n  \"history\":
+        [],\n  \"available_tools\": [\n    {\n      \"name\": \"memory_store\",\n      \"description\":
+        \"Store a key-value pair in memory with optional tags\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          },\n          \"value\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter value\"\n          },\n          \"tags\": {\n            \"type\":
+        \"array\",\n            \"description\": \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '8777'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:47 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '971'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '978'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9985'
+      X-Ratelimit-Remaining-Tokens:
+      - '198038'
+      X-Ratelimit-Reset-Requests:
+      - 2m2.174s
+      X-Ratelimit-Reset-Tokens:
+      - 588ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314f2c86741bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplysrRJuPm2BYWA4bEYIvNj1yK3L",
+          "object": "chat.completion",
+          "created": 1751678866,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to store the information that the user's hometown is Seattle in memory. This will allow me to recall it later if needed.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"hometown\",\n    \"value\": \"Seattle\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1742,
+            "completion_tokens": 72,
+            "total_tokens": 1814,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:47 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations. Each entry is a hash representing a step
+        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"Remember that my hometown is Seattle.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to store the information that the user''s
+        hometown is Seattle in memory. This will allow me to recall it later if needed.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"hometown\",\n        \"value\":
+        \"Seattle\"\n      },\n      \"observation\": \"Stored memory ''hometown''
+        successfully\"\n    }\n  ],\n  \"observation\": \"Stored memory ''hometown''
+        successfully\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3805'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:48 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '843'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '846'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9985'
+      X-Ratelimit-Remaining-Tokens:
+      - '199158'
+      X-Ratelimit-Reset-Requests:
+      - 2m9.566s
+      X-Ratelimit-Reset-Tokens:
+      - 252ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a314facead41bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bplytp7idIqnVNT8aKUBr9dTKHnTg",
+          "object": "chat.completion",
+          "created": 1751678867,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation confirms that the information about the user's hometown has been successfully stored in memory.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 779,
+            "completion_tokens": 41,
+            "total_tokens": 820,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:48 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Remember that my hometown is Seattle.\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to store the information
+        that the user''s hometown is Seattle in memory. This will allow me to recall
+        it later if needed.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"hometown\",\n        \"value\": \"Seattle\"\n      },\n      \"observation\":
+        \"Stored memory ''hometown'' successfully\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
+        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
+        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9172'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:49 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '720'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '724'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9984'
+      X-Ratelimit-Remaining-Tokens:
+      - '197948'
+      X-Ratelimit-Reset-Requests:
+      - 2m17.143s
+      X-Ratelimit-Reset-Tokens:
+      - 615ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a315014bc241bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyueO6av4BvGS092VIoj4YW9NED",
+          "object": "chat.completion",
+          "created": 1751678868,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have successfully stored the user's hometown as Seattle in memory. Since the question is a statement rather than a request for information or action, I can finish my response here.\",\n  \"action\": \"finish\",\n  \"action_input\": \"The user's hometown is Seattle.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1831,
+            "completion_tokens": 68,
+            "total_tokens": 1899,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:49 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Actually, update my hometown to
+        Portland instead of Seattle.\",\n  \"history\": [],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
+        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
+        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '8800'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:50 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1134'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1137'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9983'
+      X-Ratelimit-Remaining-Tokens:
+      - '198033'
+      X-Ratelimit-Reset-Requests:
+      - 2m24.733s
+      X-Ratelimit-Reset-Tokens:
+      - 589ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a31507d8d841bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyvuQNTPnM0zGRYFOKcI9PvwrSx",
+          "object": "chat.completion",
+          "created": 1751678869,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to update the user's hometown from Seattle to Portland. Since there is no history of previous actions, I will use the 'memory_update' tool to change the value associated with the key for the hometown.\",\n  \"action\": \"memory_update\",\n  \"action_input\": {\n    \"key\": \"hometown\",\n    \"value\": \"Portland\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1746,
+            "completion_tokens": 89,
+            "total_tokens": 1835,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:50 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations. Each entry is a hash representing a step
+        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"Actually, update my hometown to Portland instead of Seattle.\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to update the user''s
+        hometown from Seattle to Portland. Since there is no history of previous actions,
+        I will use the ''memory_update'' tool to change the value associated with
+        the key for the hometown.\",\n      \"action\": \"memory_update\",\n      \"action_input\":
+        {\n        \"key\": \"hometown\",\n        \"value\": \"Portland\"\n      },\n      \"observation\":
+        \"Updated memory ''hometown'' successfully\"\n    }\n  ],\n  \"observation\":
+        \"Updated memory ''hometown'' successfully\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3912'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:51 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '697'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '700'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9982'
+      X-Ratelimit-Remaining-Tokens:
+      - '199132'
+      X-Ratelimit-Reset-Requests:
+      - 2m32.038s
+      X-Ratelimit-Reset-Tokens:
+      - 260ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a31510187941bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyxPk8d25JMstj7xtGvpFM13kic",
+          "object": "chat.completion",
+          "created": 1751678871,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The user's hometown has been successfully updated to Portland.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 800,
+            "completion_tokens": 34,
+            "total_tokens": 834,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:51 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"Actually, update my hometown to
+        Portland instead of Seattle.\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"I need to update the user''s hometown from Seattle
+        to Portland. Since there is no history of previous actions, I will use the
+        ''memory_update'' tool to change the value associated with the key for the
+        hometown.\",\n      \"action\": \"memory_update\",\n      \"action_input\":
+        {\n        \"key\": \"hometown\",\n        \"value\": \"Portland\"\n      },\n      \"observation\":
+        \"Updated memory ''hometown'' successfully\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
+        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
+        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9278'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:53 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1000'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1004'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9981'
+      X-Ratelimit-Remaining-Tokens:
+      - '197922'
+      X-Ratelimit-Reset-Requests:
+      - 2m39.808s
+      X-Ratelimit-Reset-Tokens:
+      - 623ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a31515bd8241bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyytVvz2UyFtEN9iRG258Aad0Uf",
+          "object": "chat.completion",
+          "created": 1751678872,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"The user's hometown has already been updated to Portland successfully. Since the action was completed and confirmed with an observation, I can finish the task now.\",\n  \"action\": \"finish\",\n  \"action_input\": \"Updated memory 'hometown' successfully\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1852,
+            "completion_tokens": 65,
+            "total_tokens": 1917,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:52 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"What is my hometown?\",\n  \"history\":
+        [],\n  \"available_tools\": [\n    {\n      \"name\": \"memory_store\",\n      \"description\":
+        \"Store a key-value pair in memory with optional tags\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          },\n          \"value\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter value\"\n          },\n          \"tags\": {\n            \"type\":
+        \"array\",\n            \"description\": \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '8760'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:54 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1364'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1368'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9980'
+      X-Ratelimit-Remaining-Tokens:
+      - '198043'
+      X-Ratelimit-Reset-Requests:
+      - 2m47.185s
+      X-Ratelimit-Reset-Tokens:
+      - 586ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a3151d7bfc41bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-BplyzHfrtvdv2sbpnEOsgmQ3nRtjb",
+          "object": "chat.completion",
+          "created": 1751678873,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to determine what my hometown is. Since there is no history available, I should store this information in memory for future reference. I will use the 'memory_store' tool to save my hometown once I know it.\",\n  \"action\": \"memory_store\",\n  \"action_input\": {\n    \"key\": \"hometown\",\n    \"value\": \"unknown\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1740,
+            "completion_tokens": 91,
+            "total_tokens": 1831,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:54 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations. Each entry is a hash representing a step
+        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is my hometown?\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"I need to determine what my hometown is. Since there is no history available,
+        I should store this information in memory for future reference. I will use
+        the ''memory_store'' tool to save my hometown once I know it.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"hometown\",\n        \"value\":
+        \"unknown\"\n      },\n      \"observation\": \"Stored memory ''hometown''
+        successfully\"\n    }\n  ],\n  \"observation\": \"Stored memory ''hometown''
+        successfully\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3873'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:55 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '885'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '888'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9979'
+      X-Ratelimit-Remaining-Tokens:
+      - '199142'
+      X-Ratelimit-Reset-Requests:
+      - 2m54.278s
+      X-Ratelimit-Reset-Tokens:
+      - 257ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a315274cd041bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bplz0ztRSX539ANS50lHYcxAyhNrc",
+          "object": "chat.completion",
+          "created": 1751678874,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The memory for 'hometown' has been successfully stored, indicating that the system is ready to receive the actual hometown information in the future.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 796,
+            "completion_tokens": 52,
+            "total_tokens": 848,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:55 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"What is my hometown?\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to determine what
+        my hometown is. Since there is no history available, I should store this information
+        in memory for future reference. I will use the ''memory_store'' tool to save
+        my hometown once I know it.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"hometown\",\n        \"value\": \"unknown\"\n      },\n      \"observation\":
+        \"Stored memory ''hometown'' successfully\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
+        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
+        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9240'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:57 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1147'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1149'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9978'
+      X-Ratelimit-Remaining-Tokens:
+      - '197932'
+      X-Ratelimit-Reset-Requests:
+      - 3m1.848s
+      X-Ratelimit-Reset-Tokens:
+      - 620ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a3152dea3c41bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bplz1qwN8Lp4QeHaAiAyRx9V4HNFn",
+          "object": "chat.completion",
+          "created": 1751678875,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question about my hometown, I need to retrieve the stored memory value associated with the key 'hometown'. Since I previously stored it as 'unknown', I will use the 'memory_retrieve' tool to get the current value of my hometown.\",\n  \"action\": \"memory_retrieve\",\n  \"action_input\": {\n    \"key\": \"hometown\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1848,
+            "completion_tokens": 92,
+            "total_tokens": 1940,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:56 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations. Each entry is a hash representing a step
+        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is my hometown?\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"I need to determine what my hometown is. Since there is no history available,
+        I should store this information in memory for future reference. I will use
+        the ''memory_store'' tool to save my hometown once I know it.\",\n      \"action\":
+        \"memory_store\",\n      \"action_input\": {\n        \"key\": \"hometown\",\n        \"value\":
+        \"unknown\"\n      },\n      \"observation\": \"Stored memory ''hometown''
+        successfully\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"To
+        answer the question about my hometown, I need to retrieve the stored memory
+        value associated with the key ''hometown''. Since I previously stored it as
+        ''unknown'', I will use the ''memory_retrieve'' tool to get the current value
+        of my hometown.\",\n      \"action\": \"memory_retrieve\",\n      \"action_input\":
+        {\n        \"key\": \"hometown\"\n      },\n      \"observation\": \"unknown\"\n    }\n  ],\n  \"observation\":
+        \"unknown\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4290'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:57 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '785'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '788'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9978'
+      X-Ratelimit-Remaining-Tokens:
+      - '199045'
+      X-Ratelimit-Reset-Requests:
+      - 3m9.17s
+      X-Ratelimit-Reset-Tokens:
+      - 286ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a3153628ae41bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bplz3fk8SFTp9p0dJgXrK3pPdhp7A",
+          "object": "chat.completion",
+          "created": 1751678877,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the hometown is still marked as 'unknown', suggesting that I have not yet determined what my hometown is.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 891,
+            "completion_tokens": 49,
+            "total_tokens": 940,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:57 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
+        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
+        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
+        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools. The agent MUST use
+        information from the history to inform its actions and final answer. Each
+        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
+        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
+        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
+        \"Array of available tools with their JSON schemas. The agent MUST choose
+        an action from the tool names in this list or use \\\"finish\\\". For each
+        tool, use the name exactly as specified and provide action_input as a JSON
+        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
+        MUST be one of the tool names listed in `available_tools` input, or the literal
+        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final answer to the original question. This answer MUST be
+        directly taken from the relevant Observation in the history if available.
+        For example, if an observation showed \\\"Observation: 100.0\\\", and you
+        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
+        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"What is my hometown?\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to determine what
+        my hometown is. Since there is no history available, I should store this information
+        in memory for future reference. I will use the ''memory_store'' tool to save
+        my hometown once I know it.\",\n      \"action\": \"memory_store\",\n      \"action_input\":
+        {\n        \"key\": \"hometown\",\n        \"value\": \"unknown\"\n      },\n      \"observation\":
+        \"Stored memory ''hometown'' successfully\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"To answer the question about my hometown, I need
+        to retrieve the stored memory value associated with the key ''hometown''.
+        Since I previously stored it as ''unknown'', I will use the ''memory_retrieve''
+        tool to get the current value of my hometown.\",\n      \"action\": \"memory_retrieve\",\n      \"action_input\":
+        {\n        \"key\": \"hometown\"\n      },\n      \"observation\": \"unknown\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"memory_store\",\n      \"description\": \"Store
+        a key-value pair in memory with optional tags\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          },\n          \"tags\": {\n            \"type\": \"array\",\n            \"description\":
+        \"Parameter tags (optional)\"\n          }\n        },\n        \"required\":
+        [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_retrieve\",\n      \"description\": \"Retrieve a value by key from
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_search\",\n      \"description\": \"Search memories by pattern in
+        keys and/or values\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter pattern\"\n          },\n          \"in_keys\": {\n            \"type\":
+        \"boolean\",\n            \"description\": \"Parameter in_keys (optional)\"\n          },\n          \"in_values\":
+        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
+        in_values (optional)\"\n          }\n        },\n        \"required\": [\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_list\",\n      \"description\": \"List all stored memory keys\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_update\",\n      \"description\":
+        \"Update an existing memory value\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"key\": {\n            \"type\":
+        \"string\",\n            \"description\": \"Parameter key\"\n          },\n          \"value\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        value\"\n          }\n        },\n        \"required\": [\n          \"key\",\n          \"value\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_delete\",\n      \"description\": \"Delete a memory by key\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"key\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
+        key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        \"memory_clear\",\n      \"description\": \"Clear all stored memories\",\n      \"parameters\":
+        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
+        []\n      }\n    },\n    {\n      \"name\": \"memory_count\",\n      \"description\":
+        \"Get the count of stored memories\",\n      \"parameters\": {\n        \"type\":
+        \"object\",\n        \"properties\": {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\":
+        \"memory_get_metadata\",\n      \"description\": \"Get metadata for a specific
+        memory\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"key\": {\n            \"type\": \"string\",\n            \"description\":
+        \"Parameter key\"\n          }\n        },\n        \"required\": [\n          \"key\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.9.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9687'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 05 Jul 2025 01:27:59 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1796'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1798'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9977'
+      X-Ratelimit-Remaining-Tokens:
+      - '197828'
+      X-Ratelimit-Reset-Requests:
+      - 3m16.844s
+      X-Ratelimit-Reset-Tokens:
+      - 651ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95a3153c4de741bb-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bplz43Sdx3EYoro0Q8WC6rmrrO5WR",
+          "object": "chat.completion",
+          "created": 1751678878,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have retrieved the value of my hometown, which is currently 'unknown'. To provide a meaningful answer, I need to update this memory with the correct value once I know it. Since I cannot answer the question with the current information, I will use the 'finish' action to indicate that I cannot provide an answer at this time.\",\n  \"action\": \"finish\",\n  \"action_input\": \"I cannot determine your hometown at this time.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1949,
+            "completion_tokens": 104,
+            "total_tokens": 2053,
+            "prompt_tokens_details": {
+              "cached_tokens": 1024,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
+        }
+  recorded_at: Sat, 05 Jul 2025 01:27:59 GMT
+recorded_with: VCR 6.3.1

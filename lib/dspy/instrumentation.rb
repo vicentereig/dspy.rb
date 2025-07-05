@@ -47,6 +47,13 @@ module DSPy
         n.register_event('dspy.react.iteration_complete')
         n.register_event('dspy.react.max_iterations')
         
+        # CodeAct events
+        n.register_event('dspy.codeact')
+        n.register_event('dspy.codeact.iteration')
+        n.register_event('dspy.codeact.code_execution')
+        n.register_event('dspy.codeact.iteration_complete')
+        n.register_event('dspy.codeact.max_iterations')
+        
         # Evaluation events
         n.register_event('dspy.evaluation.start')
         n.register_event('dspy.evaluation.example')
@@ -79,6 +86,14 @@ module DSPy
         n.register_event('dspy.storage.export')
         n.register_event('dspy.storage.import')
         n.register_event('dspy.storage.cleanup')
+        
+        # Memory compaction events
+        n.register_event('dspy.memory.compaction_check')
+        n.register_event('dspy.memory.size_compaction')
+        n.register_event('dspy.memory.age_compaction')
+        n.register_event('dspy.memory.deduplication')
+        n.register_event('dspy.memory.relevance_pruning')
+        n.register_event('dspy.memory.compaction_complete')
         
         # Registry events
         n.register_event('dspy.registry.register_start')

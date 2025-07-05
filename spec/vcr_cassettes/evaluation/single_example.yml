@@ -58,7 +58,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 30 Jun 2025 21:54:53 GMT
+      - Sat, 05 Jul 2025 07:18:56 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -68,59 +68,56 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1517'
+      - '1185'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1520'
+      - '1187'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9996'
       X-Ratelimit-Remaining-Tokens:
-      - '199692'
+      - '199691'
       X-Ratelimit-Reset-Requests:
-      - 15.933s
+      - 29.994s
       X-Ratelimit-Reset-Tokens:
       - 92ms
       X-Request-Id:
-      - req_bc204485e90bcfd593b2bccbffe03f7e
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=fZzEv1WFz6hBvo0i9KqtkiNHsmxwhsY74D.6QBhY2Yc-1751320493-1.0.1.1-7W_3ejpprQkp57GIMkN1dTH4XmYNqPscUIGcmJ3b.m3q5xXtlTlx.e_wEvX6cmT0J2Dzr_.t.neLuyKCM7j6OEVryAKfGC_OaH80sqHEShM;
-        path=/; expires=Mon, 30-Jun-25 22:24:53 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=UKv8iMg3ecDe8XzLd98d4WbGVMp81g76ytkN.wWc_aA-1751320493613-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 9580e7911a29cfce-MAD
+      - 95a517559a2142be-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BoGkeTAdrFLygRls3C8FqvyA9Z4ee",
+          "id": "chatcmpl-BprShjdybME0SUelPGLf8fXuHr1rL",
           "object": "chat.completion",
-          "created": 1751320492,
+          "created": 1751699935,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": \"20\",\n  \"reasoning\": \"To solve the problem 12 + 8, we start with the number 12. We then add 8 to it. This can be visualized as counting up from 12: 13 (1), 14 (2), 15 (3), 16 (4), 17 (5), 18 (6), 19 (7), and finally 20 (8). Therefore, 12 + 8 equals 20.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"20\",\n  \"reasoning\": \"To solve the problem 12 + 8, we start with the number 12. We then add 8 to it. When we add 8 to 12, we can break it down as follows: 12 + 8 = 20. Therefore, the answer is 20.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -130,8 +127,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 322,
-            "completion_tokens": 114,
-            "total_tokens": 436,
+            "completion_tokens": 83,
+            "total_tokens": 405,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -146,5 +143,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Mon, 30 Jun 2025 21:54:53 GMT
+  recorded_at: Sat, 05 Jul 2025 07:18:56 GMT
 recorded_with: VCR 6.3.1

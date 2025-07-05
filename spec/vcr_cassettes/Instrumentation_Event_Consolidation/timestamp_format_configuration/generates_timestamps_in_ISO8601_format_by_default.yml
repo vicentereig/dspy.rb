@@ -57,7 +57,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 04 Jul 2025 18:05:14 GMT
+      - Sat, 05 Jul 2025 07:19:05 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -67,52 +67,49 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - user-ftp1nrq85er9xnlu0la8snte
+      - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '437'
+      - '1049'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '445'
+      - '1052'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9992'
       X-Ratelimit-Remaining-Tokens:
       - '199722'
       X-Ratelimit-Reset-Requests:
-      - 20.802s
+      - 1m4.547s
       X-Ratelimit-Reset-Tokens:
       - 83ms
       X-Request-Id:
-      - req_7dd39124d9a6b9cc5039b57bc46c962e
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
-      - __cf_bm=QrtVjgpwNxpVFVNEkXBLtH4l6Ua.PC7wb.qsZGlUcIA-1751652314-1.0.1.1-TzDiN82PYdsgyM1JNLU6URXoz8wiRyeWcND.Dl6duXdJEpxUWZAW5SsLnByPn7aGqTpO_AH.GQf_b41Q36CzqHgsz5omQQaOdJ2hYZ.8Gi8;
-        path=/; expires=Fri, 04-Jul-25 18:35:14 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=_e_Be3dXm9flf74IN59MqFjKlC_PLetmixlLjA90X2I-1751652314903-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a08cab9da9fbfb-EWR
+      - 95a5178b8b9b4265-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bpf4cHU2krnYHpRX4cfz9o4VnKZIw",
+          "id": "chatcmpl-BprSqQcSnRZMO6BlPuONLeG9u15JZ",
           "object": "chat.completion",
-          "created": 1751652314,
+          "created": 1751699944,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -145,5 +142,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Fri, 04 Jul 2025 18:05:14 GMT
+  recorded_at: Sat, 05 Jul 2025 07:19:05 GMT
 recorded_with: VCR 6.3.1

@@ -15,6 +15,7 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **Predict** - Basic LLM completion with structured data
 - **Chain of Thought** - Step-by-step reasoning for complex problems
 - **ReAct** - Tool-using agents with basic tool integration
+- **CodeAct** - Dynamic code execution agents for programming tasks
 - **Manual Composition** - Combine multiple LLM calls into workflows
 
 **Optimization & Evaluation:**
