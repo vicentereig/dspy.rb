@@ -16,7 +16,7 @@ class MemoryQA < DSPy::Signature
   end
 end
 
-RSpec.describe 'Memory Toolset Integration with ReAct Agent', type: :integration do
+RSpec.describe 'Memory Toolset Integration with ReAct Agent', type: :integration, skip: "Requires proper VCR cassette recording with valid OpenAI API key" do
   let(:lm) do
     DSPy::LM.new(
       'openai/gpt-4o-mini',
