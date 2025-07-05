@@ -94,6 +94,17 @@ module DSPy
         # Convert Sorbet types to JSON Schema types (extracted from Base)
         sig { params(sorbet_type: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
         def sorbet_type_to_json_schema(sorbet_type)
+          # Check for boolean types first (SimplePairUnion of TrueClass | FalseClass)
+          if sorbet_type.respond_to?(:types) && sorbet_type.types.length == 2
+            raw_types = sorbet_type.types.map do |t|
+              t.is_a?(T::Types::Simple) ? t.raw_type : t
+            end
+            
+            if raw_types.include?(TrueClass) && raw_types.include?(FalseClass)
+              return { type: :boolean }
+            end
+          end
+          
           if sorbet_type.is_a?(T::Types::Simple)
             raw_type = sorbet_type.raw_type
 
