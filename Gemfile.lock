@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    dspy (0.6.2)
+    dspy (0.6.3)
       anthropic (~> 1.1.0)
       async (~> 2.23)
       dry-configurable (~> 1.0)
       dry-logger (~> 1.0)
       dry-monitor (~> 1.0)
       informers (~> 1.2)
-      openai (~> 0.9.0)
+      openai (~> 0.12.0)
       polars-df (~> 0.20.0)
       sorbet-runtime (~> 0.5)
       sorbet-schema (~> 0.3)
@@ -81,7 +81,7 @@ GEM
       ffi
     onnxruntime (0.10.0-arm64-darwin)
       ffi
-    openai (0.9.0)
+    openai (0.12.0)
       connection_pool
     polars-df (0.20.0)
       bigdecimal

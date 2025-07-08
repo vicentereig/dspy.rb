@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "async", "~> 2.23"
 
   # Official LM provider clients
-  spec.add_dependency "openai", "~> 0.9.0"
+  spec.add_dependency "openai", "~> 0.12.0"
   spec.add_dependency "anthropic", "~> 1.1.0"
 
   # Sorbet integration dependencies
