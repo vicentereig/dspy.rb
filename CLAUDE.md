@@ -384,7 +384,9 @@ DSPy.rb follows a modular architecture:
 - Add GH issues to the DSPy.rb 1.0 Project and assign them to me
 
 ## Issue Writing Guidelines
-- When writing issues write the title from the perspective of the user.
+- When writing issue titles and descriptions, adopt the user's perspective
+- Start the description with a succinct explanation of the issue's importance
+- Follow the initial explanation with comprehensive technical details necessary to successfully accomplish the task
 
 ## Development Best Practices
 

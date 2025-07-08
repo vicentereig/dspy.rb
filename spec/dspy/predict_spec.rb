@@ -50,6 +50,26 @@ class NumericSignature < DSPy::Signature
   end
 end
 
+class StructArraySignature < DSPy::Signature
+  description "Process array of structured data"
+
+  class Citation < T::Struct
+    const :title, String
+    const :author, String
+    const :year, Integer
+    const :relevance, Float
+  end
+
+  input do
+    const :query, String
+  end
+
+  output do
+    const :citations, T::Array[Citation]
+    const :total_count, Integer
+  end
+end
+
 RSpec.describe DSPy::Predict do
   before do
     DSPy.configure do |c|
@@ -122,6 +142,34 @@ RSpec.describe DSPy::Predict do
 
     it 'coerces to float' do
       expect(prediction.float_value).to be_a(Float)
+    end
+  end
+
+  describe 'array of T::Struct coercion' do
+    let(:query) { "Find papers about machine learning" }
+    let(:predictor) { DSPy::Predict.new(StructArraySignature) }
+    
+    it 'properly coerces array of hashes to array of T::Struct objects' do
+      VCR.use_cassette('openai/gpt4o-mini/struct_array_coercion') do
+        prediction = predictor.call(query: query)
+        
+        # Check that citations is an array
+        expect(prediction.citations).to be_a(Array)
+        
+        # Check that each citation is a proper Citation struct
+        prediction.citations.each do |citation|
+          expect(citation).to be_a(StructArraySignature::Citation)
+          expect(citation.title).to be_a(String)
+          expect(citation.author).to be_a(String)
+          expect(citation.year).to be_a(Integer)
+          expect(citation.relevance).to be_a(Float)
+          expect(citation.relevance).to be_between(0.0, 1.0)
+        end
+        
+        # Check total count
+        expect(prediction.total_count).to be_a(Integer)
+        expect(prediction.total_count).to eq(prediction.citations.length)
+      end
     end
   end
 

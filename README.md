@@ -113,7 +113,7 @@ puts result.confidence   # => 0.85
 - **[Observability](docs/production/observability.md)** - Multi-platform monitoring and metrics
 
 ### Advanced Usage
-- **[Complex Types](docs/advanced/complex-types.md)** - Basic Sorbet type integration
+- **[Complex Types](docs/advanced/complex-types.md)** - Sorbet type integration with automatic coercion for structs, enums, and arrays
 - **[Manual Pipelines](docs/advanced/pipelines.md)** - Manual module composition patterns
 - **[RAG Patterns](docs/advanced/rag.md)** - Manual RAG implementation with external services
 - **[Custom Metrics](docs/advanced/custom-metrics.md)** - Proc-based evaluation logic

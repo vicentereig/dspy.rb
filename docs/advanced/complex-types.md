@@ -192,6 +192,8 @@ puts result.keywords  # => ["machine learning", "artificial intelligence", ...]
 
 ### Arrays of Structs
 
+DSPy.rb supports arrays of custom T::Struct types with automatic type coercion. When the LLM returns JSON arrays containing hash objects, DSPy.rb automatically converts them to the appropriate T::Struct instances.
+
 ```ruby
 class Product < T::Struct
   const :name, String
@@ -210,6 +212,66 @@ class ExtractProducts < DSPy::Signature
     const :products, T::Array[Product]
     const :total_found, Integer
   end
+end
+
+# Usage
+extractor = DSPy::Predict.new(ExtractProducts)
+result = extractor.call(text: "We have iPhone 15 for $999 and Samsung Galaxy for $799...")
+
+# DSPy automatically converts the JSON response to Product structs
+result.products.each do |product|
+  # Each product is a proper Product struct instance
+  puts "#{product.name} - $#{product.price} (#{product.category})"
+end
+```
+
+#### Complex Struct Arrays
+
+You can also use more complex structs with nested types:
+
+```ruby
+class Citation < T::Struct
+  const :title, String
+  const :author, String
+  const :year, Integer
+  const :relevance, Float
+  const :tags, T::Array[String]
+end
+
+class ResearchSynthesis < DSPy::Signature
+  description "Synthesize research papers on a topic"
+  
+  input do
+    const :query, String
+    const :max_results, Integer
+  end
+  
+  output do
+    const :citations, T::Array[Citation]
+    const :summary, String
+    const :key_findings, T::Array[String]
+  end
+end
+
+# The LLM returns JSON like:
+# {
+#   "citations": [
+#     {"title": "...", "author": "...", "year": 2023, "relevance": 0.95, "tags": ["ML", "NLP"]},
+#     {"title": "...", "author": "...", "year": 2022, "relevance": 0.87, "tags": ["AI"]}
+#   ],
+#   "summary": "...",
+#   "key_findings": ["...", "..."]
+# }
+
+# DSPy automatically converts each citation hash to a Citation struct
+synthesizer = DSPy::Predict.new(ResearchSynthesis)
+result = synthesizer.call(query: "transformer architectures", max_results: 5)
+
+result.citations.each do |citation|
+  # citation is a Citation struct, not a hash
+  puts "#{citation.title} by #{citation.author} (#{citation.year})"
+  puts "Relevance: #{(citation.relevance * 100).round}%"
+  puts "Tags: #{citation.tags.join(', ')}"
 end
 ```
 
