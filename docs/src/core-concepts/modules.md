@@ -33,26 +33,25 @@ DSPy modules enable:
 ### Creating a Custom Module
 
 ```ruby
+class SentimentSignature < DSPy::Signature
+  description "Analyze sentiment of text"
+  
+  input do
+    const :text, String
+  end
+  
+  output do
+    const :sentiment, String
+    const :confidence, Float
+  end
+end
+
 class SentimentAnalyzer < DSPy::Module
   def initialize
     super
     
-    # Define the signature for this module
-    @signature = Class.new(DSPy::Signature) do
-      description "Analyze sentiment of text"
-      
-      input do
-        const :text, String
-      end
-      
-      output do
-        const :sentiment, String
-        const :confidence, Float
-      end
-    end
-    
     # Create the predictor
-    @predictor = DSPy::Predict.new(@signature)
+    @predictor = DSPy::Predict.new(SentimentSignature)
   end
 
   def forward_untyped(text:)
@@ -71,6 +70,19 @@ puts result.confidence   # => 0.9
 ### Module with Language Model Configuration
 
 ```ruby
+class ClassificationSignature < DSPy::Signature
+  description "Classify text into categories"
+  
+  input do
+    const :text, String
+  end
+  
+  output do
+    const :category, String
+    const :reasoning, String
+  end
+end
+
 class ConfigurableClassifier < DSPy::Module
   def initialize(custom_lm: nil)
     super
@@ -82,21 +94,8 @@ class ConfigurableClassifier < DSPy::Module
       end
     end
     
-    @signature = Class.new(DSPy::Signature) do
-      description "Classify text into categories"
-      
-      input do
-        const :text, String
-      end
-      
-      output do
-        const :category, String
-        const :reasoning, String
-      end
-    end
-    
     # Create predictor (will use configured LM)
-    @predictor = DSPy::ChainOfThought.new(@signature)
+    @predictor = DSPy::ChainOfThought.new(ClassificationSignature)
   end
 
   def forward_untyped(text:)
@@ -177,24 +176,24 @@ end
 ### Module Using Chain of Thought
 
 ```ruby
+class ReasoningSignature < DSPy::Signature
+  description "Classify with reasoning"
+  
+  input do
+    const :text, String
+  end
+  
+  output do
+    const :category, String
+    const :reasoning, String
+  end
+end
+
 class ReasoningClassifier < DSPy::Module
   def initialize
     super
     
-    @signature = Class.new(DSPy::Signature) do
-      description "Classify with reasoning"
-      
-      input do
-        const :text, String
-      end
-      
-      output do
-        const :category, String
-        const :reasoning, String
-      end
-    end
-    
-    @predictor = DSPy::ChainOfThought.new(@signature)
+    @predictor = DSPy::ChainOfThought.new(ReasoningSignature)
   end
 
   def forward_untyped(text:)
@@ -206,21 +205,21 @@ end
 ### Module Using ReAct for Tool Integration
 
 ```ruby
+class ResearchSignature < DSPy::Signature
+  description "Research assistant"
+  
+  input do
+    const :query, String
+  end
+  
+  output do
+    const :answer, String
+  end
+end
+
 class ResearchAssistant < DSPy::Module
   def initialize
     super
-    
-    @signature = Class.new(DSPy::Signature) do
-      description "Research assistant"
-      
-      input do
-        const :query, String
-      end
-      
-      output do
-        const :answer, String
-      end
-    end
     
     # Create individual tools
     calculator = DSPy::Tools::CalculatorTool.new
@@ -230,7 +229,7 @@ class ResearchAssistant < DSPy::Module
     
     @tools = [calculator, *memory_tools]
     
-    @predictor = DSPy::ReAct.new(@signature, tools: @tools)
+    @predictor = DSPy::ReAct.new(ResearchSignature, tools: @tools)
   end
 
   def forward_untyped(query:)
@@ -244,24 +243,24 @@ For more details on creating tools and toolsets, see the [Toolsets documentation
 ### Module Using CodeAct for Dynamic Programming
 
 ```ruby
+class DataAnalysisSignature < DSPy::Signature
+  description "Analyze data using Ruby code execution"
+  
+  input do
+    const :dataset_description, String
+    const :analysis_task, String
+  end
+  
+  output do
+    const :analysis_result, String
+  end
+end
+
 class DataAnalyst < DSPy::Module
   def initialize
     super
     
-    @signature = Class.new(DSPy::Signature) do
-      description "Analyze data using Ruby code execution"
-      
-      input do
-        const :dataset_description, String
-        const :analysis_task, String
-      end
-      
-      output do
-        const :analysis_result, String
-      end
-    end
-    
-    @predictor = DSPy::CodeAct.new(@signature, max_iterations: 8)
+    @predictor = DSPy::CodeAct.new(DataAnalysisSignature, max_iterations: 8)
   end
 
   def forward_untyped(dataset_description:, analysis_task:)
@@ -297,6 +296,18 @@ puts result[:execution_steps]
 ### Using Custom Language Model
 
 ```ruby
+class CustomModuleSignature < DSPy::Signature
+  description "Your module description"
+  
+  input do
+    const :text, String
+  end
+  
+  output do
+    const :result, String
+  end
+end
+
 class CustomLMModule < DSPy::Module
   def initialize(custom_lm: nil)
     super
@@ -308,19 +319,7 @@ class CustomLMModule < DSPy::Module
       end
     end
     
-    @signature = Class.new(DSPy::Signature) do
-      description "Your module description"
-      
-      input do
-        const :text, String
-      end
-      
-      output do
-        const :result, String
-      end
-    end
-    
-    @predictor = DSPy::Predict.new(@signature)
+    @predictor = DSPy::Predict.new(CustomModuleSignature)
   end
 
   def forward_untyped(**inputs)
@@ -417,24 +416,24 @@ end
 ### 2. Clear Interfaces with Signatures
 
 ```ruby
+class DocumentAnalysisSignature < DSPy::Signature
+  description "Analyze document content"
+  
+  input do
+    const :content, String
+  end
+  
+  output do
+    const :main_topics, T::Array[String]
+    const :word_count, Integer
+  end
+end
+
 class DocumentAnalyzer < DSPy::Module
   def initialize
     super
     
-    @signature = Class.new(DSPy::Signature) do
-      description "Analyze document content"
-      
-      input do
-        const :content, String
-      end
-      
-      output do
-        const :main_topics, T::Array[String]
-        const :word_count, Integer
-      end
-    end
-    
-    @predictor = DSPy::Predict.new(@signature)
+    @predictor = DSPy::Predict.new(DocumentAnalysisSignature)
   end
   
   def forward_untyped(content:)
