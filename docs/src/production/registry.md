@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Registry & Versions
+name: Registry & Versions
 description: Version management for signature configurations and deployment tracking
 breadcrumb:
   - name: Production

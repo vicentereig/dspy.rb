@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Retrieval Augmented Generation (RAG)
+name: Retrieval Augmented Generation (RAG)
 description: Build RAG applications with DSPy.rb
 breadcrumb:
-  - title: Advanced
+  - name: Advanced
     url: /advanced/
-  - title: RAG
+  - name: RAG
     url: /advanced/rag/
 prev:
-  title: Multi-stage Pipelines
+  name: Multi-stage Pipelines
   url: /advanced/pipelines/
 next:
-  title: Custom Metrics
+  name: Custom Metrics
   url: /advanced/custom-metrics/
 ---
 

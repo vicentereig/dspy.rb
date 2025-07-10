@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Storage System
+name: Storage System
 description: Persist and manage optimized programs
 breadcrumb:
-  - title: Production
+  - name: Production
     url: /production/
-  - title: Storage System
+  - name: Storage System
     url: /production/storage/
 prev:
-  title: Production
+  name: Production
   url: /production/
 next:
-  title: Observability
+  name: Observability
   url: /production/observability/
 ---
 

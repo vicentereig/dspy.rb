@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Installation
+name: Installation
 description: Install DSPy.rb and set up your development environment
 breadcrumb:
-  - title: Getting Started
+  - name: Getting Started
     url: /getting-started/
-  - title: Installation
+  - name: Installation
     url: /getting-started/installation/
 prev:
-  title: Getting Started
+  name: Getting Started
   url: /getting-started/
 next:
-  title: Quick Start
+  name: Quick Start
   url: /getting-started/quick-start/
 ---
 

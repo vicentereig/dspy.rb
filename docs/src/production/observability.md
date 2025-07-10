@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Observability
+name: Observability
 description: Monitor and trace your DSPy applications in production
 breadcrumb:
-  - title: Production
+  - name: Production
     url: /production/
-  - title: Observability
+  - name: Observability
     url: /production/observability/
 prev:
-  title: Storage System
+  name: Storage System
   url: /production/storage/
 next:
-  title: Registry
+  name: Registry
   url: /production/registry/
 ---
 

@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Predictors
+name: Predictors
 description: Execution engines that generate structured results using language models
 breadcrumb:
   - name: Core Concepts
@@ -64,11 +64,8 @@ puts result.confidence   # => 0.92
 # Basic usage - uses global language model
 predictor = DSPy::Predict.new(ClassifyText)
 
-# Create with custom language model
+# Basic usage - uses global language model
 predictor = DSPy::Predict.new(ClassifyText)
-predictor.configure do |config|
-  config.lm = DSPy::LM.new('openai/gpt-4o')
-end
 ```
 
 ## DSPy::ChainOfThought
@@ -175,8 +172,8 @@ class SearchTool < DSPy::Tools::Base
   def call(query:)
     # Simulate web search
     [
-      { title: "Result 1", snippet: "Information about #{query}" },
-      { title: "Result 2", snippet: "More details on #{query}" }
+      { name: "Result 1", snippet: "Information about #{query}" },
+      { name: "Result 2", snippet: "More details on #{query}" }
     ].to_json
   end
 end

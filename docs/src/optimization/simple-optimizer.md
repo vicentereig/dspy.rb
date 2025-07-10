@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Simple Optimizer
+name: Simple Optimizer
 description: Quick optimization with random search
 breadcrumb:
-  - title: Optimization
+  - name: Optimization
     url: /optimization/
-  - title: Simple Optimizer
+  - name: Simple Optimizer
     url: /optimization/simple-optimizer/
 prev:
-  title: MIPROv2 Optimizer
+  name: MIPROv2 Optimizer
   url: /optimization/miprov2/
 next:
-  title: Production
+  name: Production
   url: /production/
 ---
 

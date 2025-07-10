@@ -1,9 +1,9 @@
 ---
 layout: docs
-title: Getting Started
+name: Getting Started
 description: Get up and running with DSPy.rb in minutes
 breadcrumb:
-  - title: Getting Started
+  - name: Getting Started
     url: /getting-started/
 ---
 

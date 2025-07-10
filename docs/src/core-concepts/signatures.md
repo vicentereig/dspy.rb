@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Signatures
+name: Signatures
 description: Define interfaces between your application and language models
 breadcrumb:
   - name: Core Concepts

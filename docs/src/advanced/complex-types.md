@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Complex Types
+name: Complex Types
 description: Working with enums, structs, and collections in DSPy.rb
 breadcrumb:
-  - title: Advanced
+  - name: Advanced
     url: /advanced/
-  - title: Complex Types
+  - name: Complex Types
     url: /advanced/complex-types/
 prev:
-  title: Advanced
+  name: Advanced
   url: /advanced/
 next:
-  title: Multi-stage Pipelines
+  name: Multi-stage Pipelines
   url: /advanced/pipelines/
 ---
 

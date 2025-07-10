@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Evaluation Framework
+name: Evaluation Framework
 description: Systematically test and measure your LLM applications
 breadcrumb:
-  - title: Optimization
+  - name: Optimization
     url: /optimization/
-  - title: Evaluation Framework
+  - name: Evaluation Framework
     url: /optimization/evaluation/
 prev:
-  title: Optimization
+  name: Optimization
   url: /optimization/
 next:
-  title: Prompt Optimization
+  name: Prompt Optimization
   url: /optimization/prompt-optimization/
 ---
 

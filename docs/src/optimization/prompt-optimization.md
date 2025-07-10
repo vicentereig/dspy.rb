@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Prompt Optimization
+name: Prompt Optimization
 description: Programmatically optimize prompts for better performance
 breadcrumb:
-  - title: Optimization
+  - name: Optimization
     url: /optimization/
-  - title: Prompt Optimization
+  - name: Prompt Optimization
     url: /optimization/prompt-optimization/
 prev:
-  title: Evaluation Framework
+  name: Evaluation Framework
   url: /optimization/evaluation/
 next:
-  title: MIPROv2 Optimizer
+  name: MIPROv2 Optimizer
   url: /optimization/miprov2/
 ---
 

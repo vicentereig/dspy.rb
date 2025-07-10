@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: MIPROv2 Optimizer
+name: MIPROv2 Optimizer
 description: Advanced prompt optimization with MIPROv2
 breadcrumb:
-  - title: Optimization
+  - name: Optimization
     url: /optimization/
-  - title: MIPROv2 Optimizer
+  - name: MIPROv2 Optimizer
     url: /optimization/miprov2/
 prev:
-  title: Prompt Optimization
+  name: Prompt Optimization
   url: /optimization/prompt-optimization/
 next:
-  title: Simple Optimizer
+  name: Simple Optimizer
   url: /optimization/simple-optimizer/
 ---
 

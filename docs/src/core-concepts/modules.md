@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Modules
+name: Modules
 description: Build reusable LLM components with DSPy.rb modules
 breadcrumb:
   - name: Core Concepts
@@ -67,7 +67,7 @@ puts result.sentiment    # => "positive"
 puts result.confidence   # => 0.9
 ```
 
-### Module with Language Model Configuration
+### Module with Configuration
 
 ```ruby
 class ClassificationSignature < DSPy::Signature
@@ -84,17 +84,10 @@ class ClassificationSignature < DSPy::Signature
 end
 
 class ConfigurableClassifier < DSPy::Module
-  def initialize(custom_lm: nil)
+  def initialize
     super
     
-    # Configure the language model for this instance
-    if custom_lm
-      configure do |config|
-        config.lm = custom_lm
-      end
-    end
-    
-    # Create predictor (will use configured LM)
+    # Create predictor
     @predictor = DSPy::ChainOfThought.new(ClassificationSignature)
   end
 
@@ -103,9 +96,8 @@ class ConfigurableClassifier < DSPy::Module
   end
 end
 
-# Usage with custom language model
-custom_lm = DSPy::LM.new('openai/gpt-4')
-classifier = ConfigurableClassifier.new(custom_lm: custom_lm)
+# Usage
+classifier = ConfigurableClassifier.new
 result = classifier.call(text: "This is a technical document")
 puts result.reasoning
 ```
@@ -291,9 +283,9 @@ puts result[:execution_steps]
 # => 3
 ```
 
-## Language Model Configuration
+## Module Configuration
 
-### Using Custom Language Model
+### Basic Module Setup
 
 ```ruby
 class CustomModuleSignature < DSPy::Signature
@@ -308,29 +300,20 @@ class CustomModuleSignature < DSPy::Signature
   end
 end
 
-class CustomLMModule < DSPy::Module
-  def initialize(custom_lm: nil)
+class CustomModule < DSPy::Module
+  def initialize
     super
-    
-    # Configure custom LM if provided
-    if custom_lm
-      configure do |config|
-        config.lm = custom_lm
-      end
-    end
     
     @predictor = DSPy::Predict.new(CustomModuleSignature)
   end
 
   def forward_untyped(**inputs)
-    # Uses the configured LM (custom or global)
     @predictor.call(**inputs)
   end
 end
 
-# Usage with custom LM
-custom_lm = DSPy::LM.new('openai/gpt-4')
-module_with_custom_lm = CustomLMModule.new(custom_lm: custom_lm)
+# Usage
+module_instance = CustomModule.new
 ```
 
 ## Testing Modules

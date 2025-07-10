@@ -17,15 +17,16 @@ DSPy.rb enables pipeline creation through:
 
 ```ruby
 # Individual modules for each stage
+class DocumentClassificationSignature < DSPy::Signature
+  description "Classify document type"
+  input { const :content, String }
+  output { const :document_type, String }
+end
+
 class DocumentClassifier < DSPy::Module
   def initialize
     super
-    @signature = DSPy::Signature.define do
-      description "Classify document type"
-      input { const :content, String }
-      output { const :document_type, String }
-    end
-    @predictor = DSPy::Predict.new(@signature)
+    @predictor = DSPy::Predict.new(DocumentClassificationSignature)
   end
 
   def forward(content:)
@@ -33,15 +34,16 @@ class DocumentClassifier < DSPy::Module
   end
 end
 
+class SummaryGenerationSignature < DSPy::Signature
+  description "Generate document summary"
+  input { const :content, String }
+  output { const :summary, String }
+end
+
 class SummaryGenerator < DSPy::Module
   def initialize
     super
-    @signature = DSPy::Signature.define do
-      description "Generate document summary"
-      input { const :content, String }
-      output { const :summary, String }
-    end
-    @predictor = DSPy::Predict.new(@signature)
+    @predictor = DSPy::Predict.new(SummaryGenerationSignature)
   end
 
   def forward(content:)

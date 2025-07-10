@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Core Concepts
+name: Core Concepts
 description: Understand the fundamental building blocks of DSPy.rb
 breadcrumb:
-  - title: Getting Started
+  - name: Getting Started
     url: /getting-started/
-  - title: Core Concepts
+  - name: Core Concepts
     url: /getting-started/core-concepts/
 prev:
-  title: Quick Start
+  name: Quick Start
   url: /getting-started/quick-start/
 next:
-  title: Signatures
+  name: Signatures
   url: /core-concepts/signatures/
 ---
 

@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Quick Start
+name: Quick Start
 description: Build your first DSPy.rb application in 5 minutes
 breadcrumb:
-  - title: Getting Started
+  - name: Getting Started
     url: /getting-started/
-  - title: Quick Start
+  - name: Quick Start
     url: /getting-started/quick-start/
 prev:
-  title: Installation
+  name: Installation
   url: /getting-started/installation/
 next:
-  title: Core Concepts
+  name: Core Concepts
   url: /getting-started/core-concepts/
 ---
 
@@ -126,13 +126,13 @@ class ArticleDrafter < DSPy::Module
     sections = outline.sections.map do |section|
       @draft_section.call(
         topic: topic,
-        title: outline.title,
+        name: outline.title,
         section: section
       )
     end
 
     {
-      title: outline.title,
+      name: outline.title,
       sections: sections.map(&:content)
     }
   end

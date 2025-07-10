@@ -1,17 +1,17 @@
 ---
 layout: docs
-title: Custom Metrics
+name: Custom Metrics
 description: Define domain-specific evaluation metrics
 breadcrumb:
-  - title: Advanced
+  - name: Advanced
     url: /advanced/
-  - title: Custom Metrics
+  - name: Custom Metrics
     url: /advanced/custom-metrics/
 prev:
-  title: Retrieval Augmented Generation
+  name: Retrieval Augmented Generation
   url: /advanced/rag/
 next:
-  title: Production
+  name: Production
   url: /production/
 ---
 

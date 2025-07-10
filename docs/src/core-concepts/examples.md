@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Examples
+name: Examples
 description: Type-safe training and evaluation data objects
 breadcrumb:
   - name: Core Concepts
