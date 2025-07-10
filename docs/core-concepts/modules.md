@@ -36,7 +36,7 @@ class SentimentAnalyzer < DSPy::Module
     @predictor = DSPy::Predict.new(SentimentSignature)
   end
 
-  def forward_untyped(text:)
+  def forward(text:)
     @predictor.call(text: text)
   end
 end
@@ -73,7 +73,7 @@ class ReasoningClassifier < DSPy::Module
     @predictor = DSPy::ChainOfThought.new(ClassificationSignature)
   end
 
-  def forward_untyped(text:)
+  def forward(text:)
     @predictor.call(text: text)
   end
 end
@@ -99,7 +99,7 @@ class DocumentProcessor < DSPy::Module
     @extractor = KeywordExtractor.new
   end
 
-  def forward_untyped(document:)
+  def forward(document:)
     # Step 1: Classify document type
     classification = @classifier.call(content: document)
     
@@ -131,7 +131,7 @@ class AdaptiveAnalyzer < DSPy::Module
     @general_analyzer = GeneralAnalyzer.new
   end
 
-  def forward_untyped(content:)
+  def forward(content:)
     # Determine content type
     content_type = @content_detector.call(content: content)
     
@@ -170,7 +170,7 @@ class ReasoningClassifier < DSPy::Module
     @predictor = DSPy::ChainOfThought.new(ReasoningSignature)
   end
 
-  def forward_untyped(text:)
+  def forward(text:)
     @predictor.call(text: text)
   end
 end
@@ -206,7 +206,7 @@ class ResearchAssistant < DSPy::Module
     @predictor = DSPy::ReAct.new(ResearchSignature, tools: @tools)
   end
 
-  def forward_untyped(query:)
+  def forward(query:)
     @predictor.call(query: query)
   end
 end
@@ -237,7 +237,7 @@ class DataAnalyst < DSPy::Module
     @predictor = DSPy::CodeAct.new(DataAnalysisSignature, max_iterations: 8)
   end
 
-  def forward_untyped(dataset_description:, analysis_task:)
+  def forward(dataset_description:, analysis_task:)
     # Combine inputs for the code execution agent
     task = "Dataset: #{dataset_description}\nTask: #{analysis_task}"
     
@@ -289,7 +289,7 @@ class CustomModule < DSPy::Module
     @predictor = DSPy::Predict.new(CustomModuleSignature)
   end
 
-  def forward_untyped(**inputs)
+  def forward(**inputs)
     @predictor.call(**inputs)
   end
 end
@@ -353,7 +353,7 @@ class EmailClassifier < DSPy::Module
     # Only handles email classification
   end
 
-  def forward_untyped(email:)
+  def forward(email:)
     # Single, clear purpose
   end
 end
@@ -366,7 +366,7 @@ class EmailProcessor < DSPy::Module
     @spam_detector = SpamDetector.new
   end
   
-  def forward_untyped(email:)
+  def forward(email:)
     classification = @classifier.call(email: email)
     spam_result = @spam_detector.call(email: email)
     
@@ -401,7 +401,7 @@ class DocumentAnalyzer < DSPy::Module
     @predictor = DSPy::Predict.new(DocumentAnalysisSignature)
   end
   
-  def forward_untyped(content:)
+  def forward(content:)
     @predictor.call(content: content)
   end
 end
