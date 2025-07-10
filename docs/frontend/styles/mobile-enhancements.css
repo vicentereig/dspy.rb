@@ -1,0 +1,143 @@
+/* Mobile-specific enhancements for better vertical rhythm and spacing */
+
+/* Improve vertical rhythm on mobile devices */
+@media (max-width: 768px) {
+  /* Increase paragraph spacing for better readability */
+  .prose p {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Add more breathing room to headings */
+  .prose h1 {
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .prose h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .prose h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Improve list spacing */
+  .prose ul, .prose ol {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .prose li {
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Code blocks need more padding on mobile */
+  .prose pre {
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .prose code {
+    padding: 0.25rem 0.5rem;
+  }
+  
+  /* Blockquotes spacing */
+  .prose blockquote {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-left: 1.25rem;
+  }
+  
+  /* Table spacing */
+  .prose table {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  /* Hero section spacing adjustments */
+  .mx-auto.max-w-2xl.text-center {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  
+  /* Feature cards spacing */
+  .relative.pl-16 {
+    padding-left: 4rem;
+  }
+  
+  .relative.pl-16 dt {
+    margin-bottom: 0.75rem;
+  }
+  
+  .relative.pl-16 dd {
+    line-height: 1.75;
+  }
+  
+  /* Footer spacing */
+  footer nav {
+    gap: 1rem;
+  }
+  
+  /* Mobile menu spacing improvements */
+  #mobile-menu .space-y-1 > li {
+    margin-bottom: 0.5rem;
+  }
+  
+  #mobile-menu button {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  #mobile-menu a {
+    padding: 0.625rem 0.5rem;
+  }
+  
+  /* Documentation page specific spacing */
+  article.prose {
+    padding-top: 0.5rem;
+  }
+  
+  /* Breadcrumb spacing */
+  nav[aria-label="Breadcrumb"] {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Next/Previous navigation */
+  nav.mt-12 {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+  }
+}
+
+/* Small mobile devices (max-width: 640px) */
+@media (max-width: 640px) {
+  /* Even more generous spacing for small screens */
+  .prose p {
+    font-size: 1rem;
+    line-height: 1.75;
+    margin-bottom: 1.75rem;
+  }
+  
+  /* Reduce horizontal padding on very small screens */
+  .px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Adjust hero text sizes */
+  .text-3xl {
+    font-size: 1.75rem;
+  }
+  
+  .text-4xl {
+    font-size: 2rem;
+  }
+  
+  /* Mobile menu backdrop blur effect */
+  #mobile-menu .fixed.inset-0 {
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}

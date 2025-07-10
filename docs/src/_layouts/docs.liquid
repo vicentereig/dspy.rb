@@ -256,7 +256,125 @@
               </a>
             </div>
             <nav class="flex flex-1 flex-col">
-              <!-- Mobile navigation items (same structure as desktop) -->
+              <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                <li>
+                  <ul role="list" class="-mx-2 space-y-1">
+                    <!-- Getting Started Section -->
+                    <li>
+                      <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="mobile-getting-started-menu">
+                        <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                        </svg>
+                        Getting Started
+                      </button>
+                      <ul class="mt-1 px-2" id="mobile-getting-started-menu">
+                        <li>
+                          <a href="{{ '/getting-started/installation/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Installation</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/getting-started/quick-start/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Quick Start</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/getting-started/core-concepts/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Core Concepts</a>
+                        </li>
+                      </ul>
+                    </li>
+                    
+                    <!-- Core Concepts Section -->
+                    <li>
+                      <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="mobile-core-concepts-menu">
+                        <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                        </svg>
+                        Core Concepts
+                      </button>
+                      <ul class="mt-1 px-2" id="mobile-core-concepts-menu">
+                        <li>
+                          <a href="{{ '/core-concepts/signatures/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Signatures</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/core-concepts/modules/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Modules</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/core-concepts/predictors/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Predictors</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/core-concepts/examples/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Examples</a>
+                        </li>
+                      </ul>
+                    </li>
+                    
+                    <!-- Optimization Section -->
+                    <li>
+                      <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="mobile-optimization-menu">
+                        <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                        </svg>
+                        Optimization
+                      </button>
+                      <ul class="mt-1 px-2" id="mobile-optimization-menu">
+                        <li>
+                          <a href="{{ '/optimization/prompt-optimization/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Prompt Optimization</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/optimization/simple-optimizer/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Simple Optimizer</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/optimization/miprov2/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">MIPROv2</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/optimization/evaluation/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Evaluation</a>
+                        </li>
+                      </ul>
+                    </li>
+                    
+                    <!-- Advanced Section -->
+                    <li>
+                      <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="mobile-advanced-menu">
+                        <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                        </svg>
+                        Advanced
+                      </button>
+                      <ul class="mt-1 px-2" id="mobile-advanced-menu">
+                        <li>
+                          <a href="{{ '/advanced/pipelines/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Pipelines</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/advanced/rag/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">RAG</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/advanced/complex-types/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Complex Types</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/advanced/custom-metrics/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Custom Metrics</a>
+                        </li>
+                      </ul>
+                    </li>
+                    
+                    <!-- Production Section -->
+                    <li>
+                      <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="mobile-production-menu">
+                        <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                        </svg>
+                        Production
+                      </button>
+                      <ul class="mt-1 px-2" id="mobile-production-menu">
+                        <li>
+                          <a href="{{ '/production/storage/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Storage</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/production/registry/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Registry</a>
+                        </li>
+                        <li>
+                          <a href="{{ '/production/observability/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Observability</a>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
             </nav>
           </div>
         </div>
@@ -323,5 +441,8 @@
       </div>
     </main>
   </div>
+  
+  <!-- Load JavaScript -->
+  <script src="{{ site.base_path }}/_bridgetown/static/js/index.js" defer></script>
 </body>
 </html>
