@@ -3,15 +3,23 @@
   "version": "1.0.0",
   "description": "Documentation site for DSPy.rb",
   "scripts": {
-    "dev": "bridgetown start",
-    "build": "bridgetown build",
-    "build:js": "bun esbuild.config.js",
-    "watch:js": "bun esbuild.config.js --watch",
-    "clean": "bridgetown clean",
-    "serve": "bridgetown start"
+    "dev": "concurrently \"npm:watch:*\" \"bundle exec bridgetown start\"",
+    "build": "npm run build:css && node esbuild.config.js && bundle exec bridgetown build",
+    "build:css": "npx tailwindcss -i frontend/styles/index.css -o output/_bridgetown/static/css/index.css --minify",
+    "watch:css": "npx tailwindcss -i frontend/styles/index.css -o output/_bridgetown/static/css/index.css --watch",
+    "build:js": "node esbuild.config.js",
+    "watch:js": "node esbuild.config.js --watch",
+    "clean": "bundle exec bridgetown clean",
+    "serve": "bundle exec bridgetown start"
   },
   "devDependencies": {
-    "esbuild": "^0.19.12"
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.0",
+    "esbuild": "^0.19.12",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
   },
   "private": true
 }

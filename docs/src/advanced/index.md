@@ -1,0 +1,38 @@
+---
+layout: docs
+title: Advanced Topics
+description: Explore advanced patterns and techniques in DSPy.rb
+---
+
+# Advanced Topics
+
+Ready to take your DSPy.rb applications to the next level? This section covers advanced patterns and techniques for building sophisticated LLM systems.
+
+## Advanced Guides
+
+### [Pipelines](/advanced/pipelines/)
+Build complex multi-stage processing pipelines that combine multiple modules for sophisticated workflows.
+
+### [RAG (Retrieval-Augmented Generation)](/advanced/rag/)
+Implement retrieval-augmented generation patterns to ground your LLM responses in real data.
+
+### [Complex Types](/advanced/complex-types/)
+Work with structured data, nested objects, and complex type hierarchies in your signatures.
+
+### [Custom Metrics](/advanced/custom-metrics/)
+Build domain-specific metrics to evaluate and optimize your modules for your unique use cases.
+
+## When to Use Advanced Features
+
+Consider these patterns when:
+- Building production systems with multiple processing stages
+- Working with large knowledge bases or documents
+- Handling complex, structured data
+- Optimizing for domain-specific requirements
+
+## Best Practices
+
+1. Start simple and add complexity gradually
+2. Test each component independently
+3. Monitor performance at each stage
+4. Use appropriate error handling and fallbacks

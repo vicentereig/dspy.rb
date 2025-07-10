@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Getting Started | DSPy.rb Documentation</title>
-  <meta name="description" content="Get up and running with DSPy.rb in minutes">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}DSPy.rb Documentation</title>
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
   
   <!-- Styles -->
-  <link rel="stylesheet" href="/_bridgetown/static/css/index.css">
+  <link rel="stylesheet" href="{{ '/_bridgetown/static/css/index.css' | relative_url }}">
   
   <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="{{ '/favicon.ico' | relative_url }}">
   
   <!-- Script for mobile menu toggle -->
   <script defer>
@@ -75,7 +75,7 @@
         
         <!-- Logo -->
         <div class="flex flex-shrink-0 items-center px-4 lg:px-0">
-          <a href="/" class="flex items-center gap-2">
+          <a href="{{ '/' | relative_url }}" class="flex items-center gap-2">
             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700">
               <span class="text-xl font-bold text-white">D</span>
             </div>
@@ -86,10 +86,10 @@
       
       <!-- Top navigation -->
       <div class="hidden lg:flex lg:gap-x-8">
-        <a href="/getting-started/" class="text-sm font-medium text-gray-700 hover:text-gray-900">Getting Started</a>
-        <a href="/core-concepts/" class="text-sm font-medium text-gray-700 hover:text-gray-900">Core Concepts</a>
-        <a href="/optimization/" class="text-sm font-medium text-gray-700 hover:text-gray-900">Optimization</a>
-        <a href="/advanced/" class="text-sm font-medium text-gray-700 hover:text-gray-900">Advanced</a>
+        <a href="{{ '/getting-started/' | relative_url }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">Getting Started</a>
+        <a href="{{ '/core-concepts/' | relative_url }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">Core Concepts</a>
+        <a href="{{ '/optimization/' | relative_url }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">Optimization</a>
+        <a href="{{ '/advanced/' | relative_url }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">Advanced</a>
       </div>
       
       <!-- Right side actions -->
@@ -122,13 +122,13 @@
                   </button>
                   <ul class="mt-1 px-2" id="getting-started-menu">
                     <li>
-                      <a href="/getting-started/installation/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Installation</a>
+                      <a href="{{ '/getting-started/installation/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Installation</a>
                     </li>
                     <li>
-                      <a href="/getting-started/quick-start/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Quick Start</a>
+                      <a href="{{ '/getting-started/quick-start/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Quick Start</a>
                     </li>
                     <li>
-                      <a href="/getting-started/core-concepts/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Core Concepts</a>
+                      <a href="{{ '/getting-started/core-concepts/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Core Concepts</a>
                     </li>
                   </ul>
                 </li>
@@ -143,16 +143,16 @@
                   </button>
                   <ul class="mt-1 px-2" id="core-concepts-menu">
                     <li>
-                      <a href="/core-concepts/signatures/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Signatures</a>
+                      <a href="{{ '/core-concepts/signatures/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Signatures</a>
                     </li>
                     <li>
-                      <a href="/core-concepts/modules/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Modules</a>
+                      <a href="{{ '/core-concepts/modules/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Modules</a>
                     </li>
                     <li>
-                      <a href="/core-concepts/predictors/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Predictors</a>
+                      <a href="{{ '/core-concepts/predictors/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Predictors</a>
                     </li>
                     <li>
-                      <a href="/core-concepts/examples/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Examples</a>
+                      <a href="{{ '/core-concepts/examples/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Examples</a>
                     </li>
                   </ul>
                 </li>
@@ -167,16 +167,16 @@
                   </button>
                   <ul class="mt-1 px-2" id="optimization-menu">
                     <li>
-                      <a href="/optimization/prompt-optimization/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Prompt Optimization</a>
+                      <a href="{{ '/optimization/prompt-optimization/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Prompt Optimization</a>
                     </li>
                     <li>
-                      <a href="/optimization/simple-optimizer/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Simple Optimizer</a>
+                      <a href="{{ '/optimization/simple-optimizer/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Simple Optimizer</a>
                     </li>
                     <li>
-                      <a href="/optimization/miprov2/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">MIPROv2</a>
+                      <a href="{{ '/optimization/miprov2/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">MIPROv2</a>
                     </li>
                     <li>
-                      <a href="/optimization/evaluation/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Evaluation</a>
+                      <a href="{{ '/optimization/evaluation/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Evaluation</a>
                     </li>
                   </ul>
                 </li>
@@ -191,16 +191,16 @@
                   </button>
                   <ul class="mt-1 px-2" id="advanced-menu">
                     <li>
-                      <a href="/advanced/pipelines/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Pipelines</a>
+                      <a href="{{ '/advanced/pipelines/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Pipelines</a>
                     </li>
                     <li>
-                      <a href="/advanced/rag/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">RAG</a>
+                      <a href="{{ '/advanced/rag/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">RAG</a>
                     </li>
                     <li>
-                      <a href="/advanced/complex-types/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Complex Types</a>
+                      <a href="{{ '/advanced/complex-types/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Complex Types</a>
                     </li>
                     <li>
-                      <a href="/advanced/custom-metrics/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Custom Metrics</a>
+                      <a href="{{ '/advanced/custom-metrics/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Custom Metrics</a>
                     </li>
                   </ul>
                 </li>
@@ -215,13 +215,13 @@
                   </button>
                   <ul class="mt-1 px-2" id="production-menu">
                     <li>
-                      <a href="/production/storage/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Storage</a>
+                      <a href="{{ '/production/storage/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Storage</a>
                     </li>
                     <li>
-                      <a href="/production/registry/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Registry</a>
+                      <a href="{{ '/production/registry/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Registry</a>
                     </li>
                     <li>
-                      <a href="/production/observability/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Observability</a>
+                      <a href="{{ '/production/observability/' | relative_url }}" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Observability</a>
                     </li>
                   </ul>
                 </li>
@@ -248,7 +248,7 @@
           
           <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
             <div class="flex h-16 shrink-0 items-center">
-              <a href="/" class="flex items-center gap-2">
+              <a href="{{ '/' | relative_url }}" class="flex items-center gap-2">
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700">
                   <span class="text-xl font-bold text-white">D</span>
                 </div>
@@ -267,121 +267,59 @@
     <main class="flex-1 lg:pl-72">
       <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         <!-- Breadcrumb -->
-        
+        {% if page.breadcrumb %}
         <nav class="mb-8" aria-label="Breadcrumb">
           <ol role="list" class="flex items-center space-x-2 text-sm">
             <li>
-              <a href="/" class="text-gray-400 hover:text-gray-500">
+              <a href="{{ '/' | relative_url }}" class="text-gray-400 hover:text-gray-500">
                 <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                 </svg>
                 <span class="sr-only">Home</span>
               </a>
             </li>
-            
+            {% for crumb in page.breadcrumb %}
             <li class="flex items-center">
               <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
               </svg>
-              <a href="/getting-started/" class="ml-2 text-gray-500 hover:text-gray-700">Getting Started</a>
+              <a href="{{ crumb.url | relative_url }}" class="ml-2 text-gray-500 hover:text-gray-700">{{ crumb.title }}</a>
             </li>
-            
+            {% endfor %}
           </ol>
         </nav>
-        
+        {% endif %}
         
         <!-- Page content -->
         <article class="prose prose-gray max-w-none">
-          <h1 id="getting-started-with-dspyrb">Getting Started with DSPy.rb</h1>
-
-<p>Welcome to DSPy.rb! This guide will help you get up and running with building reliable LLM applications in Ruby.</p>
-
-<h2 id="what-is-dspyrb">What is DSPy.rb?</h2>
-
-<p>DSPy.rb is a Ruby framework for building predictable LLM applications using composable, type-safe modules. Instead of wrestling with prompt engineering, you define clear interfaces and let the framework handle the complexity.</p>
-
-<h2 id="key-features">Key Features</h2>
-
-<ul>
-  <li><strong>Type-safe interfaces</strong> using Sorbet for compile-time checking</li>
-  <li><strong>Composable modules</strong> for building complex reasoning chains</li>
-  <li><strong>Systematic testing</strong> with comprehensive test coverage</li>
-  <li><strong>Production-ready</strong> with Rails and Ruby ecosystem integration</li>
-</ul>
-
-<h2 id="quick-example">Quick Example</h2>
-
-<p>Here’s a simple example of defining an LLM interface with DSPy.rb:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">EmailClassifier</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
-  <span class="n">input</span> <span class="k">do</span>
-    <span class="n">const</span> <span class="ss">:subject</span><span class="p">,</span> <span class="no">String</span>
-    <span class="n">const</span> <span class="ss">:body</span><span class="p">,</span> <span class="no">String</span>
-  <span class="k">end</span>
-  
-  <span class="n">output</span> <span class="k">do</span>
-    <span class="n">const</span> <span class="ss">:category</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">enum: </span><span class="p">[</span><span class="s2">"billing"</span><span class="p">,</span> <span class="s2">"technical"</span><span class="p">,</span> <span class="s2">"general"</span><span class="p">]</span>
-    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="c1"># Use the classifier</span>
-<span class="n">classifier</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Predict</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">EmailClassifier</span><span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">classifier</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span>
-  <span class="ss">subject: </span><span class="s2">"Invoice for March 2024"</span><span class="p">,</span>
-  <span class="ss">body: </span><span class="s2">"Please find attached your invoice..."</span>
-<span class="p">)</span>
-
-<span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">category</span>    <span class="c1"># =&gt; "billing"</span>
-<span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">confidence</span>  <span class="c1"># =&gt; 0.95</span>
-</code></pre></div></div>
-
-<h2 id="whats-next">What’s Next?</h2>
-
-<div class="grid gap-4 mt-8 sm:grid-cols-2">
-  <a href="/getting-started/installation/" class="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md">
-    <div>
-      <h3 class="text-base font-semibold leading-6 text-gray-900">Installation</h3>
-      <p class="mt-2 text-sm text-gray-500">Install DSPy.rb and set up your development environment.</p>
-    </div>
-    <span class="absolute top-6 right-6 text-gray-400">
-      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </span>
-  </a>
-  
-  <a href="/getting-started/quick-start/" class="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md">
-    <div>
-      <h3 class="text-base font-semibold leading-6 text-gray-900">Quick Start</h3>
-      <p class="mt-2 text-sm text-gray-500">Build your first LLM application with DSPy.rb.</p>
-    </div>
-    <span class="absolute top-6 right-6 text-gray-400">
-      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </span>
-  </a>
-</div>
-
+          {{ content }}
         </article>
         
         <!-- Next/Previous navigation -->
-        
+        {% if page.prev or page.next %}
         <nav class="mt-12 flex items-center justify-between border-t border-gray-200 pt-6">
-          
-          
+          {% if page.prev %}
+          <div class="flex-1">
+            <a href="{{ page.prev.url | relative_url }}" class="group flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+              <svg class="mr-3 h-5 w-5 flex-shrink-0 rotate-180 text-gray-400 group-hover:text-gray-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+              </svg>
+              {{ page.prev.title }}
+            </a>
+          </div>
+          {% endif %}
+          {% if page.next %}
           <div class="flex-1 text-right">
-            <a href="" class="group flex items-center justify-end text-sm font-medium text-gray-500 hover:text-gray-700">
-              Installation
+            <a href="{{ page.next.url | relative_url }}" class="group flex items-center justify-end text-sm font-medium text-gray-500 hover:text-gray-700">
+              {{ page.next.title }}
               <svg class="ml-3 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
               </svg>
             </a>
           </div>
-          
+          {% endif %}
         </nav>
-        
+        {% endif %}
       </div>
     </main>
   </div>

@@ -1,4 +1,277 @@
-<h1 id="why-prompt-engineering-doesnt-scale">Why Prompt Engineering Doesn’t Scale</h1>
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Prompt Engineering Doesn't Scale | DSPy.rb Documentation</title>
+  <meta name="description" content="Understanding the practical problems with string-based LLM development">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/_bridgetown/static/css/index.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  
+  <!-- Script for mobile menu toggle -->
+  <script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu toggle
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileMenuClose = document.getElementById('mobile-menu-close');
+      const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+      
+      if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.remove('hidden');
+        });
+      }
+      
+      if (mobileMenuClose) {
+        mobileMenuClose.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+        });
+      }
+      
+      if (mobileMenuBackdrop) {
+        mobileMenuBackdrop.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+        });
+      }
+      
+      // Dropdown toggles
+      const dropdownButtons = document.querySelectorAll('[data-dropdown-toggle]');
+      dropdownButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const isExpanded = button.getAttribute('aria-expanded') === 'true';
+          button.setAttribute('aria-expanded', !isExpanded);
+          const icon = button.querySelector('svg');
+          if (icon) {
+            icon.classList.toggle('rotate-90');
+          }
+          const targetId = button.getAttribute('data-dropdown-toggle');
+          const target = document.getElementById(targetId);
+          if (target) {
+            target.classList.toggle('hidden');
+          }
+        });
+      });
+    });
+  </script>
+</head>
+<body class="h-full">
+  <!-- Header with navigation from Tailwind UI -->
+  <header class="sticky top-0 z-40 bg-white shadow-sm">
+    <nav class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center">
+        <!-- Mobile menu button -->
+        <button type="button" id="mobile-menu-button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 lg:hidden">
+          <span class="absolute -inset-0.5"></span>
+          <span class="sr-only">Open sidebar</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+        
+        <!-- Logo -->
+        <div class="flex flex-shrink-0 items-center px-4 lg:px-0">
+          <a href="/" class="flex items-center gap-2">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700">
+              <span class="text-xl font-bold text-white">D</span>
+            </div>
+            <span class="text-xl font-semibold text-gray-900">DSPy.rb</span>
+          </a>
+        </div>
+      </div>
+      
+      <!-- Top navigation -->
+      <div class="hidden lg:flex lg:gap-x-8">
+        <a href="/getting-started/" class="text-sm font-medium text-gray-700 hover:text-gray-900">Getting Started</a>
+        <a href="/core-concepts/" class="text-sm font-medium text-gray-700 hover:text-gray-900">Core Concepts</a>
+        <a href="/optimization/" class="text-sm font-medium text-gray-700 hover:text-gray-900">Optimization</a>
+        <a href="/advanced/" class="text-sm font-medium text-gray-700 hover:text-gray-900">Advanced</a>
+      </div>
+      
+      <!-- Right side actions -->
+      <div class="flex items-center gap-x-4">
+        <a href="https://github.com/vicentereig/dspy.rb" class="text-gray-400 hover:text-gray-500">
+          <span class="sr-only">GitHub</span>
+          <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="flex h-full">
+    <!-- Sidebar navigation -->
+    <aside class="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col lg:pt-16">
+      <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4 scrollbar-thin">
+        <nav class="flex flex-1 flex-col pt-8">
+          <ul role="list" class="flex flex-1 flex-col gap-y-7">
+            <li>
+              <ul role="list" class="-mx-2 space-y-1">
+                <!-- Getting Started Section -->
+                <li>
+                  <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="getting-started-menu">
+                    <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                    </svg>
+                    Getting Started
+                  </button>
+                  <ul class="mt-1 px-2" id="getting-started-menu">
+                    <li>
+                      <a href="/getting-started/installation/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Installation</a>
+                    </li>
+                    <li>
+                      <a href="/getting-started/quick-start/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Quick Start</a>
+                    </li>
+                    <li>
+                      <a href="/getting-started/core-concepts/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Core Concepts</a>
+                    </li>
+                  </ul>
+                </li>
+                
+                <!-- Core Concepts Section -->
+                <li>
+                  <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="core-concepts-menu">
+                    <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                    </svg>
+                    Core Concepts
+                  </button>
+                  <ul class="mt-1 px-2" id="core-concepts-menu">
+                    <li>
+                      <a href="/core-concepts/signatures/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Signatures</a>
+                    </li>
+                    <li>
+                      <a href="/core-concepts/modules/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Modules</a>
+                    </li>
+                    <li>
+                      <a href="/core-concepts/predictors/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Predictors</a>
+                    </li>
+                    <li>
+                      <a href="/core-concepts/examples/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Examples</a>
+                    </li>
+                  </ul>
+                </li>
+                
+                <!-- Optimization Section -->
+                <li>
+                  <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="optimization-menu">
+                    <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                    </svg>
+                    Optimization
+                  </button>
+                  <ul class="mt-1 px-2" id="optimization-menu">
+                    <li>
+                      <a href="/optimization/prompt-optimization/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Prompt Optimization</a>
+                    </li>
+                    <li>
+                      <a href="/optimization/simple-optimizer/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Simple Optimizer</a>
+                    </li>
+                    <li>
+                      <a href="/optimization/miprov2/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">MIPROv2</a>
+                    </li>
+                    <li>
+                      <a href="/optimization/evaluation/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Evaluation</a>
+                    </li>
+                  </ul>
+                </li>
+                
+                <!-- Advanced Section -->
+                <li>
+                  <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="advanced-menu">
+                    <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                    </svg>
+                    Advanced
+                  </button>
+                  <ul class="mt-1 px-2" id="advanced-menu">
+                    <li>
+                      <a href="/advanced/pipelines/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Pipelines</a>
+                    </li>
+                    <li>
+                      <a href="/advanced/rag/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">RAG</a>
+                    </li>
+                    <li>
+                      <a href="/advanced/complex-types/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Complex Types</a>
+                    </li>
+                    <li>
+                      <a href="/advanced/custom-metrics/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Custom Metrics</a>
+                    </li>
+                  </ul>
+                </li>
+                
+                <!-- Production Section -->
+                <li>
+                  <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" data-dropdown-toggle="production-menu">
+                    <svg class="h-5 w-5 shrink-0 text-gray-400 transition duration-200 rotate-90" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                    </svg>
+                    Production
+                  </button>
+                  <ul class="mt-1 px-2" id="production-menu">
+                    <li>
+                      <a href="/production/storage/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Storage</a>
+                    </li>
+                    <li>
+                      <a href="/production/registry/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Registry</a>
+                    </li>
+                    <li>
+                      <a href="/production/observability/" class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">Observability</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Mobile sidebar -->
+    <div class="relative z-50 hidden" id="mobile-menu" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 bg-gray-900/80" id="mobile-menu-backdrop"></div>
+      <div class="fixed inset-0 flex">
+        <div class="relative mr-16 flex w-full max-w-xs flex-1">
+          <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+            <button type="button" class="-m-2.5 p-2.5" id="mobile-menu-close">
+              <span class="sr-only">Close sidebar</span>
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+            <div class="flex h-16 shrink-0 items-center">
+              <a href="/" class="flex items-center gap-2">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700">
+                  <span class="text-xl font-bold text-white">D</span>
+                </div>
+                <span class="text-xl font-semibold text-gray-900">DSPy.rb</span>
+              </a>
+            </div>
+            <nav class="flex flex-1 flex-col">
+              <!-- Mobile navigation items (same structure as desktop) -->
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <main class="flex-1 lg:pl-72">
+      <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <!-- Breadcrumb -->
+        
+        
+        <!-- Page content -->
+        <article class="prose prose-gray max-w-none">
+          <h1 id="why-prompt-engineering-doesnt-scale">Why Prompt Engineering Doesn’t Scale</h1>
 
 <p><em>And how to build LLM applications that actually work in production</em></p>
 
@@ -270,3 +543,27 @@
 <hr />
 
 <p><em>“The goal isn’t to stop using LLMs. It’s to start engineering with them.”</em></p>
+
+        </article>
+        
+        <!-- Next/Previous navigation -->
+        
+        <nav class="mt-12 flex items-center justify-between border-t border-gray-200 pt-6">
+          
+          
+          <div class="flex-1 text-right">
+            <a href="" class="group flex items-center justify-end text-sm font-medium text-gray-500 hover:text-gray-700">
+              DSPy.rb - Program LLMs, Don't Prompt Them
+              <svg class="ml-3 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+              </svg>
+            </a>
+          </div>
+          
+        </nav>
+        
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,217 +1,367 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DSPy.rb - Build Reliable LLM Applications in Ruby | DSPy.rb Documentation</title>
-  <meta name="description" content="A framework for building predictable LLM applications using composable, type-safe modules">
+  <title>DSPy.rb - Program LLMs, Don't Prompt Them | DSPy.rb - Build Reliable LLM Applications in Ruby</title>
+  <meta name="description" content="Write modular, testable Ruby code instead of tweaking prompts">
   
   <!-- Styles -->
-  <link rel="stylesheet" href="/styles/index.css">
+  <link rel="stylesheet" href="/_bridgetown/static/css/index.css">
   
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
-<body>
-  <header class="site-header">
-    <nav class="site-nav">
-      <a href="/" class="site-title">DSPy.rb Documentation</a>
-      <div class="nav-links">
-        <a href="/getting-started/">Getting Started</a>
-        <a href="/foundations/">Foundations</a>
-        <a href="/systems/">Systems</a>
-        <a href="https://github.com/vicentereig/dspy-rb" target="_blank">GitHub</a>
+<body class="h-full">
+  <div class="bg-white">
+    <!-- Header -->
+    <header class="absolute inset-x-0 top-0 z-50">
+      <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+        <div class="flex lg:flex-1">
+          <a href="/" class="-m-1.5 p-1.5 flex items-center gap-2">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700">
+              <span class="text-xl font-bold text-white">D</span>
+            </div>
+            <span class="text-xl font-semibold text-gray-900">DSPy.rb</span>
+          </a>
+        </div>
+        <div class="flex lg:hidden">
+          <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+            <span class="sr-only">Open main menu</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+        </div>
+        <div class="hidden lg:flex lg:gap-x-12">
+          <a href="/getting-started/" class="text-sm font-semibold leading-6 text-gray-900">Getting Started</a>
+          <a href="/core-concepts/" class="text-sm font-semibold leading-6 text-gray-900">Core Concepts</a>
+          <a href="/optimization/" class="text-sm font-semibold leading-6 text-gray-900">Optimization</a>
+          <a href="/advanced/" class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
+        </div>
+        <div class="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
+          <a href="https://github.com/vicentereig/dspy.rb" class="text-sm font-semibold leading-6 text-gray-900">
+            GitHub <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="relative isolate px-6 pt-14 lg:px-8">
+      <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+        <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
       </div>
-    </nav>
-  </header>
+      
+      <div class="mx-auto max-w-2xl py-16 sm:py-24 lg:py-32">
+  <div class="hidden sm:mb-8 sm:flex sm:justify-center">
+    <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+      Version 0.6.4 is now available. <a href="https://github.com/vicentereig/dspy.rb/releases/tag/v0.6.4" class="font-semibold text-dspy-ruby hover:text-red-700"><span class="absolute inset-0" aria-hidden="true"></span>See what's new <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </div>
+  <div class="text-center">
+    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Build LLM apps like you build software</h1>
+    <p class="mt-6 text-lg leading-8 text-gray-600">Tired of copy-pasting prompts and hoping they work? DSPy.rb lets you write modular, type-safe Ruby code that handles the LLM stuff for you. Test it, optimize it, ship it.</p>
+    <div class="mt-10 flex items-center justify-center gap-x-6">
+      <a href="/getting-started/" class="rounded-md bg-dspy-ruby px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-ruby">Get started</a>
+      <a href="/getting-started/quick-start/" class="text-sm font-semibold leading-6 text-gray-900 hover:text-dspy-ruby">View examples <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</div>
 
-  <main class="page-content">
-    <h1 id="building-llm-applications-that-actually-work">Building LLM Applications That Actually Work</h1>
+<div class="mx-auto max-w-5xl px-6 lg:px-8">
+  <div class="mx-auto max-w-3xl">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Why programmatic prompts?</h2>
+    <p class="text-lg text-gray-600 mb-12">Because prompt engineering is a nightmare. You tweak words, cross your fingers, and deploy. When it breaks in production (and it will), you're back to square one. DSPy.rb fixes this by letting you define what you want, not how to ask for it.</p>
+    
+    <h3 class="text-xl font-semibold text-gray-900 mb-6">See it in action</h3>
+    
+    <p class="text-gray-600 mb-6">Define what you need with type-safe Signatures:</p>
+<div>
+      <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Email</span> <span class="o">&lt;</span> <span class="no">T</span><span class="o">::</span><span class="no">Struct</span>
+  <span class="n">const</span> <span class="ss">:subject</span><span class="p">,</span> <span class="no">String</span>
+  <span class="n">const</span> <span class="ss">:from</span><span class="p">,</span> <span class="no">String</span>
+  <span class="n">const</span> <span class="ss">:to</span><span class="p">,</span> <span class="no">String</span>
+  <span class="n">const</span> <span class="ss">:body</span><span class="p">,</span> <span class="no">String</span>
+<span class="k">end</span>
 
-<p><em>A practical approach to reliable AI programming</em></p>
-
-<h2 id="the-real-problem">The Real Problem</h2>
-
-<p>Most developers I meet are stuck in the same place: their LLM applications work great in demos but fail unpredictably in production.</p>
-
-<p>You’ve probably been there—spending more time debugging prompt edge cases than building features, watching systems that worked perfectly in testing break mysteriously when real users touch them.</p>
-
-<h2 id="what-dspyrb-actually-does">What DSPy.rb Actually Does</h2>
-
-<p>DSPy.rb doesn’t promise to revolutionize how you think about AI. It just gives you tools to build LLM applications that behave predictably:</p>
-
-<ul>
-  <li><strong>Type-safe interfaces</strong> instead of string manipulation</li>
-  <li><strong>Composable modules</strong> instead of monolithic prompts</li>
-  <li><strong>Systematic testing</strong> instead of trial-and-error debugging</li>
-  <li><strong>Clear error handling</strong> instead of mysterious failures</li>
-</ul>
-
-<p>It’s not magic. It’s just better engineering.</p>
-
-<h2 id="where-most-developers-are">Where Most Developers Are</h2>
-
-<p>Based on working with teams building LLM applications, most developers fall into these categories:</p>
-
-<p><strong>🔧 The String Wrangler</strong></p>
-<ul>
-  <li>Everything is prompt engineering</li>
-  <li>Debugging means staring at logs</li>
-  <li>Success feels random</li>
-</ul>
-
-<p><strong>📝 The Template Builder</strong></p>
-<ul>
-  <li>Some structure with string templates</li>
-  <li>Still fragile with edge cases</li>
-  <li>Hard to test systematically</li>
-</ul>
-
-<p><strong>🏗️ The Framework User</strong> <em>(most teams)</em></p>
-<ul>
-  <li>Using AI libraries without understanding internals</li>
-  <li>Copy-pasting examples from docs</li>
-  <li>Unpredictable system behavior</li>
-</ul>
-
-<p><strong>⚙️ The Systems Builder</strong> <em>(where DSPy.rb helps you get)</em></p>
-<ul>
-  <li>Building from composable, tested modules</li>
-  <li>Predictable system behavior</li>
-  <li>Reliable production deployments</li>
-</ul>
-
-<p><strong>🏢 The Production Engineer</strong> <em>(the goal)</em></p>
-<ul>
-  <li>Systems that monitor and improve themselves</li>
-  <li>Clear patterns for common problems</li>
-  <li>Confidence in AI system behavior</li>
-</ul>
-
-<p>Which category describes your current experience?</p>
-
-<h2 id="how-to-get-started">How to Get Started</h2>
-
-<h3 id="-stop-fighting-string-formatting"><strong>🚀 Stop Fighting String Formatting</strong></h3>
-
-<p><strong><a href="/getting-started/">Getting Started →</a></strong><br />
-<em>Your first structured LLM program in 10 minutes</em></p>
-
-<p>See how type-safe signatures eliminate most prompt engineering headaches.</p>
-
-<h3 id="-learn-the-core-patterns"><strong>🔧 Learn the Core Patterns</strong></h3>
-
-<p><strong><a href="/foundations/">Foundations →</a></strong><br />
-<em>The building blocks that actually work in production</em></p>
-
-<p>Understand Signatures, Predict, Chain of Thought, and ReAct—the modules that make LLM applications reliable.</p>
-
-<h3 id="️-build-production-systems"><strong>🏗️ Build Production Systems</strong></h3>
-
-<p><strong><a href="/systems/">System Building →</a></strong><br />
-<em>From proof-of-concept to production-ready</em></p>
-
-<p>Learn to chain reasoning steps, handle errors gracefully, and test LLM systems like any other code.</p>
-
-<h3 id="-use-ai-tools-effectively"><strong>🤖 Use AI Tools Effectively</strong></h3>
-
-<p><strong><a href="/collaboration/">Agent Patterns →</a></strong><br />
-<em>When LLMs need to interact with the real world</em></p>
-
-<p>Build agents that use tools reliably, not just when they feel like it.</p>
-
-<h2 id="why-ruby-for-llm-applications">Why Ruby for LLM Applications?</h2>
-
-<p>Python dominates AI development, but Ruby brings unique advantages:</p>
-
-<ul>
-  <li><strong>Clear, readable code</strong> - LLM logic stays understandable</li>
-  <li><strong>Idiomatic Sorbet types</strong> - Define schemas in Ruby, not JSON or YAML configs</li>
-  <li><strong>Runtime type validation</strong> - Catch interface errors before they hit production</li>
-  <li><strong>Mature testing culture</strong> - Our 226+ specs prove everything works</li>
-  <li><strong>Production-ready ecosystem</strong> - Rails, Sidekiq, etc. for real applications</li>
-</ul>
-
-<p>Here’s what makes DSPy.rb different—<strong>everything is just Ruby</strong>:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Define LLM interfaces using familiar Ruby syntax</span>
-<span class="k">class</span> <span class="nc">EmailClassifier</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
-  <span class="n">input</span> <span class="k">do</span>
-    <span class="n">const</span> <span class="ss">:subject</span><span class="p">,</span> <span class="no">String</span>
-    <span class="n">const</span> <span class="ss">:body</span><span class="p">,</span> <span class="no">String</span>
-    <span class="n">const</span> <span class="ss">:priority</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">nilable</span><span class="p">(</span><span class="no">Symbol</span><span class="p">),</span> <span class="ss">enum: </span><span class="p">[</span><span class="ss">:low</span><span class="p">,</span> <span class="ss">:high</span><span class="p">],</span> <span class="ss">default: :low</span>
-  <span class="k">end</span>
-  
-  <span class="n">output</span> <span class="k">do</span>
-    <span class="n">const</span> <span class="ss">:category</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span> <span class="ss">enum: </span><span class="p">[</span><span class="s2">"billing"</span><span class="p">,</span> <span class="s2">"technical"</span><span class="p">,</span> <span class="s2">"general"</span><span class="p">]</span>
-    <span class="n">const</span> <span class="ss">:confidence</span><span class="p">,</span> <span class="no">Float</span>
-    <span class="n">const</span> <span class="ss">:suggested_actions</span><span class="p">,</span> <span class="no">T</span><span class="o">::</span><span class="no">Array</span><span class="p">[</span><span class="no">String</span><span class="p">]</span>
+<span class="k">class</span> <span class="nc">EmailCategory</span> <span class="o">&lt;</span> <span class="no">T</span><span class="o">::</span><span class="no">Enum</span>
+  <span class="n">enums</span> <span class="k">do</span>
+    <span class="no">Technical</span> <span class="o">=</span> <span class="n">new</span><span class="p">(</span><span class="s1">'technical'</span><span class="p">)</span>
+    <span class="no">Billing</span> <span class="o">=</span> <span class="n">new</span><span class="p">(</span><span class="s1">'billing'</span><span class="p">)</span>
+    <span class="no">General</span> <span class="o">=</span> <span class="n">new</span><span class="p">(</span><span class="s1">'general'</span><span class="p">)</span>
   <span class="k">end</span>
 <span class="k">end</span>
 
-<span class="c1"># ReAct tools also use Ruby types</span>
-<span class="k">class</span> <span class="nc">DatabaseQuery</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Tool</span>
+<span class="k">class</span> <span class="nc">Priority</span> <span class="o">&lt;</span> <span class="no">T</span><span class="o">::</span><span class="no">Enum</span>
+  <span class="n">enums</span> <span class="k">do</span>
+    <span class="no">Low</span> <span class="o">=</span> <span class="n">new</span><span class="p">(</span><span class="s1">'low'</span><span class="p">)</span>
+    <span class="no">Medium</span> <span class="o">=</span> <span class="n">new</span><span class="p">(</span><span class="s1">'medium'</span><span class="p">)</span>
+    <span class="no">High</span> <span class="o">=</span> <span class="n">new</span><span class="p">(</span><span class="s1">'high'</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">ClassifyEmail</span> <span class="o">&lt;</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">Signature</span>
+  <span class="n">description</span> <span class="s2">"Classify customer support emails by analyzing content and urgency"</span>
+  
   <span class="n">input</span> <span class="k">do</span>
-    <span class="n">const</span> <span class="ss">:query</span><span class="p">,</span> <span class="no">String</span>
-    <span class="n">const</span> <span class="ss">:limit</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">nilable</span><span class="p">(</span><span class="no">Integer</span><span class="p">),</span> <span class="ss">default: </span><span class="mi">10</span>
+    <span class="n">const</span> <span class="ss">:email</span><span class="p">,</span> <span class="no">Email</span><span class="p">,</span> 
+          <span class="ss">description: </span><span class="s2">"The email to classify with all headers and content"</span>
   <span class="k">end</span>
   
   <span class="n">output</span> <span class="k">do</span>
-    <span class="n">const</span> <span class="ss">:results</span><span class="p">,</span> <span class="no">T</span><span class="o">::</span><span class="no">Array</span><span class="p">[</span><span class="no">T</span><span class="o">::</span><span class="no">Hash</span><span class="p">[</span><span class="no">String</span><span class="p">,</span> <span class="no">T</span><span class="p">.</span><span class="nf">untyped</span><span class="p">]]</span>
-    <span class="n">const</span> <span class="ss">:execution_time_ms</span><span class="p">,</span> <span class="no">Float</span>
+    <span class="n">const</span> <span class="ss">:category</span><span class="p">,</span> <span class="no">EmailCategory</span><span class="p">,</span>
+          <span class="ss">description: </span><span class="s2">"Main topic: technical (API, bugs), billing (payment, pricing), or general"</span>
+    <span class="n">const</span> <span class="ss">:priority</span><span class="p">,</span> <span class="no">Priority</span><span class="p">,</span>
+          <span class="ss">description: </span><span class="s2">"Urgency level based on keywords like 'production', 'ASAP', 'urgent'"</span>
+    <span class="n">const</span> <span class="ss">:summary</span><span class="p">,</span> <span class="no">String</span><span class="p">,</span>
+          <span class="ss">description: </span><span class="s2">"One-line summary of the issue for support dashboard"</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div></div>
+</code></pre></div>      </div>
+    </div>
 
-<p>No external schema languages. No configuration files. Just Ruby code that’s statically analyzed by Sorbet and validated at runtime.</p>
+<h3 class="text-xl font-semibold text-gray-900 mt-12 mb-6">Let the LLM show its work</h3>
+    <p class="text-gray-600 mb-6">Use Chain of Thought for complex reasoning:</p>
+<div>
+      <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">classifier</span> <span class="o">=</span> <span class="no">DSPy</span><span class="o">::</span><span class="no">ChainOfThought</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">ClassifyEmail</span><span class="p">)</span>
 
-<p>More importantly: Ruby’s focus on developer productivity extends naturally to building reliable LLM applications.</p>
+<span class="c1"># Create a properly typed email object</span>
+<span class="n">email</span> <span class="o">=</span> <span class="no">Email</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
+  <span class="ss">subject: </span><span class="s2">"URGENT: API Key Not Working!!!"</span><span class="p">,</span>
+  <span class="ss">from: </span><span class="s2">"john.doe@acmecorp.com"</span><span class="p">,</span>
+  <span class="ss">to: </span><span class="s2">"support@yourcompany.com"</span><span class="p">,</span>
+  <span class="ss">body: </span><span class="s2">"My API key stopped working after the update. I need this fixed ASAP for our production deployment!"</span>
+<span class="p">)</span>
 
-<h2 id="real-engineering-not-magic">Real Engineering, Not Magic</h2>
+<span class="n">classification</span> <span class="o">=</span> <span class="n">classifier</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">email: </span><span class="n">email</span><span class="p">)</span>  <span class="c1"># Type-checked at runtime!</span>
+</code></pre></div>      </div>
+    </div>
 
-<p>This documentation focuses on practical engineering:</p>
+<h3 class="text-xl font-semibold text-gray-900 mt-12 mb-6">What you get back</h3>
+    <p class="text-gray-600 mb-6">Proper Ruby objects, not strings:</p>
+<div>
+      <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">irb</span><span class="o">&gt;</span> <span class="n">classification</span><span class="p">.</span><span class="nf">reasoning</span>
+<span class="o">=&gt;</span> <span class="s2">"Let me analyze this email step by step:
+1. The customer mentions an API key issue - this is technical
+2. They mention it stopped working after an update - suggests a system change
+3. They emphasize 'ASAP' and 'production deployment' - this is urgent
+4. Production issues always warrant high priority"</span>
 
-<ul>
-  <li><strong>Working examples</strong> from our comprehensive test suite</li>
-  <li><strong>Common failure patterns</strong> and how to avoid them</li>
-  <li><strong>Production debugging</strong> when things go wrong</li>
-  <li><strong>Performance considerations</strong> that actually matter</li>
-</ul>
+<span class="n">irb</span><span class="o">&gt;</span> <span class="n">classification</span><span class="p">.</span><span class="nf">category</span>
+<span class="o">=&gt;</span> <span class="c1">#&lt;EmailCategory::Technical:0x00007f8b2c0a1b80&gt;</span>
 
-<p>The goal isn’t philosophical transformation—it’s building LLM applications you can actually deploy with confidence.</p>
+<span class="n">irb</span><span class="o">&gt;</span> <span class="n">classification</span><span class="p">.</span><span class="nf">category</span><span class="p">.</span><span class="nf">class</span>
+<span class="o">=&gt;</span> <span class="no">EmailCategory</span><span class="o">::</span><span class="no">Technical</span>
 
-<h2 id="the-community">The Community</h2>
+<span class="n">irb</span><span class="o">&gt;</span> <span class="n">classification</span><span class="p">.</span><span class="nf">category</span> <span class="o">==</span> <span class="no">EmailCategory</span><span class="o">::</span><span class="no">Technical</span>  <span class="c1"># Type-safe comparison</span>
+<span class="o">=&gt;</span> <span class="kp">true</span>
 
-<p>Building reliable LLM applications is still a new problem space:</p>
+<span class="n">irb</span><span class="o">&gt;</span> <span class="n">classification</span><span class="p">.</span><span class="nf">priority</span>
+<span class="o">=&gt;</span> <span class="c1">#&lt;Priority::High:0x00007f8b2c0a1c20&gt;</span>
 
-<ul>
-  <li><strong>📚 <a href="/practice/">Learn from Real Examples</a></strong> - Case studies and production stories</li>
-  <li><strong>🛠️ <a href="https://github.com/vicentereig/dspy.rb">Contribute</a></strong> - Help solve common problems</li>
-  <li><strong>💬 <a href="https://github.com/vicentereig/dspy.rb/discussions">Discuss</a></strong> - Share what you’ve learned</li>
-</ul>
+<span class="n">irb</span><span class="o">&gt;</span> <span class="n">classification</span><span class="p">.</span><span class="nf">priority</span><span class="p">.</span><span class="nf">serialize</span>  <span class="c1"># Get the string value when needed</span>
+<span class="o">=&gt;</span> <span class="s2">"high"</span>
 
-<h2 id="ready-to-start">Ready to Start?</h2>
+<span class="n">irb</span><span class="o">&gt;</span> <span class="n">classification</span><span class="p">.</span><span class="nf">summary</span>
+<span class="o">=&gt;</span> <span class="s2">"API key authentication failure post-update affecting production"</span>
 
-<p>The main question isn’t “How do I use DSPy.rb?” but <strong>“How do I build LLM applications that actually work in production?”</strong></p>
+<span class="c1"># Your IDE knows these are the ONLY valid values:</span>
+<span class="n">irb</span><span class="o">&gt;</span> <span class="no">EmailCategory</span><span class="p">.</span><span class="nf">values</span>
+<span class="o">=&gt;</span> <span class="p">[</span><span class="c1">#&lt;EmailCategory::Technical&gt;, #&lt;EmailCategory::Billing&gt;, #&lt;EmailCategory::General&gt;]</span>
 
-<p>Start with the problems you’re currently facing. Notice where your current approach breaks down. Focus on building systems you can actually trust.</p>
+<span class="c1"># Type errors caught at runtime (or by Sorbet static analysis):</span>
+<span class="n">irb</span><span class="o">&gt;</span> <span class="n">classification</span><span class="p">.</span><span class="nf">category</span> <span class="o">=</span> <span class="s2">"invalid"</span>  <span class="c1"># This would raise an error!</span>
+</code></pre></div>      </div>
+    </div>
+    
+    <p class="text-lg text-gray-600 mt-12 mb-16">That's it. No prompt templates. No "You are a helpful assistant" nonsense. Just define what you want with real Ruby types and let DSPy handle the rest. Your category field can only ever be Technical, Billing, or General - not "technicall" or "TECHNICAL" or any other typo. The descriptions you add to fields become part of the prompt, guiding the LLM without you writing prompt engineering poetry. When you need to improve accuracy, you can optimize these programmatically with real data - not guesswork.</p>
+  </div>
+</div>
 
-<p><strong><a href="/getting-started/">Start Building →</a></strong></p>
+<div class="mx-auto max-w-7xl px-6 lg:px-8 py-16">
+  <div class="mx-auto max-w-2xl lg:text-center mb-16">
+    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Why DSPy.rb makes sense</h2>
+    <p class="mt-4 text-lg text-gray-600">Real benefits for real developers building real applications.</p>
+  </div>
+  
+  <div class="mx-auto grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+    <div class="flex flex-col">
+      <div class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+        <svg class="h-5 w-5 flex-none text-dspy-ruby" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 01-1.44-8.765 4.5 4.5 0 018.302-3.046 3.5 3.5 0 014.504 4.272A4 4 0 0115 17H5.5zm3.75-2.75a.75.75 0 001.5 0V9.66l1.95 2.1a.75.75 0 101.1-1.02l-3.25-3.5a.75.75 0 00-1.1 0l-3.25 3.5a.75.75 0 101.1 1.02l1.95-2.1v4.59z" clip-rule="evenodd" />
+        </svg>
+        Type-safe from the start
+      </div>
+      <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
+        <p class="flex-auto">Catch errors before runtime. Your IDE knows what fields exist, what types they are, and what methods you can call. No more KeyError surprises in production.</p>
+      </div>
+    </div>
+    
+    <div class="flex flex-col">
+      <div class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+        <svg class="h-5 w-5 flex-none text-dspy-ruby" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clip-rule="evenodd" />
+        </svg>
+        Test like normal code
+      </div>
+      <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
+        <p class="flex-auto">Write RSpec tests for your LLM logic. Mock responses, test edge cases, measure accuracy. Your CI/CD pipeline just works - no special tooling needed.</p>
+      </div>
+    </div>
+    
+    <div class="flex flex-col">
+      <div class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+        <svg class="h-5 w-5 flex-none text-dspy-ruby" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M15.98 1.804a1 1 0 00-1.96 0l-.24 1.192a3.995 3.995 0 01-.784 1.785l-.874.874a3.995 3.995 0 01-1.785.784l-1.192.24a1 1 0 000 1.96l1.192.24a3.995 3.995 0 011.785.784l.874.874a3.995 3.995 0 01.784 1.785l.24 1.192a1 1 0 001.96 0l.24-1.192a3.995 3.995 0 01.784-1.785l.874-.874a3.995 3.995 0 011.785-.784l1.192-.24a1 1 0 000-1.96l-1.192-.24a3.995 3.995 0 01-1.785-.784l-.874-.874a3.995 3.995 0 01-.784-1.785l-.24-1.192zM4.5 5.5a1 1 0 00-1.97 0l-.12.593a1.995 1.995 0 01-.392.893l-.437.437a1.995 1.995 0 01-.893.392l-.593.12a1 1 0 000 1.97l.593.12a1.995 1.995 0 01.893.392l.437.437a1.995 1.995 0 01.392.893l.12.593a1 1 0 001.97 0l.12-.593a1.995 1.995 0 01.392-.893l.437-.437a1.995 1.995 0 01.893-.392l.593-.12a1 1 0 000-1.97l-.593-.12a1.995 1.995 0 01-.893-.392l-.437-.437a1.995 1.995 0 01-.392-.893l-.12-.593z" />
+        </svg>
+        Optimize with data
+      </div>
+      <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
+        <p class="flex-auto">Stop guessing what prompts work. Feed your examples to the optimizer and let it find the best instructions and few-shot examples automatically. Science, not art.</p>
+      </div>
+    </div>
+    
+    <div class="flex flex-col">
+      <div class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+        <svg class="h-5 w-5 flex-none text-dspy-ruby" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clip-rule="evenodd" />
+          <path fill-rule="evenodd" d="M6 10a.75.75 0 01.75-.75h9.546l-1.048-.943a.75.75 0 111.004-1.114l2.5 2.25a.75.75 0 010 1.114l-2.5 2.25a.75.75 0 11-1.004-1.114l1.048-.943H6.75A.75.75 0 016 10z" clip-rule="evenodd" />
+        </svg>
+        Compose and reuse
+      </div>
+      <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
+        <p class="flex-auto">Build complex workflows from simple modules. Chain them, compose them, swap them out. Your email classifier can feed into your priority ranker. Just like regular code.</p>
+      </div>
+    </div>
+    
+    <div class="flex flex-col">
+      <div class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+        <svg class="h-5 w-5 flex-none text-dspy-ruby" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+        </svg>
+        Control your prompts
+      </div>
+      <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
+        <p class="flex-auto">Version control your LLM logic. Roll back when needed. A/B test different approaches. Know exactly what prompt is running in production. No more mystery meat.</p>
+      </div>
+    </div>
+    
+    <div class="flex flex-col">
+      <div class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+        <svg class="h-5 w-5 flex-none text-dspy-ruby" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M3.196 12.87l-.825.483a.75.75 0 000 1.294l7.25 4.25a.75.75 0 00.758 0l7.25-4.25a.75.75 0 000-1.294l-.825-.484-5.666 3.322a2.25 2.25 0 01-2.276 0L3.196 12.87z" />
+          <path d="M3.196 8.87l-.825.483a.75.75 0 000 1.294l7.25 4.25a.75.75 0 00.758 0l7.25-4.25a.75.75 0 000-1.294l-.825-.484-5.666 3.322a2.25 2.25 0 01-2.276 0L3.196 8.87z" />
+          <path d="M10.38 1.103a.75.75 0 00-.76 0l-7.25 4.25a.75.75 0 000 1.294l7.25 4.25a.75.75 0 00.76 0l7.25-4.25a.75.75 0 000-1.294l-7.25-4.25z" />
+        </svg>
+        Production ready
+      </div>
+      <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
+        <p class="flex-auto">Built-in observability, error handling, and performance monitoring. Track token usage, response times, and accuracy. Deploy with confidence.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-<hr />
+      
+      <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
+        <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+      </div>
+    </div>
+  </div>
 
-<p><em>“LLM applications don’t need to be unreliable. They just need better engineering.”</em></p>
+  <!-- Features Section -->
+  <div class="bg-white py-24 sm:py-32">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mx-auto max-w-2xl lg:text-center">
+        <h2 class="text-base font-semibold leading-7 text-dspy-ruby">Build with confidence</h2>
+        <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Everything you need to build reliable LLM applications</p>
+        <p class="mt-6 text-lg leading-8 text-gray-600">DSPy.rb brings software engineering best practices to LLM development. Type-safe interfaces, composable modules, and systematic testing.</p>
+      </div>
+      <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+        <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-gray-900">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-dspy-ruby">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                </svg>
+              </div>
+              Type-Safe Interfaces
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-gray-600">Define your LLM interfaces using familiar Ruby syntax with Sorbet types. No more string manipulation or JSON schema headaches.</dd>
+          </div>
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-gray-900">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-dspy-ruby">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              </div>
+              Composable Modules
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-gray-600">Build complex LLM applications from simple, tested modules. Chain reasoning steps, handle errors gracefully, and create reusable components.</dd>
+          </div>
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-gray-900">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-dspy-ruby">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              </div>
+              Systematic Testing
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-gray-600">Test your LLM applications like any other code. Our comprehensive test suite with 226+ specs proves everything works as expected.</dd>
+          </div>
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-gray-900">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-dspy-ruby">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.633-4.596a18.666 18.666 0 01-2.485 5.33" />
+                </svg>
+              </div>
+              Ruby Ecosystem
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-gray-600">Built on Ruby's mature ecosystem. Integrate with Rails, Sidekiq, and other tools you already know and trust.</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
 
-  </main>
+  <!-- CTA Section -->
+  <div class="bg-gradient-to-br from-red-700 to-red-800">
+    <div class="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Ready to build reliable LLM applications?</h2>
+        <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-red-100">Stop fighting with prompt engineering. Start building LLM applications that actually work in production.</p>
+        <div class="mt-10 flex items-center justify-center gap-x-6">
+          <a href="/getting-started/" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-dspy-ruby shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Get started</a>
+          <a href="https://github.com/vicentereig/dspy.rb" class="text-sm font-semibold leading-6 text-white hover:text-red-100">View on GitHub <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <footer class="site-footer">
-    <div class="footer-content">
-      <p>&copy; 2025 DSPy.rb Documentation</p>
-      <p>Built with <a href="https://bridgetownrb.com/" target="_blank">Bridgetown</a></p>
+  <!-- Footer -->
+  <footer class="bg-white">
+    <div class="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
+      <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
+        <div class="pb-6">
+          <a href="/getting-started/" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Documentation</a>
+        </div>
+        <div class="pb-6">
+          <a href="https://github.com/vicentereig/dspy.rb" class="text-sm leading-6 text-gray-600 hover:text-gray-900">GitHub</a>
+        </div>
+        <div class="pb-6">
+          <a href="https://github.com/vicentereig/dspy.rb/discussions" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Community</a>
+        </div>
+        <div class="pb-6">
+          <a href="https://github.com/vicentereig/dspy.rb/blob/main/CONTRIBUTING.md" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Contributing</a>
+        </div>
+      </nav>
+      <p class="mt-10 text-center text-xs leading-5 text-gray-500">&copy; 2025 DSPy.rb. All rights reserved.</p>
     </div>
   </footer>
-
-  <!-- Scripts -->
-  <script src="/javascript/index.js"></script>
 </body>
 </html>

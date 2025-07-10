@@ -9,13 +9,6 @@ DSPy.rb is targeted towards developers so the user documentation under docs/*.md
 When making changes make sure the developer docs are in sync with the changes.
 Make sure the developer docs do not over promise or under promise the user.
 
-## Core Principles
-- **Be skeptical of AI-generated patterns**: Always verify API methods and implementations against actual code
-- **Trust the type system**: When using Sorbet-runtime, avoid redundant runtime checks
-- **Use T::Struct over Hashes**: Define proper types for complex data structures
-- **Default to simple solutions**: Start simple, optimize only when necessary
-- **Avoid unnecessary fallbacks**: Trust types and contracts instead of defensive programming
-
 ## Important: Library Documentation
 
 When working with external libraries in this codebase, **ALWAYS check the documentation for the specific version** used in the gemspec. This is critical because:
@@ -156,15 +149,6 @@ When in doubt about a library's API:
 3. Review the CHANGELOG for breaking changes between versions
 4. Test behavior in `bundle exec irb` with the actual gem version
 
-## Library Usage Guidelines
-
-- **Always check gem documentation for the version specified in Gemfile**: Before using any library methods or APIs, verify the correct syntax and available features for the exact version we're using
-- **Never assume API syntax**: Different gem versions can have different APIs - always reference the documentation for our specific version
-- **When in doubt, search the codebase first**: Look for existing usage patterns before implementing new library calls
-- **Examples of version-specific differences**:
-  - OpenAI gem versions may have completely different APIs between major versions
-  - Check the specific version docs in the gemspec before implementation
-
 ---
 
 # Ruby 3.3 Development Guidelines
@@ -244,12 +228,7 @@ These rules ensure maintainability, safety, and developer velocity for Ruby 3.3 
 ### 7 - Git
 
 - **GH-1 (MUST)** Use Conventional Commits format when writing commit messages: https://www.conventionalcommits.org/en/v1.0.0
-  - Format: `<type>[optional scope]: <description>`
-  - Types: `fix:`, `feat:`, `docs:`, `style:`, `refactor:`, `perf:`, `test:`, `build:`, `ci:`, `chore:`
-  - Breaking changes: Add `!` after type or `BREAKING CHANGE:` in footer
 - **GH-2 (SHOULD NOT)** Refer to Claude or Anthropic in commit messages.
-- **GH-3 (SHOULD)** Reference issues in commits: `fix: resolve parsing issue (#42)`
-- **GH-4 (SHOULD)** Keep commits atomic - one logical change per commit
 
 ---
 
@@ -307,44 +286,6 @@ Brainstorm 3 better method names and evaluate:
 - Is it consistent with DSPy terminology (e.g., `forward` for inference, `compile` for optimization)?
 - Does it clearly indicate if it's a command (changes state) or query (returns value)?
 
-## Common Anti-Patterns to Avoid
-
-### Avoid Unnecessary Fallbacks
-```ruby
-# ❌ BAD: Unnecessary fallback logic
-def process(result)
-  if result.documents.is_a?(Array)
-    result.documents
-  else
-    []  # Don't do this!
-  end
-end
-
-# ✅ GOOD: Trust the types
-def process(result)
-  result.documents  # Already guaranteed to be an Array by signature
-end
-```
-
-### Type Definitions
-```ruby
-# ❌ BAD: Generic hash types
-const :metadata, T::Hash[Symbol, T.untyped]
-
-# ✅ GOOD: Specific struct
-class Metadata < T::Struct
-  const :source, String
-  const :timestamp, Time
-  const :version, Integer
-end
-const :metadata, Metadata
-```
-
-### Error Handling
-- DO NOT implement fallback logic unless explicitly required by business logic
-- Fallbacks add complexity and cognitive load
-- Trust the type system (Sorbet runtime) - don't add defensive `respond_to?` checks
-
 ## DSPy.rb Specific Considerations
 
 ### Method Extraction Guidelines
@@ -386,39 +327,6 @@ end
 
 ---
 
-## Testing Best Practices
-
-### VCR Recording for External APIs
-- **ALWAYS use VCR** for tests that make external API calls
-- DO NOT mock DSPy or LLM responses - re-record cassettes instead
-- Example:
-  ```ruby
-  it 'performs synthesis', vcr: { cassette_name: 'synthesis_response' } do
-    # Test code that calls OpenAI/Anthropic
-  end
-  ```
-
-### Mock at the Right Level
-```ruby
-# ✅ GOOD: Mock DSPy module with proper struct
-mock_result = Struct.new(:documents, :search_strategy, :total_results).new(
-  [DocumentSearchSignature::DocumentChunk.new(
-    content: 'Test content',
-    relevance_score: 0.9,
-    metadata: {},
-    # ... other required fields
-  )],
-  'sequential',
-  1
-)
-allow(search_module).to receive(:forward).and_return(mock_result)
-
-# ❌ BAD: Mocking with plain hashes
-allow(search_module).to receive(:forward).and_return({
-  documents: [{ content: 'Test' }]  # Type mismatch!
-})
-```
-
 ## Writing Tests Best Practices
 
 When evaluating whether a test you've implemented is good or not, use this checklist:
@@ -452,19 +360,6 @@ end
 
 ---
 
-## Debugging Best Practices
-
-1. **Check for Existing Issues**: When encountering errors, always check GitHub issues first
-2. **Read Error Messages Carefully**: Most errors indicate missing dependencies or configuration
-3. **Verify Dependencies**: Ensure all runtime dependencies are properly installed
-4. **Test Locally First**: Run tests and linters before pushing changes
-5. **Use DSPy.logger for Output**: Configure logging appropriately for debugging
-   - Never use `puts`, `print`, or `p` in library code
-   - Use `DSPy.logger.debug` for detailed debugging info
-   - Use `DSPy.logger.info` for important operational messages
-   - Use `DSPy.logger.warn` for warnings
-   - Use `DSPy.logger.error` for errors
-
 ## Code Organization
 
 DSPy.rb follows a modular architecture:
@@ -489,33 +384,14 @@ DSPy.rb follows a modular architecture:
 - Add GH issues to the DSPy.rb 1.0 Project and assign them to me
 
 ## Issue Writing Guidelines
-
-- Write issue titles from the user's perspective (what they want to achieve, not how to implement it)
-- Start with WHY: First paragraph should explain the user benefit and value
-- Use clear, simple language without technical jargon in the problem statement
-- Avoid grandiose promises or overselling the feature
-- Structure issues as: User Problem → Value Proposition → Implementation Details
-- Examples:
-  - ❌ "Implement DSPy ChainOfThought for query analysis"  
-  - ✅ "Enable step-by-step reasoning for complex AI tasks"
-  - ❌ "Add Redis caching layer for performance optimization"  
-  - ✅ "Speed up repeated AI operations with intelligent caching"
+- When writing issue titles and descriptions, adopt the user's perspective
+- Start the description with a succinct explanation of the issue's importance
+- Follow the initial explanation with comprehensive technical details necessary to successfully accomplish the task
 
 ## Development Best Practices
 
-### AI Development Guidelines
-1. **Be Skeptical of AI-Generated Code**: Always verify API methods, patterns, and implementations
-2. **Check Documentation First**: Before using any library feature, check the docs for your version
-3. **Verify Against Real Code**: Look at actual implementations and tests, not just documentation
-4. **Predictor Selection**:
-   - Use `DSPy::Predict` for simple, fast classification/extraction
-   - Use `DSPy::ChainOfThought` for reasoning/complex tasks
-   - Use `DSPy::ReAct` only when tools are needed for external actions
-   - Consider performance: Predict < ChainOfThought < ReAct < CodeAct
-
 ### GitHub Issue References
 - Follow GitHub good practices with issues, i.e., when working on issues make a reference in the commit message that way GitHub can link it in the web UI
-- Use conventional commits format with issue references: `feat: add new feature (#123)`
 
 ---
 
@@ -618,81 +494,3 @@ BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! aft
 types other than fix: and feat: are allowed, for example @commitlint/config-conventional (based on the Angular convention) recommends build:, chore:, ci:, docs:, style:, refactor:, perf:, test:, and others.
 footers other than BREAKING CHANGE: <description> may be provided and follow a convention similar to git trailer format.
 ```
-
----
-
-## Best Practices Learned from Experience
-
-### Signature Pattern
-```ruby
-class MySignature < DSPy::Signature
-  description "Clear task description"
-  
-  # Use T::Enum for controlled outputs
-  class MyEnum < T::Enum
-    enums do
-      Option1 = new('option1')
-      Option2 = new('option2')
-    end
-  end
-  
-  # Use T::Struct for complex outputs
-  class MyStruct < T::Struct
-    const :field1, String
-    const :field2, Integer
-  end
-  
-  input do
-    const :input_field, String, desc: "Description for LLM"
-    const :optional_field, T.nilable(String)
-  end
-  
-  output do
-    const :result, MyEnum
-    const :details, T::Array[MyStruct]
-  end
-end
-```
-
-### Module Pattern
-```ruby
-class MyModule < DSPy::Module
-  def initialize
-    super()
-    @predictor = DSPy::Predict.new(MySignature)  # or ChainOfThought, ReAct
-  end
-  
-  def forward(input:)
-    @predictor.forward(input: input)
-  end
-end
-```
-
-### Toolset Pattern
-```ruby
-class MyToolset < DSPy::Tools::Toolset
-  toolset_name "my_tools"
-  
-  tool :operation_one, description: "Does something"
-  
-  sig { params(input: String).returns(String) }
-  def operation_one(input:)
-    # Implementation
-  end
-end
-
-# Usage with ReAct
-toolset = MyToolset.new
-agent = DSPy::ReAct.new(
-  signature: MySignature,
-  tools: toolset.class.to_tools  # Note: class method
-)
-```
-
-### Key DSPy.rb Patterns to Remember
-- Signatures define inputs/outputs using `input {}` and `output {}` blocks with Sorbet types
-- Modules inherit from `DSPy::Module` and implement `forward` method
-- Results are already properly typed - don't create unnecessary wrapper methods
-- Use appropriate predictor for your use case (Predict vs ChainOfThought vs ReAct)
-- Tool names in toolsets are prefixed with the toolset name
-- Always use T::Struct for complex nested data instead of hashes

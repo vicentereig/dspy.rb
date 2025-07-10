@@ -1,154 +1,79 @@
 ---
 layout: docs
-title: "Getting Started - Building Your First Reliable LLM System"
-description: "Moving from unpredictable prompts to structured, testable applications"
-section: getting-started
+title: Getting Started
+description: Get up and running with DSPy.rb in minutes
+breadcrumb:
+  - title: Getting Started
+    url: /getting-started/
 ---
 
-# Building Your First Reliable LLM System
+# Getting Started with DSPy.rb
 
-*Moving from "crossing fingers" to "shipping with confidence"*
+Welcome to DSPy.rb! This guide will help you get up and running with building reliable LLM applications in Ruby.
 
-## The Problem Most Teams Face
+## What is DSPy.rb?
 
-If you've built LLM applications before, you've probably hit this wall: your demo works perfectly, but production is a nightmare of edge cases and unpredictable failures.
+DSPy.rb is a Ruby framework for building predictable LLM applications using composable, type-safe modules. Instead of wrestling with prompt engineering, you define clear interfaces and let the framework handle the complexity.
 
-You're not alone. Most developers I work with are dealing with:
-- Prompts that work in testing but fail with real user data
-- Hours spent debugging string formatting instead of building features
-- LLM responses that can't be parsed reliably
-- No systematic way to test AI behavior
+## Key Features
 
-## What Actually Changes
+- **Type-safe interfaces** using Sorbet for compile-time checking
+- **Composable modules** for building complex reasoning chains
+- **Systematic testing** with comprehensive test coverage
+- **Production-ready** with Rails and Ruby ecosystem integration
 
-DSPy.rb doesn't promise to revolutionize how you think about AI. It just gives you better tools for building LLM applications that work predictably.
+## Quick Example
 
-Instead of treating LLMs as magic black boxes that respond to strings, you treat them as programmable modules with clear interfaces—just like any other part of your system.
-
-Here's the shift:
-- **Before**: Hope your prompt formatting works
-- **After**: Define clear interfaces and let the system handle prompting
-
-## Your First Structured Program
-
-Let's see this in practice. Here's how most of us start:
+Here's a simple example of defining an LLM interface with DSPy.rb:
 
 ```ruby
-# The fragile approach
-prompt = "You are a helpful assistant. Answer this question: #{user_question}"
-response = llm.complete(prompt)
-# Cross your fingers and hope it parses correctly...
-```
-
-Here's the same functionality, but structured:
-
-```ruby
-# Define what you want clearly
-class QuestionAnswering < DSPy::Signature
-  description "Answer questions accurately and concisely"
-  
+class EmailClassifier < DSPy::Signature
   input do
-    const :question, String
+    const :subject, String
+    const :body, String
   end
   
   output do
-    const :answer, String, desc: "A clear, concise answer"
-    const :confidence, Float, desc: "How confident are you? (0.0-1.0)"
+    const :category, String, enum: ["billing", "technical", "general"]
+    const :confidence, Float
   end
 end
 
-# Create a predictable system
-qa_system = DSPy::Predict.new(QuestionAnswering)
+# Use the classifier
+classifier = DSPy::Predict.new(EmailClassifier)
+result = classifier.call(
+  subject: "Invoice for March 2024",
+  body: "Please find attached your invoice..."
+)
 
-# Use it reliably
-result = qa_system.call(question: "What is the capital of France?")
-puts result.answer      # "Paris"
-puts result.confidence  # 0.95
+puts result.category    # => "billing"
+puts result.confidence  # => 0.95
 ```
 
-## What You Just Gained
+## What's Next?
 
-This isn't just different syntax—you solved several real problems:
-
-1. **Clear Interface**: You defined exactly what goes in and what comes out
-2. **Type Safety**: The system validates inputs and outputs automatically using Sorbet runtime types
-3. **Structured Results**: No more parsing unpredictable response formats
-4. **Systematic Testing**: You can write real tests for this behavior
-
-Notice how the schema definitions use **idiomatic Ruby with Sorbet types**—no JSON schemas or configuration files needed. The `const` declarations create runtime type validation that integrates seamlessly with your existing Ruby codebase.
-
-## Testing Your LLM System
-
-Here's the part that changes everything—you can now test LLM behavior systematically:
-
-```ruby
-RSpec.describe QuestionAnswering do
-  let(:qa_system) { DSPy::Predict.new(QuestionAnswering) }
+<div class="grid gap-4 mt-8 sm:grid-cols-2">
+  <a href="{{ '/getting-started/installation/' | relative_url }}" class="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md">
+    <div>
+      <h3 class="text-base font-semibold leading-6 text-gray-900">Installation</h3>
+      <p class="mt-2 text-sm text-gray-500">Install DSPy.rb and set up your development environment.</p>
+    </div>
+    <span class="absolute top-6 right-6 text-gray-400">
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </span>
+  </a>
   
-  it "answers factual questions confidently" do
-    result = qa_system.call(question: "What is 2 + 2?")
-    
-    expect(result.answer).to eq("4")
-    expect(result.confidence).to be > 0.9
-  end
-  
-  it "expresses uncertainty for ambiguous questions" do
-    result = qa_system.call(question: "What's the best programming language?")
-    
-    expect(result.confidence).to be < 0.7
-  end
-end
-```
-
-No more manual testing. No more "hope it works in production." Just systematic verification like any other code.
-
-## Common Questions
-
-**"Isn't this just more complex prompting?"**
-
-No—you're not writing prompts at all. DSPy.rb generates the prompts based on your signature. You focus on interface design instead of string manipulation.
-
-**"Does this actually work with real LLMs?"**
-
-Yes. Our test suite has 226+ specs running against real language models. The structured approach is more reliable than manual prompting, not less.
-
-**"What about complex reasoning tasks?"**
-
-That's where DSPy.rb really shines. You can chain reasoning steps, add tool usage, and build sophisticated workflows—all with the same structured approach.
-
-## What You've Learned
-
-In 10 minutes, you've:
-
-- Moved from string manipulation to structured interfaces
-- Gained the ability to test LLM behavior systematically  
-- Built a foundation for more complex reasoning systems
-- Eliminated most prompt engineering headaches
-
-## Next Steps
-
-This is just the foundation. From here you can:
-
-### **🔧 Learn the Core Building Blocks**
-**[Foundations →](/foundations/)**  
-*Signatures, Predict, Chain of Thought, and ReAct modules*
-
-### **🏗️ Build Multi-Step Systems**  
-**[System Building →](/systems/)**  
-*Chain reasoning steps into production workflows*
-
-### **🤖 Add Tool Usage**
-**[Agent Patterns →](/collaboration/)**  
-*Build LLMs that interact with external systems*
-
-## The Engineering Reality
-
-Building reliable LLM applications isn't about philosophical transformation—it's about applying good engineering practices to a new type of system.
-
-DSPy.rb gives you the tools. The rest is just software engineering.
-
-**Ready to build something that actually works?**
-
----
-
-*"LLM applications are just software. They should be built like software."*
+  <a href="{{ '/getting-started/quick-start/' | relative_url }}" class="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md">
+    <div>
+      <h3 class="text-base font-semibold leading-6 text-gray-900">Quick Start</h3>
+      <p class="mt-2 text-sm text-gray-500">Build your first LLM application with DSPy.rb.</p>
+    </div>
+    <span class="absolute top-6 right-6 text-gray-400">
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </span>
+  </a>
+</div>

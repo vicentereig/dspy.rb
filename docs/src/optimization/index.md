@@ -1,0 +1,43 @@
+---
+layout: docs
+title: Optimization
+description: Learn how to optimize your DSPy.rb applications for better performance
+---
+
+# Optimization
+
+One of DSPy.rb's most powerful features is automatic optimization. Instead of manually tweaking prompts, you can use optimizers to systematically improve your modules.
+
+## Why Optimize?
+
+Traditional prompt engineering is:
+- Time-consuming and manual
+- Inconsistent across different inputs
+- Hard to maintain as requirements change
+
+DSPy.rb optimization is:
+- Automatic and data-driven
+- Consistent and reproducible
+- Adapts to new requirements
+
+## Optimization Guides
+
+### [Prompt Optimization](/optimization/prompt-optimization/)
+Learn the fundamentals of how DSPy.rb optimizes prompts automatically using examples and metrics.
+
+### [Simple Optimizer](/optimization/simple-optimizer/)
+Start with BootstrapFewShot - the easiest optimizer that generates effective few-shot examples.
+
+### [MIPROv2](/optimization/miprov2/)
+Advanced optimization with MIPROv2 for production-grade performance and reliability.
+
+### [Evaluation](/optimization/evaluation/)
+Build metrics and evaluation frameworks to measure and improve your modules systematically.
+
+## Getting Started
+
+We recommend starting with:
+1. Understanding [Prompt Optimization](/optimization/prompt-optimization/) concepts
+2. Trying the [Simple Optimizer](/optimization/simple-optimizer/) on your modules
+3. Building proper [Evaluation](/optimization/evaluation/) metrics
+4. Graduating to [MIPROv2](/optimization/miprov2/) for production use

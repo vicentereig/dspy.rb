@@ -1,2 +1,5 @@
+memory/
+.gitignore
+claude-flow*
 .bridgetown-cache
 node_modules/*

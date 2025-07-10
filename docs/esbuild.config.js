@@ -26,33 +26,17 @@ const buildOptions = (mode = "production") => ({
   publicPath: "/_bridgetown/static/js/",
 })
 
-const cssOptions = (mode = "production") => ({
-  entryPoints: ["frontend/styles/index.css"],
-  outdir: "output/_bridgetown/static/css",
-  bundle: true,
-  minify: mode === "production",
-  sourcemap: mode === "development",
-  publicPath: "/_bridgetown/static/css/",
-})
-
 if (require.main === module) {
   const mode = process.argv.includes("--watch") ? "development" : "production"
   
   if (process.argv.includes("--watch")) {
-    const jsContext = esbuild.context(buildOptions(mode))
-    const cssContext = esbuild.context(cssOptions(mode))
-    
-    Promise.all([jsContext, cssContext]).then(([js, css]) => {
-      js.watch()
-      css.watch()
-      console.log("👀 Watching for changes...")
+    esbuild.context(buildOptions(mode)).then(ctx => {
+      ctx.watch()
+      console.log("👀 Watching for JavaScript changes...")
     })
   } else {
-    Promise.all([
-      esbuild.build(buildOptions(mode)),
-      esbuild.build(cssOptions(mode))
-    ]).then(() => {
-      console.log("⚡ Build complete!")
+    esbuild.build(buildOptions(mode)).then(() => {
+      console.log("⚡ JavaScript build complete!")
     }).catch((error) => {
       console.error(error)
       process.exit(1)
@@ -60,4 +44,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { buildOptions, cssOptions }
+module.exports = { buildOptions }
