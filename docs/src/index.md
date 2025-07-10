@@ -135,8 +135,8 @@ irb> classification.category = "invalid"  # This would raise an error!
 
 <div class="mx-auto max-w-7xl px-6 lg:px-8 py-16">
   <div class="mx-auto max-w-2xl lg:text-center mb-16">
-    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Why DSPy.rb makes sense</h2>
-    <p class="mt-4 text-lg text-gray-600">Real benefits for real developers building real applications.</p>
+    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Built for Ruby developers</h2>
+    <p class="mt-4 text-lg text-gray-600">Everything you love about Ruby, now for LLM applications.</p>
   </div>
   
   <div class="mx-auto grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">

@@ -1,3 +1,21 @@
+---
+layout: docs
+title: Registry & Versions
+description: Version management for signature configurations and deployment tracking
+breadcrumb:
+  - name: Production
+    url: /production/
+  - name: Registry
+    url: /production/registry/
+nav:
+  prev:
+    name: Storage
+    url: /production/storage/
+  next:
+    name: Observability
+    url: /production/observability/
+---
+
 # Registry & Versions
 
 The DSPy.rb registry system provides version management for signature configurations and deployment tracking. It enables versioning of optimization results, simple deployment management, and rollback capabilities.

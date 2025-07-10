@@ -1,3 +1,21 @@
+---
+layout: docs
+title: Signatures
+description: Define interfaces between your application and language models
+breadcrumb:
+  - name: Core Concepts
+    url: /core-concepts/
+  - name: Signatures
+    url: /core-concepts/signatures/
+nav:
+  prev:
+    name: Core Concepts
+    url: /core-concepts/
+  next:
+    name: Modules
+    url: /core-concepts/modules/
+---
+
 # Signatures
 
 Signatures define the interface between your application and language models. They specify inputs, outputs, and task descriptions using Sorbet types for basic type safety.

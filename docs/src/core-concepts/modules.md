@@ -1,3 +1,21 @@
+---
+layout: docs
+title: Modules
+description: Build reusable LLM components with DSPy.rb modules
+breadcrumb:
+  - name: Core Concepts
+    url: /core-concepts/
+  - name: Modules
+    url: /core-concepts/modules/
+nav:
+  prev:
+    name: Signatures
+    url: /core-concepts/signatures/
+  next:
+    name: Predictors
+    url: /core-concepts/predictors/
+---
+
 # Modules
 
 DSPy.rb modules provide a foundation for building reusable LLM components. The `DSPy::Module` class serves as a base class for creating custom predictors that can be configured and tested.
