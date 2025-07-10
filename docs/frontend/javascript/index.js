@@ -3,7 +3,7 @@ import Plausible from 'plausible-tracker'
 
 // Initialize Plausible analytics  
 const plausible = Plausible({
-  domain: 'vicentereig.github.io',
+  domain: 'vicentereig.github.io/dspy.rb',
   trackLocalhost: false,
   apiHost: 'https://plausible.io'
 })
