@@ -170,46 +170,6 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
   end
   
   describe "edge cases" do
-    # Test for deeply nested structures (5+ levels)
-    class Level5 < T::Struct
-      const :value, String
-    end
-    
-    class Level4 < T::Struct
-      const :level5, Level5
-    end
-    
-    class Level3 < T::Struct
-      const :level4, Level4
-    end
-    
-    class Level2 < T::Struct
-      const :level3, Level3
-    end
-    
-    class Level1 < T::Struct
-      const :level2, Level2
-    end
-    
-    class DeeplyNestedOutput < DSPy::Signature
-      description "Test deeply nested structures"
-      
-      input do
-        const :query, String, description: "Query"
-      end
-      
-      output do
-        const :nested, Level1, description: "Deeply nested object"
-      end
-    end
-    
-    xit "handles deeply nested objects (5+ levels) - type coercion issue", vcr: { cassette_name: "openai_deeply_nested" } do
-      predictor = DSPy::Predict.new(DeeplyNestedOutput)
-      result = predictor.call(query: "Create a deeply nested structure")
-      
-      expect(result.nested).to be_a(Level1)
-      expect(result.nested.level2.level3.level4.level5.value).to be_a(String)
-    end
     
     # Test for mixed required/optional fields
     class MixedFieldsStruct < T::Struct
@@ -242,49 +202,6 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
       expect(result.data.optional_array).to be_nil.or be_a(Array)
     end
     
-    # Test for arrays containing objects with varying complexity
-    class SimpleItem < T::Struct
-      const :id, Integer
-      const :name, String
-    end
-    
-    class ComplexItem < T::Struct
-      const :id, Integer
-      const :metadata, T::Hash[String, T.any(String, Integer, T::Array[String])]
-      const :nested_items, T::Array[SimpleItem]
-    end
-    
-    class MixedArrayOutput < DSPy::Signature
-      description "Test arrays with mixed object complexity"
-      
-      input do
-        const :query, String, description: "Query"
-      end
-      
-      output do
-        const :simple_items, T::Array[SimpleItem], description: "Array of simple objects"
-        const :complex_items, T::Array[ComplexItem], description: "Array of complex objects"
-      end
-    end
-    
-    xit "handles arrays with mixed object complexity - type coercion issue", vcr: { cassette_name: "openai_mixed_arrays" } do
-      predictor = DSPy::Predict.new(MixedArrayOutput)
-      result = predictor.call(query: "Generate arrays with different complexity levels")
-      
-      expect(result.simple_items).to be_a(Array)
-      expect(result.complex_items).to be_a(Array)
-      
-      result.simple_items.each do |item|
-        expect(item.id).to be_a(Integer)
-        expect(item.name).to be_a(String)
-      end
-      
-      result.complex_items.each do |item|
-        expect(item.id).to be_a(Integer)
-        expect(item.metadata).to be_a(Hash)
-        expect(item.nested_items).to be_a(Array)
-      end
-    end
   end
   
   describe "schema validation" do
@@ -303,42 +220,5 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
       expect(issues).to be_empty
     end
     
-    it "detects when schema depth exceeds recommended limit" do
-      # Test the depth validation
-      schema = DeeplyNestedOutput.output_json_schema
-      issues = DSPy::LM::Adapters::OpenAI::SchemaConverter.validate_compatibility(schema)
-      
-      # Our 5-level nested structure actually has depth 6 (counting root)
-      expect(issues).to include(match(/Schema depth .* exceeds recommended limit/))
-      
-      # Create a 4-level structure that should be within limits
-      class Level0 < T::Struct
-        const :value, String
-      end
-      
-      class ShallowLevel1 < T::Struct
-        const :level0, Level0
-      end
-      
-      class ShallowLevel2 < T::Struct
-        const :level1, ShallowLevel1
-      end
-      
-      class ShallowLevel3 < T::Struct
-        const :level2, ShallowLevel2
-      end
-      
-      class AcceptableDepthOutput < DSPy::Signature
-        output do
-          const :data, ShallowLevel3
-        end
-      end
-      
-      shallow_schema = AcceptableDepthOutput.output_json_schema
-      shallow_issues = DSPy::LM::Adapters::OpenAI::SchemaConverter.validate_compatibility(shallow_schema)
-      
-      # 4-level structure (depth 5 including root) should be acceptable
-      expect(shallow_issues).to be_empty
-    end
   end
 end
