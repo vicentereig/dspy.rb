@@ -25,12 +25,13 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **Basic Optimization** - Simple prompt optimization techniques
 
 **Production Features:**
-- **Reliable JSON Extraction** - Automatic strategy selection for OpenAI structured outputs, Anthropic patterns, and fallback modes
+- **Reliable JSON Extraction** - Native OpenAI structured outputs, Anthropic extraction patterns, and automatic strategy selection with fallback
+- **Type-Safe Configuration** - Strategy enums with automatic provider optimization (Strict/Compatible modes)
 - **Smart Retry Logic** - Progressive fallback with exponential backoff for handling transient failures
 - **Performance Caching** - Schema and capability caching for faster repeated operations
-- **File-based Storage** - Basic optimization result persistence
+- **File-based Storage** - Optimization result persistence with versioning
 - **Multi-Platform Observability** - OpenTelemetry, New Relic, and Langfuse integration
-- **Basic Instrumentation** - Event tracking and logging
+- **Comprehensive Instrumentation** - Event tracking, performance monitoring, and detailed logging
 
 **Developer Experience:**
 - LLM provider support using official Ruby clients:
@@ -40,18 +41,30 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - Type-safe tool definitions for ReAct agents
 - Comprehensive instrumentation and observability
 
-## Fair Warning
+## Development Status
 
-This is fresh off the oven and evolving fast. I'm actively building this as a Ruby port of the [DSPy library](https://dspy.ai/). If you hit bugs or want to contribute, just email me directly!
+DSPy.rb is actively developed and approaching stability at **v0.9.0**. The core framework is production-ready with comprehensive documentation, but I'm battle-testing features through the 0.x series before committing to a stable v1.0 API. 
+
+Real-world usage feedback is invaluable - if you encounter issues or have suggestions, please open a GitHub issue!
 
 ## Quick Start
 
 ### Installation
 
-Skip the gem for now - install straight from this repo while I prep the first release:
+```ruby
+gem 'dspy', '~> 0.9'
+```
+
+Or add to your Gemfile:
 
 ```ruby
-gem 'dspy', github: 'vicentereig/dspy.rb'
+gem 'dspy'
+```
+
+Then run:
+
+```bash
+bundle install
 ```
 
 ### Your First DSPy Program
@@ -124,25 +137,30 @@ puts result.confidence   # => 0.85
 - **[RAG Patterns](docs/src/advanced/rag.md)** - Manual RAG implementation with external services
 - **[Custom Metrics](docs/src/advanced/custom-metrics.md)** - Proc-based evaluation logic
 
-## What's Next
+## Recent Achievements
 
-These are my goals to release v1.0.
+DSPy.rb has rapidly evolved from experimental to production-ready:
 
-- ✅ Prompt objects foundation - *Done*
-- ✅ Evaluation framework - *Done*  
-- ✅ Teleprompter base classes - *Done*
-- ✅ MIPROv2 optimization algorithm - *Done*
-- ✅ Storage & persistence system - *Done*
-- ✅ Registry & version management - *Done*
-- ✅ OpenTelemetry integration - *Done*
-- ✅ New Relic integration - *Done*
-- ✅ Langfuse integration - *Done*
-- 🚧 Ollama support
-- Context Engineering (see recent research: [How Contexts Fail](https://www.dbreunig.com/2025/06/22/how-contexts-fail-and-how-to-fix-them.html), [How to Fix Your Context](https://www.dbreunig.com/2025/06/26/how-to-fix-your-context.html), [Context Engineering](https://simonwillison.net/2025/Jun/27/context-engineering/))
-- Agentic Memory support
-- MCP Support
-- Documentation website
-- Performance benchmarks
+- ✅ **JSON Parsing Reliability** (v0.8.0) - Native OpenAI structured outputs, strategy selection, retry logic
+- ✅ **Type-Safe Strategy Configuration** (v0.9.0) - Provider-optimized automatic strategy selection  
+- ✅ **Documentation Website** (v0.6.4) - Comprehensive docs at [vicentereig.github.io/dspy.rb](https://vicentereig.github.io/dspy.rb)
+- ✅ **Production Observability** - OpenTelemetry, New Relic, and Langfuse integration
+- ✅ **Optimization Framework** - MIPROv2 algorithm with storage & persistence
+- ✅ **Core Module System** - Predict, ChainOfThought, ReAct, CodeAct with type safety
+
+## Roadmap - Battle-Testing Toward v1.0
+
+DSPy.rb is currently at **v0.9.0** and approaching stability. I'm focusing on real-world usage and refinement through the 0.10, 0.11, 0.12+ series before committing to a stable v1.0 API.
+
+**Current Focus Areas:**
+- 🚧 **Ollama Support** - Local model integration
+- 🚧 **Context Engineering** - Advanced prompt optimization techniques
+- 🚧 **MCP Support** - Model Context Protocol integration
+- 🚧 **Agentic Memory** - Persistent agent state management
+- 🚧 **Performance Optimization** - Based on production usage patterns
+
+**v1.0 Philosophy:** 
+v1.0 will be released after extensive production battle-testing, not after checking off features. This ensures a stable, reliable API backed by real-world validation.
 
 ## License
 
