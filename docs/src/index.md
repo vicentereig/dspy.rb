@@ -7,7 +7,7 @@ description: "Write modular, testable Ruby code instead of tweaking prompts"
 <div class="mx-auto max-w-2xl py-16 sm:py-24 lg:py-32">
   <div class="mb-6 flex justify-center sm:mb-8">
     <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-      Version 0.7.0 is now available. <a href="https://github.com/vicentereig/dspy.rb/releases/tag/v0.7.0" class="font-semibold text-dspy-ruby hover:text-red-700"><span class="absolute inset-0" aria-hidden="true"></span>See what's new <span aria-hidden="true">&rarr;</span></a>
+      Version 0.8.1 is now available. <a href="https://github.com/vicentereig/dspy.rb/releases/tag/v0.8.1" class="font-semibold text-dspy-ruby hover:text-red-700"><span class="absolute inset-0" aria-hidden="true"></span>See what's new <span aria-hidden="true">&rarr;</span></a>
     </div>
   </div>
   <div class="text-center">

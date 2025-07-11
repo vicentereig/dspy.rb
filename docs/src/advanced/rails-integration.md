@@ -378,4 +378,4 @@ DSPy.rb's automatic enum handling makes Rails integration straightforward. The k
 4. **Cache AI responses** to improve performance
 5. **Use service objects** for clean architecture
 
-If you're still seeing issues with enum handling, ensure you're using the latest version of DSPy.rb (0.7.0+) which includes improved type coercion.
+If you're still seeing issues with enum handling, ensure you're using the latest version of DSPy.rb (0.8.1+) which includes improved type coercion.
