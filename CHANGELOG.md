@@ -5,6 +5,26 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2025-07-11
+
+### Fixed
+- **OpenAI Structured Outputs with Nested Arrays** (#33) - Re-enabled test for nested arrays after OpenAI fixed API bug
+  - OpenAI API now correctly handles `additionalProperties` for nested arrays of primitive types
+  - Re-recorded VCR cassette showing successful API response for complex nested structures
+  - Restored original `tags: T::Array[String]` field in test cases
+- **Test Infrastructure Improvements** - Fixed class naming conflicts in test adapters
+
+### Added
+- **Comprehensive Edge Case Testing** - Added extensive test coverage for OpenAI structured outputs
+  - Deeply nested objects (5+ levels) with depth validation warnings
+  - Mixed required/optional fields with `T.nilable` support
+  - Arrays with varying object complexity
+  - Schema depth validation and compatibility checks
+
+### Documentation
+- Updated issue #33 with findings showing OpenAI API bug resolution
+- Enhanced test coverage for structured output edge cases
+
 ## [0.8.0] - 2025-07-11
 
 ### Added
