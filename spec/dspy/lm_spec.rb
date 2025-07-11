@@ -40,7 +40,7 @@ RSpec.describe DSPy::LM do
 
   describe '#chat' do
     # Create a test adapter that inherits from the base adapter
-    class TestAdapter < DSPy::LM::Adapter
+    class LMSpecTestAdapter < DSPy::LM::Adapter
       attr_accessor :chat_response
       
       def chat(messages:, signature: nil, **kwargs, &block)
@@ -52,7 +52,7 @@ RSpec.describe DSPy::LM do
       end
     end
     
-    let(:mock_adapter) { TestAdapter.new(model: 'test-model', api_key: 'test-key') }
+    let(:mock_adapter) { LMSpecTestAdapter.new(model: 'test-model', api_key: 'test-key') }
     let(:mock_response) do
       DSPy::LM::Response.new(
         content: '{"answer": "test response"}',

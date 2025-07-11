@@ -3,7 +3,7 @@
 require "spec_helper"
 
 # Test adapter for Sorbet compatibility
-class TestAdapter < DSPy::LM::Adapter
+class RetryHandlerTestAdapter < DSPy::LM::Adapter
   def initialize
     # Skip parent initialization for tests
     @model = "test-model"
@@ -44,7 +44,7 @@ class TestEnhancedStrategy < DSPy::LM::Strategies::BaseStrategy
 end
 
 RSpec.describe DSPy::LM::RetryHandler do
-  let(:adapter) { TestAdapter.new }
+  let(:adapter) { RetryHandlerTestAdapter.new }
   let(:signature_class) do
     Class.new(DSPy::Signature) do
       def self.name
