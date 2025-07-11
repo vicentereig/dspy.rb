@@ -286,7 +286,7 @@ end
 
 ## Next Steps
 
-- Learn about [Core Concepts](core-concepts.md)
-- Explore [Signatures & Types](../core-concepts/signatures.md)
-- Try [Prompt Optimization](../optimization/prompt-optimization.md)
-- Set up [Observability](../production/observability.md)
+- Learn about [Core Concepts](../core-concepts)
+- Explore [Signatures & Types](../../core-concepts/signatures)
+- Try [Prompt Optimization](../../optimization/prompt-optimization)
+- Set up [Observability](../../production/observability)
