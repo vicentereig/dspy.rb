@@ -27,6 +27,14 @@ DSPy.rb is a Ruby framework for building predictable LLM applications using comp
 Here's a simple example of defining an LLM interface with DSPy.rb:
 
 ```ruby
+class EmailCategory < T::Enum
+  enums do
+    Technical = new('technical')
+    Billing = new('billing')
+    General = new('general')
+  end
+end
+
 class EmailClassifier < DSPy::Signature
   input do
     const :subject, String
@@ -34,7 +42,7 @@ class EmailClassifier < DSPy::Signature
   end
   
   output do
-    const :category, String, enum: ["billing", "technical", "general"]
+    const :category, EmailCategory
     const :confidence, Float
   end
 end
@@ -46,7 +54,7 @@ result = classifier.call(
   body: "Please find attached your invoice..."
 )
 
-puts result.category    # => "billing"
+puts result.category    # => EmailCategory::Billing
 puts result.confidence  # => 0.95
 ```
 
