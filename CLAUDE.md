@@ -252,7 +252,53 @@ BRIDGETOWN_ENV=production npm run build
 
 ---
 
-### 7 - Git
+### 7 - Documentation & Styling
+
+- **DS-1 (MUST)** Use Tailwind CSS utilities instead of writing raw CSS when working on documentation site styles.
+- **DS-2 (SHOULD)** Prefer `@apply` directive for component-level styling over raw CSS properties.
+- **DS-3 (SHOULD)** Use Tailwind's design tokens (spacing, colors, etc.) via `theme()` function when raw CSS is necessary.
+- **DS-4 (MUST)** Follow mobile-first responsive design using Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`).
+
+### 7.1 - Tailwind CSS Best Practices for Documentation
+
+**Preferred Approach - Use Tailwind utilities:**
+```css
+/* ✅ Good: Use @apply with Tailwind utilities */
+.mobile-menu-button {
+  @apply inline-flex items-center justify-center rounded-md p-2 text-gray-400;
+  @apply hover:bg-gray-100 hover:text-gray-500 focus:outline-none;
+  @apply lg:hidden min-w-[44px] min-h-[44px];
+}
+
+/* ✅ Good: Use theme() function for consistent values */
+.custom-shadow {
+  box-shadow: 0 4px 6px theme('colors.gray.300');
+}
+```
+
+**Avoid Raw CSS:**
+```css
+/* ❌ Bad: Raw CSS instead of Tailwind utilities */
+.mobile-menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  padding: 8px;
+  color: #9CA3AF;
+}
+```
+
+**Available Tailwind Features:**
+- All utility classes: `flex`, `items-center`, `bg-gray-100`, etc.
+- Responsive design: `sm:hidden`, `lg:flex`, `md:block`
+- Custom colors: `bg-dspy-ruby`, `text-dspy-dark`
+- Typography plugin: `prose`, `prose-lg`, `prose-gray`
+- Forms plugin: enhanced form styling
+
+---
+
+### 8 - Git
 
 - **GH-1 (MUST)** Use Conventional Commits format when writing commit messages: https://www.conventionalcommits.org/en/v1.0.0
 - **GH-2 (SHOULD NOT)** Refer to Claude or Anthropic in commit messages.
