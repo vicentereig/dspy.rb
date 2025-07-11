@@ -115,6 +115,9 @@ module DSPy
       output_attributes = output_attributes.transform_keys(&:to_sym)
       output_props = @signature_class.output_struct_class.props
       
+      # Apply defaults for missing fields
+      output_attributes = apply_defaults_to_output(output_attributes)
+      
       coerce_output_attributes(output_attributes, output_props)
     end
 
@@ -142,6 +145,23 @@ module DSPy
         input: input_props,
         output: output_props
       })
+    end
+
+    # Applies default values to missing output fields
+    sig { params(output_attributes: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+    def apply_defaults_to_output(output_attributes)
+      return output_attributes unless @signature_class.respond_to?(:output_field_descriptors)
+      
+      field_descriptors = @signature_class.output_field_descriptors
+      
+      field_descriptors.each do |field_name, descriptor|
+        # Only apply default if field is missing and has a default
+        if !output_attributes.key?(field_name) && descriptor.has_default
+          output_attributes[field_name] = descriptor.default_value
+        end
+      end
+      
+      output_attributes
     end
   end
 end

@@ -17,7 +17,7 @@ next:
 
 # Quick Start Guide
 
-Get up and running with DSPy.rb in minutes.
+Get up and running with DSPy.rb in minutes. This guide shows Ruby-idiomatic patterns for building AI applications.
 
 ## Your First DSPy Program
 
@@ -143,6 +143,96 @@ drafter = ArticleDrafter.new
 article = drafter.forward(topic: "The impact of AI on software development")
 puts article[:title]
 puts article[:sections].first
+```
+
+## Ruby-Idiomatic Examples
+
+### Working with Collections
+
+DSPy.rb works naturally with Ruby's Enumerable patterns:
+
+```ruby
+# Process multiple items with Ruby's collection methods
+class BatchProcessor < DSPy::Module
+  def initialize
+    @classifier = DSPy::Predict.new(Classify)
+  end
+  
+  def process_batch(sentences)
+    sentences.map { |sentence| @classifier.call(sentence: sentence) }
+             .select { |result| result.confidence > 0.8 }
+             .group_by(&:sentiment)
+  end
+end
+
+# Usage
+processor = BatchProcessor.new
+results = processor.process_batch([
+  "I love this product!",
+  "This is terrible.",
+  "It's okay, I guess."
+])
+
+results[:positive]&.each { |r| puts r.sentence }
+```
+
+### Block-Based Configuration
+
+Configure DSPy components with Ruby blocks:
+
+```ruby
+# Configure with blocks for cleaner syntax
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new('openai/gpt-4o-mini') do |lm|
+    lm.api_key = ENV.fetch('OPENAI_API_KEY')
+    lm.temperature = 0.7
+    lm.max_tokens = 1000
+  end
+  
+  config.instrumentation do |i|
+    i.enabled = Rails.env.production?
+    i.logger.level = :info
+  end
+end
+```
+
+### Method Chaining
+
+Build complex queries with chainable methods:
+
+```ruby
+# Future API (coming soon)
+result = DSPy.predict(:question_answering)
+              .with_examples(training_data)
+              .with_instruction("Be concise")
+              .optimize_for(:accuracy)
+              .call(question: "What is Ruby?")
+```
+
+### Duck Typing with Tools
+
+Create tools that follow Ruby's duck typing principles:
+
+```ruby
+# Any object that responds to #call can be a tool
+class WeatherTool
+  def call(location:)
+    # In real app, this would call an API
+    { temperature: 72, conditions: "sunny" }
+  end
+end
+
+# Lambda tools for simple operations
+calculator = ->(expression:) { eval(expression) }
+
+# Use with ReAct agent
+agent = DSPy::ReAct.new(
+  WeatherReport,
+  tools: {
+    weather: WeatherTool.new,
+    calculate: calculator
+  }
+)
 ```
 
 ## Key Concepts

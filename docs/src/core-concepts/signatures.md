@@ -134,6 +134,50 @@ class ContentGeneration < DSPy::Signature
 end
 ```
 
+## Default Values (New in v0.7.0)
+
+Default values make your signatures more flexible and handle missing LLM responses gracefully:
+
+```ruby
+class SmartSearch < DSPy::Signature
+  description "Search with intelligent defaults"
+  
+  input do
+    const :query, String
+    const :max_results, Integer, default: 10
+    const :language, String, default: "English"
+    const :include_metadata, T::Boolean, default: false
+  end
+  
+  output do
+    const :results, T::Array[String]
+    const :total_found, Integer
+    const :search_time_ms, Float, default: 0.0
+    const :cached, T::Boolean, default: false
+  end
+end
+
+# Usage - input defaults reduce boilerplate
+search = DSPy::Predict.new(SmartSearch)
+
+# Only need to provide required fields
+result = search.call(query: "Ruby programming")
+# max_results=10, language="English", include_metadata=false are used
+
+# Output defaults handle missing LLM responses
+# If LLM doesn't return search_time_ms or cached, defaults are applied
+```
+
+### How Default Values Work
+
+1. **Input Defaults**: Applied when creating the input struct
+   - Reduce boilerplate in your code
+   - Make APIs more user-friendly
+   
+2. **Output Defaults**: Applied when LLM response is missing fields
+   - Improve robustness when LLMs omit optional fields  
+   - Prevent errors from incomplete responses
+
 ## Practical Examples
 
 ### Email Classification

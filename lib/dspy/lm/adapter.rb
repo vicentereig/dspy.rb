@@ -24,7 +24,12 @@ module DSPy
 
       def validate_configuration!
         raise ConfigurationError, "Model is required" if model.nil? || model.empty?
-        raise ConfigurationError, "API key is required" if api_key.nil? || api_key.empty?
+      end
+
+      def validate_api_key!(api_key, provider)
+        if api_key.nil? || api_key.to_s.strip.empty?
+          raise MissingAPIKeyError.new(provider)
+        end
       end
 
       # Helper method to normalize message format

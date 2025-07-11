@@ -7,6 +7,7 @@ module DSPy
     class AnthropicAdapter < Adapter
       def initialize(model:, api_key:)
         super
+        validate_api_key!(api_key, 'anthropic')
         @client = Anthropic::Client.new(api_key: api_key)
       end
 

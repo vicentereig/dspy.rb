@@ -1,0 +1,51 @@
+---
+layout: default
+---
+
+<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+  <header class="py-16">
+    <div class="text-center">
+      <div class="flex justify-center gap-x-4 text-sm">
+        <time datetime="{{ page.date }}" class="text-gray-500 dark:text-gray-400">
+          {{ page.date | date: "%B %d, %Y" }}
+        </time>
+        {% if page.category %}
+          <span class="text-gray-500 dark:text-gray-400">•</span>
+          <span class="text-gray-600 dark:text-gray-300">{{ page.category }}</span>
+        {% endif %}
+      </div>
+      <h1 class="mt-6 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+        {{ page.title }}
+      </h1>
+      <p class="mt-6 text-xl leading-8 text-gray-600 dark:text-gray-400">
+        {{ page.description }}
+      </p>
+      <div class="mt-8 flex items-center justify-center gap-x-4 text-sm">
+        <span class="text-gray-900 dark:text-white font-semibold">
+          {{ page.author | default: "DSPy.rb Team" }}
+        </span>
+        {% if page.read_time %}
+          <span class="text-gray-500 dark:text-gray-400">•</span>
+          <span class="text-gray-500 dark:text-gray-400">{{ page.read_time }} min read</span>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <div class="prose prose-lg prose-gray dark:prose-invert mx-auto">
+    {{ content }}
+  </div>
+
+  <footer class="mt-16 border-t border-gray-900/10 dark:border-gray-100/10 pt-8">
+    <div class="flex justify-between items-center">
+      <a href="/blog/" class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
+        ← Back to blog
+      </a>
+      {% if page.next_post %}
+        <a href="{{ page.next_post.url }}" class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
+          Next: {{ page.next_post.title }} →
+        </a>
+      {% endif %}
+    </div>
+  </footer>
+</article>

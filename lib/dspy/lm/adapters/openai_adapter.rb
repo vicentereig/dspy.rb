@@ -7,6 +7,7 @@ module DSPy
     class OpenAIAdapter < Adapter
       def initialize(model:, api_key:)
         super
+        validate_api_key!(api_key, 'openai')
         @client = OpenAI::Client.new(api_key: api_key)
       end
 

@@ -19,6 +19,9 @@ Implement retrieval-augmented generation patterns to ground your LLM responses i
 ### [Complex Types](/advanced/complex-types/)
 Work with structured data, nested objects, and complex type hierarchies in your signatures.
 
+### [Rails Integration](/advanced/rails-integration/)
+Integrate DSPy.rb seamlessly with Ruby on Rails applications, including enum handling and service patterns.
+
 ### [Custom Metrics](/advanced/custom-metrics/)
 Build domain-specific metrics to evaluate and optimize your modules for your unique use cases.
 

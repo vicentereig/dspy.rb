@@ -20,11 +20,15 @@ module DSPy
       sig { returns(T::Boolean) }
       attr_reader :has_default
 
-      sig { params(type: T.untyped, description: T.nilable(String), has_default: T::Boolean).void }
-      def initialize(type, description = nil, has_default = false)
+      sig { returns(T.untyped) }
+      attr_reader :default_value
+
+      sig { params(type: T.untyped, description: T.nilable(String), has_default: T::Boolean, default_value: T.untyped).void }
+      def initialize(type, description = nil, has_default = false, default_value = nil)
         @type = type
         @description = description
         @has_default = has_default
+        @default_value = default_value
       end
     end
 
@@ -44,8 +48,8 @@ module DSPy
       def const(name, type, **kwargs)
         description = kwargs[:description]
         has_default = kwargs.key?(:default)
-        @field_descriptors[name] = FieldDescriptor.new(type, description, has_default)
-        # Store default for future use if needed
+        default_value = kwargs[:default]
+        @field_descriptors[name] = FieldDescriptor.new(type, description, has_default, default_value)
       end
 
       sig { returns(T.class_of(T::Struct)) }
@@ -54,7 +58,11 @@ module DSPy
         Class.new(T::Struct) do
           extend T::Sig
           descriptors.each do |name, descriptor|
-            const name, descriptor.type
+            if descriptor.has_default
+              const name, descriptor.type, default: descriptor.default_value
+            else
+              const name, descriptor.type
+            end
           end
         end
       end
