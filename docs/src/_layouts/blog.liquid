@@ -64,9 +64,11 @@
                   prose-a:text-dspy-ruby prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
                   prose-strong:text-gray-900 prose-strong:font-semibold
                   prose-code:text-dspy-ruby prose-code:bg-red-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-[''] prose-code:after:content-['']
-                  prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:overflow-x-auto
                   prose-blockquote:border-l-dspy-ruby prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-600
-                  prose-img:rounded-xl prose-img:shadow-lg">
+                  prose-img:rounded-xl prose-img:shadow-lg
+                  [&_.highlight]:!bg-transparent [&_.highlight]:!text-inherit
+                  [&_.highlighter-rouge]:!bg-transparent [&_.highlighter-rouge]:!text-inherit
+                  [&_pre.highlight]:!bg-gray-900 [&_pre.highlight]:!text-gray-100 [&_pre.highlight]:!overflow-x-auto [&_pre.highlight]:!rounded-lg [&_pre.highlight]:!p-4">
         {{ content }}
       </div>
     </div>
