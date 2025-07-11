@@ -222,6 +222,33 @@ These rules ensure maintainability, safety, and developer velocity for Ruby 3.3 
 - **G-1 (MUST)** `bundle exec rubocop` passes.  
 - **G-2 (MUST)** `bundle exec srb tc` passes.
 - **G-3 (MUST)** `bundle exec rspec` passes.
+- **G-4 (MUST)** Documentation site builds successfully before pushing changes.
+
+### 6.1 — Documentation Site Build Verification
+
+When making changes to the documentation site (anything in `/docs/`), **ALWAYS** verify the build works locally before pushing:
+
+```bash
+# Navigate to docs directory
+cd docs
+
+# Install dependencies (if not already done)
+npm ci
+bundle install
+
+# Build the site locally
+BRIDGETOWN_ENV=production npm run build
+
+# If build succeeds, you're ready to push
+# If build fails, fix the issues before pushing
+```
+
+**Common build issues to check:**
+- Missing JavaScript imports/exports
+- Liquid template syntax errors
+- Missing or incorrect file paths
+- Broken markdown syntax
+- Invalid HTML in layouts
 
 ---
 
