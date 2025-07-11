@@ -466,6 +466,16 @@ DSPy.rb follows a modular architecture:
 ### GitHub Issue References
 - Follow GitHub good practices with issues, i.e., when working on issues make a reference in the commit message that way GitHub can link it in the web UI
 
+### GitHub Issue Management
+- **ALWAYS** check if the issue you're working on is already implemented before starting work
+- Before implementing a feature, search the codebase for existing implementations
+- Run tests to verify implementation status: `bundle exec rspec`
+- After completing implementation, use GitHub commit message shortcuts to close issues:
+  - `close #123` or `closes #123` or `fix #123` or `fixes #123` to close an issue
+  - `reopen #123` to reopen an issue
+  - `ref #123` to reference an issue without closing it
+- When closing implemented issues, include a comment with implementation details and verification steps
+
 ---
 
 ## Remember Shortcuts

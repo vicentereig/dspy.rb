@@ -18,6 +18,12 @@ Define what your LLM operations should do - the inputs and outputs. Think of the
 ### [Modules](/core-concepts/modules/)
 Implement how to achieve what signatures define. Modules are composable units that can be combined to build complex workflows.
 
+### [Memory](/core-concepts/memory/)
+Store and retrieve information across interactions to build stateful agents that remember user preferences and context.
+
+### [Toolsets](/core-concepts/toolsets/)
+Group related tools in a single class for agent integration. Toolsets provide agents with capabilities like memory operations, file access, and API calls.
+
 ### [Predictors](/core-concepts/predictors/)
 Connect your modules to language models with different strategies like chain-of-thought reasoning or tool use.
 
@@ -33,8 +39,10 @@ We recommend reading through these concepts in order:
 
 1. Start with [Signatures](/core-concepts/signatures/) to understand input/output contracts
 2. Move to [Modules](/core-concepts/modules/) to learn how to build workflows
-3. Explore [Predictors](/core-concepts/predictors/) for different reasoning strategies
-4. Learn about [CodeAct](/core-concepts/codeact/) for dynamic code generation
-5. Study [Examples](/core-concepts/examples/) to see everything in action
+3. Learn about [Memory](/core-concepts/memory/) for stateful agents
+4. Explore [Toolsets](/core-concepts/toolsets/) for agent capabilities
+5. Study [Predictors](/core-concepts/predictors/) for different reasoning strategies
+6. Learn about [CodeAct](/core-concepts/codeact/) for dynamic code generation
+7. Study [Examples](/core-concepts/examples/) to see everything in action
 
 Each concept builds on the previous ones, creating a comprehensive framework for LLM development.

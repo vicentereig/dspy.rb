@@ -230,7 +230,152 @@ class ResearchAssistant < DSPy::Module
 end
 ```
 
+### Complete Example: Personal Assistant with Memory
+
+Here's a complete example showing how to build a personal assistant that uses memory and toolsets:
+
+```ruby
+class PersonalAssistantSignature < DSPy::Signature
+  description "Personal assistant that remembers user preferences and context"
+  
+  input do
+    const :user_message, String
+    const :user_id, String
+  end
+  
+  output do
+    const :response, String
+    const :action_taken, String
+  end
+end
+
+class PersonalAssistant < DSPy::Module
+  def initialize
+    super
+    
+    # Get all memory tools for the agent
+    memory_tools = DSPy::Tools::MemoryToolset.to_tools
+    
+    # Create the ReAct agent with memory capabilities
+    @agent = DSPy::ReAct.new(
+      PersonalAssistantSignature,
+      tools: memory_tools
+    )
+  end
+  
+  def forward(user_message:, user_id:)
+    # The agent can now use memory tools to:
+    # - Store user preferences
+    # - Retrieve past conversations
+    # - Search for relevant information
+    @agent.call(user_message: user_message, user_id: user_id)
+  end
+end
+
+# Usage
+assistant = PersonalAssistant.new
+
+# User sets a preference
+result = assistant.call(
+  user_message: "I prefer dark mode for all applications",
+  user_id: "user123"
+)
+puts result.response
+# => "I've saved your preference for dark mode. I'll remember this for future recommendations."
+
+# Later, user asks about UI preferences
+result = assistant.call(
+  user_message: "What UI preferences do I have?",
+  user_id: "user123"
+)
+puts result.response
+# => "Based on what you've told me, you prefer dark mode for all applications."
+```
+
+### Building a Stateful Customer Service Agent
+
+```ruby
+class CustomerServiceSignature < DSPy::Signature
+  description "Customer service agent with conversation history"
+  
+  input do
+    const :customer_query, String
+    const :customer_id, String
+  end
+  
+  output do
+    const :response, String
+    const :escalation_needed, T::Boolean
+    const :issue_resolved, T::Boolean
+  end
+end
+
+class CustomerServiceAgent < DSPy::Module
+  def initialize
+    super
+    
+    # Memory for conversation history and customer data
+    memory_tools = DSPy::Tools::MemoryToolset.to_tools
+    
+    @agent = DSPy::ReAct.new(
+      CustomerServiceSignature,
+      tools: memory_tools
+    )
+  end
+  
+  def forward(customer_query:, customer_id:)
+    # Agent can:
+    # - Store conversation history
+    # - Remember customer issues
+    # - Track resolution status
+    # - Access previous interactions
+    result = @agent.call(
+      customer_query: customer_query,
+      customer_id: customer_id
+    )
+    
+    # Store conversation for future reference
+    store_conversation(customer_id, customer_query, result.response)
+    
+    result
+  end
+  
+  private
+  
+  def store_conversation(customer_id, query, response)
+    timestamp = Time.now.to_i
+    DSPy::Memory.manager.store_memory(
+      {
+        query: query,
+        response: response,
+        timestamp: timestamp
+      }.to_json,
+      user_id: customer_id,
+      tags: ["conversation", "customer_support"]
+    )
+  end
+end
+
+# Usage
+agent = CustomerServiceAgent.new
+
+# First interaction
+result = agent.call(
+  customer_query: "My order hasn't arrived and it's been 10 days",
+  customer_id: "cust456"
+)
+
+# Follow-up interaction - agent remembers previous context
+result = agent.call(
+  customer_query: "Any update on my missing order?",
+  customer_id: "cust456"
+)
+puts result.response
+# => "I can see from our previous conversation that your order was delayed. Let me check the latest status..."
+```
+
 For more details on creating tools and toolsets, see the [Toolsets documentation](toolsets.md).
+For advanced memory patterns, see the [Memory Systems documentation](../advanced/memory-systems.md).
 
 ### Module Using CodeAct for Dynamic Programming
 
