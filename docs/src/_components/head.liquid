@@ -6,11 +6,11 @@
   <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
   
   <!-- Styles -->
-  <link rel="stylesheet" href="{{ site.base_path }}/_bridgetown/static/css/index.css">
+  <link rel="stylesheet" href="{{ '/_bridgetown/static/css/index.css' | relative_url }}">
   
   <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="{{ site.base_path }}/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="{{ '/favicon.ico' | relative_url }}">
   
   <!-- JavaScript -->
-  <script defer src="{{ site.base_path }}/_bridgetown/static/js/index.js"></script>
+  <script defer src="{{ '/_bridgetown/static/js/index.js' | relative_url }}"></script>
 </head>
