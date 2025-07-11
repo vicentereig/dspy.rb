@@ -31,7 +31,7 @@ The memory compaction system addresses four key challenges:
 
 ## Architecture
 
-```
+```text
 DSPy::Memory::MemoryCompactor
 ├── Trigger Detection (inline checks)
 ├── Size Compaction (oldest-first removal)

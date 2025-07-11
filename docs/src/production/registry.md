@@ -235,7 +235,7 @@ end
 
 The registry uses file-based storage with YAML files:
 
-```
+```text
 dspy_registry/
 ├── registry.yml          # Registry configuration
 ├── signatures/

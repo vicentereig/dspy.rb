@@ -89,3 +89,26 @@ div[markdown="1"] {
 code:not([class*="language-"]) {
   @apply px-1 py-0.5 text-sm font-medium text-gray-800 rounded;
 }
+
+/* Plain code blocks without syntax highlighting */
+pre:not(.highlight) {
+  @apply rounded-lg border border-gray-700 bg-gray-900 text-gray-100 p-4 overflow-x-auto;
+}
+
+/* Ensure code inside plain pre blocks has proper styling */
+pre:not(.highlight) code {
+  @apply text-gray-100 bg-transparent;
+}
+
+/* Fix for text/plain code blocks in prose */
+.prose pre[class*="language-text"],
+.prose pre[class*="language-plain"],
+.prose pre:not([class*="language-"]) {
+  @apply bg-gray-900 text-gray-100 border-gray-700;
+}
+
+.prose pre[class*="language-text"] code,
+.prose pre[class*="language-plain"] code,
+.prose pre:not([class*="language-"]) code {
+  @apply text-gray-100;
+}

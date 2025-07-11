@@ -34,6 +34,29 @@ module.exports = {
             'code::after': {
               content: '""',
             },
+            pre: {
+              backgroundColor: theme('colors.gray.900'),
+              color: theme('colors.gray.100'),
+              overflowX: 'auto',
+              borderColor: theme('colors.gray.700'),
+            },
+            'pre code': {
+              backgroundColor: 'transparent',
+              borderWidth: '0',
+              borderRadius: '0',
+              padding: '0',
+              fontWeight: 'inherit',
+              color: theme('colors.gray.100'),
+              fontSize: 'inherit',
+              fontFamily: 'inherit',
+              lineHeight: 'inherit',
+            },
+            'pre code::before': {
+              content: '""',
+            },
+            'pre code::after': {
+              content: '""',
+            },
           },
         },
       }),
