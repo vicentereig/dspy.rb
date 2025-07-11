@@ -12,7 +12,12 @@ description: "Practical insights and tutorials for building AI applications with
     </div>
     
     <div class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-12 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-      {% assign sorted_posts = site.pages | where: "layout", "blog" | sort: "date" | reverse %}
+      {% assign blog_posts = site.pages | where: "layout", "blog" %}
+      {% if blog_posts.size > 0 %}
+        {% assign sorted_posts = blog_posts | sort: "date" | reverse %}
+      {% else %}
+        {% assign sorted_posts = blog_posts %}
+      {% endif %}
       {% for post in sorted_posts %}
         <article class="flex flex-col items-start">
           <div class="relative w-full">
