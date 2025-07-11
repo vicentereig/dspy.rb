@@ -1,8 +1,11 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+{% render "head" %}
+<body class="h-full">
+  <div class="bg-white">
+    {% render "header" %}
 
-<article class="relative isolate overflow-hidden bg-white px-6 py-32 lg:px-8">
+    <article class="relative isolate overflow-hidden bg-white px-6 pt-20 pb-32 lg:px-8">
   <!-- Background decorative elements -->
   <div class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.indigo.100),white)] opacity-20"></div>
   <div class="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
@@ -36,14 +39,15 @@ layout: default
           </div>
           <div class="text-sm leading-6">
             <p class="font-semibold text-gray-900">
-              {{ page.author | default: "DSPy.rb Team" }}
+              {{ page.author | default: "Vicente Reig" }}
             </p>
             <p class="text-gray-600">
+              Fractional Engineering Lead •
               <time datetime="{{ page.date | date: '%Y-%m-%d' }}">
                 {{ page.date | date: "%B %d, %Y" }}
               </time>
-              {% if page.read_time %}
-                • {{ page.read_time }} min read
+              {% if page.reading_time %}
+                • {{ page.reading_time }}
               {% endif %}
             </p>
           </div>
@@ -110,3 +114,9 @@ layout: default
     </footer>
   </div>
 </article>
+
+  </div>
+
+  {% render "footer" %}
+</body>
+</html>
