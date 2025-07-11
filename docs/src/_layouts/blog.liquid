@@ -2,50 +2,105 @@
 layout: default
 ---
 
-<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-  <header class="py-16">
-    <div class="text-center">
-      <div class="flex justify-center gap-x-4 text-sm">
-        <time datetime="{{ page.date }}" class="text-gray-500 dark:text-gray-400">
-          {{ page.date | date: "%B %d, %Y" }}
-        </time>
-        {% if page.category %}
-          <span class="text-gray-500 dark:text-gray-400">•</span>
-          <span class="text-gray-600 dark:text-gray-300">{{ page.category }}</span>
-        {% endif %}
-      </div>
-      <h1 class="mt-6 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-        {{ page.title }}
-      </h1>
-      <p class="mt-6 text-xl leading-8 text-gray-600 dark:text-gray-400">
-        {{ page.description }}
-      </p>
-      <div class="mt-8 flex items-center justify-center gap-x-4 text-sm">
-        <span class="text-gray-900 dark:text-white font-semibold">
-          {{ page.author | default: "DSPy.rb Team" }}
-        </span>
-        {% if page.read_time %}
-          <span class="text-gray-500 dark:text-gray-400">•</span>
-          <span class="text-gray-500 dark:text-gray-400">{{ page.read_time }} min read</span>
-        {% endif %}
-      </div>
-    </div>
-  </header>
-
-  <div class="prose prose-lg prose-gray dark:prose-invert mx-auto">
-    {{ content }}
-  </div>
-
-  <footer class="mt-16 border-t border-gray-900/10 dark:border-gray-100/10 pt-8">
-    <div class="flex justify-between items-center">
-      <a href="/blog/" class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
-        ← Back to blog
-      </a>
-      {% if page.next_post %}
-        <a href="{{ page.next_post.url }}" class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
-          Next: {{ page.next_post.title }} →
+<article class="bg-white px-6 py-32 lg:px-8">
+  <div class="mx-auto max-w-3xl text-base leading-7 text-gray-700">
+    <header>
+      <div class="flex justify-center">
+        <a href="{{ '/blog/' | relative_url }}" class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+          <span aria-hidden="true">&larr;</span> Back to blog
         </a>
-      {% endif %}
+      </div>
+      
+      <div class="mt-10 text-center">
+        <p class="text-base font-semibold leading-7 text-dspy-ruby">
+          {% if page.category %}{{ page.category }}{% else %}Article{% endif %}
+        </p>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          {{ page.title }}
+        </h1>
+        <p class="mt-6 text-xl leading-8 text-gray-600">
+          {{ page.description }}
+        </p>
+      </div>
+      
+      <div class="mt-10 flex items-center justify-center gap-x-8">
+        <div class="flex items-center gap-x-3">
+          <div class="h-10 w-10 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center">
+            <span class="text-sm font-bold text-white">{{ page.author | default: "DSPy" | slice: 0, 1 }}</span>
+          </div>
+          <div class="text-sm leading-6">
+            <p class="font-semibold text-gray-900">
+              {{ page.author | default: "DSPy.rb Team" }}
+            </p>
+            <p class="text-gray-600">
+              <time datetime="{{ page.date | date: '%Y-%m-%d' }}">
+                {{ page.date | date: "%B %d, %Y" }}
+              </time>
+              {% if page.read_time %}
+                • {{ page.read_time }} min read
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="mt-16 max-w-2xl mx-auto">
+      <div class="prose prose-lg prose-gray prose-ruby max-w-none
+                  prose-headings:font-bold prose-headings:tracking-tight
+                  prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
+                  prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+                  prose-p:text-gray-600 prose-p:leading-relaxed
+                  prose-a:text-dspy-ruby prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
+                  prose-strong:text-gray-900 prose-strong:font-semibold
+                  prose-code:text-dspy-ruby prose-code:bg-red-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-[''] prose-code:after:content-['']
+                  prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:overflow-x-auto
+                  prose-blockquote:border-l-dspy-ruby prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-600
+                  prose-img:rounded-xl prose-img:shadow-lg">
+        {{ content }}
+      </div>
     </div>
-  </footer>
+
+    <footer class="mt-16">
+      <div class="mx-auto max-w-2xl">
+        <div class="border-t border-gray-200 pt-8">
+          <!-- Newsletter CTA -->
+          <div class="rounded-2xl bg-gray-50 px-6 py-8 sm:px-8 lg:px-12">
+            <div class="mx-auto max-w-2xl text-center">
+              <h2 class="text-2xl font-bold tracking-tight text-gray-900">Stay updated</h2>
+              <p class="mt-2 text-base leading-7 text-gray-600">
+                Get the latest DSPy.rb tutorials and insights delivered to your inbox.
+              </p>
+              <div class="mt-6 flex justify-center gap-x-4">
+                <a href="https://github.com/vicentereig/dspy.rb/discussions" class="rounded-md bg-dspy-ruby px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-ruby">
+                  Join the discussion
+                </a>
+                <a href="https://github.com/vicentereig/dspy.rb" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                  Star on GitHub
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Navigation -->
+          <div class="mt-8 flex items-center justify-between">
+            <a href="{{ '/blog/' | relative_url }}" class="flex items-center text-sm font-semibold text-gray-900 hover:text-dspy-ruby">
+              <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+              Back to blog
+            </a>
+            {% if page.next_post %}
+              <a href="{{ page.next_post.url | relative_url }}" class="flex items-center text-sm font-semibold text-gray-900 hover:text-dspy-ruby">
+                Next: {{ page.next_post.title }}
+                <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
 </article>

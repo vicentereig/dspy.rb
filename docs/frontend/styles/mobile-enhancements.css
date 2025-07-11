@@ -1,5 +1,33 @@
 /* Mobile-specific enhancements for better vertical rhythm and spacing */
 
+/* Ensure minimum touch target sizes across the site */
+@media (max-width: 1024px) {
+  /* All interactive elements should meet 44px minimum */
+  button, 
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [tabindex="0"] {
+    min-height: 44px;
+    position: relative;
+  }
+
+  /* Ensure proper tap target spacing */
+  button + button,
+  a + a {
+    margin-left: 8px;
+  }
+
+  /* Header navigation links */
+  header nav a {
+    padding: 12px 16px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 /* Improve vertical rhythm on mobile devices */
 @media (max-width: 768px) {
   /* Increase paragraph spacing for better readability */
@@ -139,5 +167,81 @@
   #mobile-menu .fixed.inset-0 {
     backdrop-filter: blur(8px);
     background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Additional mobile improvements */
+@media (max-width: 1024px) {
+  /* Improve tap target sizes for navigation items */
+  .prose a {
+    padding: 2px 4px;
+    margin: -2px -4px;
+    border-radius: 4px;
+  }
+  
+  /* Better spacing for nested lists */
+  .prose ul ul,
+  .prose ol ol,
+  .prose ul ol,
+  .prose ol ul {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Improve readability with larger line heights */
+  .prose {
+    line-height: 1.75;
+  }
+  
+  /* Ensure code blocks are scrollable on mobile */
+  .prose pre {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Better spacing for definition lists */
+  .prose dt {
+    margin-top: 1.25rem;
+  }
+  
+  .prose dd {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  /* Improve table readability on mobile */
+  .prose table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .prose th,
+  .prose td {
+    padding: 0.75rem;
+  }
+}
+
+/* Landscape mobile adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Reduce vertical spacing in landscape to show more content */
+  .prose p {
+    margin-bottom: 1.25rem;
+  }
+  
+  .prose h1 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prose h2 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.875rem;
+  }
+  
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
 }

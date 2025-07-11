@@ -1,5 +1,6 @@
 @import "syntax-highlighting.css";
 @import "mobile-enhancements.css";
+@import "mobile-navigation.css";
 
 @tailwind base;
 @tailwind components;
