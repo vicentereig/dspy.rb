@@ -22,6 +22,11 @@ collections:
   docs:
     output: true
     permalink: /:collection/:name/
+  articles:
+    output: true
+    permalink: /blog/articles/:name/
+    sort_by: date
+    sort_direction: descending
 
 # Defaults
 defaults:
@@ -33,6 +38,11 @@ defaults:
   - scope:
       path: ""
       type: "docs"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "articles"
     values:
       layout: "default"
 

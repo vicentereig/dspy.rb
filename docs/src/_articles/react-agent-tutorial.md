@@ -1,11 +1,11 @@
 ---
 layout: blog
 title: "Building Your First ReAct Agent in Ruby"
-description: "Step-by-step guide to creating tool-using AI agents with DSPy.rb"
+description: "Step-by-step guide to creating tool-using AI agents with DSPy.rb. Learn how to build agents that can reason about their actions and solve complex multi-step problems."
 date: 2025-01-13
 author: "Vicente Reig"
 category: "Tutorial"
-read_time: 12
+reading_time: "12 min read"
 ---
 
 ReAct (Reasoning and Acting) agents are the workhorses of AI applications. They can use tools, reason about their actions, and solve complex multi-step problems. Today, I'll show you how to build one from scratch.

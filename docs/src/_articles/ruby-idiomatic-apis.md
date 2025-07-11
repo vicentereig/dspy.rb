@@ -1,11 +1,11 @@
 ---
 layout: blog
 title: "Building Ruby-Idiomatic AI Applications with DSPy.rb"
-description: "How DSPy.rb embraces Ruby conventions to make AI development feel natural"
+description: "How DSPy.rb embraces Ruby conventions to make AI development feel natural. Learn about the design decisions that make DSPy.rb uniquely Ruby."
 date: 2025-01-11
 author: "Vicente Reig"
 category: "Design"
-read_time: 8
+reading_time: "8 min read"
 ---
 
 When we started building DSPy.rb, we had a choice: create a direct port of the Python library or reimagine it through a Ruby lens. We chose the latter, and today I want to share how that decision shaped the library.
