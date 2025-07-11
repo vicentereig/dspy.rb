@@ -10,13 +10,13 @@ Taking your DSPy.rb applications from development to production requires careful
 
 ## Production Topics
 
-### [Storage](/production/storage/)
+### [Storage](./storage/)
 Implement persistent storage for prompts, examples, and model outputs. Learn about caching strategies and data management.
 
-### [Registry](/production/registry/)
+### [Registry](./registry/)
 Manage and version your modules, signatures, and optimized prompts across environments.
 
-### [Observability](/production/observability/)
+### [Observability](./observability/)
 Monitor your LLM applications with logging, metrics, and tracing to ensure reliability and performance.
 
 ## Key Considerations

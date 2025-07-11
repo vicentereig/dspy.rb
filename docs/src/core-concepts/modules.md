@@ -374,8 +374,8 @@ puts result.response
 # => "I can see from our previous conversation that your order was delayed. Let me check the latest status..."
 ```
 
-For more details on creating tools and toolsets, see the [Toolsets documentation](toolsets.md).
-For advanced memory patterns, see the [Memory Systems documentation](../advanced/memory-systems.md).
+For more details on creating tools and toolsets, see the [Toolsets documentation](../toolsets).
+For advanced memory patterns, see the [Memory Systems documentation](../../advanced/memory-systems).
 
 ### Module Using CodeAct for Dynamic Programming
 

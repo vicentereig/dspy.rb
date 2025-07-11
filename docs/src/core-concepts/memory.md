@@ -283,6 +283,6 @@ For production use with persistent storage, implement a custom storage backend u
 
 ## Next Steps
 
-- Learn about [Toolsets](toolsets.md) to understand how memory tools work
-- See [Advanced Memory Systems](../advanced/memory-systems.md) for compaction and optimization
-- Read about [Stateful Agents](../advanced/stateful-agents.md) for production patterns
+- Learn about [Toolsets](../toolsets) to understand how memory tools work
+- See [Advanced Memory Systems](../../advanced/memory-systems) for compaction and optimization
+- Read about [Stateful Agents](../../advanced/stateful-agents) for production patterns

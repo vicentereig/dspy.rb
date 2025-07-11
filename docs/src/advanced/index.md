@@ -10,28 +10,28 @@ Ready to take your DSPy.rb applications to the next level? This section covers a
 
 ## Advanced Guides
 
-### [Memory Systems](/advanced/memory-systems/)
+### [Memory Systems](./memory-systems/)
 Advanced memory management and compaction for stateful agents that need to maintain context over time.
 
-### [Stateful Agents](/advanced/stateful-agents/)
+### [Stateful Agents](./stateful-agents/)
 Production patterns for building agents that maintain context and state across multiple interactions.
 
-### [Custom Toolsets](/advanced/custom-toolsets/)
+### [Custom Toolsets](./custom-toolsets/)
 Build advanced toolsets for specialized agent capabilities like database operations, file handling, and API integrations.
 
-### [Pipelines](/advanced/pipelines/)
+### [Pipelines](./pipelines/)
 Build complex multi-stage processing pipelines that combine multiple modules for sophisticated workflows.
 
-### [RAG (Retrieval-Augmented Generation)](/advanced/rag/)
+### [RAG (Retrieval-Augmented Generation)](./rag/)
 Implement retrieval-augmented generation patterns to ground your LLM responses in real data.
 
-### [Complex Types](/advanced/complex-types/)
+### [Complex Types](./complex-types/)
 Work with structured data, nested objects, and complex type hierarchies in your signatures.
 
-### [Rails Integration](/advanced/rails-integration/)
+### [Rails Integration](./rails-integration/)
 Integrate DSPy.rb seamlessly with Ruby on Rails applications, including enum handling and service patterns.
 
-### [Custom Metrics](/advanced/custom-metrics/)
+### [Custom Metrics](./custom-metrics/)
 Build domain-specific metrics to evaluate and optimize your modules for your unique use cases.
 
 ## When to Use Advanced Features

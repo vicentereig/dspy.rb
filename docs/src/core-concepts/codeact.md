@@ -255,6 +255,6 @@ Planned improvements:
 
 ## Next Steps
 
-- Explore [ReAct agents](./react.md) for tool-based approaches
-- Learn about [custom signatures](./signatures.md) for CodeAct
-- See [production considerations](../production/index.md) for deployment
+- Explore [ReAct agents](../predictors#dspyreact) for tool-based approaches
+- Learn about [custom signatures](../signatures) for CodeAct
+- See [production considerations](../../production) for deployment

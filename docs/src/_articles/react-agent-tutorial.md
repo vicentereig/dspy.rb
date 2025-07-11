@@ -458,4 +458,4 @@ The key is to start simple - build basic tools, test them thoroughly, and gradua
 
 ---
 
-*Ready to build your own ReAct agent? Check out the [complete documentation](/core-concepts/predictors/) or share your creations in our [GitHub discussions](https://github.com/vicentereig/dspy.rb/discussions).*
+*Ready to build your own ReAct agent? Check out the [complete documentation](../../../core-concepts/predictors/) or share your creations in our [GitHub discussions](https://github.com/vicentereig/dspy.rb/discussions).*

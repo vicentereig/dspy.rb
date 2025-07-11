@@ -297,10 +297,10 @@ end
 
 ## Next Steps
 
-- **[Signatures & Types](../core-concepts/signatures.md)** - Deep dive into signature design
-- **[Predictors](../core-concepts/predictors.md)** - Master the different predictor types  
-- **[Modules & Pipelines](../core-concepts/modules.md)** - Build complex workflows
-- **[Examples & Validation](../core-concepts/examples.md)** - Create robust training data
+- **[Signatures & Types](../../core-concepts/signatures)** - Deep dive into signature design
+- **[Predictors](../../core-concepts/predictors)** - Master the different predictor types
+- **[Modules & Pipelines](../../core-concepts/modules)** - Build complex workflows
+- **[Examples & Validation](../../core-concepts/examples)** - Create robust training data
 
 ## Common Patterns
 
