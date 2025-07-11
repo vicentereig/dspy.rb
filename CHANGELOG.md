@@ -5,6 +5,27 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2025-07-11
+
+### Added
+- **JSON Parsing Reliability Features** (#18) - Comprehensive improvements for reliable JSON extraction from LLMs
+  - **OpenAI Structured Outputs** - Native support for OpenAI's JSON schema mode with guaranteed valid JSON
+  - **Automatic Strategy Selection** - Provider-optimized extraction (OpenAI structured outputs, Anthropic patterns, enhanced prompting)
+  - **Smart Retry Logic** - Progressive fallback with exponential backoff for handling transient failures
+  - **Performance Caching** - Schema and capability caching for faster repeated operations
+- **Enhanced Error Recovery** - Retry mechanisms with strategy fallback for maximum reliability
+- **Improved Error Messages** - Detailed JSON parsing errors with content length and context
+
+### Changed
+- LM adapters now support provider-specific optimizations for JSON extraction
+- Configuration system extended with structured output settings
+
+### Documentation
+- Added JSON extraction strategies documentation
+- Added reliability features documentation
+- Created blog post on JSON parsing reliability improvements
+- Updated README with new production features
+
 ## [0.7.0] - 2025-01-11
 
 ### Added
