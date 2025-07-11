@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dspy (0.7.0)
+    dspy (0.8.0)
       anthropic (~> 1.1.0)
       async (~> 2.23)
       dry-configurable (~> 1.0)
