@@ -56,7 +56,7 @@
     </header>
 
     <div class="mt-16 max-w-2xl mx-auto">
-      <div class="prose prose-lg prose-gray prose-ruby max-w-none
+      <div class="prose prose-lg prose-gray max-w-none
                   prose-headings:font-bold prose-headings:tracking-tight
                   prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
                   prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
@@ -66,9 +66,10 @@
                   prose-code:text-dspy-ruby prose-code:bg-red-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-[''] prose-code:after:content-['']
                   prose-blockquote:border-l-dspy-ruby prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-600
                   prose-img:rounded-xl prose-img:shadow-lg
-                  [&_.highlight]:!bg-transparent [&_.highlight]:!text-inherit
-                  [&_.highlighter-rouge]:!bg-transparent [&_.highlighter-rouge]:!text-inherit
-                  [&_pre.highlight]:!bg-gray-900 [&_pre.highlight]:!text-gray-100 [&_pre.highlight]:!overflow-x-auto [&_pre.highlight]:!rounded-lg [&_pre.highlight]:!p-4">
+                  prose-pre:!p-0 prose-pre:!bg-transparent
+                  [&_pre.highlight]:!bg-gray-900 [&_pre.highlight]:!p-4 [&_pre.highlight]:!overflow-x-auto [&_pre.highlight]:!rounded-lg
+                  [&_pre.highlight_code]:!bg-transparent [&_pre.highlight_code]:!text-gray-100
+                  [&_pre.highlight_span]:!bg-transparent">
         {{ content }}
       </div>
     </div>
