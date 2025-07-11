@@ -31,18 +31,16 @@ module DSPy
       def select
         # Allow manual override via configuration
         if DSPy.config.structured_outputs.strategy
-          strategy_name = if DSPy.config.structured_outputs.strategy.respond_to?(:serialize)
-                           # Handle enum
-                           DSPy.config.structured_outputs.strategy.serialize
-                         else
-                           # Handle string (backward compatibility)
-                           DSPy.config.structured_outputs.strategy.to_s
-                         end
-          
-          strategy = find_strategy_by_name(strategy_name)
+          strategy = select_strategy_from_preference(DSPy.config.structured_outputs.strategy)
           return strategy if strategy&.available?
           
-          DSPy.logger.warn("Requested strategy '#{strategy_name}' is not available")
+          # If strict strategy not available, fall back to compatible for Strict preference
+          if is_strict_preference?(DSPy.config.structured_outputs.strategy)
+            compatible_strategy = find_strategy_by_name("enhanced_prompting")
+            return compatible_strategy if compatible_strategy&.available?
+          end
+          
+          DSPy.logger.warn("No available strategy found for preference '#{DSPy.config.structured_outputs.strategy}'")
         end
 
         # Select the highest priority available strategy
@@ -72,6 +70,42 @@ module DSPy
       end
 
       private
+
+      # Select internal strategy based on user preference
+      sig { params(preference: DSPy::Strategy).returns(T.nilable(Strategies::BaseStrategy)) }
+      def select_strategy_from_preference(preference)
+        case preference
+        when DSPy::Strategy::Strict
+          # Try provider-optimized strategies first
+          select_provider_optimized_strategy
+        when DSPy::Strategy::Compatible
+          # Use enhanced prompting
+          find_strategy_by_name("enhanced_prompting")
+        else
+          nil
+        end
+      end
+      
+      # Check if preference is for strict (provider-optimized) strategies
+      sig { params(preference: DSPy::Strategy).returns(T::Boolean) }
+      def is_strict_preference?(preference)
+        preference == DSPy::Strategy::Strict
+      end
+      
+      # Select the best provider-optimized strategy for the current adapter
+      sig { returns(T.nilable(Strategies::BaseStrategy)) }
+      def select_provider_optimized_strategy
+        # Try OpenAI structured output first
+        openai_strategy = find_strategy_by_name("openai_structured_output")
+        return openai_strategy if openai_strategy&.available?
+        
+        # Try Anthropic extraction
+        anthropic_strategy = find_strategy_by_name("anthropic_extraction")
+        return anthropic_strategy if anthropic_strategy&.available?
+        
+        # No provider-specific strategy available
+        nil
+      end
 
       sig { returns(T::Array[Strategies::BaseStrategy]) }
       def build_strategies

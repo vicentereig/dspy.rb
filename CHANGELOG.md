@@ -5,6 +5,27 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2025-07-11
+
+### Breaking Changes
+- **Strategy Configuration API** - Simplified strategy configuration using type-safe enums
+  - Replaced complex strategy name strings with `DSPy::Strategy::Strict` and `DSPy::Strategy::Compatible` enum values
+  - `DSPy::Strategy::Strict` selects provider-optimized strategies (OpenAI structured outputs, Anthropic extraction)
+  - `DSPy::Strategy::Compatible` uses enhanced prompting that works with any provider
+  - **BREAKING**: String strategy names like `"enhanced_prompting"` are no longer supported
+  - **Migration**: Replace `config.structured_outputs.strategy = "enhanced_prompting"` with `config.structured_outputs.strategy = DSPy::Strategy::Compatible`
+
+### Added
+- **User-Friendly Strategy Categories** - Two clear strategy options instead of three internal implementations
+  - Automatic fallback from Strict to Compatible when provider-specific features are unavailable
+  - Type-safe enum values with Sorbet integration
+  - Clearer documentation and error messages
+
+### Documentation
+- Updated all documentation to use new enum-based strategy configuration
+- Improved blog post with correct version references and enum examples
+- Clarified strategy selection behavior and fallback logic
+
 ## [0.8.1] - 2025-07-11
 
 ### Fixed

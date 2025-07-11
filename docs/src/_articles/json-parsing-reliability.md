@@ -133,8 +133,9 @@ DSPy.configure do |config|
   config.structured_outputs.retry_enabled = true
   config.structured_outputs.max_retries = 3
   
-  # Force a specific strategy using enum
-  config.structured_outputs.strategy = DSPy::LM::StructuredOutputStrategy::EnhancedPrompting
+  # Choose strategy: Strict (provider-optimized) or Compatible (enhanced prompting)
+  config.structured_outputs.strategy = DSPy::Strategy::Strict
+  # config.structured_outputs.strategy = DSPy::Strategy::Compatible
   
   # Disable delays in tests
   config.test_mode = true
@@ -186,7 +187,7 @@ gem install dspy
 Or in your Gemfile:
 
 ```ruby
-gem 'dspy', '~> 0.8.1'
+gem 'dspy', '~> 0.9.0'
 ```
 
 Check out the [documentation](https://vicentereig.github.io/dspy.rb/) for more examples, or dive into the [reliability features guide](https://vicentereig.github.io/dspy.rb/production/) for advanced usage.

@@ -103,7 +103,7 @@ RSpec.describe "Simple Reliability Features" do
     
     it "respects manual strategy override" do
       DSPy.configure do |config|
-        config.structured_outputs.strategy = "enhanced_prompting"
+        config.structured_outputs.strategy = DSPy::Strategy::Compatible
       end
       
       # Even with a model that supports structured outputs

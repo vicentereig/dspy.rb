@@ -95,29 +95,49 @@ RSpec.describe DSPy::LM::StrategySelector do
     context 'with manual strategy override' do
       let(:adapter) { DSPy::LM::OpenAIAdapter.new(model: "gpt-4o", api_key: "test-key") }
       
-      before do
-        allow(DSPy.config.structured_outputs).to receive(:strategy).and_return('enhanced_prompting')
-      end
-      
-      it 'respects manual strategy selection' do
-        selector = described_class.new(adapter, signature_class)
-        strategy = selector.select
-        
-        expect(strategy).to be_a(DSPy::LM::Strategies::EnhancedPromptingStrategy)
-      end
-      
-      context 'when requested strategy is not available' do
+      context 'with Compatible strategy' do
         before do
-          allow(DSPy.config.structured_outputs).to receive(:strategy).and_return('nonexistent_strategy')
-          allow(DSPy.logger).to receive(:warn)
+          allow(DSPy.config.structured_outputs).to receive(:strategy).and_return(DSPy::Strategy::Compatible)
         end
         
-        it 'warns and falls back to auto-selection' do
+        it 'uses enhanced prompting strategy' do
           selector = described_class.new(adapter, signature_class)
           strategy = selector.select
           
-          expect(DSPy.logger).to have_received(:warn).with(/Requested strategy 'nonexistent_strategy' is not available/)
           expect(strategy).to be_a(DSPy::LM::Strategies::EnhancedPromptingStrategy)
+        end
+      end
+      
+      context 'with Strict strategy' do
+        let(:openai_adapter) do
+          adapter = DSPy::LM::OpenAIAdapter.new(model: "gpt-4o", api_key: "test-key", structured_outputs: true)
+          allow(adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(true)
+          adapter
+        end
+        
+        before do
+          allow(DSPy.config.structured_outputs).to receive(:strategy).and_return(DSPy::Strategy::Strict)
+          allow(DSPy::LM::Adapters::OpenAI::SchemaConverter).to receive(:supports_structured_outputs?).and_return(true)
+        end
+        
+        it 'uses provider-optimized strategy when available' do
+          selector = described_class.new(openai_adapter, signature_class)
+          strategy = selector.select
+          
+          expect(strategy).to be_a(DSPy::LM::Strategies::OpenAIStructuredOutputStrategy)
+        end
+        
+        context 'when provider-optimized strategy not available' do
+          before do
+            allow(DSPy.logger).to receive(:warn)
+          end
+          
+          it 'falls back to compatible strategy' do
+            selector = described_class.new(adapter, signature_class)
+            strategy = selector.select
+            
+            expect(strategy).to be_a(DSPy::LM::Strategies::EnhancedPromptingStrategy)
+          end
         end
       end
     end

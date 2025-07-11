@@ -25,7 +25,7 @@ module DSPy
   setting :structured_outputs do
     setting :openai, default: false
     setting :anthropic, default: false  # Reserved for future use
-    setting :strategy, default: nil  # Can be DSPy::LM::StructuredOutputStrategy enum value or nil for auto
+    setting :strategy, default: nil  # Can be DSPy::Strategy::Strict, DSPy::Strategy::Compatible, or nil for auto
     setting :retry_enabled, default: true
     setting :max_retries, default: 3
     setting :fallback_enabled, default: true
@@ -122,7 +122,7 @@ require_relative 'dspy/few_shot_example'
 require_relative 'dspy/prompt'
 require_relative 'dspy/example'
 require_relative 'dspy/lm'
-require_relative 'dspy/lm/structured_output_strategy'
+require_relative 'dspy/strategy'
 require_relative 'dspy/predict'
 require_relative 'dspy/chain_of_thought'
 require_relative 'dspy/re_act'

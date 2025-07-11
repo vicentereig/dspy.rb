@@ -105,7 +105,7 @@ RSpec.describe "Strategy Selection Integration" do
         c.logger = Dry.Logger(:dspy, level: :debug)
       end
       # Override strategy to use enhanced prompting even for OpenAI with structured outputs
-      allow(DSPy.config.structured_outputs).to receive(:strategy).and_return('enhanced_prompting')
+      allow(DSPy.config.structured_outputs).to receive(:strategy).and_return(DSPy::Strategy::Compatible)
       module_instance.configure { |config| config.lm = lm }
       allow(DSPy.logger).to receive(:debug).and_call_original
     end
