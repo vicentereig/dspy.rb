@@ -105,55 +105,9 @@ button[data-dropdown-toggle]:focus-visible,
   outline-offset: 2px;
 }
 
-/* Smooth scrolling for TOC links */
+/* Smooth scrolling for anchor links */
 html {
   scroll-behavior: smooth;
-}
-
-/* TOC integration styles for mobile */
-.mobile-toc {
-  display: none;
-  background: #f9fafb;
-  border-radius: 8px;
-  padding: 16px;
-  margin: 24px 0;
-}
-
-@media (max-width: 1024px) {
-  .mobile-toc {
-    display: block;
-  }
-  
-  /* Hide desktop TOC on mobile */
-  .toc-navigation {
-    display: none;
-  }
-}
-
-/* Mobile TOC toggle button */
-.mobile-toc-toggle {
-  width: 100%;
-  text-align: left;
-  padding: 12px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  font-weight: 500;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 44px;
-}
-
-.mobile-toc-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 300ms ease-in-out;
-}
-
-.mobile-toc-content.expanded {
-  max-height: 600px;
-  overflow-y: auto;
 }
 
 /* Prevent layout shift during animations */
@@ -166,8 +120,7 @@ html {
   #mobile-menu-backdrop,
   #mobile-menu .relative.mr-16,
   .hamburger-lines path,
-  button[data-dropdown-toggle] svg,
-  .mobile-toc-content {
+  button[data-dropdown-toggle] svg {
     transition: none;
   }
 }

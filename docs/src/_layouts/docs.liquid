@@ -364,44 +364,6 @@
         
         <!-- Page content -->
         <article class="prose prose-gray max-w-none prose-headings:break-words prose-code:break-words prose-pre:overflow-x-auto">
-          <!-- Table of Contents (Ruby-generated) -->
-          {% assign toc_headings = content | split: '<h' %}
-          {% assign has_headings = false %}
-          {% for heading in toc_headings %}
-            {% if forloop.index > 1 %}
-              {% assign heading_level = heading | slice: 0, 1 %}
-              {% if heading_level == '2' or heading_level == '3' %}
-                {% assign has_headings = true %}
-                {% break %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          
-          {% if has_headings %}
-          <nav class="toc-navigation not-prose mb-8 rounded-lg bg-gray-50 p-4 lg:hidden" aria-label="Table of contents">
-            <h2 class="text-sm font-semibold text-gray-900 mb-3">On this page</h2>
-            <ul class="space-y-1 text-sm">
-              {% for heading in toc_headings %}
-                {% if forloop.index > 1 %}
-                  {% assign heading_level = heading | slice: 0, 1 %}
-                  {% if heading_level == '2' or heading_level == '3' %}
-                    {% assign heading_parts = heading | split: '>' %}
-                    {% assign heading_id = heading_parts[0] | split: 'id="' | last | split: '"' | first %}
-                    {% assign heading_text = heading_parts[1] | strip_html | strip %}
-                    {% if heading_text != '' %}
-                      <li class="{% if heading_level == '3' %}ml-4{% endif %}">
-                        <a href="#{{ heading_id }}" class="block rounded-md px-3 py-1 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-                          {{ heading_text }}
-                        </a>
-                      </li>
-                    {% endif %}
-                  {% endif %}
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </nav>
-          {% endif %}
-          
           {{ content }}
         </article>
         
