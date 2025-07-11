@@ -2,30 +2,36 @@
 layout: default
 ---
 
-<article class="bg-white px-6 py-32 lg:px-8">
+<article class="relative isolate overflow-hidden bg-white px-6 py-32 lg:px-8">
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.indigo.100),white)] opacity-20"></div>
+  <div class="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
+  
   <div class="mx-auto max-w-3xl text-base leading-7 text-gray-700">
     <header>
       <div class="flex justify-center">
-        <a href="{{ '/blog/' | relative_url }}" class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-          <span aria-hidden="true">&larr;</span> Back to blog
+        <a href="{{ '/blog/' | relative_url }}" class="group relative rounded-full px-4 py-2 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 hover:bg-gray-50 transition-all">
+          <span aria-hidden="true" class="transition-transform group-hover:-translate-x-1">&larr;</span> Back to blog
         </a>
       </div>
       
-      <div class="mt-10 text-center">
-        <p class="text-base font-semibold leading-7 text-dspy-ruby">
-          {% if page.category %}{{ page.category }}{% else %}Article{% endif %}
-        </p>
-        <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+      <div class="mt-16 text-center">
+        <div class="flex justify-center">
+          <span class="inline-flex items-center rounded-full bg-dspy-ruby/10 px-3 py-1 text-sm font-medium text-dspy-ruby ring-1 ring-inset ring-dspy-ruby/20">
+            {% if page.category %}{{ page.category }}{% else %}Article{% endif %}
+          </span>
+        </div>
+        <h1 class="mt-6 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
           {{ page.title }}
         </h1>
-        <p class="mt-6 text-xl leading-8 text-gray-600">
+        <p class="mt-6 text-xl leading-8 text-gray-600 max-w-2xl mx-auto">
           {{ page.description }}
         </p>
       </div>
       
       <div class="mt-10 flex items-center justify-center gap-x-8">
-        <div class="flex items-center gap-x-3">
-          <div class="h-10 w-10 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center">
+        <div class="flex items-center gap-x-4">
+          <div class="h-12 w-12 rounded-full bg-gradient-to-br from-dspy-ruby to-red-700 flex items-center justify-center shadow-lg ring-2 ring-white">
             <span class="text-sm font-bold text-white">{{ page.author | default: "DSPy" | slice: 0, 1 }}</span>
           </div>
           <div class="text-sm leading-6">
