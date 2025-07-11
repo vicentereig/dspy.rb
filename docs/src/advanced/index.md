@@ -13,6 +13,12 @@ Ready to take your DSPy.rb applications to the next level? This section covers a
 ### [Memory Systems](/advanced/memory-systems/)
 Advanced memory management and compaction for stateful agents that need to maintain context over time.
 
+### [Stateful Agents](/advanced/stateful-agents/)
+Production patterns for building agents that maintain context and state across multiple interactions.
+
+### [Custom Toolsets](/advanced/custom-toolsets/)
+Build advanced toolsets for specialized agent capabilities like database operations, file handling, and API integrations.
+
 ### [Pipelines](/advanced/pipelines/)
 Build complex multi-stage processing pipelines that combine multiple modules for sophisticated workflows.
 
