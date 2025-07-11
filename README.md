@@ -25,6 +25,9 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - **Basic Optimization** - Simple prompt optimization techniques
 
 **Production Features:**
+- **Reliable JSON Extraction** - Automatic strategy selection for OpenAI structured outputs, Anthropic patterns, and fallback modes
+- **Smart Retry Logic** - Progressive fallback with exponential backoff for handling transient failures
+- **Performance Caching** - Schema and capability caching for faster repeated operations
 - **File-based Storage** - Basic optimization result persistence
 - **Multi-Platform Observability** - OpenTelemetry, New Relic, and Langfuse integration
 - **Basic Instrumentation** - Event tracking and logging
@@ -78,7 +81,9 @@ end
 
 # Configure DSPy with your LLM
 DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini', 
+                      api_key: ENV['OPENAI_API_KEY'],
+                      structured_outputs: true)  # Enable OpenAI's native JSON mode
 end
 
 # Create the predictor and run inference
