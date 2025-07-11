@@ -1,0 +1,16 @@
+<!-- Head Component -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}{% if include.title_suffix %}{{ include.title_suffix }}{% else %}{{ site.title }}{% endif %}</title>
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="{{ site.base_path }}/_bridgetown/static/css/index.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{{ site.base_path }}/favicon.ico">
+  
+  <!-- JavaScript -->
+  <script defer src="{{ site.base_path }}/_bridgetown/static/js/index.js"></script>
+</head>

@@ -2,7 +2,7 @@
 layout: blog
 title: "CodeAct: When Your AI Writes Ruby Code"
 description: "Deep dive into DSPy.rb's unique CodeAct module for dynamic code generation. Discover how to build AI agents that write their own Ruby code to solve problems."
-date: 2025-01-12
+date: 2025-06-15
 author: "Vicente Reig"
 category: "Features"
 reading_time: "10 min read"

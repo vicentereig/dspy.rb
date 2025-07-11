@@ -2,7 +2,7 @@
 layout: blog
 title: "Building Your First ReAct Agent in Ruby"
 description: "Step-by-step guide to creating tool-using AI agents with DSPy.rb. Learn how to build agents that can reason about their actions and solve complex multi-step problems."
-date: 2025-01-13
+date: 2025-06-28
 author: "Vicente Reig"
 category: "Tutorial"
 reading_time: "12 min read"

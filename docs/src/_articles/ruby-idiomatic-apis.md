@@ -2,7 +2,7 @@
 layout: blog
 title: "Building Ruby-Idiomatic AI Applications with DSPy.rb"
 description: "How DSPy.rb embraces Ruby conventions to make AI development feel natural. Learn about the design decisions that make DSPy.rb uniquely Ruby."
-date: 2025-01-11
+date: 2025-06-05
 author: "Vicente Reig"
 category: "Design"
 reading_time: "8 min read"
