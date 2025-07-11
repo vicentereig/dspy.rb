@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: blog
 title: "Stop Fighting JSON Parsing Errors in Your LLM Apps"
 date: 2025-07-11
 description: "How DSPy.rb's new reliability features make JSON extraction from LLMs actually reliable"
