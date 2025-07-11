@@ -28,7 +28,7 @@ end
 class StructuredItem < T::Struct
   const :name, String
   const :value, Integer
-  const :category, String
+  const :tags, T::Array[String]
 end
 
 class StructuredMetadata < T::Struct
@@ -73,7 +73,7 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
       expect(result.reasoning).not_to be_empty
     end
     
-    xit "generates valid JSON with complex nested structures (OpenAI bug with nested arrays)", vcr: { cassette_name: "openai_structured_complex" } do
+    it "generates valid JSON with complex nested structures (OpenAI bug with nested arrays)", vcr: { cassette_name: "openai_structured_complex" } do
       predictor = DSPy::Predict.new(ComplexOutput)
       result = predictor.call(query: "List three popular programming languages with their usage")
       
@@ -85,8 +85,9 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
         expect(item.name).to be_a(String)
         expect(item).to respond_to(:value)
         expect(item.value).to be_a(Integer)
-        expect(item).to respond_to(:category)
-        expect(item.category).to be_a(String)
+        expect(item).to respond_to(:tags)
+        expect(item.tags).to be_a(Array)
+        item.tags.each { |tag| expect(tag).to be_a(String) }
       end
       
       expect(result.metadata).to respond_to(:total_count)

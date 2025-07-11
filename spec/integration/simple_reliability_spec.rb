@@ -177,6 +177,24 @@ RSpec.describe "Simple Reliability Features" do
   end
   
   describe "Retry Configuration" do
+    before do
+      # Reset to defaults before test
+      DSPy.configure do |config|
+        config.structured_outputs.retry_enabled = true
+        config.structured_outputs.max_retries = 3
+        config.structured_outputs.fallback_enabled = true
+      end
+    end
+    
+    after do
+      # Reset to defaults after test
+      DSPy.configure do |config|
+        config.structured_outputs.retry_enabled = true
+        config.structured_outputs.max_retries = 3
+        config.structured_outputs.fallback_enabled = true
+      end
+    end
+    
     it "respects retry configuration settings" do
       # Test default settings
       expect(DSPy.config.structured_outputs.retry_enabled).to be true
@@ -191,12 +209,6 @@ RSpec.describe "Simple Reliability Features" do
       
       expect(DSPy.config.structured_outputs.retry_enabled).to be false
       expect(DSPy.config.structured_outputs.max_retries).to eq(5)
-      
-      # Reset configuration
-      DSPy.configure do |config|
-        config.structured_outputs.retry_enabled = true
-        config.structured_outputs.max_retries = 3
-      end
     end
   end
 end

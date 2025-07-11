@@ -17,13 +17,13 @@ end
 
 RSpec.describe DSPy::LM::Strategies::EnhancedPromptingStrategy do
   # Create a minimal test adapter
-  class TestAdapter < DSPy::LM::Adapter
+  class EnhancedPromptingTestAdapter < DSPy::LM::Adapter
     def chat(messages:, signature: nil, &block)
       # Stub implementation
     end
   end
   
-  let(:adapter) { TestAdapter.new(model: "test", api_key: "test-key") }
+  let(:adapter) { EnhancedPromptingTestAdapter.new(model: "test", api_key: "test-key") }
   let(:signature_class) { SimpleTestSignature }
   let(:strategy) { described_class.new(adapter, signature_class) }
   

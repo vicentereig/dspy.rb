@@ -31,8 +31,8 @@ http_interactions:
         with their usage\"\n}\n```\n\nRespond with the corresponding output schema
         fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
         values`."}],"temperature":0.0,"response_format":{"type":"json_schema","json_schema":{"name":"complexoutput","strict":true,"schema":{"type":"object","properties":{"items":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"value":{"type":"integer"},"tags":{"type":"array","items":{"type":"string"}}},"required":["name","value","tags"],"description":"StructuredItem
-        struct"},"description":"List of items"},"metadata":{"type":"object","properties":{"total_count":{"type":"integer"},"processed_at":{"type":"string"}},"required":["total_count","processed_at"],"description":"Processing
-        metadata"}},"required":["items","metadata"],"additionalProperties":false}}}}'
+        struct","additionalProperties":false},"description":"List of items"},"metadata":{"type":"object","properties":{"total_count":{"type":"integer"},"processed_at":{"type":"string"}},"required":["total_count","processed_at"],"description":"Processing
+        metadata","additionalProperties":false}},"required":["items","metadata"],"additionalProperties":false}}}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -63,18 +63,18 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '2899'
+      - '2957'
   response:
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
     headers:
       Date:
-      - Fri, 11 Jul 2025 12:25:02 GMT
+      - Fri, 11 Jul 2025 13:52:44 GMT
       Content-Type:
       - application/json
-      Content-Length:
-      - '288'
+      Transfer-Encoding:
+      - chunked
       Connection:
       - keep-alive
       Access-Control-Expose-Headers:
@@ -82,21 +82,21 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '14'
+      - '1916'
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '17'
+      - '1939'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
       - '199518'
       X-Ratelimit-Reset-Requests:
-      - 15.451s
+      - 8.64s
       X-Ratelimit-Reset-Tokens:
       - 144ms
       X-Request-Id:
@@ -113,19 +113,47 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 95d847f1be190325-MAD
+      - 95d8c866299ef781-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
-      encoding: UTF-8
-      string: |-
+      encoding: ASCII-8BIT
+      string: |
         {
-          "error": {
-            "message": "Invalid schema for response_format 'complexoutput': In context=('properties', 'items', 'items'), 'additionalProperties' is required to be supplied and to be false.",
-            "type": "invalid_request_error",
-            "param": "response_format",
-            "code": null
-          }
+          "id": "chatcmpl-Bs8T4NGu5cQFquaUgAeAOBPBMDO62",
+          "object": "chat.completion",
+          "created": 1752241962,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "{\"items\":[{\"name\":\"JavaScript\",\"value\":69,\"tags\":[\"web\",\"frontend\",\"backend\"]},{\"name\":\"Python\",\"value\":50,\"tags\":[\"data science\",\"web\",\"automation\"]},{\"name\":\"Java\",\"value\":35,\"tags\":[\"enterprise\",\"mobile\",\"backend\"]}],\"metadata\":{\"total_count\":3,\"processed_at\":\"2023-10-01T12:00:00Z\"}}",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 575,
+            "completion_tokens": 82,
+            "total_tokens": 657,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Fri, 11 Jul 2025 12:25:02 GMT
+  recorded_at: Fri, 11 Jul 2025 13:52:44 GMT
 recorded_with: VCR 6.3.1
