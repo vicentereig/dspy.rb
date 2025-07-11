@@ -31,3 +31,23 @@
     background-color: #d1d5db;
   }
 }
+
+/* Mobile-specific improvements for text and button alignment */
+@layer components {
+  /* Ensure proper vertical alignment for interactive elements on mobile */
+  @media (max-width: 768px) {
+    a, button {
+      @apply leading-normal;
+    }
+    
+    /* Fix baseline alignment for links with icons */
+    a svg, button svg {
+      @apply align-middle;
+    }
+    
+    /* Improve touch targets */
+    .prose a {
+      @apply inline-flex items-center;
+    }
+  }
+}
