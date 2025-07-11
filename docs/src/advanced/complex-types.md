@@ -525,3 +525,95 @@ class EmailClassification < T::Struct
 end
 ```
 
+## Limitations and Best Practices
+
+### Nesting Depth Limitations
+
+DSPy.rb has practical limits on nested struct complexity:
+
+**✅ Recommended Nesting (1-2 levels):**
+```ruby
+class Address < T::Struct
+  const :street, String
+  const :city, String
+  const :state, String
+end
+
+class Person < T::Struct
+  const :name, String
+  const :address, Address  # 2 levels total - works reliably
+end
+```
+
+**⚠️ Deep Nesting (3+ levels) - Use with Caution:**
+```ruby
+# This creates increasingly complex JSON schemas that may:
+# - Trigger OpenAI depth validation warnings (>5 levels)
+# - Have type coercion issues with deeply nested T::Struct objects
+# - Reduce LLM accuracy due to schema complexity
+
+class Level3 < T::Struct
+  const :level4, Level4
+end
+
+class Level2 < T::Struct
+  const :level3, Level3
+end
+
+class Level1 < T::Struct
+  const :level2, Level2  # 4+ levels - may fail
+end
+```
+
+**❌ Avoid Excessive Nesting (5+ levels):**
+- JSON schema generation works but creates complex schemas
+- Type coercion may return Hash objects instead of proper T::Struct instances
+- OpenAI structured outputs may reject schemas exceeding depth limits
+- LLMs struggle with deeply nested output requirements
+
+### Performance Considerations
+
+**Schema Caching:**
+DSPy.rb automatically caches JSON schemas for repeated use:
+```ruby
+# First call generates schema
+result1 = predictor.call(input: "text")
+
+# Second call uses cached schema (faster)
+result2 = predictor.call(input: "more text")
+```
+
+**Provider Optimization:**
+Different providers handle complex types differently:
+- **OpenAI Structured Outputs**: Excellent for 1-3 level nesting
+- **Anthropic**: Robust JSON extraction handles most complexity
+- **Enhanced Prompting**: Fallback for any provider, handles simpler structures better
+
+### Troubleshooting Complex Types
+
+**Type Coercion Issues:**
+If you get Hash objects instead of T::Struct instances:
+```ruby
+# Check if the issue is with deep nesting
+class SimpleStruct < T::Struct
+  const :field, String
+end
+
+# Test with a simple struct first
+# If it works, the issue is likely nesting depth
+```
+
+**Schema Validation:**
+Check schema depth warnings:
+```ruby
+schema = YourSignature.output_json_schema
+issues = DSPy::LM::Adapters::OpenAI::SchemaConverter.validate_compatibility(schema)
+puts issues  # Shows depth and complexity warnings
+```
+
+**Alternative Approaches:**
+Instead of deep nesting, consider:
+- Flattening complex structures
+- Using separate API calls for complex data
+- Breaking down into multiple simpler signatures
+
