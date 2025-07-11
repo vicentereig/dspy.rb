@@ -14,7 +14,7 @@
   
   <!-- Mobile navigation and dropdowns handled by external JavaScript -->
 </head>
-<body class="h-full">
+<body class="h-full overflow-x-hidden">
   <!-- Header with navigation from Tailwind UI -->
   <header class="sticky top-0 z-40 bg-white shadow-sm">
     <nav class="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
@@ -58,7 +58,7 @@
     </nav>
   </header>
 
-  <div class="flex h-full">
+  <div class="flex h-full overflow-hidden">
     <!-- Sidebar navigation -->
     <aside class="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col lg:pt-16">
       <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4 scrollbar-thin">
@@ -336,8 +336,8 @@
     </div>
 
     <!-- Main content -->
-    <main class="flex-1 lg:pl-72">
-      <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+    <main class="flex-1 lg:pl-72 min-w-0">
+      <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12 min-w-0">
         <!-- Breadcrumb -->
         {% if page.breadcrumb %}
         <nav class="mb-8" aria-label="Breadcrumb">
@@ -363,7 +363,45 @@
         {% endif %}
         
         <!-- Page content -->
-        <article class="prose prose-gray max-w-none">
+        <article class="prose prose-gray max-w-none prose-headings:break-words prose-code:break-words prose-pre:overflow-x-auto">
+          <!-- Table of Contents (Ruby-generated) -->
+          {% assign toc_headings = content | split: '<h' %}
+          {% assign has_headings = false %}
+          {% for heading in toc_headings %}
+            {% if forloop.index > 1 %}
+              {% assign heading_level = heading | slice: 0, 1 %}
+              {% if heading_level == '2' or heading_level == '3' %}
+                {% assign has_headings = true %}
+                {% break %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          
+          {% if has_headings %}
+          <nav class="toc-navigation not-prose mb-8 rounded-lg bg-gray-50 p-4 lg:hidden" aria-label="Table of contents">
+            <h2 class="text-sm font-semibold text-gray-900 mb-3">On this page</h2>
+            <ul class="space-y-1 text-sm">
+              {% for heading in toc_headings %}
+                {% if forloop.index > 1 %}
+                  {% assign heading_level = heading | slice: 0, 1 %}
+                  {% if heading_level == '2' or heading_level == '3' %}
+                    {% assign heading_parts = heading | split: '>' %}
+                    {% assign heading_id = heading_parts[0] | split: 'id="' | last | split: '"' | first %}
+                    {% assign heading_text = heading_parts[1] | strip_html | strip %}
+                    {% if heading_text != '' %}
+                      <li class="{% if heading_level == '3' %}ml-4{% endif %}">
+                        <a href="#{{ heading_id }}" class="block rounded-md px-3 py-1 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                          {{ heading_text }}
+                        </a>
+                      </li>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </nav>
+          {% endif %}
+          
           {{ content }}
         </article>
         
