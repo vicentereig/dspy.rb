@@ -632,3 +632,88 @@ BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! aft
 types other than fix: and feat: are allowed, for example @commitlint/config-conventional (based on the Angular convention) recommends build:, chore:, ci:, docs:, style:, refactor:, perf:, test:, and others.
 footers other than BREAKING CHANGE: <description> may be provided and follow a convention similar to git trailer format.
 ```
+
+---
+
+## Recent Learnings and Best Practices
+
+### Strategy Configuration Architecture (July 2025)
+
+**Key Learning**: When designing user-facing APIs, prioritize simplicity over exposing internal complexity.
+
+**What We Learned**:
+- Exposing three internal strategy names (`openai_structured_output`, `anthropic_extraction`, `enhanced_prompting`) created confusion
+- Users didn't understand when to use which strategy or why three existed
+- String-based configuration was error-prone and not type-safe
+
+**Solution Implemented**:
+- Created `DSPy::Strategy` enum with two user-facing categories:
+  - `DSPy::Strategy::Strict` - Provider-optimized strategies (auto-selects best for current provider)
+  - `DSPy::Strategy::Compatible` - Enhanced prompting that works with any provider
+- Internal strategy selector maps user preferences to specific implementations
+- Automatic fallback from Strict to Compatible when provider features unavailable
+
+**Breaking Change Management**:
+- Used minor version bump (0.8.1 → 0.9.0) for breaking API changes
+- Provided clear migration instructions in changelog and release notes
+- Updated all documentation and tests to use new enum
+- Removed backward compatibility to enforce clean migration
+
+### Documentation Site Management
+
+**Blog Post Layout Issues**:
+- Articles in `_articles/` collection must use `layout: blog` not `layout: post`
+- Bridgetown collections have specific permalink patterns defined in `bridgetown.config.yml`
+- Layout mismatches cause content to render without proper styling/navigation
+
+**Version Synchronization**:
+- Always update `Gemfile.lock` when changing gem version in `lib/*/version.rb`
+- CI failures due to lockfile mismatches block deployments
+- Version references in blog posts and documentation must be updated consistently
+
+**Build Verification Process**:
+```bash
+# Always verify docs build before pushing changes
+cd docs
+BRIDGETOWN_ENV=production npm run build
+```
+
+### Type Safety with Sorbet Enums
+
+**Best Practices Discovered**:
+- Use enum values directly in case statements: `when DSPy::Strategy::Strict`
+- Remove `.serialize` and string handling when switching to pure enum approach
+- Update type signatures: `params(preference: DSPy::Strategy)` not `T.untyped`
+- Enum-based APIs prevent runtime errors and improve IDE support
+
+### Testing Strategy Enum Changes
+
+**Test Update Patterns**:
+- Replace string mocks: `DSPy::Strategy::Compatible` instead of `'enhanced_prompting'`
+- Test enum behavior with actual enum values, not serialized strings
+- Integration tests need enum updates in multiple spec files
+- VCR cassettes unaffected by enum changes (internal strategy names remain same)
+
+### Release Process Improvements
+
+**GitHub CLI Integration**:
+- Use `gh release create` with `--notes` flag for rich release descriptions
+- Include migration examples in release notes for breaking changes
+- Link to full changelog for comprehensive change tracking
+
+**Gem Publishing Coordination**:
+- Coordinate version updates across: `lib/*/version.rb`, `CHANGELOG.md`, documentation
+- Test locally before publishing: `bundle exec rspec` and build verification
+- Publish sequence: commit → push → GitHub release → gem push
+
+### OpenAI API Evolution Insights
+
+**Provider Bug Tracking**:
+- OpenAI fixed `additionalProperties` bug that was blocking nested arrays (issue #33)
+- API bugs can be temporary - re-record VCR cassettes periodically to verify fixes
+- Provider-specific optimization strategies require ongoing maintenance as APIs evolve
+
+**Strategy Selection Philosophy**:
+- Provider-optimized approaches (OpenAI structured outputs) are preferred when available
+- Enhanced prompting provides reliable fallback for any provider
+- User choice between "strict" and "compatible" more intuitive than technical strategy names
