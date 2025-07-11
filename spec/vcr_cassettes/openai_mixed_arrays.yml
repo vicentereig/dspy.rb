@@ -1,0 +1,176 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Query\"\n    }\n  },\n  \"required\": [\n    \"query\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"simple_items\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"id\": {\n            \"type\": \"integer\"\n          },\n          \"name\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"id\",\n          \"name\"\n        ],\n        \"description\":
+        \"SimpleItem struct\"\n      },\n      \"description\": \"Array of simple
+        objects\"\n    },\n    \"complex_items\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"id\":
+        {\n            \"type\": \"integer\"\n          },\n          \"metadata\":
+        {\n            \"type\": \"object\",\n            \"propertyNames\": {\n              \"type\":
+        \"string\"\n            },\n            \"additionalProperties\": {\n              \"oneOf\":
+        [\n                {\n                  \"type\": \"string\"\n                },\n                {\n                  \"type\":
+        \"integer\"\n                },\n                {\n                  \"type\":
+        \"array\",\n                  \"items\": {\n                    \"type\":
+        \"string\"\n                  }\n                }\n              ],\n              \"description\":
+        \"Union of multiple types\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are Union of multiple typess\"\n          },\n          \"nested_items\":
+        {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\":
+        \"object\",\n              \"properties\": {\n                \"id\": {\n                  \"type\":
+        \"integer\"\n                },\n                \"name\": {\n                  \"type\":
+        \"string\"\n                }\n              },\n              \"required\":
+        [\n                \"id\",\n                \"name\"\n              ],\n              \"description\":
+        \"SimpleItem struct\"\n            }\n          }\n        },\n        \"required\":
+        [\n          \"id\",\n          \"metadata\",\n          \"nested_items\"\n        ],\n        \"description\":
+        \"ComplexItem struct\"\n      },\n      \"description\": \"Array of complex
+        objects\"\n    }\n  },\n  \"required\": [\n    \"simple_items\",\n    \"complex_items\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Test arrays with mixed object complexity"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"query\": \"Generate arrays with different complexity
+        levels\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"simple_items\":
+        [\n    \"example item\"\n  ],\n  \"complex_items\": [\n    \"example item\"\n  ]\n}\n```\n\nRequired
+        fields: simple_items, complex_items\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.13.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3927'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 11 Jul 2025 13:58:31 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '4886'
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '4900'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '199133'
+      X-Ratelimit-Reset-Requests:
+      - 19.976s
+      X-Ratelimit-Reset-Tokens:
+      - 260ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 95d8d0cdcdaa3852-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Bs8YcTY4GsXZAmCbrErCr0Lz2rPhv",
+          "object": "chat.completion",
+          "created": 1752242306,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"simple_items\": [\n    {\n      \"id\": 1,\n      \"name\": \"Simple Item 1\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"Simple Item 2\"\n    }\n  ],\n  \"complex_items\": [\n    {\n      \"id\": 1,\n      \"metadata\": {\n        \"description\": \"Complex Item 1\",\n        \"tags\": [\"tag1\", \"tag2\"],\n        \"count\": 5\n      },\n      \"nested_items\": [\n        {\n          \"id\": 1,\n          \"name\": \"Nested Item 1\"\n        },\n        {\n          \"id\": 2,\n          \"name\": \"Nested Item 2\"\n        }\n      ]\n    },\n    {\n      \"id\": 2,\n      \"metadata\": {\n        \"description\": \"Complex Item 2\",\n        \"tags\": [\"tag3\"],\n        \"count\": 10\n      },\n      \"nested_items\": [\n        {\n          \"id\": 3,\n          \"name\": \"Nested Item 3\"\n        }\n      ]\n    }\n  ]\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 768,
+            "completion_tokens": 237,
+            "total_tokens": 1005,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": null
+        }
+  recorded_at: Fri, 11 Jul 2025 13:58:31 GMT
+recorded_with: VCR 6.3.1
