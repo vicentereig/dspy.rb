@@ -11,7 +11,7 @@ module DSPy
         @client = Anthropic::Client.new(api_key: api_key)
       end
 
-      def chat(messages:, &block)
+      def chat(messages:, signature: nil, **extra_params, &block)
         # Anthropic requires system message to be separate from messages
         system_message, user_messages = extract_system_message(normalize_messages(messages))
         

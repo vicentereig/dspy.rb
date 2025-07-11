@@ -14,12 +14,17 @@ module DSPy
         # Creates an adapter instance based on model_id
         # @param model_id [String] Full model identifier (e.g., "openai/gpt-4")
         # @param api_key [String] API key for the provider
+        # @param options [Hash] Additional adapter-specific options
         # @return [DSPy::LM::Adapter] Appropriate adapter instance
-        def create(model_id, api_key:)
+        def create(model_id, api_key:, **options)
           provider, model = parse_model_id(model_id)
           adapter_class = get_adapter_class(provider)
           
-          adapter_class.new(model: model, api_key: api_key)
+          # Pass provider-specific options
+          adapter_options = { model: model, api_key: api_key }
+          adapter_options.merge!(options) if provider == 'openai' # Only OpenAI accepts structured_outputs for now
+          
+          adapter_class.new(**adapter_options)
         end
 
         private

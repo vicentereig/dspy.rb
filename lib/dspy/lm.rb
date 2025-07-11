@@ -14,19 +14,23 @@ require_relative 'instrumentation/token_tracker'
 require_relative 'lm/adapters/openai_adapter'
 require_relative 'lm/adapters/anthropic_adapter'
 
+# Load strategy system
+require_relative 'lm/strategy_selector'
+require_relative 'lm/retry_handler'
+
 module DSPy
   class LM
     attr_reader :model_id, :api_key, :model, :provider, :adapter
 
-    def initialize(model_id, api_key: nil)
+    def initialize(model_id, api_key: nil, **options)
       @model_id = model_id
       @api_key = api_key
       
       # Parse provider and model from model_id
       @provider, @model = parse_model_id(model_id)
       
-      # Create appropriate adapter
-      @adapter = AdapterFactory.create(model_id, api_key: api_key)
+      # Create appropriate adapter with options
+      @adapter = AdapterFactory.create(model_id, api_key: api_key, **options)
     end
 
     def chat(inference_module, input_values, &block)
@@ -54,7 +58,7 @@ module DSPy
           adapter_class: adapter.class.name,
           input_size: input_size
         }) do
-          adapter.chat(messages: messages, &block)
+          chat_with_strategy(messages, signature_class, &block)
         end
         
         # Extract actual token usage from response (more accurate than estimation)
@@ -79,7 +83,7 @@ module DSPy
         end
       else
         # Consolidated mode: execute without nested instrumentation
-        response = adapter.chat(messages: messages, &block)
+        response = chat_with_strategy(messages, signature_class, &block)
         token_usage = Instrumentation::TokenTracker.extract_token_usage(response, provider)
         parsed_result = parse_response(response, input_values, signature_class)
       end
@@ -88,6 +92,53 @@ module DSPy
     end
 
     private
+
+    def chat_with_strategy(messages, signature_class, &block)
+      # Select the best strategy for JSON extraction
+      strategy_selector = StrategySelector.new(adapter, signature_class)
+      initial_strategy = strategy_selector.select
+      
+      if DSPy.config.structured_outputs.retry_enabled && signature_class
+        # Use retry handler for JSON responses
+        retry_handler = RetryHandler.new(adapter, signature_class)
+        
+        retry_handler.with_retry(initial_strategy) do |strategy|
+          execute_chat_with_strategy(messages, signature_class, strategy, &block)
+        end
+      else
+        # No retry logic, just execute once
+        execute_chat_with_strategy(messages, signature_class, initial_strategy, &block)
+      end
+    end
+
+    def execute_chat_with_strategy(messages, signature_class, strategy, &block)
+      # Prepare request with strategy-specific modifications
+      request_params = {}
+      strategy.prepare_request(messages.dup, request_params)
+      
+      # Make the request
+      response = if request_params.any?
+        # Pass additional parameters if strategy added them
+        adapter.chat(messages: messages, signature: signature_class, **request_params, &block)
+      else
+        adapter.chat(messages: messages, signature: signature_class, &block)
+      end
+      
+      # Let strategy handle JSON extraction if needed
+      if signature_class && response.content
+        extracted_json = strategy.extract_json(response)
+        if extracted_json && extracted_json != response.content
+          # Create a new response with extracted JSON
+          response = Response.new(
+            content: extracted_json,
+            usage: response.usage,
+            metadata: response.metadata
+          )
+        end
+      end
+      
+      response
+    end
 
     # Determines if LM-level events should be emitted using smart consolidation
     def should_emit_lm_events?
@@ -139,18 +190,6 @@ module DSPy
       # Try to parse the response as JSON
       content = response.content
 
-      # Let adapters handle their own extraction logic if available
-      if adapter && adapter.respond_to?(:extract_json_from_response, true)
-        content = adapter.send(:extract_json_from_response, content)
-      else
-        # Fallback: Extract JSON if it's in a code block (legacy behavior)
-        if content.include?('```json')
-          content = content.split('```json').last.split('```').first.strip
-        elsif content.include?('```')
-          content = content.split('```').last.split('```').first.strip
-        end
-      end
-
       begin
         json_payload = JSON.parse(content)
 
@@ -161,7 +200,6 @@ module DSPy
         # Enhanced error message with debugging information
         error_details = {
           original_content: response.content,
-          extracted_content: content,
           provider: provider,
           model: model
         }

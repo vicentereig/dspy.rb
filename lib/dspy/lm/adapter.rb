@@ -14,9 +14,10 @@ module DSPy
 
       # Chat interface that all adapters must implement
       # @param messages [Array<Hash>] Array of message hashes with :role and :content
+      # @param signature [DSPy::Signature, nil] Optional signature for structured outputs
       # @param block [Proc] Optional streaming block
       # @return [DSPy::LM::Response] Normalized response
-      def chat(messages:, &block)
+      def chat(messages:, signature: nil, &block)
         raise NotImplementedError, "Subclasses must implement #chat method"
       end
 

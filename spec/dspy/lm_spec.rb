@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'dspy/signature'
+
+class TestSignature < DSPy::Signature
+  description "Test signature"
+  
+  output do
+    const :answer, String
+  end
+end
 
 RSpec.describe DSPy::LM do
   describe '#initialize' do
@@ -30,7 +39,20 @@ RSpec.describe DSPy::LM do
   end
 
   describe '#chat' do
-    let(:mock_adapter) { instance_double(DSPy::LM::OpenAIAdapter) }
+    # Create a test adapter that inherits from the base adapter
+    class TestAdapter < DSPy::LM::Adapter
+      attr_accessor :chat_response
+      
+      def chat(messages:, signature: nil, **kwargs, &block)
+        @chat_response || DSPy::LM::Response.new(
+          content: '{"answer": "test response"}',
+          usage: { 'total_tokens' => 50 },
+          metadata: { provider: 'test', model: 'test-model' }
+        )
+      end
+    end
+    
+    let(:mock_adapter) { TestAdapter.new(model: 'test-model', api_key: 'test-key') }
     let(:mock_response) do
       DSPy::LM::Response.new(
         content: '{"answer": "test response"}',
@@ -38,10 +60,10 @@ RSpec.describe DSPy::LM do
         metadata: { provider: 'openai', model: 'gpt-4' }
       )
     end
+    let(:signature_class) { TestSignature }
     let(:inference_module) do
       module_double = double('InferenceModule')
-      signature_class_double = double('SignatureClass', name: 'TestSignature')
-      allow(module_double).to receive(:signature_class).and_return(signature_class_double)
+      allow(module_double).to receive(:signature_class).and_return(signature_class)
       allow(module_double).to receive(:system_signature).and_return('You are a helpful assistant')
       allow(module_double).to receive(:user_signature).with(anything).and_return('Question: What is AI?\nAnswer:')
       module_double
@@ -56,14 +78,21 @@ RSpec.describe DSPy::LM do
     it 'delegates chat to the adapter' do
       lm = described_class.new('openai/gpt-4', api_key: 'test-key')
       
-      expect(mock_adapter).to receive(:chat)
-        .with(messages: [
-          { role: 'system', content: 'You are a helpful assistant' },
-          { role: 'user', content: 'Question: What is AI?\nAnswer:' }
-        ])
-        .and_return(mock_response)
+      # Spy on the adapter's chat method
+      allow(mock_adapter).to receive(:chat).and_call_original
+      mock_adapter.chat_response = mock_response
 
       result = lm.chat(inference_module, input_values)
+      
+      # Verify the adapter was called with messages (enhanced by strategy)
+      expect(mock_adapter).to have_received(:chat) do |**args|
+        # The strategy may enhance the messages, so check the basics
+        expect(args[:messages].first[:role]).to eq('system')
+        expect(args[:messages].last[:role]).to eq('user')
+        expect(args[:messages].last[:content]).to include('Question: What is AI?')
+        expect(args[:signature]).to eq(signature_class)
+      end
+      
       expect(result).to eq({ 'answer' => 'test response' })
     end
 
@@ -71,16 +100,25 @@ RSpec.describe DSPy::LM do
       lm = described_class.new('openai/gpt-4', api_key: 'test-key')
       block = proc { |chunk| puts chunk }
       
-      expect(mock_adapter).to receive(:chat) do |**args, &passed_block|
-        expect(passed_block).to eq(block)
-        expect(args[:messages]).to eq([
-          { role: 'system', content: 'You are a helpful assistant' },
-          { role: 'user', content: 'Question: What is AI?\nAnswer:' }
-        ])
+      # Spy on the chat method to capture the block
+      called_with_block = nil
+      allow(mock_adapter).to receive(:chat) do |**args, &passed_block|
+        called_with_block = passed_block
         mock_response
       end
 
       result = lm.chat(inference_module, input_values, &block)
+      
+      # Verify the block was passed through
+      expect(called_with_block).to eq(block)
+      expect(mock_adapter).to have_received(:chat) do |**args|
+        # The strategy may enhance the messages, so check the basics
+        expect(args[:messages].first[:role]).to eq('system')
+        expect(args[:messages].last[:role]).to eq('user')
+        expect(args[:messages].last[:content]).to include('Question: What is AI?')
+        expect(args[:signature]).to eq(signature_class)
+      end
+      
       expect(result).to eq({ 'answer' => 'test response' })
     end
   end

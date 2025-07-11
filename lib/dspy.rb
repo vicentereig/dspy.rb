@@ -21,6 +21,19 @@ module DSPy
   setting :lm
   setting :logger, default: Dry.Logger(:dspy, formatter: :string)
   
+  # Structured output configuration for LLM providers
+  setting :structured_outputs do
+    setting :openai, default: false
+    setting :anthropic, default: false  # Reserved for future use
+    setting :strategy, default: nil  # Can be 'openai_structured_output', 'anthropic_extraction', 'enhanced_prompting', or nil for auto
+    setting :retry_enabled, default: true
+    setting :max_retries, default: 3
+    setting :fallback_enabled, default: true
+  end
+  
+  # Test mode disables sleeps in retry logic
+  setting :test_mode, default: false
+  
   # Nested instrumentation configuration using proper dry-configurable syntax
   setting :instrumentation do
     # Core settings
