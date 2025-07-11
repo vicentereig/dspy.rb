@@ -96,32 +96,33 @@ puts result.confidence   # => 0.85
 
 ## Documentation
 
+📖 **[Complete Documentation Website](https://vicentereig.github.io/dspy.rb/)**
+
 ### Getting Started
-- **[Installation & Setup](docs/getting-started/installation.md)** - Detailed installation and configuration
-- **[Quick Start Guide](docs/getting-started/quick-start.md)** - Your first DSPy programs
-- **[Core Concepts](docs/getting-started/core-concepts.md)** - Understanding signatures, predictors, and modules
+- **[Installation & Setup](docs/src/getting-started/installation.md)** - Detailed installation and configuration
+- **[Quick Start Guide](docs/src/getting-started/quick-start.md)** - Your first DSPy programs
+- **[Core Concepts](docs/src/getting-started/core-concepts.md)** - Understanding signatures, predictors, and modules
 
 ### Core Features
-- **[Signatures & Types](docs/core-concepts/signatures.md)** - Define typed interfaces for LLM operations
-- **[Predictors](docs/core-concepts/predictors.md)** - Predict, ChainOfThought, ReAct, and more
-- **[Modules & Pipelines](docs/core-concepts/modules.md)** - Compose complex multi-stage workflows
-- **[Examples & Validation](docs/core-concepts/examples.md)** - Type-safe training data
+- **[Signatures & Types](docs/src/core-concepts/signatures.md)** - Define typed interfaces for LLM operations
+- **[Predictors](docs/src/core-concepts/predictors.md)** - Predict, ChainOfThought, ReAct, and more
+- **[Modules & Pipelines](docs/src/core-concepts/modules.md)** - Compose complex multi-stage workflows
+- **[Examples & Validation](docs/src/core-concepts/examples.md)** - Type-safe training data
 
 ### Optimization
-- **[Evaluation Framework](docs/optimization/evaluation.md)** - Basic testing with simple metrics
-- **[Prompt Optimization](docs/optimization/prompt-optimization.md)** - Manipulate prompts as objects
-- **[MIPROv2 Optimizer](docs/optimization/miprov2.md)** - Basic automatic optimization
-- **[Simple Optimizer](docs/optimization/simple-optimizer.md)** - Random search experimentation
+- **[Evaluation Framework](docs/src/optimization/evaluation.md)** - Basic testing with simple metrics
+- **[Prompt Optimization](docs/src/optimization/prompt-optimization.md)** - Manipulate prompts as objects
+- **[MIPROv2 Optimizer](docs/src/optimization/miprov2.md)** - Basic automatic optimization
 
 ### Production Features
-- **[Storage System](docs/production/storage.md)** - Basic file-based persistence
-- **[Observability](docs/production/observability.md)** - Multi-platform monitoring and metrics
+- **[Storage System](docs/src/production/storage.md)** - Basic file-based persistence
+- **[Observability](docs/src/production/observability.md)** - Multi-platform monitoring and metrics
 
 ### Advanced Usage
-- **[Complex Types](docs/advanced/complex-types.md)** - Sorbet type integration with automatic coercion for structs, enums, and arrays
-- **[Manual Pipelines](docs/advanced/pipelines.md)** - Manual module composition patterns
-- **[RAG Patterns](docs/advanced/rag.md)** - Manual RAG implementation with external services
-- **[Custom Metrics](docs/advanced/custom-metrics.md)** - Proc-based evaluation logic
+- **[Complex Types](docs/src/advanced/complex-types.md)** - Sorbet type integration with automatic coercion for structs, enums, and arrays
+- **[Manual Pipelines](docs/src/advanced/pipelines.md)** - Manual module composition patterns
+- **[RAG Patterns](docs/src/advanced/rag.md)** - Manual RAG implementation with external services
+- **[Custom Metrics](docs/src/advanced/custom-metrics.md)** - Proc-based evaluation logic
 
 ## What's Next
 

@@ -31,10 +31,18 @@ module DSPy
       def select
         # Allow manual override via configuration
         if DSPy.config.structured_outputs.strategy
-          strategy = find_strategy_by_name(DSPy.config.structured_outputs.strategy)
+          strategy_name = if DSPy.config.structured_outputs.strategy.respond_to?(:serialize)
+                           # Handle enum
+                           DSPy.config.structured_outputs.strategy.serialize
+                         else
+                           # Handle string (backward compatibility)
+                           DSPy.config.structured_outputs.strategy.to_s
+                         end
+          
+          strategy = find_strategy_by_name(strategy_name)
           return strategy if strategy&.available?
           
-          DSPy.logger.warn("Requested strategy '#{DSPy.config.structured_outputs.strategy}' is not available")
+          DSPy.logger.warn("Requested strategy '#{strategy_name}' is not available")
         end
 
         # Select the highest priority available strategy

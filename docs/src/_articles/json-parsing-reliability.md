@@ -60,6 +60,7 @@ class ProductExtractor < DSPy::Signature
 end
 
 # This now returns guaranteed valid JSON
+predict = DSPy::Predict.new(ProductExtractor)
 result = predict.forward(description: "iPhone 15 Pro - $999, available now")
 # => { name: "iPhone 15 Pro", price: 999.0, in_stock: true }
 ```
@@ -75,6 +76,7 @@ lm = DSPy::LM.new("anthropic/claude-3-haiku-20240307",
                   api_key: ENV["ANTHROPIC_API_KEY"])
 
 # Same code, optimized extraction for Claude
+predict = DSPy::Predict.new(ProductExtractor)
 result = predict.forward(description: "MacBook Air M3 - $1199")
 ```
 
@@ -131,8 +133,8 @@ DSPy.configure do |config|
   config.structured_outputs.retry_enabled = true
   config.structured_outputs.max_retries = 3
   
-  # Force a specific strategy
-  config.structured_outputs.strategy = "enhanced_prompting"
+  # Force a specific strategy using enum
+  config.structured_outputs.strategy = DSPy::LM::StructuredOutputStrategy::EnhancedPrompting
   
   # Disable delays in tests
   config.test_mode = true
@@ -184,10 +186,10 @@ gem install dspy
 Or in your Gemfile:
 
 ```ruby
-gem 'dspy', '~> 0.1.0'
+gem 'dspy', '~> 0.8.1'
 ```
 
-Check out the [documentation](https://github.com/vicentereig/dspy.rb) for more examples, or dive into the [reliability features guide](/docs/production/reliability_features) for advanced usage.
+Check out the [documentation](https://vicentereig.github.io/dspy.rb/) for more examples, or dive into the [reliability features guide](https://vicentereig.github.io/dspy.rb/production/) for advanced usage.
 
 ---
 
