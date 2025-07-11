@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}DSPy.rb - Build Reliable LLM Applications in Ruby</title>
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}A framework for building predictable LLM applications using composable, type-safe modules in Ruby{% endif %}">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="{{ site.base_path }}/_bridgetown/static/css/index.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{{ site.base_path }}/favicon.ico">
+  
+  <!-- JavaScript -->
+  <script defer src="{{ site.base_path }}/_bridgetown/static/js/index.js"></script>
+</head>
+<body class="h-full">
+  <div class="bg-white">
+    <!-- Header -->
+    <header class="absolute inset-x-0 top-0 z-50">
+      <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+        <div class="flex lg:flex-1">
+          <a href="{{ '/' | relative_url }}" class="-m-1.5 p-1.5 flex items-center gap-2">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700">
+              <span class="text-xl font-bold text-white">D</span>
+            </div>
+            <span class="text-xl font-semibold text-gray-900">DSPy.rb</span>
+          </a>
+        </div>
+        <div class="flex lg:hidden">
+          <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+            <span class="sr-only">Open main menu</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+        </div>
+        <div class="hidden lg:flex lg:gap-x-12">
+          <a href="{{ '/getting-started/' | relative_url }}" class="text-sm font-semibold leading-6 text-gray-900">Getting Started</a>
+          <a href="{{ '/core-concepts/' | relative_url }}" class="text-sm font-semibold leading-6 text-gray-900">Core Concepts</a>
+          <a href="{{ '/optimization/' | relative_url }}" class="text-sm font-semibold leading-6 text-gray-900">Optimization</a>
+          <a href="{{ '/advanced/' | relative_url }}" class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
+          <a href="{{ '/blog/' | relative_url }}" class="text-sm font-semibold leading-6 text-dspy-ruby">Blog</a>
+        </div>
+        <div class="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
+          <a href="https://github.com/vicentereig/dspy.rb" class="text-gray-400 hover:text-gray-500">
+            <span class="sr-only">GitHub</span>
+            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+      </nav>
+      
+      <!-- Mobile menu, show/hide based on menu state -->
+      <div class="lg:hidden hidden" role="dialog" aria-modal="true" id="mobile-menu">
+        <div class="fixed inset-0 z-50"></div>
+        <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <div class="flex items-center justify-between">
+            <a href="{{ '/' | relative_url }}" class="-m-1.5 p-1.5 flex items-center gap-2">
+              <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-700">
+                <span class="text-xl font-bold text-white">D</span>
+              </div>
+              <span class="text-xl font-semibold text-gray-900">DSPy.rb</span>
+            </a>
+            <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" id="mobile-menu-close">
+              <span class="sr-only">Close menu</span>
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="mt-6 flow-root">
+            <div class="-my-6 divide-y divide-gray-500/10">
+              <div class="space-y-2 py-6">
+                <a href="{{ '/getting-started/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Getting Started</a>
+                <a href="{{ '/core-concepts/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Core Concepts</a>
+                <a href="{{ '/optimization/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Optimization</a>
+                <a href="{{ '/advanced/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Advanced</a>
+                <a href="{{ '/blog/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-dspy-ruby hover:bg-gray-50">Blog</a>
+              </div>
+              <div class="py-6">
+                <a href="https://github.com/vicentereig/dspy.rb" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                  <span class="flex items-center gap-2">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                    </svg>
+                    GitHub
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="px-6 pt-20 lg:px-8">
+      <div class="mx-auto max-w-7xl py-16">
+        <!-- Simple Header -->
+        <div class="mx-auto max-w-2xl text-center mb-16">
+          <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            DSPy.rb Blog
+          </h1>
+          <p class="mt-6 text-lg leading-8 text-gray-600">
+            Practical insights and tutorials for building AI applications with Ruby.
+          </p>
+        </div>
+        
+        <!-- Blog posts list -->
+        <div class="mx-auto max-w-4xl">
+          {% assign blog_posts = site.pages | where: "layout", "blog" %}
+          {% if blog_posts.size > 0 %}
+            {% assign sorted_posts = blog_posts | sort: "date" | reverse %}
+            <div class="space-y-12">
+              {% for post in sorted_posts %}
+                <article class="flex flex-col gap-8 lg:flex-row">
+                  <div class="flex items-center lg:flex-shrink-0">
+                    <div class="flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-dspy-ruby to-red-700 shadow-lg">
+                      {% if post.category == "Tutorial" %}
+                        <svg class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443a55.381 55.381 0 015.25 2.882V15" />
+                        </svg>
+                      {% elsif post.category == "Features" %}
+                        <svg class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                        </svg>
+                      {% else %}
+                        <svg class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                        </svg>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <div class="flex-1">
+                    <div class="flex items-center gap-x-4 text-xs">
+                      <time datetime="{{ post.date | date: '%Y-%m-%d' }}" class="text-gray-500">
+                        {{ post.date | date: "%B %d, %Y" }}
+                      </time>
+                      <span class="inline-flex items-center rounded-full bg-dspy-ruby/10 px-2.5 py-0.5 text-xs font-medium text-dspy-ruby">
+                        {{ post.category | default: "Article" }}
+                      </span>
+                      {% if post.read_time %}
+                        <span class="text-gray-500">{{ post.read_time }} min read</span>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="group relative">
+                      <h3 class="mt-3 text-xl font-semibold leading-6 text-gray-900 group-hover:text-dspy-ruby transition-colors">
+                        <a href="{{ post.url | relative_url }}">
+                          <span class="absolute inset-0"></span>
+                          {{ post.title }}
+                        </a>
+                      </h3>
+                      <p class="mt-5 text-base leading-6 text-gray-600">
+                        {{ post.description }}
+                      </p>
+                    </div>
+                    
+                    <div class="relative mt-6 flex items-center gap-x-4">
+                      <div class="h-10 w-10 rounded-full bg-gradient-to-br from-dspy-ruby to-red-700 flex items-center justify-center">
+                        <span class="text-sm font-bold text-white">{{ post.author | default: "DSPy" | slice: 0, 1 }}</span>
+                      </div>
+                      <div class="text-sm leading-6">
+                        <p class="font-semibold text-gray-900">
+                          {{ post.author | default: "Vicente Reig" }}
+                        </p>
+                        <p class="text-gray-600">Lead Developer</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                
+                {% unless forloop.last %}
+                  <div class="border-t border-gray-200"></div>
+                {% endunless %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-16">
+              <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
+              </div>
+              <h3 class="mt-4 text-sm font-semibold text-gray-900">No blog posts yet</h3>
+              <p class="mt-2 text-sm text-gray-500">Check back soon for new content!</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white">
+    <div class="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
+      <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
+        <div class="pb-6">
+          <a href="{{ '/getting-started/' | relative_url }}" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Documentation</a>
+        </div>
+        <div class="pb-6">
+          <a href="https://github.com/vicentereig/dspy.rb" class="text-sm leading-6 text-gray-600 hover:text-gray-900">GitHub</a>
+        </div>
+        <div class="pb-6">
+          <a href="https://github.com/vicentereig/dspy.rb/discussions" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Community</a>
+        </div>
+        <div class="pb-6">
+          <a href="https://github.com/vicentereig/dspy.rb/blob/main/CONTRIBUTING.md" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Contributing</a>
+        </div>
+      </nav>
+      <p class="mt-10 text-center text-xs leading-5 text-gray-500">&copy; {{ 'now' | date: '%Y' }} DSPy.rb. All rights reserved. Created by <a href="https://vicente.services" class="text-dspy-ruby hover:text-red-700">Vicente Reig Rincon de Arellano</a>.</p>
+    </div>
+  </footer>
+</body>
+</html>

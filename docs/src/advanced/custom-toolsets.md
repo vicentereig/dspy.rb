@@ -64,118 +64,73 @@ end
 
 ## Production Toolset Examples
 
-### 1. Database Operations Toolset
+### 1. Simple Data Storage Toolset
 
 ```ruby
-class DatabaseToolset < DSPy::Tools::Toolset
+class DataStorageToolset < DSPy::Tools::Toolset
   extend T::Sig
   
-  toolset_name "db"
+  toolset_name "data"
   
-  tool :query, description: "Execute a SQL query and return results"
-  tool :insert, description: "Insert a new record"
-  tool :update, description: "Update existing records"
-  tool :delete, description: "Delete records"
-  tool :count, description: "Count records in a table"
+  tool :store_data, description: "Store data with a key"
+  tool :retrieve_data, description: "Retrieve data by key"
+  tool :list_keys, description: "List all stored keys"
+  tool :delete_data, description: "Delete data by key"
   
-  def initialize(connection_string:)
-    @connection = establish_connection(connection_string)
+  def initialize
+    @data_store = {}
   end
   
-  sig { params(sql: String, params: T::Hash[String, T.untyped]).returns(String) }
-  def query(sql:, params: {})
-    validate_query(sql)
+  sig { params(key: String, value: String).returns(String) }
+  def store_data(key:, value:)
+    @data_store[key] = {
+      value: value,
+      stored_at: Time.now.iso8601
+    }
     
-    results = @connection.execute(sql, params)
-    format_results(results)
+    "Data stored successfully for key: #{key}"
   rescue => e
-    "Error executing query: #{e.message}"
+    "Error storing data: #{e.message}"
   end
   
-  sig { params(table: String, data: T::Hash[String, T.untyped]).returns(String) }
-  def insert(table:, data:)
-    validate_table_name(table)
-    validate_data(data)
+  sig { params(key: String).returns(String) }
+  def retrieve_data(key:)
+    data = @data_store[key]
     
-    columns = data.keys.join(", ")
-    placeholders = data.keys.map { |k| ":#{k}" }.join(", ")
-    sql = "INSERT INTO #{table} (#{columns}) VALUES (#{placeholders})"
-    
-    @connection.execute(sql, data)
-    "Record inserted successfully"
+    if data
+      {
+        key: key,
+        value: data[:value],
+        stored_at: data[:stored_at]
+      }.to_json
+    else
+      "No data found for key: #{key}"
+    end
   rescue => e
-    "Error inserting record: #{e.message}"
+    "Error retrieving data: #{e.message}"
   end
   
-  sig { params(table: String, data: T::Hash[String, T.untyped], where: String).returns(String) }
-  def update(table:, data:, where:)
-    validate_table_name(table)
-    validate_data(data)
-    validate_where_clause(where)
+  sig { returns(String) }
+  def list_keys
+    keys = @data_store.keys
     
-    set_clause = data.keys.map { |k| "#{k} = :#{k}" }.join(", ")
-    sql = "UPDATE #{table} SET #{set_clause} WHERE #{where}"
-    
-    result = @connection.execute(sql, data)
-    "Updated #{result.changes} records"
+    {
+      keys: keys,
+      count: keys.length
+    }.to_json
   rescue => e
-    "Error updating records: #{e.message}"
+    "Error listing keys: #{e.message}"
   end
   
-  sig { params(table: String, where: String).returns(String) }
-  def delete(table:, where:)
-    validate_table_name(table)
-    validate_where_clause(where)
-    
-    sql = "DELETE FROM #{table} WHERE #{where}"
-    result = @connection.execute(sql)
-    "Deleted #{result.changes} records"
+  sig { params(key: String).returns(String) }
+  def delete_data(key:)
+    if @data_store.delete(key)
+      "Data deleted successfully for key: #{key}"
+    else
+      "No data found for key: #{key}"
+    end
   rescue => e
-    "Error deleting records: #{e.message}"
-  end
-  
-  sig { params(table: String, where: T.nilable(String)).returns(String) }
-  def count(table:, where: nil)
-    validate_table_name(table)
-    
-    sql = "SELECT COUNT(*) FROM #{table}"
-    sql += " WHERE #{where}" if where
-    
-    result = @connection.execute(sql)
-    "Count: #{result.first['COUNT(*)']}"
-  rescue => e
-    "Error counting records: #{e.message}"
-  end
-  
-  private
-  
-  def establish_connection(connection_string)
-    # Database connection logic
-  end
-  
-  def validate_query(sql)
-    # Validate SQL for safety
-    raise "Unsafe query" if sql.downcase.include?("drop table")
-  end
-  
-  def validate_table_name(table)
-    # Validate table name format
-    raise "Invalid table name" unless table.match?(/\A[a-zA-Z_][a-zA-Z0-9_]*\z/)
-  end
-  
-  def validate_data(data)
-    # Validate data structure
-    raise "Data cannot be empty" if data.empty?
-  end
-  
-  def validate_where_clause(where)
-    # Basic validation of WHERE clause
-    raise "WHERE clause cannot be empty" if where.nil? || where.empty?
-  end
-  
-  def format_results(results)
-    # Format results as JSON
-    results.to_json
+    "Error deleting data: #{e.message}"
   end
 end
 ```
@@ -885,37 +840,42 @@ end
 ### Unit Testing
 
 ```ruby
-RSpec.describe DatabaseToolset do
-  let(:connection_string) { "sqlite://test.db" }
-  let(:toolset) { described_class.new(connection_string: connection_string) }
+RSpec.describe DataStorageToolset do
+  let(:toolset) { described_class.new }
   
-  describe '#query' do
-    it 'executes valid SQL queries' do
-      result = toolset.query(sql: "SELECT 1 as test")
-      expect(result).to include("test")
-    end
-    
-    it 'rejects dangerous queries' do
-      result = toolset.query(sql: "DROP TABLE users")
-      expect(result).to include("Error")
+  describe '#store_data' do
+    it 'stores data successfully' do
+      result = toolset.store_data(key: "test_key", value: "test_value")
+      expect(result).to include("stored successfully")
     end
   end
   
-  describe '#insert' do
-    it 'inserts records successfully' do
-      result = toolset.insert(
-        table: "users",
-        data: { name: "John", email: "john@example.com" }
-      )
-      expect(result).to include("inserted successfully")
+  describe '#retrieve_data' do
+    it 'retrieves stored data' do
+      toolset.store_data(key: "test_key", value: "test_value")
+      result = toolset.retrieve_data(key: "test_key")
+      
+      parsed = JSON.parse(result)
+      expect(parsed["key"]).to eq("test_key")
+      expect(parsed["value"]).to eq("test_value")
     end
     
-    it 'validates table names' do
-      result = toolset.insert(
-        table: "invalid-table-name",
-        data: { name: "John" }
-      )
-      expect(result).to include("Error")
+    it 'handles missing keys gracefully' do
+      result = toolset.retrieve_data(key: "missing_key")
+      expect(result).to include("No data found")
+    end
+  end
+  
+  describe '#list_keys' do
+    it 'lists all stored keys' do
+      toolset.store_data(key: "key1", value: "value1")
+      toolset.store_data(key: "key2", value: "value2")
+      
+      result = toolset.list_keys
+      parsed = JSON.parse(result)
+      
+      expect(parsed["keys"]).to contain_exactly("key1", "key2")
+      expect(parsed["count"]).to eq(2)
     end
   end
 end
@@ -1086,4 +1046,4 @@ class CachedToolset < DSPy::Tools::Toolset
 end
 ```
 
-Custom toolsets are powerful extensions that can significantly enhance your agents' capabilities. By following these patterns and best practices, you can build robust, secure, and performant toolsets that integrate seamlessly with DSPy.rb's agent system.
+Custom toolsets allow you to extend agents with domain-specific capabilities by grouping related operations together. By following these patterns and best practices, you can build robust, secure, and performant toolsets that integrate with DSPy.rb's agent system.

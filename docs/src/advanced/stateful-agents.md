@@ -18,7 +18,7 @@ nav:
 
 # Stateful Agents
 
-Stateful agents maintain context and information across multiple interactions, enabling them to provide more personalized and contextually aware responses. This guide covers production patterns for building robust stateful agents using DSPy.rb's memory system.
+Stateful agents maintain context and information across multiple interactions, enabling them to provide responses that take into account previous conversations and user preferences. This guide covers production patterns for building robust stateful agents using DSPy.rb's memory system.
 
 ## Core Concepts
 
@@ -179,14 +179,14 @@ class PersistentAgent < DSPy::Module
 end
 ```
 
-### 3. Multi-Modal Context Agent
+### 3. Multi-Context Agent
 
 An agent that maintains different types of context and state:
 
 ```ruby
-class MultiModalContextAgent < DSPy::Module
+class MultiContextAgent < DSPy::Module
   class ContextualSignature < DSPy::Signature
-    description "Multi-modal agent with rich context management"
+    description "Agent with rich context management"
     
     input do
       const :user_message, String
@@ -422,7 +422,7 @@ class ResilientAgent < DSPy::Module
       result
     rescue => e
       # Fall back to session-only mode
-      DSPy.logger.warn("Memory system unavailable: #{e.message}")
+      DSPy.logger.warning("Memory system unavailable: #{e.message}")
       fallback_response(user_message, user_id)
     end
   end
@@ -446,6 +446,19 @@ class ResilientAgent < DSPy::Module
     context = @fallback_memory[user_id]&.last(3) || []
     
     # Create simple response without memory tools
+    class SimpleSignature < DSPy::Signature
+      description "Simple response without memory tools"
+      
+      input do
+        const :message, String
+        const :context, String
+      end
+      
+      output do
+        const :response, String
+      end
+    end
+    
     simple_agent = DSPy::Predict.new(SimpleSignature)
     simple_agent.call(
       message: message,
@@ -459,11 +472,24 @@ end
 
 ```ruby
 class StateRecoveryAgent < DSPy::Module
+  class RecoverySignature < DSPy::Signature
+    description "Agent with state recovery capabilities"
+    
+    input do
+      const :user_message, String
+      const :user_id, String
+    end
+    
+    output do
+      const :response, String
+    end
+  end
+  
   def initialize
     super
     @state_version = 1
     @memory_tools = DSPy::Tools::MemoryToolset.to_tools
-    @agent = DSPy::ReAct.new(AgentSignature, tools: @memory_tools)
+    @agent = DSPy::ReAct.new(RecoverySignature, tools: @memory_tools)
   end
   
   def forward(user_message:, user_id:)
@@ -535,15 +561,25 @@ end
 
 ```ruby
 class OptimizedStatefulAgent < DSPy::Module
+  class OptimizedSignature < DSPy::Signature
+    description "Optimized agent with memory cleanup"
+    
+    input do
+      const :user_message, String
+      const :user_id, String
+    end
+    
+    output do
+      const :response, String
+    end
+  end
+  
   def initialize
     super
     
-    # Configure memory compaction for performance
-    @memory_manager = DSPy::Memory::MemoryManager.new
-    
-    # Use memory tools with configured manager
+    # Use memory tools
     @memory_tools = DSPy::Tools::MemoryToolset.to_tools
-    @agent = DSPy::ReAct.new(AgentSignature, tools: @memory_tools)
+    @agent = DSPy::ReAct.new(OptimizedSignature, tools: @memory_tools)
   end
   
   def forward(user_message:, user_id:)
@@ -571,7 +607,7 @@ class OptimizedStatefulAgent < DSPy::Module
   
   def cleanup_old_memories(user_id)
     # Force memory compaction
-    @memory_manager.force_compact!(user_id)
+    DSPy::Memory.manager.force_compact!(user_id)
   end
   
   def store_essential_data(user_id, message, result)
@@ -655,7 +691,7 @@ end
 
 ```ruby
 RSpec.describe "Stateful Agent Integration" do
-  let(:agent) { MultiModalContextAgent.new }
+  let(:agent) { MultiContextAgent.new }
   
   before do
     DSPy::Memory.reset!
