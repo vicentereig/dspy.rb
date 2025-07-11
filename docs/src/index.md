@@ -15,7 +15,7 @@ description: "Write modular, testable Ruby code instead of tweaking prompts"
     <p class="mt-6 text-lg leading-8 text-gray-600">Tired of copy-pasting prompts and hoping they work? DSPy.rb lets you write modular, type-safe Ruby code that handles the LLM stuff for you. Test it, optimize it, ship it.</p>
     <div class="mt-10 flex items-center justify-center gap-x-6">
       <a href="{{ '/getting-started/' | relative_url }}" class="rounded-md bg-dspy-ruby px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-ruby">Get started</a>
-      <a href="{{ '/getting-started/quick-start/' | relative_url }}" class="inline-flex items-center text-sm font-semibold text-gray-900 hover:text-dspy-ruby">View examples <span aria-hidden="true">→</span></a>
+      <a href="{{ '/getting-started/quick-start/' | relative_url }}" class="inline-flex items-center py-2.5 text-sm font-semibold text-gray-900 hover:text-dspy-ruby">View examples <span aria-hidden="true">→</span></a>
     </div>
   </div>
 </div>
