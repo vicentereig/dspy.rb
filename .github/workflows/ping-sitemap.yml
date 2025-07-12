@@ -25,16 +25,3 @@ jobs:
         run: |
           curl -s "https://www.bing.com/ping?sitemap=https://vicentereig.github.io/dspy.rb/sitemap.xml"
           echo "✅ Pinged Bing"
-      
-      - name: Ping IndexNow (Bing & Yandex)
-        if: false # Enable this after setting up IndexNow key
-        run: |
-          # IndexNow requires an API key - see https://www.indexnow.org/documentation
-          curl -s -X POST "https://api.indexnow.org/indexnow" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "host": "vicentereig.github.io",
-              "key": "${{ secrets.INDEXNOW_KEY }}",
-              "keyLocation": "https://vicentereig.github.io/dspy.rb/indexnow-key.txt",
-              "urlList": ["https://vicentereig.github.io/dspy.rb/"]
-            }'
