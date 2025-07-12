@@ -5,7 +5,7 @@ gem "puma", "~> 6.0"
 gem "roda"
 
 group :bridgetown_plugins do
-  # Add any Bridgetown plugins here
+  gem "bridgetown-sitemap", "~> 2.0", require: true
 end
 
 group :development, :test do

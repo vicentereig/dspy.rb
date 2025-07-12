@@ -49,6 +49,7 @@ defaults:
 # Plugins
 plugins:
   - bridgetown-builder
+  - bridgetown-sitemap
 
 # Development settings
 livereload: true

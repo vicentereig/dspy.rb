@@ -8,4 +8,7 @@ Bridgetown.configure do |config|
   require version_file
   config.dspy_version = DSPy::VERSION
   config.dspy_release_url = "https://github.com/vicentereig/dspy.rb/releases/tag/v#{DSPy::VERSION}"
+  
+  # Initialize sitemap plugin
+  init :"bridgetown-sitemap"
 end
