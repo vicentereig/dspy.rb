@@ -1,0 +1,30 @@
+# Site metadata for SEO and social sharing
+title: DSPy.rb
+tagline: The Ruby Framework for Self-Improving Language Model Programs
+description: Build self-improving AI systems with DSPy.rb - a Ruby implementation of Stanford's DSPy framework for programming with language models.
+author: Vicente Reig
+url: https://dspy.vicente.services
+
+# Social media handles
+twitter:
+  username: "@highwayvaquero"
+  card: summary_large_image
+
+# Default Open Graph image (fallback if no article-specific image)
+image:
+  path: /images/og/default.png
+  height: 630
+  width: 1200
+
+# Default locale
+locale: en
+
+# Google site verification (if needed)
+# google_site_verification: 
+
+# Social profiles for structured data
+social:
+  name: DSPy.rb
+  links:
+    - https://github.com/vicentereig/dspy.rb
+    - https://twitter.com/highwayvaquero

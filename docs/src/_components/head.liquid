@@ -5,6 +5,9 @@
   <title>{% if page.title %}{{ page.title }} | {% endif %}{% if include.title_suffix %}{{ include.title_suffix }}{% else %}{{ site.title }}{% endif %}</title>
   <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
   
+  <!-- SEO and Open Graph tags -->
+  {% seo %}
+  
   <!-- Styles -->
   <link rel="stylesheet" href="{{ '/_bridgetown/static/css/index.css' | relative_url }}">
   

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  docs:
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.bundle
+    ports:
+      - "4000:4000"
+    environment:
+      - BRIDGETOWN_ENV=production
+    command: npm run build

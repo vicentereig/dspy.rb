@@ -11,4 +11,7 @@ Bridgetown.configure do |config|
   
   # Initialize sitemap plugin
   init :"bridgetown-sitemap"
+  
+  # Initialize SEO tag plugin
+  init :"bridgetown-seo-tag"
 end

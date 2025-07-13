@@ -6,7 +6,7 @@ This is the documentation website for DSPy.rb, built with Bridgetown and styled 
 
 ### Prerequisites
 - Ruby 3.0+
-- Node.js 18+
+- Bun 1.0+
 - Bundler
 
 ### Development
@@ -14,7 +14,7 @@ This is the documentation website for DSPy.rb, built with Bridgetown and styled 
 1. Install dependencies:
 ```bash
 bundle install
-npm install
+bun install
 ```
 
 2. Start the development server:
@@ -107,5 +107,5 @@ bundle exec bridgetown start
 For missing dependencies:
 ```bash
 bundle install
-npm install
+bun install
 ```
