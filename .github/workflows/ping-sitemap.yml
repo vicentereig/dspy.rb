@@ -2,26 +2,56 @@ name: Ping Sitemap to Search Engines
 
 on:
   workflow_run:
-    workflows: ["Deploy Documentation"]
+    workflows: ["Deploy to GitHub Pages"]
     types:
       - completed
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**/*.md'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
   ping-sitemap:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    # Only run if it's a successful workflow run, a push with .md changes, or manual trigger
+    if: |
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch'
     
     steps:
       - name: Wait for GitHub Pages deployment
-        run: sleep 60 # Give GitHub Pages time to update
-        
-      - name: Ping Google
         run: |
-          curl -s "https://www.google.com/ping?sitemap=https://vicentereig.github.io/dspy.rb/sitemap.xml"
-          echo "✅ Pinged Google"
+          if [ "${{ github.event_name }}" == "push" ]; then
+            echo "Push event detected, waiting longer for deployment to complete..."
+            sleep 180 # 3 minutes for push events
+          else
+            echo "Workflow run or manual trigger, waiting for pages update..."
+            sleep 60 # 1 minute for workflow_run events
+          fi
+        
+      # Google deprecated sitemap pings in June 2023
+      # See: https://developers.google.com/search/blog/2023/06/sitemaps-lastmod-ping
+      # Google now discovers sitemaps through robots.txt and regular crawling
       
       - name: Ping Bing
         run: |
-          curl -s "https://www.bing.com/ping?sitemap=https://vicentereig.github.io/dspy.rb/sitemap.xml"
-          echo "✅ Pinged Bing"
+          response=$(curl -s -w "\n%{http_code}" "https://www.bing.com/ping?sitemap=https://vicentereig.github.io/dspy.rb/sitemap.xml")
+          http_code=$(echo "$response" | tail -n1)
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ Successfully pinged Bing"
+          else
+            echo "⚠️ Bing ping returned status code: $http_code"
+          fi
+      
+      - name: Verify sitemap accessibility
+        run: |
+          echo "Verifying sitemap is accessible..."
+          http_code=$(curl -s -o /dev/null -w "%{http_code}" "https://vicentereig.github.io/dspy.rb/sitemap.xml")
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ Sitemap is accessible at https://vicentereig.github.io/dspy.rb/sitemap.xml"
+          else
+            echo "❌ Sitemap returned status code: $http_code"
+            exit 1
+          fi
