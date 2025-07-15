@@ -1,5 +1,5 @@
 ---
 layout: blog_home
-title: "DSPy.rb Blog"
-description: "Practical insights and tutorials for building AI applications with Ruby"
+title: "Learning in Drublic"
+description: "No BS AI development: practical Ruby tutorials that actually work"
 ---
