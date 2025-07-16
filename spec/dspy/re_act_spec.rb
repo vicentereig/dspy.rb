@@ -17,7 +17,7 @@ class DeepQA < DSPy::Signature
   end
 end
 
-RSpec.describe 'DSPy::ReAct' do
+RSpec.describe DSPy::ReAct do
   describe 'when answering a question using a Sorbet signature (auto-augmented output)' do
     let(:question) { "What is 42 plus 58?" }
     let(:date_tool) { SorbetGetTodaysDate.new }
@@ -525,16 +525,124 @@ RSpec.describe 'DSPy::ReAct' do
     end
   end
 
+  describe 'handling non-string and array inputs' do
+    let(:date_tool) { SorbetGetTodaysDate.new }
+    let(:add_tool) { SorbetAddNumbers.new }
+    let(:tools) { [date_tool, add_tool] }
+
+    before(:all) do
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      end
+    end
+
+    describe 'with array as first input' do
+      # Define Task struct
+      class Task < T::Struct
+        const :id, String
+        const :name, String
+      end
+
+      # Define signature with array as first input
+      class TaskProcessingSignature < DSPy::Signature
+        description "Process tasks to generate a summary"
+
+        input do
+          const :tasks, T::Array[Task], desc: "Array of tasks to process"
+          const :query, String, desc: "Query about the tasks"
+        end
+
+        output do
+          const :result, String, desc: "Processing result"
+        end
+      end
+
+      it 'handles array input correctly' do
+        VCR.use_cassette('openai/gpt4o-mini/react_array_input') do
+          tasks = [
+            Task.new(id: "1", name: "Buy groceries"),
+            Task.new(id: "2", name: "Call dentist")
+          ]
+
+          agent = DSPy::ReAct.new(TaskProcessingSignature, tools: tools)
+          result = agent.forward(tasks: tasks, query: "What tasks do I have?")
+
+          expect(result.result).to be_a(String)
+          expect(result.result).not_to be_empty
+          expect(result.history).to be_an(Array)
+        end
+      end
+    end
+
+    describe 'with non-string first input' do
+      # Define signature with number as first input
+      class CalculationSignature < DSPy::Signature
+        description "Perform calculations"
+
+        input do
+          const :number, Integer, desc: "Starting number"
+          const :operation, String, desc: "Operation to perform"
+        end
+
+        output do
+          const :answer, String, desc: "Calculation result"
+        end
+      end
+
+      it 'handles non-string first input correctly' do
+        VCR.use_cassette('openai/gpt4o-mini/react_non_string_input') do
+          agent = DSPy::ReAct.new(CalculationSignature, tools: tools)
+          result = agent.forward(number: 42, operation: "Add 58 to this number")
+
+          expect(result.answer).to be_a(String)
+          expect(result.answer).to include("100")
+          expect(result.history).to be_an(Array)
+        end
+      end
+    end
+
+    describe 'with no string fields at all' do
+      # Define signature with only non-string fields
+      class DataProcessingSignature < DSPy::Signature
+        description "Process numerical data"
+
+        input do
+          const :values, T::Array[Integer], desc: "Numbers to process"
+          const :multiplier, Integer, desc: "Multiplier value"
+        end
+
+        output do
+          const :result, String, desc: "Processing result"
+        end
+      end
+
+      it 'creates a generic question from all inputs' do
+        VCR.use_cassette('openai/gpt4o-mini/react_no_string_fields') do
+          agent = DSPy::ReAct.new(DataProcessingSignature, tools: tools)
+          result = agent.forward(values: [10, 20, 30], multiplier: 2)
+
+          expect(result.result).to be_a(String)
+          expect(result.result).not_to be_empty
+          expect(result.history).to be_an(Array)
+
+          # Check that the agent processed the inputs
+          first_thought = result.history.first[:thought]
+          expect(first_thought).to match(/values|multiplier|numbers|input/i)
+        end
+      end
+    end
+  end
+
   describe 'logger subscriber integration' do
     let(:log_output) { StringIO.new }
     let(:test_logger) { Logger.new(log_output) }
-    
+
     before do
       # Configure DSPy for testing
       DSPy.configure do |c|
         c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
       end
-      
+
       # Create logger subscriber manually
       @logger_subscriber = DSPy::Subscribers::LoggerSubscriber.new(logger: test_logger)
     end
@@ -552,13 +660,13 @@ RSpec.describe 'DSPy::ReAct' do
         result = agent.forward(question: question)
 
         log_content = log_output.string
-        
+
         # With smart consolidation, ReAct only emits the top-level event
         expect(log_content).to include("event=react")
         expect(log_content).to include("signature=DeepQA")
         expect(log_content).to include("status=success")
         expect(log_content).to include("event=tool_call")
-        
+
         # Nested events should not be present due to smart consolidation
         expect(log_content).not_to include("event=prediction")
         expect(log_content).not_to include("event=lm_request")

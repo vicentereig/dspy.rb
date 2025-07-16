@@ -30,18 +30,9 @@ module DSPy
       }.compact
     end
   end
-  # Defines the signature for ReAct reasoning using Sorbet signatures
-  class Thought < DSPy::Signature
-    description "Generate a thought about what to do next to answer the question."
-
-    input do
-      const :question, String,
-        description: "The question to answer"
-      const :history, T::Array[HistoryEntry],
-        description: "Previous thoughts and actions, including observations from tools. The agent MUST use information from the history to inform its actions and final answer. Each entry is a hash representing a step in the reasoning process."
-      const :available_tools, T::Array[T::Hash[String, T.untyped]],
-        description: "Array of available tools with their JSON schemas. The agent MUST choose an action from the tool names in this list or use \"finish\". For each tool, use the name exactly as specified and provide action_input as a JSON object matching the tool's schema."
-    end
+  # Base class for ReAct thought generation - will be customized per input type
+  class ThoughtBase < DSPy::Signature
+    description "Generate a thought about what to do next to process the given inputs."
 
     output do
       const :thought, String,
@@ -49,7 +40,7 @@ module DSPy
       const :action, String,
         description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
       const :action_input, T.any(String, T::Hash[T.untyped, T.untyped]),
-        description: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final answer to the original question. This answer MUST be directly taken from the relevant Observation in the history if available. For example, if an observation showed \"Observation: 100.0\", and you are finishing, this field MUST be \"100.0\". Do not leave empty if finishing with an observed answer."
+        description: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final result based on processing the input data. This result MUST be directly taken from the relevant Observation in the history if available."
     end
   end
 
@@ -60,18 +51,9 @@ module DSPy
     end
   end
 
-  # Defines the signature for processing observations and deciding next steps
-  class ReActObservation < DSPy::Signature
+  # Base class for observation processing - will be customized per input type
+  class ReActObservationBase < DSPy::Signature
     description "Process the observation from a tool and decide what to do next."
-
-    input do
-      const :question, String,
-        description: "The original question"
-      const :history, T::Array[HistoryEntry],
-        description: "Previous thoughts, actions, and observations. Each entry is a hash representing a step in the reasoning process."
-      const :observation, String,
-        description: "The result from the last action"
-    end
 
     output do
       const :interpretation, String,
@@ -108,11 +90,15 @@ module DSPy
       tools.each { |tool| @tools[tool.name.downcase] = tool }
       @max_iterations = max_iterations
 
+      # Create dynamic signature classes that include the original input fields
+      thought_signature = create_thought_signature(signature_class)
+      observation_signature = create_observation_signature(signature_class)
+
       # Create thought generator using Predict to preserve field descriptions
-      @thought_generator = T.let(DSPy::Predict.new(Thought), DSPy::Predict)
+      @thought_generator = T.let(DSPy::Predict.new(thought_signature), DSPy::Predict)
 
       # Create observation processor using Predict to preserve field descriptions
-      @observation_processor = T.let(DSPy::Predict.new(ReActObservation), DSPy::Predict)
+      @observation_processor = T.let(DSPy::Predict.new(observation_signature), DSPy::Predict)
 
       # Create enhanced output struct with ReAct fields
       @enhanced_output_struct = create_enhanced_output_struct(signature_class)
@@ -148,12 +134,11 @@ module DSPy
         max_iterations: @max_iterations,
         available_tools: available_tools
       }) do
-        # Validate input and extract question
+        # Validate input
         input_struct = @original_signature_class.input_struct_class.new(**kwargs)
-        question = T.cast(input_struct.serialize.values.first, String)
 
         # Execute ReAct reasoning loop
-        reasoning_result = execute_react_reasoning_loop(question)
+        reasoning_result = execute_react_reasoning_loop(input_struct)
 
         # Create enhanced output with all ReAct data
         create_enhanced_result(kwargs, reasoning_result)
@@ -164,9 +149,67 @@ module DSPy
 
     private
 
+    # Creates a dynamic Thought signature that includes the original input fields
+    sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(DSPy::Signature)) }
+    def create_thought_signature(signature_class)
+      # Create new class that inherits from DSPy::Signature  
+      Class.new(DSPy::Signature) do
+        # Set description
+        description "Generate a thought about what to do next to process the given inputs."
+        
+        # Define input fields
+        input do
+          const :input_context, String,
+            desc: "Serialized representation of all input fields"
+          const :history, T::Array[HistoryEntry],
+            desc: "Previous thoughts and actions, including observations from tools."
+          const :available_tools, T::Array[T::Hash[String, T.untyped]],
+            desc: "Array of available tools with their JSON schemas."
+        end
+        
+        # Define output fields (same as ThoughtBase)
+        output do
+          const :thought, String,
+            desc: "Reasoning about what to do next, considering the history and observations."
+          const :action, String,
+            desc: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
+          const :action_input, T.any(String, T::Hash[T.untyped, T.untyped]),
+            desc: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final result based on processing the input data."
+        end
+      end
+    end
+
+    # Creates a dynamic observation signature that includes the original input fields
+    sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(DSPy::Signature)) }
+    def create_observation_signature(signature_class)
+      # Create new class that inherits from DSPy::Signature
+      Class.new(DSPy::Signature) do
+        # Set description
+        description "Process the observation from a tool and decide what to do next."
+        
+        # Define input fields
+        input do
+          const :input_context, String,
+            desc: "Serialized representation of all input fields"
+          const :history, T::Array[HistoryEntry],
+            desc: "Previous thoughts, actions, and observations."
+          const :observation, String,
+            desc: "The result from the last action"
+        end
+        
+        # Define output fields (same as ReActObservationBase)
+        output do
+          const :interpretation, String,
+            desc: "Interpretation of the observation"
+          const :next_step, NextStep,
+            desc: "What to do next: '#{NextStep::Continue}' or '#{NextStep::Finish}'"
+        end
+      end
+    end
+
     # Executes the main ReAct reasoning loop
-    sig { params(question: String).returns(T::Hash[Symbol, T.untyped]) }
-    def execute_react_reasoning_loop(question)
+    sig { params(input_struct: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
+    def execute_react_reasoning_loop(input_struct)
       history = T.let([], T::Array[HistoryEntry])
       available_tools_desc = @tools.map { |name, tool| JSON.parse(tool.schema) }
       final_answer = T.let(nil, T.nilable(String))
@@ -178,7 +221,7 @@ module DSPy
         iterations_count += 1
 
         iteration_result = execute_single_iteration(
-          question, history, available_tools_desc, iterations_count, tools_used, last_observation
+          input_struct, history, available_tools_desc, iterations_count, tools_used, last_observation
         )
 
         if iteration_result[:should_finish]
@@ -202,8 +245,8 @@ module DSPy
     end
 
     # Executes a single iteration of the ReAct loop
-    sig { params(question: String, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer, tools_used: T::Array[String], last_observation: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
-    def execute_single_iteration(question, history, available_tools_desc, iteration, tools_used, last_observation)
+    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer, tools_used: T::Array[String], last_observation: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
+    def execute_single_iteration(input_struct, history, available_tools_desc, iteration, tools_used, last_observation)
       # Instrument each iteration
       Instrumentation.instrument('dspy.react.iteration', {
         iteration: iteration,
@@ -213,7 +256,7 @@ module DSPy
       }) do
         # Generate thought and action
         thought_obj = @thought_generator.forward(
-          question: question,
+          input_context: input_struct.serialize.to_json,
           history: history,
           available_tools: available_tools_desc
         )
@@ -243,7 +286,7 @@ module DSPy
 
         # Process observation and decide next step
         observation_decision = process_observation_and_decide_next_step(
-          question, history, observation, available_tools_desc, iteration
+          input_struct, history, observation, available_tools_desc, iteration
         )
 
         if observation_decision[:should_finish]
@@ -337,12 +380,12 @@ module DSPy
       )
     end
 
-    sig { params(question: String, history: T::Array[HistoryEntry], observation: String, available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
-    def process_observation_and_decide_next_step(question, history, observation, available_tools_desc, iteration)
+    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], observation: String, available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
+    def process_observation_and_decide_next_step(input_struct, history, observation, available_tools_desc, iteration)
       return { should_finish: false } if observation.include?("Unknown action")
 
       observation_result = @observation_processor.forward(
-        question: question,
+        input_context: input_struct.serialize.to_json,
         history: history,
         observation: observation
       )
@@ -350,16 +393,16 @@ module DSPy
       return { should_finish: false } unless observation_result.next_step == NextStep::Finish
 
       final_answer = generate_forced_final_answer(
-        question, history, available_tools_desc, observation_result, iteration
+        input_struct, history, available_tools_desc, observation_result, iteration
       )
 
       { should_finish: true, final_answer: final_answer }
     end
 
-    sig { params(question: String, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], observation_result: T.untyped, iteration: Integer).returns(String) }
-    def generate_forced_final_answer(question, history, available_tools_desc, observation_result, iteration)
+    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], observation_result: T.untyped, iteration: Integer).returns(String) }
+    def generate_forced_final_answer(input_struct, history, available_tools_desc, observation_result, iteration)
       final_thought = @thought_generator.forward(
-        question: question,
+        input_context: input_struct.serialize.to_json,
         history: history,
         available_tools: available_tools_desc
       )
