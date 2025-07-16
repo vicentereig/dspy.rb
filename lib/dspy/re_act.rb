@@ -152,11 +152,11 @@ module DSPy
     # Creates a dynamic Thought signature that includes the original input fields
     sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(DSPy::Signature)) }
     def create_thought_signature(signature_class)
-      # Create new class that inherits from DSPy::Signature  
+      # Create new class that inherits from DSPy::Signature
       Class.new(DSPy::Signature) do
         # Set description
         description "Generate a thought about what to do next to process the given inputs."
-        
+
         # Define input fields
         input do
           const :input_context, String,
@@ -166,7 +166,7 @@ module DSPy
           const :available_tools, T::Array[T::Hash[String, T.untyped]],
             desc: "Array of available tools with their JSON schemas."
         end
-        
+
         # Define output fields (same as ThoughtBase)
         output do
           const :thought, String,
@@ -186,7 +186,7 @@ module DSPy
       Class.new(DSPy::Signature) do
         # Set description
         description "Process the observation from a tool and decide what to do next."
-        
+
         # Define input fields
         input do
           const :input_context, String,
@@ -196,7 +196,7 @@ module DSPy
           const :observation, String,
             desc: "The result from the last action"
         end
-        
+
         # Define output fields (same as ReActObservationBase)
         output do
           const :interpretation, String,

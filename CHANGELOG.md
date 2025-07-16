@@ -5,6 +5,27 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.1] - 2025-07-16
+
+### Fixed
+- **ReAct Agent Input Flexibility** (#41) - Fixed bug where ReAct agents failed with non-string first inputs or array inputs
+  - Removed hardcoded assumption that first input field is always a String "question"
+  - ReAct now serializes all input fields as JSON and passes as `input_context` to LLM
+  - Supports array inputs, non-string first inputs, and signatures with no string fields
+  - Updated internal signatures to use generic `input_context` instead of specific `question` field
+  - Added comprehensive integration tests for edge cases
+
+### Added
+- **Enhanced ReAct Input Handling** - ReAct agents now work with any input signature structure
+  - Array inputs: `const :tasks, T::Array[Task]`
+  - Non-string first inputs: `const :number, Integer`
+  - Complex nested structures and arbitrary field combinations
+  - Maintains backward compatibility with existing ReAct agents
+
+### Documentation
+- Verified documentation already correctly showed ReAct flexibility
+- No documentation updates needed - implementation now matches documented behavior
+
 ## [0.9.0] - 2025-07-11
 
 ### Breaking Changes
