@@ -6,7 +6,7 @@ require 'spec_helper'
 class Priority < T::Enum
   enums do
     Low = new("low")
-    Medium = new("medium") 
+    Medium = new("medium")
     High = new("high")
     Critical = new("critical")
   end
@@ -87,7 +87,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
       expect(input_schema[:properties][:temperature][:type]).to eq("number")
       expect(output_schema[:properties][:adjusted_temperature][:type]).to eq("number")
 
-      # Test T::Boolean type support  
+      # Test T::Boolean type support
       expect(input_schema[:properties][:enabled][:type]).to eq("boolean")
       expect(output_schema[:properties][:feature_active][:type]).to eq("boolean")
 
@@ -103,7 +103,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
       description "AI agent with flexible input/output types"
 
       input do
-        const :query, T.any(String, T::Hash[String, T.untyped]), 
+        const :query, T.any(String, T::Hash[String, T.untyped]),
           description: "Search query as string or structured query"
         const :limit, T.any(Integer, String),
           description: "Result limit as number or 'all'"
@@ -117,7 +117,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
 
     it 'generates oneOf schemas for complex union types' do
       input_schema = UnionTypeSignature.input_json_schema
-      
+
       expect(input_schema[:properties][:query]).to include(:oneOf)
       expect(input_schema[:properties][:query][:oneOf]).to contain_exactly(
         { type: "string" },
@@ -227,6 +227,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
       end
     end
 
+
     it 'generates proper schemas for complex array and hash types' do
       input_schema = DataProcessingSignature.input_json_schema
       output_schema = DataProcessingSignature.output_json_schema
@@ -279,16 +280,16 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
 
     it 'generates schemas for multi-agent communication' do
       input_schema = MultiAgentSignature.input_json_schema
-      
+
       # Test AgentMessage struct in array
       message_schema = input_schema[:properties][:incoming_messages][:items]
       expect(message_schema[:type]).to eq("object")
       expect(message_schema[:properties]).to include(:from_agent, :to_agent, :message_type, :content, :timestamp, :metadata)
-      
+
       # message_type should be ActionType enum
       expect(message_schema[:properties][:message_type][:type]).to eq("string")
       expect(message_schema[:properties][:message_type][:enum]).to eq(["search", "create", "update", "delete", "analyze"])
-      
+
       # metadata is nilable, so not in required array
       expect(message_schema[:required]).to contain_exactly("from_agent", "to_agent", "message_type", "content", "timestamp")
     end
@@ -312,7 +313,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
 
     it 'generates schemas for class type parameters' do
       input_schema = ClassTypeSignature.input_json_schema
-      
+
       expect(input_schema[:properties][:model_class][:type]).to eq("string")
       expect(input_schema[:properties][:model_class][:description]).to eq("Model class to instantiate")
 
@@ -351,7 +352,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
 
       it 'generates proper schema for RAG agent' do
         input_schema = RAGSignature.input_json_schema
-        
+
         chunk_schema = input_schema[:properties][:retrieved_chunks][:items]
         expect(chunk_schema[:type]).to eq("object")
         expect(chunk_schema[:properties][:embedding]).to eq({
@@ -389,7 +390,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
 
       it 'generates schema for code generation agent' do
         input_schema = CodeGenSignature.input_json_schema
-        
+
         context_schema = input_schema[:properties][:context]
         expect(context_schema[:type]).to eq("object")
         expect(context_schema[:properties][:dependencies]).to eq({

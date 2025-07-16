@@ -603,7 +603,7 @@ RSpec.describe DSPy::ReAct do
 
     describe 'with no string fields at all' do
       # Define signature with only non-string fields
-      class DataProcessingSignature < DSPy::Signature
+      class NumericalDataSignature < DSPy::Signature
         description "Process numerical data"
 
         input do
@@ -618,7 +618,7 @@ RSpec.describe DSPy::ReAct do
 
       it 'creates a generic question from all inputs' do
         VCR.use_cassette('openai/gpt4o-mini/react_no_string_fields') do
-          agent = DSPy::ReAct.new(DataProcessingSignature, tools: tools)
+          agent = DSPy::ReAct.new(NumericalDataSignature, tools: tools)
           result = agent.forward(values: [10, 20, 30], multiplier: 2)
 
           expect(result.result).to be_a(String)
