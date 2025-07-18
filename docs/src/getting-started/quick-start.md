@@ -196,19 +196,6 @@ DSPy.configure do |config|
 end
 ```
 
-### Method Chaining
-
-Build complex queries with chainable methods:
-
-```ruby
-# Future API (coming soon)
-result = DSPy.predict(:question_answering)
-              .with_examples(training_data)
-              .with_instruction("Be concise")
-              .optimize_for(:accuracy)
-              .call(question: "What is Ruby?")
-```
-
 ### Duck Typing with Tools
 
 Create tools that follow Ruby's duck typing principles:
