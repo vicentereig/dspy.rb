@@ -566,6 +566,119 @@ class AnalyzeContent < DSPy::Signature
 end
 ```
 
+## Automatic Type Conversion with DSPy::Prediction
+
+DSPy.rb v0.9.0+ includes automatic type conversion that transforms LLM JSON responses into properly typed Ruby objects. This happens transparently when using DSPy modules.
+
+### How It Works
+
+1. **Schema Awareness**: DSPy::Prediction uses the signature's output schema to understand expected types
+2. **Recursive Conversion**: Nested hashes are converted to their corresponding T::Struct types
+3. **Enum Deserialization**: String values are automatically converted to T::Enum instances
+4. **Array Handling**: Arrays of structs are converted element by element
+5. **Default Values**: Missing fields use their default values from the struct definition
+6. **Graceful Fallback**: If conversion fails, the original hash is preserved
+
+### Example: Automatic Conversion in Action
+
+```ruby
+class AnalysisResult < DSPy::Signature
+  class Priority < T::Enum
+    enums do
+      Low = new('low')
+      Medium = new('medium')
+      High = new('high')
+    end
+  end
+  
+  class Finding < T::Struct
+    const :description, String
+    const :priority, Priority
+    const :tags, T::Array[String], default: []
+  end
+  
+  output do
+    const :findings, T::Array[Finding]
+    const :summary, String
+  end
+end
+
+# When the LLM returns:
+# {
+#   "findings": [
+#     {"description": "Security issue", "priority": "high"},
+#     {"description": "Performance issue", "priority": "low", "tags": ["optimization"]}
+#   ],
+#   "summary": "Found 2 issues"
+# }
+
+analyzer = DSPy::Predict.new(AnalysisResult)
+result = analyzer.call(input: "analyze this code")
+
+# Automatic conversions:
+result.findings                    # => Array of Finding structs (not hashes!)
+result.findings.first.priority     # => Priority::High (not "high" string!)
+result.findings.first.tags        # => [] (default value applied)
+result.findings.last.tags         # => ["optimization"]
+```
+
+### Conversion Features
+
+#### 1. Deep Nesting Support
+
+```ruby
+class Company < T::Struct
+  class Department < T::Struct
+    class Team < T::Struct
+      const :name, String
+      const :size, Integer
+    end
+    
+    const :name, String
+    const :teams, T::Array[Team]
+  end
+  
+  const :name, String
+  const :departments, T::Array[Department]
+end
+
+# Nested structures are converted recursively
+# Hash -> Company -> Department -> Team
+```
+
+#### 2. Union Type Handling
+
+```ruby
+# With discriminator fields
+output do
+  const :action_type, ActionEnum  # Discriminator
+  const :details, T.any(CreateAction, UpdateAction, DeleteAction)
+end
+
+# DSPy automatically selects the correct struct type based on action_type
+```
+
+#### 3. Edge Cases
+
+- **Missing Fields**: Use struct defaults or nil for optional fields
+- **Extra Fields**: Ignored during conversion
+- **Type Mismatches**: Falls back to original value
+- **Invalid Enums**: Raises KeyError (handle appropriately)
+
+### Performance Considerations
+
+- Conversion happens once when creating the Prediction object
+- Deeply nested structures (5+ levels) may impact performance
+- Large arrays are converted element by element
+- Consider flattening very complex structures
+
+### Limitations
+
+1. **Complex Union Resolution**: Without discriminators, union type selection is based on field matching
+2. **Circular References**: Not supported
+3. **Custom Deserializers**: Use T::Struct's built-in serialization
+4. **Very Deep Nesting**: May hit recursion limits or performance issues
+
 ## Working with Complex Results
 
 ### Accessing Nested Data

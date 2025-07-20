@@ -295,11 +295,22 @@ result = classifier.call(
   length_limit: 1000
 )
 
-# Access typed outputs
+# Access typed outputs (automatically converted from JSON)
+puts result.category              # => TextClassifier::Category::Technical (not a string!)
 puts result.category.serialize    # => "technical"
 puts result.confidence           # => 0.85
 puts result.keywords             # => ["APIs", "technical", "document"]
 ```
+
+### Automatic Type Conversion (v0.9.0+)
+
+DSPy automatically converts LLM JSON responses to the proper Ruby types:
+- **Enums**: Strings are converted to T::Enum instances
+- **Structs**: Nested hashes become T::Struct objects
+- **Arrays**: Elements are converted recursively
+- **Defaults**: Missing fields use their default values
+
+See [Complex Types](/advanced/complex-types/#automatic-type-conversion-with-dspy-prediction) for detailed information.
 
 ## Testing Signatures
 
