@@ -80,6 +80,25 @@ module DSPy
       # Get discriminator mappings for T.any() fields
       discriminator_mappings = detect_discriminator_fields(@_schema)
 
+      # First, add all the fields from the schema with defaults if not provided
+      @_schema.props.each do |field_name, prop_info|
+        # Skip if attribute was provided
+        next if attributes.key?(field_name)
+        
+        # Apply default value if available
+        default_value = prop_info[:default]
+        if !default_value.nil?
+          if default_value.is_a?(Proc)
+            converted[field_name] = default_value.call
+          else
+            converted[field_name] = default_value
+          end
+        elsif prop_info[:fully_optional]
+          # For optional fields without defaults, set to nil
+          converted[field_name] = nil
+        end
+      end
+
       attributes.each do |key, value|
         prop_info = @_schema.props[key]
         
@@ -92,7 +111,17 @@ module DSPy
           converted[key] = convert_union_type(value, discriminator_value, type_mapping, prop_type)
         elsif prop_info
           prop_type = prop_info[:type_object] || prop_info[:type]
-          if is_enum_type?(prop_type) && value.is_a?(String)
+          
+          # Handle nil values explicitly
+          if value.nil?
+            # Check if there's a default value
+            default_value = prop_info[:default]
+            if !default_value.nil?
+              converted[key] = default_value.is_a?(Proc) ? default_value.call : default_value
+            else
+              converted[key] = nil
+            end
+          elsif is_enum_type?(prop_type) && value.is_a?(String)
             # Convert string to enum
             converted[key] = prop_type.raw_type.deserialize(value)
           elsif value.is_a?(Hash) && needs_struct_conversion?(prop_type)
@@ -275,7 +304,44 @@ module DSPy
     def convert_to_struct(value, type)
       case type
       when T::Types::Simple
-        type.raw_type.new(**value)
+        struct_class = type.raw_type
+        # Convert nested hash values to structs if needed
+        converted_hash = {}
+        
+        # First, apply defaults for missing fields
+        struct_class.props.each do |field_name, prop_info|
+          next if value.key?(field_name)
+          
+          default_value = prop_info[:default]
+          if !default_value.nil?
+            converted_hash[field_name] = default_value.is_a?(Proc) ? default_value.call : default_value
+          end
+        end
+        
+        value.each do |k, v|
+          prop_info = struct_class.props[k]
+          if prop_info
+            prop_type = prop_info[:type_object] || prop_info[:type]
+            if v.is_a?(String) && is_enum_type?(prop_type)
+              # Convert string to enum
+              converted_hash[k] = prop_type.raw_type.deserialize(v)
+            elsif v.is_a?(Hash) && needs_struct_conversion?(prop_type)
+              converted_hash[k] = convert_to_struct(v, prop_type)
+            elsif v.is_a?(Array) && needs_array_conversion?(prop_type)
+              converted_hash[k] = convert_array_elements(v, prop_type)
+            else
+              converted_hash[k] = v
+            end
+          else
+            converted_hash[k] = v
+          end
+        end
+        begin
+          struct_class.new(**converted_hash)
+        rescue => e
+          # Return original value if conversion fails
+          value
+        end
       when T::Types::Union
         # For unions without discriminator, try each type
         type.types.each do |t|
@@ -310,7 +376,8 @@ module DSPy
       return array unless type.is_a?(T::Types::TypedArray)
 
       element_type = type.type
-      return array unless needs_struct_conversion?(element_type)
+      # Check if elements need any conversion (structs or enums)
+      return array unless needs_struct_conversion?(element_type) || is_enum_type?(element_type)
 
       array.map do |element|
         if element.is_a?(Hash)
@@ -320,6 +387,9 @@ module DSPy
           else
             convert_to_struct(element, element_type)
           end
+        elsif element.is_a?(String) && is_enum_type?(element_type)
+          # Convert string to enum
+          element_type.raw_type.deserialize(element)
         else
           element
         end
@@ -339,7 +409,26 @@ module DSPy
           required_fields = struct_class.props.reject { |_, info| info[:fully_optional] }.keys
           if required_fields.all? { |field| hash.key?(field) }
             begin
-              return struct_class.new(**hash)
+              # Need to convert nested values too
+              converted_hash = {}
+              hash.each do |k, v|
+                prop_info = struct_class.props[k]
+                if prop_info
+                  prop_type = prop_info[:type_object] || prop_info[:type]
+                  if v.is_a?(String) && is_enum_type?(prop_type)
+                    converted_hash[k] = prop_type.raw_type.deserialize(v)
+                  elsif v.is_a?(Hash) && needs_struct_conversion?(prop_type)
+                    converted_hash[k] = convert_to_struct(v, prop_type)
+                  elsif v.is_a?(Array) && needs_array_conversion?(prop_type)
+                    converted_hash[k] = convert_array_elements(v, prop_type)
+                  else
+                    converted_hash[k] = v
+                  end
+                else
+                  converted_hash[k] = v
+                end
+              end
+              return struct_class.new(**converted_hash)
             rescue TypeError, ArgumentError
               # This struct didn't match, try the next one
             end
@@ -353,10 +442,19 @@ module DSPy
 
     sig { params(attributes: T::Hash[Symbol, T.untyped]).returns(T::Class[T::Struct]) }
     def create_dynamic_struct(attributes)
+      # If we have a schema, include all fields from it in the dynamic struct
+      all_fields = if @_schema
+        # Merge schema fields with provided attributes
+        schema_fields = @_schema.props.keys.to_h { |k| [k, nil] }
+        schema_fields.merge(attributes)
+      else
+        attributes
+      end
+      
       Class.new(T::Struct) do
         const :_prediction_marker, T::Boolean, default: true
         
-        attributes.each do |key, value|
+        all_fields.each do |key, value|
           # Use T.untyped for dynamic properties
           const key, T.untyped
         end
