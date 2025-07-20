@@ -5,6 +5,37 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2025-01-20
+
+### Added
+- **Automatic Hash-to-Struct Type Conversion** (#42) - DSPy::Prediction now automatically converts LLM JSON responses to proper Ruby types
+  - Enum values: String responses automatically converted to T::Enum instances
+  - Nested structs: Hash responses recursively converted to T::Struct objects
+  - Arrays: Elements converted based on their declared types
+  - Default values: Missing fields use struct defaults
+  - Discriminated unions: Smart type selection based on discriminator fields (String or T::Enum)
+  - Graceful fallback: Original hash preserved if conversion fails
+
+### Features
+- **Union Type Support with T.any()** - Clean handling of multiple possible types
+  - Automatic struct selection for discriminated unions
+  - Support for T::Enum discriminators (recommended pattern)
+  - Array elements with union types converted correctly
+  - Deep nesting support (3+ levels with performance considerations)
+
+### Documentation
+- Added comprehensive "Automatic Type Conversion" section to complex types documentation
+- Updated signatures documentation to highlight automatic conversion feature
+- Created blog post "Union Types: The Secret to Cleaner AI Agent Workflows" demonstrating the pattern
+- Established Architecture Decision Records (ADR) directory for design decisions
+
+### Infrastructure
+- Fixed GitHub Actions to generate OG images in production builds (GENERATE_OG_IMAGES=true)
+- Added comprehensive edge case tests for DSPy::Prediction type conversion
+
+### Fixed
+- Unicode characters now display correctly in Example#to_s output (e.g., "÷" instead of "\u00F7")
+
 ## [0.9.1] - 2025-07-16
 
 ### Fixed
