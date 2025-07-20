@@ -1,4 +1,8 @@
-# Design Pattern Analysis for DSPy::Prediction Type Conversion
+# ADR-001: Design Pattern Analysis for DSPy::Prediction Type Conversion
+
+**Status**: Accepted  
+**Date**: 2025-01-20  
+**Author**: Claude (with Vicente Reig)
 
 ## Current Implementation Analysis
 

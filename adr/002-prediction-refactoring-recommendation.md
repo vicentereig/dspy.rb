@@ -1,4 +1,8 @@
-# DSPy::Prediction Refactoring Recommendation
+# ADR-002: DSPy::Prediction Refactoring Recommendation
+
+**Status**: Accepted  
+**Date**: 2025-01-20  
+**Author**: Claude (with Vicente Reig)
 
 ## Executive Summary
 
