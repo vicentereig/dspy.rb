@@ -43,7 +43,7 @@ The result? LLM applications that actually scale and don't break when you sneeze
 
 ## Development Status
 
-DSPy.rb is actively developed and approaching stability at **v0.9.0**. The core framework is production-ready with comprehensive documentation, but I'm battle-testing features through the 0.x series before committing to a stable v1.0 API. 
+DSPy.rb is actively developed and approaching stability at **v0.10.1**. The core framework is production-ready with comprehensive documentation, but I'm battle-testing features through the 0.x series before committing to a stable v1.0 API. 
 
 Real-world usage feedback is invaluable - if you encounter issues or have suggestions, please open a GitHub issue!
 
@@ -174,7 +174,7 @@ DSPy.rb has rapidly evolved from experimental to production-ready:
 
 ## Roadmap - Battle-Testing Toward v1.0
 
-DSPy.rb is currently at **v0.9.0** and approaching stability. I'm focusing on real-world usage and refinement through the 0.10, 0.11, 0.12+ series before committing to a stable v1.0 API.
+DSPy.rb is currently at **v0.10.1** and approaching stability. I'm focusing on real-world usage and refinement through the 0.11, 0.12+ series before committing to a stable v1.0 API.
 
 **Current Focus Areas:**
 - 🚧 **Ollama Support** - Local model integration
