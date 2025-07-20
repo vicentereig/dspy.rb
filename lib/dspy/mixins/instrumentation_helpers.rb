@@ -15,6 +15,9 @@ module DSPy
       # Prepares base instrumentation payload for prediction-based modules
       sig { params(signature_class: T.class_of(DSPy::Signature), input_values: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
       def prepare_base_instrumentation_payload(signature_class, input_values)
+        # Validate LM is configured before accessing its properties
+        raise DSPy::ConfigurationError.missing_lm(self.class.name) if lm.nil?
+        
         {
           signature_class: signature_class.name,
           model: lm.model,

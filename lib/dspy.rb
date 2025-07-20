@@ -5,6 +5,7 @@ require 'dry/logger'
 require 'securerandom'
 
 require_relative 'dspy/version'
+require_relative 'dspy/errors'
 
 module DSPy
   extend Dry::Configurable
@@ -145,3 +146,20 @@ require_relative 'dspy/registry/signature_registry'
 require_relative 'dspy/registry/registry_manager'
 
 # LoggerSubscriber will be lazy-initialized when first accessed
+
+# Detect potential gem conflicts and warn users
+# DSPy uses the official openai gem, warn if ruby-openai (community version) is detected
+if defined?(OpenAI) && defined?(OpenAI::Client) && !defined?(OpenAI::Internal)
+  warn <<~WARNING
+    WARNING: ruby-openai gem detected. This may cause conflicts with DSPy's OpenAI integration.
+    
+    DSPy uses the official 'openai' gem. The community 'ruby-openai' gem uses the same
+    OpenAI namespace and will cause conflicts.
+    
+    To fix this, remove 'ruby-openai' from your Gemfile and use the official gem instead:
+    - Remove: gem 'ruby-openai'
+    - Keep: gem 'openai' (official SDK that DSPy uses)
+    
+    The official gem provides better compatibility and is actively maintained by OpenAI.
+  WARNING
+end

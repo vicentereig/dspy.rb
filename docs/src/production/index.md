@@ -19,6 +19,9 @@ Manage and version your modules, signatures, and optimized prompts across enviro
 ### [Observability](./observability/)
 Monitor your LLM applications with logging, metrics, and tracing to ensure reliability and performance.
 
+### [Troubleshooting](./troubleshooting/)
+Common issues and solutions including configuration errors, gem conflicts, and debugging tips.
+
 ## Key Considerations
 
 ### Performance

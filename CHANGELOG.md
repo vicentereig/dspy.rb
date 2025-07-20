@@ -5,7 +5,33 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.10.0] - 2025-01-20
+## [0.10.1] - 2025-07-20
+
+### Added
+- **Clear Configuration Error Messages** (#34) - Better error handling when language model is not configured
+  - New `DSPy::ConfigurationError` exception with actionable error messages
+  - Early validation in instrumentation helpers prevents cryptic nil errors
+  - Error messages include examples for both global and module-level configuration
+  - Comprehensive test coverage for configuration error scenarios
+
+- **Ruby-OpenAI Gem Conflict Detection** (#29) - Warning system for gem conflicts
+  - Detects when community `ruby-openai` gem is loaded alongside DSPy
+  - Shows clear warning with migration guidance to official OpenAI SDK
+  - Helps prevent namespace conflicts and unexpected behavior
+  - Includes detection logic that distinguishes between official and community gems
+
+### Documentation
+- Created comprehensive troubleshooting guide covering:
+  - Language model configuration errors and solutions
+  - Gem conflict resolution steps
+  - Common debugging tips and techniques
+  - API key configuration examples
+
+### Fixed
+- Instrumentation no longer throws `NoMethodError: undefined method 'model' for nil` when LM is not configured
+- Module initialization provides clearer feedback when configuration is missing
+
+## [0.10.0] - 2025-07-20
 
 ### Added
 - **Automatic Hash-to-Struct Type Conversion** (#42) - DSPy::Prediction now automatically converts LLM JSON responses to proper Ruby types

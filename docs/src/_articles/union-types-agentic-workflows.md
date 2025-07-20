@@ -18,7 +18,7 @@ Ever built an AI agent that needs to decide between different actions? You know 
 Picture this: You're building a research assistant that can spawn tasks, mark them complete, or ask for clarification. The naive approach looks like:
 
 ```ruby
-# 😱 The horror of nilable everything
+# 😱 The horror of nilable everything@unioz
 class AgentAction < T::Struct
   const :spawn_task_description, T.nilable(String)
   const :spawn_task_priority, T.nilable(String)
