@@ -1,6 +1,6 @@
 ---
 layout: blog
-name: "Union Types: The Secret to Cleaner AI Agent Workflows"
+name: "Why Union Types Transform AI Agent Development"
 date: 2025-01-20
 categories: [patterns, agents]
 description: How DSPy.rb's automatic type conversion makes building AI agents surprisingly simple
