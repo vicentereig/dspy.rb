@@ -192,8 +192,28 @@ module DSPy
     # String representation for debugging
     sig { returns(String) }
     def to_s
-      "DSPy::Example(#{@signature_class.name}) input=#{input_values} expected=#{expected_values}"
+      "DSPy::Example(#{@signature_class.name}) input=#{format_hash(input_values)} expected=#{format_hash(expected_values)}"
     end
+    
+    private
+    
+    # Format hash without escaping Unicode characters
+    sig { params(hash: T::Hash[Symbol, T.untyped]).returns(String) }
+    def format_hash(hash)
+      pairs = hash.map do |k, v|
+        value_str = case v
+                    when String
+                      # Don't escape Unicode characters
+                      "\"#{v}\""
+                    else
+                      v.inspect
+                    end
+        ":#{k} => #{value_str}"
+      end
+      "{#{pairs.join(", ")}}"
+    end
+    
+    public
 
     sig { returns(String) }
     def inspect
