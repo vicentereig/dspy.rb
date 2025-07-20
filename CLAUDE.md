@@ -768,3 +768,89 @@ BRIDGETOWN_ENV=production npm run build
 - Provider-optimized approaches (OpenAI structured outputs) are preferred when available
 - Enhanced prompting provides reliable fallback for any provider
 - User choice between "strict" and "compatible" more intuitive than technical strategy names
+
+### Module-Level LM Configuration (July 2025)
+
+**Key Learning**: Module-level LM configuration uses dry-configurable's `.configure` blocks, not constructor parameters.
+
+**Correct Pattern**:
+```ruby
+# ✅ CORRECT: Use configure block
+@module = DSPy::ChainOfThought.new(SignatureClass)
+@module.configure do |config|
+  config.lm = DSPy::LM.new('anthropic/claude-3-opus-20240229', api_key: ENV['ANTHROPIC_API_KEY'])
+end
+
+# ❌ WRONG: Constructor parameters
+@module = DSPy::ChainOfThought.new(
+  SignatureClass,
+  lm: DSPy::LM.new('anthropic/claude-3-opus-20240229')
+)
+```
+
+**Important Notes**:
+- All DSPy modules inherit from DSPy::Module which includes Dry::Configurable
+- The `setting :lm` is defined at the module level for per-instance configuration
+- Falls back to global `DSPy.config.lm` if not configured at instance level
+- This pattern allows runtime reconfiguration and better testing isolation
+
+### Union Types and Automatic Type Conversion (July 2025)
+
+**Feature Implemented**: DSPy::Prediction now automatically converts LLM JSON responses to proper Ruby types (#42).
+
+**Key Capabilities**:
+- **Automatic Hash-to-Struct conversion**: JSON hashes converted to T::Struct instances
+- **T::Enum conversion**: String values automatically converted to enum instances
+- **Discriminated unions**: Smart type selection based on discriminator fields
+- **Nested conversion**: Deep conversion of nested structs and arrays
+- **Graceful fallback**: Original hash preserved if conversion fails
+
+**Discriminated Union Pattern**:
+```ruby
+# ✅ CORRECT: Use T::Enum for discriminators
+class ActionType < T::Enum
+  enums do
+    SpawnTask = new('spawn_task')
+    CompleteTask = new('complete_task')
+  end
+end
+
+output do
+  const :action_type, ActionType  # Enum discriminator
+  const :details, T.any(SpawnTask, CompleteTask)  # Union type
+end
+
+# ❌ AVOID: String discriminators (less type-safe)
+output do
+  const :action_type, String
+  const :details, T.any(SpawnTask, CompleteTask)
+end
+```
+
+**User Feedback**: "shouldn't next_action be of the type CoordinationActions, like an enum?" - This led to implementing full T::Enum support for discriminators.
+
+### Architecture Decision Records (ADR) (July 2025)
+
+**New Practice**: Created `adr/` directory for documenting significant design decisions.
+
+**Purpose**:
+- Record why certain design patterns were chosen
+- Document trade-offs and alternatives considered
+- Provide context for future maintainers
+- Avoid repeating past discussions
+
+**Example**: DSPy::Prediction design decision to use if-else chain for simplicity over complex pattern matching.
+
+### Blog Post Writing Philosophy (July 2025)
+
+**Key Learning**: Focus on benefits and user value rather than generic titles.
+
+**Example**:
+- ❌ "The Secret to Cleaner AI Agent Workflows"
+- ✅ "Why Union Types Transform AI Agent Development"
+
+**Principles**:
+- Lead with the benefit to developers
+- Use concrete examples (coffee shop agent demo)
+- Show real code patterns users can adopt
+- Keep conversational tone without being grandiloquent
