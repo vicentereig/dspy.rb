@@ -176,16 +176,16 @@ class CoffeeShopAgent < DSPy::Module
   def initialize
     super()
     # Opus for high-level reasoning
-    @orchestrator = DSPy::ChainOfThought.new(
-      OrchestratorSignature,
-      lm: DSPy::LM::Anthropic.new(model: "claude-3-opus-20240229")
-    )
+    @orchestrator = DSPy::ChainOfThought.new(OrchestratorSignature)
+    @orchestrator.configure do |config|
+      config.lm = DSPy::LM::Anthropic.new(model: "claude-3-opus-20240229")
+    end
     
     # Sonnet for execution details
-    @executor = DSPy::Predict.new(
-      ExecutorSignature,
-      lm: DSPy::LM::Anthropic.new(model: "claude-3-5-sonnet-20241022")
-    )
+    @executor = DSPy::Predict.new(ExecutorSignature)
+    @executor.configure do |config|
+      config.lm = DSPy::LM::Anthropic.new(model: "claude-3-5-sonnet-20241022")
+    end
   end
   
   def handle_customer(request:, mood: :neutral, time: "afternoon")
