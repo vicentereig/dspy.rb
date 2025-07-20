@@ -24,6 +24,7 @@ DSPy.rb provides support for structured data types beyond simple strings through
 DSPy.rb supports:
 - **Enums**: Constrained value sets with T::Enum
 - **Structs**: Complex objects with T::Struct
+- **Union Types**: Multiple possible types with T.any()
 - **Collections**: Arrays and hashes of typed elements
 - **Optional Fields**: Nullable types with T.nilable
 - **JSON Schema Generation**: Automatic schema creation for LLM consumption
@@ -360,6 +361,207 @@ class ExtractReviews < DSPy::Signature
   output do
     const :reviews, T::Array[Review]
     const :average_rating, T.nilable(Float)
+  end
+end
+```
+
+## Union Types
+
+DSPy.rb supports union types using Sorbet's `T.any()` syntax, allowing fields that can accept multiple types. This is particularly useful when working with LLMs that may return different types of structured data based on the context.
+
+### Basic Union Types
+
+You can use `T.any()` to specify that a field can be one of several types:
+
+```ruby
+class FlexibleAnalysis < DSPy::Signature
+  description "Analyze data that could be numeric or textual"
+  
+  input do
+    const :data, String
+  end
+  
+  output do
+    # Can be either a float (for numeric data) or a string (for categories)
+    const :result, T.any(Float, String)
+    const :result_type, String  # "numeric" or "categorical"
+  end
+end
+
+# Usage
+analyzer = DSPy::Predict.new(FlexibleAnalysis)
+
+# Numeric result
+result1 = analyzer.call(data: "The average score is 85.5")
+puts result1.result  # => 85.5 (Float)
+puts result1.result_type  # => "numeric"
+
+# String result
+result2 = analyzer.call(data: "The category is premium")
+puts result2.result  # => "premium" (String)
+puts result2.result_type  # => "categorical"
+```
+
+### Union Types with Structs (Discriminated Unions)
+
+A powerful pattern is using union types with different struct types, where a discriminator field determines which type is used. DSPy.rb automatically handles the conversion from LLM responses to the appropriate struct type.
+
+```ruby
+# Define action types as an enum for type safety
+class ActionType < T::Enum
+  enums do
+    CreateTask = new('create_task')
+    UpdateTask = new('update_task')
+    DeleteTask = new('delete_task')
+  end
+end
+
+# Define specific action structs
+module TaskActions
+  class CreateTask < T::Struct
+    const :title, String
+    const :description, String
+    const :priority, T.enum([:low, :medium, :high])
+    const :due_date, T.nilable(String)
+  end
+  
+  class UpdateTask < T::Struct
+    const :task_id, String
+    const :updates, T::Hash[Symbol, T.untyped]
+    const :updated_fields, T::Array[String]
+  end
+  
+  class DeleteTask < T::Struct
+    const :task_id, String
+    const :reason, T.nilable(String)
+    const :archive, T::Boolean, default: true
+  end
+end
+
+# Signature using discriminated union
+class TaskActionSignature < DSPy::Signature
+  description "Determine the appropriate task action from user input"
+  
+  input do
+    const :user_request, String
+    const :context, T.nilable(String)
+  end
+  
+  output do
+    const :action_type, ActionType  # Discriminator field
+    const :action_details, T.any(
+      TaskActions::CreateTask,
+      TaskActions::UpdateTask,
+      TaskActions::DeleteTask
+    )
+  end
+end
+
+# Usage with automatic type conversion
+processor = DSPy::Predict.new(TaskActionSignature)
+
+result = processor.call(
+  user_request: "Create a new task for reviewing the Q4 report",
+  context: "Project management workspace"
+)
+
+# DSPy automatically converts the LLM response to the correct struct type
+puts result.action_type  # => ActionType::CreateTask
+puts result.action_details.class  # => TaskActions::CreateTask
+puts result.action_details.title  # => "Review Q4 Report"
+puts result.action_details.priority  # => :high
+```
+
+### How Automatic Type Conversion Works
+
+When DSPy.rb receives a response from the LLM for a union type field:
+
+1. **Discriminator Detection**: It looks for a preceding String or Enum field that might indicate which type to use
+2. **Type Mapping**: It maps discriminator values to struct types using naming conventions (e.g., "create_task" → CreateTask)
+3. **Automatic Conversion**: It converts the Hash response to the appropriate struct instance
+
+This happens automatically without any configuration needed from the developer.
+
+### Union Types in Arrays
+
+You can also use union types within arrays for heterogeneous collections:
+
+```ruby
+class Event < T::Struct
+  abstract!
+  const :timestamp, String
+  const :user_id, String
+end
+
+class LoginEvent < Event
+  const :ip_address, String
+  const :success, T::Boolean
+end
+
+class PurchaseEvent < Event
+  const :product_id, String
+  const :amount, Float
+  const :currency, String
+end
+
+class PageViewEvent < Event
+  const :page_url, String
+  const :referrer, T.nilable(String)
+end
+
+class ExtractEvents < DSPy::Signature
+  description "Extract different types of events from logs"
+  
+  input do
+    const :log_text, String
+  end
+  
+  output do
+    const :events, T::Array[T.any(LoginEvent, PurchaseEvent, PageViewEvent)]
+    const :event_count, Integer
+  end
+end
+
+# DSPy will automatically convert each array element to the appropriate event type
+```
+
+### Best Practices for Union Types
+
+1. **Use Discriminators**: When using union types with structs, include a discriminator field (enum or string) that clearly indicates which type should be used.
+
+2. **Keep Unions Simple**: Limit unions to 2-4 types for better LLM comprehension and reliability.
+
+3. **Consistent Naming**: Use consistent naming between discriminator values and struct class names to enable automatic mapping.
+
+4. **Prefer Enums for Discriminators**: Using T::Enum for discriminator fields provides better type safety than strings:
+
+```ruby
+# Good: Type-safe enum discriminator
+class ResponseType < T::Enum
+  enums do
+    Success = new('success')
+    Error = new('error')
+    Redirect = new('redirect')
+  end
+end
+
+# Better than string discriminator
+const :response_type, ResponseType  # Instead of String
+```
+
+5. **Document Expected Types**: In your signature description, clearly indicate when and why different types might be returned:
+
+```ruby
+class AnalyzeContent < DSPy::Signature
+  description <<~DESC
+    Analyze content and return:
+    - Numeric score (0-100) for measurable content
+    - Descriptive category for qualitative content
+    - Null if content cannot be analyzed
+  DESC
+  
+  output do
+    const :analysis, T.any(Integer, String, NilClass)
   end
 end
 ```

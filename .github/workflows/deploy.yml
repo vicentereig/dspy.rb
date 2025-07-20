@@ -47,7 +47,7 @@ jobs:
       - name: Build site
         working-directory: ./docs
         run: |
-          BRIDGETOWN_ENV=production bun run build
+          GENERATE_OG_IMAGES=true BRIDGETOWN_ENV=production bun run build
           
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -114,6 +114,28 @@ class EntityExtraction < DSPy::Signature
 end
 ```
 
+## Union Types
+
+You can use `T.any()` to specify fields that can accept multiple types:
+
+```ruby
+class FlexibleExtraction < DSPy::Signature
+  description "Extract data that could be in different formats"
+  
+  input do
+    const :text, String
+  end
+  
+  output do
+    # Value can be numeric or categorical
+    const :result, T.any(Float, String)
+    const :confidence, Float
+  end
+end
+```
+
+For more complex union types with structs and automatic type conversion, see the [Union Types section in Complex Types](/advanced/complex-types/#union-types).
+
 ## Optional Fields
 
 ```ruby

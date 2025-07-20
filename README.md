@@ -67,6 +67,30 @@ Then run:
 bundle install
 ```
 
+#### System Dependencies for Ubuntu/Pop!_OS
+
+If you need to compile the `polars-df` dependency from source (used for data processing in evaluations), install these system packages:
+
+```bash
+# Update package list
+sudo apt-get update
+
+# Install Ruby development files (if not already installed)
+sudo apt-get install ruby-full ruby-dev
+
+# Install essential build tools
+sudo apt-get install build-essential
+
+# Install Rust and Cargo (required for polars-df compilation)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+
+# Install CMake (often needed for Rust projects)
+sudo apt-get install cmake
+```
+
+**Note**: The `polars-df` gem compilation can take 15-20 minutes. Pre-built binaries are available for most platforms, so compilation is only needed if a pre-built binary isn't available for your system.
+
 ### Your First DSPy Program
 
 ```ruby

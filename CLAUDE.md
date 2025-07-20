@@ -1,8 +1,10 @@
-# Claude AI Assistant Instructions for DSPy.rb
+# CLAUDE.md
 
-This document provides essential context and instructions for working with the DSPy.rb codebase. 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 I want you to have a clear understanding of the library's architecture, dependencies, and how to work with it effectively.
 I encourage you to apply a skeptical and honest approach to making decisions based on this information.
+Always follow Test-Driven Development (TDD) practices when implementing new features.
 
 ## Important: Developer Documentation
 DSPy.rb is targeted towards developers so the user documentation under docs/*.md is the primary source of information.
@@ -37,8 +39,8 @@ When working with external libraries in this codebase, **ALWAYS check the docume
   - Docs: https://github.com/socketry/async/tree/v2.23.0
   - Used for: Asynchronous LLM API calls
 
-- **openai** (~> 0.9.0) - OpenAI API client
-  - Docs: https://github.com/alexrudall/ruby-openai/tree/v0.9.0
+- **openai** (~> 0.13.0) - OpenAI API client
+  - Docs: https://github.com/alexrudall/ruby-openai/tree/v0.13.0
   - Used for: ChatGPT/GPT-4 API integration
   - **IMPORTANT**: alexrudall/ruby-openai is not the official Ruby SDK. The official SDK is: https://github.com/openai/openai-ruby
 
@@ -54,12 +56,36 @@ When working with external libraries in this codebase, **ALWAYS check the docume
   - Docs: https://github.com/ankane/polars-ruby/tree/v0.20.0
   - Used for: Data processing in evaluations
 
+- **informers** (~> 1.2) - Local embeddings
+  - Docs: https://github.com/ankane/informers
+  - Used for: Local embedding generation without API calls
+
+- **sorbet-schema** (~> 0.3) - Schema validation
+  - Docs: https://github.com/maxveldink/sorbet-schema
+  - Used for: Type-safe schema definitions
+
 #### Development Dependencies:
 - **rspec** (~> 3.12) - Testing framework
 - **vcr** (~> 6.2) - HTTP interaction recording
 - **webmock** (~> 3.18) - HTTP request stubbing
+- **byebug** (~> 11.1) - Debugging tool
+- **dotenv** (~> 2.8) - Environment variable management
+- **faraday** (~> 2.0) - HTTP client library
 
 ## Common Tasks
+
+### Development Setup
+```bash
+# Install dependencies
+bundle install
+
+# Set up environment variables for API access
+export OPENAI_API_KEY=your-openai-api-key
+export ANTHROPIC_API_KEY=your-anthropic-api-key
+
+# Run interactive console
+bundle exec irb -r ./lib/dspy.rb
+```
 
 ### Running Tests
 ```bash
@@ -72,17 +98,37 @@ bundle exec rspec spec/path/to/file_spec.rb
 # Run with specific pattern
 bundle exec rspec --pattern "**/instrumentation*"
 
+# Run a single test by line number
+bundle exec rspec spec/path/to/file_spec.rb:42
+
 # Run with coverage
 bundle exec rspec --require spec_helper
+
+# Run only unit tests (fast)
+bundle exec rspec spec/unit
+
+# Run only integration tests (slower, uses VCR)
+bundle exec rspec spec/integration
 ```
 
 ### Code Quality
 ```bash
-# Run linter (if configured)
-bundle exec rubocop
-
 # Type check with Sorbet
 bundle exec srb tc
+
+# Note: RuboCop is not currently configured in this project
+```
+
+### Building and Releasing
+```bash
+# Build the gem locally
+gem build dspy.gemspec
+
+# Install locally built gem
+gem install ./dspy-*.gem
+
+# Push to RubyGems (maintainers only)
+gem push dspy-VERSION.gem
 ```
 
 ### Common Patterns in This Codebase
@@ -125,6 +171,12 @@ bundle exec srb tc
 2. Use `bundle exec` to ensure correct gem versions
 3. The instrumentation system can help trace execution flow
 4. VCR cassettes record API interactions for consistent testing
+5. Use byebug for interactive debugging:
+   ```ruby
+   require 'byebug'
+   byebug  # Set breakpoint
+   ```
+6. In test mode, set `DSPy.config.test_mode = true` to disable retry sleeps
 
 ## Important Files
 
@@ -219,10 +271,9 @@ These rules ensure maintainability, safety, and developer velocity for Ruby 3.3 
 
 ### 6 — Tooling Gates
 
-- **G-1 (MUST)** `bundle exec rubocop` passes.  
-- **G-2 (MUST)** `bundle exec srb tc` passes.
-- **G-3 (MUST)** `bundle exec rspec` passes.
-- **G-4 (MUST)** Documentation site builds successfully before pushing changes.
+- **G-1 (MUST)** `bundle exec srb tc` passes.
+- **G-2 (MUST)** `bundle exec rspec` passes.
+- **G-3 (MUST)** Documentation site builds successfully before pushing changes.
 
 ### 6.1 — Documentation Site Build Verification
 
@@ -444,10 +495,11 @@ DSPy.rb follows a modular architecture:
   - `tools/` - Tool definitions and toolsets
   - `lm/` - Language model abstractions and clients
   - `teleprompt/` - Optimization and fine-tuning
+  - `subscribers/` - Observability integrations (DataDog, OTEL, etc.)
 - `spec/` - Test suite
   - `integration/` - Integration tests with VCR recordings
   - `unit/` - Fast unit tests
-- `docs/` - Developer documentation
+- `docs/` - Developer documentation (Bridgetown site)
 
 ---
 
@@ -562,7 +614,6 @@ When I type "qcode", this means:
 ```
 Implement your plan and make sure your new tests pass.
 Always run tests to make sure you didn't break anything else.
-Always run `bundle exec rubocop --autocorrect` on the newly created files to ensure standard formatting.
 Always run `bundle exec srb tc` to make sure type checking passes.
 Always run `bundle exec rspec` to ensure all tests pass.
 ```

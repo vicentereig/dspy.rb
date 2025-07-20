@@ -147,6 +147,11 @@ module DSPy
         }
       end
 
+      sig { returns(T.nilable(T.class_of(T::Struct))) }
+      def input_schema
+        @input_struct_class
+      end
+
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def output_json_schema
         return {} unless @output_struct_class
@@ -167,6 +172,11 @@ module DSPy
           properties: properties,
           required: required
         }
+      end
+
+      sig { returns(T.nilable(T.class_of(T::Struct))) }
+      def output_schema
+        @output_struct_class
       end
 
       private
