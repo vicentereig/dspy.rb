@@ -167,13 +167,13 @@ RSpec.describe "Single-field union types" do
 
     it "uses _type field to instantiate correct struct type" do
       json_response = {
-        "action" => {
-          "_type" => "DeserializeSpawn",
-          "task" => "Write tests"
+        action: {
+          _type: "DeserializeSpawn",
+          task: "Write tests"
         }
       }
 
-      prediction = DSPy::Prediction.new(DeserializeSignature, **json_response)
+      prediction = DSPy::Prediction.new(DeserializeSignature.output_schema, **json_response)
       
       expect(prediction.action).to be_a(DeserializeSpawn)
       expect(prediction.action.task).to eq("Write tests")
@@ -187,14 +187,14 @@ RSpec.describe "Single-field union types" do
       end
 
       json_response = {
-        "actions" => [
-          { "_type" => "DeserializeSpawn", "task" => "Task 1" },
-          { "_type" => "DeserializeComplete", "task_id" => "123" },
-          { "_type" => "DeserializeSpawn", "task" => "Task 2" }
+        actions: [
+          { _type: "DeserializeSpawn", task: "Task 1" },
+          { _type: "DeserializeComplete", task_id: "123" },
+          { _type: "DeserializeSpawn", task: "Task 2" }
         ]
       }
 
-      prediction = DSPy::Prediction.new(ArrayUnionSignature, **json_response)
+      prediction = DSPy::Prediction.new(ArrayUnionSignature.output_schema, **json_response)
       
       expect(prediction.actions.length).to eq(3)
       expect(prediction.actions[0]).to be_a(DeserializeSpawn)
@@ -202,28 +202,46 @@ RSpec.describe "Single-field union types" do
       expect(prediction.actions[2]).to be_a(DeserializeSpawn)
     end
 
-    it "provides clear error when _type field is missing" do
+    it "falls back to structural matching when _type field is missing" do
       json_response = {
-        "action" => {
-          "task" => "Missing type"
+        action: {
+          task: "Missing type"
         }
       }
 
-      expect {
-        DSPy::Prediction.new(DeserializeSignature, **json_response)
-      }.to raise_error(DSPy::DeserializationError, /_type field missing/)
+      # Without _type, it will try to match based on structure
+      # DeserializeSpawn has a 'task' field, so it will match
+      prediction = DSPy::Prediction.new(DeserializeSignature.output_schema, **json_response)
+      
+      expect(prediction.action).to be_a(DeserializeSpawn)
+      expect(prediction.action.task).to eq("Missing type")
+    end
+    
+    it "returns original hash when _type field is missing and structure doesn't match any type" do
+      # Create a hash that doesn't match any struct's required fields
+      json_response = {
+        action: {
+          unknown_field: "test"
+        }
+      }
+
+      # When no struct matches, it will return the original hash
+      prediction = DSPy::Prediction.new(DeserializeSignature.output_schema, **json_response)
+      
+      expect(prediction.action).to be_a(Hash)
+      expect(prediction.action[:unknown_field]).to eq("test")
     end
 
     it "provides clear error when _type doesn't match any union type" do
       json_response = {
-        "action" => {
-          "_type" => "UnknownType",
-          "data" => "test"
+        action: {
+          _type: "UnknownType",
+          data: "test"
         }
       }
 
       expect {
-        DSPy::Prediction.new(DeserializeSignature, **json_response)
+        DSPy::Prediction.new(DeserializeSignature.output_schema, **json_response)
       }.to raise_error(DSPy::DeserializationError, /Unknown type: UnknownType/)
     end
   end

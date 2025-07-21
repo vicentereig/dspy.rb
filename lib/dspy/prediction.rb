@@ -319,6 +319,9 @@ module DSPy
         end
         
         value.each do |k, v|
+          # Skip _type field from being added to the struct (it's not a real field)
+          next if k == :_type || k == "_type"
+          
           prop_info = struct_class.props[k]
           if prop_info
             prop_type = prop_info[:type_object] || prop_info[:type]
@@ -343,7 +346,27 @@ module DSPy
           value
         end
       when T::Types::Union
-        # For unions without discriminator, try each type
+        # Check if value has a _type field for automatic type detection
+        type_name = value[:_type] || value["_type"]
+        
+        if type_name
+          # Use _type field to determine which struct to instantiate
+          type.types.each do |t|
+            next if t == T::Utils.coerce(NilClass)
+            
+            if t.is_a?(T::Types::Simple) && t.raw_type < T::Struct
+              struct_name = t.raw_type.name.split('::').last
+              if struct_name == type_name
+                return convert_to_struct(value, t)
+              end
+            end
+          end
+          
+          # If no matching type found, raise an error
+          raise DSPy::DeserializationError, "Unknown type: #{type_name}. Expected one of: #{type.types.map { |t| t.is_a?(T::Types::Simple) && t.raw_type < T::Struct ? t.raw_type.name.split('::').last : nil }.compact.join(', ')}"
+        end
+        
+        # Fallback to trying each type if no _type field
         type.types.each do |t|
           next if t == T::Utils.coerce(NilClass)
           
@@ -398,7 +421,27 @@ module DSPy
 
     sig { params(hash: T::Hash[Symbol, T.untyped], union_type: T::Types::Union).returns(T.untyped) }
     def convert_hash_to_union_struct(hash, union_type)
-      # Try to match the hash structure to one of the union types
+      # First check if hash has a _type field for automatic type detection
+      type_name = hash[:_type] || hash["_type"]
+      
+      if type_name
+        # Use _type field to determine which struct to instantiate
+        union_type.types.each do |type|
+          next if type == T::Utils.coerce(NilClass)
+          
+          if type.is_a?(T::Types::Simple) && type.raw_type < T::Struct
+            struct_name = type.raw_type.name.split('::').last
+            if struct_name == type_name
+              return convert_to_struct(hash, type)
+            end
+          end
+        end
+        
+        # If no matching type found, raise an error
+        raise DSPy::DeserializationError, "Unknown type: #{type_name}. Expected one of: #{union_type.types.map { |t| t.is_a?(T::Types::Simple) && t.raw_type < T::Struct ? t.raw_type.name.split('::').last : nil }.compact.join(', ')}"
+      end
+      
+      # Fallback: Try to match the hash structure to one of the union types
       union_type.types.each do |type|
         next if type == T::Utils.coerce(NilClass)
         
@@ -412,6 +455,9 @@ module DSPy
               # Need to convert nested values too
               converted_hash = {}
               hash.each do |k, v|
+                # Skip _type field
+                next if k == :_type || k == "_type"
+                
                 prop_info = struct_class.props[k]
                 if prop_info
                   prop_type = prop_info[:type_object] || prop_info[:type]
