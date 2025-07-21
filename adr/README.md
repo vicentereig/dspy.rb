@@ -23,6 +23,7 @@ Each ADR is a markdown file with a descriptive name. ADRs are numbered sequentia
 | [002](002-prediction-refactoring-recommendation.md) | DSPy::Prediction Refactoring Recommendation | Accepted | 2025-01-20 | Decision to keep current implementation with minor improvements |
 | [003](003-ruby-idiomatic-api-design.md) | Ruby-Idiomatic API Design | Accepted | 2025-07-20 | Core design decisions for making DSPy.rb feel naturally Ruby |
 | [004](004-single-field-union-types.md) | Single-Field Union Types with Automatic Type Detection | Proposed | 2025-07-21 | Automatic type detection for union types using class names, eliminating boilerplate |
+| [005](005-multi-method-tool-system.md) | Multi-Method Tool System (Toolsets) | Proposed | 2025-07-21 | Support for exposing multiple methods from a single class as individual tools |
 
 ## Creating a New ADR
 

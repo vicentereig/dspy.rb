@@ -190,20 +190,20 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
       expect(tool_call_schema[:type]).to eq("object")
       expect(tool_call_schema[:properties]).to include(:tool_name, :arguments, :timestamp, :result)
       # result is a prop field with nilable type, so should not be required
-      expect(tool_call_schema[:required]).to contain_exactly("tool_name", "arguments", "timestamp")
+      expect(tool_call_schema[:required]).to contain_exactly("_type", "tool_name", "arguments", "timestamp")
 
       # Test Evidence struct schema
       evidence_schema = input_schema[:properties][:evidence][:items]
       expect(evidence_schema[:type]).to eq("object")
       expect(evidence_schema[:properties]).to include(:source, :content, :confidence, :timestamp)
-      expect(evidence_schema[:required]).to contain_exactly("source", "content", "confidence", "timestamp")
+      expect(evidence_schema[:required]).to contain_exactly("_type", "source", "content", "confidence", "timestamp")
 
       # Test Metadata struct schema
       metadata_schema = input_schema[:properties][:metadata]
       expect(metadata_schema[:type]).to eq("object")
       expect(metadata_schema[:properties]).to include(:priority, :tags, :created_at, :confidence)
       # priority, tags, created_at are prop fields but not nilable, confidence is nilable
-      expect(metadata_schema[:required]).to contain_exactly("priority", "tags", "created_at")
+      expect(metadata_schema[:required]).to contain_exactly("_type", "priority", "tags", "created_at")
     end
   end
 
@@ -291,7 +291,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
       expect(message_schema[:properties][:message_type][:enum]).to eq(["search", "create", "update", "delete", "analyze"])
 
       # metadata is nilable, so not in required array
-      expect(message_schema[:required]).to contain_exactly("from_agent", "to_agent", "message_type", "content", "timestamp")
+      expect(message_schema[:required]).to contain_exactly("_type", "from_agent", "to_agent", "message_type", "content", "timestamp")
     end
   end
 

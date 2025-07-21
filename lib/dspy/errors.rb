@@ -3,6 +3,10 @@
 module DSPy
   class Error < StandardError; end
   
+  class ValidationError < Error; end
+  
+  class DeserializationError < Error; end
+  
   class ConfigurationError < Error
     def self.missing_lm(module_name)
       new(<<~MESSAGE)

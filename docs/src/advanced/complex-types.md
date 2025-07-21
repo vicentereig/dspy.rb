@@ -369,6 +369,8 @@ end
 
 DSPy.rb supports union types using Sorbet's `T.any()` syntax, allowing fields that can accept multiple types. This is particularly useful when working with LLMs that may return different types of structured data based on the context.
 
+<!-- TODO: Update this section to reflect ADR-004 single-field union types with automatic _type field (issue #45) -->
+
 ### Basic Union Types
 
 You can use `T.any()` to specify that a field can be one of several types:
@@ -403,6 +405,8 @@ puts result2.result_type  # => "categorical"
 ```
 
 ### Union Types with Structs (Discriminated Unions)
+
+<!-- TODO: Update this section to show single-field union pattern from ADR-004 where _type field is automatically added (issue #45) -->
 
 A powerful pattern is using union types with different struct types, where a discriminator field determines which type is used. DSPy.rb automatically handles the conversion from LLM responses to the appropriate struct type.
 

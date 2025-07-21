@@ -292,6 +292,19 @@ module DSPy
         properties = {}
         required = []
 
+        # Check if struct already has a _type field
+        if struct_class.props.key?(:_type)
+          raise DSPy::ValidationError, "_type field conflict: #{struct_class.name} already has a _type field defined. " \
+                                       "DSPy uses _type for automatic type detection in union types."
+        end
+
+        # Add automatic _type field for type detection
+        properties[:_type] = {
+          type: "string",
+          const: struct_class.name.split('::').last  # Use the simple class name
+        }
+        required << "_type"
+
         struct_class.props.each do |prop_name, prop_info|
           prop_type = prop_info[:type_object] || prop_info[:type]
           properties[prop_name] = type_to_json_schema(prop_type)
