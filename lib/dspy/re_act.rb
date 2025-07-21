@@ -256,7 +256,7 @@ module DSPy
       }) do
         # Generate thought and action
         thought_obj = @thought_generator.forward(
-          input_context: input_struct.serialize.to_json,
+          input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
           history: history,
           available_tools: available_tools_desc
         )
@@ -385,7 +385,7 @@ module DSPy
       return { should_finish: false } if observation.include?("Unknown action")
 
       observation_result = @observation_processor.forward(
-        input_context: input_struct.serialize.to_json,
+        input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
         history: history,
         observation: observation
       )
@@ -402,7 +402,7 @@ module DSPy
     sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], observation_result: T.untyped, iteration: Integer).returns(String) }
     def generate_forced_final_answer(input_struct, history, available_tools_desc, observation_result, iteration)
       final_thought = @thought_generator.forward(
-        input_context: input_struct.serialize.to_json,
+        input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
         history: history,
         available_tools: available_tools_desc
       )

@@ -25,8 +25,17 @@ module DSPy
 
     sig { params(struct: T::Struct).returns(T::Hash[String, T.untyped]) }
     def self.serialize_struct(struct)
+      # Handle anonymous structs that don't have a name
+      class_name = struct.class.name
+      type_name = if class_name.nil? || class_name.empty?
+        # For anonymous structs, use a generic identifier
+        "AnonymousStruct"
+      else
+        class_name.split('::').last
+      end
+      
       result = {
-        "_type" => struct.class.name.split('::').last
+        "_type" => type_name
       }
 
       # Get all props and serialize their values
