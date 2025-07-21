@@ -1,4 +1,4 @@
-# ADR-003: Single-Field Union Types with Embedded Type Information
+# ADR-004: Single-Field Union Types with Automatic Type Detection
 
 **Status**: Proposed  
 **Date**: 2025-07-21  

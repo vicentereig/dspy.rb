@@ -17,9 +17,12 @@ Each ADR is a markdown file with a descriptive name. ADRs are numbered sequentia
 
 ## Index
 
-1. [DSPy::Prediction Type Conversion Design](001-prediction-type-conversion-design.md) - Analysis of design patterns for the Prediction class type conversion system
-2. [DSPy::Prediction Refactoring Recommendation](002-prediction-refactoring-recommendation.md) - Decision to keep current implementation with minor improvements
-3. [Ruby-Idiomatic API Design](003-ruby-idiomatic-api-design.md) - Core design decisions for making DSPy.rb feel naturally Ruby
+| ADR | Title | Status | Date | Summary |
+|-----|-------|--------|------|---------|
+| [001](001-prediction-type-conversion-design.md) | DSPy::Prediction Type Conversion Design | Accepted | 2025-01-20 | Analysis of design patterns for the Prediction class type conversion system |
+| [002](002-prediction-refactoring-recommendation.md) | DSPy::Prediction Refactoring Recommendation | Accepted | 2025-01-20 | Decision to keep current implementation with minor improvements |
+| [003](003-ruby-idiomatic-api-design.md) | Ruby-Idiomatic API Design | Accepted | 2025-07-20 | Core design decisions for making DSPy.rb feel naturally Ruby |
+| [004](004-single-field-union-types.md) | Single-Field Union Types with Automatic Type Detection | Proposed | 2025-07-21 | Automatic type detection for union types using class names, eliminating boilerplate |
 
 ## Creating a New ADR
 
