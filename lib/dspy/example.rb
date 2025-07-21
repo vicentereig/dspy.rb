@@ -60,34 +60,33 @@ module DSPy
     # Convert input struct to hash for program execution
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def input_values
-      # Use TypeSerializer to properly serialize nested structs with _type fields
-      serialized = DSPy::TypeSerializer.serialize(@input)
-      # Convert string keys to symbols for compatibility
-      symbolize_keys(serialized)
+      input_hash = {}
+      @input.class.props.keys.each do |key|
+        input_hash[key] = @input.send(key)
+      end
+      input_hash
     end
 
     # Convert expected struct to hash for comparison
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def expected_values
-      # Use TypeSerializer to properly serialize nested structs with _type fields
-      serialized = DSPy::TypeSerializer.serialize(@expected)
-      # Convert string keys to symbols for compatibility
-      symbolize_keys(serialized)
-    end
-
-    private
-
-    sig { params(hash: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
-    def symbolize_keys(hash)
-      case hash
-      when Hash
-        hash.transform_keys(&:to_sym).transform_values { |v| symbolize_keys(v) }
-      when Array
-        hash.map { |v| symbolize_keys(v) }
-      else
-        hash
+      expected_hash = {}
+      @expected.class.props.keys.each do |key|
+        expected_hash[key] = @expected.send(key)
       end
+      expected_hash
     end
+
+    # Custom equality comparison
+    sig { params(other: T.untyped).returns(T::Boolean) }
+    def ==(other)
+      return false unless other.is_a?(Example)
+      
+      @signature_class == other.signature_class &&
+        input_values == other.input_values &&
+        expected_values == other.expected_values
+    end
+
 
     # Check if prediction matches expected output using struct comparison
     sig { params(prediction: T.untyped).returns(T::Boolean) }
@@ -191,15 +190,6 @@ module DSPy
       examples
     end
 
-    # Equality comparison
-    sig { params(other: T.untyped).returns(T::Boolean) }
-    def ==(other)
-      return false unless other.is_a?(Example)
-      
-      @signature_class == other.signature_class &&
-        input_values == other.input_values &&
-        expected_values == other.expected_values
-    end
 
     # String representation for debugging
     sig { returns(String) }
