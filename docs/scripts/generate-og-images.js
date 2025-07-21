@@ -5,6 +5,22 @@ const path = require('path');
 // Articles data
 const articles = [
   {
+    slug: 'union-types-agentic-workflows',
+    title: 'Why Union Types Transform AI Agent Development',
+    description: 'How DSPy.rb\'s single-field union types with automatic type detection simplify AI agent development',
+    category: 'Patterns',
+    author: 'Vicente Reig',
+    date: 'July 20, 2025'
+  },
+  {
+    slug: 'type-safe-prediction-objects',
+    title: 'Ship AI Features with Confidence: Type-Safe Prediction Objects',
+    description: 'Discover how DSPy.rb\'s type-safe prediction objects catch integration errors before they reach production, giving you the confidence to ship AI features faster.',
+    category: 'Features',
+    author: 'Vicente Reig',
+    date: 'July 15, 2025'
+  },
+  {
     slug: 'program-of-thought-deep-dive',
     title: 'Program of Thought: The Missing Link Between Reasoning and Code',
     description: 'Deep dive into Program of Thought (PoT) - a powerful approach that separates reasoning from computation.',
