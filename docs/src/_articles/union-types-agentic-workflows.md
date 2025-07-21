@@ -133,7 +133,6 @@ class CoffeeShopSignature < DSPy::Signature
       CoffeeShopActions::CallManager,
       CoffeeShopActions::Joke
     )
-    const :reasoning, String
     const :friendly_response, String
   end
 end
@@ -157,6 +156,8 @@ When the LLM returns:
   "friendly_response": "Coming right up! One large iced latte with oat milk and an extra shot."
 }
 ```
+
+Note: The `reasoning` field is automatically added by ChainOfThought - you don't need to define it in your signature!
 
 DSPy automatically converts it to a `MakeDrink` instance. No manual parsing. No discriminator enums. No type checking. It just works!
 
@@ -418,4 +419,4 @@ So next time you're building an agent that needs to make decisions, reach for si
 
 ---
 
-*Want to try it yourself? Check out the [complete coffee shop agent example](https://github.com/vicentereig/dspy.rb/tree/main/examples/coffee-shop-agent) and the [union types documentation](/advanced/complex-types/#union-types).*
+*Want to try it yourself? Check out the [complete coffee shop agent example](https://github.com/vicentereig/dspy.rb/tree/main/examples/coffee-shop-agent) and the [union types documentation](https://vicentereig.github.io/dspy.rb/advanced/complex-types#union-types).*

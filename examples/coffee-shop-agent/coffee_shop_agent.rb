@@ -88,7 +88,6 @@ class CoffeeShopSignature < DSPy::Signature
       CoffeeShopActions::CallManager,
       CoffeeShopActions::Joke
     )
-    const :reasoning, String
     const :friendly_response, String
   end
 end
