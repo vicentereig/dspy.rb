@@ -2,65 +2,92 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 
-// Articles data
-const articles = [
-  {
-    slug: 'union-types-agentic-workflows',
-    title: 'Why Union Types Transform AI Agent Development',
-    description: 'How DSPy.rb\'s single-field union types with automatic type detection simplify AI agent development',
-    category: 'Patterns',
-    author: 'Vicente Reig',
-    date: 'July 20, 2025'
-  },
-  {
-    slug: 'type-safe-prediction-objects',
-    title: 'Ship AI Features with Confidence: Type-Safe Prediction Objects',
-    description: 'Discover how DSPy.rb\'s type-safe prediction objects catch integration errors before they reach production, giving you the confidence to ship AI features faster.',
-    category: 'Features',
-    author: 'Vicente Reig',
-    date: 'July 15, 2025'
-  },
-  {
-    slug: 'program-of-thought-deep-dive',
-    title: 'Program of Thought: The Missing Link Between Reasoning and Code',
-    description: 'Deep dive into Program of Thought (PoT) - a powerful approach that separates reasoning from computation.',
-    category: 'Research',
-    author: 'Vicente Reig',
-    date: 'July 12, 2025'
-  },
-  {
-    slug: 'react-agent-tutorial',
-    title: 'Building ReAct Agents in Ruby: From Theory to Production',
-    description: 'Learn how to build production-ready ReAct agents with DSPy.rb. Complete tutorial with code examples, best practices, and performance tips.',
-    category: 'Agents',
-    author: 'Vicente Reig',
-    date: 'July 10, 2025'
-  },
-  {
-    slug: 'json-parsing-reliability',
-    title: 'Bulletproof JSON Parsing: How DSPy.rb Achieves 99.9% Reliability',
-    description: 'Discover the 4-pattern system that makes DSPy.rb\'s JSON extraction rock-solid across all LLM providers.',
-    category: 'Engineering',
-    author: 'Vicente Reig',
-    date: 'July 6, 2025'
-  },
-  {
-    slug: 'ruby-idiomatic-apis',
-    title: 'Idiomatic Ruby APIs for AI: Lessons from DSPy.rb',
-    description: 'How to design Ruby APIs that feel natural while handling the complexity of language models. A deep dive into DSPy.rb\'s design decisions.',
-    category: 'Design',
-    author: 'Vicente Reig',
-    date: 'July 5, 2025'
-  },
-  {
-    slug: 'codeact-dynamic-code-generation',
-    title: 'CodeAct: Dynamic Code Generation for Complex AI Tasks',
-    description: 'Explore how CodeAct enables AI agents to write and execute code on-the-fly, opening new possibilities for autonomous problem-solving.',
-    category: 'Agents',
-    author: 'Vicente Reig',
-    date: 'July 4, 2025'
+// Function to extract frontmatter from markdown files
+function extractFrontmatter(content) {
+  const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---/;
+  const match = content.match(frontmatterRegex);
+  
+  if (!match) return null;
+  
+  const frontmatter = {};
+  const lines = match[1].split('\n');
+  
+  lines.forEach(line => {
+    const colonIndex = line.indexOf(':');
+    if (colonIndex > 0) {
+      const key = line.substring(0, colonIndex).trim();
+      let value = line.substring(colonIndex + 1).trim();
+      
+      // Remove quotes if present
+      if ((value.startsWith('"') && value.endsWith('"')) || 
+          (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+      
+      frontmatter[key] = value;
+    }
+  });
+  
+  return frontmatter;
+}
+
+// Function to format date
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                  'July', 'August', 'September', 'October', 'November', 'December'];
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
+// Function to get category from frontmatter
+function getCategory(frontmatter) {
+  // Try different possible fields for category
+  if (frontmatter.category) return frontmatter.category;
+  if (frontmatter.categories) {
+    // Handle array format like: [patterns, agents]
+    const categories = frontmatter.categories.replace(/[\[\]]/g, '').split(',')[0].trim();
+    return categories.charAt(0).toUpperCase() + categories.slice(1);
   }
-];
+  return 'Article';
+}
+
+// Function to get articles from source files
+async function getArticles() {
+  const articlesDir = path.join(__dirname, '../src/_articles');
+  const articles = [];
+  
+  try {
+    const files = fs.readdirSync(articlesDir).filter(file => file.endsWith('.md'));
+    
+    for (const file of files) {
+      const filePath = path.join(articlesDir, file);
+      const content = fs.readFileSync(filePath, 'utf-8');
+      const frontmatter = extractFrontmatter(content);
+      
+      if (frontmatter) {
+        const slug = file.replace('.md', '');
+        const rawDate = frontmatter.date || new Date().toISOString();
+        articles.push({
+          slug,
+          title: frontmatter.title || frontmatter.name || 'Untitled',
+          description: frontmatter.description || '',
+          category: getCategory(frontmatter),
+          author: frontmatter.author || 'Vicente Reig',
+          date: formatDate(rawDate),
+          rawDate: rawDate // Keep raw date for sorting
+        });
+      }
+    }
+    
+    // Sort by date (newest first)
+    articles.sort((a, b) => new Date(b.rawDate) - new Date(a.rawDate));
+    
+  } catch (error) {
+    console.error('Error reading articles:', error);
+  }
+  
+  return articles;
+}
 
 function generateHTML(article) {
   return `<!DOCTYPE html>
@@ -237,6 +264,16 @@ function generateHTML(article) {
 }
 
 async function generateOgImages() {
+  // Get articles dynamically from source files
+  const articles = await getArticles();
+  
+  if (articles.length === 0) {
+    console.log('No articles found to generate OG images for.');
+    return;
+  }
+  
+  console.log(`Found ${articles.length} articles to process.`);
+  
   // Ensure output directory exists
   const outputDir = path.join(__dirname, '../output/images/og');
   if (!fs.existsSync(outputDir)) {
@@ -252,6 +289,9 @@ async function generateOgImages() {
 
   for (const article of articles) {
     console.log(`Generating OG image for: ${article.slug}`);
+    console.log(`  Title: ${article.title}`);
+    console.log(`  Category: ${article.category}`);
+    console.log(`  Date: ${article.date}`);
     
     // Generate HTML
     const html = generateHTML(article);
