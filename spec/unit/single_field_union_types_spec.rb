@@ -2,15 +2,7 @@
 
 require "spec_helper"
 
-# Define TypeSerializer that will be implemented
-module DSPy
-  class TypeSerializer
-    def self.serialize(struct)
-      # Stub implementation for testing
-      {}
-    end
-  end
-end
+# TypeSerializer is now implemented in lib/dspy/type_serializer.rb
 
 RSpec.describe "Single-field union types" do
   describe "JSON schema generation with _type field" do

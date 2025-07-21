@@ -6,6 +6,7 @@ require 'securerandom'
 
 require_relative 'dspy/version'
 require_relative 'dspy/errors'
+require_relative 'dspy/type_serializer'
 
 module DSPy
   extend Dry::Configurable
