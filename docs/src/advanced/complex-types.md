@@ -369,8 +369,6 @@ end
 
 DSPy.rb supports union types using Sorbet's `T.any()` syntax, allowing fields that can accept multiple types. This is particularly useful when working with LLMs that may return different types of structured data based on the context.
 
-<!-- TODO: Update this section to reflect ADR-004 single-field union types with automatic _type field (issue #45) -->
-
 ### Basic Union Types
 
 You can use `T.any()` to specify that a field can be one of several types:
@@ -404,23 +402,14 @@ puts result2.result  # => "premium" (String)
 puts result2.result_type  # => "categorical"
 ```
 
-### Union Types with Structs (Discriminated Unions)
+### Union Types with Structs (Single-Field Unions)
 
-<!-- TODO: Update this section to show single-field union pattern from ADR-004 where _type field is automatically added (issue #45) -->
-
-A powerful pattern is using union types with different struct types, where a discriminator field determines which type is used. DSPy.rb automatically handles the conversion from LLM responses to the appropriate struct type.
+A powerful pattern is using union types with different struct types. As of v0.11.0, DSPy.rb automatically adds a `_type` field to each struct, eliminating the need for manual discriminator fields. This makes union types much simpler to use.
 
 ```ruby
-# Define action types as an enum for type safety
-class ActionType < T::Enum
-  enums do
-    CreateTask = new('create_task')
-    UpdateTask = new('update_task')
-    DeleteTask = new('delete_task')
-  end
-end
+# NEW in v0.11.0: Single-field union types - no discriminator needed!
 
-# Define specific action structs
+# Define specific action structs (no type field required)
 module TaskActions
   class CreateTask < T::Struct
     const :title, String
@@ -442,7 +431,7 @@ module TaskActions
   end
 end
 
-# Signature using discriminated union
+# Simple signature with single union field
 class TaskActionSignature < DSPy::Signature
   description "Determine the appropriate task action from user input"
   
@@ -452,12 +441,13 @@ class TaskActionSignature < DSPy::Signature
   end
   
   output do
-    const :action_type, ActionType  # Discriminator field
-    const :action_details, T.any(
+    # Just one field! DSPy automatically handles type detection
+    const :action, T.any(
       TaskActions::CreateTask,
       TaskActions::UpdateTask,
       TaskActions::DeleteTask
     )
+    const :reasoning, String
   end
 end
 
@@ -469,22 +459,53 @@ result = processor.call(
   context: "Project management workspace"
 )
 
-# DSPy automatically converts the LLM response to the correct struct type
-puts result.action_type  # => ActionType::CreateTask
-puts result.action_details.class  # => TaskActions::CreateTask
-puts result.action_details.title  # => "Review Q4 Report"
-puts result.action_details.priority  # => :high
+# DSPy automatically detects the type from the _type field
+puts result.action.class  # => TaskActions::CreateTask
+puts result.action.title  # => "Review Q4 Report"
+puts result.action.priority  # => :high
+puts result.reasoning  # => "User wants to create a task for Q4 review"
+
+# Pattern matching works beautifully
+case result.action
+when TaskActions::CreateTask
+  puts "Creating task: #{result.action.title}"
+when TaskActions::UpdateTask
+  puts "Updating task: #{result.action.task_id}"
+when TaskActions::DeleteTask
+  puts "Deleting task: #{result.action.task_id}"
+end
 ```
 
 ### How Automatic Type Conversion Works
 
 When DSPy.rb receives a response from the LLM for a union type field:
 
-1. **Discriminator Detection**: It looks for a preceding String or Enum field that might indicate which type to use
-2. **Type Mapping**: It maps discriminator values to struct types using naming conventions (e.g., "create_task" → CreateTask)
-3. **Automatic Conversion**: It converts the Hash response to the appropriate struct instance
+1. **Automatic _type Field**: DSPy adds a `_type` field to each struct's JSON schema with the struct's class name
+2. **Type Detection**: When deserializing, DSPy looks for the `_type` field in the response
+3. **Automatic Conversion**: It converts the Hash response to the appropriate struct instance based on `_type`
 
 This happens automatically without any configuration needed from the developer.
+
+#### Behind the Scenes
+
+When the LLM returns:
+```json
+{
+  "action": {
+    "_type": "CreateTask",
+    "title": "Review Q4 Report",
+    "description": "Analyze quarterly results",
+    "priority": "high",
+    "due_date": null
+  },
+  "reasoning": "User wants to create a task for Q4 review"
+}
+```
+
+DSPy automatically:
+1. Sees `_type: "CreateTask"`
+2. Finds `TaskActions::CreateTask` in the union types
+3. Creates a proper `CreateTask` struct instance
 
 ### Union Types in Arrays
 
@@ -531,26 +552,32 @@ end
 
 ### Best Practices for Union Types
 
-1. **Use Discriminators**: When using union types with structs, include a discriminator field (enum or string) that clearly indicates which type should be used.
+1. **Single-Field Unions** (v0.11.0+): Use a single `T.any()` field and let DSPy handle type detection automatically:
+
+```ruby
+# Good: Single union field
+output do
+  const :result, T.any(SuccessResult, ErrorResult, PendingResult)
+end
+
+# Avoid: Manual discriminator pattern (pre-v0.11.0)
+output do
+  const :result_type, ResultType  # No longer needed!
+  const :result_data, T.any(...)
+end
+```
 
 2. **Keep Unions Simple**: Limit unions to 2-4 types for better LLM comprehension and reliability.
 
-3. **Consistent Naming**: Use consistent naming between discriminator values and struct class names to enable automatic mapping.
-
-4. **Prefer Enums for Discriminators**: Using T::Enum for discriminator fields provides better type safety than strings:
+3. **Meaningful Struct Names**: Use clear struct names as they become the `_type` value:
 
 ```ruby
-# Good: Type-safe enum discriminator
-class ResponseType < T::Enum
-  enums do
-    Success = new('success')
-    Error = new('error')
-    Redirect = new('redirect')
-  end
-end
+# Good: Clear type names
+class CreateUserAction < T::Struct
+class UpdateUserAction < T::Struct
+class DeleteUserAction < T::Struct
 
-# Better than string discriminator
-const :response_type, ResponseType  # Instead of String
+# These become _type values: "CreateUserAction", "UpdateUserAction", etc.
 ```
 
 5. **Document Expected Types**: In your signature description, clearly indicate when and why different types might be returned:

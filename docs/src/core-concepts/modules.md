@@ -168,8 +168,8 @@ end
 ### Module Using Chain of Thought
 
 ```ruby
-class ReasoningSignature < DSPy::Signature
-  description "Classify with reasoning"
+class ClassificationSignature < DSPy::Signature
+  description "Classify text into categories"
   
   input do
     const :text, String
@@ -177,7 +177,8 @@ class ReasoningSignature < DSPy::Signature
   
   output do
     const :category, String
-    const :reasoning, String
+    # Note: ChainOfThought automatically adds a :reasoning field
+    # Do NOT define your own :reasoning field when using ChainOfThought
   end
 end
 
@@ -185,13 +186,22 @@ class ReasoningClassifier < DSPy::Module
   def initialize
     super
     
-    @predictor = DSPy::ChainOfThought.new(ReasoningSignature)
+    # ChainOfThought enhances the signature with automatic reasoning
+    @predictor = DSPy::ChainOfThought.new(ClassificationSignature)
   end
 
   def forward(text:)
+    # The result will include both :category and :reasoning fields
     @predictor.call(text: text)
   end
 end
+
+# Usage
+classifier = ReasoningClassifier.new
+result = classifier.call(text: "This is a technical document")
+
+puts result.category   # => "technical"
+puts result.reasoning  # => "The document mentions APIs and code examples..."
 ```
 
 ### Module Using ReAct for Tool Integration

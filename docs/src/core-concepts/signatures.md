@@ -341,6 +341,38 @@ RSpec.describe TextClassifier do
 end
 ```
 
+## Special Considerations
+
+### Working with ChainOfThought
+
+When using `DSPy::ChainOfThought`, be aware that it automatically adds a `:reasoning` field to your signature's output:
+
+```ruby
+# DO NOT define :reasoning in your output when using ChainOfThought
+class AnalysisSignature < DSPy::Signature
+  description "Analyze text sentiment"
+  
+  input do
+    const :text, String
+  end
+  
+  output do
+    const :sentiment, String
+    # :reasoning field will be added automatically by ChainOfThought
+  end
+end
+
+# ChainOfThought usage
+analyzer = DSPy::ChainOfThought.new(AnalysisSignature)
+result = analyzer.call(text: "Great product!")
+
+# Access both original fields and automatic reasoning
+puts result.sentiment  # => "positive" 
+puts result.reasoning  # => "The text uses positive language..."
+```
+
+**Important**: If you define your own `:reasoning` field in a signature that will be used with ChainOfThought, it may cause conflicts or unexpected behavior.
+
 ## Best Practices
 
 ### 1. Clear and Specific Descriptions

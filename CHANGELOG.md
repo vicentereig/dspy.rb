@@ -5,6 +5,28 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Single-Field Union Types with Automatic Type Detection** (#45) - Simplified union type pattern for AI agent development
+  - Automatic `_type` field injection in JSON schemas for T::Struct types
+  - TypeSerializer automatically adds `_type` field during struct serialization
+  - DSPy::Prediction uses `_type` field for automatic type detection in union types
+  - No need for manual discriminator fields - just use `T.any()` with structs
+  - Supports anonymous structs with fallback to "AnonymousStruct" type name
+  - Clean pattern for AI agents that need to choose between different action types
+
+### Examples
+- Added coffee-shop-agent example demonstrating single-field union types
+  - Shows how to build an AI agent with multiple action types
+  - Demonstrates automatic type conversion without discriminator fields
+  - Pattern matching on properly typed results
+
+### Documentation
+- Updated complex types documentation to reflect new single-field union pattern
+- Updated union types blog post to show simplified approach
+- Added Architecture Decision Record (ADR-004) for single-field union types design
+
 ## [0.10.1] - 2025-07-20
 
 ### Added
