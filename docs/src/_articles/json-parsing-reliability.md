@@ -52,6 +52,10 @@ lm = DSPy::LM.new("openai/gpt-4o-mini",
                   structured_outputs: true)
 
 class ProductExtractor < DSPy::Signature
+  input do
+    const :description, String
+  end
+  
   output do
     const :name, String
     const :price, Float
@@ -159,6 +163,10 @@ If you're already using DSPy.rb, you get these improvements automatically. Your 
 ```ruby
 # Existing code - no changes needed
 class SentimentAnalysis < DSPy::Signature
+  input do
+    const :text, String
+  end
+  
   output do
     const :sentiment, String
     const :confidence, Float
