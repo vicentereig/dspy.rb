@@ -1,5 +1,8 @@
 # DSPy.rb
 
+[![Gem Version](https://img.shields.io/gem/v/dspy)](https://rubygems.org/gems/dspy)
+[![Total Downloads](https://img.shields.io/gem/dt/dspy)](https://rubygems.org/gems/dspy)
+
 **Build reliable LLM applications in Ruby using composable, type-safe modules.**
 
 DSPy.rb brings structured LLM programming to Ruby developers. Instead of wrestling with prompt strings and parsing responses, you define typed signatures and compose them into pipelines that just work.
