@@ -209,6 +209,35 @@ predictor.configure do |config|
 end
 ```
 
+### Raw Chat API
+
+For benchmarking or using existing prompts without DSPy's structured output features, use the `raw_chat` method:
+
+```ruby
+lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+
+# Array format
+response = lm.raw_chat([
+  { role: 'system', content: 'You are a helpful assistant.' },
+  { role: 'user', content: 'What is the capital of France?' }
+])
+
+# DSL format
+response = lm.raw_chat do |m|
+  m.system "You are a helpful assistant."
+  m.user "What is the capital of France?"
+  m.assistant "The capital of France is Paris."
+  m.user "What about Spain?"
+end
+```
+
+This is particularly useful for:
+- Benchmarking monolithic prompts against modular implementations
+- Gradual migration from existing prompt systems
+- Quick prototyping without signatures
+
+See the [benchmarking guide](/optimization/benchmarking-raw-prompts/) for detailed examples.
+
 ## Error Handling and Validation
 
 DSPy provides comprehensive error handling:

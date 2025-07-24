@@ -5,6 +5,28 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2025-07-23
+
+### Added
+- **Raw Chat API for Benchmarking and Migration** (#47) - Enable running legacy prompts through DSPy's instrumentation pipeline
+  - New `DSPy::LM#raw_chat` method for executing raw prompts without structured output features
+  - Support for both array format and DSL format with `MessageBuilder`
+  - Full instrumentation support - emits `dspy.lm.request` and `dspy.lm.tokens` events
+  - Enables fair benchmarking between monolithic prompts and modular DSPy implementations
+  - Facilitates gradual migration from legacy prompt systems
+  - Streaming support via block parameter
+  - Message validation with clear error messages
+
+### Documentation
+- Added comprehensive benchmarking guide at `/optimization/benchmarking-raw-prompts/`
+- Added blog article explaining the raw_chat API and migration strategies
+- Updated core concepts documentation with raw_chat usage examples
+
+### Internal
+- Extracted common instrumentation logic into reusable private methods
+- Refactored existing `chat` method to use extracted instrumentation logic
+- Added `DSPy::LM::MessageBuilder` class for clean message construction
+
 ## [0.11.0] - 2025-07-21
 
 ### Added

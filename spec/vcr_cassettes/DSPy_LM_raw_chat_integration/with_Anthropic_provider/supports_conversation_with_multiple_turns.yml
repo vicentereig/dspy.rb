@@ -1,0 +1,102 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-3-5-sonnet-20241022","messages":[{"role":"user","content":"My
+        name is Alice"},{"role":"assistant","content":"Nice to meet you, Alice!"},{"role":"user","content":"What
+        is my name?"}],"max_tokens":4096,"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - x64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - Linux
+      X-Stainless-Package-Version:
+      - 1.1.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.8
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '235'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 24 Jul 2025 00:03:49 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '80000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '80000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-07-24T00:03:49Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '16000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '16000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-07-24T00:03:49Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-07-24T00:03:49Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '96000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '96000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-07-24T00:03:49Z'
+      Request-Id:
+      - req_011CRQs7df18xk4DgUMiGcec
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Via:
+      - 1.1 google
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 963f28198c3d43f8-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"id":"msg_01AxYV9Fy5egLBCDmvKd8LgZ","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"Your
+        name is Alice."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":29,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":8,"service_tier":"standard"}}'
+  recorded_at: Thu, 24 Jul 2025 00:03:50 GMT
+recorded_with: VCR 6.3.1

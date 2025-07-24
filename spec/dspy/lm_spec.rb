@@ -123,6 +123,161 @@ RSpec.describe DSPy::LM do
     end
   end
 
+  describe '#raw_chat' do
+    # Use the same test adapter from above
+    let(:mock_adapter) { LMSpecTestAdapter.new(model: 'test-model', api_key: 'test-key') }
+    let(:mock_response) do
+      DSPy::LM::Response.new(
+        content: 'This is a raw response without JSON',
+        usage: { 'total_tokens' => 30, 'prompt_tokens' => 10, 'completion_tokens' => 20 },
+        metadata: { provider: 'openai', model: 'gpt-4' }
+      )
+    end
+    let(:lm) { described_class.new('openai/gpt-4', api_key: 'test-key') }
+    let(:captured_events) { [] }
+
+    before do
+      allow(DSPy::LM::AdapterFactory).to receive(:create).and_return(mock_adapter)
+      mock_adapter.chat_response = mock_response
+      
+      # Capture instrumentation events
+      DSPy::Instrumentation.subscribe do |event|
+        captured_events << event
+      end
+    end
+
+    after do
+      captured_events.clear
+    end
+
+    context 'with array format' do
+      it 'sends raw messages to the adapter' do
+        messages = [
+          { role: 'system', content: 'You are a helpful assistant' },
+          { role: 'user', content: 'What is 2+2?' }
+        ]
+        
+        allow(mock_adapter).to receive(:chat).and_call_original
+        
+        result = lm.raw_chat(messages)
+        
+        expect(mock_adapter).to have_received(:chat) do |**args|
+          expect(args[:messages]).to eq(messages)
+          expect(args[:signature]).to be_nil
+        end
+        expect(result).to eq('This is a raw response without JSON')
+      end
+    end
+
+    context 'with DSL builder' do
+      it 'builds messages using the DSL' do
+        allow(mock_adapter).to receive(:chat).and_call_original
+        
+        result = lm.raw_chat do |m|
+          m.system 'You are a math tutor'
+          m.user 'Explain calculus'
+        end
+        
+        expect(mock_adapter).to have_received(:chat) do |**args|
+          expect(args[:messages]).to eq([
+            { role: 'system', content: 'You are a math tutor' },
+            { role: 'user', content: 'Explain calculus' }
+          ])
+          expect(args[:signature]).to be_nil
+        end
+        expect(result).to eq('This is a raw response without JSON')
+      end
+
+      it 'supports assistant messages in the DSL' do
+        allow(mock_adapter).to receive(:chat).and_call_original
+        
+        result = lm.raw_chat do |m|
+          m.user 'What is AI?'
+          m.assistant 'AI stands for Artificial Intelligence...'
+          m.user 'Tell me more'
+        end
+        
+        expect(mock_adapter).to have_received(:chat) do |**args|
+          expect(args[:messages].length).to eq(3)
+          expect(args[:messages][1][:role]).to eq('assistant')
+        end
+      end
+    end
+
+    context 'instrumentation' do
+      it 'emits dspy.lm.request event with RawPrompt signature_class' do
+        lm.raw_chat([{ role: 'user', content: 'Hello' }])
+        
+        request_events = captured_events.select { |e| e.id == 'dspy.lm.request' }
+        expect(request_events.length).to eq(1)
+        
+        event = request_events.first
+        expect(event.payload[:signature_class]).to eq('RawPrompt')
+        expect(event.payload[:gen_ai_operation_name]).to eq('chat')
+        expect(event.payload[:provider]).to eq('openai')
+      end
+
+      it 'emits dspy.lm.tokens event with token usage' do
+        lm.raw_chat([{ role: 'user', content: 'Hello' }])
+        
+        token_events = captured_events.select { |e| e.id == 'dspy.lm.tokens' }
+        expect(token_events.length).to eq(1)
+        
+        event = token_events.first
+        expect(event.payload[:signature_class]).to eq('RawPrompt')
+        expect(event.payload[:total_tokens]).to eq(30)
+        expect(event.payload[:input_tokens]).to eq(10)
+        expect(event.payload[:output_tokens]).to eq(20)
+      end
+
+      it 'does NOT emit dspy.lm.response.parsed event' do
+        lm.raw_chat([{ role: 'user', content: 'Hello' }])
+        
+        parsed_events = captured_events.select { |e| e.id == 'dspy.lm.response.parsed' }
+        expect(parsed_events).to be_empty
+      end
+    end
+
+    context 'streaming' do
+      it 'passes block to adapter for streaming' do
+        chunks = []
+        block = proc { |chunk| chunks << chunk }
+        
+        allow(mock_adapter).to receive(:chat) do |**args, &passed_block|
+          # Simulate streaming
+          passed_block.call('chunk1') if passed_block
+          passed_block.call('chunk2') if passed_block
+          mock_response
+        end
+        
+        result = lm.raw_chat([{ role: 'user', content: 'Stream this' }], &block)
+        
+        expect(chunks).to eq(['chunk1', 'chunk2'])
+        expect(result).to eq('This is a raw response without JSON')
+      end
+    end
+
+    context 'error handling' do
+      it 'validates message format' do
+        expect {
+          lm.raw_chat('invalid format')
+        }.to raise_error(ArgumentError, /messages must be an array/)
+      end
+
+      it 'validates each message has required fields' do
+        expect {
+          lm.raw_chat([{ content: 'missing role' }])
+        }.to raise_error(ArgumentError, /Each message must have :role and :content/)
+      end
+
+      it 'validates role is valid' do
+        expect {
+          lm.raw_chat([{ role: 'invalid', content: 'test' }])
+        }.to raise_error(ArgumentError, /Invalid role/)
+      end
+    end
+  end
+
   describe 'private methods' do
     let(:lm) { described_class.new('openai/gpt-4', api_key: 'test-key') }
 

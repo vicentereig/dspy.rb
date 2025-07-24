@@ -34,6 +34,9 @@ Advanced optimization with MIPROv2 for production-grade performance and reliabil
 ### [Evaluation](./evaluation/)
 Build metrics and evaluation frameworks to measure and improve your modules systematically.
 
+### [Benchmarking Raw Prompts](./benchmarking-raw-prompts/)
+Compare monolithic prompts against modular DSPy implementations to measure improvements in token usage, performance, and cost.
+
 ## Getting Started
 
 We recommend starting with:

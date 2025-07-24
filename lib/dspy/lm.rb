@@ -18,6 +18,9 @@ require_relative 'lm/adapters/anthropic_adapter'
 require_relative 'lm/strategy_selector'
 require_relative 'lm/retry_handler'
 
+# Load message builder
+require_relative 'lm/message_builder'
+
 module DSPy
   class LM
     attr_reader :model_id, :api_key, :model, :provider, :adapter
@@ -39,41 +42,13 @@ module DSPy
       # Build messages from inference module
       messages = build_messages(inference_module, input_values)
       
-      # Calculate input size for monitoring
-      input_text = messages.map { |m| m[:content] }.join(' ')
-      input_size = input_text.length
+      # Execute with instrumentation
+      response = instrument_lm_request(messages, signature_class.name) do
+        chat_with_strategy(messages, signature_class, &block)
+      end
       
-      # Use smart consolidation: emit LM events only when not in nested context
-      response = nil
-      token_usage = {}
-      
+      # Instrument response parsing
       if should_emit_lm_events?
-        # Emit all LM events when not in nested context
-        response = Instrumentation.instrument('dspy.lm.request', {
-          gen_ai_operation_name: 'chat',
-          gen_ai_system: provider,
-          gen_ai_request_model: model,
-          signature_class: signature_class.name,
-          provider: provider,
-          adapter_class: adapter.class.name,
-          input_size: input_size
-        }) do
-          chat_with_strategy(messages, signature_class, &block)
-        end
-        
-        # Extract actual token usage from response (more accurate than estimation)
-        token_usage = Instrumentation::TokenTracker.extract_token_usage(response, provider)
-        
-        # Emit token usage event if available
-        if token_usage.any?
-          Instrumentation.emit('dspy.lm.tokens', token_usage.merge({
-            gen_ai_system: provider,
-            gen_ai_request_model: model,
-            signature_class: signature_class.name
-          }))
-        end
-        
-        # Instrument response parsing
         parsed_result = Instrumentation.instrument('dspy.lm.response.parsed', {
           signature_class: signature_class.name,
           provider: provider,
@@ -82,13 +57,31 @@ module DSPy
           parse_response(response, input_values, signature_class)
         end
       else
-        # Consolidated mode: execute without nested instrumentation
-        response = chat_with_strategy(messages, signature_class, &block)
-        token_usage = Instrumentation::TokenTracker.extract_token_usage(response, provider)
         parsed_result = parse_response(response, input_values, signature_class)
       end
       
       parsed_result
+    end
+
+    def raw_chat(messages = nil, &block)
+      # Support both array format and builder DSL
+      if block_given? && messages.nil?
+        # DSL mode - block is for building messages
+        builder = MessageBuilder.new
+        yield builder
+        messages = builder.messages
+        streaming_block = nil
+      else
+        # Array mode - block is for streaming
+        messages ||= []
+        streaming_block = block
+      end
+      
+      # Validate messages format
+      validate_messages!(messages)
+      
+      # Execute with instrumentation
+      execute_raw_chat(messages, &streaming_block)
     end
 
     private
@@ -207,6 +200,78 @@ module DSPy
         DSPy.logger.debug("JSON parsing failed: #{error_details}")
         raise "Failed to parse LLM response as JSON: #{e.message}. Original content length: #{response.content&.length || 0} chars"
       end
+    end
+
+    # Common instrumentation method for LM requests
+    def instrument_lm_request(messages, signature_class_name, &execution_block)
+      input_text = messages.map { |m| m[:content] }.join(' ')
+      input_size = input_text.length
+      
+      response = nil
+      
+      if should_emit_lm_events?
+        # Emit dspy.lm.request event
+        response = Instrumentation.instrument('dspy.lm.request', {
+          gen_ai_operation_name: 'chat',
+          gen_ai_system: provider,
+          gen_ai_request_model: model,
+          signature_class: signature_class_name,
+          provider: provider,
+          adapter_class: adapter.class.name,
+          input_size: input_size
+        }, &execution_block)
+        
+        # Extract and emit token usage
+        emit_token_usage(response, signature_class_name)
+      else
+        # Consolidated mode: execute without instrumentation
+        response = execution_block.call
+      end
+      
+      response
+    end
+
+    # Common method to emit token usage events
+    def emit_token_usage(response, signature_class_name)
+      token_usage = Instrumentation::TokenTracker.extract_token_usage(response, provider)
+      
+      if token_usage.any?
+        Instrumentation.emit('dspy.lm.tokens', token_usage.merge({
+          gen_ai_system: provider,
+          gen_ai_request_model: model,
+          signature_class: signature_class_name
+        }))
+      end
+      
+      token_usage
+    end
+
+    def validate_messages!(messages)
+      unless messages.is_a?(Array)
+        raise ArgumentError, "messages must be an array"
+      end
+      
+      valid_roles = %w[system user assistant]
+      
+      messages.each do |message|
+        unless message.is_a?(Hash) && message.key?(:role) && message.key?(:content)
+          raise ArgumentError, "Each message must have :role and :content"
+        end
+        
+        unless valid_roles.include?(message[:role])
+          raise ArgumentError, "Invalid role: #{message[:role]}. Must be one of: #{valid_roles.join(', ')}"
+        end
+      end
+    end
+
+    def execute_raw_chat(messages, &streaming_block)
+      response = instrument_lm_request(messages, 'RawPrompt') do
+        # Direct adapter call, no strategies or JSON parsing
+        adapter.chat(messages: messages, signature: nil, &streaming_block)
+      end
+      
+      # Return raw response content, not parsed JSON
+      response.content
     end
   end
 end
