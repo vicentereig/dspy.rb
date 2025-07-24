@@ -10,9 +10,7 @@ excerpt: |
 permalink: /blog/raw-chat-api/
 ---
 
-# Raw Chat API for Benchmarking and Migration
-
-DSPy.rb 0.x.x introduces the `raw_chat` API, a powerful feature designed to help teams benchmark their existing monolithic prompts and facilitate gradual migration to DSPy's modular approach.
+DSPy.rb 0.12.0 introduces the `raw_chat` API, a powerful feature designed to help teams benchmark their existing monolithic prompts and facilitate gradual migration to DSPy's modular approach.
 
 ## The Challenge
 
@@ -199,4 +197,4 @@ Whether you're evaluating DSPy for the first time or planning a large-scale migr
 
 ---
 
-*Ready to benchmark your prompts? Check out the [complete benchmarking guide](/optimization/benchmarking-raw-prompts/) for detailed examples and best practices.*
+*Ready to benchmark your prompts? Check out the [complete benchmarking guide](/docs/optimization/benchmarking-raw-prompts/) for detailed examples and best practices.*
