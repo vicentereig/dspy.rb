@@ -6,17 +6,17 @@ date: 2025-07-23
 description: "Learn how to use DSPy.rb's raw_chat API for benchmarking monolithic prompts and migrating to modular implementations"
 tags: [api, benchmarking, migration, instrumentation]
 excerpt: |
-  The new raw_chat API enables running legacy prompts through DSPy's instrumentation pipeline, making it easy to benchmark and migrate from monolithic to modular prompt architectures.
+  The raw_chat API lets you run existing prompts through DSPy's instrumentation to compare token usage and performance against modular implementations.
 permalink: /blog/raw-chat-api/
 ---
 
-DSPy.rb 0.12.0 introduces the `raw_chat` API, a powerful feature designed to help teams benchmark their existing monolithic prompts and facilitate gradual migration to DSPy's modular approach.
+DSPy.rb 0.12.0 introduces the `raw_chat` API for benchmarking existing prompts and migrating to DSPy's modular approach.
 
-## The Challenge
+## The Problem
 
-Many teams have existing systems built around large, monolithic prompts. While DSPy's modular approach offers significant benefits—type safety, composability, and automatic optimization—it's not always clear whether migrating will improve performance or reduce costs.
+Many teams have existing prompts they want to compare against DSPy modules. Without running both through the same instrumentation, you can't get accurate comparisons.
 
-The `raw_chat` API solves this by allowing you to:
+The `raw_chat` API lets you:
 - Run existing prompts through DSPy's instrumentation pipeline
 - Compare token usage between monolithic and modular approaches
 - Measure performance across different providers
@@ -72,7 +72,7 @@ end
 
 ### 3. Streaming Support
 
-Stream responses for real-time applications:
+Stream responses with a block:
 
 ```ruby
 lm.raw_chat(messages) do |chunk|
@@ -123,7 +123,7 @@ puts "Reduction: #{((1 - modular_tokens[:total_tokens].to_f / legacy_tokens[:tot
 
 ## Integration with Observability
 
-Since `raw_chat` uses the same instrumentation pipeline, it works seamlessly with all DSPy observability tools:
+`raw_chat` uses the same instrumentation pipeline as regular DSPy calls:
 
 ```ruby
 # Configure DataDog
@@ -140,7 +140,7 @@ predictor.forward(input: 'Hello')
 
 ## Migration Strategy
 
-The `raw_chat` API enables a phased migration approach:
+Use `raw_chat` for phased migration:
 
 ### Phase 1: Baseline
 ```ruby
@@ -172,29 +172,27 @@ end
 
 ## Implementation Details
 
-Under the hood, `raw_chat`:
+`raw_chat`:
 
-1. **Bypasses JSON parsing** - Returns raw string responses
+1. **Bypasses JSON parsing** - Returns raw strings
 2. **Skips retry strategies** - No structured output validation
 3. **Direct adapter calls** - Minimal overhead
 4. **Preserves instrumentation** - Full observability
 
-This design ensures fair comparisons while maintaining DSPy's monitoring capabilities.
+This gives you fair comparisons with full monitoring.
 
 ## Best Practices
 
-1. **Consistent test data** - Use identical inputs for fair comparison
-2. **Multiple runs** - Average results to account for variance
-3. **Quality metrics** - Don't optimize for tokens alone
-4. **Gradual migration** - Start with non-critical prompts
-5. **Monitor production** - Track real-world improvements
+1. **Use identical test data** for both approaches
+2. **Run multiple times** to account for variance
+3. **Check quality**, not just token count
+4. **Start small** with non-critical prompts
+5. **Track production metrics** after migration
 
-## Conclusion
+## Summary
 
-The `raw_chat` API bridges the gap between legacy prompt systems and modern DSPy applications. By providing accurate benchmarking capabilities with full instrumentation support, it enables teams to make informed decisions about when and how to adopt DSPy's modular approach.
-
-Whether you're evaluating DSPy for the first time or planning a large-scale migration, `raw_chat` provides the tools you need to measure, compare, and optimize your prompt architecture with confidence.
+The `raw_chat` API helps you compare existing prompts with DSPy modules using the same instrumentation. This lets you make informed decisions about migration based on actual data, not guesswork.
 
 ---
 
-*Ready to benchmark your prompts? Check out the [complete benchmarking guide](/docs/optimization/benchmarking-raw-prompts/) for detailed examples and best practices.*
+*See the [benchmarking guide](/docs/optimization/benchmarking-raw-prompts/) for detailed examples.*
