@@ -5,6 +5,40 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2025-07-25
+
+### Added
+- **Token Usage Type Safety with T::Struct** - Convert token usage data to typed structs for better reliability
+  - New `DSPy::LM::Usage` and `DSPy::LM::OpenAIUsage` structs for type-safe token usage
+  - `UsageFactory` handles conversion from various formats (hashes, API response objects)
+  - Automatic handling of OpenAI's nested details objects with proper type conversion
+  - Token tracking now works reliably with VCR cassettes
+
+### Fixed
+- **Token Tracking with VCR** (#48) - Fixed token usage events not being emitted during VCR playback
+  - Normalized usage data keys to symbols in both OpenAI and Anthropic adapters
+  - Enhanced TokenTracker to handle both symbol and string keys defensively
+  - Added comprehensive integration tests for token tracking with VCR
+
+### Changed
+- **BREAKING**: `Response#usage` now returns `DSPy::LM::Usage` struct instead of Hash
+  - Access token counts via `.input_tokens`, `.output_tokens`, `.total_tokens` instead of hash keys
+  - Use `.to_h` method on usage struct if you need a hash representation
+  - OpenAI responses return `DSPy::LM::OpenAIUsage` with additional `prompt_tokens_details` and `completion_tokens_details`
+
+### Migration Guide
+If you were directly accessing usage data:
+```ruby
+# Before (0.12.0)
+response.usage[:input_tokens]   # or response.usage['input_tokens']
+response.usage[:output_tokens]  # or response.usage['output_tokens']
+
+# After (0.13.0)
+response.usage.input_tokens
+response.usage.output_tokens
+response.usage.to_h  # if you need hash format
+```
+
 ## [0.12.0] - 2025-07-23
 
 ### Added

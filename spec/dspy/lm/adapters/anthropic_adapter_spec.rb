@@ -56,7 +56,8 @@ RSpec.describe DSPy::LM::AnthropicAdapter do
 
       expect(result).to be_a(DSPy::LM::Response)
       expect(result.content).to eq('Hello back!')
-      expect(result.usage).to eq({ 'total_tokens' => 30 })
+      expect(result.usage).to be_a(DSPy::LM::Usage)
+      expect(result.usage.total_tokens).to eq(30)
       expect(result.metadata[:provider]).to eq('anthropic')
       expect(result.metadata[:model]).to eq('claude-3-sonnet')
       expect(result.metadata[:response_id]).to eq('msg-123')

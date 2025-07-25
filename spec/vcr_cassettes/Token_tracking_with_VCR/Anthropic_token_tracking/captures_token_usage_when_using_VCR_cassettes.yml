@@ -1,0 +1,115 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-3-haiku-20240307","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"What is 3+3?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: Respond with ONLY valid
+        JSON. No markdown formatting, no code blocks, no explanations. Start your
+        response with ''{'' and end with ''}''."}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Answer simple questions"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - x64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - Linux
+      X-Stainless-Package-Version:
+      - 1.1.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.8
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1344'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 25 Jul 2025 00:00:33 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '100000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '100000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-07-25T00:00:33Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '20000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '20000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-07-25T00:00:33Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-07-25T00:00:33Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '120000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '120000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-07-25T00:00:33Z'
+      Request-Id:
+      - req_011CRSkg5mif9AQ65who8kfC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Via:
+      - 1.1 google
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 964760aefc3bb9c6-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"id":"msg_01HXnQ7eD4L9ALhKRu7WUy9V","type":"message","role":"assistant","model":"claude-3-haiku-20240307","content":[{"type":"text","text":"##
+        Output values\n```json\n{\n  \"answer\": \"6\"\n}\n```"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":342,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":23,"service_tier":"standard"}}'
+  recorded_at: Fri, 25 Jul 2025 00:00:34 GMT
+recorded_with: VCR 6.3.1

@@ -52,9 +52,12 @@ module DSPy
             raise AdapterError, "OpenAI refused to generate output: #{message.refusal}"
           end
 
+          # Convert usage data to typed struct
+          usage_struct = UsageFactory.create('openai', usage)
+          
           Response.new(
             content: content,
-            usage: usage.respond_to?(:to_h) ? usage.to_h : usage,
+            usage: usage_struct,
             metadata: {
               provider: 'openai',
               model: model,

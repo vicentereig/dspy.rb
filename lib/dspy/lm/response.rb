@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'usage'
+
 module DSPy
   class LM
     # Normalized response format for all LM providers

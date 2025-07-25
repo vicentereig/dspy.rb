@@ -60,7 +60,8 @@ RSpec.describe DSPy::LM::OpenAIAdapter do
 
       expect(result).to be_a(DSPy::LM::Response)
       expect(result.content).to eq('Hello back!')
-      expect(result.usage).to eq({ 'total_tokens' => 25 })
+      expect(result.usage).to be_a(DSPy::LM::OpenAIUsage)
+      expect(result.usage.total_tokens).to eq(25)
       expect(result.metadata[:provider]).to eq('openai')
       expect(result.metadata[:model]).to eq(model)
       expect(result.metadata[:response_id]).to eq('resp-123')

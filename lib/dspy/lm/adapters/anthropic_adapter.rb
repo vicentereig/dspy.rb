@@ -63,9 +63,12 @@ module DSPy
             content = response.content.first.text if response.content.is_a?(Array) && response.content.first
             usage = response.usage
 
+            # Convert usage data to typed struct
+            usage_struct = UsageFactory.create('anthropic', usage)
+            
             Response.new(
               content: content,
-              usage: usage.respond_to?(:to_h) ? usage.to_h : usage,
+              usage: usage_struct,
               metadata: {
                 provider: 'anthropic',
                 model: model,
