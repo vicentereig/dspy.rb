@@ -104,7 +104,7 @@ module DSPy
         sig { returns(T::Hash[Symbol, T.untyped]) }
         def convert_to_tool_schema
           # Get output fields from signature
-          output_schema = signature_class.output_schema
+          output_fields = signature_class.output_field_descriptors
           
           # Convert to Anthropic tool format
           {
@@ -112,18 +112,18 @@ module DSPy
             description: "Output the result in the required JSON format",
             input_schema: {
               type: "object",
-              properties: build_properties_from_schema(output_schema),
-              required: output_schema.keys.map(&:to_s)
+              properties: build_properties_from_fields(output_fields),
+              required: output_fields.keys.map(&:to_s)
             }
           }
         end
 
-        sig { params(schema: T::Hash[Symbol, T.untyped]).returns(T::Hash[String, T.untyped]) }
-        def build_properties_from_schema(schema)
+        sig { params(fields: T::Hash[Symbol, T.untyped]).returns(T::Hash[String, T.untyped]) }
+        def build_properties_from_fields(fields)
           properties = {}
           
-          schema.each do |field_name, field_type|
-            properties[field_name.to_s] = convert_type_to_json_schema(field_type)
+          fields.each do |field_name, descriptor|
+            properties[field_name.to_s] = convert_type_to_json_schema(descriptor.type)
           end
           
           properties
@@ -131,6 +131,18 @@ module DSPy
 
         sig { params(type: T.untyped).returns(T::Hash[String, T.untyped]) }
         def convert_type_to_json_schema(type)
+          # Handle raw Ruby class types - use === for class comparison
+          if type == String
+            return { type: "string" }
+          elsif type == Integer
+            return { type: "integer" }
+          elsif type == Float
+            return { type: "number" }
+          elsif type == TrueClass || type == FalseClass
+            return { type: "boolean" }
+          end
+          
+          # Handle Sorbet types
           case type
           when T::Types::Simple
             case type.raw_type.to_s

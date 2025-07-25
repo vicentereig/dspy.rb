@@ -37,7 +37,7 @@ RSpec.describe DSPy::LM::AnthropicAdapter do
       double('Anthropic::Response',
              id: 'msg-123',
              role: 'assistant',
-             content: [double('Content', text: 'Hello back!')],
+             content: [double('Content', type: 'text', text: 'Hello back!')],
              usage: double('Usage', 
                           total_tokens: 30,
                           to_h: { 'total_tokens' => 30 }))

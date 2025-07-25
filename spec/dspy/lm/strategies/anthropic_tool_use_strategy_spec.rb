@@ -5,7 +5,32 @@ require 'dspy/lm/adapters/anthropic_adapter'
 require 'dspy/lm/strategies/anthropic_tool_use_strategy'
 
 RSpec.describe DSPy::LM::Strategies::AnthropicToolUseStrategy do
-  let(:adapter) { instance_double(DSPy::LM::AnthropicAdapter, model: 'claude-3-opus-20240229') }
+  # Create test adapter classes for mocking
+  class TestAnthropicAdapter < DSPy::LM::AnthropicAdapter
+    attr_reader :model
+    
+    def initialize(model:, api_key: "test")
+      super(model: model, api_key: api_key)
+    end
+    
+    def chat(messages:, signature: nil, &block)
+      # Stub implementation
+    end
+  end
+  
+  class TestOpenAIAdapter < DSPy::LM::Adapter
+    attr_reader :model
+    
+    def initialize(model:, api_key: "test")
+      super(model: model, api_key: api_key)
+    end
+    
+    def chat(messages:, signature: nil, &block)
+      # Stub implementation
+    end
+  end
+  
+  let(:adapter) { TestAnthropicAdapter.new(model: 'claude-3-opus-20240229') }
   
   # Define a test signature
   class TestToolSignature < DSPy::Signature
@@ -33,7 +58,7 @@ RSpec.describe DSPy::LM::Strategies::AnthropicToolUseStrategy do
     end
     
     context 'with non-Anthropic adapter' do
-      let(:adapter) { instance_double(DSPy::LM::OpenAIAdapter, model: 'gpt-4') }
+      let(:adapter) { TestOpenAIAdapter.new(model: 'gpt-4') }
       
       it 'returns false' do
         expect(strategy.available?).to be false
@@ -41,7 +66,7 @@ RSpec.describe DSPy::LM::Strategies::AnthropicToolUseStrategy do
     end
     
     context 'with old Claude model' do
-      let(:adapter) { instance_double(DSPy::LM::AnthropicAdapter, model: 'claude-2.1') }
+      let(:adapter) { TestAnthropicAdapter.new(model: 'claude-2.1') }
       
       it 'returns false' do
         expect(strategy.available?).to be false
