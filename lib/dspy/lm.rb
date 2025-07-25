@@ -118,7 +118,7 @@ module DSPy
       end
       
       # Let strategy handle JSON extraction if needed
-      if signature_class && response.content
+      if signature_class
         extracted_json = strategy.extract_json(response)
         if extracted_json && extracted_json != response.content
           # Create a new response with extracted JSON

@@ -48,24 +48,26 @@ module DSPy
         sig { override.params(response: DSPy::LM::Response).returns(T.nilable(String)) }
         def extract_json(response)
           # Extract JSON from tool use response
-          content = response.content
-          return nil if content.nil? || content.empty?
-          
-          # Parse the response to find tool use
           begin
-            # Anthropic returns tool use in a specific format
+            # Check for tool calls in metadata first (this is the primary method)
             if response.metadata && response.metadata[:tool_calls]
               tool_calls = response.metadata[:tool_calls]
+              DSPy.logger.debug("AnthropicToolUseStrategy: Found tool_calls: #{tool_calls.inspect}")
               if tool_calls.is_a?(Array) && !tool_calls.empty?
                 first_call = tool_calls.first
                 if first_call[:name] == "json_output" && first_call[:input]
-                  return JSON.generate(first_call[:input])
+                  json_result = JSON.generate(first_call[:input])
+                  DSPy.logger.debug("AnthropicToolUseStrategy: Extracted JSON: #{json_result}")
+                  return json_result
                 end
               end
+            else
+              DSPy.logger.debug("AnthropicToolUseStrategy: No tool_calls in metadata: #{response.metadata.inspect}")
             end
             
             # Fallback: try to extract from content if it contains tool use blocks
-            if content.include?("<tool_use>")
+            content = response.content
+            if content && !content.empty? && content.include?("<tool_use>")
               tool_content = content[/<tool_use>.*?<\/tool_use>/m]
               if tool_content
                 json_match = tool_content[/<input>(.*?)<\/input>/m, 1]
