@@ -7,15 +7,13 @@ author: "Vicente Reig"
 draft: true
 ---
 
-# Under the Hood: How DSPy.rb Extracts JSON from Every LLM
+DSPy.rb uses 4 different strategies to extract JSON from LLMs. Here's how each one works.
 
-DSPy.rb uses 4 different strategies to extract JSON from LLMs. Here's exactly how each one works.
+When you call `predict.forward()`, DSPy.rb picks the best strategy for your LLM provider. Each strategy is designed to get reliable JSON output from different models.
 
-When you call `predict.forward()`, DSPy.rb doesn't just send your prompt to the LLM and hope for the best. It selects from a sophisticated set of strategies, each optimized for different providers and models. This technical deep-dive reveals the implementation details that make JSON extraction reliable.
+## How Strategy Selection Works
 
-## The Strategy Architecture
-
-DSPy.rb uses a priority-based system to select the best strategy for your LLM:
+DSPy.rb ranks strategies by priority and picks the best one available:
 
 ```ruby
 # From lib/dspy/lm/strategy_selector.rb
@@ -27,7 +25,7 @@ STRATEGIES = [
 ].freeze
 ```
 
-The selector examines your adapter and model, then picks the highest-priority strategy that's available:
+The selector checks your LLM provider and model, then uses the highest-priority strategy that works:
 
 ```ruby
 def select
@@ -47,7 +45,7 @@ end
 
 ## OpenAI: Native Structured Outputs (Priority 100)
 
-For OpenAI models that support structured outputs (GPT-4o, GPT-4o-mini), DSPy.rb uses the most reliable approach possible:
+For OpenAI models that support structured outputs (GPT-4o, GPT-4o-mini), DSPy.rb uses OpenAI's built-in JSON feature:
 
 ```ruby
 # What DSPy.rb sends to OpenAI
@@ -70,7 +68,7 @@ request_params[:response_format] = {
 }
 ```
 
-This approach guarantees valid JSON - OpenAI's API literally cannot return invalid JSON when using structured outputs. The schema converter handles complex Ruby types:
+This guarantees valid JSON - OpenAI's API won't return invalid JSON when using structured outputs. The schema converter handles complex Ruby types:
 
 ```ruby
 # Converts T::Array[String] to JSON Schema
@@ -81,11 +79,11 @@ when T::Types::TypedArray
   }
 ```
 
-## Anthropic: Two Complementary Approaches
+## Anthropic: Two Ways to Get JSON
 
 ### Tool Use Strategy (Priority 95)
 
-DSPy.rb now leverages Anthropic's tool calling feature to force JSON output:
+DSPy.rb uses Anthropic's tool calling feature to get structured JSON:
 
 ```ruby
 # From anthropic_tool_use_strategy.rb
@@ -123,7 +121,7 @@ end
 
 ### 4-Pattern Extraction Strategy (Priority 90)
 
-When tool use isn't available or appropriate, DSPy.rb uses a battle-tested extraction approach that handles Claude's various response formats:
+When tool use isn't available, DSPy.rb uses 4 patterns to extract JSON from Claude's responses:
 
 ```ruby
 # From anthropic_adapter.rb
@@ -154,7 +152,7 @@ def extract_json_from_response(content)
 end
 ```
 
-The adapter also enhances prompts specifically for Claude:
+The adapter also adds special instructions for Claude:
 
 ```ruby
 # Special instruction added to Claude prompts
@@ -163,9 +161,9 @@ json_instruction = "\n\nIMPORTANT: Respond with ONLY valid JSON. " \
                   "Start your response with '{' and end with '}'."
 ```
 
-## Enhanced Prompting: The Universal Fallback (Priority 50)
+## Enhanced Prompting: Works with Any Model (Priority 50)
 
-For models without native JSON support, DSPy.rb enhances prompts with explicit instructions:
+For models without native JSON support, DSPy.rb adds clear instructions to the prompt:
 
 ```ruby
 def enhance_prompt_with_json_instructions(prompt, schema)
@@ -206,9 +204,9 @@ return content if valid_json?(content)
 json_match = content.match(/\{[\s\S]*\}|\[[\s\S]*\]/)
 ```
 
-## Real Examples: What Gets Sent to Each Provider
+## Real Examples: What Each Provider Receives
 
-Let's see what actually happens when you use the same DSPy signature with different providers:
+Here's what happens when you use the same DSPy signature with different providers:
 
 ```ruby
 class ProductExtractor < DSPy::Signature
@@ -260,11 +258,11 @@ end
 }
 ```
 
-## Implementation Details
+## Behind the Scenes
 
-### Retry Mechanism
+### Retry Logic
 
-DSPy.rb doesn't give up after one failed attempt:
+DSPy.rb tries multiple times if JSON extraction fails:
 
 ```ruby
 # From retry_handler.rb
@@ -293,7 +291,7 @@ end
 
 ### Performance Optimizations
 
-Schema conversion and capability detection are cached to avoid redundant work:
+DSPy.rb caches schemas and capability checks to speed things up:
 
 ```ruby
 # Schema caching (1 hour TTL)
@@ -343,16 +341,16 @@ strategy = strategy_selector.select
 puts "Using strategy: #{strategy.name} (priority: #{strategy.priority})"
 ```
 
-## Conclusion
+## Key Takeaways
 
-DSPy.rb's multi-strategy approach ensures reliable JSON extraction across all major LLM providers. By understanding these internals, you can:
+DSPy.rb's multi-strategy approach makes JSON extraction work reliably across all major LLMs. Understanding these details helps you:
 
-- Choose the right model for your JSON needs
-- Debug extraction issues more effectively
-- Configure strategies for your specific use case
-- Contribute improvements to the extraction patterns
+- Pick the right model for JSON tasks
+- Debug extraction problems faster
+- Configure strategies for your needs
+- Contribute improvements to the project
 
-The beauty is that all this complexity is hidden behind a simple API. You just define your signature and call `forward()` - DSPy.rb handles the rest.
+The best part? You don't need to worry about any of this complexity. Just define your signature and call `forward()` - DSPy.rb does the rest.
 
 ---
 
