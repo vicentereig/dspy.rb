@@ -62,12 +62,12 @@ RSpec.describe DSPy::LM::StrategySelector do
         DSPy::LM::AnthropicAdapter.new(model: "claude-3", api_key: "test-key")
       end
       
-      it 'selects Anthropic extraction strategy' do
+      it 'selects Anthropic tool use strategy for Claude 3' do
         selector = described_class.new(anthropic_adapter, signature_class)
         strategy = selector.select
         
-        expect(strategy).to be_a(DSPy::LM::Strategies::AnthropicExtractionStrategy)
-        expect(strategy.name).to eq('anthropic_extraction')
+        expect(strategy).to be_a(DSPy::LM::Strategies::AnthropicToolUseStrategy)
+        expect(strategy.name).to eq('anthropic_tool_use')
       end
     end
     

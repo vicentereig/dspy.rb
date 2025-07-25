@@ -85,10 +85,10 @@ RSpec.describe "Strategy Selection Integration" do
       allow(DSPy.logger).to receive(:debug).and_call_original
     end
     
-    it "selects Anthropic extraction strategy", vcr: { cassette_name: "strategy_selection_anthropic" } do
+    it "selects Anthropic tool use strategy", vcr: { cassette_name: "strategy_selection_anthropic" } do
       result = module_instance.forward("What is 2+2?")
       
-      expect(DSPy.logger).to have_received(:debug).with(/Selected JSON extraction strategy: anthropic_extraction/)
+      expect(DSPy.logger).to have_received(:debug).with(/Selected JSON extraction strategy: anthropic_tool_use/)
       expect(result.answer).to be_a(String)
       expect(result.confidence).to be_a(Float)
     end
