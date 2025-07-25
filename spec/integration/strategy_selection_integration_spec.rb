@@ -116,16 +116,16 @@ RSpec.describe "Strategy Selection Integration" do
     end
     
     it "respects manual strategy selection", vcr: { cassette_name: "strategy_selection_manual_override" } do
-      result = module_instance.forward("What is 2+2?")
-      
-      # Just verify the result works - the debug logging might be happening at a different level
-      expect(result.answer).to be_a(String)
-      expect(result.confidence).to be_a(Float)
-      
       # Verify the strategy was overridden by checking the actual strategy used
       strategy_selector = DSPy::LM::StrategySelector.new(lm.adapter, StrategyTestSignature)
       strategy = strategy_selector.select
       expect(strategy.name).to eq('enhanced_prompting')
+      expect(strategy).to be_a(DSPy::LM::Strategies::EnhancedPromptingStrategy)
+      
+      # Verify the module works correctly with the overridden strategy
+      result = module_instance.forward("What is 2+2?")
+      expect(result.answer).to be_a(String)
+      expect(result.confidence).to be_a(Float)
     end
   end
 end

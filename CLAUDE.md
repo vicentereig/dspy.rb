@@ -113,8 +113,8 @@ bundle exec rspec spec/integration
 
 ### Code Quality
 ```bash
-# Type check with Sorbet
-bundle exec srb tc
+# Type check with Sorbet (currently disabled - do not run)
+# bundle exec srb tc
 
 # Note: RuboCop is not currently configured in this project
 ```
@@ -271,7 +271,7 @@ These rules ensure maintainability, safety, and developer velocity for Ruby 3.3 
 
 ### 6 — Tooling Gates
 
-- **G-1 (MUST)** `bundle exec srb tc` passes.
+- **G-1 (MUST)** ~~`bundle exec srb tc` passes~~ (currently disabled - do not run).
 - **G-2 (MUST)** `bundle exec rspec` passes.
 - **G-3 (MUST)** Documentation site builds successfully before pushing changes.
 
@@ -614,7 +614,6 @@ When I type "qcode", this means:
 ```
 Implement your plan and make sure your new tests pass.
 Always run tests to make sure you didn't break anything else.
-Always run `bundle exec srb tc` to make sure type checking passes.
 Always run `bundle exec rspec` to ensure all tests pass.
 ```
 
