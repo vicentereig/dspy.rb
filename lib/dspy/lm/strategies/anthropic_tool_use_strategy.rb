@@ -52,17 +52,13 @@ module DSPy
             # Check for tool calls in metadata first (this is the primary method)
             if response.metadata && response.metadata[:tool_calls]
               tool_calls = response.metadata[:tool_calls]
-              DSPy.logger.debug("AnthropicToolUseStrategy: Found tool_calls: #{tool_calls.inspect}")
               if tool_calls.is_a?(Array) && !tool_calls.empty?
                 first_call = tool_calls.first
                 if first_call[:name] == "json_output" && first_call[:input]
                   json_result = JSON.generate(first_call[:input])
-                  DSPy.logger.debug("AnthropicToolUseStrategy: Extracted JSON: #{json_result}")
                   return json_result
                 end
               end
-            else
-              DSPy.logger.debug("AnthropicToolUseStrategy: No tool_calls in metadata: #{response.metadata.inspect}")
             end
             
             # Fallback: try to extract from content if it contains tool use blocks

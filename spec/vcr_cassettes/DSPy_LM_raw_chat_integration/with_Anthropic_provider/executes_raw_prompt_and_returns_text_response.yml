@@ -46,7 +46,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Thu, 24 Jul 2025 00:03:49 GMT
+      - Fri, 25 Jul 2025 15:50:24 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -58,27 +58,27 @@ http_interactions:
       Anthropic-Ratelimit-Input-Tokens-Remaining:
       - '80000'
       Anthropic-Ratelimit-Input-Tokens-Reset:
-      - '2025-07-24T00:03:49Z'
+      - '2025-07-25T15:50:24Z'
       Anthropic-Ratelimit-Output-Tokens-Limit:
       - '16000'
       Anthropic-Ratelimit-Output-Tokens-Remaining:
       - '16000'
       Anthropic-Ratelimit-Output-Tokens-Reset:
-      - '2025-07-24T00:03:49Z'
+      - '2025-07-25T15:50:24Z'
       Anthropic-Ratelimit-Requests-Limit:
       - '1000'
       Anthropic-Ratelimit-Requests-Remaining:
       - '999'
       Anthropic-Ratelimit-Requests-Reset:
-      - '2025-07-24T00:03:48Z'
+      - '2025-07-25T15:50:23Z'
       Anthropic-Ratelimit-Tokens-Limit:
       - '96000'
       Anthropic-Ratelimit-Tokens-Remaining:
       - '96000'
       Anthropic-Ratelimit-Tokens-Reset:
-      - '2025-07-24T00:03:49Z'
+      - '2025-07-25T15:50:24Z'
       Request-Id:
-      - req_011CRQs7ZSWCV4orQpFhy4kp
+      - req_011CRU174p19hHCcE2qUF1ET
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
@@ -92,9 +92,9 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 963f281358440cac-EWR
+      - 964cd00b08eb431f-EWR
     body:
       encoding: ASCII-8BIT
-      string: '{"id":"msg_01ViseHeAEP4zcMEHitgtduV","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"6"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":22,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":5,"service_tier":"standard"}}'
-  recorded_at: Thu, 24 Jul 2025 00:03:49 GMT
+      string: '{"id":"msg_01Cs191STYX3RCJEFiLhSFMr","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"6"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":22,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":5,"service_tier":"standard"}}'
+  recorded_at: Fri, 25 Jul 2025 15:50:24 GMT
 recorded_with: VCR 6.3.1

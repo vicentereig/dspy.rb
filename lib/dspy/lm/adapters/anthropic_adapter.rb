@@ -71,7 +71,7 @@ module DSPy
             
             if response.content.is_a?(Array)
               response.content.each do |content_block|
-                case content_block.type
+                case content_block.type.to_s
                 when "text"
                   content += content_block.text
                 when "tool_use"
