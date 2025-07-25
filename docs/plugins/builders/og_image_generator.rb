@@ -44,9 +44,9 @@ class Builders::OgImageGenerator < SiteBuilder
     private
 
     def generate_all_images(articles, output_dir)
-      Playwright.create(playwright_cli_executable_path: `which playwright`.strip) do |playwright|
+      Playwright.create(playwright_cli_executable_path: './node_modules/.bin/playwright') do |playwright|
         chromium = playwright.chromium
-        browser = chromium.launch(headless: true)
+        browser = chromium.launch(headless: true, timeout: 30000)
         
         begin
           # Create a single page to reuse for all images
@@ -80,7 +80,7 @@ class Builders::OgImageGenerator < SiteBuilder
       html_content = generate_og_html(article)
       
       # Load the HTML content
-      page.set_content(html_content)
+      page.set_content(html_content, timeout: 30000)
       
       # Wait for any fonts to load
       sleep(0.2)
@@ -325,9 +325,9 @@ class Builders::OgImageGenerator < SiteBuilder
     end
 
     def generate_default_og_image(output_dir)
-      Playwright.create(playwright_cli_executable_path: `which playwright`.strip) do |playwright|
+      Playwright.create(playwright_cli_executable_path: './node_modules/.bin/playwright') do |playwright|
         chromium = playwright.chromium
-        browser = chromium.launch(headless: true)
+        browser = chromium.launch(headless: true, timeout: 30000)
         
         begin
           page = browser.new_page
@@ -409,7 +409,7 @@ class Builders::OgImageGenerator < SiteBuilder
             </html>
           HTML
           
-          page.set_content(html_content)
+          page.set_content(html_content, timeout: 30000)
           sleep(0.2)
           page.screenshot(path: File.join(output_dir, "default.png"))
           

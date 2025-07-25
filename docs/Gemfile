@@ -13,4 +13,4 @@ group :development, :test do
 end
 
 gem "bridgetown-seo-tag", "~> 6.0", group: :bridgetown_plugins
-gem "playwright-ruby-client", "~> 1.40", group: :bridgetown_plugins
+gem "playwright-ruby-client", "~> 1.54", group: :bridgetown_plugins
