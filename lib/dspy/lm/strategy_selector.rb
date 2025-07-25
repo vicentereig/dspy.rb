@@ -3,6 +3,7 @@
 require "sorbet-runtime"
 require_relative "strategies/base_strategy"
 require_relative "strategies/openai_structured_output_strategy"
+require_relative "strategies/anthropic_tool_use_strategy"
 require_relative "strategies/anthropic_extraction_strategy"
 require_relative "strategies/enhanced_prompting_strategy"
 
@@ -15,6 +16,7 @@ module DSPy
       # Available strategies in order of registration
       STRATEGIES = [
         Strategies::OpenAIStructuredOutputStrategy,
+        Strategies::AnthropicToolUseStrategy,
         Strategies::AnthropicExtractionStrategy,
         Strategies::EnhancedPromptingStrategy
       ].freeze
@@ -99,7 +101,11 @@ module DSPy
         openai_strategy = find_strategy_by_name("openai_structured_output")
         return openai_strategy if openai_strategy&.available?
         
-        # Try Anthropic extraction
+        # Try Anthropic tool use first
+        anthropic_tool_strategy = find_strategy_by_name("anthropic_tool_use")
+        return anthropic_tool_strategy if anthropic_tool_strategy&.available?
+        
+        # Fall back to Anthropic extraction
         anthropic_strategy = find_strategy_by_name("anthropic_extraction")
         return anthropic_strategy if anthropic_strategy&.available?
         

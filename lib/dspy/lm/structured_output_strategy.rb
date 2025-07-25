@@ -8,6 +8,7 @@ module DSPy
     class StructuredOutputStrategy < T::Enum
       enums do
         OpenAIStructuredOutput = new("openai_structured_output")
+        AnthropicToolUse = new("anthropic_tool_use")
         AnthropicExtraction = new("anthropic_extraction")
         EnhancedPrompting = new("enhanced_prompting")
       end

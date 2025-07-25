@@ -15,15 +15,20 @@ module DSPy
         # Anthropic requires system message to be separate from messages
         system_message, user_messages = extract_system_message(normalize_messages(messages))
         
-        # Apply JSON prefilling if needed for better Claude JSON compliance
-        user_messages = prepare_messages_for_json(user_messages, system_message)
+        # Check if this is a tool use request
+        has_tools = extra_params.key?(:tools) && !extra_params[:tools].empty?
+        
+        # Apply JSON prefilling if needed for better Claude JSON compliance (but not for tool use)
+        unless has_tools
+          user_messages = prepare_messages_for_json(user_messages, system_message)
+        end
         
         request_params = {
           model: model,
           messages: user_messages,
           max_tokens: 4096, # Required for Anthropic
           temperature: 0.0 # DSPy default for deterministic responses
-        }
+        }.merge(extra_params)
 
         # Add system message if present
         request_params[:system] = system_message if system_message
@@ -60,21 +65,44 @@ module DSPy
               raise AdapterError, "Anthropic API error: #{response.error}"
             end
 
-            content = response.content.first.text if response.content.is_a?(Array) && response.content.first
+            # Handle both text content and tool use
+            content = ""
+            tool_calls = []
+            
+            if response.content.is_a?(Array)
+              response.content.each do |content_block|
+                case content_block.type
+                when "text"
+                  content += content_block.text
+                when "tool_use"
+                  tool_calls << {
+                    id: content_block.id,
+                    name: content_block.name,
+                    input: content_block.input
+                  }
+                end
+              end
+            end
+            
             usage = response.usage
 
             # Convert usage data to typed struct
             usage_struct = UsageFactory.create('anthropic', usage)
             
+            metadata = {
+              provider: 'anthropic',
+              model: model,
+              response_id: response.id,
+              role: response.role
+            }
+            
+            # Add tool calls to metadata if present
+            metadata[:tool_calls] = tool_calls unless tool_calls.empty?
+            
             Response.new(
               content: content,
               usage: usage_struct,
-              metadata: {
-                provider: 'anthropic',
-                model: model,
-                response_id: response.id,
-                role: response.role
-              }
+              metadata: metadata
             )
           end
         rescue => e
