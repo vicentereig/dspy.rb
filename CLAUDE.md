@@ -854,3 +854,56 @@ end
 - Use concrete examples (coffee shop agent demo)
 - Show real code patterns users can adopt
 - Keep conversational tone without being grandiloquent
+
+### Token Usage Type Safety with T::Struct (July 2025)
+
+**Key Learning**: Converting API response data to T::Struct improves type safety and prevents VCR serialization issues.
+
+**Problem Solved**: 
+- VCR serializes response objects with string keys while live API calls had symbol keys
+- Token tracking events weren't being emitted during VCR playback (#48)
+- Hash-based usage data was error-prone and inconsistent
+
+**Solution Implemented**:
+```ruby
+# ✅ CORRECT: Type-safe usage structs
+class Usage < T::Struct
+  const :input_tokens, Integer
+  const :output_tokens, Integer
+  const :total_tokens, Integer
+end
+
+# Factory handles various formats
+usage = UsageFactory.create('openai', usage_data)
+```
+
+**Key Insights**:
+- Use UsageFactory to normalize various data formats (hash with string keys, symbol keys, API objects)
+- OpenAI returns nested objects that need `.to_h` conversion
+- T::Struct cannot be subclassed - use separate structs instead of inheritance
+- Factory pattern with T.untyped signature supports test doubles
+
+### VCR Integration Best Practices (July 2025)
+
+**Key Learning**: Data structures used in VCR recordings need special handling for consistency.
+
+**Best Practices**:
+- Normalize all hash keys to symbols before creating response objects
+- Use typed structs instead of hashes for data that gets serialized
+- Write integration tests that verify features work with VCR playback
+- Re-record cassettes periodically to catch provider API changes
+
+### Version Management and CI (July 2025)
+
+**Key Learning**: Version bumps require Gemfile.lock updates to keep CI green.
+
+**Process**:
+1. Update version in `lib/dspy/version.rb`
+2. Run `bundle install` to update Gemfile.lock
+3. Commit both files together
+4. Push before creating GitHub release
+
+**CI Debugging**:
+- Check GitHub Actions logs for specific failure reasons
+- Gemfile.lock mismatches are common after version bumps
+- Use direct GitHub Actions URLs to investigate failures
