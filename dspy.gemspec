@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Vicente Reig Rincón de Arellano"]
   spec.email = ["hey@vicente.services"]
 
-  spec.summary = "Ruby port of DSPy 2.6"
-  spec.description = "A Ruby implementation of DSPy, a framework for programming with large language models"
+  spec.summary = "The Ruby framework for programming—rather than prompting—language models."
+  spec.description = "The Ruby framework for programming with large language models."
   spec.homepage = "https://github.com/vicentereig/dspy.rb"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
