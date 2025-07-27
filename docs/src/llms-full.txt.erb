@@ -129,6 +129,15 @@ Signatures define the interface between your application and language models:
 class EmailClassifier < DSPy::Signature
   description "Classify customer support emails by category and priority"
   
+  class Priority < T::Enum
+    enums do
+      Low = new('low')
+      Medium = new('medium')
+      High = new('high')
+      Urgent = new('urgent')
+    end
+  end
+  
   input do
     const :email_content, String
     const :sender, String
@@ -136,7 +145,7 @@ class EmailClassifier < DSPy::Signature
   
   output do
     const :category, String
-    const :priority, T::Enum
+    const :priority, Priority
     const :confidence, Float
   end
 end

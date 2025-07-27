@@ -26,6 +26,15 @@ Define interfaces between your app and LLMs using Ruby types:
 class EmailClassifier < DSPy::Signature
   description "Classify customer support emails by category and priority"
   
+  class Priority < T::Enum
+    enums do
+      Low = new('low')
+      Medium = new('medium')
+      High = new('high')
+      Urgent = new('urgent')
+    end
+  end
+  
   input do
     const :email_content, String
     const :sender, String
@@ -33,7 +42,7 @@ class EmailClassifier < DSPy::Signature
   
   output do
     const :category, String
-    const :priority, T::Enum  # Type-safe enums
+    const :priority, Priority  # Type-safe enum with defined values
     const :confidence, Float
   end
 end
