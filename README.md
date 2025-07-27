@@ -138,6 +138,12 @@ puts result.confidence   # => 0.85
 
 📖 **[Complete Documentation Website](https://vicentereig.github.io/dspy.rb/)**
 
+### LLM-Friendly Documentation
+
+For LLMs and AI assistants working with DSPy.rb:
+- **[llms.txt](https://vicentereig.github.io/dspy.rb/llms.txt)** - Concise reference optimized for LLMs
+- **[llms-full.txt](https://vicentereig.github.io/dspy.rb/llms-full.txt)** - Comprehensive API documentation
+
 ### Getting Started
 - **[Installation & Setup](docs/src/getting-started/installation.md)** - Detailed installation and configuration
 - **[Quick Start Guide](docs/src/getting-started/quick-start.md)** - Your first DSPy programs
