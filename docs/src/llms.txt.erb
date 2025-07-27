@@ -1,0 +1,144 @@
+---
+permalink: /llms.txt
+layout: none
+---
+# DSPy.rb
+
+> Build LLM apps like you build software. Type-safe, modular, testable.
+
+DSPy.rb brings software engineering best practices to LLM development. Instead of tweaking prompts, you define what you want with Ruby types and let DSPy handle the rest.
+
+## Overview
+
+DSPy.rb is a Ruby framework for building language model applications with programmatic prompts. It provides:
+
+- **Type-safe signatures** - Define inputs/outputs with Sorbet types
+- **Modular components** - Compose and reuse LLM logic
+- **Automatic optimization** - Use data to improve prompts, not guesswork
+- **Production-ready** - Built-in observability, testing, and error handling
+
+## Core Concepts
+
+### 1. Signatures
+Define interfaces between your app and LLMs using Ruby types:
+
+```ruby
+class EmailClassifier < DSPy::Signature
+  description "Classify customer support emails by category and priority"
+  
+  input do
+    const :email_content, String
+    const :sender, String
+  end
+  
+  output do
+    const :category, String
+    const :priority, T::Enum  # Type-safe enums
+    const :confidence, Float
+  end
+end
+```
+
+### 2. Modules
+Build complex workflows from simple building blocks:
+
+- **Predict** - Basic LLM calls with signatures
+- **ChainOfThought** - Step-by-step reasoning
+- **ProgramOfThought** - Code generation and execution
+- **ReAct** - Tool-using agents
+- **CodeAct** - Dynamic code generation agents
+
+### 3. Optimization
+Improve accuracy with real data:
+
+- **SimpleOptimizer** - Basic prompt tuning
+- **MIPROv2** - Advanced optimization with bootstrap sampling
+- **Evaluation** - Measure and track performance
+
+## Quick Start
+
+```ruby
+# Install
+gem 'dspy', github: 'vicentereig/dspy.rb'
+
+# Configure
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+end
+
+# Define a task
+class SentimentAnalysis < DSPy::Signature
+  description "Analyze sentiment of text"
+  
+  input do
+    const :text, String
+  end
+  
+  output do
+    const :sentiment, String  # positive, negative, neutral
+    const :score, Float       # 0.0 to 1.0
+  end
+end
+
+# Use it
+analyzer = DSPy::Predict.new(SentimentAnalysis)
+result = analyzer.call(text: "This product is amazing!")
+puts result.sentiment  # => "positive"
+puts result.score      # => 0.92
+```
+
+## Main Features
+
+### Type Safety
+- Sorbet integration for compile-time checks
+- Automatic JSON schema generation
+- Enum types for controlled outputs
+- Struct types for complex data
+
+### Composability
+- Chain modules together
+- Share signatures across modules
+- Swap predictors without changing logic
+- Build reusable components
+
+### Observability
+- Automatic instrumentation
+- Token usage tracking
+- Performance monitoring
+- Integration with APM tools
+
+### Testing
+- RSpec integration
+- VCR for recording LLM interactions
+- Mock responses for unit tests
+- Evaluation frameworks
+
+## Documentation Structure
+
+- **Getting Started** - Installation, quick start, first program
+- **Core Concepts** - Signatures, modules, predictors, examples
+- **Advanced** - Complex types, memory systems, agents, RAG
+- **Optimization** - Prompt tuning, evaluation, benchmarking
+- **Production** - Observability, storage, troubleshooting
+- **Blog** - Tutorials and deep dives
+
+## Key URLs
+
+- Homepage: https://vicentereig.github.io/dspy.rb/
+- GitHub: https://github.com/vicentereig/dspy.rb
+- Documentation: https://vicentereig.github.io/dspy.rb/getting-started/
+- API Reference: https://vicentereig.github.io/dspy.rb/core-concepts/
+
+## For LLMs
+
+When helping users with DSPy.rb:
+
+1. **Focus on signatures** - They define the contract with LLMs
+2. **Use proper types** - T::Enum for categories, T::Struct for complex data
+3. **Compose modules** - Chain predictors for complex workflows
+4. **Test thoroughly** - Use RSpec and VCR for reliable tests
+5. **Monitor production** - Use built-in instrumentation
+
+## Version
+
+Current: <%= site.config.dspy_version %>
