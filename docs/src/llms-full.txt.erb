@@ -1,0 +1,1361 @@
+---
+permalink: /llms-full.txt
+layout: none
+---
+# DSPy.rb - Comprehensive Reference
+
+> Build LLM apps like you build software. Type-safe, modular, testable.
+
+DSPy.rb brings software engineering best practices to LLM development. Instead of tweaking prompts, you define what you want with Ruby types and let DSPy handle the rest.
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Installation & Setup](#installation--setup)
+3. [Core Concepts](#core-concepts)
+4. [Signatures](#signatures)
+5. [Modules](#modules)
+6. [Predictors](#predictors)
+7. [Complex Types](#complex-types)
+8. [Agent Systems](#agent-systems)
+9. [Memory Systems](#memory-systems)
+10. [Toolsets](#toolsets)
+11. [Optimization](#optimization)
+12. [Production Features](#production-features)
+13. [Testing Strategies](#testing-strategies)
+14. [API Reference](#api-reference)
+15. [Integration Guides](#integration-guides)
+16. [Examples](#examples)
+
+## Overview
+
+DSPy.rb is a Ruby framework for building language model applications with programmatic prompts. It provides:
+
+- **Type-safe signatures** - Define inputs/outputs with Sorbet types
+- **Modular components** - Compose and reuse LLM logic  
+- **Automatic optimization** - Use data to improve prompts, not guesswork
+- **Production-ready** - Built-in observability, testing, and error handling
+
+### Key Features
+
+- **Provider Support**: OpenAI, Anthropic (more coming)
+- **Type Safety**: Sorbet integration throughout
+- **Automatic JSON Extraction**: Provider-optimized strategies
+- **Composable Modules**: Chain, compose, and reuse
+- **Agent Systems**: ReAct, CodeAct, and custom agents
+- **Memory & State**: Persistent memory for stateful applications
+- **Observability**: APM integration, token tracking, performance monitoring
+
+## Installation & Setup
+
+### Requirements
+
+- Ruby 3.3 or higher
+- Bundler
+
+### Installation
+
+Add to your Gemfile:
+
+```ruby
+gem 'dspy', github: 'vicentereig/dspy.rb'
+```
+
+Then run:
+
+```bash
+bundle install
+```
+
+### Basic Configuration
+
+```ruby
+require 'dspy'
+
+# Configure with OpenAI
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+end
+
+# Or configure with Anthropic
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+end
+```
+
+### Environment Variables
+
+```bash
+# LLM API Keys
+export OPENAI_API_KEY=sk-your-key-here
+export ANTHROPIC_API_KEY=sk-ant-your-key-here
+
+# Optional: Observability
+export OTEL_SERVICE_NAME=my-dspy-app
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+export LANGFUSE_SECRET_KEY=sk_your_key
+export LANGFUSE_PUBLIC_KEY=pk_your_key
+export NEW_RELIC_LICENSE_KEY=your_license_key
+```
+
+### Advanced Configuration
+
+```ruby
+DSPy.configure do |c|
+  # Language Model
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini', 
+    api_key: ENV['OPENAI_API_KEY'],
+    temperature: 0.7,
+    max_tokens: 2000
+  )
+  
+  # Instrumentation
+  c.instrumentation.enabled = true
+  c.instrumentation.subscribers = ['logger', 'otel', 'newrelic', 'langfuse']
+  
+  # Logging
+  c.logger.level = :info
+  c.logger.formatter = :json
+end
+```
+
+## Core Concepts
+
+### 1. Signatures
+
+Signatures define the interface between your application and language models:
+
+```ruby
+class EmailClassifier < DSPy::Signature
+  description "Classify customer support emails by category and priority"
+  
+  input do
+    const :email_content, String
+    const :sender, String
+  end
+  
+  output do
+    const :category, String
+    const :priority, T::Enum
+    const :confidence, Float
+  end
+end
+```
+
+### 2. Modules
+
+Modules provide reusable LLM components:
+
+- **DSPy::Module** - Base class for custom modules
+- **Per-instance configuration** - Each module can have its own LM
+- **Composability** - Combine modules for complex workflows
+
+### 3. Predictors
+
+Built-in predictors for different reasoning patterns:
+
+- **Predict** - Basic LLM calls
+- **ChainOfThought** - Step-by-step reasoning
+- **ProgramOfThought** - Code generation and execution
+- **ReAct** - Tool-using agents
+- **CodeAct** - Dynamic code generation
+
+### 4. Optimization
+
+Improve accuracy with data:
+
+- **SimpleOptimizer** - Basic prompt tuning
+- **MIPROv2** - Advanced optimization
+- **Evaluation** - Metrics and benchmarking
+
+## Signatures
+
+### Basic Structure
+
+```ruby
+class TaskSignature < DSPy::Signature
+  description "Clear description of what this signature accomplishes"
+  
+  input do
+    const :field_name, String
+  end
+  
+  output do
+    const :result_field, String
+  end
+end
+```
+
+### Input Types
+
+```ruby
+input do
+  const :text, String                       # Required string
+  const :context, T.nilable(String)         # Optional string
+  const :max_length, Integer                # Required integer
+  const :include_score, T::Boolean          # Boolean
+  const :tags, T::Array[String]             # Array of strings
+  const :metadata, T::Hash[String, String]  # Hash
+end
+```
+
+### Output Types with Enums
+
+```ruby
+class Priority < T::Enum
+  enums do
+    Low = new('low')
+    Medium = new('medium')
+    High = new('high')
+  end
+end
+
+output do
+  const :priority, Priority
+  const :confidence, Float
+end
+```
+
+### Default Values (v0.7.0+)
+
+```ruby
+class SmartSearch < DSPy::Signature
+  description "Search with intelligent defaults"
+  
+  input do
+    const :query, String
+    const :max_results, Integer, default: 10
+    const :language, String, default: "English"
+  end
+  
+  output do
+    const :results, T::Array[String]
+    const :cached, T::Boolean, default: false
+  end
+end
+```
+
+### Working with Structs
+
+```ruby
+class ContactInfo < T::Struct
+  const :name, String
+  const :email, String
+  const :phone, T.nilable(String)
+end
+
+class ExtractContact < DSPy::Signature
+  description "Extract contact information"
+  
+  output do
+    const :contact, ContactInfo
+  end
+end
+```
+
+### Union Types (v0.11.0+)
+
+```ruby
+# Single-field unions - automatic type detection
+class TaskAction < DSPy::Signature
+  output do
+    const :action, T.any(CreateTask, UpdateTask, DeleteTask)
+  end
+end
+```
+
+## Modules
+
+### Creating Custom Modules
+
+```ruby
+class SentimentAnalyzer < DSPy::Module
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(SentimentSignature)
+  end
+
+  def forward(text:)
+    @predictor.call(text: text)
+  end
+end
+```
+
+### Module Composition
+
+```ruby
+class DocumentProcessor < DSPy::Module
+  def initialize
+    super
+    @classifier = DocumentClassifier.new
+    @summarizer = DocumentSummarizer.new
+    @extractor = KeywordExtractor.new
+  end
+
+  def forward(document:)
+    classification = @classifier.call(content: document)
+    summary = @summarizer.call(content: document)
+    keywords = @extractor.call(content: document)
+    
+    {
+      document_type: classification.document_type,
+      summary: summary.summary,
+      keywords: keywords.keywords
+    }
+  end
+end
+```
+
+### Per-Instance LM Configuration
+
+```ruby
+module = DSPy::ChainOfThought.new(SignatureClass)
+module.configure do |config|
+  config.lm = DSPy::LM.new('anthropic/claude-3-opus', 
+    api_key: ENV['ANTHROPIC_API_KEY']
+  )
+end
+```
+
+## Predictors
+
+### Predict
+
+Basic LLM calls with signatures:
+
+```ruby
+predictor = DSPy::Predict.new(EmailClassifier)
+result = predictor.call(
+  email_content: "My order hasn't arrived",
+  sender: "customer@example.com"
+)
+```
+
+### ChainOfThought
+
+Adds automatic reasoning to any signature:
+
+```ruby
+# Automatically adds :reasoning field to output
+cot = DSPy::ChainOfThought.new(ComplexAnalysis)
+result = cot.call(data: complex_data)
+puts result.reasoning  # Step-by-step explanation
+```
+
+### ProgramOfThought
+
+Generates and executes code:
+
+```ruby
+class MathProblem < DSPy::Signature
+  description "Solve mathematical problems"
+  
+  input do
+    const :problem, String
+  end
+  
+  output do
+    const :answer, T.any(Integer, Float, String)
+  end
+end
+
+solver = DSPy::ProgramOfThought.new(MathProblem)
+result = solver.call(problem: "What is the sum of squares from 1 to 10?")
+```
+
+### ReAct
+
+Tool-using agent with reasoning:
+
+```ruby
+# Define tools
+calculator = DSPy::Tools::CalculatorTool.new
+memory_tools = DSPy::Tools::MemoryToolset.to_tools
+
+# Create agent
+agent = DSPy::ReAct.new(
+  ResearchSignature,
+  tools: [calculator, *memory_tools],
+  max_iterations: 10
+)
+
+result = agent.call(query: "Calculate compound interest...")
+```
+
+### CodeAct
+
+Dynamic code generation agent:
+
+```ruby
+agent = DSPy::CodeAct.new(
+  DataAnalysisSignature,
+  max_iterations: 8
+)
+
+result = agent.call(task: "Analyze this CSV data...")
+puts result.solution  # Final answer
+puts result.history   # Execution steps
+```
+
+## Complex Types
+
+### Enums
+
+```ruby
+class Status < T::Enum
+  enums do
+    Active = new('active')
+    Inactive = new('inactive')
+    Pending = new('pending')
+  end
+end
+```
+
+### Structs
+
+```ruby
+class Product < T::Struct
+  const :name, String
+  const :price, Float
+  const :tags, T::Array[String], default: []
+end
+```
+
+### Arrays of Structs
+
+```ruby
+output do
+  const :products, T::Array[Product]
+end
+
+# Automatic conversion from JSON
+result.products.each do |product|
+  puts "#{product.name}: $#{product.price}"
+end
+```
+
+### Union Types
+
+```ruby
+# Automatic type detection (v0.11.0+)
+output do
+  const :result, T.any(SuccessResult, ErrorResult)
+end
+
+# Pattern matching
+case result.result
+when SuccessResult
+  puts "Success: #{result.result.message}"
+when ErrorResult
+  puts "Error: #{result.result.error}"
+end
+```
+
+### Nested Structures
+
+```ruby
+class Company < T::Struct
+  class Department < T::Struct
+    const :name, String
+    const :head, String
+  end
+  
+  const :name, String
+  const :departments, T::Array[Department]
+end
+```
+
+## Agent Systems
+
+### ReAct Agent
+
+Reasoning + Acting pattern:
+
+```ruby
+class ResearchAssistant < DSPy::Module
+  def initialize
+    super
+    
+    # Create tools
+    calculator = DSPy::Tools::CalculatorTool.new
+    memory_tools = DSPy::Tools::MemoryToolset.to_tools
+    
+    @agent = DSPy::ReAct.new(
+      ResearchSignature,
+      tools: [calculator, *memory_tools]
+    )
+  end
+  
+  def forward(query:)
+    @agent.call(query: query)
+  end
+end
+```
+
+### CodeAct Agent
+
+Code generation and execution:
+
+```ruby
+class DataAnalyst < DSPy::Module
+  def initialize
+    super
+    @agent = DSPy::CodeAct.new(
+      AnalysisSignature,
+      max_iterations: 8
+    )
+  end
+  
+  def forward(task:)
+    result = @agent.call(task: task)
+    {
+      solution: result.solution,
+      code_executed: result.history.map { |h| h[:ruby_code] }
+    }
+  end
+end
+```
+
+### Custom Agents
+
+Build your own agent patterns:
+
+```ruby
+class CustomAgent < DSPy::Module
+  def initialize
+    super
+    @planner = DSPy::ChainOfThought.new(PlanningSignature)
+    @executor = DSPy::CodeAct.new(ExecutionSignature)
+    @validator = DSPy::Predict.new(ValidationSignature)
+  end
+  
+  def forward(task:)
+    plan = @planner.call(task: task)
+    execution = @executor.call(plan: plan.plan)
+    validation = @validator.call(result: execution.solution)
+    
+    {
+      result: execution.solution,
+      confidence: validation.confidence
+    }
+  end
+end
+```
+
+## Memory Systems
+
+### Basic Memory Operations
+
+```ruby
+# Initialize memory
+DSPy::Memory.configure do |config|
+  config.storage_adapter = :in_memory  # or :redis
+end
+
+# Store memory
+memory_id = DSPy::Memory.manager.store_memory(
+  "User prefers dark mode",
+  user_id: "user123",
+  tags: ["preferences", "ui"]
+)
+
+# Retrieve memory
+memory = DSPy::Memory.manager.retrieve_memory(memory_id)
+
+# Search memories
+memories = DSPy::Memory.manager.search_memories(
+  user_id: "user123",
+  tags: ["preferences"]
+)
+```
+
+### Memory with Agents
+
+```ruby
+class PersonalAssistant < DSPy::Module
+  def initialize
+    super
+    memory_tools = DSPy::Tools::MemoryToolset.to_tools
+    
+    @agent = DSPy::ReAct.new(
+      AssistantSignature,
+      tools: memory_tools
+    )
+  end
+  
+  def forward(user_message:, user_id:)
+    @agent.call(
+      user_message: user_message,
+      user_id: user_id
+    )
+  end
+end
+```
+
+### Redis Storage
+
+```ruby
+require 'redis'
+
+DSPy::Memory.configure do |config|
+  config.storage_adapter = :redis
+  config.redis_client = Redis.new(url: ENV['REDIS_URL'])
+  config.redis_namespace = 'dspy:memory'
+end
+```
+
+## Toolsets
+
+### Creating Tools
+
+```ruby
+class WeatherTool < DSPy::Tools::Base
+  name "get_weather"
+  description "Get current weather for a location"
+  
+  input do
+    property :location, String, required: true
+    property :units, String, enum: ["celsius", "fahrenheit"]
+  end
+  
+  def call(location:, units: "celsius")
+    # Implementation
+    "#{location}: 22°C, sunny"
+  end
+end
+```
+
+### Creating Toolsets
+
+```ruby
+class WeatherToolset < DSPy::Tools::Toolset
+  tool :get_weather do
+    description "Get current weather"
+    
+    input do
+      property :location, String, required: true
+    end
+    
+    def call(location:)
+      "#{location}: 22°C"
+    end
+  end
+  
+  tool :get_forecast do
+    description "Get weather forecast"
+    
+    input do
+      property :location, String, required: true
+      property :days, Integer, default: 7
+    end
+    
+    def call(location:, days: 7)
+      "#{days}-day forecast for #{location}"
+    end
+  end
+end
+
+# Use with agents
+tools = WeatherToolset.to_tools
+agent = DSPy::ReAct.new(WeatherSignature, tools: tools)
+```
+
+### Built-in Tools
+
+```ruby
+# Calculator
+calculator = DSPy::Tools::CalculatorTool.new
+
+# Memory toolset
+memory_tools = DSPy::Tools::MemoryToolset.to_tools
+# Includes: store_memory, retrieve_memory, search_memories
+```
+
+## Optimization
+
+### SimpleOptimizer
+
+Basic prompt optimization:
+
+```ruby
+# Create training examples
+examples = [
+  DSPy::FewShotExample.new(
+    input: { text: "Great product!" },
+    output: { sentiment: "positive", score: 0.9 }
+  ),
+  DSPy::FewShotExample.new(
+    input: { text: "Terrible service" },
+    output: { sentiment: "negative", score: 0.1 }
+  )
+]
+
+# Optimize
+optimizer = DSPy::SimpleOptimizer.new
+optimized_module = optimizer.compile(
+  module_instance: classifier,
+  training_examples: examples
+)
+```
+
+### MIPROv2
+
+Advanced optimization with bootstrap sampling:
+
+```ruby
+optimizer = DSPy::MIPROv2.new(
+  k_demos: 3,
+  num_candidates: 10,
+  mode: 'balanced'
+)
+
+optimized = optimizer.compile(
+  module_instance: complex_module,
+  training_examples: training_data,
+  validation_examples: val_data
+)
+```
+
+### Evaluation Framework
+
+```ruby
+evaluator = DSPy::Evaluation.new
+
+metrics = evaluator.evaluate(
+  module_instance: classifier,
+  test_examples: test_data,
+  metrics: [:accuracy, :f1_score]
+)
+
+puts "Accuracy: #{metrics[:accuracy]}"
+puts "F1 Score: #{metrics[:f1_score]}"
+```
+
+## Production Features
+
+### Observability
+
+```ruby
+# Enable instrumentation
+DSPy.configure do |c|
+  c.instrumentation.enabled = true
+  c.instrumentation.subscribers = ['logger', 'otel']
+end
+
+# Events emitted:
+# - lm.request.start/end
+# - lm.chat.start/end
+# - prediction.start/end
+# - module.forward.start/end
+```
+
+### OpenTelemetry Integration
+
+```ruby
+require 'opentelemetry/sdk'
+
+# Configure OTEL
+OpenTelemetry::SDK.configure do |c|
+  c.service_name = 'my-dspy-app'
+  c.use 'OpenTelemetry::Instrumentation::Net::HTTP'
+end
+
+# DSPy automatically integrates
+DSPy.configure do |c|
+  c.instrumentation.subscribers = ['otel']
+end
+```
+
+### Error Handling
+
+```ruby
+begin
+  result = predictor.call(input: data)
+rescue DSPy::Errors::ValidationError => e
+  puts "Invalid input: #{e.message}"
+rescue DSPy::Errors::LMError => e
+  puts "LLM error: #{e.message}"
+  # Implement retry logic
+end
+```
+
+### Token Usage Tracking
+
+```ruby
+# Automatic tracking with events
+DSPy::Instrumentation.subscribe('lm.tokens.used') do |event|
+  puts "Input tokens: #{event.payload[:input_tokens]}"
+  puts "Output tokens: #{event.payload[:output_tokens]}"
+  puts "Total cost: $#{event.payload[:estimated_cost]}"
+end
+```
+
+### Registry & Storage
+
+```ruby
+# Store compiled modules
+registry = DSPy::Registry.new
+registry.store(
+  module_instance: optimized_classifier,
+  name: "email_classifier_v2",
+  metadata: { accuracy: 0.95 }
+)
+
+# Load later
+classifier = registry.load("email_classifier_v2")
+```
+
+## Testing Strategies
+
+### Unit Testing with RSpec
+
+```ruby
+RSpec.describe EmailClassifier do
+  let(:classifier) { EmailClassifier.new }
+  
+  it "classifies spam correctly" do
+    result = classifier.call(
+      email_content: "Win a prize!",
+      sender: "spam@example.com"
+    )
+    
+    expect(result.category).to eq("spam")
+    expect(result.confidence).to be > 0.8
+  end
+end
+```
+
+### Integration Testing with VCR
+
+```ruby
+RSpec.describe "LLM Integration", vcr: true do
+  let(:predictor) { DSPy::Predict.new(AnalysisSignature) }
+  
+  it "analyzes text with real LLM" do
+    result = predictor.call(text: "Sample text")
+    expect(result).to respond_to(:analysis)
+  end
+end
+```
+
+### Mocking LLM Responses
+
+```ruby
+# In tests
+allow(predictor).to receive(:call).and_return(
+  DSPy::Prediction.new(
+    sentiment: "positive",
+    confidence: 0.9
+  )
+)
+```
+
+### Testing Agents
+
+```ruby
+RSpec.describe ResearchAssistant do
+  let(:assistant) { ResearchAssistant.new }
+  
+  it "uses tools to answer questions" do
+    result = assistant.call(
+      query: "What is 2+2?"
+    )
+    
+    expect(result.answer).to eq("4")
+    expect(result.tool_calls).to include(
+      hash_including(tool: "calculator")
+    )
+  end
+end
+```
+
+## API Reference
+
+### Core Classes
+
+#### DSPy::Signature
+- `description(text)` - Set signature description
+- `input { }` - Define input schema
+- `output { }` - Define output schema
+- `.input_json_schema` - Get input JSON schema
+- `.output_json_schema` - Get output JSON schema
+
+#### DSPy::Module
+- `initialize` - Constructor
+- `forward(**kwargs)` - Main processing method
+- `call(**kwargs)` - Alias for forward
+- `configure { |config| }` - Configure module
+
+#### DSPy::Prediction
+- Automatic type conversion from JSON
+- Access fields as methods
+- Handles enums, structs, arrays
+
+### Predictors
+
+#### DSPy::Predict
+- `new(signature_class)` - Create predictor
+- `call(**inputs)` - Execute prediction
+
+#### DSPy::ChainOfThought
+- Adds `:reasoning` field automatically
+- Same API as Predict
+
+#### DSPy::ReAct
+- `new(signature, tools:, max_iterations: 10)`
+- Returns result with tool call history
+
+#### DSPy::CodeAct
+- `new(signature, max_iterations: 8)`
+- Returns solution and execution history
+
+### Configuration
+
+#### DSPy.configure
+```ruby
+DSPy.configure do |c|
+  c.lm                              # Language model
+  c.instrumentation.enabled         # Enable/disable
+  c.instrumentation.subscribers     # Event subscribers
+  c.logger.level                    # Log level
+  c.logger.formatter               # Log format
+end
+```
+
+### Strategy Selection (v0.9.0+)
+
+```ruby
+# Automatic provider optimization
+DSPy.configure do |c|
+  c.strategy = DSPy::Strategy::Strict  # Provider-optimized
+  # or
+  c.strategy = DSPy::Strategy::Compatible  # Works everywhere
+end
+```
+
+## Integration Guides
+
+### Rails Integration
+
+```ruby
+# config/initializers/dspy.rb
+Rails.application.config.after_initialize do
+  DSPy.configure do |c|
+    c.lm = DSPy::LM.new(
+      Rails.application.credentials.llm_model,
+      api_key: Rails.application.credentials.llm_api_key
+    )
+    c.instrumentation.enabled = Rails.env.production?
+  end
+end
+
+# app/services/email_classifier_service.rb
+class EmailClassifierService
+  def initialize
+    @classifier = DSPy::ChainOfThought.new(EmailClassifier)
+  end
+  
+  def classify(email)
+    @classifier.call(
+      email_content: email.body,
+      sender: email.from
+    )
+  end
+end
+```
+
+### Sidekiq Jobs
+
+```ruby
+class AnalyzeDocumentJob
+  include Sidekiq::Job
+  
+  def perform(document_id)
+    document = Document.find(document_id)
+    
+    analyzer = DSPy::Predict.new(DocumentAnalysis)
+    result = analyzer.call(content: document.text)
+    
+    document.update!(
+      category: result.category,
+      summary: result.summary
+    )
+  end
+end
+```
+
+### API Endpoints
+
+```ruby
+# Sinatra example
+post '/api/classify' do
+  content_type :json
+  
+  data = JSON.parse(request.body.read)
+  
+  classifier = DSPy::Predict.new(TextClassifier)
+  result = classifier.call(text: data['text'])
+  
+  {
+    category: result.category.serialize,
+    confidence: result.confidence
+  }.to_json
+end
+```
+
+## Examples
+
+### Email Support System
+
+```ruby
+# Signature for email classification
+class EmailTriage < DSPy::Signature
+  description "Triage customer support emails"
+  
+  class Priority < T::Enum
+    enums do
+      Low = new('low')
+      Medium = new('medium')
+      High = new('high')
+      Urgent = new('urgent')
+    end
+  end
+  
+  input do
+    const :subject, String
+    const :body, String
+    const :customer_tier, String
+  end
+  
+  output do
+    const :department, String
+    const :priority, Priority
+    const :summary, String
+    const :auto_reply_suggested, T::Boolean
+  end
+end
+
+# Agent with memory
+class SupportAgent < DSPy::Module
+  def initialize
+    super
+    
+    memory_tools = DSPy::Tools::MemoryToolset.to_tools
+    
+    @triage = DSPy::ChainOfThought.new(EmailTriage)
+    @agent = DSPy::ReAct.new(
+      SupportResponse,
+      tools: memory_tools
+    )
+  end
+  
+  def forward(email:, customer_id:)
+    # Triage email
+    triage_result = @triage.call(
+      subject: email.subject,
+      body: email.body,
+      customer_tier: email.customer.tier
+    )
+    
+    # Generate response with context
+    response = @agent.call(
+      email: email.body,
+      customer_id: customer_id,
+      priority: triage_result.priority.serialize
+    )
+    
+    {
+      department: triage_result.department,
+      priority: triage_result.priority,
+      response: response.suggested_reply,
+      should_escalate: triage_result.priority == EmailTriage::Priority::Urgent
+    }
+  end
+end
+```
+
+### Data Analysis Pipeline
+
+```ruby
+# Multi-stage analysis
+class DataPipeline < DSPy::Module
+  def initialize
+    super
+    
+    @cleaner = DSPy::Predict.new(DataCleaning)
+    @analyzer = DSPy::CodeAct.new(DataAnalysis)
+    @visualizer = DSPy::ProgramOfThought.new(DataVisualization)
+    @reporter = DSPy::ChainOfThought.new(ReportGeneration)
+  end
+  
+  def forward(raw_data:, analysis_goals:)
+    # Clean data
+    cleaned = @cleaner.call(data: raw_data)
+    
+    # Analyze
+    analysis = @analyzer.call(
+      data: cleaned.cleaned_data,
+      goals: analysis_goals
+    )
+    
+    # Generate visualizations
+    viz = @visualizer.call(
+      data: analysis.results,
+      chart_types: ["bar", "line", "scatter"]
+    )
+    
+    # Create report
+    report = @reporter.call(
+      analysis: analysis.solution,
+      visualizations: viz.code,
+      goals: analysis_goals
+    )
+    
+    {
+      cleaned_data: cleaned.cleaned_data,
+      analysis_results: analysis.solution,
+      visualization_code: viz.code,
+      final_report: report.report
+    }
+  end
+end
+```
+
+### Content Moderation System
+
+```ruby
+# Complex content analysis
+class ContentModerator < DSPy::Module
+  class ViolationType < T::Enum
+    enums do
+      None = new('none')
+      Spam = new('spam')
+      Toxic = new('toxic')
+      Misinformation = new('misinformation')
+      OffTopic = new('off_topic')
+    end
+  end
+  
+  class ModerationResult < T::Struct
+    const :violation_type, ViolationType
+    const :confidence, Float
+    const :explanation, String
+    const :action, String  # "approve", "flag", "remove"
+  end
+  
+  def initialize
+    super
+    
+    @classifier = DSPy::ChainOfThought.new(ContentClassification)
+    @fact_checker = DSPy::ReAct.new(
+      FactChecking,
+      tools: [WebSearchTool.new]
+    )
+  end
+  
+  def forward(content:, context:)
+    # Initial classification
+    classification = @classifier.call(
+      content: content,
+      context: context
+    )
+    
+    # Fact check if needed
+    if classification.needs_fact_check
+      fact_result = @fact_checker.call(
+        claim: content,
+        context: context
+      )
+      
+      if fact_result.likely_false
+        return ModerationResult.new(
+          violation_type: ViolationType::Misinformation,
+          confidence: fact_result.confidence,
+          explanation: fact_result.explanation,
+          action: "flag"
+        )
+      end
+    end
+    
+    ModerationResult.new(
+      violation_type: classification.violation_type,
+      confidence: classification.confidence,
+      explanation: classification.reasoning,
+      action: determine_action(classification)
+    )
+  end
+  
+  private
+  
+  def determine_action(classification)
+    case classification.violation_type
+    when ViolationType::None
+      "approve"
+    when ViolationType::Spam, ViolationType::Toxic
+      "remove"
+    else
+      "flag"
+    end
+  end
+end
+```
+
+## Advanced Patterns
+
+### Custom Strategy Implementation
+
+```ruby
+class CustomJSONStrategy < DSPy::StrategyInterface
+  def extract_json(signature, lm_response)
+    # Custom extraction logic
+    parsed = JSON.parse(lm_response)
+    signature.output_struct.new(parsed)
+  rescue JSON::ParserError
+    # Fallback logic
+  end
+end
+```
+
+### Dynamic Module Configuration
+
+```ruby
+class AdaptiveModule < DSPy::Module
+  def initialize
+    super
+    @strategies = {
+      simple: DSPy::Predict.new(SimpleSignature),
+      complex: DSPy::ChainOfThought.new(ComplexSignature)
+    }
+  end
+  
+  def forward(input:, complexity: :simple)
+    strategy = @strategies[complexity]
+    strategy.call(input: input)
+  end
+end
+```
+
+### Streaming Responses
+
+```ruby
+# Future feature - not yet implemented
+class StreamingPredictor < DSPy::Module
+  def forward(input:, &block)
+    @lm.stream(prompt: build_prompt(input)) do |chunk|
+      yield chunk
+    end
+  end
+end
+```
+
+## Performance Optimization
+
+### Caching
+
+```ruby
+# Schema caching happens automatically
+# First call generates schema
+result1 = predictor.call(input: "text")
+
+# Subsequent calls use cached schema
+result2 = predictor.call(input: "more text")
+```
+
+### Batch Processing
+
+```ruby
+# Process multiple items efficiently
+items = ["text1", "text2", "text3"]
+
+results = items.map do |item|
+  predictor.call(text: item)
+end
+```
+
+### Connection Pooling
+
+```ruby
+# Configure HTTP client
+DSPy::LM.configure do |config|
+  config.http_timeout = 30
+  config.max_retries = 3
+  config.retry_delay = 1
+end
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Type Conversion Failures**
+   - Check nesting depth (keep under 3 levels)
+   - Verify enum values match exactly
+   - Use T.nilable for optional fields
+
+2. **JSON Extraction Errors**
+   - Enable debug logging
+   - Check provider compatibility
+   - Use Compatible strategy as fallback
+
+3. **Memory Issues**
+   - Configure appropriate storage backend
+   - Implement memory compaction
+   - Set retention policies
+
+4. **Performance Problems**
+   - Use provider-optimized strategies
+   - Implement caching where appropriate
+   - Monitor token usage
+
+### Debug Mode
+
+```ruby
+DSPy.configure do |c|
+  c.logger.level = :debug
+  c.instrumentation.enabled = true
+end
+
+# Subscribe to all events
+DSPy::Instrumentation.subscribe(/.*/) do |event|
+  puts "Event: #{event.name}"
+  puts "Payload: #{event.payload}"
+end
+```
+
+## Best Practices
+
+1. **Signature Design**
+   - Clear, specific descriptions
+   - Appropriate type constraints
+   - Meaningful field names
+
+2. **Module Composition**
+   - Single responsibility principle
+   - Dependency injection
+   - Testable components
+
+3. **Error Handling**
+   - Graceful degradation
+   - Retry strategies
+   - User-friendly messages
+
+4. **Production Deployment**
+   - Enable monitoring
+   - Set up alerts
+   - Version your modules
+
+## Resources
+
+- **Documentation**: https://vicentereig.github.io/dspy.rb/
+- **GitHub**: https://github.com/vicentereig/dspy.rb
+- **Issues**: https://github.com/vicentereig/dspy.rb/issues
+- **Examples**: https://github.com/vicentereig/dspy.rb/tree/main/examples
+
+## Version History
+
+- v<%= site.config.dspy_version %> - Latest release
+- See CHANGELOG.md for full history
+
+---
+
+Generated for DSPy.rb v<%= site.config.dspy_version %>
