@@ -5,6 +5,18 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.1] - 2025-07-28
+
+### Fixed
+- **CodeAct Input Flexibility** - Fixed CodeAct to handle any input signature structure
+  - Removed hardcoded assumption about input fields (similar to ReAct fix in v0.9.1)
+  - Now uses `TypeSerializer.serialize` to properly handle all input types
+  - Supports array inputs, non-string fields, and complex signatures
+  - Maintains backward compatibility with existing CodeAct agents
+
+### Documentation
+- Fixed Ollama blog post frontmatter to use `description` instead of `summary` for proper display
+
 ## [0.15.0] - 2025-07-28
 
 ### Added
