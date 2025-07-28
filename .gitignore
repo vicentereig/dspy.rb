@@ -1,5 +1,7 @@
 docs/output/*
 memory/
+dspy_registry/
+dspy_storage/
 .hive-mind/
 .swarm/
 claude-flow
