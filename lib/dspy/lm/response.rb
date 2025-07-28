@@ -66,6 +66,7 @@ module DSPy
       const :structured_output, T.nilable(T::Boolean), default: nil
       const :stop_reason, T.nilable(String), default: nil
       const :stop_sequence, T.nilable(String), default: nil
+      const :tool_calls, T.nilable(T::Array[T::Hash[Symbol, T.untyped]]), default: nil
       
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def to_h
@@ -78,6 +79,7 @@ module DSPy
         hash[:structured_output] = structured_output unless structured_output.nil?
         hash[:stop_reason] = stop_reason if stop_reason
         hash[:stop_sequence] = stop_sequence if stop_sequence
+        hash[:tool_calls] = tool_calls if tool_calls
         hash
       end
     end
@@ -138,7 +140,8 @@ module DSPy
           AnthropicResponseMetadata.new(
             **common_fields,
             stop_reason: metadata[:stop_reason]&.to_s,
-            stop_sequence: metadata[:stop_sequence]&.to_s
+            stop_sequence: metadata[:stop_sequence]&.to_s,
+            tool_calls: metadata[:tool_calls]
           )
         else
           ResponseMetadata.new(**common_fields)

@@ -3,6 +3,7 @@
 require 'dry-monitor'
 require 'dry-configurable'
 require 'time'
+require_relative 'instrumentation/event_payload_factory'
 
 module DSPy
   # Core instrumentation module using dry-monitor for event emission
@@ -133,7 +134,9 @@ module DSPy
           status: 'success'
         ).merge(generate_timestamp)
 
-        self.emit_event(event_name, enhanced_payload)
+        # Create typed event struct
+        event_struct = EventPayloadFactory.create_event(event_name, enhanced_payload)
+        self.emit_event(event_name, event_struct)
         result
       rescue => error
         end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -147,7 +150,9 @@ module DSPy
           error_message: error.message
         ).merge(generate_timestamp)
 
-        self.emit_event(event_name, error_payload)
+        # Create typed event struct
+        event_struct = EventPayloadFactory.create_event(event_name, error_payload)
+        self.emit_event(event_name, event_struct)
         raise
       end
     end
@@ -161,7 +166,9 @@ module DSPy
         status: payload[:status] || 'success'
       ).merge(generate_timestamp)
 
-      self.emit_event(event_name, enhanced_payload)
+      # Create typed event struct
+      event_struct = EventPayloadFactory.create_event(event_name, enhanced_payload)
+      self.emit_event(event_name, event_struct)
     end
 
     # Register additional events dynamically (useful for testing)
@@ -183,7 +190,32 @@ module DSPy
 
     def self.emit_event(event_name, payload)
       # Only emit events - subscribers self-register when explicitly created
-      notifications.instrument(event_name, payload)
+      # Convert struct to hash if needed (dry-monitor expects hash)
+      if payload.respond_to?(:to_h)
+        payload_hash = payload.to_h
+        # Restore original timestamp format if needed
+        restore_timestamp_format(payload_hash)
+      else
+        payload_hash = payload
+      end
+      notifications.instrument(event_name, payload_hash)
+    end
+    
+    # Restore timestamp to original format based on configuration
+    def self.restore_timestamp_format(payload_hash)
+      return unless payload_hash[:timestamp]
+      
+      case DSPy.config.instrumentation.timestamp_format
+      when DSPy::TimestampFormat::UNIX_NANO
+        # Convert ISO8601 back to nanoseconds
+        timestamp = Time.parse(payload_hash[:timestamp])
+        payload_hash.delete(:timestamp)
+        payload_hash[:timestamp_ns] = (timestamp.to_f * 1_000_000_000).to_i
+      when DSPy::TimestampFormat::RFC3339_NANO
+        # Convert to RFC3339 with nanoseconds
+        timestamp = Time.parse(payload_hash[:timestamp])
+        payload_hash[:timestamp] = timestamp.strftime('%Y-%m-%dT%H:%M:%S.%9N%z')
+      end
     end
 
     def self.setup_subscribers

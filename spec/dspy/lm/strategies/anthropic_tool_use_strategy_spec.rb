@@ -130,20 +130,24 @@ RSpec.describe DSPy::LM::Strategies::AnthropicToolUseStrategy do
   describe '#extract_json' do
     context 'with tool use in metadata' do
       let(:response) do
+        metadata = DSPy::LM::AnthropicResponseMetadata.new(
+          provider: 'anthropic',
+          model: 'claude-3-haiku',
+          tool_calls: [{
+            id: 'call_123',
+            name: 'json_output',
+            input: {
+              'answer' => '4',
+              'confidence' => 1.0,
+              'steps' => ['2 + 2 = 4']
+            }
+          }]
+        )
+        
         DSPy::LM::Response.new(
           content: 'I\'ll calculate 2+2 for you.',
           usage: nil,
-          metadata: {
-            tool_calls: [{
-              id: 'call_123',
-              name: 'json_output',
-              input: {
-                'answer' => '4',
-                'confidence' => 1.0,
-                'steps' => ['2 + 2 = 4']
-              }
-            }]
-          }
+          metadata: metadata
         )
       end
       

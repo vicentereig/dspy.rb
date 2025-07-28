@@ -50,8 +50,8 @@ module DSPy
           # Extract JSON from tool use response
           begin
             # Check for tool calls in metadata first (this is the primary method)
-            if response.metadata && response.metadata[:tool_calls]
-              tool_calls = response.metadata[:tool_calls]
+            if response.metadata.respond_to?(:tool_calls) && response.metadata.tool_calls
+              tool_calls = response.metadata.tool_calls
               if tool_calls.is_a?(Array) && !tool_calls.empty?
                 first_call = tool_calls.first
                 if first_call[:name] == "json_output" && first_call[:input]

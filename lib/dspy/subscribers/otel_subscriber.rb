@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
+require_relative '../instrumentation/event_payloads'
 
 begin
   require 'opentelemetry/api'
@@ -402,10 +403,8 @@ module DSPy
             'dspy.lm.model' => payload[:gen_ai_request_model] || payload[:model],
             'dspy.lm.status' => payload[:status],
             'dspy.lm.duration_ms' => payload[:duration_ms],
-            'dspy.lm.tokens_total' => payload[:tokens_total],
-            'dspy.lm.tokens_input' => payload[:tokens_input],
-            'dspy.lm.tokens_output' => payload[:tokens_output],
-            'dspy.lm.cost' => payload[:cost]
+            'dspy.lm.adapter_class' => payload[:adapter_class],
+            'dspy.lm.input_size' => payload[:input_size]
           }
         ) do |span|
           if payload[:status] == 'error'
