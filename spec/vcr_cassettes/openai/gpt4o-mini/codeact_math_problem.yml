@@ -8,20 +8,22 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"task\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The task description requiring Ruby code solution\"\n    },\n    \"context\":
+        \"JSON representation of all input fields for the task\"\n    },\n    \"context\":
         {\n      \"type\": \"string\",\n      \"description\": \"Available variables
         and previous results from code execution history\"\n    },\n    \"history\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"step\": {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"ruby_code\":
-        {\n            \"type\": \"string\"\n          },\n          \"execution_result\":
-        {\n            \"type\": \"string\"\n          },\n          \"error_message\":
-        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
-        [\n          \"step\"\n        ],\n        \"description\": \"DSPy::CodeActHistoryEntry
-        struct\"\n      },\n      \"description\": \"Previous thoughts and code executions
-        with their results. Use this to understand what has been tried and what variables
-        are available.\"\n    }\n  },\n  \"required\": [\n    \"task\",\n    \"context\",\n    \"history\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"CodeActHistoryEntry\"\n          },\n          \"step\": {\n            \"type\":
+        \"integer\"\n          },\n          \"thought\": {\n            \"type\":
+        \"string\"\n          },\n          \"ruby_code\": {\n            \"type\":
+        \"string\"\n          },\n          \"execution_result\": {\n            \"type\":
+        \"string\"\n          },\n          \"error_message\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"step\",\n          \"error_message\"\n        ],\n        \"description\":
+        \"DSPy::CodeActHistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and code executions with their results. Use this to understand what
+        has been tried and what variables are available.\"\n    }\n  },\n  \"required\":
+        [\n    \"task\",\n    \"context\",\n    \"history\"\n  ]\n}\n```\nYour output
+        schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about the approach to solve the task with Ruby code\"\n    },\n    \"ruby_code\":
         {\n      \"type\": \"string\",\n      \"description\": \"Ruby code to execute.
@@ -35,10 +37,20 @@ http_interactions:
         values\nRespond exclusively with the output schema fields in the json block
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate Ruby code to solve the given task."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"task\": \"Calculate the sum of numbers from
-        1 to 10\",\n  \"context\": \"No previous context available.\",\n  \"history\":
-        []\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+        Input Values\n```json\n{\n  \"task\": \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"problem\\\":\\\"Calculate
+        the sum of numbers from 1 to 10\\\"}\",\n  \"context\": \"No previous context
+        available.\",\n  \"history\": []\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
+        this structure:\n```json\n{\n  \"thought\": \"Reasoning about the approach
+        to solve the task with Ruby code\",\n  \"ruby_code\": \"Ruby code to execute.
+        This should be valid Ruby code that can be evaluated safely. Avoid system
+        calls, file operations, or other potentially dangerous operations.\",\n  \"explanation\":
+        \"Brief explanation of what the code does and why this approach was chosen\"\n}\n```\n\nRequired
+        fields: thought, ruby_code, explanation\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -49,17 +61,17 @@ http_interactions:
       Host:
       - api.openai.com
       X-Stainless-Arch:
-      - arm64
+      - x64
       X-Stainless-Lang:
       - ruby
       X-Stainless-Os:
-      - MacOS
+      - Linux
       X-Stainless-Package-Version:
-      - 0.9.0
+      - 0.13.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.3.8
       Content-Type:
       - application/json
       Authorization:
@@ -69,14 +81,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '2933'
+      - '3908'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 21:42:35 GMT
+      - Mon, 28 Jul 2025 15:50:14 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -88,11 +100,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1493'
+      - '1851'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1495'
+      - '1855'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -100,11 +114,11 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '199353'
+      - '199126'
       X-Ratelimit-Reset-Requests:
       - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 193ms
+      - 261ms
       X-Request-Id:
       - "<REQUEST_ID>"
       Strict-Transport-Security:
@@ -119,23 +133,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 95aa086e2d777274-EWR
+      - 966587e44c22425f-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bq4wUp479pBJLTBKyoIT9VzwedFiD",
+          "id": "chatcmpl-ByKP6WFfL0ecG3svHeojzvLwACi9c",
           "object": "chat.completion",
-          "created": 1751751754,
+          "created": 1753717812,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To calculate the sum of numbers from 1 to 10, I can use a simple loop or the formula for the sum of an arithmetic series. Since the range is small, a loop is straightforward and easy to understand.\",\n  \"ruby_code\": \"sum = 0\\n(1..10).each do |number|\\n  sum += number\\nend\\nsum\",\n  \"explanation\": \"This code initializes a sum variable to 0, then iterates through each number from 1 to 10, adding each number to the sum. Finally, it returns the total sum.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To calculate the sum of numbers from 1 to 10, I will use a simple loop or the built-in sum method with a range. This approach is straightforward and efficient for this small range of numbers.\",\n  \"ruby_code\": \"sum = (1..10).sum\",\n  \"explanation\": \"This code uses the range (1..10) to create a sequence of numbers from 1 to 10 and then calls the sum method to calculate the total. This method is chosen for its simplicity and readability.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -144,9 +158,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 614,
-            "completion_tokens": 135,
-            "total_tokens": 749,
+            "prompt_tokens": 811,
+            "completion_tokens": 121,
+            "total_tokens": 932,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -161,7 +175,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 21:42:35 GMT
+  recorded_at: Mon, 28 Jul 2025 15:50:14 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -170,19 +184,21 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"task\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The original task\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"ruby_code\":
-        {\n            \"type\": \"string\"\n          },\n          \"execution_result\":
-        {\n            \"type\": \"string\"\n          },\n          \"error_message\":
-        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
-        [\n          \"step\"\n        ],\n        \"description\": \"DSPy::CodeActHistoryEntry
-        struct\"\n      },\n      \"description\": \"Previous thoughts, code executions,
-        and their results\"\n    },\n    \"execution_result\": {\n      \"type\":
-        \"string\",\n      \"description\": \"The result from executing the Ruby code\"\n    },\n    \"error_message\":
-        {\n      \"type\": \"string\",\n      \"description\": \"Error message if
-        the code execution failed\"\n    }\n  },\n  \"required\": [\n    \"task\",\n    \"history\",\n    \"execution_result\",\n    \"error_message\"\n  ]\n}\n```\nYour
+        \"JSON representation of all input fields for the task\"\n    },\n    \"history\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"CodeActHistoryEntry\"\n          },\n          \"step\": {\n            \"type\":
+        \"integer\"\n          },\n          \"thought\": {\n            \"type\":
+        \"string\"\n          },\n          \"ruby_code\": {\n            \"type\":
+        \"string\"\n          },\n          \"execution_result\": {\n            \"type\":
+        \"string\"\n          },\n          \"error_message\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"step\",\n          \"error_message\"\n        ],\n        \"description\":
+        \"DSPy::CodeActHistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, code executions, and their results\"\n    },\n    \"execution_result\":
+        {\n      \"type\": \"string\",\n      \"description\": \"The result from executing
+        the Ruby code\"\n    },\n    \"error_message\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Error message if the code execution failed (empty string if no error)\"\n    }\n  },\n  \"required\":
+        [\n    \"task\",\n    \"history\",\n    \"execution_result\",\n    \"error_message\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"observation\": {\n      \"type\":
         \"string\",\n      \"description\": \"Analysis of the execution result and
@@ -199,14 +215,24 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Process the result of Ruby code execution and decide what to
         do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"task\":
-        \"Calculate the sum of numbers from 1 to 10\",\n  \"history\": [\n    {\n      \"step\":
-        1,\n      \"thought\": \"To calculate the sum of numbers from 1 to 10, I can
-        use a simple loop or the formula for the sum of an arithmetic series. Since
-        the range is small, a loop is straightforward and easy to understand.\",\n      \"ruby_code\":
-        \"sum = 0\\n(1..10).each do |number|\\n  sum += number\\nend\\nsum\",\n      \"execution_result\":
-        \"55\"\n    }\n  ],\n  \"execution_result\": \"55\",\n  \"error_message\":
-        null\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"problem\\\":\\\"Calculate the
+        sum of numbers from 1 to 10\\\"}\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"To calculate the sum of numbers from 1 to 10, I will
+        use a simple loop or the built-in sum method with a range. This approach is
+        straightforward and efficient for this small range of numbers.\",\n      \"ruby_code\":
+        \"sum = (1..10).sum\",\n      \"execution_result\": \"55\",\n      \"error_message\":
+        \"\"\n    }\n  ],\n  \"execution_result\": \"55\",\n  \"error_message\": \"\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"observation\": \"Analysis
+        of the execution result and what it means for solving the task\",\n  \"next_step\":
+        \"What to do next: ''#<DSPy::CodeActNextStep::Continue>'' to continue with
+        more code or ''#<DSPy::CodeActNextStep::Finish>'' if the task is complete\",\n  \"final_answer\":
+        \"If next_step is ''finish'', provide the final answer to the task based on
+        the execution results\"\n}\n```\n\nRequired fields: observation, next_step,
+        final_answer\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
+        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
+        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -217,17 +243,17 @@ http_interactions:
       Host:
       - api.openai.com
       X-Stainless-Arch:
-      - arm64
+      - x64
       X-Stainless-Lang:
       - ruby
       X-Stainless-Os:
-      - MacOS
+      - Linux
       X-Stainless-Package-Version:
-      - 0.9.0
+      - 0.13.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.3.8
       Content-Type:
       - application/json
       Authorization:
@@ -237,14 +263,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '3484'
+      - '4518'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 21:42:37 GMT
+      - Mon, 28 Jul 2025 15:50:17 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -256,11 +282,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1329'
+      - '1694'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1331'
+      - '1698'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -268,42 +296,42 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '199230'
+      - '198989'
       X-Ratelimit-Reset-Requests:
-      - 15.493s
+      - 14.168s
       X-Ratelimit-Reset-Tokens:
-      - 231ms
+      - 303ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95aa087b48067274-EWR
+      - 966587f45ec4425f-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bq4wWTVxADyGMYmvu333dD1pmTdJt",
+          "id": "chatcmpl-ByKP9Y71eS1VKOzbiH2r5tOkr33le",
           "object": "chat.completion",
-          "created": 1751751756,
+          "created": 1753717815,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"observation\": \"The execution result of the Ruby code is 55, which is the correct sum of numbers from 1 to 10. This confirms that the code executed successfully and produced the expected outcome.\",\n  \"next_step\": \"finish\",\n  \"final_answer\": \"The sum of numbers from 1 to 10 is 55.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"observation\": \"The execution result of 55 is the correct sum of numbers from 1 to 10, confirming that the code executed successfully without errors.\",\n  \"next_step\": \"finish\",\n  \"final_answer\": \"The sum of numbers from 1 to 10 is 55.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -312,9 +340,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 777,
-            "completion_tokens": 82,
-            "total_tokens": 859,
+            "prompt_tokens": 990,
+            "completion_tokens": 72,
+            "total_tokens": 1062,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -329,5 +357,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_34a54ae93c"
         }
-  recorded_at: Sat, 05 Jul 2025 21:42:37 GMT
+  recorded_at: Mon, 28 Jul 2025 15:50:17 GMT
 recorded_with: VCR 6.3.1
