@@ -9,6 +9,7 @@ require 'stringio'
 require_relative 'instrumentation'
 require_relative 'mixins/struct_builder'
 require_relative 'mixins/instrumentation_helpers'
+require_relative 'type_serializer'
 
 module DSPy
   # Define a simple struct for CodeAct history entries with proper type annotations
@@ -37,7 +38,7 @@ module DSPy
 
     input do
       const :task, String,
-        description: "The task description requiring Ruby code solution"
+        description: "JSON representation of all input fields for the task"
       const :context, String,
         description: "Available variables and previous results from code execution history"
       const :history, T::Array[CodeActHistoryEntry],
@@ -67,7 +68,7 @@ module DSPy
 
     input do
       const :task, String,
-        description: "The original task"
+        description: "JSON representation of all input fields for the task"
       const :history, T::Array[CodeActHistoryEntry],
         description: "Previous thoughts, code executions, and their results"
       const :execution_result, T.nilable(String),
@@ -148,9 +149,9 @@ module DSPy
       result = instrument_prediction('dspy.codeact', @original_signature_class, kwargs, {
         max_iterations: @max_iterations
       }) do
-        # Validate input and extract task
+        # Validate input and serialize all fields as task context
         input_struct = @original_signature_class.input_struct_class.new(**kwargs)
-        task = T.cast(input_struct.serialize.values.first, String)
+        task = DSPy::TypeSerializer.serialize(input_struct).to_json
 
         # Execute CodeAct reasoning loop
         reasoning_result = execute_codeact_reasoning_loop(task)
