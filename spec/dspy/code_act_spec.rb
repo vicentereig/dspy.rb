@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'stringio'
 require 'dspy/code_act'
 
-class MathProblem < DSPy::Signature
+class CodeActMathProblem < DSPy::Signature
   description "Solve mathematical problems using Ruby code"
 
   input do
@@ -19,7 +19,7 @@ end
 RSpec.describe 'DSPy::CodeAct' do
   describe 'when solving a mathematical problem using Ruby code execution' do
     let(:problem) { "Calculate the sum of numbers from 1 to 10" }
-    let(:agent) { DSPy::CodeAct.new(MathProblem, max_iterations: 5) }
+    let(:agent) { DSPy::CodeAct.new(CodeActMathProblem, max_iterations: 5) }
     let(:prediction) do
       VCR.use_cassette('openai/gpt4o-mini/codeact_math_problem') do
         agent.forward(problem: problem)
@@ -167,7 +167,7 @@ RSpec.describe 'DSPy::CodeAct' do
   end
 
   describe 'code execution safety' do
-    let(:agent) { DSPy::CodeAct.new(MathProblem, max_iterations: 3) }
+    let(:agent) { DSPy::CodeAct.new(CodeActMathProblem, max_iterations: 3) }
 
     it 'can execute basic arithmetic operations' do
       result, error = agent.send(:execute_ruby_code_safely, "2 + 2")
@@ -218,7 +218,7 @@ RSpec.describe 'DSPy::CodeAct' do
   end
 
   describe 'signature and struct creation' do
-    let(:agent) { DSPy::CodeAct.new(MathProblem) }
+    let(:agent) { DSPy::CodeAct.new(CodeActMathProblem) }
 
     it 'creates RubyCodeGeneration signature correctly' do
       expect(DSPy::RubyCodeGeneration).to be < DSPy::Signature
@@ -268,7 +268,7 @@ RSpec.describe 'DSPy::CodeAct' do
   end
 
   describe 'enhanced output struct validation' do
-    let(:agent) { DSPy::CodeAct.new(MathProblem) }
+    let(:agent) { DSPy::CodeAct.new(CodeActMathProblem) }
 
     it 'validates enhanced output struct has required fields' do
       # Test that validation method exists and works
@@ -287,7 +287,7 @@ RSpec.describe 'DSPy::CodeAct' do
   end
 
   describe 'private method unit tests' do
-    let(:agent) { DSPy::CodeAct.new(MathProblem, max_iterations: 2) }
+    let(:agent) { DSPy::CodeAct.new(CodeActMathProblem, max_iterations: 2) }
     let(:task) { "Calculate 2 + 2" }
     let(:history) { [] }
     let(:context) { "previous calculations available" }
@@ -358,14 +358,14 @@ RSpec.describe 'DSPy::CodeAct' do
     it 'logs CodeAct agent events when running actual agent operations' do
       VCR.use_cassette('openai/gpt4o-mini/codeact_math_problem') do
         problem = "Calculate 5 + 3"
-        agent = DSPy::CodeAct.new(MathProblem, max_iterations: 3)
+        agent = DSPy::CodeAct.new(CodeActMathProblem, max_iterations: 3)
         result = agent.forward(problem: problem)
 
         log_content = log_output.string
         
         # Check for CodeAct-specific events
         expect(log_content).to include("event=codeact")
-        expect(log_content).to include("signature=MathProblem")
+        expect(log_content).to include("signature=CodeActMathProblem")
         expect(log_content).to include("status=success")
         expect(log_content).to include("event=code_execution")
       end
