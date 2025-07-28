@@ -5,6 +5,14 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.2] - 2025-07-28
+
+### Fixed
+- **CI Test Failures** - Resolved test failures in continuous integration
+  - Fixed class name collision between CodeAct and Ollama integration tests
+  - Re-recorded VCR cassettes to match updated TypeSerializer request format
+  - Renamed `MathProblem` to `CodeActMathProblem` in CodeAct specs to avoid conflicts
+
 ## [0.15.1] - 2025-07-28
 
 ### Fixed
