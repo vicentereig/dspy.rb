@@ -5,8 +5,6 @@ summary: "DSPy.rb now supports Ollama, bringing type-safe structured outputs to 
 date: 2025-07-28
 ---
 
-# Run LLMs Locally with Ollama and Type-Safe Ruby
-
 I'm excited to announce that DSPy.rb v0.15.0 brings full support for Ollama! You can now run powerful language models locally while maintaining all the type safety and structured outputs that make DSPy.rb unique. This means zero API costs during development, complete data privacy, and the same great developer experience you expect from DSPy.
 
 ## Why Local LLMs Matter
