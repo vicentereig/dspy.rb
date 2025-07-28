@@ -5,6 +5,31 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2025-07-28
+
+### Added
+- **llms.txt and llms-full.txt Documentation** (#51) - Machine-readable documentation format for LLMs
+  - Created `llms.txt` with core DSPy.rb information for AI agents
+  - Created comprehensive `llms-full.txt` with complete library details
+  - Added links to documentation footer and README for easy access
+  - Enables AI agents to better understand and work with DSPy.rb
+
+- **AnthropicToolUseStrategy** - Improved handling of Anthropic's tool_use response format
+  - Better JSON extraction from Anthropic's structured outputs
+  - Enhanced compatibility with Claude's latest response formats
+  - Improved test coverage for various response patterns
+
+### Fixed
+- Fixed Anthropic tool_use response format handling to properly extract JSON from content blocks
+- Resolved Sorbet type checking issues in AnthropicToolUseStrategy tests
+- Updated playwright-ruby-client dependency to fix OG image generation for documentation site
+- Fixed OG image URL paths to include base_path for GitHub Pages deployment
+
+### Changed
+- Updated gemspec description for clarity
+- Simplified language in documentation articles for better accessibility
+- Improved strategy selection tests to focus on behavior rather than implementation details
+
 ## [0.13.0] - 2025-07-25
 
 ### Added
