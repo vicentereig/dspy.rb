@@ -40,6 +40,7 @@ The result? LLM applications that actually scale and don't break when you sneeze
 - LLM provider support using official Ruby clients:
   - [OpenAI Ruby](https://github.com/openai/openai-ruby)
   - [Anthropic Ruby SDK](https://github.com/anthropics/anthropic-sdk-ruby)
+  - [Ollama](https://ollama.com/) via OpenAI compatibility layer
 - Runtime type checking with [Sorbet](https://sorbet.org/)
 - Type-safe tool definitions for ReAct agents
 - Comprehensive instrumentation and observability

@@ -39,6 +39,7 @@ gem 'async', '~> 2.23'
 # Official LM provider clients
 gem 'openai', '~> 0.9.0'
 gem 'anthropic', '~> 1.1.0'
+# Note: Ollama support is built-in via OpenAI compatibility layer
 
 # Sorbet integration dependencies
 gem 'sorbet-runtime', '~> 0.5'
@@ -74,6 +75,8 @@ DSPy.configure do |c|
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
   # or
   c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+  # or use Ollama for local models
+  c.lm = DSPy::LM.new('ollama/llama3.2')
 end
 ```
 
@@ -87,6 +90,8 @@ export OPENAI_API_KEY=sk-your-key-here
 
 # Anthropic
 export ANTHROPIC_API_KEY=sk-ant-your-key-here
+
+# Ollama (no API key needed for local instances)
 
 # Optional: Observability platforms
 export OTEL_SERVICE_NAME=my-dspy-app
@@ -141,6 +146,29 @@ end
    end
    ```
 
+### Ollama Setup (Local Models)
+
+1. Install Ollama from [ollama.com](https://ollama.com/)
+2. Pull a model:
+   ```bash
+   ollama pull llama3.2
+   ```
+3. Use in DSPy (no API key needed):
+   ```ruby
+   DSPy.configure do |c|
+     c.lm = DSPy::LM.new('ollama/llama3.2')
+   end
+   ```
+4. For remote Ollama instances:
+   ```ruby
+   DSPy.configure do |c|
+     c.lm = DSPy::LM.new('ollama/llama3.2', 
+       base_url: 'https://my-ollama.example.com/v1',
+       api_key: 'optional-auth-token'
+     )
+   end
+   ```
+
 ## Verification
 
 Test your installation:
@@ -184,8 +212,13 @@ puts "✅ DSPy is working! Response: #{result.response}"
 - Check that you're using the correct provider prefix (e.g., `openai/gpt-4`, not just `gpt-4`)
 
 **"Unsupported provider"**
-- DSPy requires provider prefixes. Use `openai/model-name` or `anthropic/model-name`
+- DSPy requires provider prefixes. Use `openai/model-name`, `anthropic/model-name`, or `ollama/model-name`
 - Legacy format without provider is no longer supported
+
+**"Connection refused" with Ollama**
+- Make sure Ollama is running: `ollama serve`
+- Check that the model is downloaded: `ollama list`
+- Verify the base URL if using a custom port
 
 **Sorbet type errors**
 - Make sure you're using the correct types in your signatures

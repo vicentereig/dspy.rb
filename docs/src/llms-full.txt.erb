@@ -38,7 +38,7 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 
 ### Key Features
 
-- **Provider Support**: OpenAI, Anthropic (more coming)
+- **Provider Support**: OpenAI, Anthropic, Ollama (via OpenAI compatibility)
 - **Type Safety**: Sorbet integration throughout
 - **Automatic JSON Extraction**: Provider-optimized strategies
 - **Composable Modules**: Chain, compose, and reuse
@@ -80,6 +80,11 @@ end
 # Or configure with Anthropic
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+end
+
+# Or use Ollama for local models
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('ollama/llama3.2')  # No API key needed for local
 end
 ```
 

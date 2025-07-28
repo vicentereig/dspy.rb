@@ -7,7 +7,8 @@ module DSPy
       # Maps provider prefixes to adapter classes
       ADAPTER_MAP = {
         'openai' => 'OpenAIAdapter',
-        'anthropic' => 'AnthropicAdapter'
+        'anthropic' => 'AnthropicAdapter',
+        'ollama' => 'OllamaAdapter'
       }.freeze
 
       class << self
@@ -22,7 +23,8 @@ module DSPy
           
           # Pass provider-specific options
           adapter_options = { model: model, api_key: api_key }
-          adapter_options.merge!(options) if provider == 'openai' # Only OpenAI accepts structured_outputs for now
+          # Both OpenAI and Ollama accept additional options
+          adapter_options.merge!(options) if %w[openai ollama].include?(provider)
           
           adapter_class.new(**adapter_options)
         end

@@ -5,6 +5,23 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2025-07-28
+
+### Added
+- **Ollama Support** - Run LLMs locally with full DSPy.rb functionality
+  - New `OllamaAdapter` using Ollama's OpenAI-compatible API
+  - Support for both local (default) and remote Ollama instances
+  - Optional API key authentication for remote instances
+  - Structured output support with automatic fallback strategies
+  - Full token usage tracking and instrumentation
+  - Comprehensive integration tests with VCR recordings
+
+### Documentation
+- Updated installation guide with Ollama setup instructions
+- Added Ollama examples to quick start guide
+- Updated provider list in README and core concepts
+- Created blog post announcing Ollama support with type-safe examples
+
 ## [0.14.0] - 2025-07-28
 
 ### Added

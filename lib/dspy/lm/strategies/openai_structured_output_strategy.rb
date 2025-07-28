@@ -11,9 +11,14 @@ module DSPy
 
         sig { override.returns(T::Boolean) }
         def available?
-          # Check if adapter is OpenAI and supports structured outputs
-          return false unless adapter.is_a?(DSPy::LM::OpenAIAdapter)
+          # Check if adapter is OpenAI or Ollama and supports structured outputs
+          return false unless adapter.is_a?(DSPy::LM::OpenAIAdapter) || adapter.is_a?(DSPy::LM::OllamaAdapter)
           return false unless adapter.instance_variable_get(:@structured_outputs_enabled)
+          
+          # For Ollama, we assume it supports basic structured outputs
+          if adapter.is_a?(DSPy::LM::OllamaAdapter)
+            return true
+          end
           
           DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?(adapter.model)
         end

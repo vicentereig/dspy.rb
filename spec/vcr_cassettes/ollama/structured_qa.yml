@@ -1,0 +1,72 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://localhost:11434/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"llama3.2","messages":[{"role":"system","content":"Your input
+        schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    },\n    \"confidence\":
+        {\n      \"type\": \"number\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Complete this task."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is the capital of France?\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":0.0,"response_format":{"type":"json_schema","json_schema":{"name":"simpleanswer","strict":true,"schema":{"type":"object","properties":{"answer":{"type":"string"},"confidence":{"type":"number"}},"required":["answer","confidence"],"additionalProperties":false}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - localhost:11434
+      X-Stainless-Arch:
+      - x64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - Linux
+      X-Stainless-Package-Version:
+      - 0.13.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.8
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer ollama
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1533'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 28 Jul 2025 14:22:08 GMT
+      Content-Length:
+      - '338'
+    body:
+      encoding: UTF-8
+      string: '{"id":"chatcmpl-279","object":"chat.completion","created":1753712528,"model":"llama3.2","system_fingerprint":"fp_ollama","choices":[{"index":0,"message":{"role":"assistant","content":"{\n  \"answer\":
+        \"Paris\",\n  \"confidence\": 0.9\n}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":299,"completion_tokens":19,"total_tokens":318}}
+
+        '
+  recorded_at: Mon, 28 Jul 2025 14:22:08 GMT
+recorded_with: VCR 6.3.1

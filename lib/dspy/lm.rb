@@ -13,6 +13,7 @@ require_relative 'instrumentation/token_tracker'
 # Load adapters
 require_relative 'lm/adapters/openai_adapter'
 require_relative 'lm/adapters/anthropic_adapter'
+require_relative 'lm/adapters/ollama_adapter'
 
 # Load strategy system
 require_relative 'lm/strategy_selector'

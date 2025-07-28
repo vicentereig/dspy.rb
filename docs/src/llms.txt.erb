@@ -73,6 +73,8 @@ gem 'dspy', github: 'vicentereig/dspy.rb'
 # Configure
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+  # or use Ollama for local models
+  # c.lm = DSPy::LM.new('ollama/llama3.2')
 end
 
 # Define a task

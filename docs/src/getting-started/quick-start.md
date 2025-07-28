@@ -51,6 +51,8 @@ end
 # Configure DSPy with your LLM
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+  # or use Ollama for local models
+  # c.lm = DSPy::LM.new('ollama/llama3.2')
 end
 
 # Create the predictor and run inference
