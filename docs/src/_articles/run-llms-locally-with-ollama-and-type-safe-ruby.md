@@ -3,7 +3,9 @@ layout: blog
 name: "Run LLMs Locally with Ollama and Type-Safe Ruby"
 description: "DSPy.rb now supports Ollama, bringing type-safe structured outputs to local LLM development. Learn how to build cost-effective AI applications with zero API charges during development."
 date: 2025-07-28
-
+author: "Vicente Reig"
+category: "Features"
+reading_time: "2 min read"
 ---
 
 I'm excited to announce that DSPy.rb v0.15.0 brings full support for Ollama! You can now run powerful language models locally while maintaining all the type safety and structured outputs that make DSPy.rb unique. This means zero API costs during development, complete data privacy, and the same great developer experience you expect from DSPy.
@@ -157,19 +159,7 @@ end
 
 ## Cost Analysis: Development Savings
 
-Let's look at the real savings during development:
-
-```ruby
-# Typical development cycle costs with GPT-4
-# - 100 test runs per day
-# - Average 500 input + 200 output tokens per run
-# - GPT-4 pricing: $0.03/1K input, $0.06/1K output
-daily_cost = 100 * ((500 * 0.03 + 200 * 0.06) / 1000)
-# => $2.70 per day, $81 per month
-
-# With Ollama
-daily_cost = 0  # Zero API costs!
-```
+Let's look at the real savings during development. A typical development cycle involves running around 100 test iterations per day, with each test using roughly 500 input tokens and generating 200 output tokens. With GPT-4's pricing at $0.03 per 1K input tokens and $0.06 per 1K output tokens, this adds up to about $2.70 per day, or $81 per month just for development testing. With Ollama, your daily API cost drops to exactly zero – you're only paying for the electricity to run your machine.
 
 ## Performance Considerations
 
