@@ -150,8 +150,7 @@ RSpec.describe "Simple Reliability Features" do
       # Test extraction from markdown code block
       response1 = DSPy::LM::Response.new(
         content: "Here's the answer:\n```json\n{\"answer\": \"42\"}\n```",
-        usage: {},
-        metadata: {}
+        metadata: DSPy::LM::ResponseMetadata.new(provider: 'test', model: 'test')
       )
       extracted1 = strategy.extract_json(response1)
       expect(extracted1).to eq('{"answer": "42"}')
@@ -159,8 +158,7 @@ RSpec.describe "Simple Reliability Features" do
       # Test extraction from plain JSON
       response2 = DSPy::LM::Response.new(
         content: '{"answer": "42"}',
-        usage: {},
-        metadata: {}
+        metadata: DSPy::LM::ResponseMetadata.new(provider: 'test', model: 'test')
       )
       extracted2 = strategy.extract_json(response2)
       expect(extracted2).to eq('{"answer": "42"}')
@@ -168,8 +166,7 @@ RSpec.describe "Simple Reliability Features" do
       # Test extraction from JSON with text
       response3 = DSPy::LM::Response.new(
         content: 'The result is: {"answer": "42"} as requested.',
-        usage: {},
-        metadata: {}
+        metadata: DSPy::LM::ResponseMetadata.new(provider: 'test', model: 'test')
       )
       extracted3 = strategy.extract_json(response3)
       expect(extracted3).to eq('{"answer": "42"}')

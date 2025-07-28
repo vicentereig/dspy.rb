@@ -19,7 +19,8 @@ require_relative 'lm/adapters/ollama_adapter'
 require_relative 'lm/strategy_selector'
 require_relative 'lm/retry_handler'
 
-# Load message builder
+# Load message builder and message types
+require_relative 'lm/message'
 require_relative 'lm/message_builder'
 
 module DSPy
@@ -78,8 +79,8 @@ module DSPy
         streaming_block = block
       end
       
-      # Validate messages format
-      validate_messages!(messages)
+      # Normalize and validate messages
+      messages = normalize_messages(messages)
       
       # Execute with instrumentation
       execute_raw_chat(messages, &streaming_block)
@@ -106,16 +107,19 @@ module DSPy
     end
 
     def execute_chat_with_strategy(messages, signature_class, strategy, &block)
+      # Convert messages to hash format for strategy and adapter
+      hash_messages = messages_to_hash_array(messages)
+      
       # Prepare request with strategy-specific modifications
       request_params = {}
-      strategy.prepare_request(messages.dup, request_params)
+      strategy.prepare_request(hash_messages.dup, request_params)
       
       # Make the request
       response = if request_params.any?
         # Pass additional parameters if strategy added them
-        adapter.chat(messages: messages, signature: signature_class, **request_params, &block)
+        adapter.chat(messages: hash_messages, signature: signature_class, **request_params, &block)
       else
-        adapter.chat(messages: messages, signature: signature_class, &block)
+        adapter.chat(messages: hash_messages, signature: signature_class, &block)
       end
       
       # Let strategy handle JSON extraction if needed
@@ -171,11 +175,19 @@ module DSPy
       
       # Add system message
       system_prompt = inference_module.system_signature
-      messages << { role: 'system', content: system_prompt } if system_prompt
+      if system_prompt
+        messages << Message.new(
+          role: Message::Role::System,
+          content: system_prompt
+        )
+      end
       
       # Add user message
       user_prompt = inference_module.user_signature(input_values)
-      messages << { role: 'user', content: user_prompt }
+      messages << Message.new(
+        role: Message::Role::User,
+        content: user_prompt
+      )
       
       messages
     end
@@ -205,7 +217,14 @@ module DSPy
 
     # Common instrumentation method for LM requests
     def instrument_lm_request(messages, signature_class_name, &execution_block)
-      input_text = messages.map { |m| m[:content] }.join(' ')
+      # Handle both Message objects and hash format
+      input_text = messages.map do |m|
+        if m.is_a?(Message)
+          m.content
+        else
+          m[:content]
+        end
+      end.join(' ')
       input_size = input_text.length
       
       response = nil
@@ -252,27 +271,84 @@ module DSPy
         raise ArgumentError, "messages must be an array"
       end
       
-      valid_roles = %w[system user assistant]
-      
-      messages.each do |message|
-        unless message.is_a?(Hash) && message.key?(:role) && message.key?(:content)
-          raise ArgumentError, "Each message must have :role and :content"
-        end
-        
-        unless valid_roles.include?(message[:role])
-          raise ArgumentError, "Invalid role: #{message[:role]}. Must be one of: #{valid_roles.join(', ')}"
+      messages.each_with_index do |message, index|
+        # Accept both Message objects and hash format for backward compatibility
+        if message.is_a?(Message)
+          # Already validated by type system
+          next
+        elsif message.is_a?(Hash) && message.key?(:role) && message.key?(:content)
+          # Legacy hash format - validate role
+          valid_roles = %w[system user assistant]
+          unless valid_roles.include?(message[:role])
+            raise ArgumentError, "Invalid role at index #{index}: #{message[:role]}. Must be one of: #{valid_roles.join(', ')}"
+          end
+        else
+          raise ArgumentError, "Message at index #{index} must be a Message object or hash with :role and :content"
         end
       end
     end
 
     def execute_raw_chat(messages, &streaming_block)
       response = instrument_lm_request(messages, 'RawPrompt') do
+        # Convert messages to hash format for adapter
+        hash_messages = messages_to_hash_array(messages)
         # Direct adapter call, no strategies or JSON parsing
-        adapter.chat(messages: messages, signature: nil, &streaming_block)
+        adapter.chat(messages: hash_messages, signature: nil, &streaming_block)
       end
       
       # Return raw response content, not parsed JSON
       response.content
+    end
+    
+    # Convert messages to normalized Message objects
+    def normalize_messages(messages)
+      # Validate array format first
+      unless messages.is_a?(Array)
+        raise ArgumentError, "messages must be an array"
+      end
+      
+      return messages if messages.all? { |m| m.is_a?(Message) }
+      
+      # Convert hash messages to Message objects
+      normalized = []
+      messages.each_with_index do |msg, index|
+        if msg.is_a?(Message)
+          normalized << msg
+        elsif msg.is_a?(Hash)
+          # Validate hash has required fields
+          unless msg.key?(:role) && msg.key?(:content)
+            raise ArgumentError, "Message at index #{index} must have :role and :content"
+          end
+          
+          # Validate role
+          valid_roles = %w[system user assistant]
+          unless valid_roles.include?(msg[:role])
+            raise ArgumentError, "Invalid role at index #{index}: #{msg[:role]}. Must be one of: #{valid_roles.join(', ')}"
+          end
+          
+          # Create Message object
+          message = MessageFactory.create(msg)
+          if message.nil?
+            raise ArgumentError, "Failed to create Message from hash at index #{index}"
+          end
+          normalized << message
+        else
+          raise ArgumentError, "Message at index #{index} must be a Message object or hash with :role and :content"
+        end
+      end
+      
+      normalized
+    end
+    
+    # Convert Message objects to hash array for adapters
+    def messages_to_hash_array(messages)
+      messages.map do |msg|
+        if msg.is_a?(Message)
+          msg.to_h
+        else
+          msg
+        end
+      end
     end
   end
 end

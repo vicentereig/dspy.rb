@@ -40,9 +40,13 @@ RSpec.describe DSPy::LM::OpenAIAdapter do
       double('OpenAI::Response',
              id: 'resp-123',
              created: 1234567890,
+             system_fingerprint: 'fp_123',
              choices: [
                double('Choice', 
-                      message: double('Message', content: 'Hello back!'))
+                      message: double('Message', 
+                                    content: 'Hello back!',
+                                    refusal: nil),
+                      finish_reason: 'stop')
              ],
              usage: double('Usage', 
                           total_tokens: 25,
@@ -62,10 +66,11 @@ RSpec.describe DSPy::LM::OpenAIAdapter do
       expect(result.content).to eq('Hello back!')
       expect(result.usage).to be_a(DSPy::LM::OpenAIUsage)
       expect(result.usage.total_tokens).to eq(25)
-      expect(result.metadata[:provider]).to eq('openai')
-      expect(result.metadata[:model]).to eq(model)
-      expect(result.metadata[:response_id]).to eq('resp-123')
-      expect(result.metadata[:created]).to eq(1234567890)
+      expect(result.metadata).to be_a(DSPy::LM::OpenAIResponseMetadata)
+      expect(result.metadata.provider).to eq('openai')
+      expect(result.metadata.model).to eq(model)
+      expect(result.metadata.response_id).to eq('resp-123')
+      expect(result.metadata.created).to eq(1234567890)
     end
 
     it 'handles streaming with block' do

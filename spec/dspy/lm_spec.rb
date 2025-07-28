@@ -56,7 +56,11 @@ RSpec.describe DSPy::LM do
     let(:mock_response) do
       DSPy::LM::Response.new(
         content: '{"answer": "test response"}',
-        usage: { 'total_tokens' => 50 },
+        usage: DSPy::LM::Usage.new(
+          input_tokens: 20,
+          output_tokens: 30,
+          total_tokens: 50
+        ),
         metadata: { provider: 'openai', model: 'gpt-4' }
       )
     end
@@ -129,7 +133,11 @@ RSpec.describe DSPy::LM do
     let(:mock_response) do
       DSPy::LM::Response.new(
         content: 'This is a raw response without JSON',
-        usage: { 'total_tokens' => 30, 'prompt_tokens' => 10, 'completion_tokens' => 20 },
+        usage: DSPy::LM::Usage.new(
+          input_tokens: 10,
+          output_tokens: 20,
+          total_tokens: 30
+        ),
         metadata: { provider: 'openai', model: 'gpt-4' }
       )
     end
@@ -162,6 +170,7 @@ RSpec.describe DSPy::LM do
         result = lm.raw_chat(messages)
         
         expect(mock_adapter).to have_received(:chat) do |**args|
+          # Messages are now converted to hash format for adapters
           expect(args[:messages]).to eq(messages)
           expect(args[:signature]).to be_nil
         end
@@ -267,7 +276,7 @@ RSpec.describe DSPy::LM do
       it 'validates each message has required fields' do
         expect {
           lm.raw_chat([{ content: 'missing role' }])
-        }.to raise_error(ArgumentError, /Each message must have :role and :content/)
+        }.to raise_error(ArgumentError, /must have :role and :content/)
       end
 
       it 'validates role is valid' do
@@ -315,10 +324,15 @@ RSpec.describe DSPy::LM do
       it 'builds messages with system and user prompts' do
         messages = lm.send(:build_messages, inference_module, input_values)
         
-        expect(messages).to eq([
-          { role: 'system', content: 'You are a helpful assistant' },
-          { role: 'user', content: 'Question: What is AI?\nAnswer:' }
-        ])
+        expect(messages.size).to eq(2)
+        
+        expect(messages[0]).to be_a(DSPy::LM::Message)
+        expect(messages[0].role).to eq(DSPy::LM::Message::Role::System)
+        expect(messages[0].content).to eq('You are a helpful assistant')
+        
+        expect(messages[1]).to be_a(DSPy::LM::Message)
+        expect(messages[1].role).to eq(DSPy::LM::Message::Role::User)
+        expect(messages[1].content).to eq('Question: What is AI?\nAnswer:')
       end
     end
   end

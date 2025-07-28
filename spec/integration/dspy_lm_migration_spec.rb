@@ -80,7 +80,11 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
       def chat(messages:, signature: nil, **kwargs, &block)
         @chat_response || DSPy::LM::Response.new(
           content: '{"answer": "test response"}',
-          usage: { 'total_tokens' => 50 },
+          usage: DSPy::LM::Usage.new(
+          input_tokens: 20,
+          output_tokens: 30,
+          total_tokens: 50
+        ),
           metadata: { provider: 'test', model: 'test-model' }
         )
       end
@@ -90,7 +94,11 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
     let(:mock_response) do
       DSPy::LM::Response.new(
         content: '{"answer": "test response"}',
-        usage: { 'total_tokens' => 50 },
+        usage: DSPy::LM::Usage.new(
+          input_tokens: 20,
+          output_tokens: 30,
+          total_tokens: 50
+        ),
         metadata: { provider: 'openai', model: 'gpt-4' }
       )
     end

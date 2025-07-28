@@ -58,10 +58,10 @@ RSpec.describe DSPy::LM::AnthropicAdapter do
       expect(result.content).to eq('Hello back!')
       expect(result.usage).to be_a(DSPy::LM::Usage)
       expect(result.usage.total_tokens).to eq(30)
-      expect(result.metadata[:provider]).to eq('anthropic')
-      expect(result.metadata[:model]).to eq('claude-3-sonnet')
-      expect(result.metadata[:response_id]).to eq('msg-123')
-      expect(result.metadata[:role]).to eq('assistant')
+      expect(result.metadata).to be_a(DSPy::LM::AnthropicResponseMetadata)
+      expect(result.metadata.provider).to eq('anthropic')
+      expect(result.metadata.model).to eq('claude-3-sonnet')
+      expect(result.metadata.response_id).to eq('msg-123')
     end
 
     it 'handles streaming with block' do
@@ -76,7 +76,8 @@ RSpec.describe DSPy::LM::AnthropicAdapter do
 
       result = adapter.chat(messages: messages, &test_block)
       
-      expect(result.metadata[:streaming]).to be_truthy
+      expect(result.metadata).to be_a(DSPy::LM::AnthropicResponseMetadata)
+      expect(result.metadata.provider).to eq('anthropic')
     end
 
     it 'handles API errors gracefully' do

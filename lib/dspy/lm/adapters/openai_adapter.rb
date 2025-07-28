@@ -43,7 +43,8 @@ module DSPy
             raise AdapterError, "OpenAI API error: #{response.error}"
           end
 
-          message = response.choices.first.message
+          choice = response.choices.first
+          message = choice.message
           content = message.content
           usage = response.usage
 
@@ -55,16 +56,20 @@ module DSPy
           # Convert usage data to typed struct
           usage_struct = UsageFactory.create('openai', usage)
           
+          # Create typed metadata
+          metadata = ResponseMetadataFactory.create('openai', {
+            model: model,
+            response_id: response.id,
+            created: response.created,
+            structured_output: @structured_outputs_enabled && signature && supports_structured_outputs?,
+            system_fingerprint: response.system_fingerprint,
+            finish_reason: choice.finish_reason
+          })
+          
           Response.new(
             content: content,
             usage: usage_struct,
-            metadata: {
-              provider: 'openai',
-              model: model,
-              response_id: response.id,
-              created: response.created,
-              structured_output: @structured_outputs_enabled && signature && supports_structured_outputs?
-            }
+            metadata: metadata
           )
         rescue => e
           raise AdapterError, "OpenAI adapter error: #{e.message}"

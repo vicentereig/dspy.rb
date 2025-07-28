@@ -49,14 +49,16 @@ module DSPy
               end
             end
             
+            # Create typed metadata for streaming response
+            metadata = ResponseMetadataFactory.create('anthropic', {
+              model: model,
+              streaming: true
+            })
+            
             Response.new(
               content: content,
               usage: nil, # Usage not available in streaming
-              metadata: {
-                provider: 'anthropic',
-                model: model,
-                streaming: true
-              }
+              metadata: metadata
             )
           else
             response = @client.messages.create(**request_params)
@@ -99,10 +101,13 @@ module DSPy
             # Add tool calls to metadata if present
             metadata[:tool_calls] = tool_calls unless tool_calls.empty?
             
+            # Create typed metadata
+            typed_metadata = ResponseMetadataFactory.create('anthropic', metadata)
+            
             Response.new(
               content: content,
               usage: usage_struct,
-              metadata: metadata
+              metadata: typed_metadata
             )
           end
         rescue => e

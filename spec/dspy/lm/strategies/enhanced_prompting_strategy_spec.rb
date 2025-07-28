@@ -92,7 +92,7 @@ RSpec.describe DSPy::LM::Strategies::EnhancedPromptingStrategy do
           {"answer": "42", "confidence": 0.95}
           ```
           CONTENT
-          usage: {}
+          metadata: DSPy::LM::ResponseMetadata.new(provider: 'test', model: 'test')
         )
       end
       
@@ -106,7 +106,7 @@ RSpec.describe DSPy::LM::Strategies::EnhancedPromptingStrategy do
       let(:response) do
         DSPy::LM::Response.new(
           content: '{"answer": "42", "confidence": 0.95}',
-          usage: {}
+          metadata: DSPy::LM::ResponseMetadata.new(provider: 'test', model: 'test')
         )
       end
       
@@ -125,7 +125,7 @@ RSpec.describe DSPy::LM::Strategies::EnhancedPromptingStrategy do
           {"answer": "42", "confidence": 0.95}
           ```
           CONTENT
-          usage: {}
+          metadata: DSPy::LM::ResponseMetadata.new(provider: 'test', model: 'test')
         )
       end
       
@@ -139,7 +139,7 @@ RSpec.describe DSPy::LM::Strategies::EnhancedPromptingStrategy do
       let(:response) do
         DSPy::LM::Response.new(
           content: 'The result is {"answer": "42", "confidence": 0.95} as requested.',
-          usage: {}
+          metadata: DSPy::LM::ResponseMetadata.new(provider: 'test', model: 'test')
         )
       end
       
@@ -153,7 +153,7 @@ RSpec.describe DSPy::LM::Strategies::EnhancedPromptingStrategy do
       let(:response) do
         DSPy::LM::Response.new(
           content: 'This is not JSON at all',
-          usage: {}
+          metadata: DSPy::LM::ResponseMetadata.new(provider: 'test', model: 'test')
         )
       end
       
@@ -166,8 +166,8 @@ RSpec.describe DSPy::LM::Strategies::EnhancedPromptingStrategy do
     context 'with nil content' do
       let(:response) do
         DSPy::LM::Response.new(
-          content: nil,
-          usage: {}
+          content: '',
+          metadata: DSPy::LM::ResponseMetadata.new(provider: 'test', model: 'test')
         )
       end
       
