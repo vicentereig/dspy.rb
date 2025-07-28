@@ -1,7 +1,7 @@
 ---
 layout: blog
 name: "Run LLMs Locally with Ollama and Type-Safe Ruby"
-summary: "DSPy.rb now supports Ollama, bringing type-safe structured outputs to local LLM development. Learn how to build cost-effective AI applications with zero API charges during development."
+description: "DSPy.rb now supports Ollama, bringing type-safe structured outputs to local LLM development. Learn how to build cost-effective AI applications with zero API charges during development."
 date: 2025-07-28
 ---
 
