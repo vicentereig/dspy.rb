@@ -184,13 +184,15 @@ DSPy.rb has rapidly evolved from experimental to production-ready:
 
 ## Roadmap - Battle-Testing Toward v1.0
 
-DSPy.rb is currently at **v0.13.0** and approaching stability. I'm focusing on real-world usage and refinement through the 0.14, 0.15+ series before committing to a stable v1.0 API.
+DSPy.rb is currently at **v0.15.2** and approaching stability. I'm focusing on real-world usage and refinement through the 0.16+ series before committing to a stable v1.0 API.
 
 **Current Focus Areas:**
-- 🚧 **Ollama Support** - Local model integration
+- ✅ **Ollama Support** - Local model integration (completed in v0.15.0)
+- ✅ **Agentic Memory** - Persistent agent state management with Memory module
+- 🚧 **Google Gemini Support** - Integration with Gemini models (#52)
 - 🚧 **Context Engineering** - Advanced prompt optimization techniques
 - 🚧 **MCP Support** - Model Context Protocol integration
-- 🚧 **Agentic Memory** - Persistent agent state management
+- 🚧 **Additional Optimizer Support** - Expanding teleprompt capabilities
 - 🚧 **Performance Optimization** - Based on production usage patterns
 
 **v1.0 Philosophy:** 
