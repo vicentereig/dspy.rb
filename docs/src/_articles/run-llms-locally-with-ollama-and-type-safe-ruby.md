@@ -208,6 +208,12 @@ Ollama provides OpenAI-compatible endpoints, which means DSPy.rb's structured ou
 ```ruby
 # Example: Recording tests with VCR
 RSpec.describe ProductAnalyzer do
+  before do
+    DSPy.configure do |c|
+      c.lm = DSPy::LM.new('ollama/llama3.2')
+    end
+  end
+
   it "categorizes products correctly", vcr: { cassette_name: "ollama/product_analysis" } do
     analyzer = DSPy::Predict.new(ProductAnalysis)
     result = analyzer.forward(description: "Blue running shoes with gel cushioning")
