@@ -3,7 +3,10 @@
 
 require 'bundler/setup'
 require 'dspy'
-require 'dotenv/load'
+
+# Load .env from project root
+require 'dotenv'
+Dotenv.load(File.join(File.dirname(__FILE__), '..', '..', '.env'))
 
 # Configure DSPy
 DSPy.configure do |config|

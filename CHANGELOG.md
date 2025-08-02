@@ -5,6 +5,15 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.4] - 2025-08-02
+
+### Fixed
+- **Enum Coercion in Union Types** - Fixed edge case where enum fields within union types weren't properly coerced
+  - Union type conversion now recursively applies type coercion to all struct fields
+  - Fixes coffee shop example where `DrinkSize` enum was passed as string from LLM
+  - Added comprehensive test coverage for enum fields within union types
+  - Example: `T.any(MakeDrink, RefundOrder)` with `size: DrinkSize` enum field now works correctly
+
 ## [0.15.3] - 2025-08-02
 
 ### Fixed

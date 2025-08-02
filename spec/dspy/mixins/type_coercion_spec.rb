@@ -2,6 +2,15 @@
 
 require 'spec_helper'
 
+# Test enums
+class Priority < T::Enum
+  enums do
+    Low = new('low')
+    Medium = new('medium')
+    High = new('high')
+  end
+end
+
 # Test structs for union type handling
 module TestStructs
   class SearchAction < T::Struct
@@ -12,6 +21,11 @@ module TestStructs
   class AnswerAction < T::Struct
     const :content, String
     const :confidence, Float
+  end
+  
+  class TaskAction < T::Struct
+    const :title, String
+    const :priority, Priority  # Enum field
   end
 end
 
@@ -36,6 +50,24 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
   describe '#coerce_value_to_type' do
     context 'with union types (T.any)' do
       let(:union_type) { T.any(TestStructs::SearchAction, TestStructs::AnswerAction) }
+      
+      it 'converts Hash with enum fields within union types' do
+        # Test with union type including a struct with enum field
+        union_with_enum = T.any(TestStructs::TaskAction, TestStructs::AnswerAction)
+        
+        hash_value = {
+          "_type" => "TaskAction",
+          "title" => "Important task",
+          "priority" => "high"  # String that needs enum conversion
+        }
+        
+        result = instance.test_coerce(hash_value, union_with_enum)
+        
+        expect(result).to be_a(TestStructs::TaskAction)
+        expect(result.title).to eq("Important task")
+        expect(result.priority).to be_a(Priority)
+        expect(result.priority).to eq(Priority::High)
+      end
       
       it 'converts Hash with _type discriminator to appropriate struct' do
         # Test AnswerAction conversion

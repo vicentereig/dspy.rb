@@ -1,4 +1,4 @@
-# typed: strict
+54 # typed: strict
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
@@ -168,8 +168,22 @@ module DSPy
               symbolized_hash = value.transform_keys(&:to_sym)
               symbolized_hash.delete(:_type)
               
-              # Create the struct instance
-              return type.raw_type.new(**symbolized_hash)
+              # Coerce struct field values based on their types
+              struct_class = type.raw_type
+              struct_props = struct_class.props
+              
+              coerced_hash = {}
+              symbolized_hash.each do |key, val|
+                if struct_props[key]
+                  prop_type = struct_props[key][:type_object] || struct_props[key][:type]
+                  coerced_hash[key] = coerce_value_to_type(val, prop_type)
+                else
+                  coerced_hash[key] = val
+                end
+              end
+              
+              # Create the struct instance with coerced values
+              return struct_class.new(**coerced_hash)
             end
           end
         end
