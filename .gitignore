@@ -1,3 +1,4 @@
+.claude*
 docs/output/*
 memory/
 dspy_registry/

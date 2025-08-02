@@ -2,17 +2,16 @@
 
 require 'spec_helper'
 
-# Test enums
-class Priority < T::Enum
-  enums do
-    Low = new('low')
-    Medium = new('medium')
-    High = new('high')
-  end
-end
-
 # Test structs for union type handling
 module TestStructs
+  # Test enums scoped to avoid conflicts
+  class Priority < T::Enum
+    enums do
+      Low = new('low')
+      Medium = new('medium')
+      High = new('high')
+    end
+  end
   class SearchAction < T::Struct
     const :query, String
     const :max_results, Integer, default: 5
@@ -25,7 +24,7 @@ module TestStructs
   
   class TaskAction < T::Struct
     const :title, String
-    const :priority, Priority  # Enum field
+    const :priority, TestStructs::Priority  # Enum field
   end
 end
 
@@ -65,8 +64,8 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         
         expect(result).to be_a(TestStructs::TaskAction)
         expect(result.title).to eq("Important task")
-        expect(result.priority).to be_a(Priority)
-        expect(result.priority).to eq(Priority::High)
+        expect(result.priority).to be_a(TestStructs::Priority)
+        expect(result.priority).to eq(TestStructs::Priority::High)
       end
       
       it 'converts Hash with _type discriminator to appropriate struct' do
