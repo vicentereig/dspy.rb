@@ -5,6 +5,15 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.3] - 2025-08-02
+
+### Fixed
+- **Union Type Conversion in Predictors** (#54) - Fixed automatic conversion of LLM responses to union types
+  - Added union type handling to `TypeCoercion` mixin used by `DSPy::Predict` and `DSPy::ChainOfThought`
+  - LLM responses with `_type` discriminators are now correctly converted to appropriate struct instances
+  - Enables elegant union type patterns in predictors as documented
+  - Example: `T.any(SearchAction, AnswerAction)` now works correctly with predictors
+
 ## [0.15.2] - 2025-07-28
 
 ### Fixed

@@ -30,6 +30,8 @@ module DSPy
         return value if value.nil?
 
         case prop_type
+        when ->(type) { union_type?(type) }
+          coerce_union_value(value, prop_type)
         when ->(type) { array_type?(type) }
           coerce_array_value(value, prop_type)
         when ->(type) { enum_type?(type) }
@@ -100,6 +102,18 @@ module DSPy
         false
       end
 
+      # Checks if a type is a union type (T.any)
+      sig { params(type: T.untyped).returns(T::Boolean) }
+      def union_type?(type)
+        type.is_a?(T::Types::Union) && !is_nilable_type?(type)
+      end
+
+      # Checks if a type is nilable (contains NilClass)
+      sig { params(type: T.untyped).returns(T::Boolean) }
+      def is_nilable_type?(type)
+        type.is_a?(T::Types::Union) && type.types.any? { |t| t == T::Utils.coerce(NilClass) }
+      end
+
       # Coerces an array value, converting each element as needed
       sig { params(value: T.untyped, prop_type: T.untyped).returns(T.untyped) }
       def coerce_array_value(value, prop_type)
@@ -131,6 +145,40 @@ module DSPy
       rescue ArgumentError => e
         # If struct creation fails, return the original value
         DSPy.logger.debug("Failed to coerce to struct #{struct_class}: #{e.message}")
+        value
+      end
+
+      # Coerces a union value by using _type discriminator
+      sig { params(value: T.untyped, union_type: T.untyped).returns(T.untyped) }
+      def coerce_union_value(value, union_type)
+        return value unless value.is_a?(Hash)
+        
+        # Check for _type discriminator field
+        type_name = value[:_type] || value["_type"]
+        return value unless type_name
+        
+        # Find matching struct type in the union
+        union_type.types.each do |type|
+          next if type == T::Utils.coerce(NilClass)
+          
+          if type.is_a?(T::Types::Simple) && type.raw_type < T::Struct
+            struct_name = type.raw_type.name.split('::').last
+            if struct_name == type_name
+              # Convert string keys to symbols and remove _type
+              symbolized_hash = value.transform_keys(&:to_sym)
+              symbolized_hash.delete(:_type)
+              
+              # Create the struct instance
+              return type.raw_type.new(**symbolized_hash)
+            end
+          end
+        end
+        
+        # If no matching type found, return original value
+        value
+      rescue ArgumentError => e
+        # If struct creation fails, return the original value
+        DSPy.logger.debug("Failed to coerce union type: #{e.message}")
         value
       end
     end

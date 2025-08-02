@@ -3,6 +3,7 @@
 
 require 'bundler/setup'
 require 'dspy'
+require 'dotenv/load'
 
 # Configure DSPy
 DSPy.configure do |config|
