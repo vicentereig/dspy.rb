@@ -47,7 +47,7 @@ The result? LLM applications that actually scale and don't break when you sneeze
 
 ## Development Status
 
-DSPy.rb is actively developed and approaching stability at **v0.13.0**. The core framework is production-ready with comprehensive documentation, but I'm battle-testing features through the 0.x series before committing to a stable v1.0 API. 
+DSPy.rb is actively developed and approaching stability at **v0.15.4**. The core framework is production-ready with comprehensive documentation, but I'm battle-testing features through the 0.x series before committing to a stable v1.0 API. 
 
 Real-world usage feedback is invaluable - if you encounter issues or have suggestions, please open a GitHub issue!
 
@@ -56,7 +56,7 @@ Real-world usage feedback is invaluable - if you encounter issues or have sugges
 ### Installation
 
 ```ruby
-gem 'dspy', '~> 0.13'
+gem 'dspy', '~> 0.15'
 ```
 
 Or add to your Gemfile:
