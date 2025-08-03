@@ -130,6 +130,42 @@ RSpec.describe 'DSPy::Prediction edge cases' do
       expect(prediction.items[2]).to be_a(ArrayUnionTypes::TypeA)
       expect(prediction.items[2].value_a).to eq('second')
     end
+
+    context 'with nilable array of union types' do
+      class NilableArrayUnionSignature < DSPy::Signature
+        output do
+          const :items, T.nilable(T::Array[T.any(ArrayUnionTypes::TypeA, ArrayUnionTypes::TypeB)])
+        end
+      end
+
+      it 'handles nil array' do
+        prediction_data = { items: nil }
+        prediction = DSPy::Prediction.new(NilableArrayUnionSignature.output_schema, **prediction_data)
+        expect(prediction.items).to be_nil
+      end
+
+      it 'handles empty array' do
+        prediction_data = { items: [] }
+        prediction = DSPy::Prediction.new(NilableArrayUnionSignature.output_schema, **prediction_data)
+        expect(prediction.items).to eq([])
+      end
+
+      it 'handles array with elements' do
+        prediction_data = {
+          items: [
+            { type: 'a', value_a: 'test' },
+            { type: 'b', value_b: 42 }
+          ]
+        }
+        prediction = DSPy::Prediction.new(NilableArrayUnionSignature.output_schema, **prediction_data)
+        
+        expect(prediction.items).to be_an(Array)
+        expect(prediction.items[0]).to be_a(ArrayUnionTypes::TypeA)
+        expect(prediction.items[0].value_a).to eq('test')
+        expect(prediction.items[1]).to be_a(ArrayUnionTypes::TypeB)
+        expect(prediction.items[1].value_b).to eq(42)
+      end
+    end
   end
 
   describe 'enum edge cases' do

@@ -5,6 +5,15 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.5] - 2025-08-03
+
+### Fixed
+- **Nilable Arrays with Union Types** (#56) - Fixed type conversion for nilable arrays containing union types
+  - `T.nilable(T::Array[T.any(StructA, StructB)])` now properly converts array elements to struct instances
+  - Previously elements remained as hashes instead of being converted to their respective types
+  - Updated `needs_array_conversion?` and `convert_array_elements` to handle nilable wrapper types
+  - Added comprehensive test coverage for nilable array edge cases
+
 ## [0.15.4] - 2025-08-02
 
 ### Fixed

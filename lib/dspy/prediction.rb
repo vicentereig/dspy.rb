@@ -388,7 +388,17 @@ module DSPy
     def needs_array_conversion?(type)
       case type
       when T::Types::TypedArray
-        needs_struct_conversion?(type.type)
+        needs_struct_conversion?(type.type) || is_enum_type?(type.type)
+      when T::Types::Union
+        # Handle nilable arrays: T.nilable(T::Array[...])
+        if is_nilable_type?(type)
+          # Find the non-nil type in the union
+          non_nil_type = type.types.find { |t| t != T::Utils.coerce(NilClass) }
+          # Recursively check if it needs array conversion
+          needs_array_conversion?(non_nil_type)
+        else
+          false
+        end
       else
         false
       end
@@ -396,6 +406,13 @@ module DSPy
 
     sig { params(array: T::Array[T.untyped], type: T.untyped).returns(T::Array[T.untyped]) }
     def convert_array_elements(array, type)
+      # Handle nilable arrays: T.nilable(T::Array[...])
+      if type.is_a?(T::Types::Union) && is_nilable_type?(type)
+        # Find the non-nil type (should be TypedArray)
+        array_type = type.types.find { |t| t != T::Utils.coerce(NilClass) }
+        return convert_array_elements(array, array_type)
+      end
+      
       return array unless type.is_a?(T::Types::TypedArray)
 
       element_type = type.type
