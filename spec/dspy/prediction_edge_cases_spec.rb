@@ -455,4 +455,88 @@ RSpec.describe 'DSPy::Prediction edge cases' do
       expect(prediction._prediction_marker).to eq(true)
     end
   end
+
+  describe 'union types with extra fields from LLM' do
+    # Test for issue #59
+    module UnionWithExtraFields
+      class ReflectAction < T::Struct
+        const :reasoning, String
+        const :thoughts, String
+      end
+
+      class AnswerAction < T::Struct
+        const :reasoning, String
+        const :content, String
+      end
+    end
+
+    class UnionWithDiscriminator < DSPy::Signature
+      output do
+        const :action_type, String
+        const :action, T.any(
+          UnionWithExtraFields::ReflectAction,
+          UnionWithExtraFields::AnswerAction
+        )
+      end
+    end
+
+    it 'ignores extra fields when converting union types with discriminator' do
+      # Simulate LLM response that includes extra fields
+      prediction_data = {
+        action_type: 'reflect_action',  # Use the correct snake_case discriminator
+        action: {
+          reasoning: 'Need to analyze the problem further',
+          thoughts: 'Considering multiple perspectives',
+          synthesis: 'This field should be ignored',  # Extra field not in ReflectAction
+          confidence: 0.95,  # Another extra field
+          metadata: { source: 'llm' }  # Complex extra field
+        }
+      }
+
+      prediction = DSPy::Prediction.new(UnionWithDiscriminator.output_schema, **prediction_data)
+
+      # Should successfully create the struct without errors
+      expect(prediction.action_type).to eq('reflect_action')
+      expect(prediction.action).to be_a(UnionWithExtraFields::ReflectAction)
+      expect(prediction.action.reasoning).to eq('Need to analyze the problem further')
+      expect(prediction.action.thoughts).to eq('Considering multiple perspectives')
+      
+      # Verify extra fields were not added to the struct
+      expect { prediction.action.synthesis }.to raise_error(NoMethodError)
+      expect { prediction.action.confidence }.to raise_error(NoMethodError)
+      expect { prediction.action.metadata }.to raise_error(NoMethodError)
+    end
+
+    it 'handles extra fields with _type discriminator in union types' do
+      # Alternative pattern where _type is used within the union field itself
+      class UnionWithInternalType < DSPy::Signature
+        output do
+          const :result, T.any(
+            UnionWithExtraFields::ReflectAction,
+            UnionWithExtraFields::AnswerAction
+          )
+        end
+      end
+
+      prediction_data = {
+        result: {
+          _type: 'AnswerAction',
+          reasoning: 'Based on the analysis',
+          content: 'The answer is 42',
+          extra_field: 'Should be ignored',
+          nested_extra: { data: 'Also ignored' }
+        }
+      }
+
+      prediction = DSPy::Prediction.new(UnionWithInternalType.output_schema, **prediction_data)
+
+      expect(prediction.result).to be_a(UnionWithExtraFields::AnswerAction)
+      expect(prediction.result.reasoning).to eq('Based on the analysis')
+      expect(prediction.result.content).to eq('The answer is 42')
+      
+      # Verify extra fields were filtered out
+      expect { prediction.result.extra_field }.to raise_error(NoMethodError)
+      expect { prediction.result.nested_extra }.to raise_error(NoMethodError)
+    end
+  end
 end

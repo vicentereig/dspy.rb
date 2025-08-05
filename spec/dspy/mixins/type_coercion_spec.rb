@@ -119,6 +119,28 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         
         expect(result).to eq(hash_value)
       end
+      
+      it 'ignores extra fields not defined in the struct when converting union types' do
+        # This tests the fix for issue #59
+        hash_value = {
+          "_type" => "AnswerAction",
+          "content" => "The answer is 42",
+          "confidence" => 0.95,
+          "synthesis" => "Extra field that should be ignored",  # Not defined in AnswerAction
+          "extra_data" => { "foo" => "bar" }  # Another extra field
+        }
+        
+        result = instance.test_coerce(hash_value, union_type)
+        
+        # Should successfully create the struct without the extra fields
+        expect(result).to be_a(TestStructs::AnswerAction)
+        expect(result.content).to eq("The answer is 42")
+        expect(result.confidence).to eq(0.95)
+        
+        # Verify the struct doesn't have the extra fields
+        expect { result.synthesis }.to raise_error(NoMethodError)
+        expect { result.extra_data }.to raise_error(NoMethodError)
+      end
     end
     
     context 'with existing type handling' do

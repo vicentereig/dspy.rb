@@ -172,13 +172,12 @@ module DSPy
               struct_class = type.raw_type
               struct_props = struct_class.props
               
+              # ONLY include fields that exist in the struct
               coerced_hash = {}
-              symbolized_hash.each do |key, val|
-                if struct_props[key]
+              struct_props.each_key do |key|
+                if symbolized_hash.key?(key)
                   prop_type = struct_props[key][:type_object] || struct_props[key][:type]
-                  coerced_hash[key] = coerce_value_to_type(val, prop_type)
-                else
-                  coerced_hash[key] = val
+                  coerced_hash[key] = coerce_value_to_type(symbolized_hash[key], prop_type)
                 end
               end
               

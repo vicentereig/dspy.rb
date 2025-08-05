@@ -403,6 +403,34 @@ module ReviewActions
 end
 ```
 
+## Robustness Against LLM Quirks
+
+One more thing that makes union types in DSPy.rb particularly robust: **automatic field filtering**. 
+
+Sometimes LLMs get creative and return extra fields that aren't part of your struct definition. Maybe the model confuses similar concepts or hallucinates additional properties. With DSPy.rb v0.15.4+, these extra fields are automatically filtered out during type conversion:
+
+```ruby
+# Even if the LLM returns this:
+{
+  "_type" => "RefundOrder",
+  "order_id" => "12345",
+  "reason" => "Cold coffee",
+  "refund_amount" => 4.99,
+  "customer_mood" => "angry",  # <- Not in RefundOrder struct!
+  "weather" => "rainy"         # <- Also not defined!
+}
+
+# DSPy automatically filters to only defined fields:
+action = RefundOrder.new(
+  order_id: "12345",
+  reason: "Cold coffee", 
+  refund_amount: 4.99
+)
+# No errors, no fuss!
+```
+
+This means your agents are more resilient to LLM variations and prompt changes. You define what fields you care about, and DSPy ensures that's exactly what you get.
+
 ## The Bottom Line
 
 Single-field union types aren't just a nice-to-have - they fundamentally change how you structure AI applications. Instead of defensive programming against a struct full of nils, you get precise types that match your domain.

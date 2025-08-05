@@ -280,8 +280,20 @@ module DSPy
       struct_class = type_mapping[discriminator_str]
       return value unless struct_class
 
-      # Convert the Hash to the appropriate struct type
-      struct_class.new(**value)
+      # Filter to only include fields defined in the struct
+      struct_props = struct_class.props
+      filtered_hash = {}
+      
+      value.each do |k, v|
+        # Skip _type field and any fields not defined in the struct
+        next if k == :_type || k == "_type"
+        next unless struct_props.key?(k.to_sym)
+        
+        filtered_hash[k.to_sym] = v
+      end
+      
+      # Convert the filtered Hash to the appropriate struct type
+      struct_class.new(**filtered_hash)
     rescue TypeError, ArgumentError
       # If conversion fails, return the original value
       value
@@ -335,9 +347,8 @@ module DSPy
             else
               converted_hash[k] = v
             end
-          else
-            converted_hash[k] = v
           end
+          # Skip fields not defined in the struct
         end
         begin
           struct_class.new(**converted_hash)
@@ -487,9 +498,8 @@ module DSPy
                   else
                     converted_hash[k] = v
                   end
-                else
-                  converted_hash[k] = v
                 end
+                # Skip fields not defined in the struct
               end
               return struct_class.new(**converted_hash)
             rescue TypeError, ArgumentError
