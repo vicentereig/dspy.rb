@@ -5,6 +5,16 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.6] - 2025-08-05
+
+### Fixed
+- **Union Type Resilience Against LLM Hallucinations** (#59) - Fixed type coercion to filter extra fields not defined in structs
+  - When LLMs return extra fields that aren't part of the target T::Struct, these are now automatically filtered out
+  - Prevents `ArgumentError: Unrecognized properties` when LLMs confuse similar concepts or add hallucinated fields
+  - Example: If LLM returns `synthesis` field for `ReflectAction` (which only has `reasoning` and `thoughts`), it's silently ignored
+  - Makes DSPy.rb agents more robust to prompt changes and model variations
+  - Added comprehensive test coverage and updated documentation
+
 ## [0.15.5] - 2025-08-03
 
 ### Fixed
