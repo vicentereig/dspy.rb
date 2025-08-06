@@ -26,28 +26,56 @@ In DSPy.rb, tools are just Ruby objects that respond to `call`:
 
 ```ruby
 # A simple web search tool
-class WebSearchTool
+class WebSearchTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'web_search'
+  tool_description 'Searches the web for information on a given topic'
+
+  # Define a type for search results
+  class SearchResult < T::Struct
+    const :title, String
+    const :url, String
+    const :snippet, String
+  end
+
+  sig { params(query: String).returns(T::Array[SearchResult]) }
   def call(query:)
     # In production, this would call a real search API
     case query.downcase
     when /ruby programming/
       [
-        { title: "Ruby Programming Language", url: "https://ruby-lang.org", snippet: "A dynamic, open source programming language..." },
-        { title: "Ruby on Rails", url: "https://rubyonrails.org", snippet: "Rails is a web application framework..." }
+        SearchResult.new(title: "Ruby Programming Language", url: "https://ruby-lang.org", snippet: "A dynamic, open source programming language..."),
+        SearchResult.new(title: "Ruby on Rails", url: "https://rubyonrails.org", snippet: "Rails is a web application framework...")
       ]
     when /climate change/
       [
-        { title: "IPCC Report 2024", url: "https://ipcc.ch", snippet: "Latest findings on global climate..." },
-        { title: "NASA Climate Data", url: "https://climate.nasa.gov", snippet: "Real-time climate monitoring..." }
+        SearchResult.new(title: "IPCC Report 2024", url: "https://ipcc.ch", snippet: "Latest findings on global climate..."),
+        SearchResult.new(title: "NASA Climate Data", url: "https://climate.nasa.gov", snippet: "Real-time climate monitoring...")
       ]
     else
-      [{ title: "No results found", url: "", snippet: "Try a different query" }]
+      [SearchResult.new(title: "No results found", url: "", snippet: "Try a different query")]
     end
   end
 end
 
 # A calculator tool using Ruby's capabilities
-class CalculatorTool
+class CalculatorTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'calculator'
+  tool_description 'Evaluates mathematical expressions safely'
+
+  # Define result types
+  class CalculationSuccess < T::Struct
+    const :result, Numeric
+  end
+
+  class CalculationError < T::Struct
+    const :error, String
+  end
+
+  sig { params(expression: String).returns(T.any(CalculationSuccess, CalculationError)) }
   def call(expression:)
     # Safe evaluation of mathematical expressions
     allowed_methods = %w[+ - * / ** % sin cos tan log sqrt]
@@ -57,31 +85,53 @@ class CalculatorTool
     unauthorized = tokens - allowed_methods
     
     if unauthorized.any?
-      { error: "Unauthorized operations: #{unauthorized.join(', ')}" }
+      CalculationError.new(error: "Unauthorized operations: #{unauthorized.join(', ')}")
     else
-      { result: eval(expression) }
+      result = eval(expression)
+      CalculationSuccess.new(result: result)
     end
   rescue => e
-    { error: e.message }
+    CalculationError.new(error: e.message)
   end
 end
 
 # A data analysis tool
-class DataAnalysisTool
+class DataAnalysisTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'data_analysis'
+  tool_description 'Performs statistical analysis on numerical data'
+
+  # Define result types
+  class AnalysisSuccess < T::Struct
+    const :result, Float
+    const :operation, String
+  end
+
+  class AnalysisError < T::Struct
+    const :error, String
+  end
+
+  sig { params(data: T::Array[Numeric], operation: String).returns(T.any(AnalysisSuccess, AnalysisError)) }
   def call(data:, operation:)
-    case operation
+    return AnalysisError.new(error: "Data cannot be empty") if data.empty?
+
+    case operation.downcase
     when "mean"
-      { result: data.sum.to_f / data.size }
+      result = data.sum.to_f / data.size
+      AnalysisSuccess.new(result: result, operation: operation)
     when "median"
       sorted = data.sort
       mid = sorted.size / 2
-      { result: sorted.size.odd? ? sorted[mid] : (sorted[mid-1] + sorted[mid]) / 2.0 }
+      result = sorted.size.odd? ? sorted[mid].to_f : (sorted[mid-1] + sorted[mid]) / 2.0
+      AnalysisSuccess.new(result: result, operation: operation)
     when "std_dev"
       mean = data.sum.to_f / data.size
       variance = data.map { |x| (x - mean) ** 2 }.sum / data.size
-      { result: Math.sqrt(variance) }
+      result = Math.sqrt(variance)
+      AnalysisSuccess.new(result: result, operation: operation)
     else
-      { error: "Unknown operation: #{operation}" }
+      AnalysisError.new(error: "Unknown operation: #{operation}. Supported: mean, median, std_dev")
     end
   end
 end
@@ -122,11 +172,11 @@ DSPy.configure do |c|
 end
 
 # Initialize tools
-tools = {
-  search: WebSearchTool.new,
-  calculate: CalculatorTool.new,
-  analyze: DataAnalysisTool.new
-}
+tools = [
+  WebSearchTool.new,
+  CalculatorTool.new,
+  DataAnalysisTool.new
+]
 
 # Create the agent
 research_agent = DSPy::ReAct.new(ResearchAssistant, tools: tools, max_iters: 5)
@@ -195,15 +245,33 @@ Let's create a more sophisticated tool that integrates with Rails:
 
 ```ruby
 # app/tools/database_query_tool.rb
-class DatabaseQueryTool
+class DatabaseQueryTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'database_query'
+  tool_description 'Executes safe database queries on allowed models'
+
+  # Define result types
+  class QuerySuccess < T::Struct
+    const :result, T.any(Integer, Float, T::Array[T::Hash[String, T.untyped]])
+    const :query_type, String
+  end
+
+  class QueryError < T::Struct
+    const :error, String
+  end
+
+  sig { params(allowed_models: T::Array[String]).void }
   def initialize(allowed_models: [])
     @allowed_models = allowed_models
+    super()
   end
   
+  sig { params(model: String, query: String, limit: Integer).returns(T.any(QuerySuccess, QueryError)) }
   def call(model:, query:, limit: 10)
     # Security: Only allow whitelisted models
     unless @allowed_models.include?(model)
-      return { error: "Model #{model} is not allowed" }
+      return QueryError.new(error: "Model #{model} is not allowed")
     end
     
     # Get the actual model class
@@ -213,31 +281,34 @@ class DatabaseQueryTool
     case query
     when /count where (\w+) = ['"]([^'"]+)['"]/
       field, value = $1, $2
-      { result: model_class.where(field => value).count }
+      result = model_class.where(field => value).count
+      QuerySuccess.new(result: result, query_type: "count")
       
     when /average (\w+) where (\w+) = ['"]([^'"]+)['"]/
       avg_field, where_field, value = $1, $2, $3
-      { result: model_class.where(where_field => value).average(avg_field) }
+      result = model_class.where(where_field => value).average(avg_field).to_f
+      QuerySuccess.new(result: result, query_type: "average")
       
     when /recent (\d+)/
       count = $1.to_i
       records = model_class.order(created_at: :desc).limit(count)
-      { result: records.map { |r| r.attributes.slice('id', 'name', 'created_at') } }
+      result = records.map { |r| r.attributes.slice('id', 'name', 'created_at') }
+      QuerySuccess.new(result: result, query_type: "recent")
       
     else
-      { error: "Query pattern not recognized" }
+      QueryError.new(error: "Query pattern not recognized")
     end
   rescue => e
-    { error: e.message }
+    QueryError.new(error: e.message)
   end
 end
 
 # Use it in an agent
 analytics_agent = DSPy::ReAct.new(
   DataAnalytics,
-  tools: {
-    db_query: DatabaseQueryTool.new(allowed_models: ['User', 'Order', 'Product'])
-  }
+  tools: [
+    DatabaseQueryTool.new(allowed_models: ['User', 'Order', 'Product'])
+  ]
 )
 
 result = analytics_agent.forward(
@@ -250,26 +321,44 @@ result = analytics_agent.forward(
 ReAct agents can gracefully handle tool failures:
 
 ```ruby
-class ResilientSearchTool
+class ResilientSearchTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'resilient_search'
+  tool_description 'Searches with automatic retry on failures'
+
+  class SearchResult < T::Struct
+    const :title, String
+    const :snippet, String
+  end
+
+  class SearchError < T::Struct
+    const :error, String
+    const :retry_count, Integer
+  end
+
+  sig { void }
   def initialize
     @attempt = 0
+    super()
   end
   
+  sig { params(query: String).returns(T.any(T::Array[SearchResult], SearchError)) }
   def call(query:)
     @attempt += 1
     
     # Simulate API failures
     if @attempt == 1
-      { error: "API rate limit exceeded" }
+      SearchError.new(error: "API rate limit exceeded", retry_count: @attempt)
     else
       # Normal search results
-      [{ title: "Result", snippet: "Found after retry" }]
+      [SearchResult.new(title: "Result", snippet: "Found after retry")]
     end
   end
 end
 
 # The agent will automatically retry with different strategies
-agent = DSPy::ReAct.new(SearchTask, tools: { search: ResilientSearchTool.new })
+agent = DSPy::ReAct.new(SearchTask, tools: [ResilientSearchTool.new])
 ```
 
 ## Production Best Practices
@@ -277,13 +366,29 @@ agent = DSPy::ReAct.new(SearchTask, tools: { search: ResilientSearchTool.new })
 ### 1. Tool Timeouts
 
 ```ruby
-class TimeoutTool
-  def call(**args)
+class TimeoutTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'timeout_operation'
+  tool_description 'Performs operations with timeout protection'
+
+  class OperationSuccess < T::Struct
+    const :result, String
+  end
+
+  class TimeoutError < T::Struct
+    const :error, String
+  end
+
+  sig { params(data: String).returns(T.any(OperationSuccess, TimeoutError)) }
+  def call(data:)
     Timeout.timeout(5) do
       # Your tool logic here
+      processed_data = "Processed: #{data}"
+      OperationSuccess.new(result: processed_data)
     end
   rescue Timeout::Error
-    { error: "Tool execution timed out" }
+    TimeoutError.new(error: "Tool execution timed out")
   end
 end
 ```
@@ -291,12 +396,29 @@ end
 ### 2. Caching Results
 
 ```ruby
-class CachedSearchTool
+class CachedSearchTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'cached_search'
+  tool_description 'Performs web search with caching for performance'
+
+  sig { params(query: String).returns(T::Array[T::Hash[String, String]]) }
   def call(query:)
     Rails.cache.fetch(["search", query], expires_in: 1.hour) do
       # Expensive search operation
       perform_search(query)
     end
+  end
+
+  private
+
+  sig { params(query: String).returns(T::Array[T::Hash[String, String]]) }
+  def perform_search(query)
+    # Mock implementation - replace with actual search API
+    [
+      { "title" => "Result 1", "url" => "https://example.com/1", "snippet" => "First result for #{query}" },
+      { "title" => "Result 2", "url" => "https://example.com/2", "snippet" => "Second result for #{query}" }
+    ]
   end
 end
 ```
@@ -304,15 +426,25 @@ end
 ### 3. Async Tool Execution
 
 ```ruby
-class AsyncTool
+class AsyncTool < DSPy::Tools::Base
+  extend T::Sig
   include Sidekiq::Worker
+
+  tool_name 'async_operation'
+  tool_description 'Queues long-running operations for background processing'
+
+  class JobQueued < T::Struct
+    const :status, String
+    const :job_id, String
+  end
   
+  sig { params(job_params: T::Hash[String, T.untyped]).returns(JobQueued) }
   def call(job_params:)
     # Queue the job and return immediately
     job_id = SecureRandom.uuid
     AsyncToolJob.perform_async(job_id, job_params)
     
-    { status: "processing", job_id: job_id }
+    JobQueued.new(status: "processing", job_id: job_id)
   end
 end
 ```
@@ -320,28 +452,46 @@ end
 ### 4. Tool Authorization
 
 ```ruby
-class AuthorizedTool
+class AuthorizedTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'authorized_resource'
+  tool_description 'Accesses resources with user authorization checks'
+
+  class ResourceSuccess < T::Struct
+    const :data, T::Hash[String, T.untyped]
+  end
+
+  class AuthorizationError < T::Struct
+    const :error, String
+  end
+
+  sig { params(user: T.untyped).void }
   def initialize(user)
     @user = user
+    super()
   end
   
+  sig { params(resource_id: String).returns(T.any(ResourceSuccess, AuthorizationError)) }
   def call(resource_id:)
     resource = Resource.find(resource_id)
     
     unless can?(@user, :read, resource)
-      return { error: "Unauthorized" }
+      return AuthorizationError.new(error: "Unauthorized")
     end
     
-    { data: resource.attributes }
+    ResourceSuccess.new(data: resource.attributes)
+  rescue ActiveRecord::RecordNotFound
+    AuthorizationError.new(error: "Resource not found")
   end
 end
 
 # Pass user-specific tools to the agent
 agent = DSPy::ReAct.new(
   Task,
-  tools: { 
-    resource: AuthorizedTool.new(current_user) 
-  }
+  tools: [
+    AuthorizedTool.new(current_user)
+  ]
 )
 ```
 
@@ -356,32 +506,63 @@ DSPy.configure do |c|
 end
 
 # 2. Add tool instrumentation
-class InstrumentedTool
-  def call(**args)
+class InstrumentedTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'instrumented_operation'
+  tool_description 'Performs operations with detailed logging'
+
+  class OperationSuccess < T::Struct
+    const :result, String
+    const :duration, Float
+  end
+
+  class OperationError < T::Struct
+    const :error, String
+    const :duration, Float
+  end
+
+  sig { params(data: String).returns(T.any(OperationSuccess, OperationError)) }
+  def call(data:)
     started_at = Time.now
-    Rails.logger.info "Tool called with: #{args.inspect}"
+    Rails.logger.info "Tool called with: #{data.inspect}"
     
-    result = perform_operation(**args)
-    
+    result = perform_operation(data)
     duration = Time.now - started_at
-    Rails.logger.info "Tool completed in #{duration}s: #{result.inspect}"
     
-    result
+    Rails.logger.info "Tool completed in #{duration}s: #{result.inspect}"
+    OperationSuccess.new(result: result, duration: duration)
   rescue => e
+    duration = Time.now - started_at
     Rails.logger.error "Tool failed: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
-    { error: e.message }
+    OperationError.new(error: e.message, duration: duration)
+  end
+
+  private
+
+  sig { params(data: String).returns(String) }
+  def perform_operation(data)
+    "Processed: #{data}"
   end
 end
 
 # 3. Inspect failed iterations
 result = agent.forward(task: "Complex task")
 
-if result.failure?
-  result.react_iterations.each do |iter|
-    if iter.error?
-      puts "Failed at: #{iter.thought}"
-      puts "Tool error: #{iter.observation[:error]}"
+# Check for errors in the agent's reasoning trace
+result.history.each do |iteration|
+  # Look for error responses in tool calls
+  if iteration[:action] != 'finish' && iteration[:observation].is_a?(Hash)
+    observation = iteration[:observation]
+    
+    # Check for typed error responses
+    if observation.respond_to?(:error)
+      puts "Failed at: #{iteration[:thought]}"
+      puts "Tool error: #{observation.error}"
+    elsif observation.is_a?(Hash) && observation.key?('error')
+      puts "Failed at: #{iteration[:thought]}"
+      puts "Tool error: #{observation['error']}"
     end
   end
 end
@@ -401,7 +582,7 @@ report_tool = ReportGeneratorTool.new
 
 react_agent = DSPy::ReAct.new(
   SalesAnalysis,
-  tools: { sales: sales_tool, stats: stats_tool, report: report_tool }
+  tools: [sales_tool, stats_tool, report_tool]
 )
 
 # CodeAct approach - writing custom analysis code
