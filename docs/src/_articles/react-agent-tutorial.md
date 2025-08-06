@@ -142,12 +142,20 @@ end
 The signature defines what your agent does:
 
 ```ruby
+class ResearchDepth < T::Enum
+  enums do
+    Basic = new('basic')
+    Detailed = new('detailed')
+    Comprehensive = new('comprehensive')
+  end
+end
+
 class ResearchAssistant < DSPy::Signature
   description "Research a topic and provide a comprehensive summary with statistics"
   
   input do
     const :topic, String, description: "The topic to research"
-    const :depth, String, description: "How detailed the research should be (basic, detailed, comprehensive)"
+    const :depth, ResearchDepth, description: "How detailed the research should be"
   end
   
   output do
@@ -184,7 +192,7 @@ research_agent = DSPy::ReAct.new(ResearchAssistant, tools: tools, max_iters: 5)
 # Use the agent
 result = research_agent.forward(
   topic: "Ruby programming language adoption trends",
-  depth: "detailed"
+  depth: ResearchDepth::Detailed
 )
 
 puts "Summary: #{result.summary}"
@@ -206,7 +214,7 @@ end
 
 result = research_agent.forward(
   topic: "Climate change impact on agriculture",
-  depth: "comprehensive"
+  depth: ResearchDepth::Comprehensive
 )
 
 # Access the reasoning trace
