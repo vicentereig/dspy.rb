@@ -186,8 +186,8 @@ tools = [
   DataAnalysisTool.new
 ]
 
-# Create the agent
-research_agent = DSPy::ReAct.new(ResearchAssistant, tools: tools, max_iters: 5)
+# Create the agent with default max_iters of 10 (as per documentation)
+research_agent = DSPy::ReAct.new(ResearchAssistant, tools: tools)
 
 # Use the agent
 result = research_agent.forward(
@@ -218,33 +218,39 @@ result = research_agent.forward(
 )
 
 # Access the reasoning trace
-result.react_iterations.each_with_index do |iteration, i|
-  puts "\n=== Iteration #{i + 1} ==="
-  puts "Thought: #{iteration.thought}"
-  
-  if iteration.tool_name
-    puts "Action: #{iteration.tool_name}(#{iteration.tool_args})"
-    puts "Observation: #{iteration.observation}"
-  end
+result.history.each do |iteration|
+  puts "\n=== Step #{iteration[:step]} ==="
+  puts "Thought: #{iteration[:thought]}"
+  puts "Action: #{iteration[:action]}"
+  puts "Action Input: #{iteration[:action_input]}"
 end
+
+puts "\nTotal iterations: #{result.iterations}"
 ```
 
 This might output:
 ```
-=== Iteration 1 ===
+=== Step 1 ===
 Thought: I need to search for information about climate change impacts on agriculture
-Action: search({"query": "climate change impact agriculture 2024"})
-Observation: [{"title": "IPCC Report 2024", "snippet": "Agricultural yields expected to decline by 10-25% by 2050..."}]
+Action: web_search
+Action Input: {"query": "climate change impact agriculture 2024"}
 
-=== Iteration 2 ===
+=== Step 2 ===
 Thought: I found that yields may decline 10-25%. Let me calculate the impact for different scenarios
-Action: calculate({"expression": "1000000 * 0.25"})
-Observation: {"result": 250000}
+Action: calculator
+Action Input: {"expression": "1000000 * 0.25"}
 
-=== Iteration 3 ===
+=== Step 3 ===
 Thought: A 25% decline on 1 million tons of production means 250,000 tons lost. Let me search for adaptation strategies
-Action: search({"query": "climate adaptation strategies agriculture"})
-Observation: [{"title": "Sustainable Farming Practices", "snippet": "Drought-resistant crops, precision irrigation..."}]
+Action: web_search
+Action Input: {"query": "climate adaptation strategies agriculture"}
+
+=== Step 4 ===
+Thought: Based on my research and calculations, I have comprehensive information to provide a summary
+Action: finish
+Action Input: {}
+
+Total iterations: 4
 ```
 
 ## Advanced: Custom Tool Creation
@@ -556,24 +562,25 @@ class InstrumentedTool < DSPy::Tools::Base
 end
 
 # 3. Inspect failed iterations
-result = agent.forward(task: "Complex task")
+result = agent.forward(question: "Complex question")
 
 # Check for errors in the agent's reasoning trace
 result.history.each do |iteration|
-  # Look for error responses in tool calls
-  if iteration[:action] != 'finish' && iteration[:observation].is_a?(Hash)
-    observation = iteration[:observation]
-    
-    # Check for typed error responses
-    if observation.respond_to?(:error)
-      puts "Failed at: #{iteration[:thought]}"
-      puts "Tool error: #{observation.error}"
-    elsif observation.is_a?(Hash) && observation.key?('error')
-      puts "Failed at: #{iteration[:thought]}"
-      puts "Tool error: #{observation['error']}"
-    end
+  puts "\n=== Step #{iteration[:step]} ==="
+  puts "Thought: #{iteration[:thought]}"
+  puts "Action: #{iteration[:action]}"
+  puts "Action Input: #{iteration[:action_input]}"
+  
+  # Check if this was the last step that didn't reach 'finish'
+  if iteration[:action] != 'finish'
+    puts "Status: Tool execution step"
+  else
+    puts "Status: Agent completed successfully"
   end
 end
+
+puts "\nAgent used #{result.iterations} total iterations"
+puts "Final answer: #{result.answer}"
 ```
 
 ## ReAct vs CodeAct: A Practical Comparison
@@ -593,13 +600,19 @@ react_agent = DSPy::ReAct.new(
   tools: [sales_tool, stats_tool, report_tool]
 )
 
-# CodeAct approach - writing custom analysis code
-codeact_agent = DSPy::CodeAct.new
+# CodeAct approach - generates and executes Ruby code dynamically
+codeact_agent = DSPy::CodeAct.new(SalesAnalysisSignature)
 
-# ReAct is better here because:
-# 1. Tools can access live database
-# 2. Report generation follows company templates
-# 3. More predictable and auditable
+# CodeAct generates Ruby code like:
+# sales_data = fetch_sales_data(start_date: "2024-01-01")
+# average_sale = sales_data.sum / sales_data.count
+# puts "Average sale: #{average_sale}"
+
+# When to use ReAct vs CodeAct:
+# - ReAct: When you have predefined tools and structured workflows
+# - CodeAct: When you need dynamic computation and data analysis
+# - ReAct: Better for production systems with controlled environments  
+# - CodeAct: Better for exploratory data analysis and rapid prototyping
 ```
 
 ## Next Steps
@@ -614,13 +627,63 @@ Now that you've built your first ReAct agent, try these challenges:
 Here's a starter for a multi-agent system:
 
 ```ruby
-class ResearchAgent < DSPy::Module
-  def initialize
-    @web_agent = DSPy::ReAct.new(WebResearch, tools: { search: SearchTool.new })
-    @analyst_agent = DSPy::ReAct.new(DataAnalysis, tools: { analyze: AnalysisTool.new })
-    @writer_agent = DSPy::ReAct.new(ReportWriting, tools: { format: FormatterTool.new })
+class WebResearchSignature < DSPy::Signature
+  description "Research a topic comprehensively using web search"
+  
+  input do
+    const :query, String, description: "The research query"
   end
   
+  output do
+    const :findings, T::Array[String], description: "Key research findings"
+    const :summary, String, description: "Research summary"
+  end
+end
+
+class DataAnalysisSignature < DSPy::Signature
+  description "Analyze research data and extract insights"
+  
+  input do
+    const :data, T::Array[String], description: "Data to analyze"
+  end
+  
+  output do
+    const :insights, T::Array[String], description: "Key insights"
+    const :metrics, T::Array[String], description: "Important metrics"
+  end
+end
+
+class ReportWritingSignature < DSPy::Signature
+  description "Write a comprehensive report from research and analysis"
+  
+  input do
+    const :research, String, description: "Research summary"
+    const :analysis, T::Array[String], description: "Analysis insights"
+  end
+  
+  output do
+    const :report, String, description: "Final formatted report"
+    const :confidence, Float, description: "Confidence in report quality (0-1)"
+  end
+end
+
+class ResearchAgent < DSPy::Module
+  extend T::Sig
+
+  sig { void }
+  def initialize
+    super
+    
+    search_tool = WebSearchTool.new
+    analysis_tool = DataAnalysisTool.new
+    formatter_tool = FormatterTool.new
+    
+    @web_agent = DSPy::ReAct.new(WebResearchSignature, tools: [search_tool])
+    @analyst_agent = DSPy::ReAct.new(DataAnalysisSignature, tools: [analysis_tool])
+    @writer_agent = DSPy::ReAct.new(ReportWritingSignature, tools: [formatter_tool])
+  end
+  
+  sig { params(topic: String).returns(T.untyped) }
   def forward(topic:)
     # Research phase
     research = @web_agent.forward(query: topic)
@@ -635,6 +698,26 @@ class ResearchAgent < DSPy::Module
     )
     
     report
+  end
+end
+
+class FormatterTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'format_report'
+  tool_description 'Formats research data into a professional report'
+
+  class FormattedReport < T::Struct
+    const :formatted_text, String
+    const :word_count, Integer
+  end
+
+  sig { params(content: String, style: String).returns(FormattedReport) }
+  def call(content:, style: "professional")
+    formatted = "# Research Report\n\n#{content}\n\n---\nGenerated in #{style} style"
+    word_count = content.split.length
+    
+    FormattedReport.new(formatted_text: formatted, word_count: word_count)
   end
 end
 ```
