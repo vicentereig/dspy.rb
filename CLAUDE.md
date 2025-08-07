@@ -39,13 +39,13 @@ When working with external libraries in this codebase, **ALWAYS check the docume
   - Docs: https://github.com/socketry/async/tree/v2.23.0
   - Used for: Asynchronous LLM API calls
 
-- **openai** (~> 0.13.0) - OpenAI API client
-  - Docs: https://github.com/alexrudall/ruby-openai/tree/v0.13.0
+- **openai** (~> 0.16.0) - OpenAI API client (Official SDK)
+  - Docs: https://github.com/openai/openai-ruby/tree/v0.16.0
   - Used for: ChatGPT/GPT-4 API integration
-  - **IMPORTANT**: alexrudall/ruby-openai is not the official Ruby SDK. The official SDK is: https://github.com/openai/openai-ruby
+  - **IMPORTANT**: This is the official OpenAI Ruby SDK, not the community ruby-openai gem
 
-- **anthropic** (~> 1.1.0) - Anthropic API client
-  - Docs: https://github.com/anthropics/anthropic-sdk-ruby/tree/v1.1.0
+- **anthropic** (~> 1.1.1) - Anthropic API client (Official SDK)
+  - Docs: https://github.com/anthropics/anthropic-sdk-ruby/tree/v1.1.1
   - Used for: Claude API integration
 
 - **sorbet-runtime** (~> 0.5) - Runtime type checking

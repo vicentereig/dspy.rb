@@ -5,6 +5,16 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.7] - 2025-08-07
+
+### Changed
+- **Updated SDK Dependencies** - Updated to latest stable versions of official SDKs
+  - OpenAI SDK updated from `~> 0.13.0` to `~> 0.16.0`
+  - Anthropic SDK updated from `~> 1.1.0` to `~> 1.1.1`
+  - Both updates maintain backward compatibility with existing code
+  - Enables access to latest features: OpenAI structured outputs improvements, webhook verification
+  - All tests pass with updated SDKs
+
 ## [0.15.6] - 2025-08-05
 
 ### Fixed
