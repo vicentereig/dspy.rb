@@ -11,6 +11,46 @@ Traditional prompting is like writing code with string concatenation: it works u
 
 The result? LLM applications that actually scale and don't break when you sneeze.
 
+## Your First DSPy Program
+
+```ruby
+# Define a signature for sentiment classification
+class Classify < DSPy::Signature
+  description "Classify sentiment of a given sentence."
+
+  class Sentiment < T::Enum
+    enums do
+      Positive = new('positive')
+      Negative = new('negative')
+      Neutral = new('neutral')
+    end
+  end
+
+  input do
+    const :sentence, String
+  end
+
+  output do
+    const :sentiment, Sentiment
+    const :confidence, Float
+  end
+end
+
+# Configure DSPy with your LLM
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini', 
+                      api_key: ENV['OPENAI_API_KEY'],
+                      structured_outputs: true)  # Enable OpenAI's native JSON mode
+end
+
+# Create the predictor and run inference
+classify = DSPy::Predict.new(Classify)
+result = classify.call(sentence: "This book was super fun to read!")
+
+puts result.sentiment    # => #<Sentiment::Positive>  
+puts result.confidence   # => 0.85
+```
+
 ## What You Get
 
 **Core Building Blocks:**
@@ -94,46 +134,6 @@ sudo apt-get install cmake
 ```
 
 **Note**: The `polars-df` gem compilation can take 15-20 minutes. Pre-built binaries are available for most platforms, so compilation is only needed if a pre-built binary isn't available for your system.
-
-### Your First DSPy Program
-
-```ruby
-# Define a signature for sentiment classification
-class Classify < DSPy::Signature
-  description "Classify sentiment of a given sentence."
-
-  class Sentiment < T::Enum
-    enums do
-      Positive = new('positive')
-      Negative = new('negative')
-      Neutral = new('neutral')
-    end
-  end
-
-  input do
-    const :sentence, String
-  end
-
-  output do
-    const :sentiment, Sentiment
-    const :confidence, Float
-  end
-end
-
-# Configure DSPy with your LLM
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', 
-                      api_key: ENV['OPENAI_API_KEY'],
-                      structured_outputs: true)  # Enable OpenAI's native JSON mode
-end
-
-# Create the predictor and run inference
-classify = DSPy::Predict.new(Classify)
-result = classify.call(sentence: "This book was super fun to read!")
-
-puts result.sentiment    # => #<Sentiment::Positive>  
-puts result.confidence   # => 0.85
-```
 
 ## Documentation
 
