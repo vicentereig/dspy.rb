@@ -2,6 +2,7 @@
 
 require 'openai'
 require_relative 'openai/schema_converter'
+require_relative '../vision_models'
 
 module DSPy
   class LM
@@ -14,9 +15,18 @@ module DSPy
       end
 
       def chat(messages:, signature: nil, response_format: nil, &block)
+        normalized_messages = normalize_messages(messages)
+        
+        # Validate vision support if images are present
+        if contains_images?(normalized_messages)
+          VisionModels.validate_vision_support!('openai', model)
+          # Convert messages to OpenAI format with proper image handling
+          normalized_messages = format_multimodal_messages(normalized_messages)
+        end
+        
         request_params = {
           model: model,
-          messages: normalize_messages(messages),
+          messages: normalized_messages,
           temperature: 0.0 # DSPy default for deterministic responses
         }
 
@@ -80,6 +90,31 @@ module DSPy
 
       def supports_structured_outputs?
         DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?(model)
+      end
+      
+      def format_multimodal_messages(messages)
+        messages.map do |msg|
+          if msg[:content].is_a?(Array)
+            # Convert multimodal content to OpenAI format
+            formatted_content = msg[:content].map do |item|
+              case item[:type]
+              when 'text'
+                { type: 'text', text: item[:text] }
+              when 'image'
+                item[:image].to_openai_format
+              else
+                item
+              end
+            end
+            
+            {
+              role: msg[:role],
+              content: formatted_content
+            }
+          else
+            msg
+          end
+        end
       end
     end
   end

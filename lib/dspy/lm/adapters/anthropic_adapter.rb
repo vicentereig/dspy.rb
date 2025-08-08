@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'anthropic'
+require_relative '../vision_models'
 
 module DSPy
   class LM
@@ -12,14 +13,23 @@ module DSPy
       end
 
       def chat(messages:, signature: nil, **extra_params, &block)
+        normalized_messages = normalize_messages(messages)
+        
+        # Validate vision support if images are present
+        if contains_images?(normalized_messages)
+          VisionModels.validate_vision_support!('anthropic', model)
+          # Convert messages to Anthropic format with proper image handling
+          normalized_messages = format_multimodal_messages(normalized_messages)
+        end
+        
         # Anthropic requires system message to be separate from messages
-        system_message, user_messages = extract_system_message(normalize_messages(messages))
+        system_message, user_messages = extract_system_message(normalized_messages)
         
         # Check if this is a tool use request
         has_tools = extra_params.key?(:tools) && !extra_params[:tools].empty?
         
         # Apply JSON prefilling if needed for better Claude JSON compliance (but not for tool use)
-        unless has_tools
+        unless has_tools || contains_images?(normalized_messages)
           user_messages = prepare_messages_for_json(user_messages, system_message)
         end
         
@@ -233,6 +243,31 @@ module DSPy
         end
 
         [system_message, user_messages]
+      end
+      
+      def format_multimodal_messages(messages)
+        messages.map do |msg|
+          if msg[:content].is_a?(Array)
+            # Convert multimodal content to Anthropic format
+            formatted_content = msg[:content].map do |item|
+              case item[:type]
+              when 'text'
+                { type: 'text', text: item[:text] }
+              when 'image'
+                item[:image].to_anthropic_format
+              else
+                item
+              end
+            end
+            
+            {
+              role: msg[:role],
+              content: formatted_content
+            }
+          else
+            msg
+          end
+        end
       end
     end
   end

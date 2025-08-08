@@ -18,7 +18,7 @@ module DSPy
       end
       
       const :role, Role
-      const :content, String
+      const :content, T.any(String, T::Array[T::Hash[Symbol, T.untyped]])
       const :name, T.nilable(String), default: nil
       
       sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -33,7 +33,64 @@ module DSPy
       
       sig { returns(String) }
       def to_s
-        name ? "#{role.serialize}(#{name}): #{content}" : "#{role.serialize}: #{content}"
+        if content.is_a?(String)
+          name ? "#{role.serialize}(#{name}): #{content}" : "#{role.serialize}: #{content}"
+        else
+          name ? "#{role.serialize}(#{name}): [multimodal content]" : "#{role.serialize}: [multimodal content]"
+        end
+      end
+      
+      sig { returns(T::Boolean) }
+      def multimodal?
+        content.is_a?(Array)
+      end
+      
+      sig { returns(T::Hash[Symbol, T.untyped]) }
+      def to_openai_format
+        formatted = { role: role.serialize }
+        
+        if content.is_a?(String)
+          formatted[:content] = content
+        else
+          # Convert multimodal content array to OpenAI format
+          formatted[:content] = content.map do |item|
+            case item[:type]
+            when 'text'
+              { type: 'text', text: item[:text] }
+            when 'image'
+              item[:image].to_openai_format
+            else
+              item
+            end
+          end
+        end
+        
+        formatted[:name] = name if name
+        formatted
+      end
+      
+      sig { returns(T::Hash[Symbol, T.untyped]) }
+      def to_anthropic_format
+        formatted = { role: role.serialize }
+        
+        if content.is_a?(String)
+          formatted[:content] = content
+        else
+          # Convert multimodal content array to Anthropic format
+          formatted[:content] = content.map do |item|
+            case item[:type]
+            when 'text'
+              { type: 'text', text: item[:text] }
+            when 'image'
+              item[:image].to_anthropic_format
+            else
+              item
+            end
+          end
+        end
+        
+        formatted[:name] = name if name
+        formatted
       end
     end
     
@@ -71,9 +128,16 @@ module DSPy
       sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.nilable(Message)) }
       def self.create_from_hash(data)
         role_str = data[:role]&.to_s
-        content = data[:content]&.to_s
+        content = data[:content]
         
         return nil if role_str.nil? || content.nil?
+        
+        # Handle both string and array content
+        formatted_content = if content.is_a?(Array)
+          content
+        else
+          content.to_s
+        end
         
         # Convert string role to enum
         role = case role_str
@@ -87,7 +151,7 @@ module DSPy
         
         Message.new(
           role: role,
-          content: content,
+          content: formatted_content,
           name: data[:name]&.to_s
         )
       rescue => e

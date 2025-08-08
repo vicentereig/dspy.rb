@@ -36,10 +36,25 @@ module DSPy
       # Helper method to normalize message format
       def normalize_messages(messages)
         messages.map do |msg|
-          {
-            role: msg[:role].to_s,
-            content: msg[:content].to_s
-          }
+          # Support both Message objects and hash format
+          if msg.is_a?(DSPy::LM::Message)
+            msg.to_h
+          else
+            content = msg[:content]
+            # Don't convert array content to string
+            {
+              role: msg[:role].to_s,
+              content: content.is_a?(Array) ? content : content.to_s
+            }
+          end
+        end
+      end
+      
+      # Check if messages contain images
+      def contains_images?(messages)
+        messages.any? do |msg|
+          content = msg[:content] || msg.content
+          content.is_a?(Array) && content.any? { |item| item[:type] == 'image' }
         end
       end
     end

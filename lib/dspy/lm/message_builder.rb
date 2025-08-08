@@ -41,6 +41,34 @@ module DSPy
         self
       end
       
+      sig { params(text: String, image: DSPy::Image).returns(MessageBuilder) }
+      def user_with_image(text, image)
+        content_array = [
+          { type: 'text', text: text },
+          { type: 'image', image: image }
+        ]
+        
+        @messages << Message.new(
+          role: Message::Role::User,
+          content: content_array
+        )
+        self
+      end
+      
+      sig { params(text: String, images: T::Array[DSPy::Image]).returns(MessageBuilder) }
+      def user_with_images(text, images)
+        content_array = [{ type: 'text', text: text }]
+        images.each do |image|
+          content_array << { type: 'image', image: image }
+        end
+        
+        @messages << Message.new(
+          role: Message::Role::User,
+          content: content_array
+        )
+        self
+      end
+      
       # For backward compatibility, allow conversion to hash array
       sig { returns(T::Array[T::Hash[Symbol, T.untyped]]) }
       def to_h
