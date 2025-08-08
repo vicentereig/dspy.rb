@@ -768,6 +768,32 @@ BRIDGETOWN_ENV=production npm run build
 - Enhanced prompting provides reliable fallback for any provider
 - User choice between "strict" and "compatible" more intuitive than technical strategy names
 
+### Multimodal Implementation Patterns (January 2025)
+
+**Key Learning**: When adding multimodal support, extend existing message infrastructure rather than creating parallel systems.
+
+**Implementation Approach**:
+- Extended `Message` content to accept `T.any(String, T::Array[T::Hash[Symbol, T.untyped]])`
+- Reused existing adapter `normalize_messages` with multimodal awareness
+- Added provider-specific format conversion methods (`to_openai_format`, `to_anthropic_format`)
+- Minimal disruption to existing text-only flows
+
+**Provider Differences**:
+- **OpenAI**: Supports direct URL references in `image_url` format
+- **Anthropic**: Requires base64-encoded images with `source` blocks
+- Model validation through whitelist approach vs. API feature detection
+
+**Testing Multimodal Features**:
+- Simple colored squares work better than complex images for integration tests
+- Minimal valid PNGs can be constructed programmatically for testing
+- VCR cassettes may fail with "unsupported image" if PNG construction is invalid
+- Skip integration tests when API keys unavailable rather than mocking
+
+**Design Decisions**:
+- No fallback strategies for non-vision models - explicit errors are clearer
+- `DSPy::Image` as simple data container, not active record pattern
+- Vision model detection via static lists vs. runtime API queries (faster, more reliable)
+
 ### Module-Level LM Configuration (July 2025)
 
 **Key Learning**: Module-level LM configuration uses dry-configurable's `.configure` blocks, not constructor parameters.
