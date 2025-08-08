@@ -26,7 +26,6 @@ Gem::Specification.new do |spec|
   # Runtime dependencies
   spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-logger", "~> 1.0"
-  spec.add_dependency "dry-monitor", "~> 1.0"
   spec.add_dependency "async", "~> 2.23"
 
   # Official LM provider clients
