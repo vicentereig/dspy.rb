@@ -82,7 +82,29 @@ module DSPy
             metadata: metadata
           )
         rescue => e
-          raise AdapterError, "OpenAI adapter error: #{e.message}"
+          # Check for specific error types and messages
+          error_msg = e.message.to_s
+          
+          # Try to parse error body if it looks like JSON
+          error_body = if error_msg.start_with?('{')
+                         JSON.parse(error_msg) rescue nil
+                       elsif e.respond_to?(:response) && e.response
+                         e.response[:body] rescue nil
+                       end
+          
+          # Check for specific image-related errors
+          if error_msg.include?('image_parse_error') || error_msg.include?('unsupported image')
+            raise AdapterError, "Image processing failed: #{error_msg}. Ensure your image is a valid PNG, JPEG, GIF, or WebP format and under 5MB."
+          elsif error_msg.include?('rate') && error_msg.include?('limit')
+            raise AdapterError, "OpenAI rate limit exceeded: #{error_msg}. Please wait and try again."
+          elsif error_msg.include?('authentication') || error_msg.include?('API key') || error_msg.include?('Unauthorized')
+            raise AdapterError, "OpenAI authentication failed: #{error_msg}. Check your API key."
+          elsif error_body && error_body.dig('error', 'message')
+            raise AdapterError, "OpenAI API error: #{error_body.dig('error', 'message')}"
+          else
+            # Generic error handling
+            raise AdapterError, "OpenAI adapter error: #{e.message}"
+          end
         end
       end
 

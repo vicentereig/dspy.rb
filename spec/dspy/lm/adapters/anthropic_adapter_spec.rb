@@ -86,7 +86,7 @@ RSpec.describe DSPy::LM::AnthropicAdapter do
 
       expect {
         adapter.chat(messages: messages)
-      }.to raise_error(DSPy::LM::AdapterError, /Anthropic adapter error: API Error/)
+      }.to raise_error(DSPy::LM::AdapterError, 'Anthropic adapter error: API Error')
     end
   end
 

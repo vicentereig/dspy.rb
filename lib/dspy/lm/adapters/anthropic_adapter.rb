@@ -121,7 +121,21 @@ module DSPy
             )
           end
         rescue => e
-          raise AdapterError, "Anthropic adapter error: #{e.message}"
+          # Check for specific image-related errors in the message
+          error_msg = e.message.to_s
+          
+          if error_msg.include?('Could not process image')
+            raise AdapterError, "Image processing failed: #{error_msg}. Ensure your image is a valid PNG, JPEG, GIF, or WebP format, properly base64-encoded, and under 5MB."
+          elsif error_msg.include?('image')
+            raise AdapterError, "Image error: #{error_msg}. Anthropic requires base64-encoded images (URLs are not supported)."
+          elsif error_msg.include?('rate')
+            raise AdapterError, "Anthropic rate limit exceeded: #{error_msg}. Please wait and try again."
+          elsif error_msg.include?('authentication') || error_msg.include?('API key')
+            raise AdapterError, "Anthropic authentication failed: #{error_msg}. Check your API key."
+          else
+            # Generic error handling
+            raise AdapterError, "Anthropic adapter error: #{e.message}"
+          end
         end
       end
 

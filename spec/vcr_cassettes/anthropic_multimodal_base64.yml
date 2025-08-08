@@ -6,7 +6,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"model":"claude-3-5-sonnet-20241022","messages":[{"role":"user","content":[{"type":"text","text":"What
-        color is this image? Answer with just the color name."},{"type":"image","source":{"type":"base64","media_type":"image/png","data":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR4nGL4z8AAAAMBAQAY3Y20eQAAAABJRU5ErkJggg=="}}]}],"max_tokens":4096,"temperature":0.0}'
+        color is this image? Answer with just the color name."},{"type":"image","source":{"type":"base64","media_type":"image/png","data":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR42mP4z8BAEmIY1TCqYfhqAACQ+f8B8u7oVwAAAABJRU5ErkJggg=="}}]}],"max_tokens":4096,"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -39,26 +39,46 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '374'
+      - '386'
   response:
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
     headers:
       Date:
-      - Fri, 08 Aug 2025 09:45:56 GMT
+      - Fri, 08 Aug 2025 13:29:12 GMT
       Content-Type:
       - application/json
-      Content-Length:
-      - '93'
+      Transfer-Encoding:
+      - chunked
       Connection:
       - keep-alive
-      Cf-Ray:
-      - 96be156c6b9c2b84-LAX
-      X-Should-Retry:
-      - 'false'
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '80000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '80000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-08-08T13:29:12Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '16000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '16000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-08-08T13:29:12Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-08-08T13:29:12Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '96000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '96000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-08-08T13:29:12Z'
       Request-Id:
-      - req_011CRv2dxNdrfTP1NVu3982j
+      - req_011CRvKfS8jteRpiiCHn6uPm
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
@@ -71,9 +91,10 @@ http_interactions:
       - none
       Server:
       - cloudflare
+      Cf-Ray:
+      - 96bf5c79984c08fe-LAX
     body:
-      encoding: UTF-8
-      string: '{"type":"error","error":{"type":"invalid_request_error","message":"Could
-        not process image"}}'
-  recorded_at: Fri, 08 Aug 2025 09:45:55 GMT
+      encoding: ASCII-8BIT
+      string: '{"id":"msg_01MWi7jZa5eDKWgveRwLv8hx","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"Red"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":24,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":4,"service_tier":"standard"}}'
+  recorded_at: Fri, 08 Aug 2025 13:29:12 GMT
 recorded_with: VCR 6.3.1

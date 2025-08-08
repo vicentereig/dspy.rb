@@ -6,7 +6,7 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"user","content":[{"type":"text","text":"What
-        colors are these two images? List them in order."},{"type":"image_url","image_url":{"url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAEUlEQVR42vvPwPB/FI2ikYoAGAD/AXPrwsoAAAAASUVORK5CYII="}},{"type":"image_url","image_url":{"url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAEUlEQVR42mNg+M8wikbRSEUAGeL/AdtjAosAAAAASUVORK5CYII="}}]}],"temperature":0.0}'
+        colors are these two images? List them in order."},{"type":"image_url","image_url":{"url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR42mP4z8BAEmIY1TCqYfhqAACQ+f8B8u7oVwAAAABJRU5ErkJggg=="}},{"type":"image_url","image_url":{"url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFUlEQVR42mNgYPhPIhrVMKph2GoAAJLb/wHQPqPSAAAAAElFTkSuQmCC"}}]}],"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -37,18 +37,18 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '493'
+      - '505'
   response:
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
     headers:
       Date:
-      - Fri, 08 Aug 2025 09:46:05 GMT
+      - Fri, 08 Aug 2025 13:29:11 GMT
       Content-Type:
       - application/json
-      Content-Length:
-      - '199'
+      Transfer-Encoding:
+      - chunked
       Connection:
       - keep-alive
       Access-Control-Expose-Headers:
@@ -56,11 +56,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '24'
+      - '710'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '875'
       X-Ratelimit-Limit-Input-Images:
       - '50000'
       X-Ratelimit-Limit-Requests:
@@ -70,19 +72,17 @@ http_interactions:
       X-Ratelimit-Remaining-Input-Images:
       - '49998'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '172164'
+      - '194183'
       X-Ratelimit-Reset-Input-Images:
       - 2ms
       X-Ratelimit-Reset-Requests:
-      - 20.139s
+      - 15.547s
       X-Ratelimit-Reset-Tokens:
-      - 8.35s
+      - 1.744s
       X-Request-Id:
       - "<REQUEST_ID>"
-      X-Envoy-Upstream-Service-Time:
-      - '266'
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
@@ -95,19 +95,47 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 96be15a52eeff643-LAX
+      - 96bf5c6e9f4d7bad-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
-      encoding: UTF-8
-      string: |-
+      encoding: ASCII-8BIT
+      string: |
         {
-          "error": {
-            "message": "You uploaded an unsupported image. Please make sure your image is valid.",
-            "type": "invalid_request_error",
-            "param": null,
-            "code": "image_parse_error"
-          }
+          "id": "chatcmpl-C2HReaVCLBa9hmVOGSr7L2dOGnGP8",
+          "object": "chat.completion",
+          "created": 1754659750,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "The colors in the images are:\n\n1. Red\n2. Blue",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 17019,
+            "completion_tokens": 14,
+            "total_tokens": 17033,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_62a23a81ef"
         }
-  recorded_at: Fri, 08 Aug 2025 09:46:05 GMT
+  recorded_at: Fri, 08 Aug 2025 13:29:11 GMT
 recorded_with: VCR 6.3.1
