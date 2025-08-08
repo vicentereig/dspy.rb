@@ -998,3 +998,20 @@ message = DSPy::LM::MessageBuilder.user_with_images(
 - Always re-record cassettes when API responses contain errors
 - Verify successful responses (200 OK) in all cassettes
 - Test with real images to ensure accurate VCR recordings
+
+**Provider Compatibility Validation**:
+- Added validation at adapter boundary to prevent silent failures
+- OpenAI supports: URLs, base64, raw data, detail parameter
+- Anthropic supports: base64, raw data only (no URLs or detail)
+- Fail-fast approach provides immediate, actionable error messages
+
+```ruby
+# Clear error messages guide users to correct usage
+"Anthropic doesn't support image URLs. Please provide base64 or raw data instead."
+"Anthropic doesn't support the 'detail' parameter. This feature is OpenAI-specific."
+```
+
+**Design Pattern Applied**:
+- Provider-agnostic core: DSPy::Image remains neutral
+- Validation at boundary: Adapters validate before formatting
+- Extensible registry: Easy to add new providers and capabilities
