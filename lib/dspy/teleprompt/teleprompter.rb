@@ -327,11 +327,8 @@ module DSPy
       # Emit optimization events
       sig { params(event_name: String, payload: T::Hash[Symbol, T.untyped]).void }
       def emit_event(event_name, payload = {})
-        full_event_name = "dspy.optimization.#{event_name}"
-        
-        Instrumentation.emit(full_event_name, payload.merge({
-          teleprompter_class: self.class.name,
-          timestamp: Time.now.iso8601
+        DSPy.log("optimization.#{event_name}", payload.merge({
+          'teleprompter.class' => self.class.name
         }))
       end
     end

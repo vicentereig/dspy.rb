@@ -482,22 +482,20 @@ module DSPy
 
       sig { params(signature_name: String, version: String).void }
       def emit_auto_deployment_event(signature_name, version)
-        DSPy::Instrumentation.emit('dspy.registry.auto_deployment', {
-          signature_name: signature_name,
-          version: version,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.auto_deployment',
+          'registry.signature_name' => signature_name,
+          'registry.version' => version
+        )
       end
 
       sig { params(signature_name: String, current_score: Float, previous_score: Float).void }
       def emit_automatic_rollback_event(signature_name, current_score, previous_score)
-        DSPy::Instrumentation.emit('dspy.registry.automatic_rollback', {
-          signature_name: signature_name,
-          current_score: current_score,
-          previous_score: previous_score,
-          performance_drop: previous_score - current_score,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.automatic_rollback',
+          'registry.signature_name' => signature_name,
+          'registry.current_score' => current_score,
+          'registry.previous_score' => previous_score,
+          'registry.performance_drop' => previous_score - current_score
+        )
       end
     end
   end

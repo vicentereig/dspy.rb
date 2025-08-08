@@ -165,12 +165,12 @@ module DSPy
     # Emits reasoning analysis instrumentation event
     sig { params(reasoning_content: String).void }
     def emit_reasoning_analysis(reasoning_content)
-      Instrumentation.emit('dspy.chain_of_thought.reasoning_complete', {
-        signature_class: @original_signature.name,
-        reasoning_steps: count_reasoning_steps(reasoning_content),
-        reasoning_length: reasoning_content.length,
-        has_reasoning: true
-      })
+      DSPy.log('chain_of_thought.reasoning_complete',
+        'dspy.signature' => @original_signature.name,
+        'cot.reasoning_steps' => count_reasoning_steps(reasoning_content),
+        'cot.reasoning_length' => reasoning_content.length,
+        'cot.has_reasoning' => true
+      )
     end
 
     # Count reasoning steps by looking for step indicators

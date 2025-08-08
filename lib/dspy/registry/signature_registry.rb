@@ -611,114 +611,102 @@ module DSPy
       # Event emission methods
       sig { params(signature_name: String, version: T.nilable(String)).void }
       def emit_register_start_event(signature_name, version)
-        DSPy::Instrumentation.emit('dspy.registry.register_start', {
-          signature_name: signature_name,
-          version: version,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.register_start',
+          'registry.signature_name' => signature_name,
+          'registry.version' => version
+        )
       end
 
       sig { params(version: SignatureVersion).void }
       def emit_register_complete_event(version)
-        DSPy::Instrumentation.emit('dspy.registry.register_complete', {
-          signature_name: version.signature_name,
-          version: version.version,
-          version_hash: version.version_hash,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.register_complete',
+          'registry.signature_name' => version.signature_name,
+          'registry.version' => version.version,
+          'registry.version_hash' => version.version_hash
+        )
       end
 
       sig { params(signature_name: String, version: T.nilable(String), error: Exception).void }
       def emit_register_error_event(signature_name, version, error)
-        DSPy::Instrumentation.emit('dspy.registry.register_error', {
-          signature_name: signature_name,
-          version: version,
-          error: error.message,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.register_error',
+          'registry.signature_name' => signature_name,
+          'registry.version' => version,
+          'registry.error' => error.message
+        )
       end
 
       sig { params(signature_name: String, version: String).void }
       def emit_deploy_start_event(signature_name, version)
-        DSPy::Instrumentation.emit('dspy.registry.deploy_start', {
-          signature_name: signature_name,
-          version: version,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.deploy_start',
+          'registry.signature_name' => signature_name,
+          'registry.version' => version
+        )
       end
 
       sig { params(version: SignatureVersion).void }
       def emit_deploy_complete_event(version)
-        DSPy::Instrumentation.emit('dspy.registry.deploy_complete', {
-          signature_name: version.signature_name,
-          version: version.version,
-          performance_score: version.performance_score,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.deploy_complete',
+          'registry.signature_name' => version.signature_name,
+          'registry.version' => version.version,
+          'registry.performance_score' => version.performance_score
+        )
       end
 
       sig { params(signature_name: String, version: String, error: Exception).void }
       def emit_deploy_error_event(signature_name, version, error)
-        DSPy::Instrumentation.emit('dspy.registry.deploy_error', {
-          signature_name: signature_name,
-          version: version,
-          error: error.message,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.deploy_error',
+          'registry.signature_name' => signature_name,
+          'registry.version' => version,
+          'registry.error' => error.message
+        )
       end
 
       sig { params(signature_name: String).void }
       def emit_rollback_start_event(signature_name)
-        DSPy::Instrumentation.emit('dspy.registry.rollback_start', {
-          signature_name: signature_name,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.rollback_start',
+          'registry.signature_name' => signature_name
+        )
       end
 
       sig { params(version: SignatureVersion).void }
       def emit_rollback_complete_event(version)
-        DSPy::Instrumentation.emit('dspy.registry.rollback_complete', {
-          signature_name: version.signature_name,
-          version: version.version,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.rollback_complete',
+          'registry.signature_name' => version.signature_name,
+          'registry.version' => version.version
+        )
       end
 
       sig { params(signature_name: String, error_message: String).void }
       def emit_rollback_error_event(signature_name, error_message)
-        DSPy::Instrumentation.emit('dspy.registry.rollback_error', {
-          signature_name: signature_name,
-          error: error_message,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.rollback_error',
+          'registry.signature_name' => signature_name,
+          'registry.error' => error_message
+        )
       end
 
       sig { params(version: SignatureVersion).void }
       def emit_performance_update_event(version)
-        DSPy::Instrumentation.emit('dspy.registry.performance_update', {
-          signature_name: version.signature_name,
-          version: version.version,
-          performance_score: version.performance_score,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.performance_update',
+          'registry.signature_name' => version.signature_name,
+          'registry.version' => version.version,
+          'registry.performance_score' => version.performance_score
+        )
       end
 
       sig { params(export_path: String, signature_count: Integer).void }
       def emit_export_event(export_path, signature_count)
-        DSPy::Instrumentation.emit('dspy.registry.export', {
-          export_path: export_path,
-          signature_count: signature_count,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.export',
+          'registry.export_path' => export_path,
+          'registry.signature_count' => signature_count
+        )
       end
 
       sig { params(import_path: String, signature_count: Integer).void }
       def emit_import_event(import_path, signature_count)
-        DSPy::Instrumentation.emit('dspy.registry.import', {
-          import_path: import_path,
-          signature_count: signature_count,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('registry.import',
+          'registry.import_path' => import_path,
+          'registry.signature_count' => signature_count
+        )
       end
     end
   end

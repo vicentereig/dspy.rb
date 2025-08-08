@@ -357,82 +357,75 @@ module DSPy
       # Event emission methods
       sig { params(program_id: T.nilable(String)).void }
       def emit_save_start_event(program_id)
-        DSPy.log('storage.save_start',
+        DSPy.log('storage.save_start', **{
           'storage.program_id' => program_id,
           'storage.path' => @storage_path
-        )
+        })
       end
 
       sig { params(saved_program: SavedProgram).void }
       def emit_save_complete_event(saved_program)
-        DSPy.log('storage.save_complete',
+        DSPy.log('storage.save_complete', **{
           'storage.program_id' => saved_program.program_id,
           'storage.best_score' => saved_program.optimization_result[:best_score_value],
           'storage.file_size' => File.size(program_file_path(saved_program.program_id))
-        )
+        })
       end
 
       sig { params(program_id: T.nilable(String), error: Exception).void }
       def emit_save_error_event(program_id, error)
-        DSPy::Instrumentation.emit('dspy.storage.save_error', {
-          program_id: program_id,
-          error: error.message,
-          error_class: error.class.name,
-          timestamp: Time.now.iso8601
+        DSPy.log('storage.save_error', **{
+          'storage.program_id' => program_id,
+          'storage.error' => error.message,
+          'storage.error_class' => error.class.name
         })
       end
 
       sig { params(program_id: String).void }
       def emit_load_start_event(program_id)
-        DSPy::Instrumentation.emit('dspy.storage.load_start', {
-          program_id: program_id,
-          timestamp: Time.now.iso8601
+        DSPy.log('storage.load_start', **{
+          'storage.program_id' => program_id
         })
       end
 
       sig { params(saved_program: SavedProgram).void }
       def emit_load_complete_event(saved_program)
-        DSPy::Instrumentation.emit('dspy.storage.load_complete', {
-          program_id: saved_program.program_id,
-          saved_at: saved_program.saved_at.iso8601,
-          age_hours: ((Time.now - saved_program.saved_at) / 3600).round(2),
-          timestamp: Time.now.iso8601
+        DSPy.log('storage.load_complete', **{
+          'storage.program_id' => saved_program.program_id,
+          'storage.saved_at' => saved_program.saved_at.iso8601,
+          'storage.age_hours' => ((Time.now - saved_program.saved_at) / 3600).round(2)
         })
       end
 
       sig { params(program_id: String, error: T.any(String, Exception)).void }
       def emit_load_error_event(program_id, error)
         error_message = error.is_a?(Exception) ? error.message : error.to_s
-        DSPy::Instrumentation.emit('dspy.storage.load_error', {
-          program_id: program_id,
-          error: error_message,
-          timestamp: Time.now.iso8601
+        DSPy.log('storage.load_error', **{
+          'storage.program_id' => program_id,
+          'storage.error' => error_message
         })
       end
 
       sig { params(program_id: String).void }
       def emit_delete_event(program_id)
-        DSPy::Instrumentation.emit('dspy.storage.delete', {
-          program_id: program_id,
-          timestamp: Time.now.iso8601
+        DSPy.log('storage.delete', **{
+          'storage.program_id' => program_id
         })
       end
 
       sig { params(export_path: String, program_count: Integer).void }
       def emit_export_event(export_path, program_count)
-        DSPy::Instrumentation.emit('dspy.storage.export', {
-          export_path: export_path,
-          program_count: program_count,
-          timestamp: Time.now.iso8601
+        DSPy.log('storage.export', **{
+          'storage.export_path' => export_path,
+          'storage.program_count' => program_count
         })
       end
 
       sig { params(import_path: String, program_count: Integer).void }
       def emit_import_event(import_path, program_count)
-        DSPy::Instrumentation.emit('dspy.storage.import', {
-          import_path: import_path,
-          program_count: program_count,
-          timestamp: Time.now.iso8601
+        DSPy.log('storage.import', **{
+          'storage.import_path' => import_path,
+          'storage.program_count' => program_count
         })
       end
     end

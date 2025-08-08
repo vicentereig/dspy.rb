@@ -250,10 +250,10 @@ module DSPy
           end
         end
         
-        DSPy.log('storage.cleanup',
+        DSPy.log('storage.cleanup', **{
           'storage.deleted_count' => deleted_count,
           'storage.remaining_count' => @config.max_stored_programs
-        )
+        })
         
         deleted_count
       end
