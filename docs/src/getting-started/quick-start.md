@@ -191,9 +191,9 @@ DSPy.configure do |config|
     lm.max_tokens = 1000
   end
   
-  config.instrumentation do |i|
-    i.enabled = Rails.env.production?
-    i.logger.level = :info
+  # Configure logging for observability
+  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(stream: Rails.root.join('log', 'dspy.log'))
   end
 end
 ```

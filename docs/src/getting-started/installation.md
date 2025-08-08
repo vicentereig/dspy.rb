@@ -33,7 +33,6 @@ DSPy.rb requires Ruby 3.3+ and includes these core dependencies:
 # Core dependencies (automatically installed)
 gem 'dry-configurable', '~> 1.0'
 gem 'dry-logger', '~> 1.0'
-gem 'dry-monitor', '~> 1.0'
 gem 'async', '~> 2.23'
 
 # Official LM provider clients
@@ -46,24 +45,9 @@ gem 'sorbet-runtime', '~> 0.5'
 gem 'sorbet-schema', '~> 0.3'
 ```
 
-## Optional Observability Dependencies
+## Observability
 
-Add any of these gems for enhanced observability:
-
-```ruby
-# OpenTelemetry (distributed tracing)
-gem 'opentelemetry-api'
-gem 'opentelemetry-sdk'
-gem 'opentelemetry-exporter-otlp'
-
-# New Relic (APM)
-gem 'newrelic_rpm'
-
-# Langfuse (LLM observability) 
-gem 'langfuse'
-```
-
-DSPy automatically detects and integrates with available platforms - no configuration required!
+DSPy.rb uses structured logging for observability. The logs can be parsed and sent to any monitoring platform you prefer.
 
 ## Configuration
 
@@ -108,9 +92,10 @@ DSPy.configure do |c|
   # LLM Configuration
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
   
-  # Instrumentation Configuration
-  c.instrumentation.enabled = true
-  c.instrumentation.subscribers = ['logger']  # Available: logger, otel, newrelic, langfuse
+  # Logging Configuration
+  c.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(stream: 'log/dspy.log')
+  end
 end
 ```
 

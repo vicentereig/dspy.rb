@@ -17,160 +17,225 @@ next:
 
 # Observability
 
-DSPy.rb provides comprehensive observability capabilities for production environments, including distributed tracing, metrics collection, logging, and integration with popular monitoring platforms.
+DSPy.rb provides a simple, lightweight observability system based on structured logging and span tracking. The system is designed to be OTEL/Langfuse compatible while maintaining minimal overhead.
 
 ## Overview
 
 The observability system offers:
-- **Distributed Tracing**: Track requests across DSPy modules and external services
-- **Metrics Collection**: Performance, accuracy, and business metrics
-- **Structured Logging**: Detailed operation logs with context
-- **Multi-Platform Integration**: OpenTelemetry, New Relic, Langfuse support
-- **Custom Instrumentation**: Add domain-specific observability
-- **Real-time Monitoring**: Live dashboards and alerting
+- **Span Tracking**: Trace operations with parent-child relationships
+- **Structured Logging**: JSON or key=value format based on environment
+- **Context Propagation**: Automatic trace correlation across operations
+- **GenAI Conventions**: Following OpenTelemetry semantic conventions for LLMs
+- **Zero Dependencies**: No external instrumentation libraries required
+- **Thread-Safe**: Isolated context per thread
+
+## Architecture
+
+DSPy.rb uses a simple Context system for observability:
+
+```ruby
+# lib/dspy/context.rb - ~50 lines total
+module DSPy
+  class Context
+    # Thread-local storage for trace context
+    # Manages span stack and trace IDs
+  end
+end
+```
 
 ## Basic Configuration
 
-### Enable Instrumentation
+### Enable Logging
 
 ```ruby
 DSPy.configure do |config|
-  # Enable instrumentation
-  config.instrumentation.enabled = true
+  # Configure logger (uses Dry::Logger)
+  config.logger = Dry.Logger(:dspy)
   
-  # Configure subscribers
-  config.instrumentation.subscribers = [
-    :logger,      # Structured logging
-    :otel,        # OpenTelemetry tracing
-    :newrelic,    # New Relic APM
-    :langfuse     # LLM-specific observability
-  ]
-  
-  # Sampling configuration
-  config.instrumentation.sampling_rate = 1.0  # 100% in development
-  
-  # Timestamp format for OpenTelemetry compliance
-  config.instrumentation.timestamp_format = DSPy::TimestampFormat::ISO8601
+  # Or with custom configuration
+  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(stream: "log/production.log")
+  end
 end
 ```
 
-### Production Configuration
+### Environment-Aware Formatting
+
+The logger automatically detects the environment:
+- **Production** (`RAILS_ENV=production` or `RACK_ENV=production`): JSON format
+- **Development/Test**: Key=value format for readability
+
+## Using the Context System
+
+### Basic Span Tracking
 
 ```ruby
+# Wrap any operation in a span
+DSPy::Context.with_span(
+  operation: 'my_operation',
+  'my.attribute' => 'value'
+) do
+  # Your code here
+  result = perform_work()
+  
+  # Log events within the span
+  DSPy.log('my.event', result: result, status: 'success')
+  
+  result
+end
+```
+
+### Nested Spans
+
+Spans automatically track parent-child relationships:
+
+```ruby
+DSPy::Context.with_span(operation: 'parent_operation') do
+  # Parent span
+  
+  DSPy::Context.with_span(operation: 'child_operation') do
+    # Child span - automatically linked to parent
+  end
+end
+```
+
+### Accessing Current Context
+
+```ruby
+# Get current trace context
+context = DSPy::Context.current
+# => { trace_id: "uuid", span_stack: ["parent_id", "current_id"] }
+
+# Check if in a span
+if DSPy::Context.current[:span_stack].any?
+  # Currently within a span
+end
+```
+
+## Semantic Conventions
+
+DSPy.rb follows GenAI semantic conventions for LLM operations:
+
+### LLM Operations
+
+```ruby
+# Automatically added by DSPy::LM
+DSPy::Context.with_span(
+  operation: 'llm.generate',
+  'gen_ai.system' => 'openai',
+  'gen_ai.request.model' => 'gpt-4',
+  'gen_ai.usage.prompt_tokens' => 150,
+  'gen_ai.usage.completion_tokens' => 50
+) do
+  # LLM call
+end
+```
+
+### Module Operations
+
+```ruby
+# Automatically added by DSPy modules
+DSPy::Context.with_span(
+  operation: 'dspy.predict',
+  'dspy.module' => 'ChainOfThought',
+  'dspy.signature' => 'QuestionAnswering'
+) do
+  # Module execution
+end
+```
+
+## Reading Logs
+
+### JSON Format (Production)
+
+```json
+{
+  "timestamp": "2024-01-15T10:30:45.123Z",
+  "level": "INFO",
+  "event": "llm.generate",
+  "trace_id": "123e4567-e89b-12d3-a456-426614174000",
+  "span_id": "987fcdeb-51a2-43f1-9012-345678901234",
+  "parent_span_id": "abcdef12-3456-7890-abcd-ef1234567890",
+  "gen_ai.system": "openai",
+  "gen_ai.request.model": "gpt-4",
+  "duration_ms": 1250
+}
+```
+
+### Key=Value Format (Development)
+
+```
+timestamp=2024-01-15T10:30:45.123Z level=INFO event=llm.generate trace_id=123e4567 span_id=987fcdeb parent_span_id=abcdef12 gen_ai.system=openai gen_ai.request.model=gpt-4 duration_ms=1250
+```
+
+## Integration with External Systems
+
+### Exporting to OpenTelemetry
+
+Since DSPy.rb logs follow OTEL conventions, you can use log forwarding:
+
+```ruby
+# Use a log forwarder to send JSON logs to OTEL collector
+# Configure your infrastructure to forward logs from:
 DSPy.configure do |config|
-  config.instrumentation.enabled = true
-  
-  # Production subscribers
-  config.instrumentation.subscribers = [:otel, :newrelic, :custom_metrics]
-  
-  # Sampling for performance
-  config.instrumentation.sampling_rate = 0.1  # 10% sampling in production
-  
-  # Performance settings
-  config.instrumentation.async_processing = true
-  config.instrumentation.buffer_size = 1000
-  config.instrumentation.flush_interval = 30.seconds
-  
-  # Error handling
-  config.instrumentation.error_reporting = true
-  config.instrumentation.error_service = :sentry
-  
-  # Timestamp format for production monitoring
-  config.instrumentation.timestamp_format = DSPy::TimestampFormat::UNIX_NANO
+  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(stream: "/var/log/dspy/traces.json")
+  end
 end
 ```
 
-## Smart Event Consolidation
+### Langfuse Integration
 
-DSPy.rb automatically reduces instrumentation noise by detecting when you're using higher-level modules like ChainOfThought or ReAct. Instead of emitting redundant nested events, it only logs the top-level operation.
+Langfuse can ingest the JSON logs directly:
 
-### Real Examples
-
-**Direct Predict call** emits detailed events:
-```
-event=lm_request timestamp=2025-07-04T13:46:24+02:00 provider=openai model=gpt-4o-mini status=success duration_ms=3.82
-event=lm_tokens timestamp=2025-07-04T13:46:24+02:00 provider=openai model=gpt-4o-mini input_tokens=290 output_tokens=23 total_tokens=313
-event=prediction timestamp=2025-07-04T13:46:24+02:00 signature=TestEventConsolidation status=success duration_ms=5.13
-```
-
-**ChainOfThought call** emits only the consolidated event:
-```
-event=chain_of_thought timestamp=2025-07-04T13:46:24+02:00 signature=TestQuestionAnswering status=success duration_ms=2.44
+```bash
+# Forward logs to Langfuse using their log ingestion API
+tail -f log/production.log | \
+  jq -c 'select(.event | startswith("llm"))' | \
+  curl -X POST https://api.langfuse.com/logs \
+    -H "Authorization: Bearer $LANGFUSE_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d @-
 ```
 
-This cuts instrumentation noise significantly for nested operations while keeping full detail for direct calls.
+### Custom Processing
 
-### Token Reporting Standardization
-
-Both OpenAI and Anthropic providers report tokens using consistent field names:
-
-```
-event=lm_tokens timestamp=2025-07-04T13:46:24+02:00 provider=openai model=gpt-4o-mini input_tokens=290 output_tokens=23 total_tokens=313
-```
-
-The token fields are standardized as `input_tokens`, `output_tokens`, and `total_tokens` regardless of provider.
-
-### Timestamp Formats
-
-Configure timestamp formats for different monitoring platforms:
+Process logs with your preferred tools:
 
 ```ruby
-# ISO8601 format (default)
-config.instrumentation.timestamp_format = DSPy::TimestampFormat::ISO8601
-# Example: timestamp=2025-07-04T13:46:24+02:00
-
-# RFC3339 with nanosecond precision
-config.instrumentation.timestamp_format = DSPy::TimestampFormat::RFC3339_NANO
-# Example: timestamp=2025-07-04T13:46:24.367503000+0200
-
-# Unix nanoseconds for high-precision monitoring
-config.instrumentation.timestamp_format = DSPy::TimestampFormat::UNIX_NANO
-# Example: timestamp_ns=1751629584365840896
+# Parse and analyze logs
+File.foreach("log/production.log") do |line|
+  event = JSON.parse(line)
+  
+  if event["event"] == "llm.generate"
+    # Track LLM usage
+    tokens = event["gen_ai.usage.total_tokens"]
+    model = event["gen_ai.request.model"]
+    # ... your analytics
+  end
+end
 ```
 
-## Distributed Tracing
+## Common Patterns
 
-### Automatic Instrumentation
-
-DSPy automatically instruments all core operations:
+### Adding Custom Attributes
 
 ```ruby
-# This code is automatically instrumented
-classifier = DSPy::Predict.new(ClassifyText)
-result = classifier.call(text: "Sample text")
-
-# Generated trace includes:
-# - dspy.predict.call
-#   - dspy.lm.request
-#   - dspy.validation.check
-#   - dspy.result.format
-```
-
-### Manual Instrumentation
-
-```ruby
-class CustomProcessor < DSPy::Module
-  def call(input)
-    DSPy.tracer.in_span('custom_processor.call') do |span|
-      # Add custom attributes
-      span.set_attribute('input.length', input.length)
-      span.set_attribute('processor.version', '2.1.0')
+class MyModule < DSPy::Module
+  def forward(**inputs)
+    DSPy::Context.with_span(
+      operation: 'my_module.process',
+      'module.version' => '1.0',
+      'module.customer_id' => customer_id
+    ) do
+      # Your logic
+      result = process(inputs)
       
-      # Process with nested spans
-      validated_input = DSPy.tracer.in_span('validation') do
-        validate_input(input)
-      end
-      
-      result = DSPy.tracer.in_span('core_processing') do |core_span|
-        core_span.set_attribute('complexity', assess_complexity(validated_input))
-        process_core_logic(validated_input)
-      end
-      
-      # Record custom metrics
-      span.add_event('processing_completed', {
-        'result.confidence' => result.confidence,
-        'processing.duration' => Time.current - span.start_time
-      })
+      # Log custom metrics
+      DSPy.log('my_module.complete', 
+        items_processed: result.count,
+        processing_time: elapsed_time
+      )
       
       result
     end
@@ -178,656 +243,139 @@ class CustomProcessor < DSPy::Module
 end
 ```
 
-### Correlation IDs
+### Error Tracking
 
 ```ruby
-# Automatic correlation ID generation
-DSPy.configure do |config|
-  config.instrumentation.correlation_id.enabled = true
-  config.instrumentation.correlation_id.header = 'X-Correlation-ID'
-  config.instrumentation.correlation_id.generator = -> { SecureRandom.uuid }
-end
-
-# Manual correlation ID
-DSPy.with_correlation_id('user-request-12345') do
-  result = classifier.call(text: "User feedback text")
-  # All nested operations will include this correlation ID
-end
-```
-
-## Metrics Collection
-
-### Built-in Metrics
-
-DSPy automatically collects performance and accuracy metrics:
-
-```ruby
-# Performance metrics
-- dspy.prediction.duration
-- dspy.prediction.token_usage
-- dspy.prediction.cost
-- dspy.lm.request.duration
-- dspy.lm.request.input_tokens
-- dspy.lm.request.output_tokens
-- dspy.lm.request.total_tokens
-
-# Accuracy metrics (when ground truth available)
-- dspy.prediction.accuracy
-- dspy.prediction.confidence_accuracy_correlation
-- dspy.signature.field_accuracy
-
-# Error metrics
-- dspy.prediction.errors_total
-- dspy.lm.errors_total
-- dspy.validation.errors_total
-```
-
-### Custom Metrics
-
-```ruby
-class BusinessMetricsCollector
-  include DSPy::Instrumentation::Metrics
-  
-  def initialize
-    # Define custom metrics
-    @user_satisfaction = histogram(
-      'dspy.business.user_satisfaction',
-      description: 'User satisfaction scores',
-      buckets: [1, 2, 3, 4, 5]
+DSPy::Context.with_span(operation: 'risky_operation') do
+  begin
+    perform_operation()
+  rescue => e
+    DSPy.log('error.occurred',
+      error_class: e.class.name,
+      error_message: e.message,
+      error_backtrace: e.backtrace.first(5)
     )
-    
-    @prediction_confidence = histogram(
-      'dspy.prediction.confidence_distribution',
-      description: 'Distribution of prediction confidence scores',
-      buckets: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-    )
-    
-    @business_impact = counter(
-      'dspy.business.decisions_automated',
-      description: 'Number of business decisions automated by DSPy'
-    )
-  end
-  
-  def record_prediction_result(result, context = {})
-    # Record confidence distribution
-    @prediction_confidence.record(result.confidence)
-    
-    # Record business impact
-    if context[:automated_decision]
-      @business_impact.increment(
-        tags: {
-          decision_type: context[:decision_type],
-          confidence_level: confidence_bucket(result.confidence)
-        }
-      )
-    end
-    
-    # Record user satisfaction if available
-    if context[:user_feedback]
-      @user_satisfaction.record(
-        context[:user_feedback][:satisfaction_score],
-        tags: {
-          prediction_category: result.category,
-          confidence_level: confidence_bucket(result.confidence)
-        }
-      )
-    end
-  end
-  
-  private
-  
-  def confidence_bucket(confidence)
-    case confidence
-    when 0.0...0.3 then 'low'
-    when 0.3...0.7 then 'medium'
-    else 'high'
-    end
-  end
-end
-
-# Usage
-metrics_collector = BusinessMetricsCollector.new
-
-# In your application
-result = classifier.call(text: "Customer feedback")
-metrics_collector.record_prediction_result(
-  result,
-  context: {
-    automated_decision: true,
-    decision_type: 'customer_routing',
-    user_feedback: { satisfaction_score: 4 }
-  }
-)
-```
-
-## Platform Integrations
-
-### OpenTelemetry
-
-```ruby
-# OpenTelemetry configuration
-require 'opentelemetry/sdk'
-require 'opentelemetry/exporter/otlp'
-
-OpenTelemetry::SDK.configure do |c|
-  c.service_name = 'dspy-application'
-  c.service_version = '1.0.0'
-  
-  c.add_span_processor(
-    OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
-      OpenTelemetry::Exporter::OTLP::Exporter.new(
-        endpoint: ENV['OTEL_EXPORTER_OTLP_ENDPOINT']
-      )
-    )
-  )
-end
-
-# DSPy will automatically use the configured tracer
-DSPy.configure do |config|
-  config.instrumentation.subscribers = [:otel]
-  config.instrumentation.otel.tracer_name = 'dspy-ruby'
-end
-```
-
-### New Relic
-
-```ruby
-# New Relic configuration
-DSPy.configure do |config|
-  config.instrumentation.subscribers = [:newrelic]
-  
-  config.instrumentation.newrelic.app_name = 'DSPy Application'
-  config.instrumentation.newrelic.license_key = ENV['NEW_RELIC_LICENSE_KEY']
-  
-  # Custom attributes
-  config.instrumentation.newrelic.custom_attributes = {
-    'dspy.version' => DSPy::VERSION,
-    'deployment.environment' => Rails.env
-  }
-end
-
-# Custom New Relic events
-class NewRelicDSPySubscriber < DSPy::Subscribers::NewRelicSubscriber
-  def prediction_completed(event)
-    super
-    
-    # Record custom New Relic event
-    NewRelic::Agent.record_custom_event('DSPyPrediction', {
-      signature: event.payload[:signature],
-      confidence: event.payload[:result][:confidence],
-      processing_time: event.payload[:duration],
-      success: event.payload[:success]
-    })
-    
-    # Add custom attributes to transaction
-    NewRelic::Agent.add_custom_attributes({
-      'dspy.prediction.confidence' => event.payload[:result][:confidence],
-      'dspy.signature.name' => event.payload[:signature]
-    })
-  end
-end
-```
-
-### Langfuse (LLM Observability)
-
-```ruby
-# Langfuse configuration for LLM-specific observability
-DSPy.configure do |config|
-  config.instrumentation.subscribers = [:langfuse]
-  
-  config.instrumentation.langfuse.public_key = ENV['LANGFUSE_PUBLIC_KEY']
-  config.instrumentation.langfuse.secret_key = ENV['LANGFUSE_SECRET_KEY']
-  config.instrumentation.langfuse.host = ENV['LANGFUSE_HOST']
-  
-  # LLM-specific tracking
-  config.instrumentation.langfuse.track_tokens = true
-  config.instrumentation.langfuse.track_costs = true
-  config.instrumentation.langfuse.track_prompts = true
-end
-
-# Custom Langfuse traces
-class LangfuseDSPySubscriber < DSPy::Subscribers::LangfuseSubscriber
-  def lm_request_started(event)
-    super
-    
-    # Create Langfuse generation
-    @current_generation = @langfuse.generation(
-      name: "dspy_#{event.payload[:signature]}_prediction",
-      input: event.payload[:prompt],
-      model: event.payload[:model],
-      start_time: event.payload[:start_time]
-    )
-  end
-  
-  def lm_request_completed(event)
-    super
-    
-    # Update Langfuse generation
-    @current_generation.end(
-      output: event.payload[:response],
-      end_time: event.payload[:end_time],
-      usage: {
-        input_tokens: event.payload[:input_tokens],
-        output_tokens: event.payload[:output_tokens],
-        total_tokens: event.payload[:total_tokens]
-      },
-      level: event.payload[:success] ? 'INFO' : 'ERROR'
-    )
-  end
-end
-```
-
-## Logging
-
-### Structured Logging
-
-```ruby
-# Configure structured logging
-DSPy.configure do |config|
-  config.logger = ActiveSupport::Logger.new(STDOUT)
-  config.logger.formatter = DSPy::Logging::StructuredFormatter.new
-  
-  config.instrumentation.logger.level = :info
-  config.instrumentation.logger.include_payloads = true
-  config.instrumentation.logger.correlation_id = true
-end
-
-# Example log output
-{
-  "timestamp": "2024-01-15T10:30:45.123Z",
-  "level": "INFO",
-  "event": "dspy.prediction.completed",
-  "correlation_id": "req-12345",
-  "signature": "ClassifyText",
-  "duration_ms": 245,
-  "success": true,
-  "result": {
-    "confidence": 0.92,
-    "category": "positive"
-  },
-  "metadata": {
-    "model": "gpt-4o-mini",
-    "tokens_used": 45,
-    "cost": 0.001
-  }
-}
-```
-
-### Log Sampling
-
-```ruby
-# Configure log sampling for high-volume applications
-DSPy.configure do |config|
-  config.instrumentation.logger.sampling = {
-    prediction_events: 0.1,     # Sample 10% of predictions
-    lm_request_events: 0.05,    # Sample 5% of LM requests
-    error_events: 1.0,          # Log all errors
-    slow_requests: 1.0          # Log all slow requests (>2s)
-  }
-  
-  # Conditional sampling
-  config.instrumentation.logger.sampling_conditions = {
-    low_confidence: ->(event) { 
-      event.payload.dig(:result, :confidence) < 0.7 
-    },
-    high_value_users: ->(event) {
-      event.payload.dig(:context, :user_tier) == 'premium'
-    }
-  }
-end
-```
-
-## Real-time Monitoring
-
-### Dashboards
-
-```ruby
-class DSPyDashboard
-  def initialize(metrics_store)
-    @metrics = metrics_store
-  end
-  
-  def generate_dashboard_data(time_range: 1.hour)
-    {
-      overview: {
-        total_predictions: @metrics.count('dspy.prediction.total', time_range),
-        average_accuracy: @metrics.average('dspy.prediction.accuracy', time_range),
-        average_latency: @metrics.average('dspy.prediction.duration', time_range),
-        error_rate: @metrics.rate('dspy.prediction.errors', time_range)
-      },
-      
-      performance_trends: {
-        accuracy_trend: @metrics.trend('dspy.prediction.accuracy', time_range, interval: 5.minutes),
-        latency_trend: @metrics.trend('dspy.prediction.duration', time_range, interval: 5.minutes),
-        throughput_trend: @metrics.trend('dspy.prediction.rate', time_range, interval: 5.minutes)
-      },
-      
-      signature_breakdown: @metrics.group_by('dspy.prediction.accuracy', 'signature', time_range),
-      
-      model_usage: @metrics.group_by('dspy.lm.request.total', 'model', time_range),
-      
-      cost_analysis: {
-        total_cost: @metrics.sum('dspy.prediction.cost', time_range),
-        cost_by_model: @metrics.group_by('dspy.prediction.cost', 'model', time_range),
-        cost_trend: @metrics.trend('dspy.prediction.cost', time_range, interval: 1.hour)
-      }
-    }
-  end
-end
-```
-
-### Alerting
-
-```ruby
-class DSPyAlerting
-  def initialize(metrics_store, notification_service)
-    @metrics = metrics_store
-    @notifications = notification_service
-    @alert_rules = []
-  end
-  
-  def add_alert_rule(name, condition, notification_config)
-    @alert_rules << {
-      name: name,
-      condition: condition,
-      notification: notification_config,
-      last_triggered: nil,
-      cooldown: notification_config[:cooldown] || 10.minutes
-    }
-  end
-  
-  def check_alerts
-    @alert_rules.each do |rule|
-      next if in_cooldown?(rule)
-      
-      if rule[:condition].call(@metrics)
-        trigger_alert(rule)
-        rule[:last_triggered] = Time.current
-      end
-    end
-  end
-  
-  def setup_default_alerts
-    # High error rate alert
-    add_alert_rule(
-      'high_error_rate',
-      ->(metrics) { 
-        metrics.rate('dspy.prediction.errors', 5.minutes) > 0.05 
-      },
-      {
-        channels: [:slack, :pagerduty],
-        severity: :high,
-        cooldown: 15.minutes
-      }
-    )
-    
-    # Low accuracy alert
-    add_alert_rule(
-      'accuracy_degradation',
-      ->(metrics) {
-        current = metrics.average('dspy.prediction.accuracy', 10.minutes)
-        baseline = metrics.average('dspy.prediction.accuracy', 24.hours)
-        current < baseline * 0.9  # 10% degradation
-      },
-      {
-        channels: [:slack, :email],
-        severity: :medium,
-        cooldown: 30.minutes
-      }
-    )
-    
-    # High latency alert
-    add_alert_rule(
-      'high_latency',
-      ->(metrics) {
-        metrics.percentile('dspy.prediction.duration', 95, 5.minutes) > 2000  # 2 seconds
-      },
-      {
-        channels: [:slack],
-        severity: :medium,
-        cooldown: 10.minutes
-      }
-    )
-  end
-  
-  private
-  
-  def trigger_alert(rule)
-    alert_data = {
-      rule_name: rule[:name],
-      severity: rule[:notification][:severity],
-      triggered_at: Time.current,
-      metrics_snapshot: capture_metrics_snapshot
-    }
-    
-    rule[:notification][:channels].each do |channel|
-      @notifications.send_alert(channel, alert_data)
-    end
-  end
-end
-```
-
-## Performance Monitoring
-
-### Custom Performance Tracking
-
-```ruby
-class PerformanceTracker
-  def initialize
-    @performance_data = {}
-    @benchmarks = {}
-  end
-  
-  def track_operation(operation_name, &block)
-    start_time = Time.current
-    start_memory = memory_usage
-    
-    result = yield
-    
-    end_time = Time.current
-    end_memory = memory_usage
-    
-    record_performance(operation_name, {
-      duration: end_time - start_time,
-      memory_delta: end_memory - start_memory,
-      timestamp: start_time,
-      success: !result.nil?
-    })
-    
-    result
-  rescue StandardError => e
-    record_performance(operation_name, {
-      duration: Time.current - start_time,
-      memory_delta: memory_usage - start_memory,
-      timestamp: start_time,
-      success: false,
-      error: e.class.name
-    })
-    
     raise
   end
-  
-  def benchmark_against_baseline(operation_name, baseline_percentile: 95)
-    recent_performance = @performance_data[operation_name]&.last(100) || []
-    return nil if recent_performance.empty?
-    
-    baseline = @benchmarks[operation_name]
-    return nil unless baseline
-    
-    current_p95 = percentile(recent_performance.map { |p| p[:duration] }, baseline_percentile)
-    baseline_p95 = baseline[:p95_duration]
-    
-    {
-      current_p95: current_p95,
-      baseline_p95: baseline_p95,
-      performance_ratio: current_p95 / baseline_p95,
-      regression: current_p95 > baseline_p95 * 1.2  # 20% regression threshold
-    }
-  end
-  
-  def establish_baseline(operation_name, sample_size: 100)
-    recent_data = @performance_data[operation_name]&.last(sample_size) || []
-    return false if recent_data.size < sample_size
-    
-    durations = recent_data.map { |p| p[:duration] }
-    
-    @benchmarks[operation_name] = {
-      established_at: Time.current,
-      sample_size: sample_size,
-      mean_duration: durations.sum / durations.size,
-      p50_duration: percentile(durations, 50),
-      p95_duration: percentile(durations, 95),
-      p99_duration: percentile(durations, 99)
-    }
-    
-    true
-  end
 end
 ```
 
-## Configuration Management
-
-### Environment-Specific Observability
+### Performance Monitoring
 
 ```ruby
-# Development configuration
-if Rails.env.development?
-  DSPy.configure do |config|
-    config.instrumentation.enabled = true
-    config.instrumentation.subscribers = [:logger]
-    config.instrumentation.logger.level = :debug
-    config.instrumentation.sampling_rate = 1.0
-  end
+start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+DSPy::Context.with_span(operation: 'batch_process') do
+  results = process_batch(items)
+  
+  duration = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
+  
+  DSPy.log('batch.complete',
+    duration_ms: (duration * 1000).round(2),
+    items_count: items.size,
+    success_rate: results.count(&:success?) / items.size.to_f
+  )
+  
+  results
+end
+```
+
+## Migration from Old Instrumentation
+
+If you were using the old instrumentation system:
+
+### Before (Old System)
+```ruby
+# Complex configuration
+DSPy.configure do |config|
+  config.instrumentation.enabled = true
+  config.instrumentation.subscribers = [:logger, :otel]
+  config.instrumentation.sampling_rate = 0.1
 end
 
-# Staging configuration
-if Rails.env.staging?
-  DSPy.configure do |config|
-    config.instrumentation.enabled = true
-    config.instrumentation.subscribers = [:logger, :otel]
-    config.instrumentation.logger.level = :info
-    config.instrumentation.sampling_rate = 0.5
-  end
+# Event emission
+DSPy::Instrumentation.instrument('my.event', payload) do
+  work()
+end
+```
+
+### After (New System)
+```ruby
+# Simple configuration
+DSPy.configure do |config|
+  config.logger = Dry.Logger(:dspy)
 end
 
-# Production configuration
-if Rails.env.production?
-  DSPy.configure do |config|
-    config.instrumentation.enabled = true
-    config.instrumentation.subscribers = [:otel, :newrelic, :langfuse]
-    config.instrumentation.logger.level = :warn
-    config.instrumentation.sampling_rate = 0.1
-    config.instrumentation.async_processing = true
-    config.instrumentation.error_reporting = true
-  end
+# Span tracking
+DSPy::Context.with_span(operation: 'my.event', **payload) do
+  work()
 end
 ```
 
 ## Best Practices
 
-### 1. Sampling Strategy
+1. **Use Semantic Names**: Follow dot notation for operations (e.g., `user.signup`, `llm.generate`)
 
+2. **Keep Attributes Flat**: Avoid deeply nested attribute structures
+
+3. **Limit Attribute Size**: Don't log large payloads as span attributes
+
+4. **Use Consistent Keys**: Maintain consistent attribute naming across your application
+
+5. **Sample in Production**: For high-volume applications, implement sampling:
+   ```ruby
+   # Simple sampling
+   if rand < 0.1  # 10% sampling
+     DSPy::Context.with_span(operation: 'sampled_op') do
+       # ...
+     end
+   else
+     # Execute without span tracking
+   end
+   ```
+
+## Troubleshooting
+
+### No Logs Appearing
+
+Check that logger is configured:
 ```ruby
-# Use intelligent sampling
-DSPy.configure do |config|
-  config.instrumentation.sampling_strategy = :intelligent
-  config.instrumentation.sampling_rules = {
-    # Always sample errors
-    error_events: 1.0,
-    
-    # Always sample slow requests
-    slow_requests: { threshold: 2.seconds, rate: 1.0 },
-    
-    # Sample based on confidence
-    low_confidence: { 
-      condition: ->(event) { event.payload.dig(:result, :confidence) < 0.7 },
-      rate: 0.5
-    },
-    
-    # Sample high-value operations more
-    important_signatures: {
-      condition: ->(event) { ['CriticalClassifier', 'SecurityCheck'].include?(event.payload[:signature]) },
-      rate: 0.3
-    },
-    
-    # Default sampling
-    default: 0.1
-  }
-end
+DSPy.config.logger # Should not be nil
 ```
 
-### 2. Context Preservation
+### Missing Trace Correlation
 
+Ensure operations are wrapped in spans:
 ```ruby
-# Preserve context across async operations
-class AsyncProcessor
-  def process_batch(items)
-    current_context = DSPy.current_trace_context
-    
-    items.map do |item|
-      Async do
-        DSPy.with_trace_context(current_context) do
-          process_item(item)
-        end
-      end
-    end.map(&:wait)
+# Correct - with span
+DSPy::Context.with_span(operation: 'my_op') do
+  DSPy.log('my.event', data: 'value')
+end
+
+# Incorrect - no span context
+DSPy.log('my.event', data: 'value')  # Will log but no trace_id
+```
+
+### Thread Safety Issues
+
+Context is thread-local, so each thread has isolated context:
+```ruby
+Thread.new do
+  # This thread has its own context
+  DSPy::Context.with_span(operation: 'thread_op') do
+    # ...
   end
 end
 ```
 
-### 3. Custom Metrics for Business Value
+## Summary
 
-```ruby
-# Track business outcomes, not just technical metrics
-class BusinessOutcomeTracker
-  def track_automation_success(prediction, actual_outcome)
-    # Track prediction accuracy
-    accuracy = prediction.matches?(actual_outcome) ? 1.0 : 0.0
-    
-    DSPy.metrics.histogram('business.automation.accuracy').record(accuracy)
-    
-    # Track business impact
-    if prediction.automated_decision?
-      DSPy.metrics.counter('business.decisions.automated').increment
-      
-      if accuracy == 1.0
-        DSPy.metrics.counter('business.decisions.successful').increment
-      end
-    end
-    
-    # Track cost savings
-    if prediction.replaced_human_decision?
-      estimated_savings = calculate_cost_savings(prediction)
-      DSPy.metrics.histogram('business.cost_savings').record(estimated_savings)
-    end
-  end
-end
-```
+The new observability system in DSPy.rb is intentionally minimal and focused on structured logging with span tracking. It provides:
 
-### 4. Proactive Monitoring
+- Simple API with just two main methods: `Context.with_span` and `DSPy.log`
+- Automatic trace correlation with UUIDs
+- Environment-aware formatting
+- OTEL-compatible output format
+- Zero external dependencies
 
-```ruby
-# Set up proactive health checks
-class DSPyHealthChecker
-  def run_health_checks
-    checks = [
-      check_model_availability,
-      check_prediction_accuracy,
-      check_response_times,
-      check_error_rates
-    ]
-    
-    overall_health = checks.all? { |check| check[:healthy] }
-    
-    DSPy.metrics.gauge('dspy.health.overall').set(overall_health ? 1 : 0)
-    
-    checks.each do |check|
-      DSPy.metrics.gauge("dspy.health.#{check[:name]}").set(check[:healthy] ? 1 : 0)
-    end
-    
-    overall_health
-  end
-end
-```
-
-Comprehensive observability is essential for production DSPy applications. Use these tools and patterns to maintain visibility into your system's performance, accuracy, and business impact.
+For most applications, this provides sufficient observability while maintaining simplicity and performance.
