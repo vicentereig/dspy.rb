@@ -5,7 +5,7 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.17.0] - 2025-01-08
 
 ### Changed
 - **Upgraded Anthropic SDK** - Updated from `~> 1.1.1` to `~> 1.5.0`
@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - AWS Bedrock base URL compatibility fixes  
   - Performance improvements and bug fixes
   - All existing functionality remains compatible
+  - Foundation for future reasoning model integration
 
 ## [0.15.7] - 2025-08-07
 
