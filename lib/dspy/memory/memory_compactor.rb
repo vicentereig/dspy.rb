@@ -50,7 +50,7 @@ module DSPy
       # Main compaction entry point - checks all triggers and compacts if needed
       sig { params(store: MemoryStore, embedding_engine: EmbeddingEngine, user_id: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
       def compact_if_needed!(store, embedding_engine, user_id: nil)
-        DSPy::Instrumentation.instrument('dspy.memory.compaction_check', { user_id: user_id }) do
+        DSPy::Context.with_span(operation: 'memory.compaction_check', 'memory.user_id' => user_id) do
           results = {}
           
           # Check triggers in order of impact
@@ -142,7 +142,7 @@ module DSPy
       # Remove oldest memories when over size limit
       sig { params(store: MemoryStore, user_id: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
       def perform_size_compaction!(store, user_id)
-        DSPy::Instrumentation.instrument('dspy.memory.size_compaction', { user_id: user_id }) do
+        DSPy::Context.with_span(operation: 'memory.size_compaction', 'memory.user_id' => user_id) do
           current_count = store.count(user_id: user_id)
           target_count = (@max_memories * 0.8).to_i  # Remove to 80% of limit
           remove_count = current_count - target_count
@@ -181,7 +181,7 @@ module DSPy
       # Remove memories older than age limit
       sig { params(store: MemoryStore, user_id: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
       def perform_age_compaction!(store, user_id)
-        DSPy::Instrumentation.instrument('dspy.memory.age_compaction', { user_id: user_id }) do
+        DSPy::Context.with_span(operation: 'memory.age_compaction', 'memory.user_id' => user_id) do
           cutoff_time = Time.now - (@max_age_days * 24 * 60 * 60)
           all_memories = store.list(user_id: user_id)
           old_memories = all_memories.select { |m| m.created_at < cutoff_time }
@@ -205,7 +205,7 @@ module DSPy
       # Remove near-duplicate memories using embedding similarity
       sig { params(store: MemoryStore, embedding_engine: EmbeddingEngine, user_id: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
       def perform_deduplication!(store, embedding_engine, user_id)
-        DSPy::Instrumentation.instrument('dspy.memory.deduplication', { user_id: user_id }) do
+        DSPy::Context.with_span(operation: 'memory.deduplication', 'memory.user_id' => user_id) do
           memories = store.list(user_id: user_id)
           memories_with_embeddings = memories.select(&:embedding)
           
@@ -258,7 +258,7 @@ module DSPy
       # Remove memories with low relevance (low access patterns)
       sig { params(store: MemoryStore, user_id: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
       def perform_relevance_pruning!(store, user_id)
-        DSPy::Instrumentation.instrument('dspy.memory.relevance_pruning', { user_id: user_id }) do
+        DSPy::Context.with_span(operation: 'memory.relevance_pruning', 'memory.user_id' => user_id) do
           memories = store.list(user_id: user_id)
           total_access = memories.sum(&:access_count)
           return { removed_count: 0, trigger: 'no_access_data' } if total_access == 0

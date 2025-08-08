@@ -74,7 +74,9 @@ RSpec.describe 'Token usage with T::Struct' do
         metadata: { provider: 'openai' }
       )
       
-      tokens = DSPy::Instrumentation::TokenTracker.extract_token_usage(response, 'openai')
+      # Token extraction is now internal to LM, test through actual LM usage
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: 'test-key')
+      tokens = lm.send(:extract_token_usage, response)
       
       expect(tokens).to eq({
         input_tokens: 100,
@@ -97,7 +99,9 @@ RSpec.describe 'Token usage with T::Struct' do
         metadata: { provider: 'openai' }
       )
       
-      tokens = DSPy::Instrumentation::TokenTracker.extract_token_usage(response, 'openai')
+      # Token extraction is now internal to LM, test through actual LM usage
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: 'test-key')
+      tokens = lm.send(:extract_token_usage, response)
       
       expect(tokens).to eq({
         input_tokens: 100,

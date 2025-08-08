@@ -216,10 +216,11 @@ module DSPy
       # Force memory compaction (useful for testing or manual cleanup)
       sig { params(user_id: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
       def force_compact!(user_id = nil)
-        DSPy::Instrumentation.instrument('dspy.memory.compaction_complete', { 
-          user_id: user_id, 
-          forced: true 
-        }) do
+        DSPy::Context.with_span(
+          operation: 'memory.compaction_complete',
+          'memory.user_id' => user_id,
+          'memory.forced' => true
+        ) do
           results = {}
           
           # Run all compaction strategies regardless of thresholds
