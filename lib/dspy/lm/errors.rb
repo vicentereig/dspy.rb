@@ -19,5 +19,12 @@ module DSPy
         super("API key is required but was not provided. Set it via the api_key parameter or #{env_var} environment variable.")
       end
     end
+    
+    # Raised when image features are incompatible with the target provider
+    class IncompatibleImageFeatureError < AdapterError
+      def initialize(message)
+        super(message)
+      end
+    end
   end
 end
