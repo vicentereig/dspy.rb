@@ -4,9 +4,9 @@ order: 9
 title: "Raw Chat API for Benchmarking and Migration"
 date: 2025-07-23
 description: "Learn how to use DSPy.rb's raw_chat API for benchmarking monolithic prompts and migrating to modular implementations"
-tags: [api, benchmarking, migration, instrumentation]
+tags: [api, benchmarking, migration, observability]
 excerpt: |
-  The raw_chat API lets you run existing prompts through DSPy's instrumentation to compare token usage and performance against modular implementations.
+  The raw_chat API lets you run existing prompts through DSPy's observability system to compare token usage and performance against modular implementations.
 permalink: /blog/raw-chat-api/
 ---
 
@@ -14,10 +14,10 @@ DSPy.rb 0.12.0 introduces the `raw_chat` API for benchmarking existing prompts a
 
 ## The Problem
 
-Many teams have existing prompts they want to compare against DSPy modules. Without running both through the same instrumentation, you can't get accurate comparisons.
+Many teams have existing prompts they want to compare against DSPy modules. Without running both through the same observability system, you can't get accurate comparisons.
 
 The `raw_chat` API lets you:
-- Run existing prompts through DSPy's instrumentation pipeline
+- Run existing prompts through DSPy's observability system
 - Compare token usage between monolithic and modular approaches
 - Measure performance across different providers
 - Make data-driven migration decisions
@@ -47,7 +47,7 @@ end
 
 ### 1. Full Instrumentation Support
 
-Unlike bypassing DSPy entirely, `raw_chat` emits all standard instrumentation events:
+Unlike bypassing DSPy entirely, `raw_chat` emits all standard log events with span tracking:
 
 ```ruby
 # These events are emitted for raw_chat:
@@ -190,7 +190,7 @@ end
 1. **Bypasses JSON parsing** - Returns raw strings
 2. **Skips retry strategies** - No structured output validation
 3. **Direct adapter calls** - Minimal overhead
-4. **Preserves instrumentation** - Full observability
+4. **Preserves observability** - Full span tracking and logging
 
 This gives you fair comparisons with full monitoring.
 
@@ -204,7 +204,7 @@ This gives you fair comparisons with full monitoring.
 
 ## Summary
 
-The `raw_chat` API helps you compare existing prompts with DSPy modules using the same instrumentation. This lets you make informed decisions about migration based on actual data, not guesswork.
+The `raw_chat` API helps you compare existing prompts with DSPy modules using the same observability system. This lets you make informed decisions about migration based on actual data, not guesswork.
 
 ---
 

@@ -7,7 +7,7 @@ order: 6
 
 # Benchmarking Raw Prompts
 
-When migrating from monolithic prompts to modular DSPy implementations, it's crucial to measure and compare their performance. DSPy.rb provides the `raw_chat` method specifically for this purpose, allowing you to run existing prompts through the same instrumentation pipeline as your DSPy modules.
+When migrating from monolithic prompts to modular DSPy implementations, it's crucial to measure and compare their performance. DSPy.rb provides the `raw_chat` method specifically for this purpose, allowing you to run existing prompts through the same observability system as your DSPy modules.
 
 ## Why Benchmark Raw Prompts?
 
@@ -45,9 +45,9 @@ end
 puts result # => "# Changelog\n\n## Features\n- Add user authentication..."
 ```
 
-## Capturing Instrumentation Data
+## Capturing Observability Data
 
-Both `raw_chat` and regular DSPy modules emit the same instrumentation events, making comparison straightforward:
+Both `raw_chat` and regular DSPy modules emit the same log events with span tracking, making comparison straightforward:
 
 ```ruby
 # Capture events for analysis by processing logs
@@ -252,7 +252,7 @@ end
 
 ## Integration with Observability Tools
 
-The `raw_chat` method emits standard DSPy instrumentation events, making it compatible with all observability integrations:
+The `raw_chat` method emits standard DSPy log events with span tracking, making it compatible with all observability integrations:
 
 ```ruby
 # Configure observability
@@ -299,6 +299,6 @@ end
 
 ## Conclusion
 
-The `raw_chat` method provides a crucial bridge for teams migrating from monolithic prompts to modular DSPy implementations. By enabling direct performance comparisons with full instrumentation support, it helps make data-driven decisions about when and how to modularize your prompts.
+The `raw_chat` method provides a crucial bridge for teams migrating from monolithic prompts to modular DSPy implementations. By enabling direct performance comparisons with full observability support, it helps make data-driven decisions about when and how to modularize your prompts.
 
 Remember: while token efficiency is important, the real benefits of DSPy's modular approach include improved maintainability, testability, and the ability to optimize prompts programmatically.

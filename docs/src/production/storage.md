@@ -258,7 +258,7 @@ history = storage.get_history
 
 ## Events and Monitoring
 
-The storage system emits instrumentation events for monitoring:
+The storage system emits structured log events for monitoring:
 
 - `dspy.storage.save_start` - When save begins
 - `dspy.storage.save_complete` - Successful save with file size

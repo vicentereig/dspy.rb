@@ -517,10 +517,10 @@ When things go wrong, here's how to debug:
 ```ruby
 # 1. Enable verbose logging
 DSPy.configure do |c|
-  c.instrumentation.logger.level = :debug
+  c.logger.level = :debug
 end
 
-# 2. Add tool instrumentation
+# 2. Add tool logging with Context spans
 class InstrumentedTool < DSPy::Tools::Base
   extend T::Sig
 
@@ -539,19 +539,21 @@ class InstrumentedTool < DSPy::Tools::Base
 
   sig { params(data: String).returns(T.any(OperationSuccess, OperationError)) }
   def call(data:)
-    started_at = Time.now
-    Rails.logger.info "Tool called with: #{data.inspect}"
-    
-    result = perform_operation(data)
-    duration = Time.now - started_at
-    
-    Rails.logger.info "Tool completed in #{duration}s: #{result.inspect}"
-    OperationSuccess.new(result: result, duration: duration)
-  rescue => e
-    duration = Time.now - started_at
-    Rails.logger.error "Tool failed: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
-    OperationError.new(error: e.message, duration: duration)
+    DSPy::Context.with_span(operation: 'tool.instrumented_operation', tool_input: data) do
+        started_at = Time.now
+        DSPy.log('tool.started', tool_name: 'instrumented_operation', input: data)
+        
+        result = perform_operation(data)
+        duration = Time.now - started_at
+        
+        DSPy.log('tool.completed', tool_name: 'instrumented_operation', duration: duration, result: result)
+        OperationSuccess.new(result: result, duration: duration)
+      rescue => e
+        duration = Time.now - started_at
+        DSPy.log('tool.failed', tool_name: 'instrumented_operation', error: e.message, duration: duration)
+        OperationError.new(error: e.message, duration: duration)
+      end
+    end
   end
 
   private

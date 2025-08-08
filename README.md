@@ -71,10 +71,10 @@ puts result.confidence   # => 0.85
 - **Reliable JSON Extraction** - Native OpenAI structured outputs, Anthropic extraction patterns, and automatic strategy selection with fallback
 - **Type-Safe Configuration** - Strategy enums with automatic provider optimization (Strict/Compatible modes)
 - **Smart Retry Logic** - Progressive fallback with exponential backoff for handling transient failures
+- **Zero-Config Langfuse Integration** - Set env vars and get automatic OpenTelemetry traces in Langfuse
 - **Performance Caching** - Schema and capability caching for faster repeated operations
 - **File-based Storage** - Optimization result persistence with versioning
-- **Multi-Platform Observability** - OpenTelemetry, New Relic, and Langfuse integration
-- **Comprehensive Instrumentation** - Event tracking, performance monitoring, and detailed logging
+- **Structured Logging** - JSON and key=value formats with span tracking
 
 **Developer Experience:**
 - LLM provider support using official Ruby clients:
@@ -163,7 +163,7 @@ For LLMs and AI assistants working with DSPy.rb:
 
 ### Production Features
 - **[Storage System](docs/src/production/storage.md)** - Basic file-based persistence
-- **[Observability](docs/src/production/observability.md)** - Multi-platform monitoring and metrics
+- **[Observability](docs/src/production/observability.md)** - Zero-config Langfuse integration and structured logging
 
 ### Advanced Usage
 - **[Complex Types](docs/src/advanced/complex-types.md)** - Sorbet type integration with automatic coercion for structs, enums, and arrays

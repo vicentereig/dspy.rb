@@ -252,7 +252,7 @@ Planned improvements:
 2. **Provide Context**: Clear context leads to better code generation
 3. **Validate Output**: Always validate generated code results
 4. **Monitor Resources**: Set timeouts and memory limits
-5. **Log Everything**: Enable instrumentation in production
+5. **Log Everything**: Enable observability with Langfuse in production
 
 ## Next Steps
 

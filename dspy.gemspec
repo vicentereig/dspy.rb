@@ -42,5 +42,9 @@ Gem::Specification.new do |spec|
   # Local embeddings
   spec.add_dependency "informers", "~> 1.2"
 
+  # Optional OpenTelemetry integration for Langfuse
+  spec.add_dependency "opentelemetry-sdk", "~> 1.8"
+  spec.add_dependency "opentelemetry-exporter-otlp", "~> 0.30"
+
   # Development dependencies are already specified in the Gemfile
 end

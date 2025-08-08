@@ -17,14 +17,23 @@ module DSPy
         parent_span_id = current[:span_stack].last
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         
-        # Log span start with proper hierarchy
-        DSPy.log('span.start', 
+        # Prepare attributes with context information
+        span_attributes = {
           trace_id: current[:trace_id],
           span_id: span_id,
           parent_span_id: parent_span_id,
           operation: operation,
           **attributes
-        )
+        }
+        
+        # Log span start with proper hierarchy
+        DSPy.log('span.start', **span_attributes)
+        
+        # Create OpenTelemetry span if observability is enabled
+        otel_span = nil
+        if DSPy::Observability.enabled?
+          otel_span = DSPy::Observability.start_span(operation, span_attributes)
+        end
         
         # Push to stack for child spans
         current[:span_stack].push(span_id)
@@ -42,6 +51,9 @@ module DSPy
             span_id: span_id,
             duration_ms: duration_ms
           )
+          
+          # Finish OpenTelemetry span
+          DSPy::Observability.finish_span(otel_span) if otel_span
         end
         
         result

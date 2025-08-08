@@ -306,7 +306,7 @@ registry.import_registry('./registry_backup.yml')
 
 ## Events and Monitoring
 
-The registry emits instrumentation events for monitoring:
+The registry emits structured log events for monitoring:
 
 - `dspy.registry.register_start` - Version registration begins
 - `dspy.registry.register_complete` - Version registered successfully

@@ -603,4 +603,4 @@ DSPy.configure do |config|
 end
 ```
 
-Predictors provide the core execution capabilities for DSPy applications with built-in instrumentation and type safety.
+Predictors provide the core execution capabilities for DSPy applications with built-in observability and type safety.

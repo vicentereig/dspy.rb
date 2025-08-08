@@ -167,4 +167,78 @@ RSpec.describe DSPy::Context do
       expect(trace_id1).not_to eq(trace_id2)
     end
   end
+
+  describe 'OpenTelemetry integration' do
+    let(:mock_span) { double('otel_span') }
+
+    before { described_class.clear! }
+
+    context 'when Observability is enabled' do
+      before do
+        allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+        allow(DSPy::Observability).to receive(:start_span).and_return(mock_span)
+        allow(DSPy::Observability).to receive(:finish_span)
+      end
+
+      it 'creates OTEL span alongside logging' do
+        expect(DSPy::Observability).to receive(:start_span).with(
+          'test.operation',
+          hash_including(
+            trace_id: anything,
+            span_id: anything,
+            parent_span_id: nil,
+            operation: 'test.operation',
+            custom_attr: 'value'
+          )
+        )
+
+        expect(DSPy::Observability).to receive(:finish_span).with(mock_span)
+
+        described_class.with_span(operation: 'test.operation', custom_attr: 'value') { }
+      end
+
+      it 'finishes OTEL span even when block raises exception' do
+        expect(DSPy::Observability).to receive(:start_span).and_return(mock_span)
+        expect(DSPy::Observability).to receive(:finish_span).with(mock_span)
+
+        expect do
+          described_class.with_span(operation: 'failing') do
+            raise 'test error'
+          end
+        end.to raise_error('test error')
+      end
+
+      it 'passes GenAI semantic attributes to OTEL span' do
+        expect(DSPy::Observability).to receive(:start_span).with(
+          'llm.generate',
+          hash_including(
+            'gen_ai.system' => 'openai',
+            'gen_ai.request.model' => 'gpt-4'
+          )
+        )
+
+        described_class.with_span(
+          operation: 'llm.generate',
+          'gen_ai.system' => 'openai',
+          'gen_ai.request.model' => 'gpt-4'
+        ) { }
+      end
+    end
+
+    context 'when Observability is disabled' do
+      before do
+        allow(DSPy::Observability).to receive(:enabled?).and_return(false)
+      end
+
+      it 'only logs spans without OTEL integration' do
+        expect(DSPy::Observability).not_to receive(:start_span)
+        expect(DSPy::Observability).not_to receive(:finish_span)
+
+        expect(DSPy).to receive(:log).with('span.start', anything)
+        expect(DSPy).to receive(:log).with('span.end', anything)
+
+        described_class.with_span(operation: 'test.operation') { }
+      end
+    end
+  end
 end

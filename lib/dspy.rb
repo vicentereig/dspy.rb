@@ -7,6 +7,7 @@ require 'securerandom'
 require_relative 'dspy/version'
 require_relative 'dspy/errors'
 require_relative 'dspy/type_serializer'
+require_relative 'dspy/observability'
 require_relative 'dspy/context'
 
 module DSPy
@@ -102,6 +103,9 @@ require_relative 'dspy/storage/program_storage'
 require_relative 'dspy/storage/storage_manager'
 require_relative 'dspy/registry/signature_registry'
 require_relative 'dspy/registry/registry_manager'
+
+# Auto-configure observability if Langfuse env vars are present
+DSPy::Observability.configure!
 
 # LoggerSubscriber will be lazy-initialized when first accessed
 

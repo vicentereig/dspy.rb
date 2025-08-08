@@ -368,14 +368,129 @@ Thread.new do
 end
 ```
 
+## Langfuse Integration (Zero Configuration)
+
+DSPy.rb includes **zero-config Langfuse integration** via OpenTelemetry. Simply set your Langfuse environment variables and DSPy will automatically export spans to Langfuse alongside the normal logging.
+
+### Setup
+
+```bash
+# Required environment variables
+export LANGFUSE_PUBLIC_KEY=pk-lf-your-public-key
+export LANGFUSE_SECRET_KEY=sk-lf-your-secret-key
+
+# Optional: specify host (defaults to cloud.langfuse.com)
+export LANGFUSE_HOST=https://cloud.langfuse.com  # or https://us.cloud.langfuse.com
+```
+
+### How It Works
+
+When Langfuse environment variables are detected, DSPy automatically:
+
+1. **Configures OpenTelemetry SDK** with OTLP exporter
+2. **Creates dual output**: Both structured logs AND OpenTelemetry spans
+3. **Exports to Langfuse** using proper authentication and endpoints
+4. **Falls back gracefully** if OpenTelemetry gems are missing or configuration fails
+
+### Example Output
+
+With Langfuse configured, your DSPy applications will send traces like this:
+
+**In your logs** (as usual):
+```json
+{
+  "severity": "INFO",
+  "time": "2025-08-08T22:02:57Z",
+  "trace_id": "abc-123-def",
+  "span_id": "span-456",
+  "parent_span_id": "span-789",
+  "operation": "ChainOfThought.forward",
+  "dspy.module": "ChainOfThought",
+  "event": "span.start"
+}
+```
+
+**In Langfuse** (automatically):
+```
+Trace: abc-123-def
+├─ ChainOfThought.forward [2000ms]
+│  ├─ Module: ChainOfThought
+│  └─ llm.generate [1000ms]
+│     ├─ Model: gpt-4-0613
+│     ├─ Temperature: 0.7
+│     ├─ Tokens: 100 in / 50 out / 150 total
+│     └─ Cost: $0.0021 (calculated by Langfuse)
+```
+
+### GenAI Semantic Conventions
+
+DSPy automatically includes OpenTelemetry GenAI semantic conventions:
+
+```ruby
+# LLM operations automatically include:
+{
+  "gen_ai.system": "openai",
+  "gen_ai.request.model": "gpt-4",
+  "gen_ai.response.model": "gpt-4-0613",
+  "gen_ai.usage.prompt_tokens": 100,
+  "gen_ai.usage.completion_tokens": 50,
+  "gen_ai.usage.total_tokens": 150
+}
+```
+
+### Manual Configuration (Advanced)
+
+For custom OpenTelemetry setups, you can disable auto-configuration and set up manually:
+
+```ruby
+# Disable auto-config by not setting Langfuse env vars
+# Then configure OpenTelemetry yourself:
+
+require 'opentelemetry/sdk'
+require 'opentelemetry/exporter/otlp'
+
+OpenTelemetry::SDK.configure do |config|
+  config.service_name = 'my-dspy-app'
+  # Your custom configuration
+end
+```
+
+### Dependencies
+
+The Langfuse integration requires these gems (automatically included):
+- `opentelemetry-sdk` (~> 1.8)
+- `opentelemetry-exporter-otlp` (~> 0.30)
+
+If these gems are not available, DSPy gracefully falls back to logging-only mode.
+
+### Troubleshooting Langfuse Integration
+
+**Spans not appearing in Langfuse:**
+1. Verify environment variables are set correctly
+2. Check Langfuse host/region (EU vs US)
+3. Ensure network connectivity to Langfuse endpoints
+
+**OpenTelemetry errors:**
+1. Check that required gems are installed: `bundle install`
+2. Look for observability error logs: `grep "observability.error" log/production.log`
+
+**Authentication issues:**
+1. Verify your public and secret keys are correct
+2. Check that keys have proper permissions in Langfuse dashboard
+
 ## Summary
 
-The new observability system in DSPy.rb is intentionally minimal and focused on structured logging with span tracking. It provides:
+The observability system in DSPy.rb provides three modes of operation:
 
-- Simple API with just two main methods: `Context.with_span` and `DSPy.log`
-- Automatic trace correlation with UUIDs
-- Environment-aware formatting
-- OTEL-compatible output format
-- Zero external dependencies
+1. **Logging Only** (default): Structured logs with span tracking
+2. **Langfuse Integration** (zero-config): Logs + automatic OpenTelemetry export
+3. **Custom OTEL** (advanced): Full control over OpenTelemetry configuration
 
-For most applications, this provides sufficient observability while maintaining simplicity and performance.
+Key benefits:
+- **Zero-config Langfuse**: Just set env vars and it works
+- **Non-invasive**: Logging still works without Langfuse
+- **Standards-compliant**: Uses OpenTelemetry GenAI semantic conventions
+- **Graceful degradation**: Falls back to logging if anything fails
+- **Minimal overhead**: ~100 lines of observability code total
+
+For most applications, the zero-config Langfuse integration provides production-ready observability with minimal setup.
