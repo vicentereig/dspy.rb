@@ -44,8 +44,8 @@ When working with external libraries in this codebase, **ALWAYS check the docume
   - Used for: ChatGPT/GPT-4 API integration
   - **IMPORTANT**: This is the official OpenAI Ruby SDK, not the community ruby-openai gem
 
-- **anthropic** (~> 1.1.1) - Anthropic API client (Official SDK)
-  - Docs: https://github.com/anthropics/anthropic-sdk-ruby/tree/v1.1.1
+- **anthropic** (~> 1.5.0) - Anthropic API client (Official SDK)
+  - Docs: https://github.com/anthropics/anthropic-sdk-ruby/tree/v1.5.0
   - Used for: Claude API integration
 
 - **sorbet-runtime** (~> 0.5) - Runtime type checking
@@ -705,6 +705,49 @@ footers other than BREAKING CHANGE: <description> may be provided and follow a c
 ```
 
 ---
+
+## Testing Philosophy - API Key Management
+
+### Test Environment Behavior (August 2025)
+
+**Key Principle**: Tests should FAIL when required environment variables are missing, not skip or use fallbacks.
+
+**Correct Pattern**:
+```ruby
+# ✅ CORRECT: Test fails if API key missing
+it "calls the API", vcr: { cassette_name: "test" } do
+  lm = DSPy::LM.new("openai/gpt-4", api_key: ENV['OPENAI_API_KEY'])
+  # Test implementation - will fail with clear error if key missing
+end
+
+# ✅ CORRECT: Integration test with explicit skip check
+it "calls the API", vcr: { cassette_name: "test" } do
+  skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+  lm = DSPy::LM.new("openai/gpt-4", api_key: ENV['OPENAI_API_KEY'])
+  # test implementation
+end
+```
+
+**Forbidden Patterns**:
+```ruby
+# ❌ NEVER: Fallback API keys hide configuration issues
+api_key = ENV['OPENAI_API_KEY'] || 'test-key'
+lm = DSPy::LM.new("openai/gpt-4", api_key: api_key)
+
+# ❌ NEVER: Silent defaults
+api_key = ENV['OPENAI_API_KEY'] || 'fallback-key'
+
+# ❌ NEVER: Helper methods that add fallbacks
+def api_key_with_fallback(env_var)
+  ENV[env_var] || 'test-key'
+end
+```
+
+**Rationale**:
+- Explicit failures reveal misconfiguration immediately
+- VCR cassettes should work with real API calls, not fake keys
+- Production code should never have fallback keys
+- Clear error messages guide developers to proper setup
 
 ## Recent Learnings and Best Practices
 
