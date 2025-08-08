@@ -38,7 +38,7 @@ gem 'async', '~> 2.23'
 
 # Official LM provider clients
 gem 'openai', '~> 0.9.0'
-gem 'anthropic', '~> 1.1.0'
+gem 'anthropic', '~> 1.5.0'
 # Note: Ollama support is built-in via OpenAI compatibility layer
 
 # Sorbet integration dependencies
