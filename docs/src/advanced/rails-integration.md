@@ -229,14 +229,15 @@ Rails.application.config.after_initialize do
       api_key: Rails.application.credentials.openai_api_key
     )
     
-    # Configure instrumentation based on environment
-    config.instrumentation do |i|
-      i.enabled = Rails.env.production?
-      i.subscribers = [:logger]
-      i.subscribers << :newrelic if defined?(NewRelic)
-      
-      # Use Rails logger
-      i.logger.level = Rails.logger.level
+    # Configure observability based on environment
+    config.logger = if Rails.env.production?
+      Dry.Logger(:dspy, formatter: :json) do |logger|
+        logger.add_backend(stream: Rails.root.join("log/dspy.log"))
+      end
+    else
+      Dry.Logger(:dspy) do |logger|
+        logger.add_backend(level: :debug, stream: $stdout)
+      end
     end
   end
 end

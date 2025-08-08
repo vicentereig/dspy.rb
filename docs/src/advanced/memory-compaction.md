@@ -149,18 +149,21 @@ manager.compact_if_needed!(nil)  # Use nil for global compaction
 
 ## Instrumentation and Monitoring
 
-The compaction system emits detailed instrumentation events:
+The compaction system emits detailed log events:
 
 ```ruby
-# Subscribe to compaction events
-DSPy::Instrumentation.subscribe('dspy.memory.compaction_check') do |event|
-  puts "Compaction check for user: #{event[:user_id]}"
-  puts "Duration: #{event[:duration_ms]}ms"
-end
-
-DSPy::Instrumentation.subscribe('dspy.memory.size_compaction') do |event|
-  puts "Size compaction removed #{event[:removed_count]} memories"
-  puts "Before: #{event[:before_count]}, After: #{event[:after_count]}"
+# Process compaction logs
+File.foreach("log/dspy.log") do |line|
+  event = JSON.parse(line)
+  
+  case event["event"]
+  when "dspy.memory.compaction_check"
+    puts "Compaction check for user: #{event["user_id"]}"
+    puts "Duration: #{event["duration_ms"]}ms"
+  when "dspy.memory.size_compaction"
+    puts "Size compaction removed #{event["removed_count"]} memories"
+    puts "Before: #{event["before_count"]}, After: #{event["after_count"]}"
+  end
 end
 ```
 

@@ -206,10 +206,11 @@ puts "Confidence: #{result.confidence}"
 One of the best features of ReAct agents is transparency. You can see exactly how they think:
 
 ```ruby
-# Enable detailed instrumentation
+# Enable detailed observability
 DSPy.configure do |c|
-  c.instrumentation.enabled = true
-  c.instrumentation.logger.level = :info
+  c.logger = Dry.Logger(:dspy) do |logger|
+    logger.add_backend(level: :info, stream: $stdout)
+  end
 end
 
 result = research_agent.forward(

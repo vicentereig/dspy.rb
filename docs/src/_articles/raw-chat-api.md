@@ -96,9 +96,15 @@ LEGACY_PROMPT = <<~PROMPT
   Be concise but informative.
 PROMPT
 
-# Capture instrumentation data
-events = []
-DSPy::Instrumentation.subscribe { |e| events << e }
+# Configure logging to capture data
+require 'tempfile'
+log_file = Tempfile.new('dspy_benchmark')
+
+DSPy.configure do |config|
+  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(stream: log_file)
+  end
+end
 
 # Benchmark legacy approach
 legacy_result = lm.raw_chat do |m|
@@ -106,31 +112,38 @@ legacy_result = lm.raw_chat do |m|
   m.user commits.join("\n")
 end
 
-legacy_tokens = events.find { |e| e.id == 'dspy.lm.tokens' }.payload
+# Extract legacy tokens
+log_file.rewind
+events = log_file.readlines.map { |line| JSON.parse(line) }
+legacy_tokens = events.find { |e| e["event"] == 'llm.generate' }
 
-# Clear events and benchmark modular approach
-events.clear
+# Clear log and benchmark modular approach
+log_file.truncate(0)
+log_file.rewind
 generator = DSPy::ChainOfThought.new(ChangelogSignature)
 modular_result = generator.forward(commits: commits)
 
-modular_tokens = events.find { |e| e.id == 'dspy.lm.tokens' }.payload
+# Extract modular tokens
+log_file.rewind
+events = log_file.readlines.map { |line| JSON.parse(line) }
+modular_tokens = events.find { |e| e["event"] == 'llm.generate' }
 
 # Compare results
-puts "Legacy: #{legacy_tokens[:total_tokens]} tokens"
-puts "Modular: #{modular_tokens[:total_tokens]} tokens"
-puts "Reduction: #{((1 - modular_tokens[:total_tokens].to_f / legacy_tokens[:total_tokens]) * 100).round(2)}%"
+puts "Legacy: #{legacy_tokens["gen_ai.usage.total_tokens"]} tokens"
+puts "Modular: #{modular_tokens["gen_ai.usage.total_tokens"]} tokens"
+puts "Reduction: #{((1 - modular_tokens["gen_ai.usage.total_tokens"].to_f / legacy_tokens["gen_ai.usage.total_tokens"]) * 100).round(2)}%"
 ```
 
 ## Integration with Observability
 
-`raw_chat` uses the same instrumentation pipeline as regular DSPy calls:
+`raw_chat` uses the same observability system as regular DSPy calls:
 
 ```ruby
-# Configure DataDog
+# Configure observability
 DSPy.configure do |config|
-  config.instrumentation.subscribers = [
-    DSPy::Subscribers::DatadogSubscriber.new
-  ]
+  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(stream: "/var/log/dspy/production.log")
+  end
 end
 
 # Both calls are tracked identically

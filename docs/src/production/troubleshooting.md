@@ -214,11 +214,10 @@ response = lm.generate("Test prompt")
 puts response
 ```
 
-4. **Use instrumentation for debugging**:
+4. **Use logging for debugging**:
 ```ruby
 DSPy.configure do |config|
-  config.instrumentation.enabled = true
-  config.instrumentation.subscribers = [:logger]
+  config.logger = Dry.Logger(:dspy, formatter: :json)
 end
 ```
 

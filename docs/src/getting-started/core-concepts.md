@@ -185,9 +185,8 @@ Configure DSPy with your preferred language model:
 DSPy.configure do |config|
   config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
   
-  # Optional: Configure instrumentation
-  config.instrumentation.enabled = true
-  config.instrumentation.subscribers = [:logger, :otel]
+  # Optional: Configure logging for observability
+  config.logger = Dry.Logger(:dspy)
 end
 ```
 

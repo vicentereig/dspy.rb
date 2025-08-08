@@ -211,12 +211,13 @@ report = analyzer.analyze_trends({
 
 ## Debugging CodeAct
 
-Enable instrumentation to see what's happening:
+Enable logging to see what's happening:
 
 ```ruby
 DSPy.configure do |c|
-  c.instrumentation.enabled = true
-  c.instrumentation.logger.level = :debug
+  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(level: :debug, stream: $stdout)
+  end
 end
 
 # This will log each code generation attempt and execution result

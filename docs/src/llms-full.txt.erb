@@ -114,13 +114,10 @@ DSPy.configure do |c|
     max_tokens: 2000
   )
   
-  # Instrumentation
-  c.instrumentation.enabled = true
-  c.instrumentation.subscribers = ['logger', 'otel', 'newrelic', 'langfuse']
-  
-  # Logging
-  c.logger.level = :info
-  c.logger.formatter = :json
+  # Observability
+  c.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(level: :info, stream: $stdout)
+  end
 end
 ```
 
@@ -750,17 +747,16 @@ puts "F1 Score: #{metrics[:f1_score]}"
 ### Observability
 
 ```ruby
-# Enable instrumentation
+# Enable observability
 DSPy.configure do |c|
-  c.instrumentation.enabled = true
-  c.instrumentation.subscribers = ['logger', 'otel']
+  c.logger = Dry.Logger(:dspy, formatter: :json)
 end
 
-# Events emitted:
-# - lm.request.start/end
-# - lm.chat.start/end
-# - prediction.start/end
-# - module.forward.start/end
+# Span tracking emitted for:
+# - llm.generate
+# - dspy.predict
+# - module.forward
+# - tool.execute
 ```
 
 ### OpenTelemetry Integration
@@ -774,9 +770,11 @@ OpenTelemetry::SDK.configure do |c|
   c.use 'OpenTelemetry::Instrumentation::Net::HTTP'
 end
 
-# DSPy automatically integrates
+# DSPy logs can be forwarded to OTEL
 DSPy.configure do |c|
-  c.instrumentation.subscribers = ['otel']
+  c.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(stream: "/var/log/dspy/traces.json")
+  end
 end
 ```
 
@@ -796,11 +794,14 @@ end
 ### Token Usage Tracking
 
 ```ruby
-# Automatic tracking with events
-DSPy::Instrumentation.subscribe('lm.tokens.used') do |event|
-  puts "Input tokens: #{event.payload[:input_tokens]}"
-  puts "Output tokens: #{event.payload[:output_tokens]}"
-  puts "Total cost: $#{event.payload[:estimated_cost]}"
+# Automatic tracking with log processing
+File.foreach("log/dspy.log") do |line|
+  event = JSON.parse(line)
+  if event["event"] == "llm.generate"
+    puts "Input tokens: #{event["gen_ai.usage.prompt_tokens"]}"
+    puts "Output tokens: #{event["gen_ai.usage.completion_tokens"]}"
+    puts "Model: #{event["gen_ai.request.model"]}"
+  end
 end
 ```
 
@@ -929,10 +930,8 @@ end
 ```ruby
 DSPy.configure do |c|
   c.lm                              # Language model
-  c.instrumentation.enabled         # Enable/disable
-  c.instrumentation.subscribers     # Event subscribers
-  c.logger.level                    # Log level
-  c.logger.formatter               # Log format
+  c.logger                          # Structured logger
+  c.strategy                        # Extraction strategy
 end
 ```
 
@@ -959,7 +958,7 @@ Rails.application.config.after_initialize do
       Rails.application.credentials.llm_model,
       api_key: Rails.application.credentials.llm_api_key
     )
-    c.instrumentation.enabled = Rails.env.production?
+    c.logger = Dry.Logger(:dspy, formatter: Rails.env.production? ? :json : :string)
   end
 end
 
@@ -1325,14 +1324,16 @@ end
 
 ```ruby
 DSPy.configure do |c|
-  c.logger.level = :debug
-  c.instrumentation.enabled = true
+  c.logger = Dry.Logger(:dspy) do |logger|
+    logger.add_backend(level: :debug, stream: $stdout)
+  end
 end
 
-# Subscribe to all events
-DSPy::Instrumentation.subscribe(/.*/) do |event|
-  puts "Event: #{event.name}"
-  puts "Payload: #{event.payload}"
+# Process all log events
+File.foreach("log/dspy.log") do |line|
+  event = JSON.parse(line)
+  puts "Event: #{event["event"]}"
+  puts "Attributes: #{event.select { |k, v| k.start_with?("gen_ai") || k.start_with?("dspy") }}"
 end
 ```
 

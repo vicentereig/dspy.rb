@@ -587,11 +587,11 @@ class ProductionPredictor
 end
 ```
 
-### 3. Use Built-in Instrumentation
+### 3. Use Built-in Observability
 
 ```ruby
-# Instrumentation is automatic - check DSPy.config.instrumentation
-# Events are emitted for:
+# Observability is automatic - configure logging to see events
+# Span tracking is emitted for:
 # - dspy.predict
 # - dspy.chain_of_thought  
 # - dspy.react
@@ -599,8 +599,7 @@ end
 
 # Enable logging to see events
 DSPy.configure do |config|
-  config.instrumentation.enabled = true
-  config.instrumentation.subscribers = ['logger']
+  config.logger = Dry.Logger(:dspy)
 end
 ```
 

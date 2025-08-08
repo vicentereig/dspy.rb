@@ -209,8 +209,9 @@ When things go wrong, CodeAct provides full visibility:
 ```ruby
 # Enable detailed logging
 DSPy.configure do |c|
-  c.instrumentation.enabled = true
-  c.instrumentation.logger.level = :debug
+  c.logger = Dry.Logger(:dspy) do |logger|
+    logger.add_backend(level: :debug, stream: $stdout)
+  end
 end
 
 result = agent.forward(task: "Complex task that might fail")

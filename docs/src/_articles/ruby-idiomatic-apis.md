@@ -111,15 +111,13 @@ DSPy.configure do |config|
     lm.max_tokens = 1000
   end
   
-  # Environment-aware instrumentation
-  config.instrumentation do |i|
-    i.enabled = Rails.env.production?
-    i.logger.level = Rails.env.development? ? :debug : :info
-    
-    # Conditional subscribers
-    i.subscribers = [:logger]
-    i.subscribers << :newrelic if defined?(NewRelic)
-    i.subscribers << :otel if ENV['OTEL_ENDPOINT']
+  # Environment-aware logging
+  config.logger = Dry.Logger(:dspy) do |logger|
+    if Rails.env.production?
+      logger.add_backend(formatter: :json, stream: Rails.root.join("log/dspy.log"))
+    else
+      logger.add_backend(level: :debug, stream: $stdout)
+    end
   end
 end
 ```
@@ -213,8 +211,10 @@ result.history.each do |step|
   puts "Tools used: #{step.tool_calls.map(&:tool_name).join(', ')}"
 end
 
-# Enable detailed instrumentation
-DSPy.config.instrumentation.logger.level = :debug
+# Enable detailed logging
+DSPy.config.logger = Dry.Logger(:dspy) do |logger|
+  logger.add_backend(level: :debug, stream: $stdout)
+end
 # Now you'll see every LLM call, tool execution, and timing info
 ```
 

@@ -50,10 +50,14 @@ puts result # => "# Changelog\n\n## Features\n- Add user authentication..."
 Both `raw_chat` and regular DSPy modules emit the same instrumentation events, making comparison straightforward:
 
 ```ruby
-# Capture events for analysis
-captured_events = []
-DSPy::Instrumentation.subscribe do |event|
-  captured_events << event
+# Capture events for analysis by processing logs
+require 'tempfile'
+
+log_file = Tempfile.new('dspy_benchmark')
+DSPy.configure do |config|
+  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(stream: log_file)
+  end
 end
 
 # Run monolithic prompt
@@ -62,14 +66,16 @@ monolithic_result = lm.raw_chat do |m|
   m.user commit_data
 end
 
-# Extract token usage
-monolithic_tokens = captured_events
-  .select { |e| e.id == 'dspy.lm.tokens' }
+# Extract token usage from logs
+log_file.rewind
+events = log_file.readlines.map { |line| JSON.parse(line) }
+monolithic_tokens = events
+  .select { |e| e["event"] == 'llm.generate' }
   .last
-  .payload
 
-# Clear events for next test
-captured_events.clear
+# Clear logs for next test
+log_file.truncate(0)
+log_file.rewind
 
 # Run modular DSPy version
 changelog_generator = DSPy::ChainOfThought.new(ChangelogSignature)
@@ -128,9 +134,10 @@ def benchmark_approaches(commits_data)
   
   # Benchmark monolithic approach
   start_time = Time.now
-  events = []
   
-  DSPy::Instrumentation.subscribe { |e| events << e }
+  # Reset log file
+  log_file.truncate(0)
+  log_file.rewind
   
   monolithic_result = lm.raw_chat do |m|
     m.system MONOLITHIC_PROMPT
@@ -138,7 +145,11 @@ def benchmark_approaches(commits_data)
   end
   
   monolithic_time = Time.now - start_time
-  monolithic_tokens = events.find { |e| e.id == 'dspy.lm.tokens' }&.payload
+  
+  # Extract tokens from logs
+  log_file.rewind
+  events = log_file.readlines.map { |line| JSON.parse(line) }
+  monolithic_tokens = events.find { |e| e["event"] == 'llm.generate' }
   
   results[:monolithic] = {
     time: monolithic_time,
@@ -215,19 +226,23 @@ def benchmark_providers(prompt_messages)
   providers.each do |provider|
     lm = DSPy::LM.new(provider[:id], api_key: provider[:key])
     
-    events = []
-    DSPy::Instrumentation.subscribe { |e| events << e }
+    # Reset log file for each provider
+    log_file.truncate(0)
+    log_file.rewind
     
     start_time = Time.now
     result = lm.raw_chat(prompt_messages)
     elapsed = Time.now - start_time
     
-    token_event = events.find { |e| e.id == 'dspy.lm.tokens' }
+    # Extract token usage from logs
+    log_file.rewind
+    events = log_file.readlines.map { |line| JSON.parse(line) }
+    token_event = events.find { |e| e["event"] == 'llm.generate' }
     
     results[provider[:id]] = {
       response: result,
       time: elapsed,
-      tokens: token_event&.payload
+      tokens: token_event
     }
   end
   
@@ -240,16 +255,16 @@ end
 The `raw_chat` method emits standard DSPy instrumentation events, making it compatible with all observability integrations:
 
 ```ruby
-# Configure DataDog integration
+# Configure observability
 DSPy.configure do |config|
-  config.instrumentation.subscribers = [
-    DSPy::Subscribers::DatadogSubscriber.new
-  ]
+  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
+    logger.add_backend(stream: "/var/log/dspy/benchmarks.json")
+  end
 end
 
-# Both raw and modular prompts will be tracked
-lm.raw_chat([{ role: 'user', content: 'Hello' }])  # Tracked in DataDog
-predictor.forward(input: 'Hello')                   # Also tracked in DataDog
+# Both raw and modular prompts will be logged
+lm.raw_chat([{ role: 'user', content: 'Hello' }])  # Logged as llm.generate
+predictor.forward(input: 'Hello')                   # Logged as dspy.predict
 ```
 
 ## Best Practices
