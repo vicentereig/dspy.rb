@@ -27,7 +27,6 @@ module DSPy
     extend T::Sig
     include Mixins::StructBuilder
     include Mixins::TypeCoercion
-    include Mixins::InstrumentationHelpers
 
     sig { returns(T.class_of(Signature)) }
     attr_reader :signature_class
@@ -85,7 +84,12 @@ module DSPy
 
     sig { params(input_values: T.untyped).returns(T.untyped) }
     def forward_untyped(**input_values)
-      instrument_prediction('dspy.predict', @signature_class, input_values) do
+      # Wrap prediction in span tracking
+      DSPy::Context.with_span(
+        operation: "#{self.class.name}.forward",
+        'dspy.module' => self.class.name,
+        'dspy.signature' => @signature_class.name
+      ) do
         # Validate input
         validate_input_struct(input_values)
         

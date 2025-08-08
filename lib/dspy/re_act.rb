@@ -67,7 +67,6 @@ module DSPy
   class ReAct < Predict
     extend T::Sig
     include Mixins::StructBuilder
-    include Mixins::InstrumentationHelpers
 
     FINISH_ACTION = "finish"
     sig { returns(T.class_of(DSPy::Signature)) }
@@ -247,13 +246,15 @@ module DSPy
     # Executes a single iteration of the ReAct loop
     sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer, tools_used: T::Array[String], last_observation: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
     def execute_single_iteration(input_struct, history, available_tools_desc, iteration, tools_used, last_observation)
-      # Instrument each iteration
-      Instrumentation.instrument('dspy.react.iteration', {
-        iteration: iteration,
-        max_iterations: @max_iterations,
-        history_length: history.length,
-        tools_used_so_far: tools_used.uniq
-      }) do
+      # Track each iteration with span
+      DSPy::Context.with_span(
+        operation: 'react.iteration',
+        'dspy.module' => 'ReAct',
+        'react.iteration' => iteration,
+        'react.max_iterations' => @max_iterations,
+        'react.history_length' => history.length,
+        'react.tools_used' => tools_used.uniq
+      ) do
         # Generate thought and action
         thought_obj = @thought_generator.forward(
           input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
@@ -357,11 +358,13 @@ module DSPy
     sig { params(action: T.nilable(String), action_input: T.untyped, iteration: Integer).returns(String) }
     def execute_tool_with_instrumentation(action, action_input, iteration)
       if action && @tools[action.downcase]
-        Instrumentation.instrument('dspy.react.tool_call', {
-          iteration: iteration,
-          tool_name: action.downcase,
-          tool_input: action_input
-        }) do
+        DSPy::Context.with_span(
+          operation: 'react.tool_call',
+          'dspy.module' => 'ReAct',
+          'react.iteration' => iteration,
+          'tool.name' => action.downcase,
+          'tool.input' => action_input
+        ) do
           execute_action(action, action_input)
         end
       else

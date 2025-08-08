@@ -91,7 +91,6 @@ module DSPy
   class CodeAct < Predict
     extend T::Sig
     include Mixins::StructBuilder
-    include Mixins::InstrumentationHelpers
 
     sig { returns(T.class_of(DSPy::Signature)) }
     attr_reader :original_signature_class
@@ -202,11 +201,13 @@ module DSPy
     # Executes a single iteration of the Think-Code-Observe loop
     sig { params(task: String, history: T::Array[CodeActHistoryEntry], context: String, iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
     def execute_single_iteration(task, history, context, iteration)
-      Instrumentation.instrument('dspy.codeact.iteration', {
-        iteration: iteration,
-        max_iterations: @max_iterations,
-        history_length: history.length
-      }) do
+      DSPy::Context.with_span(
+        operation: 'codeact.iteration',
+        'dspy.module' => 'CodeAct',
+        'codeact.iteration' => iteration,
+        'codeact.max_iterations' => @max_iterations,
+        'codeact.history_length' => history.length
+      ) do
         execution_state = execute_think_code_step(task, context, history, iteration)
         
         observation_decision = process_observation_and_decide_next_step(
@@ -305,10 +306,12 @@ module DSPy
 
     sig { params(ruby_code: String, iteration: Integer).returns([T.nilable(String), String]) }
     def execute_ruby_code_with_instrumentation(ruby_code, iteration)
-      Instrumentation.instrument('dspy.codeact.code_execution', {
-        iteration: iteration,
-        code_length: ruby_code.length
-      }) do
+      DSPy::Context.with_span(
+        operation: 'codeact.code_execution',
+        'dspy.module' => 'CodeAct',
+        'codeact.iteration' => iteration,
+        'code.length' => ruby_code.length
+      ) do
         execute_ruby_code_safely(ruby_code)
       end
     end
