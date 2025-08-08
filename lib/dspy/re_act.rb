@@ -6,9 +6,7 @@ require_relative 'predict'
 require_relative 'signature'
 require_relative 'chain_of_thought'
 require 'json'
-require_relative 'instrumentation'
 require_relative 'mixins/struct_builder'
-require_relative 'mixins/instrumentation_helpers'
 
 module DSPy
   # Define a simple struct for history entries with proper type annotations

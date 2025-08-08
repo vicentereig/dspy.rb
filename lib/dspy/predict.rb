@@ -2,11 +2,9 @@
 
 require 'sorbet-runtime'
 require_relative 'module'
-require_relative 'instrumentation'
 require_relative 'prompt'
 require_relative 'mixins/struct_builder'
 require_relative 'mixins/type_coercion'
-require_relative 'mixins/instrumentation_helpers'
 
 module DSPy
   # Exception raised when prediction fails validation
@@ -109,7 +107,11 @@ module DSPy
     def validate_input_struct(input_values)
       @signature_class.input_struct_class.new(**input_values)
     rescue ArgumentError => e
-      emit_validation_error(@signature_class, 'input', e.message)
+      DSPy.log('prediction.validation_error', **{
+        'dspy.signature' => @signature_class.name,
+        'prediction.validation_type' => 'input',
+        'prediction.validation_errors' => { input: e.message }
+      })
       raise PredictionInvalidError.new({ input: e.message })
     end
 

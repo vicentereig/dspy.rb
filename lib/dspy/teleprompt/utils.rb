@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
-require_relative '../instrumentation'
 require_relative '../evaluate'
 require_relative '../example'
 require_relative 'data_handler'

@@ -6,9 +6,7 @@ require_relative 'predict'
 require_relative 'signature'
 require 'json'
 require 'stringio'
-require_relative 'instrumentation'
 require_relative 'mixins/struct_builder'
-require_relative 'mixins/instrumentation_helpers'
 require_relative 'type_serializer'
 
 module DSPy

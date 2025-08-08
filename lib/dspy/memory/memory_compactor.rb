@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
-require_relative '../instrumentation'
 
 module DSPy
   module Memory

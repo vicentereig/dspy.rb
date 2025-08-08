@@ -4,7 +4,6 @@
 require 'sorbet-runtime'
 require_relative 'predict'
 require_relative 'signature'
-require_relative 'instrumentation'
 require_relative 'mixins/struct_builder'
 
 module DSPy

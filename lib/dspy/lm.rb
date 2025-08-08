@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sorbet-runtime'
+
 # Load adapter infrastructure
 require_relative 'lm/errors'
 require_relative 'lm/response'
@@ -7,8 +9,6 @@ require_relative 'lm/adapter'
 require_relative 'lm/adapter_factory'
 
 # Load instrumentation
-require_relative 'instrumentation'
-require_relative 'instrumentation/token_tracker'
 
 # Load adapters
 require_relative 'lm/adapters/openai_adapter'
@@ -25,6 +25,7 @@ require_relative 'lm/message_builder'
 
 module DSPy
   class LM
+    extend T::Sig
     attr_reader :model_id, :api_key, :model, :provider, :adapter
 
     def initialize(model_id, api_key: nil, **options)
@@ -246,7 +247,7 @@ module DSPy
 
     # Common method to emit token usage events
     def emit_token_usage(response, signature_class_name)
-      token_usage = Instrumentation::TokenTracker.extract_token_usage(response, provider)
+      token_usage = extract_token_usage(response)
       
       if token_usage.any?
         DSPy.log('lm.tokens', **token_usage.merge({
@@ -258,6 +259,47 @@ module DSPy
       
       token_usage
     end
+
+    private
+
+    # Extract token usage from API responses
+    sig { params(response: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
+    def extract_token_usage(response)
+      return {} unless response&.usage
+      
+      # Handle Usage struct objects
+      if response.usage.respond_to?(:input_tokens)
+        return {
+          input_tokens: response.usage.input_tokens,
+          output_tokens: response.usage.output_tokens,
+          total_tokens: response.usage.total_tokens
+        }.compact
+      end
+      
+      # Handle hash-based usage (for VCR compatibility)
+      usage = response.usage
+      return {} unless usage.is_a?(Hash)
+      
+      case provider.to_s.downcase
+      when 'openai'
+        {
+          input_tokens: usage[:prompt_tokens] || usage['prompt_tokens'],
+          output_tokens: usage[:completion_tokens] || usage['completion_tokens'], 
+          total_tokens: usage[:total_tokens] || usage['total_tokens']
+        }.compact
+      when 'anthropic'
+        {
+          input_tokens: usage[:input_tokens] || usage['input_tokens'],
+          output_tokens: usage[:output_tokens] || usage['output_tokens'],
+          total_tokens: (usage[:input_tokens] || usage['input_tokens'] || 0) +
+                       (usage[:output_tokens] || usage['output_tokens'] || 0)
+        }.compact
+      else
+        {}
+      end
+    end
+
+    public
 
     def validate_messages!(messages)
       unless messages.is_a?(Array)
