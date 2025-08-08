@@ -268,6 +268,8 @@ module DSPy
               when 'text'
                 { type: 'text', text: item[:text] }
               when 'image'
+                # Validate image compatibility before formatting
+                item[:image].validate_for_provider!('anthropic')
                 item[:image].to_anthropic_format
               else
                 item

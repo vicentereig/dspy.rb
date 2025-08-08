@@ -95,9 +95,9 @@ RSpec.describe 'Anthropic Multimodal Integration', :vcr do
         image = DSPy::Image.new(url: 'https://example.com/image.jpg')
         
         expect {
-          lm.generate([
-            DSPy::LM::MessageBuilder.user_with_image("What's in this image?", image)
-          ])
+          lm.raw_chat do |messages|
+            messages.user_with_image("What's in this image?", image)
+          end
         }.to raise_error(
           DSPy::LM::IncompatibleImageFeatureError,
           "Anthropic doesn't support image URLs. Please provide base64 or raw data instead."
@@ -115,9 +115,9 @@ RSpec.describe 'Anthropic Multimodal Integration', :vcr do
         )
         
         expect {
-          lm.generate([
-            DSPy::LM::MessageBuilder.user_with_image("What's in this image?", image)
-          ])
+          lm.raw_chat do |messages|
+            messages.user_with_image("What's in this image?", image)
+          end
         }.to raise_error(
           DSPy::LM::IncompatibleImageFeatureError,
           "Anthropic doesn't support the 'detail' parameter. This feature is OpenAI-specific."

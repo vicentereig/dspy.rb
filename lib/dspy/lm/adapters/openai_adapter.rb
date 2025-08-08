@@ -123,6 +123,8 @@ module DSPy
               when 'text'
                 { type: 'text', text: item[:text] }
               when 'image'
+                # Validate image compatibility before formatting
+                item[:image].validate_for_provider!('openai')
                 item[:image].to_openai_format
               else
                 item

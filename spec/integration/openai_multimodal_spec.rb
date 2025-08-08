@@ -98,12 +98,12 @@ RSpec.describe 'OpenAI Multimodal Integration', :vcr do
         # This should not raise an error during validation
         # (though it might fail at API call due to fake URL)
         expect {
-          messages = DSPy::LM::MessageBuilder.new.tap do |builder|
-            builder.user_with_image("What's in this image?", image)
-          end
+          builder = DSPy::LM::MessageBuilder.new
+          builder.user_with_image("What's in this image?", image)
+          messages = builder.build
           # We're testing validation, not the actual API call
-          lm.instance_eval { format_multimodal_messages(messages.build) }
-        }.not_to raise_error(DSPy::LM::IncompatibleImageFeatureError)
+          lm.send(:format_multimodal_messages, messages)
+        }.not_to raise_error
       end
 
       it 'allows base64 images with detail parameter' do
@@ -118,11 +118,11 @@ RSpec.describe 'OpenAI Multimodal Integration', :vcr do
         
         # This should not raise an error
         expect {
-          messages = DSPy::LM::MessageBuilder.new.tap do |builder|
-            builder.user_with_image("What's in this image?", image)
-          end
-          lm.instance_eval { format_multimodal_messages(messages.build) }
-        }.not_to raise_error(DSPy::LM::IncompatibleImageFeatureError)
+          builder = DSPy::LM::MessageBuilder.new
+          builder.user_with_image("What's in this image?", image)
+          messages = builder.build
+          lm.send(:format_multimodal_messages, messages)
+        }.not_to raise_error
       end
     end
   end
