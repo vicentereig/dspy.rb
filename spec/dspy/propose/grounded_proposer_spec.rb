@@ -416,23 +416,4 @@ RSpec.describe DSPy::Propose::GroundedProposer do
     end
   end
 
-  describe 'instrumentation integration' do
-    it 'instruments proposal process' do
-      expect(DSPy::Instrumentation).to receive(:instrument).with(
-        'dspy.optimization.instruction_proposal_start',
-        hash_including(signature_class: 'ProposerQA')
-      ).and_call_original
-
-      # Allow for all nested instrumentation calls from DSPy::Predict and DSPy::LM
-      allow(DSPy::Instrumentation).to receive(:instrument).and_call_original
-      allow(DSPy::Instrumentation).to receive(:emit).and_call_original
-
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.optimization.instruction_proposal_complete',
-        hash_including(:num_candidates, :model_used)
-      )
-
-      proposer.propose_instructions(ProposerQA, training_examples)
-    end
-  end
 end

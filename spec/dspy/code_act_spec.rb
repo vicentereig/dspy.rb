@@ -336,39 +336,4 @@ RSpec.describe 'DSPy::CodeAct' do
     end
   end
 
-  describe 'logger subscriber integration' do
-    let(:log_output) { StringIO.new }
-    let(:test_logger) { Logger.new(log_output) }
-    
-    before do
-      # Configure DSPy for testing
-      DSPy.configure do |c|
-        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-      end
-      
-      # Create logger subscriber manually
-      @logger_subscriber = DSPy::Subscribers::LoggerSubscriber.new(logger: test_logger)
-    end
-
-    after do
-      # Clean up
-      @logger_subscriber = nil
-    end
-
-    it 'logs CodeAct agent events when running actual agent operations' do
-      VCR.use_cassette('openai/gpt4o-mini/codeact_math_problem') do
-        problem = "Calculate 5 + 3"
-        agent = DSPy::CodeAct.new(CodeActMathProblem, max_iterations: 3)
-        result = agent.forward(problem: problem)
-
-        log_content = log_output.string
-        
-        # Check for CodeAct-specific events
-        expect(log_content).to include("event=codeact")
-        expect(log_content).to include("signature=CodeActMathProblem")
-        expect(log_content).to include("status=success")
-        expect(log_content).to include("event=code_execution")
-      end
-    end
-  end
 end

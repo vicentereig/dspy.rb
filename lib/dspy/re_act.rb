@@ -126,22 +126,14 @@ module DSPy
       lm = config.lm || DSPy.config.lm
       available_tools = @tools.keys
 
-      # Instrument the entire ReAct agent lifecycle
-      result = instrument_prediction('dspy.react', @original_signature_class, kwargs, {
-        max_iterations: @max_iterations,
-        available_tools: available_tools
-      }) do
-        # Validate input
-        input_struct = @original_signature_class.input_struct_class.new(**kwargs)
+      # Validate input
+      input_struct = @original_signature_class.input_struct_class.new(**kwargs)
 
-        # Execute ReAct reasoning loop
-        reasoning_result = execute_react_reasoning_loop(input_struct)
+      # Execute ReAct reasoning loop
+      reasoning_result = execute_react_reasoning_loop(input_struct)
 
-        # Create enhanced output with all ReAct data
-        create_enhanced_result(kwargs, reasoning_result)
-      end
-
-      result
+      # Create enhanced output with all ReAct data
+      create_enhanced_result(kwargs, reasoning_result)
     end
 
     private

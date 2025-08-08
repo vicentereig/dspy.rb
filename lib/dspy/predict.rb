@@ -91,8 +91,14 @@ module DSPy
         # Validate input
         validate_input_struct(input_values)
         
+        # Check if LM is configured
+        current_lm = lm
+        if current_lm.nil?
+          raise DSPy::ConfigurationError.missing_lm(self.class.name)
+        end
+        
         # Call LM and process response
-        output_attributes = lm.chat(self, input_values)
+        output_attributes = current_lm.chat(self, input_values)
         processed_output = process_lm_output(output_attributes)
         
         # Create combined result struct

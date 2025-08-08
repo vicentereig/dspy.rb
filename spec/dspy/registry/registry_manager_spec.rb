@@ -241,16 +241,14 @@ RSpec.describe DSPy::Registry::RegistryManager do
       expect(rolled_back).to be(false)
     end
 
-    it 'emits automatic rollback event' do
-      # Allow other events (rollback_start, deploy_start, etc.)
-      allow(DSPy::Instrumentation).to receive(:emit).and_call_original
+    it 'rolls back when performance drops significantly' do
+      # Performance dropped from 0.9 to 0.7 (22% drop, above 5% threshold)
+      rolled_back = registry_manager.monitor_and_rollback('TestSignature', 0.7)
       
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.automatic_rollback',
-        hash_including(:signature_name, :current_score, :previous_score, :performance_drop)
-      ).and_call_original
+      expect(rolled_back).to be(true)
       
-      registry_manager.monitor_and_rollback('TestSignature', 0.7)
+      deployed = registry_manager.registry.get_deployed_version('TestSignature')
+      expect(deployed.version).to eq('v1.0') # Rolled back to previous version
     end
   end
 
@@ -410,15 +408,6 @@ RSpec.describe DSPy::Registry::RegistryManager do
     end
 
     it 'auto-deploys when significant improvement is detected' do
-      # Allow other events (register_start, register_complete, deploy_start, etc.)
-      allow(DSPy::Instrumentation).to receive(:emit).and_call_original
-      
-      # Register optimization result that should trigger auto-deployment
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.auto_deployment',
-        hash_including(:signature_name, :version)
-      ).and_call_original
-      
       version = registry_manager.register_optimization_result(mock_optimization_result)
       
       deployed = registry_manager.registry.get_deployed_version('TestSignature')
@@ -445,11 +434,6 @@ RSpec.describe DSPy::Registry::RegistryManager do
       )
       
       # Should not trigger auto-deployment
-      expect(DSPy::Instrumentation).not_to receive(:emit).with(
-        'dspy.registry.auto_deployment',
-        anything
-      )
-      
       registry_manager.register_optimization_result(low_improvement_result)
     end
   end

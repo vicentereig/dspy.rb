@@ -370,34 +370,6 @@ RSpec.describe DSPy::Teleprompt::Utils do
     end
   end
 
-  describe 'instrumentation integration' do
-    it 'emits bootstrap events' do
-      training_examples = [create_test_example("2 + 3", 5)]
-      config = DSPy::Teleprompt::Utils::BootstrapConfig.new
-
-      expect(DSPy::Instrumentation).to receive(:instrument).with(
-        'dspy.optimization.bootstrap_start',
-        hash_including(trainset_size: 1)
-      ).and_call_original
-
-      # Allow bootstrap example events for each example
-      allow(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.optimization.bootstrap_example',
-        anything
-      )
-
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.optimization.bootstrap_complete',
-        hash_including(:successful_count, :success_rate)
-      )
-
-      DSPy::Teleprompt::Utils.create_n_fewshot_demo_sets(
-        mock_predictor,
-        training_examples,
-        config: config
-      )
-    end
-  end
 
   private
 

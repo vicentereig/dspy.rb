@@ -3,14 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe 'DSPy Configuration Error Handling' do
-  # Test module that uses instrumentation helpers
+  # Test module that tries to use LM directly
   let(:test_module_class) do
     Class.new(DSPy::Module) do
-      include DSPy::Mixins::InstrumentationHelpers
-      
-      def forward(**input_values)
-        # This will trigger the instrumentation helper which checks for LM
-        prepare_base_instrumentation_payload(TestSignature, input_values)
+      def forward_untyped(**input_values)
+        # This will trigger the LM check
+        if lm.nil?
+          raise DSPy::ConfigurationError.missing_lm(self.class.name)
+        end
+        { response: "test response" }
       end
     end
   end

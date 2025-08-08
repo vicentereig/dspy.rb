@@ -81,18 +81,16 @@ module DSPy
     sig { returns(T.class_of(DSPy::Signature)) }
     attr_reader :original_signature
 
-    # Override forward_untyped to add ChainOfThought-specific instrumentation
+    # Override forward_untyped to add ChainOfThought-specific analysis
     sig { override.params(input_values: T.untyped).returns(T.untyped) }
     def forward_untyped(**input_values)
-      instrument_prediction('dspy.chain_of_thought', @original_signature, input_values) do
-        # Call parent prediction logic
-        prediction_result = super(**input_values)
-        
-        # Analyze reasoning if present
-        analyze_reasoning(prediction_result)
-        
-        prediction_result
-      end
+      # Call parent prediction logic
+      prediction_result = super(**input_values)
+      
+      # Analyze reasoning if present
+      analyze_reasoning(prediction_result)
+      
+      prediction_result
     end
 
     private

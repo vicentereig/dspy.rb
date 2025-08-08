@@ -15,40 +15,6 @@ RSpec.describe 'Ollama Integration', :integration do
       
       expect(response).to match(/4/)
     end
-    
-    
-    it 'emits correct instrumentation events', vcr: { cassette_name: 'ollama/instrumentation' } do
-      captured_events = []
-      
-      # Register events and subscribe
-      DSPy::Instrumentation.register_event('dspy.lm.request')
-      DSPy::Instrumentation.register_event('dspy.lm.tokens')
-      
-      DSPy::Instrumentation.subscribe('dspy.lm.request') do |event|
-        captured_events << event
-      end
-      
-      DSPy::Instrumentation.subscribe('dspy.lm.tokens') do |event|
-        captured_events << event
-      end
-      
-      lm.raw_chat([
-        { role: 'user', content: 'Hello, Ollama!' }
-      ])
-      
-      # Should emit request and token events
-      request_event = captured_events.find { |e| e.id == 'dspy.lm.request' }
-      token_event = captured_events.find { |e| e.id == 'dspy.lm.tokens' }
-      
-      expect(request_event).not_to be_nil
-      expect(request_event.payload[:gen_ai_system]).to eq('ollama')
-      expect(request_event.payload[:gen_ai_request_model]).to eq('llama3.2')
-      
-      expect(token_event).not_to be_nil
-      expect(token_event.payload[:input_tokens]).to be_a(Integer)
-      expect(token_event.payload[:output_tokens]).to be_a(Integer)
-      expect(token_event.payload[:total_tokens]).to be_a(Integer)
-    end
   end
   
   describe 'structured outputs with Ollama' do

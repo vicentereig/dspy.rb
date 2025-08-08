@@ -324,17 +324,6 @@ RSpec.describe DSPy::Storage::StorageManager do
       expect(remaining_scores).to eq([0.7, 0.9])
     end
 
-    it 'emits cleanup event' do
-      # Allow all other events (save, delete, etc.)
-      allow(DSPy::Instrumentation).to receive(:emit).and_call_original
-      
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.cleanup',
-        hash_including(:deleted_count, :remaining_count)
-      ).and_call_original
-      
-      storage_manager.cleanup_old_programs
-    end
   end
 
   describe '#compare_programs' do

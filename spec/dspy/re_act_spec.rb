@@ -633,44 +633,4 @@ RSpec.describe DSPy::ReAct do
     end
   end
 
-  describe 'logger subscriber integration' do
-    let(:log_output) { StringIO.new }
-    let(:test_logger) { Logger.new(log_output) }
-
-    before do
-      # Configure DSPy for testing
-      DSPy.configure do |c|
-        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-      end
-
-      # Create logger subscriber manually
-      @logger_subscriber = DSPy::Subscribers::LoggerSubscriber.new(logger: test_logger)
-    end
-
-    after do
-      # Clean up
-      @logger_subscriber = nil
-    end
-
-    it 'logs ReAct agent events when running actual agent operations' do
-      VCR.use_cassette('openai/gpt4o-mini/sorbet_react_agent_auto_augmented_output') do
-        question = "What is 42 plus 58?"
-        tools = [SorbetAddNumbers.new, SorbetCalculatorTool.new]
-        agent = DSPy::ReAct.new(DeepQA, tools: tools)
-        result = agent.forward(question: question)
-
-        log_content = log_output.string
-
-        # With smart consolidation, ReAct only emits the top-level event
-        expect(log_content).to include("event=react")
-        expect(log_content).to include("signature=DeepQA")
-        expect(log_content).to include("status=success")
-        expect(log_content).to include("event=tool_call")
-
-        # Nested events should not be present due to smart consolidation
-        expect(log_content).not_to include("event=prediction")
-        expect(log_content).not_to include("event=lm_request")
-      end
-    end
-  end
 end

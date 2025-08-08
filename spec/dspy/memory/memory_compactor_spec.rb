@@ -365,29 +365,4 @@ RSpec.describe DSPy::Memory::MemoryCompactor do
     end
   end
 
-  describe 'instrumentation' do
-    it 'emits compaction events' do
-      compactor = described_class.new(max_memories: 5)
-      
-      # Add memories to trigger compaction
-      10.times do |i|
-        record = DSPy::Memory::MemoryRecord.new(
-          content: "Memory #{i}",
-          user_id: user_id,
-          embedding: [0.1, 0.2, 0.3]
-        )
-        store.store(record)
-      end
-
-      events = []
-      DSPy::Instrumentation.subscribe('dspy.memory.compaction_check') do |event|
-        events << event
-      end
-
-      compactor.compact_if_needed!(store, embedding_engine, user_id: user_id)
-
-      expect(events).not_to be_empty
-      expect(events.last[:user_id]).to eq(user_id)
-    end
-  end
 end

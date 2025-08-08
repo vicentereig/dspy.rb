@@ -467,31 +467,4 @@ RSpec.describe DSPy::Teleprompt::Teleprompter do
     end
   end
 
-  describe 'instrumentation' do
-    it 'instruments optimization steps' do
-      # Mock the instrumentation
-      expect(DSPy::Instrumentation).to receive(:instrument).with(
-        "dspy.optimization.test_step",
-        hash_including(teleprompter_class: "MockTeleprompter")
-      ).and_yield
-
-      result = teleprompter.send(:instrument_step, "test_step") do
-        "test_result"
-      end
-      
-      expect(result).to eq("test_result")
-    end
-
-    it 'emits optimization events' do
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        "dspy.optimization.test_event",
-        hash_including(
-          teleprompter_class: "MockTeleprompter",
-          timestamp: kind_of(String)
-        )
-      )
-      
-      teleprompter.send(:emit_event, "test_event", { custom: "data" })
-    end
-  end
 end

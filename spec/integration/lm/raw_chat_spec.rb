@@ -3,18 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'DSPy::LM#raw_chat integration', :vcr do
-  let(:captured_events) { [] }
-
-  before do
-    # Capture all events for testing
-    DSPy::Instrumentation.subscribe do |event|
-      captured_events << event
-    end
-  end
-
-  after do
-    captured_events.clear
-  end
 
   describe 'with OpenAI provider' do
     let(:openai_lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY']) }
@@ -39,31 +27,6 @@ RSpec.describe 'DSPy::LM#raw_chat integration', :vcr do
       expect(result.downcase).to include('2x')
     end
 
-    it 'emits correct instrumentation events' do
-      openai_lm.raw_chat([{ role: 'user', content: 'Hello' }])
-
-      # Check dspy.lm.request event
-      request_events = captured_events.select { |e| e.id == 'dspy.lm.request' }
-      expect(request_events.length).to eq(1)
-      
-      request_event = request_events.first
-      expect(request_event.payload[:signature_class]).to eq('RawPrompt')
-      expect(request_event.payload[:provider]).to eq('openai')
-      expect(request_event.payload[:gen_ai_request_model]).to eq('gpt-4o-mini')
-
-      # Check dspy.lm.tokens event
-      token_events = captured_events.select { |e| e.id == 'dspy.lm.tokens' }
-      expect(token_events.length).to eq(1)
-      
-      token_event = token_events.first
-      expect(token_event.payload[:signature_class]).to eq('RawPrompt')
-      expect(token_event.payload[:input_tokens]).to be_a(Integer)
-      expect(token_event.payload[:output_tokens]).to be_a(Integer)
-
-      # Ensure NO dspy.lm.response.parsed event
-      parsed_events = captured_events.select { |e| e.id == 'dspy.lm.response.parsed' }
-      expect(parsed_events).to be_empty
-    end
   end
 
   describe 'with Anthropic provider' do
@@ -89,26 +52,6 @@ RSpec.describe 'DSPy::LM#raw_chat integration', :vcr do
       expect(result).to include('Alice')
     end
 
-    it 'emits correct instrumentation events' do
-      anthropic_lm.raw_chat([{ role: 'user', content: 'Hi' }])
-
-      # Check events
-      request_events = captured_events.select { |e| e.id == 'dspy.lm.request' }
-      expect(request_events.length).to eq(1)
-      
-      request_event = request_events.first
-      expect(request_event.payload[:signature_class]).to eq('RawPrompt')
-      expect(request_event.payload[:provider]).to eq('anthropic')
-      expect(request_event.payload[:gen_ai_request_model]).to eq('claude-3-5-sonnet-20241022')
-
-      # Token events
-      token_events = captured_events.select { |e| e.id == 'dspy.lm.tokens' }
-      expect(token_events.length).to eq(1)
-      
-      # No parsed events for raw prompts
-      parsed_events = captured_events.select { |e| e.id == 'dspy.lm.response.parsed' }
-      expect(parsed_events).to be_empty
-    end
   end
 
   describe 'benchmarking use case' do
@@ -134,7 +77,7 @@ RSpec.describe 'DSPy::LM#raw_chat integration', :vcr do
       DATA
     end
 
-    it 'allows benchmarking of monolithic prompts with instrumentation' do
+    it 'allows benchmarking of monolithic prompts' do
       # Execute the monolithic prompt
       result = openai_lm.raw_chat do |m|
         m.system monolithic_prompt
@@ -143,17 +86,8 @@ RSpec.describe 'DSPy::LM#raw_chat integration', :vcr do
 
       expect(result).to be_a(String)
       expect(result.downcase).to include('feat')
-      
-      # Verify we can access token usage for benchmarking
-      token_events = captured_events.select { |e| e.id == 'dspy.lm.tokens' }
-      expect(token_events).not_to be_empty
-      
-      last_token_event = token_events.last
-      expect(last_token_event.payload[:input_tokens]).to be > 0
-      expect(last_token_event.payload[:output_tokens]).to be > 0
-      
-      # This data can be compared against modular DSPy implementation
-      puts "Monolithic prompt tokens: input=#{last_token_event.payload[:input_tokens]}, output=#{last_token_event.payload[:output_tokens]}"
+      expect(result.downcase).to include('fix')
+      expect(result.downcase).to include('chore')
     end
   end
 end

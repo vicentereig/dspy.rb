@@ -42,41 +42,4 @@ RSpec.describe DSPy::Signature do
     end
   end
 
-  describe 'logger subscriber integration' do
-    let(:log_output) { StringIO.new }
-    let(:test_logger) { Logger.new(log_output) }
-    
-    before do
-      # Configure DSPy for testing
-      DSPy.configure do |c|
-        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-      end
-      
-      # Create logger subscriber manually
-      @logger_subscriber = DSPy::Subscribers::LoggerSubscriber.new(logger: test_logger)
-    end
-
-    after do
-      # Clean up
-      @logger_subscriber = nil
-    end
-
-    it 'logs chain of thought events when running actual predictions' do
-      VCR.use_cassette('chain_of_thought_simple') do
-        cot = DSPy::ChainOfThought.new(AnswerPredictor)
-        result = cot.forward(question: "What is the capital of France?")
-
-        log_content = log_output.string
-        
-        # With smart consolidation, ChainOfThought only emits the top-level event
-        expect(log_content).to include("event=chain_of_thought")
-        expect(log_content).to include("signature=AnswerPredictor")
-        expect(log_content).to include("status=success")
-        
-        # Nested events should not be present due to smart consolidation
-        expect(log_content).not_to include("event=prediction")
-        expect(log_content).not_to include("event=lm_request")
-      end
-    end
-  end
 end

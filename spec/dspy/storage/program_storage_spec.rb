@@ -84,18 +84,6 @@ RSpec.describe DSPy::Storage::ProgramStorage do
       expect(history[:summary][:avg_score]).to eq(0.85)
     end
 
-    it 'emits save events' do
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.save_start', 
-        hash_including(:storage_path)
-      )
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.save_complete', 
-        hash_including(:program_id, :best_score)
-      )
-      
-      storage.save_program(mock_program, mock_optimization_result)
-    end
   end
 
   describe '#load_program' do
@@ -114,34 +102,6 @@ RSpec.describe DSPy::Storage::ProgramStorage do
       expect(result).to be_nil
     end
 
-    it 'emits load events' do
-      # Allow save events first (from saved_program creation)
-      allow(DSPy::Instrumentation).to receive(:emit).and_call_original
-      
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.load_start',
-        hash_including(:program_id)
-      ).and_call_original
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.load_complete',
-        hash_including(:program_id, :age_hours)
-      ).and_call_original
-      
-      storage.load_program(saved_program.program_id)
-    end
-
-    it 'emits error event for missing program' do
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.load_start',
-        hash_including(:program_id)
-      )
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.load_error',
-        hash_including(:program_id, :error)
-      )
-      
-      storage.load_program('missing_id')
-    end
   end
 
   describe '#list_programs' do
@@ -204,17 +164,6 @@ RSpec.describe DSPy::Storage::ProgramStorage do
       expect(program_ids).not_to include(saved_program.program_id)
     end
 
-    it 'emits delete event' do
-      # Allow save events first (from saved_program creation)
-      allow(DSPy::Instrumentation).to receive(:emit).and_call_original
-      
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.delete',
-        hash_including(:program_id)
-      ).and_call_original
-      
-      storage.delete_program(saved_program.program_id)
-    end
   end
 
   describe '#export_programs' do
@@ -233,19 +182,6 @@ RSpec.describe DSPy::Storage::ProgramStorage do
       expect(export_data[:exported_at]).to be_a(String)
     end
 
-    it 'emits export event' do
-      saved = storage.save_program(mock_program, mock_optimization_result)
-      
-      # Allow all other events
-      allow(DSPy::Instrumentation).to receive(:emit).and_call_original
-      
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.export',
-        hash_including(:export_path, :program_count)
-      ).and_call_original
-      
-      storage.export_programs([saved.program_id], temp_export_file)
-    end
   end
 
   describe '#import_programs' do
@@ -268,17 +204,6 @@ RSpec.describe DSPy::Storage::ProgramStorage do
       expect(storage.list_programs.size).to eq(1)
     end
 
-    it 'emits import event' do
-      saved = storage.save_program(mock_program, mock_optimization_result)
-      storage.export_programs([saved.program_id], temp_export_file)
-      
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.storage.import',
-        hash_including(:import_path, :program_count)
-      )
-      
-      storage.import_programs(temp_export_file)
-    end
   end
 
   describe DSPy::Storage::ProgramStorage::SavedProgram do

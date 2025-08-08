@@ -215,18 +215,6 @@ RSpec.describe DSPy::Registry::SignatureRegistry do
       expect(versions.map(&:version)).to include("v1.1", "v1.2")
     end
 
-    it 'emits registration events' do
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.register_start',
-        hash_including(:signature_name)
-      )
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.register_complete',
-        hash_including(:signature_name, :version, :version_hash)
-      )
-      
-      registry.register_version("TestSignature", test_configuration)
-    end
   end
 
   describe '#deploy_version' do
@@ -272,18 +260,6 @@ RSpec.describe DSPy::Registry::SignatureRegistry do
       expect(result).to be_nil
     end
 
-    it 'emits deployment events' do
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.deploy_start',
-        hash_including(:signature_name, :version)
-      )
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.deploy_complete',
-        hash_including(:signature_name, :version)
-      )
-      
-      registry.deploy_version("TestSignature", "v1.0")
-    end
   end
 
   describe '#rollback' do
@@ -315,34 +291,6 @@ RSpec.describe DSPy::Registry::SignatureRegistry do
       expect(result).to be_nil
     end
 
-    it 'emits rollback events on success' do
-      # Allow all other events
-      allow(DSPy::Instrumentation).to receive(:emit).and_call_original
-      
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.rollback_start',
-        hash_including(:signature_name)
-      ).and_call_original
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.rollback_complete',
-        hash_including(:signature_name, :version)
-      ).and_call_original
-      
-      registry.rollback("TestSignature")
-    end
-
-    it 'emits error event on failure' do
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.rollback_start',
-        hash_including(:signature_name)
-      )
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.rollback_error',
-        hash_including(:signature_name, :error)
-      )
-      
-      registry.rollback("NonExistentSignature")
-    end
   end
 
   describe '#get_deployed_version' do
@@ -415,14 +363,6 @@ RSpec.describe DSPy::Registry::SignatureRegistry do
       expect(result).to be_nil
     end
 
-    it 'emits performance update event' do
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.performance_update',
-        hash_including(:signature_name, :version, :performance_score)
-      )
-      
-      registry.update_performance_score("TestSignature", "v1.0", 0.92)
-    end
   end
 
   describe '#get_performance_history' do
@@ -513,20 +453,5 @@ RSpec.describe DSPy::Registry::SignatureRegistry do
       expect(deployed.version).to eq("v1.0")
     end
 
-    it 'emits export and import events' do
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.export',
-        hash_including(:export_path, :signature_count)
-      )
-      
-      registry.export_registry(export_file)
-
-      expect(DSPy::Instrumentation).to receive(:emit).with(
-        'dspy.registry.import',
-        hash_including(:import_path, :signature_count)
-      )
-      
-      registry.import_registry(export_file)
-    end
   end
 end

@@ -564,23 +564,5 @@ RSpec.describe DSPy::Teleprompt::SimpleOptimizer do
       )
     end
 
-    it 'instruments optimization process' do
-      expect(DSPy::Instrumentation).to receive(:instrument).with(
-        'dspy.optimization.compile',
-        hash_including(trainset_size: 5, num_trials: 10)
-      ).and_call_original
-
-      # Allow other instrumentation calls from evaluation
-      allow(DSPy::Instrumentation).to receive(:instrument).and_call_original
-
-      optimizer.compile(test_program, trainset: training_examples, valset: validation_examples)
-    end
-
-    it 'emits trial events' do
-      expect(optimizer).to receive(:emit_event).with('trial_start', anything).at_least(:once)
-      expect(optimizer).to receive(:emit_event).with('trial_complete', anything).at_least(:once)
-
-      optimizer.compile(test_program, trainset: training_examples, valset: validation_examples)
-    end
   end
 end

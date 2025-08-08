@@ -142,22 +142,15 @@ module DSPy
     def forward(**kwargs)
       lm = config.lm || DSPy.config.lm
 
-      # Instrument the entire CodeAct agent lifecycle
-      result = instrument_prediction('dspy.codeact', @original_signature_class, kwargs, {
-        max_iterations: @max_iterations
-      }) do
-        # Validate input and serialize all fields as task context
-        input_struct = @original_signature_class.input_struct_class.new(**kwargs)
-        task = DSPy::TypeSerializer.serialize(input_struct).to_json
+      # Validate input and serialize all fields as task context
+      input_struct = @original_signature_class.input_struct_class.new(**kwargs)
+      task = DSPy::TypeSerializer.serialize(input_struct).to_json
 
-        # Execute CodeAct reasoning loop
-        reasoning_result = execute_codeact_reasoning_loop(task)
+      # Execute CodeAct reasoning loop
+      reasoning_result = execute_codeact_reasoning_loop(task)
 
-        # Create enhanced output with all CodeAct data
-        create_enhanced_result(kwargs, reasoning_result)
-      end
-
-      result
+      # Create enhanced output with all CodeAct data
+      create_enhanced_result(kwargs, reasoning_result)
     end
 
     private

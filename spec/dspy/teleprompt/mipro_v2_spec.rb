@@ -651,20 +651,11 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
     end
   end
 
-  describe 'instrumentation integration' do
-    it 'instruments optimization process' do
+  describe 'compilation with mocked components' do
+    it 'works with mocked components' do
       config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
       config.num_trials = 1
       mipro = DSPy::Teleprompt::MIPROv2.new(config: config)
-
-      expect(DSPy::Instrumentation).to receive(:instrument).with(
-        'dspy.optimization.miprov2_compile',
-        hash_including(trainset_size: 5, num_trials: 1, optimization_strategy: 'adaptive')
-      ).and_call_original
-
-      # Allow other instrumentation calls
-      allow(DSPy::Instrumentation).to receive(:instrument).and_call_original
-      allow(DSPy::Instrumentation).to receive(:emit).and_call_original
 
       # Mock components to avoid complex setup
       allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return(
@@ -684,7 +675,8 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
         )
       )
 
-      mipro.compile(test_program, trainset: training_examples, valset: validation_examples)
+      result = mipro.compile(test_program, trainset: training_examples, valset: validation_examples)
+      expect(result).to be_a(DSPy::Teleprompt::MIPROv2::MIPROv2Result)
     end
   end
 

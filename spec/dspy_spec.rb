@@ -21,40 +21,31 @@ RSpec.describe DSPy do
       expect(DSPy.config.logger).to be_a(Dry::Logger::Dispatcher)
     end
 
-    it 'has instrumentation setting' do
-      expect(DSPy.config).to respond_to(:instrumentation)
-      expect(DSPy.config.instrumentation).to respond_to(:enabled)
-      expect(DSPy.config.instrumentation).to respond_to(:logger)
+    it 'has structured_outputs setting' do
+      expect(DSPy.config).to respond_to(:structured_outputs)
+      expect(DSPy.config.structured_outputs).to respond_to(:openai)
+      expect(DSPy.config.structured_outputs).to respond_to(:anthropic)
     end
 
-    it 'supports clean configuration API' do
-      # Direct property access
-      DSPy.config.instrumentation.enabled = true
-      DSPy.config.instrumentation.subscribers = [:logger]
-      DSPy.config.instrumentation.logger.level = :debug
+    it 'has test_mode setting' do
+      expect(DSPy.config).to respond_to(:test_mode)
+      expect(DSPy.config.test_mode).to eq(false)
+    end
 
-      expect(DSPy.config.instrumentation.enabled).to eq(true)
-      expect(DSPy.config.instrumentation.subscribers).to eq([:logger])
-      expect(DSPy.config.instrumentation.logger.level).to eq(:debug)
-
-      # Configuration blocks work too
+    it 'supports configuration blocks' do
       DSPy.configure do |config|
-        config.instrumentation.enabled = false
-        config.instrumentation.logger.level = :info
+        config.test_mode = true
+        config.structured_outputs.openai = true
       end
 
-      expect(DSPy.config.instrumentation.enabled).to eq(false)
-      expect(DSPy.config.instrumentation.logger.level).to eq(:info)
-
-      # Validation should pass
-      DSPy.config.instrumentation.enabled = true
-      DSPy.config.instrumentation.subscribers = [:logger]
-      expect { DSPy.validate_instrumentation! }.not_to raise_error
+      expect(DSPy.config.test_mode).to eq(true)
+      expect(DSPy.config.structured_outputs.openai).to eq(true)
 
       # Reset to defaults
-      DSPy.config.instrumentation.enabled = false
-      DSPy.config.instrumentation.subscribers = []
-      DSPy.config.instrumentation.logger.level = :info
+      DSPy.configure do |config|
+        config.test_mode = false
+        config.structured_outputs.openai = false
+      end
     end
   end
 end 

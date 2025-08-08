@@ -268,39 +268,4 @@ RSpec.describe 'Memory Compaction Integration', type: :integration do
     end
   end
 
-  describe 'instrumentation during compaction' do
-    it 'emits detailed instrumentation events' do
-      events = []
-      
-      # Subscribe to all memory compaction events
-      %w[
-        dspy.memory.compaction_check
-        dspy.memory.size_compaction
-        dspy.memory.age_compaction
-        dspy.memory.deduplication
-        dspy.memory.relevance_pruning
-        dspy.memory.compaction_complete
-      ].each do |event_name|
-        DSPy::Instrumentation.subscribe(event_name) do |event|
-          events << { name: event_name, payload: event }
-        end
-      end
-
-      # Trigger compaction
-      15.times do |i|
-        manager.store_memory("Memory #{i}", user_id: user_id)
-      end
-
-      # Should have emitted compaction events
-      expect(events).not_to be_empty
-      
-      compaction_check_events = events.select { |e| e[:name] == 'dspy.memory.compaction_check' }
-      expect(compaction_check_events).not_to be_empty
-      
-      # Events should include user_id
-      compaction_check_events.each do |event|
-        expect(event[:payload][:user_id]).to eq(user_id)
-      end
-    end
-  end
 end

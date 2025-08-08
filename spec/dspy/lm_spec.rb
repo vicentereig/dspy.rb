@@ -142,20 +142,9 @@ RSpec.describe DSPy::LM do
       )
     end
     let(:lm) { described_class.new('openai/gpt-4', api_key: 'test-key') }
-    let(:captured_events) { [] }
-
     before do
       allow(DSPy::LM::AdapterFactory).to receive(:create).and_return(mock_adapter)
       mock_adapter.chat_response = mock_response
-      
-      # Capture instrumentation events
-      DSPy::Instrumentation.subscribe do |event|
-        captured_events << event
-      end
-    end
-
-    after do
-      captured_events.clear
     end
 
     context 'with array format' do
@@ -213,39 +202,6 @@ RSpec.describe DSPy::LM do
       end
     end
 
-    context 'instrumentation' do
-      it 'emits dspy.lm.request event with RawPrompt signature_class' do
-        lm.raw_chat([{ role: 'user', content: 'Hello' }])
-        
-        request_events = captured_events.select { |e| e.id == 'dspy.lm.request' }
-        expect(request_events.length).to eq(1)
-        
-        event = request_events.first
-        expect(event.payload[:signature_class]).to eq('RawPrompt')
-        expect(event.payload[:gen_ai_operation_name]).to eq('chat')
-        expect(event.payload[:provider]).to eq('openai')
-      end
-
-      it 'emits dspy.lm.tokens event with token usage' do
-        lm.raw_chat([{ role: 'user', content: 'Hello' }])
-        
-        token_events = captured_events.select { |e| e.id == 'dspy.lm.tokens' }
-        expect(token_events.length).to eq(1)
-        
-        event = token_events.first
-        expect(event.payload[:signature_class]).to eq('RawPrompt')
-        expect(event.payload[:total_tokens]).to eq(30)
-        expect(event.payload[:input_tokens]).to eq(10)
-        expect(event.payload[:output_tokens]).to eq(20)
-      end
-
-      it 'does NOT emit dspy.lm.response.parsed event' do
-        lm.raw_chat([{ role: 'user', content: 'Hello' }])
-        
-        parsed_events = captured_events.select { |e| e.id == 'dspy.lm.response.parsed' }
-        expect(parsed_events).to be_empty
-      end
-    end
 
     context 'streaming' do
       it 'passes block to adapter for streaming' do

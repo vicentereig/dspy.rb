@@ -173,40 +173,4 @@ RSpec.describe DSPy::Predict do
     end
   end
 
-  describe 'logger subscriber integration' do
-    let(:log_output) { StringIO.new }
-    let(:test_logger) { Logger.new(log_output) }
-    
-    before do
-      # Configure DSPy for testing
-      DSPy.configure do |c|
-        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-      end
-      
-      # Create logger subscriber manually
-      @logger_subscriber = DSPy::Subscribers::LoggerSubscriber.new(logger: test_logger)
-    end
-
-    after do
-      # Clean up
-      @logger_subscriber = nil
-    end
-
-    it 'logs prediction events when running actual predictions' do
-      VCR.use_cassette('predict_simple') do
-        predictor = DSPy::Predict.new(Classify)
-        result = predictor.forward(sentence: "I love this movie!")
-
-        log_content = log_output.string
-        
-        # Check that both LM request and prediction events are logged in key-value format
-        expect(log_content).to include("event=lm_request")
-        expect(log_content).to include("provider=openai")
-        expect(log_content).to include("model=gpt-4o-mini")
-        expect(log_content).to include("status=success")
-        expect(log_content).to include("event=prediction")
-        expect(log_content).to include("signature=Classify")
-      end
-    end
-  end
 end
