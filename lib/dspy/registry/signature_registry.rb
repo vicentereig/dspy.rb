@@ -611,102 +611,102 @@ module DSPy
       # Event emission methods
       sig { params(signature_name: String, version: T.nilable(String)).void }
       def emit_register_start_event(signature_name, version)
-        DSPy.log('registry.register_start',
+        DSPy.log('registry.register_start', **{
           'registry.signature_name' => signature_name,
           'registry.version' => version
-        )
+        })
       end
 
       sig { params(version: SignatureVersion).void }
       def emit_register_complete_event(version)
-        DSPy.log('registry.register_complete',
+        DSPy.log('registry.register_complete', **{
           'registry.signature_name' => version.signature_name,
           'registry.version' => version.version,
           'registry.version_hash' => version.version_hash
-        )
+        })
       end
 
       sig { params(signature_name: String, version: T.nilable(String), error: Exception).void }
       def emit_register_error_event(signature_name, version, error)
-        DSPy.log('registry.register_error',
+        DSPy.log('registry.register_error', **{
           'registry.signature_name' => signature_name,
           'registry.version' => version,
           'registry.error' => error.message
-        )
+        })
       end
 
       sig { params(signature_name: String, version: String).void }
       def emit_deploy_start_event(signature_name, version)
-        DSPy.log('registry.deploy_start',
+        DSPy.log('registry.deploy_start', **{
           'registry.signature_name' => signature_name,
           'registry.version' => version
-        )
+        })
       end
 
       sig { params(version: SignatureVersion).void }
       def emit_deploy_complete_event(version)
-        DSPy.log('registry.deploy_complete',
+        DSPy.log('registry.deploy_complete', **{
           'registry.signature_name' => version.signature_name,
           'registry.version' => version.version,
           'registry.performance_score' => version.performance_score
-        )
+        })
       end
 
       sig { params(signature_name: String, version: String, error: Exception).void }
       def emit_deploy_error_event(signature_name, version, error)
-        DSPy.log('registry.deploy_error',
+        DSPy.log('registry.deploy_error', **{
           'registry.signature_name' => signature_name,
           'registry.version' => version,
           'registry.error' => error.message
-        )
+        })
       end
 
       sig { params(signature_name: String).void }
       def emit_rollback_start_event(signature_name)
-        DSPy.log('registry.rollback_start',
+        DSPy.log('registry.rollback_start', **{
           'registry.signature_name' => signature_name
-        )
+        })
       end
 
       sig { params(version: SignatureVersion).void }
       def emit_rollback_complete_event(version)
-        DSPy.log('registry.rollback_complete',
+        DSPy.log('registry.rollback_complete', **{
           'registry.signature_name' => version.signature_name,
           'registry.version' => version.version
-        )
+        })
       end
 
       sig { params(signature_name: String, error_message: String).void }
       def emit_rollback_error_event(signature_name, error_message)
-        DSPy.log('registry.rollback_error',
+        DSPy.log('registry.rollback_error', **{
           'registry.signature_name' => signature_name,
           'registry.error' => error_message
-        )
+        })
       end
 
       sig { params(version: SignatureVersion).void }
       def emit_performance_update_event(version)
-        DSPy.log('registry.performance_update',
+        DSPy.log('registry.performance_update', **{
           'registry.signature_name' => version.signature_name,
           'registry.version' => version.version,
           'registry.performance_score' => version.performance_score
-        )
+        })
       end
 
       sig { params(export_path: String, signature_count: Integer).void }
       def emit_export_event(export_path, signature_count)
-        DSPy.log('registry.export',
+        DSPy.log('registry.export', **{
           'registry.export_path' => export_path,
           'registry.signature_count' => signature_count
-        )
+        })
       end
 
       sig { params(import_path: String, signature_count: Integer).void }
       def emit_import_event(import_path, signature_count)
-        DSPy.log('registry.import',
+        DSPy.log('registry.import', **{
           'registry.import_path' => import_path,
           'registry.signature_count' => signature_count
-        )
+        })
       end
     end
   end

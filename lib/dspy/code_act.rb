@@ -358,23 +358,23 @@ module DSPy
 
     sig { params(iteration: Integer, thought: String, ruby_code: String, execution_result: T.nilable(String), error_message: T.nilable(String)).void }
     def emit_iteration_complete_event(iteration, thought, ruby_code, execution_result, error_message)
-      Instrumentation.emit('dspy.codeact.iteration_complete', {
-        iteration: iteration,
-        thought: thought,
-        ruby_code: ruby_code,
-        execution_result: execution_result,
-        error_message: error_message,
-        success: error_message.nil?
+      DSPy.log('codeact.iteration_complete', **{
+        'codeact.iteration' => iteration,
+        'codeact.thought' => thought,
+        'codeact.ruby_code' => ruby_code,
+        'codeact.execution_result' => execution_result,
+        'codeact.error_message' => error_message,
+        'codeact.success' => error_message.nil?
       })
     end
 
     sig { params(iterations_count: Integer, final_answer: T.nilable(String), history: T::Array[CodeActHistoryEntry]).void }
     def handle_max_iterations_if_needed(iterations_count, final_answer, history)
       if iterations_count >= @max_iterations && final_answer.nil?
-        Instrumentation.emit('dspy.codeact.max_iterations', {
-          iteration_count: iterations_count,
-          max_iterations: @max_iterations,
-          final_history_length: history.length
+        DSPy.log('codeact.max_iterations', **{
+          'codeact.iteration_count' => iterations_count,
+          'codeact.max_iterations' => @max_iterations,
+          'codeact.final_history_length' => history.length
         })
       end
     end

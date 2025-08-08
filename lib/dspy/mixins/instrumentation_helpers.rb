@@ -46,19 +46,19 @@ module DSPy
       # Emits a validation error event
       sig { params(signature_class: T.class_of(DSPy::Signature), validation_type: String, error_message: String).void }
       def emit_validation_error(signature_class, validation_type, error_message)
-        Instrumentation.emit('dspy.prediction.validation_error', {
-          signature_class: signature_class.name,
-          validation_type: validation_type,
-          validation_errors: { validation_type.to_sym => error_message }
+        DSPy.log('prediction.validation_error', **{
+          'dspy.signature' => signature_class.name,
+          'prediction.validation_type' => validation_type,
+          'prediction.validation_errors' => { validation_type.to_sym => error_message }
         })
       end
 
       # Emits a prediction completion event
       sig { params(signature_class: T.class_of(DSPy::Signature), success: T::Boolean, additional_data: T::Hash[Symbol, T.untyped]).void }
       def emit_prediction_complete(signature_class, success, additional_data = {})
-        Instrumentation.emit('dspy.prediction.complete', {
-          signature_class: signature_class.name,
-          success: success
+        DSPy.log('prediction.complete', **{
+          'dspy.signature' => signature_class.name,
+          'prediction.success' => success
         }.merge(additional_data))
       end
 

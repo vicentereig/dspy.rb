@@ -550,12 +550,12 @@ module DSPy
       # Emit instruction proposal completion event
       sig { params(result: ProposalResult).void }
       def emit_proposal_complete_event(result)
-        DSPy.log('optimization.instruction_proposal_complete',
+        DSPy.log('optimization.instruction_proposal_complete', **{
           'proposal.num_candidates' => result.num_candidates,
           'proposal.best_instruction_length' => result.best_instruction.length,
           'proposal.analysis_themes' => result.analysis[:common_themes] || [],
           'proposal.model_used' => @config.proposal_model
-        )
+        })
       end
     end
   end

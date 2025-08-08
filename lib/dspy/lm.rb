@@ -249,10 +249,10 @@ module DSPy
       token_usage = Instrumentation::TokenTracker.extract_token_usage(response, provider)
       
       if token_usage.any?
-        Instrumentation.emit('dspy.lm.tokens', token_usage.merge({
-          gen_ai_system: provider,
-          gen_ai_request_model: model,
-          signature_class: signature_class_name
+        DSPy.log('lm.tokens', **token_usage.merge({
+          'gen_ai.system' => provider,
+          'gen_ai.request.model' => model,
+          'dspy.signature' => signature_class_name
         }))
       end
       

@@ -424,24 +424,24 @@ module DSPy
 
     sig { params(iteration: Integer, thought: String, action: String, action_input: T.untyped, observation: String, tools_used: T::Array[String]).void }
     def emit_iteration_complete_event(iteration, thought, action, action_input, observation, tools_used)
-      Instrumentation.emit('dspy.react.iteration_complete', {
-        iteration: iteration,
-        thought: thought,
-        action: action,
-        action_input: action_input,
-        observation: observation,
-        tools_used: tools_used.uniq
+      DSPy.log('react.iteration_complete', **{
+        'react.iteration' => iteration,
+        'react.thought' => thought,
+        'react.action' => action,
+        'react.action_input' => action_input,
+        'react.observation' => observation,
+        'react.tools_used' => tools_used.uniq
       })
     end
 
     sig { params(iterations_count: Integer, final_answer: T.nilable(String), tools_used: T::Array[String], history: T::Array[HistoryEntry]).void }
     def handle_max_iterations_if_needed(iterations_count, final_answer, tools_used, history)
       if iterations_count >= @max_iterations && final_answer.nil?
-        Instrumentation.emit('dspy.react.max_iterations', {
-          iteration_count: iterations_count,
-          max_iterations: @max_iterations,
-          tools_used: tools_used.uniq,
-          final_history_length: history.length
+        DSPy.log('react.max_iterations', **{
+          'react.iteration_count' => iterations_count,
+          'react.max_iterations' => @max_iterations,
+          'react.tools_used' => tools_used.uniq,
+          'react.final_history_length' => history.length
         })
       end
     end

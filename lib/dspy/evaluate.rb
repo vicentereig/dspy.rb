@@ -270,12 +270,12 @@ module DSPy
         end
         
         # Emit batch completion event
-        Instrumentation.emit('dspy.evaluation.batch_complete', {
-          program_class: @program.class.name,
-          total_examples: batch_result.total_examples,
-          passed_examples: batch_result.passed_examples,
-          pass_rate: batch_result.pass_rate,
-          aggregated_metrics: aggregated_metrics
+        DSPy.log('evaluation.batch_complete', **{
+          'evaluation.program_class' => @program.class.name,
+          'evaluation.total_examples' => batch_result.total_examples,
+          'evaluation.passed_examples' => batch_result.passed_examples,
+          'evaluation.pass_rate' => batch_result.pass_rate,
+          'evaluation.aggregated_metrics' => aggregated_metrics
         })
         
         if display_progress

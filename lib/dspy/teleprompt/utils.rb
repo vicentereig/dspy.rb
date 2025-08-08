@@ -344,23 +344,23 @@ module DSPy
       # Emit bootstrap completion event
       sig { params(statistics: T::Hash[Symbol, T.untyped]).void }
       def self.emit_bootstrap_complete_event(statistics)
-        DSPy.log('optimization.bootstrap_complete',
+        DSPy.log('optimization.bootstrap_complete', **{
           'bootstrap.successful_count' => statistics[:successful_count],
           'bootstrap.failed_count' => statistics[:failed_count],
           'bootstrap.success_rate' => statistics[:success_rate],
           'bootstrap.candidate_sets_created' => statistics[:candidate_sets_created],
           'bootstrap.average_set_size' => statistics[:average_set_size]
-        )
+        })
       end
 
       # Emit individual bootstrap example event
       sig { params(index: Integer, success: T::Boolean, error: T.nilable(String)).void }
       def self.emit_bootstrap_example_event(index, success, error)
-        DSPy.log('optimization.bootstrap_example',
+        DSPy.log('optimization.bootstrap_example', **{
           'bootstrap.example_index' => index,
           'bootstrap.success' => success,
           'bootstrap.error' => error
-        )
+        })
       end
 
       # Infer signature class from examples
