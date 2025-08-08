@@ -10,6 +10,18 @@ module DSPy
     SUPPORTED_FORMATS = %w[image/jpeg image/png image/gif image/webp].freeze
     MAX_SIZE_BYTES = 5 * 1024 * 1024 # 5MB limit
     
+    # Provider capability registry
+    PROVIDER_CAPABILITIES = {
+      'openai' => {
+        sources: %w[url base64 data],
+        parameters: %w[detail]
+      },
+      'anthropic' => {
+        sources: %w[base64 data], 
+        parameters: []
+      }
+    }.freeze
+    
     def initialize(url: nil, base64: nil, data: nil, content_type: nil, detail: nil)
       @detail = detail # OpenAI detail level: 'low', 'high', or 'auto'
       
@@ -100,6 +112,43 @@ module DSPy
         validate_size!(Base64.decode64(base64).bytesize)
       elsif data
         validate_size!(data.size)
+      end
+    end
+    
+    def validate_for_provider!(provider)
+      capabilities = PROVIDER_CAPABILITIES[provider]
+      
+      unless capabilities
+        raise DSPy::LM::IncompatibleImageFeatureError, 
+              "Unknown provider '#{provider}'. Supported providers: #{PROVIDER_CAPABILITIES.keys.join(', ')}"
+      end
+      
+      # Check source compatibility
+      current_source = if url
+                         'url'
+                       elsif base64
+                         'base64'
+                       elsif data
+                         'data'
+                       end
+      
+      unless capabilities[:sources].include?(current_source)
+        case provider
+        when 'anthropic'
+          if current_source == 'url'
+            raise DSPy::LM::IncompatibleImageFeatureError,
+                  "Anthropic doesn't support image URLs. Please provide base64 or raw data instead."
+          end
+        end
+      end
+      
+      # Check parameter compatibility
+      if detail && !capabilities[:parameters].include?('detail')
+        case provider
+        when 'anthropic'
+          raise DSPy::LM::IncompatibleImageFeatureError,
+                "Anthropic doesn't support the 'detail' parameter. This feature is OpenAI-specific."
+        end
       end
     end
     
