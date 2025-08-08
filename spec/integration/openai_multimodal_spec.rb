@@ -86,29 +86,22 @@ RSpec.describe 'OpenAI Multimodal Integration', :vcr do
     let(:api_key) { ENV['OPENAI_API_KEY'] }
 
     context 'when using OpenAI-specific features' do
-      it 'allows URL images with detail parameter' do
+      it 'allows URL images with detail parameter during validation' do
         skip 'Requires OPENAI_API_KEY' unless api_key
-        lm = DSPy::LM.new("openai/#{model}", api_key: api_key)
 
         image = DSPy::Image.new(
           url: 'https://example.com/image.jpg',
           detail: 'low'
         )
         
-        # This should not raise an error during validation
-        # (though it might fail at API call due to fake URL)
+        # Direct validation should not raise error for OpenAI
         expect {
-          builder = DSPy::LM::MessageBuilder.new
-          builder.user_with_image("What's in this image?", image)
-          messages = builder.build
-          # We're testing validation, not the actual API call
-          lm.send(:format_multimodal_messages, messages)
+          image.validate_for_provider!('openai')
         }.not_to raise_error
       end
 
-      it 'allows base64 images with detail parameter' do
+      it 'allows base64 images with detail parameter during validation' do
         skip 'Requires OPENAI_API_KEY' unless api_key
-        lm = DSPy::LM.new("openai/#{model}", api_key: api_key)
 
         image = DSPy::Image.new(
           base64: TestImages.create_solid_color_png,
@@ -116,12 +109,9 @@ RSpec.describe 'OpenAI Multimodal Integration', :vcr do
           detail: 'high'
         )
         
-        # This should not raise an error
+        # Direct validation should not raise error for OpenAI
         expect {
-          builder = DSPy::LM::MessageBuilder.new
-          builder.user_with_image("What's in this image?", image)
-          messages = builder.build
-          lm.send(:format_multimodal_messages, messages)
+          image.validate_for_provider!('openai')
         }.not_to raise_error
       end
     end
