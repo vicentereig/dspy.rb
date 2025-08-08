@@ -7,6 +7,7 @@ require 'securerandom'
 require_relative 'dspy/version'
 require_relative 'dspy/errors'
 require_relative 'dspy/type_serializer'
+require_relative 'dspy/context'
 
 module DSPy
   extend Dry::Configurable
@@ -94,6 +95,15 @@ module DSPy
 
   def self.logger
     config.logger
+  end
+
+  def self.log(event, **attributes)
+    # Temporary placeholder for logging - will be replaced with proper implementation
+    return unless logger
+    
+    # For now, just log to configured logger for testing
+    combined_attrs = { event: event }.merge(attributes)
+    logger.info(combined_attrs)
   end
 
   # Validation methods for instrumentation configuration
