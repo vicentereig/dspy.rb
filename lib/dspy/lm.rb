@@ -49,18 +49,8 @@ module DSPy
         chat_with_strategy(messages, signature_class, &block)
       end
       
-      # Instrument response parsing
-      if should_emit_lm_events?
-        parsed_result = Instrumentation.instrument('dspy.lm.response.parsed', {
-          signature_class: signature_class.name,
-          provider: provider,
-          response_length: response.content&.length || 0
-        }) do
-          parse_response(response, input_values, signature_class)
-        end
-      else
-        parsed_result = parse_response(response, input_values, signature_class)
-      end
+      # Parse response (no longer needs separate instrumentation)
+      parsed_result = parse_response(response, input_values, signature_class)
       
       parsed_result
     end
@@ -227,25 +217,28 @@ module DSPy
       end.join(' ')
       input_size = input_text.length
       
-      response = nil
-      
-      if should_emit_lm_events?
-        # Emit dspy.lm.request event
-        response = Instrumentation.instrument('dspy.lm.request', {
-          gen_ai_operation_name: 'chat',
-          gen_ai_system: provider,
-          gen_ai_request_model: model,
-          signature_class: signature_class_name,
-          provider: provider,
-          adapter_class: adapter.class.name,
-          input_size: input_size
-        }, &execution_block)
+      # Wrap LLM call in span tracking
+      response = DSPy::Context.with_span(
+        operation: 'llm.generate',
+        'gen_ai.system' => provider,
+        'gen_ai.request.model' => model,
+        'dspy.signature' => signature_class_name
+      ) do
+        result = execution_block.call
         
-        # Extract and emit token usage
-        emit_token_usage(response, signature_class_name)
-      else
-        # Consolidated mode: execute without instrumentation
-        response = execution_block.call
+        # Add usage data if available
+        if result.respond_to?(:usage) && result.usage
+          usage = result.usage
+          DSPy.log('span.attributes',
+            span_id: DSPy::Context.current[:span_stack].last,
+            'gen_ai.response.model' => result.respond_to?(:model) ? result.model : nil,
+            'gen_ai.usage.prompt_tokens' => usage.respond_to?(:input_tokens) ? usage.input_tokens : nil,
+            'gen_ai.usage.completion_tokens' => usage.respond_to?(:output_tokens) ? usage.output_tokens : nil,
+            'gen_ai.usage.total_tokens' => usage.respond_to?(:total_tokens) ? usage.total_tokens : nil
+          )
+        end
+        
+        result
       end
       
       response
