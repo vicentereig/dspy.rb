@@ -47,7 +47,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 08 Aug 2025 13:29:16 GMT
+      - Fri, 08 Aug 2025 14:04:06 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -59,27 +59,27 @@ http_interactions:
       Anthropic-Ratelimit-Input-Tokens-Remaining:
       - '80000'
       Anthropic-Ratelimit-Input-Tokens-Reset:
-      - '2025-08-08T13:29:16Z'
+      - '2025-08-08T14:04:06Z'
       Anthropic-Ratelimit-Output-Tokens-Limit:
       - '16000'
       Anthropic-Ratelimit-Output-Tokens-Remaining:
       - '16000'
       Anthropic-Ratelimit-Output-Tokens-Reset:
-      - '2025-08-08T13:29:16Z'
+      - '2025-08-08T14:04:06Z'
       Anthropic-Ratelimit-Requests-Limit:
       - '1000'
       Anthropic-Ratelimit-Requests-Remaining:
       - '999'
       Anthropic-Ratelimit-Requests-Reset:
-      - '2025-08-08T13:29:15Z'
+      - '2025-08-08T14:04:02Z'
       Anthropic-Ratelimit-Tokens-Limit:
       - '96000'
       Anthropic-Ratelimit-Tokens-Remaining:
       - '96000'
       Anthropic-Ratelimit-Tokens-Reset:
-      - '2025-08-08T13:29:16Z'
+      - '2025-08-08T14:04:06Z'
       Request-Id:
-      - req_011CRvKfh1CLemaKaivWoM66
+      - req_011CRvNKYnPF18Y1qazd51Ap
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
@@ -93,9 +93,9 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 96bf5c8f5aa62b68-LAX
+      - 96bf8f847e33cb83-LAX
     body:
       encoding: ASCII-8BIT
-      string: '{"id":"msg_01VA2bzjBiLrAYA87RkGGCq4","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"Red"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":29,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":4,"service_tier":"standard"}}'
-  recorded_at: Fri, 08 Aug 2025 13:29:16 GMT
+      string: '{"id":"msg_01X9mkTGLxtgVJJ8kfv2aaUP","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"Red"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":29,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":4,"service_tier":"standard"}}'
+  recorded_at: Fri, 08 Aug 2025 14:04:06 GMT
 recorded_with: VCR 6.3.1

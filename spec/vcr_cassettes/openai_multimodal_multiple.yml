@@ -44,7 +44,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 08 Aug 2025 13:29:11 GMT
+      - Fri, 08 Aug 2025 14:03:56 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -56,13 +56,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '710'
+      - '749'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '875'
+      - '809'
       X-Ratelimit-Limit-Input-Images:
       - '50000'
       X-Ratelimit-Limit-Requests:
@@ -72,15 +72,15 @@ http_interactions:
       X-Ratelimit-Remaining-Input-Images:
       - '49998'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9997'
       X-Ratelimit-Remaining-Tokens:
-      - '194183'
+      - '160986'
       X-Ratelimit-Reset-Input-Images:
       - 2ms
       X-Ratelimit-Reset-Requests:
-      - 15.547s
+      - 21.714s
       X-Ratelimit-Reset-Tokens:
-      - 1.744s
+      - 11.703s
       X-Request-Id:
       - "<REQUEST_ID>"
       Cf-Cache-Status:
@@ -95,16 +95,16 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 96bf5c6e9f4d7bad-LAX
+      - 96bf8f5aed28dbe9-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-C2HReaVCLBa9hmVOGSr7L2dOGnGP8",
+          "id": "chatcmpl-C2HzIAzPRZraTkd5zyMlisJ8uzXg8",
           "object": "chat.completion",
-          "created": 1754659750,
+          "created": 1754661836,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -137,5 +137,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_62a23a81ef"
         }
-  recorded_at: Fri, 08 Aug 2025 13:29:11 GMT
+  recorded_at: Fri, 08 Aug 2025 14:03:56 GMT
 recorded_with: VCR 6.3.1

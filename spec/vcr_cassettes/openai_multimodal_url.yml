@@ -44,7 +44,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 08 Aug 2025 13:28:11 GMT
+      - Fri, 08 Aug 2025 14:03:54 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -56,13 +56,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1949'
+      - '2030'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2076'
+      - '2175'
       X-Ratelimit-Limit-Input-Images:
       - '50000'
       X-Ratelimit-Limit-Requests:
@@ -95,16 +95,16 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 96bf5aef3c01279a-LAX
+      - 96bf8f382c8c78ec-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-C2HQf8qtFi0dr9d3vMBZ1xyYNW24S",
+          "id": "chatcmpl-C2HzEFzdbcAtCwmLTdo55TXZLvzZB",
           "object": "chat.completion",
-          "created": 1754659689,
+          "created": 1754661832,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -137,5 +137,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_62a23a81ef"
         }
-  recorded_at: Fri, 08 Aug 2025 13:28:11 GMT
+  recorded_at: Fri, 08 Aug 2025 14:03:54 GMT
 recorded_with: VCR 6.3.1

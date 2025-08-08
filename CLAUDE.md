@@ -253,6 +253,27 @@ These rules ensure maintainability, safety, and developer velocity for Ruby 3.3 
   expect(result).to have(1).item    # Bad
   expect(result.first).to eq(value) # Bad
   ```
+- **T-7 (MUST)** For VCR integration tests: Skip tests when API keys are missing rather than using fallback keys
+  ```ruby
+  # ✅ Good: Skip when API key missing, create LM after skip check
+  it "calls the API", vcr: { cassette_name: "test" } do
+    skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+    lm = DSPy::LM.new("openai/gpt-4", api_key: ENV['OPENAI_API_KEY'])
+    # test implementation
+  end
+
+  # ❌ Bad: Fallback API key with VCR
+  it "calls the API", vcr: { cassette_name: "test" } do
+    api_key = ENV['OPENAI_API_KEY'] || 'test-key'  # Never do this with VCR
+    lm = DSPy::LM.new("openai/gpt-4", api_key: api_key)
+  end
+
+  # ❌ Bad: Create LM before skip check (causes validation errors)
+  it "calls the API", vcr: { cassette_name: "test" } do
+    lm = DSPy::LM.new("openai/gpt-4", api_key: ENV['OPENAI_API_KEY'])
+    skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']  # Too late!
+  end
+  ```
 
 ---
 
@@ -932,3 +953,48 @@ usage = UsageFactory.create('openai', usage_data)
 - Check GitHub Actions logs for specific failure reasons
 - Gemfile.lock mismatches are common after version bumps
 - Use direct GitHub Actions URLs to investigate failures
+
+### Multimodal Support Implementation (August 2025)
+
+**Key Learning**: Successfully added multimodal (vision) support for both OpenAI and Anthropic providers (#62).
+
+**Architecture Design**:
+- Created `DSPy::Image` class as central abstraction for image inputs
+- Supports three formats: URL (OpenAI only), base64, and byte arrays
+- Provider-specific conversions handled transparently
+
+**Provider Differences**:
+```ruby
+# OpenAI supports direct URLs
+image = DSPy::Image.from_url("https://example.com/image.jpg")
+
+# Anthropic requires base64
+image = DSPy::Image.from_file("local_image.png")  # Auto-converts to base64
+```
+
+**Message Builder Pattern**:
+```ruby
+# Single image
+message = DSPy::LM::MessageBuilder.user_with_image("What's in this image?", image)
+
+# Multiple images
+message = DSPy::LM::MessageBuilder.user_with_images(
+  "Compare these images",
+  [image1, image2]
+)
+```
+
+**PNG Generation for Tests**:
+- Must use proper PNG structure with zlib compression
+- Raw binary data will be rejected by APIs
+- Created `TestImages` module for reliable test image generation
+
+**Error Handling Philosophy**:
+- Surface specific API errors to developers rather than swallowing them
+- Provide actionable error messages for common issues (unsupported format, size limits)
+- Better developer experience through clear failure reasons
+
+**VCR Cassette Management**:
+- Always re-record cassettes when API responses contain errors
+- Verify successful responses (200 OK) in all cassettes
+- Test with real images to ensure accurate VCR recordings
