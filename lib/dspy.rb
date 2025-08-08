@@ -94,16 +94,48 @@ module DSPy
   end
 
   def self.logger
-    config.logger
+    @logger ||= create_logger
   end
 
   def self.log(event, **attributes)
-    # Temporary placeholder for logging - will be replaced with proper implementation
     return unless logger
     
-    # For now, just log to configured logger for testing
-    combined_attrs = { event: event }.merge(attributes)
-    logger.info(combined_attrs)
+    # Merge context automatically (but don't include span_stack)
+    context = Context.current.dup
+    context.delete(:span_stack)
+    attributes = context.merge(attributes)
+    attributes[:event] = event
+    
+    # Use Dry::Logger's structured logging
+    logger.info(attributes)
+  end
+
+  def self.create_logger
+    env = ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'
+    log_output = ENV['DSPY_LOG'] # Allow override
+    
+    case env
+    when 'test'
+      # Test: key=value format to log/test.log (or override)
+      Dry.Logger(:dspy, formatter: :string) do |config|
+        config.add_backend(stream: log_output || "log/test.log")
+      end
+    when 'development'
+      # Development: key=value format to log/development.log (or override)
+      Dry.Logger(:dspy, formatter: :string) do |config|
+        config.add_backend(stream: log_output || "log/development.log")
+      end
+    when 'production', 'staging'
+      # Production: JSON to STDOUT (or override)
+      Dry.Logger(:dspy, formatter: :json) do |config|
+        config.add_backend(stream: log_output || $stdout)
+      end
+    else
+      # Fallback: key=value to STDOUT
+      Dry.Logger(:dspy, formatter: :string) do |config|
+        config.add_backend(stream: log_output || $stdout)
+      end
+    end
   end
 
   # Validation methods for instrumentation configuration
