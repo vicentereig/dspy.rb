@@ -313,12 +313,15 @@ module DSPy
       # Instrument optimization steps
       sig { params(step_name: String, payload: T::Hash[Symbol, T.untyped], block: T.proc.returns(T.untyped)).returns(T.untyped) }
       def instrument_step(step_name, payload = {}, &block)
-        event_name = "dspy.optimization.#{step_name}"
-        
-        Instrumentation.instrument(event_name, payload.merge({
-          teleprompter_class: self.class.name,
-          config: @config.to_h
-        }), &block)
+        DSPy::Context.with_span(
+          operation: "optimization.#{step_name}",
+          'dspy.module' => 'Teleprompter',
+          'teleprompter.class' => self.class.name,
+          'teleprompter.config' => @config.to_h,
+          **payload
+        ) do
+          yield
+        end
       end
 
       # Emit optimization events

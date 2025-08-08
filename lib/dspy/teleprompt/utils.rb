@@ -104,11 +104,13 @@ module DSPy
         ).returns(BootstrapResult)
       end
       def self.create_n_fewshot_demo_sets(program, trainset, config: BootstrapConfig.new, metric: nil)
-        Instrumentation.instrument('dspy.optimization.bootstrap_start', {
-          trainset_size: trainset.size,
-          max_bootstrapped_examples: config.max_bootstrapped_examples,
-          num_candidate_sets: config.num_candidate_sets
-        }) do
+        DSPy::Context.with_span(
+          operation: 'optimization.bootstrap_start',
+          'dspy.module' => 'Bootstrap',
+          'bootstrap.trainset_size' => trainset.size,
+          'bootstrap.max_examples' => config.max_bootstrapped_examples,
+          'bootstrap.num_candidate_sets' => config.num_candidate_sets
+        ) do
           # Convert to typed examples if needed
           typed_examples = ensure_typed_examples(trainset)
           
@@ -172,11 +174,13 @@ module DSPy
         ).returns(DSPy::Evaluate::BatchEvaluationResult)
       end
       def self.eval_candidate_program_minibatch(program, examples, config, metric)
-        Instrumentation.instrument('dspy.optimization.minibatch_evaluation', {
-          total_examples: examples.size,
-          minibatch_size: config.minibatch_size,
-          num_batches: (examples.size.to_f / config.minibatch_size).ceil
-        }) do
+        DSPy::Context.with_span(
+          operation: 'optimization.minibatch_evaluation',
+          'dspy.module' => 'Bootstrap',
+          'minibatch.total_examples' => examples.size,
+          'minibatch.size' => config.minibatch_size,
+          'minibatch.num_batches' => (examples.size.to_f / config.minibatch_size).ceil
+        ) do
           # Randomly sample a minibatch for evaluation
           sample_size = [config.minibatch_size, examples.size].min
           sampled_examples = examples.sample(sample_size)

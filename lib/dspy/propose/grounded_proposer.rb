@@ -104,12 +104,14 @@ module DSPy
         ).returns(ProposalResult)
       end
       def propose_instructions(signature_class, examples, few_shot_examples: nil, current_instruction: nil)
-        Instrumentation.instrument('dspy.optimization.instruction_proposal_start', {
-          signature_class: signature_class.name,
-          num_examples: examples.size,
-          has_few_shot: !few_shot_examples.nil?,
-          has_current_instruction: !current_instruction.nil?
-        }) do
+        DSPy::Context.with_span(
+          operation: 'optimization.instruction_proposal',
+          'dspy.module' => 'GroundedProposer',
+          'proposal.signature' => signature_class.name,
+          'proposal.num_examples' => examples.size,
+          'proposal.has_few_shot' => !few_shot_examples.nil?,
+          'proposal.has_current_instruction' => !current_instruction.nil?
+        ) do
           # Analyze the task and training data
           analysis = analyze_task(signature_class, examples, few_shot_examples)
           

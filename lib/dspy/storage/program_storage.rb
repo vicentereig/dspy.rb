@@ -357,21 +357,19 @@ module DSPy
       # Event emission methods
       sig { params(program_id: T.nilable(String)).void }
       def emit_save_start_event(program_id)
-        DSPy::Instrumentation.emit('dspy.storage.save_start', {
-          program_id: program_id,
-          storage_path: @storage_path,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('storage.save_start',
+          'storage.program_id' => program_id,
+          'storage.path' => @storage_path
+        )
       end
 
       sig { params(saved_program: SavedProgram).void }
       def emit_save_complete_event(saved_program)
-        DSPy::Instrumentation.emit('dspy.storage.save_complete', {
-          program_id: saved_program.program_id,
-          best_score: saved_program.optimization_result[:best_score_value],
-          file_size_bytes: File.size(program_file_path(saved_program.program_id)),
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('storage.save_complete',
+          'storage.program_id' => saved_program.program_id,
+          'storage.best_score' => saved_program.optimization_result[:best_score_value],
+          'storage.file_size' => File.size(program_file_path(saved_program.program_id))
+        )
       end
 
       sig { params(program_id: T.nilable(String), error: Exception).void }

@@ -138,10 +138,12 @@ module DSPy
     # Evaluate program on a single example
     sig { params(example: T.untyped, trace: T.nilable(T.untyped)).returns(EvaluationResult) }
     def call(example, trace: nil)
-      Instrumentation.instrument('dspy.evaluation.example', {
-        program_class: @program.class.name,
-        has_metric: !@metric.nil?
-      }) do
+      DSPy::Context.with_span(
+        operation: 'evaluation.example',
+        'dspy.module' => 'Evaluator',
+        'evaluation.program' => @program.class.name,
+        'evaluation.has_metric' => !@metric.nil?
+      ) do
         begin
           # Extract input from example - support both hash and object formats
           input_values = extract_input_values(example)
@@ -209,12 +211,14 @@ module DSPy
       ).returns(BatchEvaluationResult)
     end
     def evaluate(devset, display_progress: true, display_table: false, return_outputs: true)
-      Instrumentation.instrument('dspy.evaluation.batch', {
-        program_class: @program.class.name,
-        num_examples: devset.length,
-        has_metric: !@metric.nil?,
-        num_threads: @num_threads
-      }) do
+      DSPy::Context.with_span(
+        operation: 'evaluation.batch',
+        'dspy.module' => 'Evaluator',
+        'evaluation.program' => @program.class.name,
+        'evaluation.num_examples' => devset.length,
+        'evaluation.has_metric' => !@metric.nil?,
+        'evaluation.num_threads' => @num_threads
+      ) do
         results = []
         errors = 0
         

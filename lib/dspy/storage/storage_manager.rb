@@ -250,11 +250,10 @@ module DSPy
           end
         end
         
-        DSPy::Instrumentation.emit('dspy.storage.cleanup', {
-          deleted_count: deleted_count,
-          remaining_count: @config.max_stored_programs,
-          timestamp: Time.now.iso8601
-        })
+        DSPy.log('storage.cleanup',
+          'storage.deleted_count' => deleted_count,
+          'storage.remaining_count' => @config.max_stored_programs
+        )
         
         deleted_count
       end
