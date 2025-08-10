@@ -105,6 +105,8 @@ module DSPy
     # Creates signature class with enhanced description and reasoning field
     sig { params(signature_class: T.class_of(DSPy::Signature), enhanced_output_struct: T.class_of(T::Struct)).returns(T.class_of(DSPy::Signature)) }
     def create_signature_class(signature_class, enhanced_output_struct)
+      original_name = signature_class.name
+      
       Class.new(DSPy::Signature) do
         description "#{signature_class.description} Think step by step."
 
@@ -125,8 +127,16 @@ module DSPy
         # Add reasoning field descriptor (ChainOfThought always provides this)
         @output_field_descriptors[:reasoning] = FieldDescriptor.new(String, "Step by step reasoning process")
 
+        # Store the original signature name for tracking/logging
+        @original_signature_name = original_name
+
         class << self
-          attr_reader :input_struct_class, :output_struct_class
+          attr_reader :input_struct_class, :output_struct_class, :original_signature_name
+          
+          # Override name to return the original signature name for tracking
+          def name
+            @original_signature_name || super
+          end
         end
       end
     end

@@ -5,6 +5,23 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.1] - 2025-08-10
+
+### Fixed
+- **ChainOfThought Signature Name Tracking** - Fixed `dspy.signature=nil` in observability logs
+  - Enhanced signature classes created by ChainOfThought now preserve the original signature name
+  - Properly tracks signature names in span tracking and reasoning analysis events
+  - Fixes issue where logging showed `dspy.signature=nil` instead of actual signature name (e.g., `MathProblemSolver`)
+  - Added comprehensive test coverage for signature name preservation
+
+## [0.18.0] - 2025-08-10
+
+### Added
+- **Plausible Analytics Integration** - Enhanced tracking capabilities for web analytics
+  - Added new event types and improved tracking structure
+  - Better support for custom properties and event metadata
+  - Improved error handling and retry logic
+
 ## [0.17.0] - 2025-01-08
 
 ### Changed

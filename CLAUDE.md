@@ -972,6 +972,109 @@ usage = UsageFactory.create('openai', usage_data)
 - T::Struct cannot be subclassed - use separate structs instead of inheritance
 - Factory pattern with T.untyped signature supports test doubles
 
+### Sorbet T::Struct Inheritance Limitations and Patterns (January 2025)
+
+**Key Learning**: T::Struct cannot inherit from another T::Struct - this is a deliberate Sorbet limitation for performance optimization.
+
+**The Problem**:
+```ruby
+# ❌ FORBIDDEN: T::Struct inheritance not allowed
+class Response < T::Struct
+  const :content, String
+  const :usage, Usage
+end
+
+class ReasoningResponse < Response  # This will fail!
+  const :reasoning_tokens, Integer
+end
+```
+
+**Why**: Sorbet needs to statically determine all properties of a T::Struct at compile time for performance. It cannot discover properties via inheritance.
+
+**Recommended Pattern - Union Types with Separate Structs**:
+```ruby
+# ✅ CORRECT: Separate structs with union type
+class Response < T::Struct
+  const :content, String
+  const :usage, Usage
+  const :metadata, ResponseMetadata
+end
+
+class ReasoningResponse < T::Struct
+  const :content, String  # Duplicate fields
+  const :usage, Usage
+  const :metadata, ResponseMetadata
+  const :reasoning_content, T.nilable(String)  # Additional fields
+  const :reasoning_tokens, Integer
+end
+
+# Type alias for cleaner signatures
+ResponseType = T.type_alias { T.any(Response, ReasoningResponse) }
+
+# Usage with type narrowing
+def process_response(response)
+  case response
+  when ReasoningResponse
+    # Can access reasoning_content and reasoning_tokens here
+    handle_reasoning(response.reasoning_content)
+  when Response
+    # Regular response handling
+    handle_regular(response)
+  else
+    T.absurd(response)  # Ensures all cases covered
+  end
+end
+```
+
+**Alternative Pattern - Composition (when avoiding duplication)**:
+```ruby
+# ✅ ALTERNATIVE: Composition pattern
+class ReasoningData < T::Struct
+  const :reasoning_content, T.nilable(String)
+  const :reasoning_tokens, Integer
+end
+
+class ReasoningResponse < T::Struct
+  const :base_response, Response
+  const :reasoning, ReasoningData
+  
+  # Delegate common methods if needed
+  extend T::Sig
+  sig { returns(String) }
+  def content
+    base_response.content
+  end
+end
+```
+
+**When to Use Each Pattern**:
+- **Separate Structs with Duplication**: Simpler, more explicit, better for small number of fields
+- **Composition**: When you have many fields to avoid duplication, but adds indirection
+
+**Type Narrowing Best Practices**:
+```ruby
+# Using case statements (preferred)
+case response
+when ReasoningResponse then process_reasoning(response)
+when Response then process_regular(response)
+else T.absurd(response)
+end
+
+# Using is_a? checks (when needed)
+if response.is_a?(ReasoningResponse)
+  # Sorbet understands type narrowing here
+  puts response.reasoning_tokens
+end
+```
+
+**Key Takeaways**:
+1. Never try to inherit T::Struct from another T::Struct
+2. Use union types (T.any) for polymorphic returns
+3. Type aliases make signatures cleaner
+4. Case statements provide excellent type narrowing
+5. Duplication is often better than complex workarounds
+6. This limitation exists for Sorbet's performance optimization
+
 ### VCR Integration Best Practices (July 2025)
 
 **Key Learning**: Data structures used in VCR recordings need special handling for consistency.
