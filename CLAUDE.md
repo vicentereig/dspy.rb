@@ -22,47 +22,16 @@ When working with external libraries in this codebase, **ALWAYS check the docume
 ### Key Libraries and Their Versions
 
 #### Runtime Dependencies (from gemspec):
-- **dry-configurable** (~> 1.0) - Configuration management
-  - Docs: https://dry-rb.org/gems/dry-configurable/1.0/
-  - Used for: Module configuration, nested settings blocks
-  - Key patterns: `setting :name`, nested blocks for sub-configurations
-
-- **dry-logger** (~> 1.0) - Structured logging
-  - Docs: https://dry-rb.org/gems/dry-logger/1.0/
-  - Used for: Application-wide logging with structured output
-
-- **dry-monitor** (~> 1.0) - Event monitoring and instrumentation
-  - Docs: https://dry-rb.org/gems/dry-monitor/1.0/
-  - Used for: Event emission, instrumentation system
-
-- **async** (~> 2.23) - Concurrent programming
-  - Docs: https://github.com/socketry/async/tree/v2.23.0
-  - Used for: Asynchronous LLM API calls
-
-- **openai** (~> 0.16.0) - OpenAI API client (Official SDK)
-  - Docs: https://github.com/openai/openai-ruby/tree/v0.16.0
-  - Used for: ChatGPT/GPT-4 API integration
-  - **IMPORTANT**: This is the official OpenAI Ruby SDK, not the community ruby-openai gem
-
-- **anthropic** (~> 1.5.0) - Anthropic API client (Official SDK)
-  - Docs: https://github.com/anthropics/anthropic-sdk-ruby/tree/v1.5.0
-  - Used for: Claude API integration
-
-- **sorbet-runtime** (~> 0.5) - Runtime type checking
-  - Docs: https://sorbet.org/
-  - Used for: Type safety throughout the codebase
-
-- **polars-df** (~> 0.20.0) - DataFrame library
-  - Docs: https://github.com/ankane/polars-ruby/tree/v0.20.0
-  - Used for: Data processing in evaluations
-
-- **informers** (~> 1.2) - Local embeddings
-  - Docs: https://github.com/ankane/informers
-  - Used for: Local embedding generation without API calls
-
-- **sorbet-schema** (~> 0.3) - Schema validation
-  - Docs: https://github.com/maxveldink/sorbet-schema
-  - Used for: Type-safe schema definitions
+- **dry-configurable** (~> 1.0) - Configuration management ([docs](https://dry-rb.org/gems/dry-configurable/1.0/))
+- **dry-logger** (~> 1.0) - Structured logging ([docs](https://dry-rb.org/gems/dry-logger/1.0/))
+- **dry-monitor** (~> 1.0) - Event monitoring ([docs](https://dry-rb.org/gems/dry-monitor/1.0/))
+- **async** (~> 2.23) - Concurrent programming ([docs](https://github.com/socketry/async/tree/v2.23.0))
+- **openai** (~> 0.16.0) - Official OpenAI SDK ([docs](https://github.com/openai/openai-ruby/tree/v0.16.0))
+- **anthropic** (~> 1.5.0) - Official Anthropic SDK ([docs](https://github.com/anthropics/anthropic-sdk-ruby/tree/v1.5.0))
+- **sorbet-runtime** (~> 0.5) - Runtime type checking ([docs](https://sorbet.org/))
+- **polars-df** (~> 0.20.0) - DataFrame library ([docs](https://github.com/ankane/polars-ruby/tree/v0.20.0))
+- **informers** (~> 1.2) - Local embeddings ([docs](https://github.com/ankane/informers))
+- **sorbet-schema** (~> 0.3) - Schema validation ([docs](https://github.com/maxveldink/sorbet-schema))
 
 #### Development Dependencies:
 - **rspec** (~> 3.12) - Testing framework
@@ -70,7 +39,69 @@ When working with external libraries in this codebase, **ALWAYS check the docume
 - **webmock** (~> 3.18) - HTTP request stubbing
 - **byebug** (~> 11.1) - Debugging tool
 - **dotenv** (~> 2.8) - Environment variable management
-- **faraday** (~> 2.0) - HTTP client library
+
+## Documentation Links
+
+### User Documentation
+- [Getting Started](docs/src/getting-started/index.md)
+  - [Installation](docs/src/getting-started/installation.md)
+  - [Quick Start](docs/src/getting-started/quick-start.md)
+  - [First Program](docs/src/getting-started/first-program.md)
+  - [Core Concepts](docs/src/getting-started/core-concepts.md)
+- [Core Concepts](docs/src/core-concepts/index.md)
+  - [Signatures](docs/src/core-concepts/signatures.md)
+  - [Modules](docs/src/core-concepts/modules.md)
+  - [Predictors](docs/src/core-concepts/predictors.md)
+  - [Memory](docs/src/core-concepts/memory.md)
+  - [Toolsets](docs/src/core-concepts/toolsets.md)
+  - [CodeAct Agent](docs/src/core-concepts/codeact.md)
+  - [Examples](docs/src/core-concepts/examples.md)
+- [Features](docs/src/features/)
+  - [Multimodal Support](docs/src/features/multimodal.md)
+- [Advanced Topics](docs/src/advanced/index.md)
+  - [Complex Types](docs/src/advanced/complex-types.md)
+  - [Memory Systems](docs/src/advanced/memory-systems.md)
+  - [Custom Toolsets](docs/src/advanced/custom-toolsets.md)
+  - [Custom Metrics](docs/src/advanced/custom-metrics.md)
+  - [Pipelines](docs/src/advanced/pipelines.md)
+  - [RAG](docs/src/advanced/rag.md)
+  - [Rails Integration](docs/src/advanced/rails-integration.md)
+  - [Stateful Agents](docs/src/advanced/stateful-agents.md)
+  - [Python Comparison](docs/src/advanced/python-comparison.md)
+- [Optimization](docs/src/optimization/index.md)
+  - [Evaluation](docs/src/optimization/evaluation.md)
+  - [Simple Optimizer](docs/src/optimization/simple-optimizer.md)
+  - [MIPROv2](docs/src/optimization/miprov2.md)
+  - [Prompt Optimization](docs/src/optimization/prompt-optimization.md)
+  - [Benchmarking](docs/src/optimization/benchmarking-raw-prompts.md)
+- [Production](docs/src/production/index.md)
+  - [Observability](docs/src/production/observability.md)
+  - [Storage](docs/src/production/storage.md)
+  - [Registry](docs/src/production/registry.md)
+  - [Troubleshooting](docs/src/production/troubleshooting.md)
+
+### Blog & Articles
+- [Run LLMs Locally with Ollama](docs/src/_articles/run-llms-locally-with-ollama-and-type-safe-ruby.md)
+- [Type-Safe Prediction Objects](docs/src/_articles/type-safe-prediction-objects.md)
+- [Union Types in Agentic Workflows](docs/src/_articles/union-types-agentic-workflows.md)
+- [ReAct Agent Tutorial](docs/src/_articles/react-agent-tutorial.md)
+- [CodeAct Dynamic Code Generation](docs/src/_articles/codeact-dynamic-code-generation.md)
+- [JSON Parsing Reliability](docs/src/_articles/json-parsing-reliability.md)
+- [Program of Thought Deep Dive](docs/src/_articles/program-of-thought-deep-dive.md)
+- [Ruby Idiomatic APIs](docs/src/_articles/ruby-idiomatic-apis.md)
+- [Raw Chat API](docs/src/_articles/raw-chat-api.md)
+- [Under the Hood: JSON Extraction](docs/src/_articles/under-the-hood-json-extraction.md)
+
+### Architecture Decision Records (ADRs)
+- [ADR Index](adr/README.md)
+- [001: Prediction Type Conversion Design](adr/001-prediction-type-conversion-design.md)
+- [002: Prediction Refactoring](adr/002-prediction-refactoring-recommendation.md)
+- [003: Ruby Idiomatic API Design](adr/003-ruby-idiomatic-api-design.md)
+- [004: Single Field Union Types](adr/004-single-field-union-types.md)
+- [005: Multi-Method Tool System](adr/005-multi-method-tool-system.md)
+- [006: Unified Image Type](adr/006-unified-image-type-vs-provider-specific-types.md)
+- [Development Learnings](adr/LEARNINGS.md) - Accumulated knowledge from development
+- [Architecture & Provider Integration](adr/ARCHITECTURE.md) - System design and provider strategies
 
 ## Common Tasks
 
@@ -95,28 +126,14 @@ bundle exec rspec
 # Run specific test file
 bundle exec rspec spec/path/to/file_spec.rb
 
-# Run with specific pattern
-bundle exec rspec --pattern "**/instrumentation*"
-
 # Run a single test by line number
 bundle exec rspec spec/path/to/file_spec.rb:42
-
-# Run with coverage
-bundle exec rspec --require spec_helper
 
 # Run only unit tests (fast)
 bundle exec rspec spec/unit
 
 # Run only integration tests (slower, uses VCR)
 bundle exec rspec spec/integration
-```
-
-### Code Quality
-```bash
-# Type check with Sorbet (currently disabled - do not run)
-# bundle exec srb tc
-
-# Note: RuboCop is not currently configured in this project
 ```
 
 ### Building and Releasing
@@ -131,129 +148,33 @@ gem install ./dspy-*.gem
 gem push dspy-VERSION.gem
 ```
 
-### Common Patterns in This Codebase
+## Development Guidelines
 
-1. **Configuration Pattern**: Uses dry-configurable extensively
-   ```ruby
-   # CORRECT: Nested configuration blocks
-   setting :instrumentation do
-     setting :enabled, default: false
-     setting :logger do
-       setting :level, default: :info
-     end
-   end
-   
-   # WRONG: Separate configuration classes
-   # Don't create InstrumentationConfig classes
-   ```
+### Ruby 3.3 Development Best Practices
 
-2. **Instrumentation**: Event-driven architecture using dry-monitor
-   ```ruby
-   DSPy::Instrumentation.instrument('event.name', payload) do
-     # work to be measured
-   end
-   ```
-
-3. **Module System**: All DSPy modules inherit from DSPy::Module
-   - Supports per-instance LM configuration
-   - Uses Sorbet for type safety
-
-## Architecture Notes
-
-- The instrumentation system is configuration-driven (see `docs/production/observability.md`)
-- LM providers are abstracted through a common interface in `lib/dspy/lm.rb`
-- All events are registered in `lib/dspy/instrumentation.rb`
-- Storage and registry systems support versioning and deployment
-
-## Debugging Tips
-
-1. Check library version compatibility when encountering unexpected behavior
-2. Use `bundle exec` to ensure correct gem versions
-3. The instrumentation system can help trace execution flow
-4. VCR cassettes record API interactions for consistent testing
-5. Use byebug for interactive debugging:
-   ```ruby
-   require 'byebug'
-   byebug  # Set breakpoint
-   ```
-6. In test mode, set `DSPy.config.test_mode = true` to disable retry sleeps
-
-## Important Files
-
-- `lib/dspy.rb` - Main module with configuration
-- `lib/dspy/instrumentation.rb` - Event system and monitoring
-- `lib/dspy/lm.rb` - Language model abstraction
-- `docs/production/observability.md` - Instrumentation documentation
-
-## Before Making Changes
-
-1. Read the documentation for any library you're using directly
-2. Check existing patterns in the codebase
-3. Run tests to ensure nothing breaks
-4. Follow the established configuration patterns (dry-configurable)
-5. Consider backward compatibility when refactoring
-
-## Version-Specific Documentation Links
-
-When in doubt about a library's API:
-1. Check the gemspec for the exact version constraint
-2. Look for version-specific documentation (add `/tree/vX.Y.Z` to GitHub URLs)
-3. Review the CHANGELOG for breaking changes between versions
-4. Test behavior in `bundle exec irb` with the actual gem version
-
----
-
-# Ruby 3.3 Development Guidelines
-
-## Implementation Best Practices
-
-### 0 — Purpose  
-
-These rules ensure maintainability, safety, and developer velocity for Ruby 3.3 development. 
-**MUST** rules are enforced by CI; **SHOULD** rules are strongly recommended.
-
----
-
-### 1 — Before Coding
-
+#### Before Coding
 - **BP-1 (MUST)** Ask the user clarifying questions.
 - **BP-2 (SHOULD)** Draft and confirm an approach for complex work.  
 - **BP-3 (SHOULD)** If ≥ 2 approaches exist, list clear pros and cons.
 
----
-
-### 2 — While Coding
-
+#### While Coding
 - **C-1 (MUST)** Follow TDD: scaffold stub -> write failing test -> implement.
 - **C-2 (MUST)** Name methods with existing domain vocabulary for consistency.  
 - **C-3 (SHOULD NOT)** Introduce classes when small testable methods suffice.  
 - **C-4 (SHOULD)** Prefer simple, composable, testable methods.
 - **C-5 (MUST)** Use Sorbet type annotations for critical interfaces
-  ```ruby
-  sig { params(user_id: String).returns(T.nilable(User)) }   # ✅ Good
-  def find_user(user_id); end                                # ❌ Bad (no type info)
-  ```  
 - **C-6 (MUST)** Use Ruby 3.3 features appropriately: `Data` class, pattern matching, etc.
 - **C-7 (SHOULD NOT)** Add comments except for critical caveats; rely on self-explanatory code.
 - **C-8 (SHOULD)** Default to simple classes; use modules for shared behavior and mixins. 
-- **C-9 (SHOULD NOT)** Extract a new method unless it will be reused elsewhere, is the only way to unit-test otherwise untestable logic, or drastically improves readability of an opaque block.
+- **C-9 (SHOULD NOT)** Extract a new method unless it will be reused elsewhere.
 
----
-
-### 3 — Testing
-
-- **T-2 (MUST)** For any API change, add/extend integration tests in `spec/integration/*.rb`.
-- **T-3 (MUST)** ALWAYS separate pure-logic unit tests from LLM-touching integration tests.
-- **T-4 (SHOULD)** Prefer integration tests over heavy mocking.  
-- **T-5 (SHOULD)** Unit-test complex algorithms thoroughly.
-- **T-6 (SHOULD)** Test the entire structure in one assertion if possible
-  ```ruby
-  expect(result).to eq([value]) # Good
-
-  expect(result).to have(1).item    # Bad
-  expect(result.first).to eq(value) # Bad
-  ```
-- **T-7 (MUST)** For VCR integration tests: Skip tests when API keys are missing rather than using fallback keys
+#### Testing
+- **T-1 (MUST)** For any API change, add/extend integration tests in `spec/integration/*.rb`.
+- **T-2 (MUST)** ALWAYS separate pure-logic unit tests from LLM-touching integration tests.
+- **T-3 (SHOULD)** Prefer integration tests over heavy mocking.  
+- **T-4 (SHOULD)** Unit-test complex algorithms thoroughly.
+- **T-5 (SHOULD)** Test the entire structure in one assertion if possible
+- **T-6 (MUST)** For VCR integration tests: Skip tests when API keys are missing rather than using fallback keys
   ```ruby
   # ✅ Good: Skip when API key missing, create LM after skip check
   it "calls the API", vcr: { cassette_name: "test" } do
@@ -261,42 +182,16 @@ These rules ensure maintainability, safety, and developer velocity for Ruby 3.3 
     lm = DSPy::LM.new("openai/gpt-4", api_key: ENV['OPENAI_API_KEY'])
     # test implementation
   end
-
-  # ❌ Bad: Fallback API key with VCR
-  it "calls the API", vcr: { cassette_name: "test" } do
-    api_key = ENV['OPENAI_API_KEY'] || 'test-key'  # Never do this with VCR
-    lm = DSPy::LM.new("openai/gpt-4", api_key: api_key)
-  end
-
-  # ❌ Bad: Create LM before skip check (causes validation errors)
-  it "calls the API", vcr: { cassette_name: "test" } do
-    lm = DSPy::LM.new("openai/gpt-4", api_key: ENV['OPENAI_API_KEY'])
-    skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']  # Too late!
-  end
   ```
 
----
+#### Code Organization
+- **O-1 (SHOULD)** Group related functionality in logical subdirectories (`tools/`, `memory/`, `agents/`).
 
-### 4 — Database/Storage
+#### Tooling Gates
+- **G-1 (MUST)** `bundle exec rspec` passes.
+- **G-2 (MUST)** Documentation site builds successfully before pushing changes.
 
-- **D-1 (MUST)** Use dependency injection for storage backends to support testing.  
-- **D-2 (SHOULD)** Use structured data types (`Data` class, `Struct`) for complex data rather than raw hashes.
-
----
-
-### 5 — Code Organization
-
-- **O-2 (SHOULD)** Group related functionality in logical subdirectories (`tools/`, `memory/`, `agents/`).
-
----
-
-### 6 — Tooling Gates
-
-- **G-1 (MUST)** ~~`bundle exec srb tc` passes~~ (currently disabled - do not run).
-- **G-2 (MUST)** `bundle exec rspec` passes.
-- **G-3 (MUST)** Documentation site builds successfully before pushing changes.
-
-### 6.1 — Documentation Site Build Verification
+### Documentation Site Build Verification
 
 When making changes to the documentation site (anything in `/docs/`), **ALWAYS** verify the build works locally before pushing:
 
@@ -315,312 +210,58 @@ BRIDGETOWN_ENV=production npm run build
 # If build fails, fix the issues before pushing
 ```
 
-**Common build issues to check:**
-- Missing JavaScript imports/exports
-- Liquid template syntax errors
-- Missing or incorrect file paths
-- Broken markdown syntax
-- Invalid HTML in layouts
+### Git Best Practices
 
----
-
-### 7 - Documentation & Styling
-
-- **DS-1 (MUST)** Use Tailwind CSS utilities instead of writing raw CSS when working on documentation site styles.
-- **DS-2 (SHOULD)** Prefer `@apply` directive for component-level styling over raw CSS properties.
-- **DS-3 (SHOULD)** Use Tailwind's design tokens (spacing, colors, etc.) via `theme()` function when raw CSS is necessary.
-- **DS-4 (MUST)** Follow mobile-first responsive design using Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`).
-
-### 7.1 - Tailwind CSS Best Practices for Documentation
-
-**Preferred Approach - Use Tailwind utilities:**
-```css
-/* ✅ Good: Use @apply with Tailwind utilities */
-.mobile-menu-button {
-  @apply inline-flex items-center justify-center rounded-md p-2 text-gray-400;
-  @apply hover:bg-gray-100 hover:text-gray-500 focus:outline-none;
-  @apply lg:hidden min-w-[44px] min-h-[44px];
-}
-
-/* ✅ Good: Use theme() function for consistent values */
-.custom-shadow {
-  box-shadow: 0 4px 6px theme('colors.gray.300');
-}
-```
-
-**Avoid Raw CSS:**
-```css
-/* ❌ Bad: Raw CSS instead of Tailwind utilities */
-.mobile-menu-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  padding: 8px;
-  color: #9CA3AF;
-}
-```
-
-**Available Tailwind Features:**
-- All utility classes: `flex`, `items-center`, `bg-gray-100`, etc.
-- Responsive design: `sm:hidden`, `lg:flex`, `md:block`
-- Custom colors: `bg-dspy-ruby`, `text-dspy-dark`
-- Typography plugin: `prose`, `prose-lg`, `prose-gray`
-- Forms plugin: enhanced form styling
-
----
-
-### 8 - Git
-
-- **GH-1 (MUST)** Use Conventional Commits format when writing commit messages: https://www.conventionalcommits.org/en/v1.0.0
+- **GH-1 (MUST)** Use Conventional Commits format: https://www.conventionalcommits.org/en/v1.0.0
 - **GH-2 (SHOULD NOT)** Refer to Claude or Anthropic in commit messages.
-
----
+- **GH-3 (MUST)** Reference GitHub issues in commit messages (e.g., `fix #123`, `ref #456`)
 
 ## Writing Methods Best Practices
 
-When evaluating whether a Ruby method you implemented is good or not, use this checklist:
+When evaluating whether a Ruby method is good, use this checklist:
 
-### 1. Readability First
-Can you read the method and HONESTLY easily follow what it's doing? If yes, then stop here. Ruby emphasizes readability - your code should read like well-written prose.
-
-### 2. Cyclomatic Complexity
-Does the method have very high cyclomatic complexity? Check for:
-- Deeply nested `if/elsif/else` chains
-- Complex `case/when` statements
-- Multiple guard clauses that obscure the main logic
-- Nested loops with conditional logic
-
-If complexity is high, consider extracting private methods or using Ruby patterns like early returns.
-
-### 3. Ruby Idioms and Data Structures
-Are there Ruby-specific patterns or data structures that would make this method cleaner?
-- Use `Enumerable` methods (`map`, `select`, `reduce`, `each_with_object`) instead of manual loops
-- Consider `Struct` or `Data` (Ruby 3.2+) for simple value objects
-- Use `Set` for unique collections
-- Leverage `Hash` with default values or blocks
-- For DSPy components: consider using modules for mixins, delegation patterns for prompt chaining
-
-### 4. Method Parameters
-- Are there any unused parameters?
-- Could keyword arguments make the method interface clearer?
-- Should any positional arguments be converted to keyword arguments for clarity?
-- For DSPy signatures: are prompt templates and parameters clearly separated?
-
-### 5. Type Safety and Coercion
-- Are there unnecessary `.to_s`, `.to_i`, `.to_a` calls that could be handled at method boundaries?
-- Consider using Sorbet type signatures for critical interfaces
-- For LLM responses: is type coercion happening at the right abstraction level?
-
-### 6. Testability
-Is the method easily testable with RSpec without heavy mocking?
-- Avoid mocking LLM calls directly in unit tests - use VCR for integration tests
-- Can you test the prompt construction logic separately from LLM execution?
-- Are there clear inputs and outputs that can be asserted?
-- For DSPy modules: can you test signature validation independently?
-
-### 7. Dependencies and Side Effects
-- Does the method have hidden dependencies on instance variables that could be parameters?
-- Are there any class variables or global state dependencies?
-- For LLM interactions: is the model configuration injected or hard-coded?
-- Can API keys and endpoints be configured without modifying the method?
-
-### 8. Naming Conventions
-Brainstorm 3 better method names and evaluate:
-- Does it follow Ruby conventions? (snake_case, predicate methods end with `?`, dangerous methods end with `!`)
-- Is it consistent with DSPy terminology (e.g., `forward` for inference, `compile` for optimization)?
-- Does it clearly indicate if it's a command (changes state) or query (returns value)?
-
-## DSPy.rb Specific Considerations
-
-### Method Extraction Guidelines
-You SHOULD NOT extract a separate method unless:
-- The extracted method represents a reusable DSPy component (Signature, Module, Optimizer)
-- The method encapsulates prompt template logic that varies by use case
-- The original method mixes LLM interaction with business logic that should be tested separately
-- The method handles retry logic or error recovery that's reusable across different LLM calls
-
-### Example Patterns
-
-```ruby
-# GOOD: Clear separation of concerns
-class ChainOfThought < DSPy::Module
-  def forward(input)
-    reasoning = generate_reasoning(input)
-    answer = extract_answer(reasoning)
-    DSPy::Prediction.new(reasoning: reasoning, answer: answer)
-  end
-
-  private
-
-  def generate_reasoning(input)
-    # Focused on prompt construction
-  end
-
-  def extract_answer(reasoning)
-    # Focused on parsing logic
-  end
-end
-
-# BAD: Mixed concerns, hard to test
-class ChainOfThought < DSPy::Module
-  def forward(input)
-    # 50 lines mixing prompt construction, API calls, parsing, and error handling
-  end
-end
-```
-
----
+1. **Readability First** - Can you read the method and easily follow what it's doing?
+2. **Cyclomatic Complexity** - Check for deeply nested conditions, complex case statements
+3. **Ruby Idioms** - Use `Enumerable` methods, `Data` class, appropriate data structures
+4. **Method Parameters** - Use keyword arguments for clarity, avoid unused parameters
+5. **Type Safety** - Use Sorbet type signatures for critical interfaces
+6. **Testability** - Is the method easily testable without heavy mocking?
+7. **Dependencies** - Avoid hidden dependencies on instance/class variables
+8. **Naming** - Follow Ruby conventions (snake_case, `?` for predicates, `!` for dangerous)
 
 ## Writing Tests Best Practices
 
-When evaluating whether a test you've implemented is good or not, use this checklist:
-
-1. **SHOULD** parameterize inputs; never embed unexplained literals such as `42` or `"foo"` directly in the test.
-2. **SHOULD NOT** add a test unless it can fail for a real defect. Trivial asserts (e.g., `expect(2).to eq(2)`) are forbidden.
-3. **SHOULD** ensure the test description states exactly what the final expect verifies. If the wording and assert don't align, rename or rewrite.
-4. **SHOULD** compare results to independent, pre-computed expectations or to properties of the domain, never to the method's output re-used as the oracle.
-5. **SHOULD** follow the same lint, type-safety, and style rules as prod code (RuboCop, Sorbet, etc.).
-6. **SHOULD** express invariants or axioms (e.g., commutativity, idempotence, round-trip) rather than single hard-coded cases whenever practical.
-7. Unit tests for a method should be grouped under `describe MethodName` or `describe '#method_name'`.
-8. Use `anything` or specific matchers when testing for parameters that can be variable (e.g. dynamic IDs).
-9. **ALWAYS** use strong assertions over weaker ones e.g. `expect(x).to eq(1)` instead of `expect(x).to be >= 1`.
-10. **SHOULD** test edge cases, realistic input, unexpected input, and value boundaries.
-11. **SHOULD NOT** test conditions that are caught by Sorbet type checking.
-12. **MUST** Use VCR for recording LLM interactions in integration tests:
-```ruby
-# Good: VCR-recorded integration test
-it "generates valid reasoning", vcr: { cassette_name: "chain_of_thought_reasoning" } do
-  result = chain_of_thought.forward("What is 2+2?")
-  expect(result.reasoning).to include("step")
-  expect(result.answer).to eq("4")
-end
-
-# Bad: Mocked LLM calls in unit tests
-it "calls LLM with correct prompt" do
-  expect(lm).to receive(:generate).with(hash_including(prompt: anything))
-  chain_of_thought.forward("What is 2+2?")
-end
-```
-
----
-
-## Code Organization
-
-DSPy.rb follows a modular architecture:
-
-- `lib/dspy.rb` - Main entry point and configuration
-- `lib/dspy/` - Core library components
-  - `agents/` - Multi-step agent implementations (ReAct, CodeAct, etc.)
-  - `memory/` - Memory management and persistence
-  - `tools/` - Tool definitions and toolsets
-  - `lm/` - Language model abstractions and clients
-  - `teleprompt/` - Optimization and fine-tuning
-  - `subscribers/` - Observability integrations (DataDog, OTEL, etc.)
-- `spec/` - Test suite
-  - `integration/` - Integration tests with VCR recordings
-  - `unit/` - Fast unit tests
-- `docs/` - Developer documentation (Bridgetown site)
-
----
+1. **SHOULD** parameterize inputs; never embed unexplained literals
+2. **SHOULD NOT** add a test unless it can fail for a real defect
+3. **SHOULD** ensure test description matches what the assert verifies
+4. **SHOULD** compare to independent expectations, not method output as oracle
+5. **SHOULD** express invariants/axioms rather than single cases when practical
+6. **SHOULD** test edge cases, realistic input, unexpected input, boundaries
+7. **MUST** Use VCR for recording LLM interactions in integration tests
 
 ## Project Management
 
 ### GitHub Issues
 - Add GH issues to the DSPy.rb 1.0 Project and assign them to me
+- When writing issues, adopt the user's perspective
+- Start with a succinct explanation of importance
+- Follow with comprehensive technical details
 
-## Issue Writing Guidelines
-- When writing issue titles and descriptions, adopt the user's perspective
-- Start the description with a succinct explanation of the issue's importance
-- Follow the initial explanation with comprehensive technical details necessary to successfully accomplish the task
-
-## Development Best Practices
-
-### GitHub Issue References
-- Follow GitHub good practices with issues, i.e., when working on issues make a reference in the commit message that way GitHub can link it in the web UI
-
-### GitHub Issue Management
+### Development Best Practices
 - **ALWAYS** check if the issue you're working on is already implemented before starting work
 - Before implementing a feature, search the codebase for existing implementations
 - Run tests to verify implementation status: `bundle exec rspec`
-- After completing implementation, use GitHub commit message shortcuts to close issues:
-  - `close #123` or `closes #123` or `fix #123` or `fixes #123` to close an issue
-  - `reopen #123` to reopen an issue
-  - `ref #123` to reference an issue without closing it
-- When closing implemented issues, include a comment with implementation details and verification steps
-
----
-
-## LLM Provider Integration Insights
-
-### Current State Assessment (July 2025)
-
-**Anthropic/Claude - Excellent Foundation:**
-- Comprehensive 4-pattern JSON extraction system with 26 test cases
-- Recent improvements (July 2025) show active development and solid architecture
-- Smart prefilling strategy and JSON detection heuristics
-- Model-specific behavior detection for optimal performance
-
-**OpenAI - Significant Gaps:**
-- Missing native structured output support (`response_format: { type: "json_schema" }`)
-- No function/tool calling integration
-- Falls back to basic regex parsing vs provider-native features
-- Higher JSON parsing failure rates due to lack of optimization
-
-**Strategic Approach:**
-- **Explicit over implicit**: Prefer clear configuration over black-box auto-detection
-- **Provider-specific optimization**: Leverage each provider's strengths rather than lowest common denominator
-- **User control**: Provide override options for advanced users
-- **Incremental improvement**: Start with high-impact changes (OpenAI structured outputs) before complex detection systems
-
-### Implementation Priorities
-
-1. **OpenAI Structured Outputs** (Immediate ROI)
-   - Add native `response_format` support to OpenAI adapter
-   - Convert DSPy signatures to OpenAI JSON schema format
-   - Maintain backward compatibility with explicit opt-in
-
-2. **Provider Detection** (Strategic Value)
-   - Simple capability detection for choosing optimal strategies
-   - Configuration overrides for user control
-   - Clear debugging and visibility into strategy selection
-
-3. **Enhanced Reliability** (Long-term Value)
-   - Retry mechanisms with progressive fallback
-   - Multiple extraction strategies for edge cases
-   - Performance monitoring and success rate tracking
-
-### Lessons Learned
-
-**Over-Engineering Warning:**
-- Complex auto-detection systems introduce maintenance burden
-- User complaints about JSON parsing failures are rare in practice
-- Current Anthropic implementation is already excellent
-- Focus on documented provider gaps rather than theoretical problems
-
-**Architectural Principles:**
-- Provider-specific code paths are preferable to complex abstraction layers
-- Explicit configuration beats magical behavior
-- User education and documentation can solve many perceived problems
-- Performance and reliability improvements should be measurable and user-facing
-
----
+- Use GitHub commit message shortcuts to close issues: `close #123`, `fix #123`
 
 ## Remember Shortcuts
 
-Remember the following shortcuts which the user may invoke at any time.
-
 ### QNEW
-
-When I type "qnew", this means:
-
 ```
 Understand all BEST PRACTICES listed in CLAUDE.md.
 Your code SHOULD ALWAYS follow these best practices.
 ```
 
 ### QPLAN
-When I type "qplan", this means:
 ```
 Analyze similar parts of the codebase and determine whether your plan:
 - is consistent with rest of codebase
@@ -628,10 +269,7 @@ Analyze similar parts of the codebase and determine whether your plan:
 - reuses existing code
 ```
 
-## QCODE
-
-When I type "qcode", this means:
-
+### QCODE
 ```
 Implement your plan and make sure your new tests pass.
 Always run tests to make sure you didn't break anything else.
@@ -639,525 +277,36 @@ Always run `bundle exec rspec` to ensure all tests pass.
 ```
 
 ### QCHECK
-
-When I type "qcheck", this means:
-
 ```
 You are a SKEPTICAL senior software engineer.
-Perform this analysis for every MAJOR code change you introduced (skip minor changes):
-
+Perform this analysis for every MAJOR code change you introduced:
 1. CLAUDE.md checklist Writing Methods Best Practices.
 2. CLAUDE.md checklist Writing Tests Best Practices.
 3. CLAUDE.md checklist Implementation Best Practices.
 ```
 
 ### QCHECKM
-
-When I type "qcheckm", this means:
-
 ```
 You are a SKEPTICAL senior software engineer.
-Perform this analysis for every MAJOR method you added or edited (skip minor changes):
-
+Perform this analysis for every MAJOR method you added or edited:
 1. CLAUDE.md checklist Writing Methods Best Practices.
 ```
 
 ### QCHECKT
-
-When I type "qcheckt", this means:
-
 ```
 You are a SKEPTICAL senior software engineer.
-Perform this analysis for every MAJOR test you added or edited (skip minor changes):
-
+Perform this analysis for every MAJOR test you added or edited:
 1. CLAUDE.md checklist Writing Tests Best Practices.
 ```
 
 ### QUX
-
-When I type "qux", this means:
-
 ```
 Imagine you are a human UX tester of the feature you implemented. 
 Output a comprehensive list of scenarios you would test, sorted by highest priority.
 ```
 
 ### QGIT
-
-When I type "qgit", this means:
-
 ```
 Add all changes to staging, create a commit, and push to remote.
-
-Follow this checklist for writing your commit message:
-- SHOULD use Conventional Commits format: https://www.conventionalcommits.org/en/v1.0.0
-- SHOULD NOT refer to Claude or Anthropic in the commit message.
-- SHOULD structure commit message as follows:
-<type>[optional scope]: <description>
-[optional body]
-[optional footer(s)]
-- commit SHOULD contain the following structural elements to communicate intent: 
-fix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).
-feat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).
-BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! after the type/scope, introduces a breaking API change (correlating with MAJOR in Semantic Versioning). A BREAKING CHANGE can be part of commits of any type.
-types other than fix: and feat: are allowed, for example @commitlint/config-conventional (based on the Angular convention) recommends build:, chore:, ci:, docs:, style:, refactor:, perf:, test:, and others.
-footers other than BREAKING CHANGE: <description> may be provided and follow a convention similar to git trailer format.
+Follow Conventional Commits format: https://www.conventionalcommits.org/en/v1.0.0
 ```
-
----
-
-## Testing Philosophy - API Key Management
-
-### Test Environment Behavior (August 2025)
-
-**Key Principle**: Tests should FAIL when required environment variables are missing, not skip or use fallbacks.
-
-**Correct Pattern**:
-```ruby
-# ✅ CORRECT: Test fails if API key missing
-it "calls the API", vcr: { cassette_name: "test" } do
-  lm = DSPy::LM.new("openai/gpt-4", api_key: ENV['OPENAI_API_KEY'])
-  # Test implementation - will fail with clear error if key missing
-end
-
-# ✅ CORRECT: Integration test with explicit skip check
-it "calls the API", vcr: { cassette_name: "test" } do
-  skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
-  lm = DSPy::LM.new("openai/gpt-4", api_key: ENV['OPENAI_API_KEY'])
-  # test implementation
-end
-```
-
-**Forbidden Patterns**:
-```ruby
-# ❌ NEVER: Fallback API keys hide configuration issues
-api_key = ENV['OPENAI_API_KEY'] || 'test-key'
-lm = DSPy::LM.new("openai/gpt-4", api_key: api_key)
-
-# ❌ NEVER: Silent defaults
-api_key = ENV['OPENAI_API_KEY'] || 'fallback-key'
-
-# ❌ NEVER: Helper methods that add fallbacks
-def api_key_with_fallback(env_var)
-  ENV[env_var] || 'test-key'
-end
-```
-
-**Rationale**:
-- Explicit failures reveal misconfiguration immediately
-- VCR cassettes should work with real API calls, not fake keys
-- Production code should never have fallback keys
-- Clear error messages guide developers to proper setup
-
-## Recent Learnings and Best Practices
-
-### Strategy Configuration Architecture (July 2025)
-
-**Key Learning**: When designing user-facing APIs, prioritize simplicity over exposing internal complexity.
-
-**What We Learned**:
-- Exposing three internal strategy names (`openai_structured_output`, `anthropic_extraction`, `enhanced_prompting`) created confusion
-- Users didn't understand when to use which strategy or why three existed
-- String-based configuration was error-prone and not type-safe
-
-**Solution Implemented**:
-- Created `DSPy::Strategy` enum with two user-facing categories:
-  - `DSPy::Strategy::Strict` - Provider-optimized strategies (auto-selects best for current provider)
-  - `DSPy::Strategy::Compatible` - Enhanced prompting that works with any provider
-- Internal strategy selector maps user preferences to specific implementations
-- Automatic fallback from Strict to Compatible when provider features unavailable
-
-**Breaking Change Management**:
-- Used minor version bump (0.8.1 → 0.9.0) for breaking API changes
-- Provided clear migration instructions in changelog and release notes
-- Updated all documentation and tests to use new enum
-- Removed backward compatibility to enforce clean migration
-
-### Documentation Site Management
-
-**Blog Post Layout Issues**:
-- Articles in `_articles/` collection must use `layout: blog` not `layout: post`
-- Bridgetown collections have specific permalink patterns defined in `bridgetown.config.yml`
-- Layout mismatches cause content to render without proper styling/navigation
-
-**Version Synchronization**:
-- Always update `Gemfile.lock` when changing gem version in `lib/*/version.rb`
-- CI failures due to lockfile mismatches block deployments
-- Version references in blog posts and documentation must be updated consistently
-
-**Build Verification Process**:
-```bash
-# Always verify docs build before pushing changes
-cd docs
-BRIDGETOWN_ENV=production npm run build
-```
-
-### Type Safety with Sorbet Enums
-
-**Best Practices Discovered**:
-- Use enum values directly in case statements: `when DSPy::Strategy::Strict`
-- Remove `.serialize` and string handling when switching to pure enum approach
-- Update type signatures: `params(preference: DSPy::Strategy)` not `T.untyped`
-- Enum-based APIs prevent runtime errors and improve IDE support
-
-### Testing Strategy Enum Changes
-
-**Test Update Patterns**:
-- Replace string mocks: `DSPy::Strategy::Compatible` instead of `'enhanced_prompting'`
-- Test enum behavior with actual enum values, not serialized strings
-- Integration tests need enum updates in multiple spec files
-- VCR cassettes unaffected by enum changes (internal strategy names remain same)
-
-### Release Process Improvements
-
-**GitHub CLI Integration**:
-- Use `gh release create` with `--notes` flag for rich release descriptions
-- Include migration examples in release notes for breaking changes
-- Link to full changelog for comprehensive change tracking
-
-**Gem Publishing Coordination**:
-- Coordinate version updates across: `lib/*/version.rb`, `CHANGELOG.md`, documentation
-- Test locally before publishing: `bundle exec rspec` and build verification
-- Publish sequence: commit → push → GitHub release → gem push
-
-### OpenAI API Evolution Insights
-
-**Provider Bug Tracking**:
-- OpenAI fixed `additionalProperties` bug that was blocking nested arrays (issue #33)
-- API bugs can be temporary - re-record VCR cassettes periodically to verify fixes
-- Provider-specific optimization strategies require ongoing maintenance as APIs evolve
-
-**Strategy Selection Philosophy**:
-- Provider-optimized approaches (OpenAI structured outputs) are preferred when available
-- Enhanced prompting provides reliable fallback for any provider
-- User choice between "strict" and "compatible" more intuitive than technical strategy names
-
-### Multimodal Implementation Patterns (January 2025)
-
-**Key Learning**: When adding multimodal support, extend existing message infrastructure rather than creating parallel systems.
-
-**Implementation Approach**:
-- Extended `Message` content to accept `T.any(String, T::Array[T::Hash[Symbol, T.untyped]])`
-- Reused existing adapter `normalize_messages` with multimodal awareness
-- Added provider-specific format conversion methods (`to_openai_format`, `to_anthropic_format`)
-- Minimal disruption to existing text-only flows
-
-**Provider Differences**:
-- **OpenAI**: Supports direct URL references in `image_url` format
-- **Anthropic**: Requires base64-encoded images with `source` blocks
-- Model validation through whitelist approach vs. API feature detection
-
-**Testing Multimodal Features**:
-- Simple colored squares work better than complex images for integration tests
-- Minimal valid PNGs can be constructed programmatically for testing
-- VCR cassettes may fail with "unsupported image" if PNG construction is invalid
-- Skip integration tests when API keys unavailable rather than mocking
-
-**Design Decisions**:
-- No fallback strategies for non-vision models - explicit errors are clearer
-- `DSPy::Image` as simple data container, not active record pattern
-- Vision model detection via static lists vs. runtime API queries (faster, more reliable)
-
-### Module-Level LM Configuration (July 2025)
-
-**Key Learning**: Module-level LM configuration uses dry-configurable's `.configure` blocks, not constructor parameters.
-
-**Correct Pattern**:
-```ruby
-# ✅ CORRECT: Use configure block
-@module = DSPy::ChainOfThought.new(SignatureClass)
-@module.configure do |config|
-  config.lm = DSPy::LM.new('anthropic/claude-3-opus-20240229', api_key: ENV['ANTHROPIC_API_KEY'])
-end
-
-# ❌ WRONG: Constructor parameters
-@module = DSPy::ChainOfThought.new(
-  SignatureClass,
-  lm: DSPy::LM.new('anthropic/claude-3-opus-20240229')
-)
-```
-
-**Important Notes**:
-- All DSPy modules inherit from DSPy::Module which includes Dry::Configurable
-- The `setting :lm` is defined at the module level for per-instance configuration
-- Falls back to global `DSPy.config.lm` if not configured at instance level
-- This pattern allows runtime reconfiguration and better testing isolation
-
-### Union Types and Automatic Type Conversion (July 2025)
-
-**Feature Implemented**: DSPy::Prediction now automatically converts LLM JSON responses to proper Ruby types (#42).
-
-**Key Capabilities**:
-- **Automatic Hash-to-Struct conversion**: JSON hashes converted to T::Struct instances
-- **T::Enum conversion**: String values automatically converted to enum instances
-- **Discriminated unions**: Smart type selection based on discriminator fields
-- **Nested conversion**: Deep conversion of nested structs and arrays
-- **Graceful fallback**: Original hash preserved if conversion fails
-
-**Discriminated Union Pattern**:
-```ruby
-# ✅ CORRECT: Use T::Enum for discriminators
-class ActionType < T::Enum
-  enums do
-    SpawnTask = new('spawn_task')
-    CompleteTask = new('complete_task')
-  end
-end
-
-output do
-  const :action_type, ActionType  # Enum discriminator
-  const :details, T.any(SpawnTask, CompleteTask)  # Union type
-end
-
-# ❌ AVOID: String discriminators (less type-safe)
-output do
-  const :action_type, String
-  const :details, T.any(SpawnTask, CompleteTask)
-end
-```
-
-**User Feedback**: "shouldn't next_action be of the type CoordinationActions, like an enum?" - This led to implementing full T::Enum support for discriminators.
-
-### Architecture Decision Records (ADR) (July 2025)
-
-**New Practice**: Created `adr/` directory for documenting significant design decisions.
-
-**Purpose**:
-- Record why certain design patterns were chosen
-- Document trade-offs and alternatives considered
-- Provide context for future maintainers
-- Avoid repeating past discussions
-
-**Example**: DSPy::Prediction design decision to use if-else chain for simplicity over complex pattern matching.
-
-### Blog Post Writing Philosophy (July 2025)
-
-**Key Learning**: Focus on benefits and user value rather than generic titles.
-
-**Example**:
-- ❌ "The Secret to Cleaner AI Agent Workflows"
-- ✅ "Why Union Types Transform AI Agent Development"
-
-**Principles**:
-- Lead with the benefit to developers
-- Use concrete examples (coffee shop agent demo)
-- Show real code patterns users can adopt
-- Keep conversational tone without being grandiloquent
-
-### Token Usage Type Safety with T::Struct (July 2025)
-
-**Key Learning**: Converting API response data to T::Struct improves type safety and prevents VCR serialization issues.
-
-**Problem Solved**: 
-- VCR serializes response objects with string keys while live API calls had symbol keys
-- Token tracking events weren't being emitted during VCR playback (#48)
-- Hash-based usage data was error-prone and inconsistent
-
-**Solution Implemented**:
-```ruby
-# ✅ CORRECT: Type-safe usage structs
-class Usage < T::Struct
-  const :input_tokens, Integer
-  const :output_tokens, Integer
-  const :total_tokens, Integer
-end
-
-# Factory handles various formats
-usage = UsageFactory.create('openai', usage_data)
-```
-
-**Key Insights**:
-- Use UsageFactory to normalize various data formats (hash with string keys, symbol keys, API objects)
-- OpenAI returns nested objects that need `.to_h` conversion
-- T::Struct cannot be subclassed - use separate structs instead of inheritance
-- Factory pattern with T.untyped signature supports test doubles
-
-### Sorbet T::Struct Inheritance Limitations and Patterns (January 2025)
-
-**Key Learning**: T::Struct cannot inherit from another T::Struct - this is a deliberate Sorbet limitation for performance optimization.
-
-**The Problem**:
-```ruby
-# ❌ FORBIDDEN: T::Struct inheritance not allowed
-class Response < T::Struct
-  const :content, String
-  const :usage, Usage
-end
-
-class ReasoningResponse < Response  # This will fail!
-  const :reasoning_tokens, Integer
-end
-```
-
-**Why**: Sorbet needs to statically determine all properties of a T::Struct at compile time for performance. It cannot discover properties via inheritance.
-
-**Recommended Pattern - Union Types with Separate Structs**:
-```ruby
-# ✅ CORRECT: Separate structs with union type
-class Response < T::Struct
-  const :content, String
-  const :usage, Usage
-  const :metadata, ResponseMetadata
-end
-
-class ReasoningResponse < T::Struct
-  const :content, String  # Duplicate fields
-  const :usage, Usage
-  const :metadata, ResponseMetadata
-  const :reasoning_content, T.nilable(String)  # Additional fields
-  const :reasoning_tokens, Integer
-end
-
-# Type alias for cleaner signatures
-ResponseType = T.type_alias { T.any(Response, ReasoningResponse) }
-
-# Usage with type narrowing
-def process_response(response)
-  case response
-  when ReasoningResponse
-    # Can access reasoning_content and reasoning_tokens here
-    handle_reasoning(response.reasoning_content)
-  when Response
-    # Regular response handling
-    handle_regular(response)
-  else
-    T.absurd(response)  # Ensures all cases covered
-  end
-end
-```
-
-**Alternative Pattern - Composition (when avoiding duplication)**:
-```ruby
-# ✅ ALTERNATIVE: Composition pattern
-class ReasoningData < T::Struct
-  const :reasoning_content, T.nilable(String)
-  const :reasoning_tokens, Integer
-end
-
-class ReasoningResponse < T::Struct
-  const :base_response, Response
-  const :reasoning, ReasoningData
-  
-  # Delegate common methods if needed
-  extend T::Sig
-  sig { returns(String) }
-  def content
-    base_response.content
-  end
-end
-```
-
-**When to Use Each Pattern**:
-- **Separate Structs with Duplication**: Simpler, more explicit, better for small number of fields
-- **Composition**: When you have many fields to avoid duplication, but adds indirection
-
-**Type Narrowing Best Practices**:
-```ruby
-# Using case statements (preferred)
-case response
-when ReasoningResponse then process_reasoning(response)
-when Response then process_regular(response)
-else T.absurd(response)
-end
-
-# Using is_a? checks (when needed)
-if response.is_a?(ReasoningResponse)
-  # Sorbet understands type narrowing here
-  puts response.reasoning_tokens
-end
-```
-
-**Key Takeaways**:
-1. Never try to inherit T::Struct from another T::Struct
-2. Use union types (T.any) for polymorphic returns
-3. Type aliases make signatures cleaner
-4. Case statements provide excellent type narrowing
-5. Duplication is often better than complex workarounds
-6. This limitation exists for Sorbet's performance optimization
-
-### VCR Integration Best Practices (July 2025)
-
-**Key Learning**: Data structures used in VCR recordings need special handling for consistency.
-
-**Best Practices**:
-- Normalize all hash keys to symbols before creating response objects
-- Use typed structs instead of hashes for data that gets serialized
-- Write integration tests that verify features work with VCR playback
-- Re-record cassettes periodically to catch provider API changes
-
-### Version Management and CI (July 2025)
-
-**Key Learning**: Version bumps require Gemfile.lock updates to keep CI green.
-
-**Process**:
-1. Update version in `lib/dspy/version.rb`
-2. Run `bundle install` to update Gemfile.lock
-3. Commit both files together
-4. Push before creating GitHub release
-
-**CI Debugging**:
-- Check GitHub Actions logs for specific failure reasons
-- Gemfile.lock mismatches are common after version bumps
-- Use direct GitHub Actions URLs to investigate failures
-
-### Multimodal Support Implementation (August 2025)
-
-**Key Learning**: Successfully added multimodal (vision) support for both OpenAI and Anthropic providers (#62).
-
-**Architecture Design**:
-- Created `DSPy::Image` class as central abstraction for image inputs
-- Supports three formats: URL (OpenAI only), base64, and byte arrays
-- Provider-specific conversions handled transparently
-
-**Provider Differences**:
-```ruby
-# OpenAI supports direct URLs
-image = DSPy::Image.from_url("https://example.com/image.jpg")
-
-# Anthropic requires base64
-image = DSPy::Image.from_file("local_image.png")  # Auto-converts to base64
-```
-
-**Message Builder Pattern**:
-```ruby
-# Single image
-message = DSPy::LM::MessageBuilder.user_with_image("What's in this image?", image)
-
-# Multiple images
-message = DSPy::LM::MessageBuilder.user_with_images(
-  "Compare these images",
-  [image1, image2]
-)
-```
-
-**PNG Generation for Tests**:
-- Must use proper PNG structure with zlib compression
-- Raw binary data will be rejected by APIs
-- Created `TestImages` module for reliable test image generation
-
-**Error Handling Philosophy**:
-- Surface specific API errors to developers rather than swallowing them
-- Provide actionable error messages for common issues (unsupported format, size limits)
-- Better developer experience through clear failure reasons
-
-**VCR Cassette Management**:
-- Always re-record cassettes when API responses contain errors
-- Verify successful responses (200 OK) in all cassettes
-- Test with real images to ensure accurate VCR recordings
-
-**Provider Compatibility Validation**:
-- Added validation at adapter boundary to prevent silent failures
-- OpenAI supports: URLs, base64, raw data, detail parameter
-- Anthropic supports: base64, raw data only (no URLs or detail)
-- Fail-fast approach provides immediate, actionable error messages
-
-```ruby
-# Clear error messages guide users to correct usage
-"Anthropic doesn't support image URLs. Please provide base64 or raw data instead."
-"Anthropic doesn't support the 'detail' parameter. This feature is OpenAI-specific."
-```
-
-**Design Pattern Applied**:
-- Provider-agnostic core: DSPy::Image remains neutral
-- Validation at boundary: Adapters validate before formatting
-- Extensible registry: Easy to add new providers and capabilities
