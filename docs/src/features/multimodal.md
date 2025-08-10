@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: docs
 title: Multimodal Support
 nav_order: 7
 parent: Features
