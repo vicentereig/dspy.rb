@@ -617,69 +617,71 @@ end
 
 ## Toolsets
 
-### Creating Tools
+### Creating Tools with Sorbet Types
+
+Tools use Sorbet signatures to define typed interfaces:
 
 ```ruby
-class WeatherTool < DSPy::Tools::Base
-  name "get_weather"
-  description "Get current weather for a location"
-  
-  input do
-    property :location, String, required: true
-    property :units, String, enum: ["celsius", "fahrenheit"]
-  end
-  
-  def call(location:, units: "celsius")
-    # Implementation
-    "#{location}: 22°C, sunny"
+class CalculatorTool < DSPy::Tools::Base
+  tool_name 'calculator'
+  tool_description 'Performs basic arithmetic operations'
+
+  sig { params(operation: String, num1: Float, num2: Float).returns(T.any(Float, String)) }
+  def call(operation:, num1:, num2:)
+    case operation.downcase
+    when 'add'      then num1 + num2
+    when 'subtract' then num1 - num2
+    when 'multiply' then num1 * num2
+    when 'divide'
+      return "Error: Cannot divide by zero" if num2 == 0
+      num1 / num2
+    else
+      "Error: Unknown operation '#{operation}'. Use add, subtract, multiply, or divide"
+    end
   end
 end
 ```
 
 ### Creating Toolsets
 
+Toolsets group related tools together:
+
 ```ruby
 class WeatherToolset < DSPy::Tools::Toolset
-  tool :get_weather do
-    description "Get current weather"
-    
-    input do
-      property :location, String, required: true
-    end
-    
-    def call(location:)
-      "#{location}: 22°C"
-    end
+  toolset_name "weather"
+  
+  tool :get_current, tool_name: "weather_current", description: "Get current weather"
+  tool :get_forecast, description: "Get weather forecast"
+  
+  def get_current(location:)
+    # Actual implementation would call weather API
+    "#{location}: 22°C, sunny"
   end
   
-  tool :get_forecast do
-    description "Get weather forecast"
-    
-    input do
-      property :location, String, required: true
-      property :days, Integer, default: 7
-    end
-    
-    def call(location:, days: 7)
-      "#{days}-day forecast for #{location}"
-    end
+  def get_forecast(location:, days: 7)
+    "#{days}-day forecast for #{location}"
   end
 end
 
-# Use with agents
+# Convert to tool instances for agents
 tools = WeatherToolset.to_tools
 agent = DSPy::ReAct.new(WeatherSignature, tools: tools)
 ```
 
-### Built-in Tools
+### Built-in Toolsets
 
 ```ruby
-# Calculator
-calculator = DSPy::Tools::CalculatorTool.new
-
-# Memory toolset
+# Memory toolset with persistent storage
 memory_tools = DSPy::Tools::MemoryToolset.to_tools
-# Includes: store_memory, retrieve_memory, search_memories
+# Includes: memory_store, memory_retrieve, memory_search, 
+#          memory_list, memory_update, memory_delete, 
+#          memory_clear, memory_count, memory_get_metadata
+
+# Text processing toolset
+text_tools = DSPy::Tools::TextProcessingToolset.to_tools
+# Includes: summarize, extract_keywords, count_tokens,
+#          translate, format_markdown, extract_entities,
+#          sentiment_analysis, clean_text, compare_texts
 ```
 
 ## Optimization

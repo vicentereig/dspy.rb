@@ -57,7 +57,25 @@ Build complex workflows from simple building blocks:
 - **ReAct** - Tool-using agents
 - **CodeAct** - Dynamic code generation agents
 
-### 3. Optimization
+### 3. Tools
+Create typed tools for agents using Sorbet signatures:
+
+```ruby
+class CalculatorTool < DSPy::Tools::Base
+  tool_name 'calculator'
+  tool_description 'Performs arithmetic'
+  
+  sig { params(operation: String, num1: Float, num2: Float).returns(Float) }
+  def call(operation:, num1:, num2:)
+    case operation
+    when 'add' then num1 + num2
+    when 'multiply' then num1 * num2
+    end
+  end
+end
+```
+
+### 4. Optimization
 Improve accuracy with real data:
 
 - **SimpleOptimizer** - Basic prompt tuning
