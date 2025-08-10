@@ -223,13 +223,13 @@ class ResearchAssistant < DSPy::Module
   def initialize
     super
     
-    # Create individual tools
-    calculator = DSPy::Tools::CalculatorTool.new
-    
-    # Or use a toolset (multiple tools from one class)
+    # Use a toolset (multiple tools from one class)
     memory_tools = DSPy::Tools::MemoryToolset.to_tools
     
-    @tools = [calculator, *memory_tools]
+    # You can also create custom tools with Sorbet signatures
+    # See the ReAct Agent Tutorial for custom tool examples
+    
+    @tools = memory_tools
     
     @predictor = DSPy::ReAct.new(ResearchSignature, tools: @tools)
   end
