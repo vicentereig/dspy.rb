@@ -45,14 +45,11 @@ This document captures accumulated knowledge and patterns discovered during DSPy
 # ✅ CORRECT: Use configure block
 @module = DSPy::ChainOfThought.new(SignatureClass)
 @module.configure do |config|
-  config.lm = DSPy::LM.new('anthropic/claude-3-opus-20240229', api_key: ENV['ANTHROPIC_API_KEY'])
+  config.lm = DSPy::LM.new('openai/gpt-4')
 end
 
 # ❌ WRONG: Constructor parameters
-@module = DSPy::ChainOfThought.new(
-  SignatureClass,
-  lm: DSPy::LM.new('anthropic/claude-3-opus-20240229')
-)
+@module = DSPy::ChainOfThought.new(SignatureClass, lm: lm)
 ```
 
 **Important Notes**:
@@ -185,83 +182,38 @@ usage = UsageFactory.create('openai', usage_data)
 - T::Struct cannot be subclassed - use separate structs instead of inheritance
 - Factory pattern with T.untyped signature supports test doubles
 
-### Sorbet T::Struct Inheritance Limitations and Patterns (January 2025)
+### Sorbet T::Struct Inheritance Limitations (January 2025)
 
-**Key Learning**: T::Struct cannot inherit from another T::Struct - this is a deliberate Sorbet limitation for performance optimization.
+**Key Learning**: T::Struct cannot inherit from another T::Struct - Sorbet limitation for performance.
 
-**The Problem**:
+**The Problem**: Inheritance between T::Structs is forbidden.
+
+**Solution**: Use separate structs with union types:
 ```ruby
-# ❌ FORBIDDEN: T::Struct inheritance not allowed
+# Separate structs
 class Response < T::Struct
   const :content, String
   const :usage, Usage
-end
-
-class ReasoningResponse < Response  # This will fail!
-  const :reasoning_tokens, Integer
-end
-```
-
-**Why**: Sorbet needs to statically determine all properties of a T::Struct at compile time for performance. It cannot discover properties via inheritance.
-
-**Recommended Pattern - Union Types with Separate Structs**:
-```ruby
-# ✅ CORRECT: Separate structs with union type
-class Response < T::Struct
-  const :content, String
-  const :usage, Usage
-  const :metadata, ResponseMetadata
 end
 
 class ReasoningResponse < T::Struct
-  const :content, String  # Duplicate fields
+  const :content, String  # Duplicate fields when needed
   const :usage, Usage
-  const :metadata, ResponseMetadata
-  const :reasoning_content, T.nilable(String)  # Additional fields
-  const :reasoning_tokens, Integer
+  const :reasoning_tokens, Integer  # Additional fields
 end
 
-# Type alias for cleaner signatures
+# Type alias for polymorphism
 ResponseType = T.type_alias { T.any(Response, ReasoningResponse) }
 
-# Usage with type narrowing
-def process_response(response)
-  case response
-  when ReasoningResponse
-    # Can access reasoning_content and reasoning_tokens here
-    handle_reasoning(response.reasoning_content)
-  when Response
-    # Regular response handling
-    handle_regular(response)
-  else
-    T.absurd(response)  # Ensures all cases covered
-  end
-end
-```
-
-**Type Narrowing Best Practices**:
-```ruby
-# Using case statements (preferred)
+# Type narrowing with case
 case response
-when ReasoningResponse then process_reasoning(response)
-when Response then process_regular(response)
+when ReasoningResponse then handle_reasoning(response)
+when Response then handle_regular(response)
 else T.absurd(response)
 end
-
-# Using is_a? checks (when needed)
-if response.is_a?(ReasoningResponse)
-  # Sorbet understands type narrowing here
-  puts response.reasoning_tokens
-end
 ```
 
-**Key Takeaways**:
-1. Never try to inherit T::Struct from another T::Struct
-2. Use union types (T.any) for polymorphic returns
-3. Type aliases make signatures cleaner
-4. Case statements provide excellent type narrowing
-5. Duplication is often better than complex workarounds
-6. This limitation exists for Sorbet's performance optimization
+**Key Takeaways**: Use union types for polymorphism, duplication is OK, case statements for type narrowing.
 
 ### Type Safety with Sorbet Enums
 
@@ -275,91 +227,36 @@ end
 
 ## Provider Integration
 
-### Multimodal Implementation Patterns (January 2025)
+### Multimodal Implementation (January 2025)
 
-**Key Learning**: When adding multimodal support, extend existing message infrastructure rather than creating parallel systems.
+**Key Learning**: Extend existing message infrastructure rather than creating parallel systems.
 
-**Implementation Approach**:
-- Extended `Message` content to accept `T.any(String, T::Array[T::Hash[Symbol, T.untyped]])`
-- Reused existing adapter `normalize_messages` with multimodal awareness
-- Added provider-specific format conversion methods (`to_openai_format`, `to_anthropic_format`)
-- Minimal disruption to existing text-only flows
-
-**Provider Differences**:
-- **OpenAI**: Supports direct URL references in `image_url` format
-- **Anthropic**: Requires base64-encoded images with `source` blocks
-- Model validation through whitelist approach vs. API feature detection
-
-**Message Builder Pattern**:
-```ruby
-# Single image
-message = DSPy::LM::MessageBuilder.user_with_image("What's in this image?", image)
-
-# Multiple images
-message = DSPy::LM::MessageBuilder.user_with_images(
-  "Compare these images",
-  [image1, image2]
-)
-```
-
-**Testing Multimodal Features**:
-- Simple colored squares work better than complex images for integration tests
-- Minimal valid PNGs can be constructed programmatically for testing
-- VCR cassettes may fail with "unsupported image" if PNG construction is invalid
-- Skip integration tests when API keys unavailable rather than mocking
-
-**Design Decisions**:
-- No fallback strategies for non-vision models - explicit errors are clearer
-- `DSPy::Image` as simple data container, not active record pattern
-- Vision model detection via static lists vs. runtime API queries (faster, more reliable)
-
-### Multimodal Support Implementation (August 2025)
-
-**Architecture Design**:
-- Created `DSPy::Image` class as central abstraction for image inputs
-- Supports three formats: URL (OpenAI only), base64, and byte arrays
+**Implementation**:
+- Extended `Message` content to accept multimodal arrays
+- Created `DSPy::Image` class as central abstraction
 - Provider-specific conversions handled transparently
 
 **Provider Differences**:
-```ruby
-# OpenAI supports direct URLs
-image = DSPy::Image.from_url("https://example.com/image.jpg")
+- **OpenAI**: Supports direct URLs, base64, raw data, detail parameter
+- **Anthropic**: Base64/raw data only (no URLs or detail parameter)
 
-# Anthropic requires base64
-image = DSPy::Image.from_file("local_image.png")  # Auto-converts to base64
+**Message Builder Pattern**:
+```ruby
+# Simple API for single or multiple images
+message = DSPy::LM::MessageBuilder.user_with_image("What's this?", image)
+message = DSPy::LM::MessageBuilder.user_with_images("Compare", [img1, img2])
 ```
 
-**PNG Generation for Tests**:
-- Must use proper PNG structure with zlib compression
-- Raw binary data will be rejected by APIs
-- Created `TestImages` module for reliable test image generation
+**Design Principles**:
+- Provider-agnostic core with validation at adapter boundary
+- Explicit errors over silent fallbacks
+- Static model lists over runtime API detection
 
-**Error Handling Philosophy**:
-- Surface specific API errors to developers rather than swallowing them
-- Provide actionable error messages for common issues (unsupported format, size limits)
-- Better developer experience through clear failure reasons
-
-**Provider Compatibility Validation**:
-- Added validation at adapter boundary to prevent silent failures
-- OpenAI supports: URLs, base64, raw data, detail parameter
-- Anthropic supports: base64, raw data only (no URLs or detail)
-- Fail-fast approach provides immediate, actionable error messages
-
-```ruby
-# Clear error messages guide users to correct usage
-"Anthropic doesn't support image URLs. Please provide base64 or raw data instead."
-"Anthropic doesn't support the 'detail' parameter. This feature is OpenAI-specific."
-```
-
-**Design Pattern Applied**:
-- Provider-agnostic core: DSPy::Image remains neutral
-- Validation at boundary: Adapters validate before formatting
-- Extensible registry: Easy to add new providers and capabilities
 
 ### OpenAI API Evolution Insights
 
 **Provider Bug Tracking**:
-- OpenAI fixed `additionalProperties` bug that was blocking nested arrays (issue #33)
+- OpenAI fixed `additionalProperties` bug that was blocking nested arrays
 - API bugs can be temporary - re-record VCR cassettes periodically to verify fixes
 - Provider-specific optimization strategies require ongoing maintenance as APIs evolve
 
@@ -452,6 +349,4 @@ BRIDGETOWN_ENV=production npm run build
 
 ## User Feedback Insights
 
-**Union Types Request**: "shouldn't next_action be of the type CoordinationActions, like an enum?" - This led to implementing full T::Enum support for discriminators.
-
-This feedback drove the implementation of automatic type conversion for union types and T::Enum support in DSPy::Prediction.
+**Union Types Request**: Led to implementing full T::Enum support for discriminators and automatic type conversion in DSPy::Prediction.
