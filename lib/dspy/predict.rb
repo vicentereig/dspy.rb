@@ -5,20 +5,40 @@ require_relative 'module'
 require_relative 'prompt'
 require_relative 'mixins/struct_builder'
 require_relative 'mixins/type_coercion'
+require_relative 'error_formatter'
 
 module DSPy
   # Exception raised when prediction fails validation
   class PredictionInvalidError < StandardError
     extend T::Sig
 
-    sig { params(errors: T::Hash[T.untyped, T.untyped]).void }
-    def initialize(errors)
+    sig { params(errors: T::Hash[T.untyped, T.untyped], context: T.nilable(String)).void }
+    def initialize(errors, context: nil)
       @errors = errors
-      super("Prediction validation failed: #{errors}")
+      @context = context
+      
+      # Format the error message using ErrorFormatter for better readability
+      formatted_message = if errors.key?(:output) && errors[:output].is_a?(String)
+        # This is likely a type validation error from Sorbet
+        formatted = DSPy::ErrorFormatter.format_error(errors[:output], context)
+        "Prediction validation failed:\n\n#{formatted}"
+      elsif errors.key?(:input) && errors[:input].is_a?(String)
+        # This is an input validation error
+        formatted = DSPy::ErrorFormatter.format_error(errors[:input], context)
+        "Input validation failed:\n\n#{formatted}"
+      else
+        # Fallback to original format for any other error structure
+        "Prediction validation failed: #{errors}"
+      end
+      
+      super(formatted_message)
     end
 
     sig { returns(T::Hash[T.untyped, T.untyped]) }
     attr_reader :errors
+
+    sig { returns(T.nilable(String)) }
+    attr_reader :context
   end
 
   class Predict < DSPy::Module
