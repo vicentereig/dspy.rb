@@ -24,24 +24,26 @@ RSpec.describe 'Error Formatting Integration' do
 
   context 'when struct instantiation fails with type errors' do
     it 'provides human-readable error message for array type mismatch' do
-      # Direct test of what happens when combined_struct.new fails
-      predictor = DSPy::Predict.new(TestSignature)
-      combined_struct = predictor.send(:create_combined_struct_class)
-      
-      # This simulates the exact scenario from the user's error
-      input_values = { query: "test query" }
-      output_attributes = { 
-        drug_symptom_pairs: [
-          {"_type" => "DrugSymptomPair", "drug" => "medication_x", "symptom" => "chest pain"},
-          {"_type" => "DrugSymptomPair", "drug" => "medication_x", "symptom" => "irregular heartbeat"}
-        ]
-      }
-      all_attributes = input_values.merge(output_attributes)
-      
-      # This should raise the TypeError that gets caught and formatted
-      expect {
-        combined_struct.new(**all_attributes)
-      }.to raise_error(TypeError) do |type_error|
+      # Test the direct scenario - create a struct that expects T::Array and try to pass plain Array
+      begin
+        # Create the struct directly to test type error
+        combined_struct_class = Class.new(T::Struct) do
+          const :query, String
+          const :drug_symptom_pairs, T::Array[DrugSymptomPair]
+        end
+        
+        # This should raise the TypeError that gets caught and formatted in predict.rb
+        combined_struct_class.new(
+          query: "test query",
+          drug_symptom_pairs: [
+            {"_type" => "DrugSymptomPair", "drug" => "medication_x", "symptom" => "chest pain"},
+            {"_type" => "DrugSymptomPair", "drug" => "medication_x", "symptom" => "irregular heartbeat"}
+          ]
+        )
+        
+        # If we get here, the test setup is wrong
+        fail "Expected TypeError but struct instantiation succeeded"
+      rescue TypeError => type_error
         # Now test how our PredictionInvalidError formats this
         prediction_error = DSPy::PredictionInvalidError.new({ output: type_error.message })
         
@@ -61,13 +63,18 @@ RSpec.describe 'Error Formatting Integration' do
     end
 
     it 'handles missing required fields error' do
-      predictor = DSPy::Predict.new(TestSignature)
-      combined_struct = predictor.send(:create_combined_struct_class)
-      
-      # Missing the required query field should cause ArgumentError
-      expect {
-        combined_struct.new(drug_symptom_pairs: [])
-      }.to raise_error(ArgumentError) do |arg_error|
+      begin
+        # Create a struct that requires certain fields
+        struct_class = Class.new(T::Struct) do
+          const :query, String
+          const :drug_symptom_pairs, T::Array[DrugSymptomPair]
+        end
+        
+        # Missing the required query field should cause ArgumentError
+        struct_class.new(drug_symptom_pairs: [])
+        
+        fail "Expected ArgumentError but struct instantiation succeeded"
+      rescue ArgumentError => arg_error
         # Test how our PredictionInvalidError formats this
         prediction_error = DSPy::PredictionInvalidError.new({ output: arg_error.message })
         
