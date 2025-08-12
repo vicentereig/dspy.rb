@@ -22,7 +22,7 @@ RSpec.describe 'DSPy::LM span tracking' do
           output_tokens: 20,
           total_tokens: 30
         ),
-        model: 'gpt-4-0613'
+        metadata: double('metadata', model: 'gpt-4-0613')
       )
     end
 
@@ -96,7 +96,7 @@ RSpec.describe 'DSPy::LM span tracking' do
         double('response',
           content: 'Test response',
           usage: nil,
-          model: nil
+          metadata: double('metadata', model: nil)
         )
       end
 

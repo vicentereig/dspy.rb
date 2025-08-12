@@ -123,7 +123,7 @@ module DSPy
         # Extract common fields
         common_fields = {
           provider: provider,
-          model: metadata[:model] || 'unknown',
+          model: metadata[:model],
           response_id: metadata[:response_id] || metadata[:id],
           created: metadata[:created],
           structured_output: metadata[:structured_output]
@@ -151,7 +151,7 @@ module DSPy
         # Fallback to basic metadata
         ResponseMetadata.new(
           provider: provider,
-          model: metadata[:model] || 'unknown'
+          model: metadata[:model]
         )
       end
     end

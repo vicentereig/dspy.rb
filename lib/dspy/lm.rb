@@ -232,10 +232,10 @@ module DSPy
           usage = result.usage
           DSPy.log('span.attributes',
             span_id: DSPy::Context.current[:span_stack].last,
-            'gen_ai.response.model' => result.respond_to?(:model) ? result.model : nil,
-            'gen_ai.usage.prompt_tokens' => usage.respond_to?(:input_tokens) ? usage.input_tokens : nil,
-            'gen_ai.usage.completion_tokens' => usage.respond_to?(:output_tokens) ? usage.output_tokens : nil,
-            'gen_ai.usage.total_tokens' => usage.respond_to?(:total_tokens) ? usage.total_tokens : nil
+            'gen_ai.response.model' => result.metadata.model,
+            'gen_ai.usage.prompt_tokens' => usage.input_tokens,
+            'gen_ai.usage.completion_tokens' => usage.output_tokens,
+            'gen_ai.usage.total_tokens' => usage.total_tokens
           )
         end
         

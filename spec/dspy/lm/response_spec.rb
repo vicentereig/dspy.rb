@@ -285,22 +285,19 @@ RSpec.describe DSPy::LM::ResponseMetadataFactory do
     end
     
     context 'with missing model' do
-      it 'uses unknown as default' do
-        metadata = described_class.create('openai', {})
-        
-        expect(metadata.model).to eq('unknown')
+      it 'raises an error' do
+        expect {
+          described_class.create('openai', {})
+        }.to raise_error(TypeError, /Can't set .* to nil/)
       end
     end
     
     context 'with error during creation' do
-      it 'returns fallback metadata and logs error' do
-        # This test is no longer relevant since we handle nil metadata gracefully
-        # Test that nil metadata creates a valid metadata object
-        metadata = described_class.create('openai', nil)
-        
-        expect(metadata).to be_a(DSPy::LM::OpenAIResponseMetadata)
-        expect(metadata.provider).to eq('openai')
-        expect(metadata.model).to eq('unknown')
+      it 'raises an error when model is missing' do
+        # Test that nil metadata raises an error due to missing model
+        expect {
+          described_class.create('openai', nil)
+        }.to raise_error(TypeError, /Can't set .* to nil/)
       end
     end
   end
