@@ -85,7 +85,10 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
           output_tokens: 30,
           total_tokens: 50
         ),
-          metadata: { provider: 'test', model: 'test-model' }
+          metadata: DSPy::LM::ResponseMetadata.new(
+            provider: 'test',
+            model: 'test-model'
+          )
         )
       end
     end
@@ -99,7 +102,10 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
           output_tokens: 30,
           total_tokens: 50
         ),
-        metadata: { provider: 'openai', model: 'gpt-4' }
+        metadata: DSPy::LM::OpenAIResponseMetadata.new(
+          provider: 'openai',
+          model: 'gpt-4'
+        )
       )
     end
 

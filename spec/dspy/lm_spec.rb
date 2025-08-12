@@ -47,7 +47,10 @@ RSpec.describe DSPy::LM do
         @chat_response || DSPy::LM::Response.new(
           content: '{"answer": "test response"}',
           usage: { 'total_tokens' => 50 },
-          metadata: { provider: 'test', model: 'test-model' }
+          metadata: DSPy::LM::ResponseMetadata.new(
+            provider: 'test',
+            model: 'test-model'
+          )
         )
       end
     end
@@ -61,7 +64,10 @@ RSpec.describe DSPy::LM do
           output_tokens: 30,
           total_tokens: 50
         ),
-        metadata: { provider: 'openai', model: 'gpt-4' }
+        metadata: DSPy::LM::OpenAIResponseMetadata.new(
+          provider: 'openai',
+          model: 'gpt-4'
+        )
       )
     end
     let(:signature_class) { TestSignature }
@@ -138,7 +144,10 @@ RSpec.describe DSPy::LM do
           output_tokens: 20,
           total_tokens: 30
         ),
-        metadata: { provider: 'openai', model: 'gpt-4' }
+        metadata: DSPy::LM::OpenAIResponseMetadata.new(
+          provider: 'openai',
+          model: 'gpt-4'
+        )
       )
     end
     let(:lm) { described_class.new('openai/gpt-4', api_key: 'test-key') }
