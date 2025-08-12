@@ -731,17 +731,122 @@ optimized = optimizer.compile(
 
 ### Evaluation Framework
 
-```ruby
-evaluator = DSPy::Evaluation.new
+DSPy.rb provides a comprehensive evaluation system for testing and measuring LLM application performance.
 
-metrics = evaluator.evaluate(
-  module_instance: classifier,
-  test_examples: test_data,
-  metrics: [:accuracy, :f1_score]
+#### Basic Evaluation
+
+```ruby
+# Create evaluator with a predictor and metric
+predictor = DSPy::Predict.new(YourSignature)
+metric = DSPy::Metrics.exact_match(field: :answer)
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+
+# Evaluate against test examples
+result = evaluator.evaluate(test_examples, display_progress: true)
+
+puts "Score: #{result.score}"
+puts "Passed: #{result.passed_examples}/#{result.total_examples}"
+```
+
+#### Built-in Metrics
+
+```ruby
+# Exact match comparison
+exact_metric = DSPy::Metrics.exact_match(field: :answer, case_sensitive: false)
+
+# Contains/substring matching
+contains_metric = DSPy::Metrics.contains(field: :answer)
+
+# Numeric difference with tolerance
+numeric_metric = DSPy::Metrics.numeric_difference(field: :score, tolerance: 0.1)
+
+# Composite AND (all must pass)
+composite_metric = DSPy::Metrics.composite_and(exact_metric, contains_metric)
+```
+
+#### Custom Metrics
+
+```ruby
+# Custom metric as proc
+custom_metric = ->(example, prediction) do
+  return false unless prediction && prediction.respond_to?(:answer)
+  prediction.answer.downcase.strip == example.expected_answer.downcase.strip
+end
+
+# Multi-factor custom metric
+quality_metric = ->(example, prediction) do
+  return 0.0 unless prediction
+  
+  score = 0.0
+  score += 0.5 if prediction.answer == example.expected_answer  # Accuracy
+  score += 0.3 if prediction.explanation&.length&.> 50          # Completeness
+  score += 0.2 if prediction.confidence&.> 0.8                  # Confidence
+  
+  score
+end
+
+evaluator = DSPy::Evaluate.new(predictor, metric: quality_metric)
+```
+
+#### Single Example Evaluation
+
+```ruby
+example = { input: { question: "What is 2+2?" }, expected: { answer: "4" } }
+result = evaluator.call(example)
+
+puts result.passed      # => true/false
+puts result.metrics     # => Hash with metric details
+puts result.prediction  # => Actual prediction object
+```
+
+#### Batch Evaluation Results
+
+```ruby
+batch_result = evaluator.evaluate(test_examples)
+
+# Overall metrics
+puts batch_result.score              # 0.0 to 1.0
+puts batch_result.total_examples     # Total count
+puts batch_result.passed_examples    # Passed count
+puts batch_result.pass_rate         # Passed/Total ratio
+
+# Individual results
+batch_result.results.each do |individual_result|
+  puts "Example passed: #{individual_result.passed}"
+  puts "Error: #{individual_result.metrics[:error]}" if individual_result.metrics[:error]
+end
+```
+
+#### Error Handling
+
+```ruby
+# Configure error handling
+evaluator = DSPy::Evaluate.new(
+  predictor,
+  metric: metric,
+  max_errors: 3,              # Stop after 3 errors
+  provide_traceback: true     # Include stack traces
 )
 
-puts "Accuracy: #{metrics[:accuracy]}"
-puts "F1 Score: #{metrics[:f1_score]}"
+# Errors are captured in results
+result = evaluator.evaluate(test_examples)
+error_count = result.results.count { |r| r.metrics[:error] }
+puts "#{error_count} examples failed with errors"
+```
+
+#### Integration with Optimization
+
+```ruby
+# Use evaluation in optimization loops
+optimizer = DSPy::MIPROv2.new(signature: YourSignature)
+
+result = optimizer.optimize(examples: train_examples) do |candidate_predictor, val_examples|
+  evaluator = DSPy::Evaluate.new(candidate_predictor, metric: custom_metric)
+  evaluation_result = evaluator.evaluate(val_examples, display_progress: false)
+  evaluation_result.score  # Return score for optimization
+end
+
+puts "Best optimized score: #{result.best_score_value}"
 ```
 
 ## Production Features

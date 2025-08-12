@@ -116,6 +116,31 @@ puts result.sentiment  # => "positive"
 puts result.score      # => 0.92
 ```
 
+## Evaluation & Metrics
+
+Test and measure your LLM applications:
+
+```ruby
+# Basic evaluation
+metric = DSPy::Metrics.exact_match(field: :answer)
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+
+test_examples = [
+  { input: { question: "What is 2+2?" }, expected: { answer: "4" } },
+  { input: { question: "What is 3+3?" }, expected: { answer: "6" } }
+]
+
+result = evaluator.evaluate(test_examples)
+puts "Accuracy: #{result.score}"  # => 0.95
+
+# Custom metrics
+custom_metric = ->(example, prediction) do
+  prediction.answer.downcase == example.expected_answer.downcase
+end
+
+# Built-in metrics: exact_match, contains, numeric_difference, composite_and
+```
+
 ## Main Features
 
 ### Type Safety
