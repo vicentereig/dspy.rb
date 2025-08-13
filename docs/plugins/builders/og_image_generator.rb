@@ -24,15 +24,94 @@ class Builders::OgImageGenerator < SiteBuilder
           # Get articles collection
           articles = site.collections.articles&.resources || []
           
-          if articles.any?
-            Bridgetown.logger.info "OG Images:", "Generating images for #{articles.length} articles"
+          # Get documentation pages - check both regular pages and any docs collection
+          docs_pages = []
+          
+          
+          # Try to get from docs collection first
+          if site.collections.docs&.resources
+            docs_pages = site.collections.docs.resources
+          end
+          
+          # Check pages collection specifically 
+          if site.collections.pages&.resources
+            pages_resources = site.collections.pages.resources
+            page_docs_from_collection = pages_resources.select { |page| 
+              path = if page.respond_to?(:relative_path)
+                       page.relative_path.to_s
+                     elsif page.respond_to?(:path)
+                       page.path.to_s
+                     else
+                       ''
+                     end
+              is_doc_page = path.end_with?('.md') && 
+                           !path.start_with?('_articles/') &&
+                           !path.start_with?('blog/') &&
+                           path != 'index.md' &&
+                           (path.start_with?('advanced/') || path.start_with?('core-concepts/') || 
+                            path.start_with?('getting-started/') || path.start_with?('optimization/') || 
+                            path.start_with?('production/'))
+              is_doc_page
+            }
+            docs_pages += page_docs_from_collection
+          end
+          
+          # Check pages collection for documentation pages
+          if site.respond_to?(:pages) && site.pages
+            page_docs = site.pages.select { |page| 
+              path = if page.respond_to?(:relative_path)
+                       page.relative_path.to_s
+                     elsif page.respond_to?(:path)
+                       page.path.to_s
+                     else
+                       ''
+                     end
+              is_doc_page = path.end_with?('.md') && 
+                           !path.start_with?('_articles/') &&
+                           !path.start_with?('blog/') &&
+                           path != 'index.md' &&
+                           (path.start_with?('advanced/') || path.start_with?('core-concepts/') || 
+                            path.start_with?('getting-started/') || path.start_with?('optimization/') || 
+                            path.start_with?('production/'))
+              is_doc_page
+            }
+            docs_pages += page_docs
+          end
+          
+          # Also check for generated_pages (regular markdown pages)
+          if site.respond_to?(:generated_pages)
+            generated_docs = site.generated_pages.select { |page| 
+              path = if page.respond_to?(:relative_path)
+                       page.relative_path.to_s
+                     elsif page.respond_to?(:path)
+                       page.path.to_s
+                     else
+                       ''
+                     end
+              is_doc_page = path.end_with?('.md') && 
+                           !path.start_with?('_articles/') &&
+                           !path.start_with?('blog/') &&
+                           path != 'index.md' &&
+                           (path.start_with?('advanced/') || path.start_with?('core-concepts/') || 
+                            path.start_with?('getting-started/') || path.start_with?('optimization/') || 
+                            path.start_with?('production/'))
+              is_doc_page
+            }
+            docs_pages += generated_docs
+          end
+          
+          total_pages = articles.length + docs_pages.length
+          
+          if total_pages > 0
+            Bridgetown.logger.info "OG Images:", "Generating images for #{articles.length} articles and #{docs_pages.length} documentation pages"
             
             # Generate images using Playwright
-            generate_all_images(articles, og_output_dir)
+            generate_all_images(articles, og_output_dir, 'article')
+            generate_all_images(docs_pages, og_output_dir, 'docs')
             
             Bridgetown.logger.info "OG Images:", "Generation complete!"
           else
-            Bridgetown.logger.warn "OG Images:", "No articles found to generate images for"
+            Bridgetown.logger.warn "OG Images:", "No articles or documentation pages found to generate images for"
           end
         rescue => e
           Bridgetown.logger.error "OG Images:", "Error during generation: #{e.message}"
@@ -43,7 +122,7 @@ class Builders::OgImageGenerator < SiteBuilder
 
     private
 
-    def generate_all_images(articles, output_dir)
+    def generate_all_images(pages, output_dir, page_type = 'article')
       Playwright.create(playwright_cli_executable_path: './node_modules/.bin/playwright') do |playwright|
         chromium = playwright.chromium
         browser = chromium.launch(headless: true, timeout: 30000)
@@ -53,8 +132,8 @@ class Builders::OgImageGenerator < SiteBuilder
           page = browser.new_page
           page.set_viewport_size(width: 1200, height: 630)
           
-          articles.each do |article|
-            generate_single_image(page, article, output_dir)
+          pages.each do |page_resource|
+            generate_single_image(page, page_resource, output_dir, page_type)
           end
         ensure
           browser.close
@@ -65,19 +144,49 @@ class Builders::OgImageGenerator < SiteBuilder
       Bridgetown.logger.error "OG Images:", "Make sure Playwright is installed: npx playwright install chromium"
     end
 
-    def generate_single_image(page, article, output_dir)
-      # Generate a unique filename based on the article slug
-      slug = article.data.slug || article.basename_without_ext
+    def generate_single_image(page, page_resource, output_dir, page_type = 'article')
+      # Generate a unique filename based on the page slug or path
+      if page_type == 'article'
+        slug = page_resource.data.slug || page_resource.basename_without_ext
+      else
+        # For documentation pages, use the path structure
+        page_path = if page_resource.respond_to?(:relative_path)
+                      page_resource.relative_path.to_s
+                    elsif page_resource.respond_to?(:path)
+                      page_resource.path.to_s
+                    else
+                      ''
+                    end
+        slug = page_path.gsub('src/', '').gsub('.md', '').gsub('/', '-')
+      end
+      
       output_path = File.join(output_dir, "#{slug}.png")
       
-      # Skip if image already exists and is newer than the article
-      if File.exist?(output_path) && File.mtime(output_path) > article.mtime
-        Bridgetown.logger.info "OG Images:", "Skipping #{slug} (already exists)"
-        return
+      # Skip if image already exists and is newer than the page
+      begin
+        source_path = if page_resource.respond_to?(:relative_path)
+                        page_resource.relative_path.to_s
+                      elsif page_resource.respond_to?(:path)
+                        page_resource.path.to_s
+                      else
+                        ''
+                      end
+        page_mtime = if page_resource.respond_to?(:date) && page_resource.date
+                      page_resource.date
+                     else
+                       File.mtime(File.join(page_resource.site.source, source_path))
+                     end
+        
+        if File.exist?(output_path) && File.mtime(output_path) > page_mtime
+          Bridgetown.logger.info "OG Images:", "Skipping #{slug} (already exists)"
+          return
+        end
+      rescue => e
+        # If we can't get mtime, just regenerate the image
       end
       
       # Generate HTML content for the OG image
-      html_content = generate_og_html(article)
+      html_content = generate_og_html(page_resource, page_type)
       
       # Load the HTML content
       page.set_content(html_content, timeout: 30000)
@@ -90,17 +199,28 @@ class Builders::OgImageGenerator < SiteBuilder
       
       Bridgetown.logger.info "OG Images:", "Generated image for #{slug}"
     rescue => e
-      Bridgetown.logger.error "OG Images:", "Error generating image for #{article.data.title}: #{e.message}"
+      title = page_type == 'article' ? page_resource.data.title : page_resource.data['title'] || slug
+      Bridgetown.logger.error "OG Images:", "Error generating image for #{title}: #{e.message}"
     end
 
-    def generate_og_html(article)
-      # Extract data from the article
-      title = article.data.title || "Untitled"
-      description = article.data.description || ""
-      author = article.data.author || "Vicente Reig"
-      date = article.data.date ? format_date(article.data.date) : ""
-      category = article.data.category || "Article"
-      reading_time = article.data.reading_time || calculate_reading_time(article)
+    def generate_og_html(page_resource, page_type = 'article')
+      # Extract data based on page type
+      if page_type == 'article'
+        title = page_resource.data.title || "Untitled"
+        description = page_resource.data.description || ""
+        author = page_resource.data.author || "Vicente Reig"
+        date = page_resource.data.date ? format_date(page_resource.data.date) : ""
+        category = page_resource.data.category || "Article"
+        reading_time = page_resource.data.reading_time || calculate_reading_time(page_resource)
+      else
+        # For documentation pages
+        title = page_resource.data['title'] || "Documentation"
+        description = page_resource.data['description'] || ""
+        author = "" # No author for docs
+        date = "" # No date for docs
+        category = determine_docs_category(page_resource)
+        reading_time = ""
+      end
       
       # Escape HTML entities
       title = CGI.escapeHTML(title)
@@ -268,12 +388,25 @@ class Builders::OgImageGenerator < SiteBuilder
               color: #dc2626;
               box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
             }
+            
+            /* Documentation-specific styles */
+            .docs-layout .header {
+              #{page_type == 'docs' ? 'justify-content: flex-start;' : ''}
+            }
+            
+            .docs-layout .content {
+              #{page_type == 'docs' ? 'margin-top: 20px;' : ''}
+            }
+            
+            .docs-layout .footer {
+              #{page_type == 'docs' ? 'justify-content: flex-end;' : ''}
+            }
           </style>
         </head>
         <body>
           <div class="decorative-bg"></div>
           <div class="decorative-circles"></div>
-          <div class="container">
+          <div class="container #{page_type == 'docs' ? 'docs-layout' : ''}">
             <div class="header">
               <div class="category-badge">#{category}</div>
               #{reading_time.empty? ? '' : '<div class="reading-time">' + reading_time + '</div>'}
@@ -285,13 +418,14 @@ class Builders::OgImageGenerator < SiteBuilder
             </div>
             
             <div class="footer">
-              <div class="author-info">
-                <div class="author-avatar">#{author[0].upcase}</div>
-                <div class="author-details">
-                  <div class="author-name">#{author}</div>
-                  #{date.empty? ? '' : '<div class="publish-date">' + date + '</div>'}
-                </div>
-              </div>
+              #{page_type == 'article' && !author.empty? ? 
+                '<div class="author-info">
+                  <div class="author-avatar">' + author[0].upcase + '</div>
+                  <div class="author-details">
+                    <div class="author-name">' + author + '</div>
+                    ' + (date.empty? ? '' : '<div class="publish-date">' + date + '</div>') + '
+                  </div>
+                </div>' : ''}
               <div class="branding">
                 <div class="ruby-icon">💎</div>
                 <span>DSPy.rb</span>
@@ -321,6 +455,40 @@ class Builders::OgImageGenerator < SiteBuilder
         "#{minutes} min read"
       else
         ""
+      end
+    end
+
+    def determine_docs_category(page_resource)
+      # Determine category based on the path structure
+      path = if page_resource.respond_to?(:relative_path)
+               page_resource.relative_path.to_s
+             elsif page_resource.respond_to?(:path)
+               page_resource.path.to_s
+             else
+               ''
+             end
+      
+      if path.start_with?('src/getting-started/')
+        'Getting Started'
+      elsif path.start_with?('src/core-concepts/')
+        'Core Concepts'
+      elsif path.start_with?('src/advanced/')
+        'Advanced'
+      elsif path.start_with?('src/optimization/')
+        'Optimization'
+      elsif path.start_with?('src/production/')
+        'Production'
+      elsif path.start_with?('src/features/')
+        'Features'
+      else
+        # Check if it's a parent page based on the data
+        if page_resource.data['nav_order'] && page_resource.data['has_children']
+          'Guide'
+        elsif page_resource.data['parent']
+          page_resource.data['parent']
+        else
+          'Documentation'
+        end
       end
     end
 
