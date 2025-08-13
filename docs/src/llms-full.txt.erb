@@ -617,47 +617,61 @@ DSPy.rb supports advanced structured signatures for comprehensive image analysis
 ```ruby
 # Image analysis with detailed extraction
 class ImageAnalysis < DSPy::Signature
-  input :focus, String, default: 'general', desc: 'Analysis focus'
-  input :detail_level, String, default: 'standard', desc: 'Detail level'
+  description "Analyze images comprehensively to extract objects, colors, mood, and style"
+
+  input do
+    const :image, DSPy::Image, description: 'Image to analyze'
+    const :focus, String, default: 'general', description: 'Analysis focus'
+    const :detail_level, String, default: 'standard', description: 'Detail level'
+  end
   
   output do
-    const :description, String, desc: 'Overall image description'
-    const :objects, T::Array[String], desc: 'Objects detected in image'
-    const :dominant_colors, T::Array[String], desc: 'Main colors present'
-    const :mood, String, desc: 'Overall mood or atmosphere'
-    const :style, String, desc: 'Artistic style or characteristics'
-    const :confidence, Float, desc: 'Analysis confidence (0.0-1.0)'
+    const :description, String, description: 'Overall image description'
+    const :objects, T::Array[String], description: 'Objects detected in image'
+    const :dominant_colors, T::Array[String], description: 'Main colors present'
+    const :mood, String, description: 'Overall mood or atmosphere'
+    const :style, String, description: 'Artistic style or characteristics'
+    const :confidence, Float, description: 'Analysis confidence (0.0-1.0)'
   end
 end
 
 # Type-safe bounding box detection
 class BoundingBox < T::Struct
-  const :x, Float, desc: 'Normalized x coordinate (0.0-1.0)'
-  const :y, Float, desc: 'Normalized y coordinate (0.0-1.0)'
-  const :width, Float, desc: 'Normalized width (0.0-1.0)'
-  const :height, Float, desc: 'Normalized height (0.0-1.0)'
+  const :x, Float, description: 'Normalized x coordinate (0.0-1.0)'
+  const :y, Float, description: 'Normalized y coordinate (0.0-1.0)'
+  const :width, Float, description: 'Normalized width (0.0-1.0)'
+  const :height, Float, description: 'Normalized height (0.0-1.0)'
 end
 
 class DetectedObject < T::Struct
-  const :label, String, desc: 'Object type/label'
-  const :bbox, BoundingBox, desc: 'Bounding box coordinates'
-  const :confidence, Float, desc: 'Detection confidence (0.0-1.0)'
+  const :label, String, description: 'Object type/label'
+  const :bbox, BoundingBox, description: 'Bounding box coordinates'
+  const :confidence, Float, description: 'Detection confidence (0.0-1.0)'
 end
 
 class BoundingBoxDetection < DSPy::Signature
-  input :query, T.any(String, NilClass), desc: 'Object to detect'
+  description "Detect and locate objects in images with normalized bounding box coordinates"
+
+  input do
+    const :image, DSPy::Image, description: 'Image to analyze for object detection'
+    const :query, T.any(String, NilClass), description: 'Object to detect'
+  end
   
   output do
-    const :objects, T::Array[DetectedObject], desc: 'Detected objects with type-safe bounding boxes'
-    const :count, Integer, desc: 'Total objects detected'
-    const :confidence, Float, desc: 'Overall detection confidence'
+    const :objects, T::Array[DetectedObject], description: 'Detected objects with type-safe bounding boxes'
+    const :count, Integer, description: 'Total objects detected'
+    const :confidence, Float, description: 'Overall detection confidence'
   end
 end
 
 # Usage examples
 analyzer = DSPy::Predict.new(ImageAnalysis)
 image = DSPy::Image.new(url: 'https://example.com/landscape.jpg')
-result = analyzer.call(focus: 'colors', detail_level: 'detailed')
+result = analyzer.call(
+  image: image,
+  focus: 'colors',
+  detail_level: 'detailed'
+)
 
 puts result.description
 puts "Colors: #{result.dominant_colors.join(', ')}"
@@ -666,7 +680,10 @@ puts "Mood: #{result.mood}"
 
 # Object detection with type safety
 detector = DSPy::Predict.new(BoundingBoxDetection)
-detection = detector.call(query: 'vehicles')
+detection = detector.call(
+  image: image,
+  query: 'vehicles'
+)
 
 detection.objects.each do |obj|
   puts "#{obj.label} at (#{obj.bbox.x}, #{obj.bbox.y})"

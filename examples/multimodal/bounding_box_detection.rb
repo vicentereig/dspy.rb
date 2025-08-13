@@ -11,68 +11,41 @@ require 'json'
 
 # Define structured types for bounding box detection
 class BoundingBox < T::Struct
-  const :x, Float, desc: 'Normalized x coordinate (0.0-1.0)'
-  const :y, Float, desc: 'Normalized y coordinate (0.0-1.0)'
-  const :width, Float, desc: 'Normalized width (0.0-1.0)'
-  const :height, Float, desc: 'Normalized height (0.0-1.0)'
+  const :x, Float
+  const :y, Float
+  const :width, Float
+  const :height, Float
 end
 
 class DetectedObject < T::Struct
-  const :label, String, desc: 'Object type/label'
-  const :bbox, BoundingBox, desc: 'Bounding box coordinates'
-  const :confidence, Float, desc: 'Detection confidence (0.0-1.0)'
+  const :label, String
+  const :bbox, BoundingBox
+  const :confidence, Float
 end
 
 # Define a signature for bounding box detection
 class BoundingBoxDetection < DSPy::Signature
-  input :query, T.any(String, NilClass), desc: 'Object to detect (e.g., "airplanes", "cars")'
-  input :image_description, T.any(String, NilClass), desc: 'Optional description of the image'
+  description "Detect and locate objects in images with normalized bounding box coordinates"
+
+  class DetailLevel < T::Enum
+    enums do
+      Basic = new('basic')
+      Standard = new('standard')
+      Detailed = new('detailed')
+    end
+  end
+
+  input do
+    const :query, T.any(String, NilClass), description: 'Object to detect (e.g., "airplanes", "cars")'
+    const :image, DSPy::Image, description: 'Image to analyze for object detection'
+    const :detail_level, DetailLevel, default: DetailLevel::Standard, description: 'Detection detail level'
+  end
   
   # Output structured bounding box data with type-safe structs
   output do
-    const :objects, T::Array[DetectedObject], desc: 'Array of detected objects with bounding boxes'
-    const :count, Integer, desc: 'Total number of objects detected'
-    const :confidence, Float, desc: 'Overall confidence in the detection (0.0-1.0)'
-  end
-end
-
-# Create a module for object detection
-class ObjectDetector < DSPy::Predict
-  def initialize
-    super(BoundingBoxDetection)
-  end
-  
-  def detect(image, query = 'all objects')
-    # Build the prompt with the image
-    messages = []
-    
-    # System prompt for structured output
-    messages << {
-      role: 'system',
-      content: <<~PROMPT
-        You are an expert computer vision system that detects objects in images.
-        Return structured data with detected objects and their normalized bounding boxes.
-        All coordinates should be normalized to 0-1 range relative to image dimensions.
-        Each object should have a label, bounding box (x, y, width, height), and confidence score.
-      PROMPT
-    }
-    
-    # User message with image
-    content = [
-      { type: 'text', text: "Detect #{query} in this image and provide bounding boxes." },
-      { type: 'image', image: image }
-    ]
-    
-    messages << {
-      role: 'user',
-      content: content
-    }
-    
-    # Call the LM with multimodal content
-    forward(
-      query: query,
-      image_description: "Aerial image for object detection"
-    )
+    const :objects, T::Array[DetectedObject], description: 'Array of detected objects with bounding boxes'
+    const :count, Integer, description: 'Total number of objects detected'
+    const :confidence, Float, description: 'Overall confidence in the detection (0.0-1.0)'
   end
 end
 
@@ -93,15 +66,19 @@ def main
     url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/KSFO_from_above.jpg/1280px-KSFO_from_above.jpg'
   )
   
-  detector = ObjectDetector.new
-  result = detector.detect(airport_image, 'airplanes')
+  detector = DSPy::Predict.new(BoundingBoxDetection)
+  detection = detector.call(
+    query: 'airplanes',
+    image: airport_image,
+    detail_level: BoundingBoxDetection::DetailLevel::Detailed
+  )
   
   puts "Detection Results:"
-  puts "  Total airplanes detected: #{result.count}"
-  puts "  Overall confidence: #{(result.confidence * 100).round(1)}%"
+  puts "  Total airplanes detected: #{detection.count}"
+  puts "  Overall confidence: #{(detection.confidence * 100).round(1)}%"
   puts "\nBounding Boxes:"
   
-  result.objects.each_with_index do |obj, i|
+  detection.objects.each_with_index do |obj, i|
     puts "  #{i + 1}. #{obj.label}"
     puts "     Position: (#{obj.bbox.x}, #{obj.bbox.y})"
     puts "     Size: #{obj.bbox.width} x #{obj.bbox.height}"
@@ -123,11 +100,15 @@ def main
       content_type: 'image/jpeg'
     )
     
-    result = detector.detect(local_image, 'vehicles')
+    vehicle_detection = detector.call(
+      query: 'vehicles',
+      image: local_image,
+      detail_level: BoundingBoxDetection::DetailLevel::Standard
+    )
     
     puts "Detection Results:"
-    puts "  Total vehicles detected: #{result.count}"
-    puts "  Overall confidence: #{(result.confidence * 100).round(1)}%"
+    puts "  Total vehicles detected: #{vehicle_detection.count}"
+    puts "  Overall confidence: #{(vehicle_detection.confidence * 100).round(1)}%"
   else
     puts "  (Skipping: No local image file found)"
   end
@@ -142,14 +123,18 @@ def main
     url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Shibuya_Crossing_2023.jpg/1280px-Shibuya_Crossing_2023.jpg'
   )
   
-  result = detector.detect(street_image, 'people, cars, traffic lights, and buildings')
+  street_detection = detector.call(
+    query: 'people, cars, traffic lights, and buildings',
+    image: street_image,
+    detail_level: BoundingBoxDetection::DetailLevel::Detailed
+  )
   
   puts "Detection Results:"
-  puts "  Total objects detected: #{result.count}"
-  puts "  Overall confidence: #{(result.confidence * 100).round(1)}%"
+  puts "  Total objects detected: #{street_detection.count}"
+  puts "  Overall confidence: #{(street_detection.confidence * 100).round(1)}%"
   
   # Group by object type
-  grouped = result.objects.group_by { |obj| obj.label }
+  grouped = street_detection.objects.group_by { |obj| obj.label }
   puts "\nObjects by type:"
   grouped.each do |label, objects|
     puts "  #{label}: #{objects.count}"

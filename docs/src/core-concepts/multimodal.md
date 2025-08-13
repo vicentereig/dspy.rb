@@ -116,42 +116,46 @@ Extract comprehensive information from images including colors, objects, mood, a
 
 ```ruby
 class ImageAnalysis < DSPy::Signature
-  input :focus, String, default: 'general', desc: 'Analysis focus'
-  input :detail_level, String, default: 'standard', desc: 'Level of detail'
+  description "Analyze images comprehensively to extract objects, colors, mood, and style"
+
+  class DetailLevel < T::Enum
+    enums do
+      Brief = new('brief')
+      Standard = new('standard')
+      Detailed = new('detailed')
+    end
+  end
+
+  input do
+    const :image, DSPy::Image, description: 'Image to analyze'
+    const :focus, String, default: 'general', description: 'Analysis focus'
+    const :detail_level, DetailLevel, default: DetailLevel::Standard, description: 'Level of detail'
+  end
   
   output do
-    const :description, String, desc: 'Overall description of the image'
-    const :objects, T::Array[String], desc: 'List of objects detected'
-    const :dominant_colors, T::Array[String], desc: 'Main colors in the image'
-    const :mood, String, desc: 'Overall mood or atmosphere'
-    const :style, String, desc: 'Artistic style or characteristics'
-    const :lighting, String, desc: 'Description of lighting conditions'
-    const :confidence, Float, desc: 'Analysis confidence (0.0-1.0)'
-  end
-end
-
-class ImageAnalyzer < DSPy::Predict
-  def initialize
-    super(ImageAnalysis)
-  end
-  
-  def analyze(image, focus: 'general')
-    forward(
-      focus: focus,
-      detail_level: 'detailed'
-    )
+    const :description, String, description: 'Overall description of the image'
+    const :objects, T::Array[String], description: 'List of objects detected'
+    const :dominant_colors, T::Array[String], description: 'Main colors in the image'
+    const :mood, String, description: 'Overall mood or atmosphere'
+    const :style, String, description: 'Artistic style or characteristics'
+    const :lighting, String, description: 'Description of lighting conditions'
+    const :confidence, Float, description: 'Analysis confidence (0.0-1.0)'
   end
 end
 
 # Usage
-analyzer = ImageAnalyzer.new
+analyzer = DSPy::Predict.new(ImageAnalysis)
 image = DSPy::Image.new(url: 'https://example.com/landscape.jpg')
-result = analyzer.analyze(image, focus: 'colors')
+analysis = analyzer.call(
+  image: image,
+  focus: 'colors',
+  detail_level: ImageAnalysis::DetailLevel::Detailed
+)
 
-puts result.description
-puts "Colors: #{result.dominant_colors.join(', ')}"
-puts "Mood: #{result.mood}"
-puts "Objects: #{result.objects.join(', ')}"
+puts analysis.description
+puts "Colors: #{analysis.dominant_colors.join(', ')}"
+puts "Mood: #{analysis.mood}"
+puts "Objects: #{analysis.objects.join(', ')}"
 ```
 
 ### Object Detection with Type-Safe Bounding Boxes
@@ -161,33 +165,52 @@ Use `T::Struct` for type-safe bounding box detection:
 ```ruby
 # Define structured types
 class BoundingBox < T::Struct
-  const :x, Float, desc: 'Normalized x coordinate (0.0-1.0)'
-  const :y, Float, desc: 'Normalized y coordinate (0.0-1.0)'
-  const :width, Float, desc: 'Normalized width (0.0-1.0)'
-  const :height, Float, desc: 'Normalized height (0.0-1.0)'
+  const :x, Float
+  const :y, Float
+  const :width, Float
+  const :height, Float
 end
 
 class DetectedObject < T::Struct
-  const :label, String, desc: 'Object type/label'
-  const :bbox, BoundingBox, desc: 'Bounding box coordinates'
-  const :confidence, Float, desc: 'Detection confidence (0.0-1.0)'
+  const :label, String
+  const :bbox, BoundingBox
+  const :confidence, Float
 end
 
 class BoundingBoxDetection < DSPy::Signature
-  input :query, T.any(String, NilClass), desc: 'Object to detect'
+  description "Detect and locate objects in images with normalized bounding box coordinates"
+
+  class DetailLevel < T::Enum
+    enums do
+      Basic = new('basic')
+      Standard = new('standard')
+      Detailed = new('detailed')
+    end
+  end
+
+  input do
+    const :query, T.any(String, NilClass), description: 'Object to detect'
+    const :image, DSPy::Image, description: 'Image to analyze for object detection'
+    const :detail_level, DetailLevel, default: DetailLevel::Standard, description: 'Detection detail level'
+  end
   
   output do
-    const :objects, T::Array[DetectedObject], desc: 'Detected objects with bounding boxes'
-    const :count, Integer, desc: 'Total number of objects detected'
-    const :confidence, Float, desc: 'Overall detection confidence'
+    const :objects, T::Array[DetectedObject], description: 'Detected objects with bounding boxes'
+    const :count, Integer, description: 'Total number of objects detected'
+    const :confidence, Float, description: 'Overall detection confidence'
   end
 end
 
 # Usage with type safety
 detector = DSPy::Predict.new(BoundingBoxDetection)
-result = detector.call(query: 'airplanes')
+image = DSPy::Image.new(url: 'https://example.com/aerial-image.jpg')
+detection = detector.call(
+  query: 'airplanes',
+  image: image,
+  detail_level: BoundingBoxDetection::DetailLevel::Standard
+)
 
-result.objects.each do |obj|
+detection.objects.each do |obj|
   puts "#{obj.label} at (#{obj.bbox.x}, #{obj.bbox.y})"
   puts "Size: #{obj.bbox.width} x #{obj.bbox.height}"
   puts "Confidence: #{(obj.confidence * 100).round(1)}%"
