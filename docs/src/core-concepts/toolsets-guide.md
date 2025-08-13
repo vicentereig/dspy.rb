@@ -1,3 +1,9 @@
+---
+layout: docs
+name: Toolsets Guide
+description: Comprehensive guide to building and using toolsets for agent workflows
+---
+
 # Toolsets
 
 DSPy.rb's Toolset pattern lets you group related tools in a single class. Instead of creating separate tool classes for each operation, you can expose multiple methods from one class as individual tools.

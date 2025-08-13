@@ -1,3 +1,9 @@
+---
+layout: docs
+name: Memory Compaction
+description: Intelligent memory optimization system that automatically manages agent memory without background jobs
+---
+
 # Memory Compaction System
 
 DSPy.rb includes an intelligent memory compaction system that automatically optimizes agent memory usage without requiring background job processing. The system uses inline triggers to maintain optimal memory performance while preserving important memories.

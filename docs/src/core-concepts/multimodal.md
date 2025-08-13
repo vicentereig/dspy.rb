@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: Multimodal Support
+description: Process images and text with DSPy.rb's multimodal capabilities. Support for OpenAI and Anthropic vision models with type-safe image analysis and structured outputs.
 nav_order: 7
 parent: Core Concepts
 ---

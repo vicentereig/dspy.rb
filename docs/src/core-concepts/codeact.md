@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: "CodeAct: Dynamic Code Generation"
+description: Build intelligent agents that write and execute Ruby code dynamically for creative problem-solving
 ---
 
 # CodeAct: Dynamic Code Generation

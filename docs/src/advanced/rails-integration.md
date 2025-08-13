@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: "Rails Integration Guide"
+description: Seamlessly integrate DSPy.rb with Ruby on Rails applications, including enum handling and best practices
 ---
 
 # Rails Integration Guide

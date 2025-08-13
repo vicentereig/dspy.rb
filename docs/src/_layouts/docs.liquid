@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-50">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% if page.title %}{{ page.title }} | {% endif %}DSPy.rb Documentation</title>
-  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="{{ site.base_path }}/_bridgetown/static/css/index.css">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="{{ site.base_path }}/favicon.ico">
-
-  <!-- Mobile navigation and dropdowns handled by external JavaScript -->
-</head>
+{% render "head", title_suffix: "DSPy.rb Documentation" %}
 <body class="h-full overflow-x-hidden">
   <!-- Header with navigation from Tailwind UI -->
   <header class="sticky top-0 z-40 bg-white shadow-sm">
