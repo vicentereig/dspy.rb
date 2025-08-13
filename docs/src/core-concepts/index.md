@@ -30,6 +30,9 @@ Connect your modules to language models with different strategies like chain-of-
 ### [CodeAct](./codeact/)
 Enable AI agents to dynamically write and execute Ruby code for creative problem-solving.
 
+### [Multimodal](./multimodal/)
+Work with text and image inputs to build vision-capable AI applications using multimodal language models.
+
 ### [Examples](./examples/)
 Learn from real-world use cases and patterns that demonstrate best practices for common scenarios.
 
@@ -43,6 +46,7 @@ We recommend reading through these concepts in order:
 4. Explore [Toolsets](./toolsets/) for agent capabilities
 5. Study [Predictors](./predictors/) for different reasoning strategies
 6. Learn about [CodeAct](./codeact/) for dynamic code generation
-7. Study [Examples](./examples/) to see everything in action
+7. Explore [Multimodal](./multimodal/) for text and image workflows
+8. Study [Examples](./examples/) to see everything in action
 
 Each concept builds on the previous ones, creating a comprehensive framework for LLM development.

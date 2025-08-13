@@ -9,14 +9,28 @@ require 'json'
 # This example demonstrates how to use DSPy's multimodal capabilities
 # to detect objects in images and return structured bounding box data
 
+# Define structured types for bounding box detection
+class BoundingBox < T::Struct
+  const :x, Float, desc: 'Normalized x coordinate (0.0-1.0)'
+  const :y, Float, desc: 'Normalized y coordinate (0.0-1.0)'
+  const :width, Float, desc: 'Normalized width (0.0-1.0)'
+  const :height, Float, desc: 'Normalized height (0.0-1.0)'
+end
+
+class DetectedObject < T::Struct
+  const :label, String, desc: 'Object type/label'
+  const :bbox, BoundingBox, desc: 'Bounding box coordinates'
+  const :confidence, Float, desc: 'Detection confidence (0.0-1.0)'
+end
+
 # Define a signature for bounding box detection
 class BoundingBoxDetection < DSPy::Signature
   input :query, T.any(String, NilClass), desc: 'Object to detect (e.g., "airplanes", "cars")'
   input :image_description, T.any(String, NilClass), desc: 'Optional description of the image'
   
-  # Output structured bounding box data
+  # Output structured bounding box data with type-safe structs
   output do
-    const :objects, T::Array[T::Hash[Symbol, T.untyped]], desc: 'Array of detected objects with bounding boxes'
+    const :objects, T::Array[DetectedObject], desc: 'Array of detected objects with bounding boxes'
     const :count, Integer, desc: 'Total number of objects detected'
     const :confidence, Float, desc: 'Overall confidence in the detection (0.0-1.0)'
   end
@@ -37,19 +51,9 @@ class ObjectDetector < DSPy::Predict
       role: 'system',
       content: <<~PROMPT
         You are an expert computer vision system that detects objects in images.
-        When detecting objects, provide bounding boxes in the format:
-        {
-          "objects": [
-            {
-              "label": "object_type",
-              "bbox": {"x": x_coordinate, "y": y_coordinate, "width": width, "height": height},
-              "confidence": 0.95
-            }
-          ],
-          "count": total_objects,
-          "confidence": overall_confidence
-        }
-        Coordinates should be normalized to 0-1 range relative to image dimensions.
+        Return structured data with detected objects and their normalized bounding boxes.
+        All coordinates should be normalized to 0-1 range relative to image dimensions.
+        Each object should have a label, bounding box (x, y, width, height), and confidence score.
       PROMPT
     }
     
@@ -98,10 +102,10 @@ def main
   puts "\nBounding Boxes:"
   
   result.objects.each_with_index do |obj, i|
-    puts "  #{i + 1}. #{obj[:label]}"
-    puts "     Position: (#{obj[:bbox][:x]}, #{obj[:bbox][:y]})"
-    puts "     Size: #{obj[:bbox][:width]} x #{obj[:bbox][:height]}"
-    puts "     Confidence: #{(obj[:confidence] * 100).round(1)}%"
+    puts "  #{i + 1}. #{obj.label}"
+    puts "     Position: (#{obj.bbox.x}, #{obj.bbox.y})"
+    puts "     Size: #{obj.bbox.width} x #{obj.bbox.height}"
+    puts "     Confidence: #{(obj.confidence * 100).round(1)}%"
   end
   
   # Example 2: Using base64 encoded image
@@ -145,7 +149,7 @@ def main
   puts "  Overall confidence: #{(result.confidence * 100).round(1)}%"
   
   # Group by object type
-  grouped = result.objects.group_by { |obj| obj[:label] }
+  grouped = result.objects.group_by { |obj| obj.label }
   puts "\nObjects by type:"
   grouped.each do |label, objects|
     puts "  #{label}: #{objects.count}"

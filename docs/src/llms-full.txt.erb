@@ -17,15 +17,16 @@ DSPy.rb brings software engineering best practices to LLM development. Instead o
 5. [Modules](#modules)
 6. [Predictors](#predictors)
 7. [Complex Types](#complex-types)
-8. [Agent Systems](#agent-systems)
-9. [Memory Systems](#memory-systems)
-10. [Toolsets](#toolsets)
-11. [Optimization](#optimization)
-12. [Production Features](#production-features)
-13. [Testing Strategies](#testing-strategies)
-14. [API Reference](#api-reference)
-15. [Integration Guides](#integration-guides)
-16. [Examples](#examples)
+8. [Multimodal Support](#multimodal-support)
+9. [Agent Systems](#agent-systems)
+10. [Memory Systems](#memory-systems)
+11. [Toolsets](#toolsets)
+12. [Optimization](#optimization)
+13. [Production Features](#production-features)
+14. [Testing Strategies](#testing-strategies)
+15. [API Reference](#api-reference)
+16. [Integration Guides](#integration-guides)
+17. [Examples](#examples)
 
 ## Overview
 
@@ -42,6 +43,7 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 - **Type Safety**: Sorbet integration throughout
 - **Automatic JSON Extraction**: Provider-optimized strategies
 - **Composable Modules**: Chain, compose, and reuse
+- **Multimodal Support**: Text and image inputs with vision models
 - **Agent Systems**: ReAct, CodeAct, and custom agents
 - **Memory & State**: Persistent memory for stateful applications
 - **Observability**: APM integration, token tracking, performance monitoring
@@ -473,6 +475,202 @@ class Company < T::Struct
   
   const :name, String
   const :departments, T::Array[Department]
+end
+```
+
+## Multimodal Support
+
+DSPy.rb provides comprehensive support for text and image inputs through its unified `DSPy::Image` interface, enabling vision-capable LLM applications across multiple providers.
+
+### Image Input Types
+
+```ruby
+# URL-based images (OpenAI only)
+image = DSPy::Image.new(url: "https://example.com/image.jpg")
+
+# Base64 encoded images (both providers)
+image = DSPy::Image.new(
+  base64: base64_string,
+  content_type: "image/jpeg"
+)
+
+# Byte array images (both providers)
+File.open("image.jpg", "rb") do |file|
+  image = DSPy::Image.new(
+    data: file.read,
+    content_type: "image/jpeg"
+  )
+end
+
+# With detail level (OpenAI only)
+image = DSPy::Image.new(
+  url: "https://example.com/image.jpg",
+  detail: "high"
+)
+```
+
+### Using Images with Raw Chat
+
+Currently, multimodal support works at the raw chat level using the message builder:
+
+```ruby
+# Configure with vision-capable model
+lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+
+# Single image analysis
+image = DSPy::Image.new(url: "https://example.com/photo.jpg")
+response = lm.raw_chat do |messages|
+  messages.user_with_image('What is in this image?', image)
+end
+
+puts response # String response
+
+# Multiple images
+image1 = DSPy::Image.new(url: "https://example.com/before.jpg")
+image2 = DSPy::Image.new(url: "https://example.com/after.jpg")
+
+response = lm.raw_chat do |messages|
+  messages.user_with_images('Compare these images', [image1, image2])
+end
+
+# With system prompt
+response = lm.raw_chat do |messages|
+  messages.system('You are an expert image analyst.')
+  messages.user_with_image('Analyze this image in detail.', image)
+end
+```
+
+### Provider-Specific Usage
+
+**OpenAI (supports URLs and base64):**
+```ruby
+lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+
+# URL images work
+image = DSPy::Image.new(url: 'https://example.com/image.jpg')
+
+response = lm.raw_chat do |messages|
+  messages.user_with_image('What color is this?', image)
+end
+```
+
+# Use latest models
+**Anthropic (base64 only):**
+```ruby  
+lm = DSPy::LM.new('anthropic/claude-4', api_key: ENV['ANTHROPIC_API_KEY'])
+
+# Must use base64 or raw data
+File.open('image.jpg', 'rb') do |file|
+  image = DSPy::Image.new(
+    data: file.read,
+    content_type: 'image/jpeg'
+  )
+  
+  response = lm.raw_chat do |messages|
+    messages.system('You are a color detection expert.')
+    messages.user_with_image('What color?', image)
+  end
+end
+```
+
+### Error Handling
+
+DSPy.rb validates image compatibility and provides clear error messages:
+
+```ruby
+# Non-vision model error
+begin
+  non_vision_lm = DSPy::LM.new('openai/gpt-3.5-turbo', api_key: ENV['OPENAI_API_KEY'])
+  image = DSPy::Image.new(url: 'https://example.com/image.jpg')
+  
+  non_vision_lm.raw_chat do |messages|
+    messages.user_with_image('What is this?', image)
+  end
+rescue ArgumentError => e
+  puts "Error: #{e.message}"  # Model does not support vision
+end
+
+# Provider compatibility error
+begin
+  anthropic_lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+  image = DSPy::Image.new(url: 'https://example.com/image.jpg')
+  
+  anthropic_lm.raw_chat do |messages|
+    messages.user_with_image('What is this?', image)
+  end
+rescue DSPy::LM::IncompatibleImageFeatureError => e
+  puts "Error: #{e.message}"  # Anthropic doesn't support image URLs
+end
+```
+
+### Supported Formats and Limits
+
+- **Formats**: JPEG, PNG, GIF, WebP
+- **Size Limit**: 5MB per image
+- **OpenAI**: URLs and base64, supports `detail` parameter
+- **Anthropic**: Base64 and raw data only, no `detail` parameter
+
+### Structured Multimodal Signatures
+
+DSPy.rb supports advanced structured signatures for comprehensive image analysis:
+
+```ruby
+# Image analysis with detailed extraction
+class ImageAnalysis < DSPy::Signature
+  input :focus, String, default: 'general', desc: 'Analysis focus'
+  input :detail_level, String, default: 'standard', desc: 'Detail level'
+  
+  output do
+    const :description, String, desc: 'Overall image description'
+    const :objects, T::Array[String], desc: 'Objects detected in image'
+    const :dominant_colors, T::Array[String], desc: 'Main colors present'
+    const :mood, String, desc: 'Overall mood or atmosphere'
+    const :style, String, desc: 'Artistic style or characteristics'
+    const :confidence, Float, desc: 'Analysis confidence (0.0-1.0)'
+  end
+end
+
+# Type-safe bounding box detection
+class BoundingBox < T::Struct
+  const :x, Float, desc: 'Normalized x coordinate (0.0-1.0)'
+  const :y, Float, desc: 'Normalized y coordinate (0.0-1.0)'
+  const :width, Float, desc: 'Normalized width (0.0-1.0)'
+  const :height, Float, desc: 'Normalized height (0.0-1.0)'
+end
+
+class DetectedObject < T::Struct
+  const :label, String, desc: 'Object type/label'
+  const :bbox, BoundingBox, desc: 'Bounding box coordinates'
+  const :confidence, Float, desc: 'Detection confidence (0.0-1.0)'
+end
+
+class BoundingBoxDetection < DSPy::Signature
+  input :query, T.any(String, NilClass), desc: 'Object to detect'
+  
+  output do
+    const :objects, T::Array[DetectedObject], desc: 'Detected objects with type-safe bounding boxes'
+    const :count, Integer, desc: 'Total objects detected'
+    const :confidence, Float, desc: 'Overall detection confidence'
+  end
+end
+
+# Usage examples
+analyzer = DSPy::Predict.new(ImageAnalysis)
+image = DSPy::Image.new(url: 'https://example.com/landscape.jpg')
+result = analyzer.call(focus: 'colors', detail_level: 'detailed')
+
+puts result.description
+puts "Colors: #{result.dominant_colors.join(', ')}"
+puts "Objects: #{result.objects.join(', ')}"
+puts "Mood: #{result.mood}"
+
+# Object detection with type safety
+detector = DSPy::Predict.new(BoundingBoxDetection)
+detection = detector.call(query: 'vehicles')
+
+detection.objects.each do |obj|
+  puts "#{obj.label} at (#{obj.bbox.x}, #{obj.bbox.y})"
+  puts "Size: #{obj.bbox.width} x #{obj.bbox.height}"
 end
 ```
 
