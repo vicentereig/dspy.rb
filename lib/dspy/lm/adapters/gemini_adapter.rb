@@ -11,21 +11,15 @@ module DSPy
         super
         validate_api_key!(api_key, 'gemini')
         
-        # Create two clients - one for streaming, one for regular calls
-        @base_credentials = {
-          service: 'generative-language-api',
-          api_key: api_key
-        }
-        @base_options = { model: model }
-        
         @client = Gemini.new(
-          credentials: @base_credentials,
-          options: @base_options
-        )
-        
-        @streaming_client = Gemini.new(
-          credentials: @base_credentials,
-          options: @base_options.merge(server_sent_events: true)
+          credentials: {
+            service: 'generative-language-api',
+            api_key: api_key
+          },
+          options: { 
+            model: model,
+            server_sent_events: true
+          }
         )
       end
 
@@ -47,76 +41,56 @@ module DSPy
         }.merge(extra_params)
 
         begin
-          if block_given?
-            # Streaming response
-            content = ""
-            @streaming_client.stream_generate_content(request_params) do |chunk|
-              # Handle case where chunk might be a string (from VCR)
-              if chunk.is_a?(String)
-                begin
-                  chunk = JSON.parse(chunk)
-                rescue JSON::ParserError => e
-                  raise AdapterError, "Failed to parse Gemini streaming response: #{e.message}"
-                end
-              end
-              
-              if chunk.dig('candidates', 0, 'content', 'parts')
-                chunk_text = extract_text_from_parts(chunk.dig('candidates', 0, 'content', 'parts'))
-                content += chunk_text
-                block.call(chunk)
-              end
-            end
-            
-            # Create typed metadata for streaming response
-            metadata = ResponseMetadataFactory.create('gemini', {
-              model: model,
-              streaming: true
-            })
-            
-            Response.new(
-              content: content,
-              usage: nil, # Usage not available in streaming
-              metadata: metadata
-            )
-          else
-            response = @client.generate_content(request_params)
-            
-            # Handle case where response might be a string (from VCR)
-            if response.is_a?(String)
+          # Always use streaming
+          content = ""
+          final_response_data = nil
+          
+          @client.stream_generate_content(request_params) do |chunk|
+            # Handle case where chunk might be a string (from SSE VCR)
+            if chunk.is_a?(String)
               begin
-                response = JSON.parse(response)
+                chunk = JSON.parse(chunk)
               rescue JSON::ParserError => e
-                raise AdapterError, "Failed to parse Gemini response: #{e.message}"
+                raise AdapterError, "Failed to parse Gemini streaming response: #{e.message}"
               end
             end
             
-            # Extract content from response
-            content = ""
-            if response.dig('candidates', 0, 'content', 'parts')
-              content = extract_text_from_parts(response.dig('candidates', 0, 'content', 'parts'))
+            # Extract content from chunks
+            if chunk.dig('candidates', 0, 'content', 'parts')
+              chunk_text = extract_text_from_parts(chunk.dig('candidates', 0, 'content', 'parts'))
+              content += chunk_text
+              
+              # Call block only if provided (for real streaming)
+              block.call(chunk) if block_given?
             end
             
-            # Extract usage information
-            usage_data = response['usageMetadata']
-            usage_struct = UsageFactory.create('gemini', usage_data)
-            
-            # Create metadata
-            metadata = {
-              provider: 'gemini',
-              model: model,
-              finish_reason: response.dig('candidates', 0, 'finishReason'),
-              safety_ratings: response.dig('candidates', 0, 'safetyRatings')
-            }
-            
-            # Create typed metadata
-            typed_metadata = ResponseMetadataFactory.create('gemini', metadata)
-            
-            Response.new(
-              content: content,
-              usage: usage_struct,
-              metadata: typed_metadata
-            )
+            # Store final response data (usage, metadata) from last chunk
+            if chunk['usageMetadata'] || chunk.dig('candidates', 0, 'finishReason')
+              final_response_data = chunk
+            end
           end
+          
+          # Extract usage information from final chunk
+          usage_data = final_response_data&.dig('usageMetadata')
+          usage_struct = usage_data ? UsageFactory.create('gemini', usage_data) : nil
+          
+          # Create metadata from final chunk
+          metadata = {
+            provider: 'gemini',
+            model: model,
+            finish_reason: final_response_data&.dig('candidates', 0, 'finishReason'),
+            safety_ratings: final_response_data&.dig('candidates', 0, 'safetyRatings'),
+            streaming: block_given?
+          }
+          
+          # Create typed metadata
+          typed_metadata = ResponseMetadataFactory.create('gemini', metadata)
+          
+          Response.new(
+            content: content,
+            usage: usage_struct,
+            metadata: typed_metadata
+          )
         rescue => e
           handle_gemini_error(e)
         end

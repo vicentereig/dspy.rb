@@ -4,22 +4,31 @@ require 'spec_helper'
 
 RSpec.describe DSPy::LM::GeminiAdapter do
   let(:adapter) { described_class.new(model: 'gemini-2.5-flash', api_key: 'test-key') }
-  let(:mock_client) { double('Gemini') }
+  let(:mock_client) { double('Gemini Client') }
 
   before do
-    # Mock the regular client for any model
-    allow(Gemini).to receive(:new) do |args|
-      if args[:options][:server_sent_events]
-        mock_client
-      else
-        mock_client
-      end
-    end
+    # Mock single streaming client
+    allow(Gemini).to receive(:new).with(
+      credentials: {
+        service: 'generative-language-api',
+        api_key: anything
+      },
+      options: hash_including(server_sent_events: true)
+    ).and_return(mock_client)
   end
 
   describe '#initialize' do
-    it 'creates both regular and streaming Gemini clients with correct configuration' do
-      expect(Gemini).to receive(:new).twice.and_return(mock_client)
+    it 'creates single streaming Gemini client' do
+      expect(Gemini).to receive(:new).with(
+        credentials: {
+          service: 'generative-language-api',
+          api_key: 'test-key'
+        },
+        options: { 
+          model: 'gemini-2.5-flash',
+          server_sent_events: true 
+        }
+      ).and_return(mock_client)
       
       described_class.new(model: 'gemini-2.5-flash', api_key: 'test-key')
     end
@@ -70,9 +79,44 @@ RSpec.describe DSPy::LM::GeminiAdapter do
         ]
       }
       
-      expect(mock_client).to receive(:generate_content)
+      # Mock non-streaming response (since tests run with VCR)
+      mock_response = {
+        'candidates' => [{
+          'content' => {
+            'role' => 'model',
+            'parts' => [{ 'text' => 'Hello back!' }]
+          },
+          'finishReason' => 'STOP',
+          'safetyRatings' => []
+        }],
+        'usageMetadata' => {
+          'promptTokenCount' => 10,
+          'candidatesTokenCount' => 5,
+          'totalTokenCount' => 15
+        }
+      }
+      
+      expect(mock_client).to receive(:stream_generate_content)
         .with(expected_gemini_request)
-        .and_return(mock_response)
+        .and_yield({
+          'candidates' => [{
+            'content' => {
+              'role' => 'model',
+              'parts' => [{ 'text' => 'Hello back!' }]
+            }
+          }]
+        })
+        .and_yield({
+          'candidates' => [{
+            'finishReason' => 'STOP',
+            'safetyRatings' => []
+          }],
+          'usageMetadata' => {
+            'promptTokenCount' => 10,
+            'candidatesTokenCount' => 5,
+            'totalTokenCount' => 15
+          }
+        })
 
       result = adapter.chat(messages: messages)
 
@@ -86,6 +130,7 @@ RSpec.describe DSPy::LM::GeminiAdapter do
       expect(result.metadata.provider).to eq('gemini')
       expect(result.metadata.model).to eq('gemini-2.5-flash')
       expect(result.metadata.finish_reason).to eq('STOP')
+      expect(result.metadata.streaming).to be false
     end
     
     it 'passes extra parameters to Gemini API' do
@@ -98,9 +143,9 @@ RSpec.describe DSPy::LM::GeminiAdapter do
         max_output_tokens: 100
       }
       
-      expect(mock_client).to receive(:generate_content)
+      expect(mock_client).to receive(:stream_generate_content)
         .with(expected_gemini_request)
-        .and_return(mock_response)
+        .and_yield({ 'candidates' => [{ 'content' => { 'parts' => [{ 'text' => 'response' }] } }] })
 
       adapter.chat(
         messages: messages, 
@@ -138,7 +183,8 @@ RSpec.describe DSPy::LM::GeminiAdapter do
         'usageMetadata' => { 'totalTokenCount' => 5 }
       }
       
-      expect(mock_client).to receive(:generate_content).and_return(empty_response)
+      expect(mock_client).to receive(:stream_generate_content)
+        .and_yield(empty_response)
 
       result = adapter.chat(messages: messages)
       
@@ -151,7 +197,8 @@ RSpec.describe DSPy::LM::GeminiAdapter do
         'usageMetadata' => { 'totalTokenCount' => 5 }
       }
       
-      expect(mock_client).to receive(:generate_content).and_return(no_candidates_response)
+      expect(mock_client).to receive(:stream_generate_content)
+        .and_yield(no_candidates_response)
 
       result = adapter.chat(messages: messages)
       
@@ -163,7 +210,8 @@ RSpec.describe DSPy::LM::GeminiAdapter do
         'candidates' => [{ 'content' => { 'parts' => [{ 'text' => 'Hello!' }] } }]
       }
       
-      expect(mock_client).to receive(:generate_content).and_return(no_usage_response)
+      expect(mock_client).to receive(:stream_generate_content)
+        .and_yield(no_usage_response)
 
       result = adapter.chat(messages: messages)
       
@@ -172,7 +220,7 @@ RSpec.describe DSPy::LM::GeminiAdapter do
     end
 
     it 'handles API errors gracefully' do
-      allow(mock_client).to receive(:generate_content)
+      allow(mock_client).to receive(:stream_generate_content)
         .and_raise(StandardError, 'API Error')
 
       expect {
@@ -181,7 +229,7 @@ RSpec.describe DSPy::LM::GeminiAdapter do
     end
 
     it 'handles authentication errors specifically' do
-      allow(mock_client).to receive(:generate_content)
+      allow(mock_client).to receive(:stream_generate_content)
         .and_raise(StandardError, 'API_KEY invalid')
 
       expect {
@@ -190,7 +238,7 @@ RSpec.describe DSPy::LM::GeminiAdapter do
     end
 
     it 'handles rate limit errors specifically' do
-      allow(mock_client).to receive(:generate_content)
+      allow(mock_client).to receive(:stream_generate_content)
         .and_raise(StandardError, 'RATE_LIMIT exceeded')
 
       expect {
@@ -199,7 +247,7 @@ RSpec.describe DSPy::LM::GeminiAdapter do
     end
 
     it 'handles safety filter errors specifically' do
-      allow(mock_client).to receive(:generate_content)
+      allow(mock_client).to receive(:stream_generate_content)
         .and_raise(StandardError, 'Content blocked by SAFETY filters')
 
       expect {
@@ -387,10 +435,11 @@ RSpec.describe DSPy::LM::GeminiAdapter do
         }
       ]
 
-      expect(mock_client).to receive(:generate_content).and_return({
-        'candidates' => [{ 'content' => { 'parts' => [{ 'text' => 'response' }] } }],
-        'usageMetadata' => { 'totalTokenCount' => 10 }
-      })
+      expect(mock_client).to receive(:stream_generate_content)
+        .and_yield({
+          'candidates' => [{ 'content' => { 'parts' => [{ 'text' => 'response' }] } }],
+          'usageMetadata' => { 'totalTokenCount' => 10 }
+        })
 
       vision_adapter.chat(messages: messages)
     end
