@@ -19,6 +19,10 @@ module DSPy
       'anthropic' => {
         sources: %w[base64 data], 
         parameters: []
+      },
+      'gemini' => {
+        sources: %w[base64 data], # Gemini supports inline base64 data, not URLs
+        parameters: []
       }
     }.freeze
     
@@ -99,6 +103,27 @@ module DSPy
       end
     end
     
+    def to_gemini_format
+      if url
+        # Gemini requires base64 for inline data, URLs not supported for inline_data
+        raise NotImplementedError, "URL fetching for Gemini not yet implemented. Use base64 or data instead."
+      elsif base64
+        {
+          inline_data: {
+            mime_type: content_type,
+            data: base64
+          }
+        }
+      elsif data
+        {
+          inline_data: {
+            mime_type: content_type,
+            data: to_base64
+          }
+        }
+      end
+    end
+    
     def to_base64
       return base64 if base64
       return Base64.strict_encode64(data.pack('C*')) if data
@@ -139,6 +164,11 @@ module DSPy
             raise DSPy::LM::IncompatibleImageFeatureError,
                   "Anthropic doesn't support image URLs. Please provide base64 or raw data instead."
           end
+        when 'gemini'
+          if current_source == 'url'
+            raise DSPy::LM::IncompatibleImageFeatureError,
+                  "Gemini doesn't support image URLs for inline data. Please provide base64 or raw data instead."
+          end
         end
       end
       
@@ -148,6 +178,9 @@ module DSPy
         when 'anthropic'
           raise DSPy::LM::IncompatibleImageFeatureError,
                 "Anthropic doesn't support the 'detail' parameter. This feature is OpenAI-specific."
+        when 'gemini'
+          raise DSPy::LM::IncompatibleImageFeatureError,
+                "Gemini doesn't support the 'detail' parameter. This feature is OpenAI-specific."
         end
       end
     end
