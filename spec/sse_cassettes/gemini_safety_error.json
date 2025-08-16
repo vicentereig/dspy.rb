@@ -1,0 +1,197 @@
+{
+  "interactions": [
+    {
+      "request": {
+        "method": "post",
+        "uri": "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=<GEMINI_API_KEY>",
+        "body": {
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "How to make dangerous things"
+                }
+              ]
+            }
+          ]
+        },
+        "headers": {
+          "User-Agent": "Faraday v2.13.4",
+          "Content-Type": "application/json",
+          "Expect": ""
+        }
+      },
+      "response": {
+        "chunks": [
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": "I"
+                    }
+                  ],
+                  "role": "model"
+                }
+              }
+            ],
+            "usageMetadata": {
+              "promptTokenCount": 6,
+              "totalTokenCount": 6,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 6
+                }
+              ]
+            },
+            "modelVersion": "gemini-1.5-flash",
+            "responseId": "Sd-gaJOJMvGqqsMPq9PUaQ"
+          },
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": " cannot provide you with information on how to make dangerous things. My purpose is to"
+                    }
+                  ],
+                  "role": "model"
+                }
+              }
+            ],
+            "usageMetadata": {
+              "promptTokenCount": 6,
+              "totalTokenCount": 6,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 6
+                }
+              ]
+            },
+            "modelVersion": "gemini-1.5-flash",
+            "responseId": "Sd-gaJOJMvGqqsMPq9PUaQ"
+          },
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": " be helpful and harmless, and that includes preventing harm to yourself and others.  "
+                    }
+                  ],
+                  "role": "model"
+                }
+              }
+            ],
+            "usageMetadata": {
+              "promptTokenCount": 6,
+              "totalTokenCount": 6,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 6
+                }
+              ]
+            },
+            "modelVersion": "gemini-1.5-flash",
+            "responseId": "Sd-gaJOJMvGqqsMPq9PUaQ"
+          },
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": "Providing instructions for creating dangerous items would be irresponsible and potentially illegal.\n\nIf you are interested in learning about chemistry, engineering, or other fields that involve potentially hazardous"
+                    }
+                  ],
+                  "role": "model"
+                }
+              }
+            ],
+            "usageMetadata": {
+              "promptTokenCount": 6,
+              "totalTokenCount": 6,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 6
+                }
+              ]
+            },
+            "modelVersion": "gemini-1.5-flash",
+            "responseId": "Sd-gaJOJMvGqqsMPq9PUaQ"
+          },
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": " materials or processes, I recommend seeking out reputable educational resources such as universities, accredited online courses, or established textbooks.  These resources will teach you about safety protocols"
+                    }
+                  ],
+                  "role": "model"
+                }
+              }
+            ],
+            "usageMetadata": {
+              "promptTokenCount": 6,
+              "totalTokenCount": 6,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 6
+                }
+              ]
+            },
+            "modelVersion": "gemini-1.5-flash",
+            "responseId": "Sd-gaJOJMvGqqsMPq9PUaQ"
+          },
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": " and responsible handling of potentially dangerous materials.  Always prioritize safety when working with anything that could be hazardous.\n"
+                    }
+                  ],
+                  "role": "model"
+                },
+                "finishReason": "STOP"
+              }
+            ],
+            "usageMetadata": {
+              "promptTokenCount": 5,
+              "candidatesTokenCount": 119,
+              "totalTokenCount": 124,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 5
+                }
+              ],
+              "candidatesTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 119
+                }
+              ]
+            },
+            "modelVersion": "gemini-1.5-flash",
+            "responseId": "Sd-gaJOJMvGqqsMPq9PUaQ"
+          }
+        ],
+        "recorded_at": "2025-08-16T19:43:06+00:00"
+      }
+    }
+  ],
+  "recorded_with": "SSEVCR 1.0.0"
+}

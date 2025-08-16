@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
   # Official LM provider clients
   spec.add_dependency "openai", "~> 0.16.0"
   spec.add_dependency "anthropic", "~> 1.5.0"
+  spec.add_dependency "gemini-ai", "~> 4.3"
 
   # Sorbet integration dependencies
   spec.add_dependency "sorbet-runtime", "~> 0.5"

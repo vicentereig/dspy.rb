@@ -1,0 +1,93 @@
+{
+  "interactions": [
+    {
+      "request": {
+        "method": "post",
+        "uri": "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=<GEMINI_API_KEY>",
+        "body": {
+          "contents": [
+            {
+              "role": "user",
+              "parts": [
+                {
+                  "text": "What is the capital of France? Answer with just the city name."
+                }
+              ]
+            }
+          ]
+        },
+        "headers": {
+          "User-Agent": "Faraday v2.13.4",
+          "Content-Type": "application/json",
+          "Expect": ""
+        }
+      },
+      "response": {
+        "chunks": [
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": "Paris"
+                    }
+                  ],
+                  "role": "model"
+                }
+              }
+            ],
+            "usageMetadata": {
+              "promptTokenCount": 15,
+              "totalTokenCount": 15,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 15
+                }
+              ]
+            },
+            "modelVersion": "gemini-1.5-flash",
+            "responseId": "Rt-gaNqGLJuThMIPnryvyAg"
+          },
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": "\n"
+                    }
+                  ],
+                  "role": "model"
+                },
+                "finishReason": "STOP"
+              }
+            ],
+            "usageMetadata": {
+              "promptTokenCount": 14,
+              "candidatesTokenCount": 2,
+              "totalTokenCount": 16,
+              "promptTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 14
+                }
+              ],
+              "candidatesTokensDetails": [
+                {
+                  "modality": "TEXT",
+                  "tokenCount": 2
+                }
+              ]
+            },
+            "modelVersion": "gemini-1.5-flash",
+            "responseId": "Rt-gaNqGLJuThMIPnryvyAg"
+          }
+        ],
+        "recorded_at": "2025-08-16T19:43:02+00:00"
+      }
+    }
+  ],
+  "recorded_with": "SSEVCR 1.0.0"
+}

@@ -26,12 +26,35 @@ module DSPy
         'claude-3-5-haiku-20241022'
       ].freeze
       
+      # Gemini vision-capable models (all Gemini models support vision)
+      GEMINI_VISION_MODELS = [
+        # Gemini 2.5 series (2025)
+        'gemini-2.5-pro',
+        'gemini-2.5-flash',
+        'gemini-2.5-flash-lite',
+        # Gemini 2.0 series (2024-2025)
+        'gemini-2.0-flash',
+        'gemini-2.0-flash-experimental',
+        'gemini-2.0-flash-lite', 
+        'gemini-2.0-pro-experimental',
+        # Gemini 1.5 series
+        'gemini-1.5-pro',
+        'gemini-1.5-flash',
+        'gemini-1.5-pro-latest',
+        'gemini-1.5-flash-latest',
+        # Legacy models
+        'gemini-pro-vision',
+        'gemini-1.0-pro-vision'
+      ].freeze
+      
       def self.supports_vision?(provider, model)
         case provider.to_s.downcase
         when 'openai'
           OPENAI_VISION_MODELS.any? { |m| model.include?(m) }
         when 'anthropic'
           ANTHROPIC_VISION_MODELS.any? { |m| model.include?(m) }
+        when 'gemini'
+          GEMINI_VISION_MODELS.any? { |m| model.include?(m) }
         else
           false
         end
@@ -49,6 +72,8 @@ module DSPy
           OPENAI_VISION_MODELS
         when 'anthropic'
           ANTHROPIC_VISION_MODELS
+        when 'gemini'
+          GEMINI_VISION_MODELS
         else
           []
         end

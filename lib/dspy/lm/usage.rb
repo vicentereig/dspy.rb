@@ -72,6 +72,8 @@ module DSPy
           create_openai_usage(normalized)
         when 'anthropic'
           create_anthropic_usage(normalized)
+        when 'gemini'
+          create_gemini_usage(normalized)
         else
           create_generic_usage(normalized)
         end
@@ -133,6 +135,23 @@ module DSPy
         )
       rescue => e
         DSPy.logger.debug("Failed to create Anthropic usage: #{e.message}")
+        nil
+      end
+      
+      sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.nilable(Usage)) }
+      def self.create_gemini_usage(data)
+        # Gemini uses promptTokenCount/candidatesTokenCount/totalTokenCount
+        input_tokens = data[:promptTokenCount] || data[:input_tokens] || 0
+        output_tokens = data[:candidatesTokenCount] || data[:output_tokens] || 0
+        total_tokens = data[:totalTokenCount] || data[:total_tokens] || (input_tokens + output_tokens)
+        
+        Usage.new(
+          input_tokens: input_tokens,
+          output_tokens: output_tokens,
+          total_tokens: total_tokens
+        )
+      rescue => e
+        DSPy.logger.debug("Failed to create Gemini usage: #{e.message}")
         nil
       end
       
