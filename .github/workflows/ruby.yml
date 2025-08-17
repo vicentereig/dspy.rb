@@ -31,5 +31,6 @@ jobs:
       env:
         OPENAI_API_KEY: "test-openai-key-for-vcr"
         ANTHROPIC_API_KEY: "test-anthropic-key-for-vcr"
+        GEMINI_API_KEY: "test-gemini-key-for-vcr"
         LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
         LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
