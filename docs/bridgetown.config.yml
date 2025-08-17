@@ -2,8 +2,8 @@
 #
 # URL is used by Bridgetown to generate canonical URLs for your site.
 # For localhost/development, you don't need to set this variable.
-url: "https://vicentereig.github.io" # the base hostname & protocol for your site
-base_path: "/dspy.rb" # the subpath of your site for GitHub Pages
+url: "https://vicentereig.github.io/dspy.rb" # the full URL for your site
+base_path: "" # empty to avoid double path in canonical URLs
 title: "DSPy.rb Documentation"
 description: "Structured programming for large language models in Ruby"
 
