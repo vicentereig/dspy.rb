@@ -193,6 +193,33 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
       expect(mipro.mipro_config.optimization_strategy).to eq("bayesian")
       expect(mipro.mipro_config.early_stopping_patience).to eq(5)
     end
+
+    it 'accepts metric parameter for light mode' do
+      custom_metric = proc { |example, prediction| true }
+      mipro = DSPy::Teleprompt::MIPROv2::AutoMode.light(metric: custom_metric)
+
+      expect(mipro.metric).to eq(custom_metric)
+      expect(mipro.mipro_config.num_trials).to eq(6)
+      expect(mipro.mipro_config.optimization_strategy).to eq("greedy")
+    end
+
+    it 'accepts metric parameter for medium mode' do
+      custom_metric = proc { |example, prediction| prediction[:confidence] > 0.8 }
+      mipro = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: custom_metric)
+
+      expect(mipro.metric).to eq(custom_metric)
+      expect(mipro.mipro_config.num_trials).to eq(12)
+      expect(mipro.mipro_config.optimization_strategy).to eq("adaptive")
+    end
+
+    it 'accepts metric parameter for heavy mode' do
+      custom_metric = proc { |example, prediction| prediction[:answer].length > 10 }
+      mipro = DSPy::Teleprompt::MIPROv2::AutoMode.heavy(metric: custom_metric)
+
+      expect(mipro.metric).to eq(custom_metric)
+      expect(mipro.mipro_config.num_trials).to eq(18)
+      expect(mipro.mipro_config.optimization_strategy).to eq("bayesian")
+    end
   end
 
   describe DSPy::Teleprompt::MIPROv2::MIPROv2Config do
