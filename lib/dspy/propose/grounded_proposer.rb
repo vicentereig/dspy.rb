@@ -172,14 +172,34 @@ module DSPy
       sig { params(struct_class: T.class_of(T::Struct)).returns(T::Array[T::Hash[Symbol, T.untyped]]) }
       def extract_field_info(struct_class)
         struct_class.props.map do |name, prop_info|
-          {
+          field_info = {
             name: name,
             type: prop_info[:type].to_s,
             description: prop_info[:description] || "",
             required: !prop_info[:rules]&.any? { |rule| rule.is_a?(T::Props::NilableRules) }
           }
+          
+          # Extract enum values if this is an enum type
+          if enum_values = extract_enum_values(prop_info[:type])
+            field_info[:enum_values] = enum_values
+            field_info[:is_enum] = true
+          end
+          
+          field_info
         end
       end
+
+      # Extract enum values from a type if it's an enum
+      sig { params(type: T.untyped).returns(T.nilable(T::Array[String])) }
+      def extract_enum_values(type)
+        # Handle T::Enum types
+        if type.is_a?(Class) && type < T::Enum
+          type.values.map(&:serialize)
+        else
+          nil
+        end
+      end
+
 
       # Analyze patterns in training examples
       sig { params(examples: T::Array[T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
@@ -364,8 +384,12 @@ module DSPy
         context_parts << "Task: #{signature_class.description}" if @config.use_task_description
         
         if @config.use_input_output_analysis
-          context_parts << "Input fields: #{analysis[:input_fields].map { |f| "#{f[:name]} (#{f[:type]})" }.join(', ')}"
-          context_parts << "Output fields: #{analysis[:output_fields].map { |f| "#{f[:name]} (#{f[:type]})" }.join(', ')}"
+          # Build detailed field descriptions including enum values
+          input_descriptions = analysis[:input_fields].map { |f| format_field_description(f) }
+          output_descriptions = analysis[:output_fields].map { |f| format_field_description(f) }
+          
+          context_parts << "Input fields: #{input_descriptions.join(', ')}"
+          context_parts << "Output fields: #{output_descriptions.join(', ')}"
         end
         
         if analysis[:common_themes] && analysis[:common_themes].any?
@@ -377,6 +401,17 @@ module DSPy
         end
         
         context_parts.join("\n")
+      end
+
+      # Format field description with enum values if applicable
+      sig { params(field: T::Hash[Symbol, T.untyped]).returns(String) }
+      def format_field_description(field)
+        base = "#{field[:name]} (#{field[:type]})"
+        if field[:is_enum] && field[:enum_values]
+          "#{base} [values: #{field[:enum_values].join(', ')}]"
+        else
+          base
+        end
       end
 
       # Build requirements text for instruction generation
