@@ -8,7 +8,8 @@ module DSPy
       ADAPTER_MAP = {
         'openai' => 'OpenAIAdapter',
         'anthropic' => 'AnthropicAdapter',
-        'ollama' => 'OllamaAdapter'
+        'ollama' => 'OllamaAdapter',
+        'gemini' => 'GeminiAdapter'
       }.freeze
 
       class << self

@@ -84,13 +84,42 @@ module DSPy
       end
     end
     
+    # Gemini-specific metadata with additional fields
+    class GeminiResponseMetadata < T::Struct
+      extend T::Sig
+      
+      const :provider, String
+      const :model, String
+      const :response_id, T.nilable(String), default: nil
+      const :created, T.nilable(Integer), default: nil
+      const :structured_output, T.nilable(T::Boolean), default: nil
+      const :finish_reason, T.nilable(String), default: nil
+      const :safety_ratings, T.nilable(T::Array[T::Hash[String, T.untyped]]), default: nil
+      const :streaming, T.nilable(T::Boolean), default: nil
+      
+      sig { returns(T::Hash[Symbol, T.untyped]) }
+      def to_h
+        hash = {
+          provider: provider,
+          model: model
+        }
+        hash[:response_id] = response_id if response_id
+        hash[:created] = created if created
+        hash[:structured_output] = structured_output unless structured_output.nil?
+        hash[:finish_reason] = finish_reason if finish_reason
+        hash[:safety_ratings] = safety_ratings if safety_ratings
+        hash[:streaming] = streaming unless streaming.nil?
+        hash
+      end
+    end
+    
     # Normalized response format for all LM providers
     class Response < T::Struct
       extend T::Sig
       
       const :content, String
       const :usage, T.nilable(T.any(Usage, OpenAIUsage)), default: nil
-      const :metadata, T.any(ResponseMetadata, OpenAIResponseMetadata, AnthropicResponseMetadata, T::Hash[Symbol, T.untyped])
+      const :metadata, T.any(ResponseMetadata, OpenAIResponseMetadata, AnthropicResponseMetadata, GeminiResponseMetadata, T::Hash[Symbol, T.untyped])
       
       sig { returns(String) }
       def to_s
@@ -112,7 +141,7 @@ module DSPy
     module ResponseMetadataFactory
       extend T::Sig
       
-      sig { params(provider: String, metadata: T.nilable(T::Hash[Symbol, T.untyped])).returns(T.any(ResponseMetadata, OpenAIResponseMetadata, AnthropicResponseMetadata)) }
+      sig { params(provider: String, metadata: T.nilable(T::Hash[Symbol, T.untyped])).returns(T.any(ResponseMetadata, OpenAIResponseMetadata, AnthropicResponseMetadata, GeminiResponseMetadata)) }
       def self.create(provider, metadata)
         # Handle nil metadata
         metadata ||= {}
@@ -142,6 +171,13 @@ module DSPy
             stop_reason: metadata[:stop_reason]&.to_s,
             stop_sequence: metadata[:stop_sequence]&.to_s,
             tool_calls: metadata[:tool_calls]
+          )
+        when 'gemini'
+          GeminiResponseMetadata.new(
+            **common_fields,
+            finish_reason: metadata[:finish_reason]&.to_s,
+            safety_ratings: metadata[:safety_ratings],
+            streaming: metadata[:streaming]
           )
         else
           ResponseMetadata.new(**common_fields)
