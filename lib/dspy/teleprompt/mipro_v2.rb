@@ -18,8 +18,13 @@ module DSPy
       module AutoMode
         extend T::Sig
 
-        sig { returns(MIPROv2) }
-        def self.light
+        sig do
+          params(
+            metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)),
+            kwargs: T.untyped
+          ).returns(MIPROv2)
+        end
+        def self.light(metric: nil, **kwargs)
           config = MIPROv2Config.new
           config.num_trials = 6
           config.num_instruction_candidates = 3
@@ -28,11 +33,16 @@ module DSPy
           config.bootstrap_sets = 3
           config.optimization_strategy = "greedy"
           config.early_stopping_patience = 2
-          MIPROv2.new(config: config)
+          MIPROv2.new(metric: metric, config: config, **kwargs)
         end
 
-        sig { returns(MIPROv2) }
-        def self.medium
+        sig do
+          params(
+            metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)),
+            kwargs: T.untyped
+          ).returns(MIPROv2)
+        end
+        def self.medium(metric: nil, **kwargs)
           config = MIPROv2Config.new
           config.num_trials = 12
           config.num_instruction_candidates = 5
@@ -41,11 +51,16 @@ module DSPy
           config.bootstrap_sets = 5
           config.optimization_strategy = "adaptive"
           config.early_stopping_patience = 3
-          MIPROv2.new(config: config)
+          MIPROv2.new(metric: metric, config: config, **kwargs)
         end
 
-        sig { returns(MIPROv2) }
-        def self.heavy
+        sig do
+          params(
+            metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)),
+            kwargs: T.untyped
+          ).returns(MIPROv2)
+        end
+        def self.heavy(metric: nil, **kwargs)
           config = MIPROv2Config.new
           config.num_trials = 18
           config.num_instruction_candidates = 8
@@ -54,7 +69,7 @@ module DSPy
           config.bootstrap_sets = 8
           config.optimization_strategy = "bayesian"
           config.early_stopping_patience = 5
-          MIPROv2.new(config: config)
+          MIPROv2.new(metric: metric, config: config, **kwargs)
         end
       end
 
