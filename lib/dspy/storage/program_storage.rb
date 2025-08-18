@@ -103,11 +103,26 @@ module DSPy
           end
         end
 
-        sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+        sig { params(data: T.untyped).returns(T.untyped) }
         def self.deserialize_program(data)
-          # Basic deserialization - would need enhancement for complex programs
-          # For now, return the serialized state
-          data
+          # Ensure data is a Hash
+          unless data.is_a?(Hash)
+            raise ArgumentError, "Expected Hash for program data, got #{data.class.name}"
+          end
+          
+          # Get class name from the serialized data
+          class_name = data[:class_name]
+          raise ArgumentError, "Missing class_name in serialized data" unless class_name
+          
+          # Get the class constant
+          program_class = Object.const_get(class_name)
+          
+          # Use the class's from_h method
+          unless program_class.respond_to?(:from_h)
+            raise ArgumentError, "Class #{class_name} does not support deserialization (missing from_h method)"
+          end
+          
+          program_class.from_h(data)
         end
 
         sig { params(program: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
@@ -316,16 +331,12 @@ module DSPy
           { programs: [], summary: { total_programs: 0, avg_score: 0.0 } }
         end
         
-        # Extract signature class name from program or fallback for imported programs
-        signature_class_name = if saved_program.program.respond_to?(:signature_class)
-          # Real program object
-          saved_program.program.signature_class.name
-        else
-          # Imported program (Hash) - get from stored state
-          # TODO: remove this once SavedProgram#deserialize_program is fixed
-          saved_program.program.dig(:state, :signature_class) || 
-          saved_program.program.dig('state', 'signature_class')
+        # Extract signature class name from program object
+        unless saved_program.program.respond_to?(:signature_class)
+          raise ArgumentError, "Program #{saved_program.program.class.name} does not respond to signature_class method"
         end
+        
+        signature_class_name = saved_program.program.signature_class.name
         
         if signature_class_name.nil? || signature_class_name.empty?
           raise(

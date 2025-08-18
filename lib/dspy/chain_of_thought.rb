@@ -25,6 +25,7 @@ module DSPy
       @signature_class = enhanced_signature
     end
 
+
     # Override prompt-based methods to maintain ChainOfThought behavior
     sig { override.params(new_prompt: Prompt).returns(ChainOfThought) }
     def with_prompt(new_prompt)

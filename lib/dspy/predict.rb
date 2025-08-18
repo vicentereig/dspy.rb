@@ -59,6 +59,42 @@ module DSPy
       @prompt = Prompt.from_signature(signature_class)
     end
 
+    # Reconstruct program from serialized hash
+    sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.attached_class) }
+    def self.from_h(data)
+      state = data[:state]
+      raise ArgumentError, "Missing state in serialized data" unless state
+
+      signature_class_name = state[:signature_class]
+      signature_class = Object.const_get(signature_class_name)
+      program = new(signature_class)
+      
+      # Restore instruction if available
+      if state[:instruction]
+        program = program.with_instruction(state[:instruction])
+      end
+      
+      # Restore examples if available
+      few_shot_examples = state[:few_shot_examples]
+      if few_shot_examples && !few_shot_examples.empty?
+        # Convert hash examples back to FewShotExample objects
+        examples = few_shot_examples.map do |ex|
+          if ex.is_a?(Hash)
+            DSPy::FewShotExample.new(
+              input: ex[:input],
+              output: ex[:output],
+              reasoning: ex[:reasoning]
+            )
+          else
+            ex
+          end
+        end
+        program = program.with_examples(examples)
+      end
+      
+      program
+    end
+
     # Backward compatibility methods - delegate to prompt object
     sig { returns(String) }
     def system_signature
