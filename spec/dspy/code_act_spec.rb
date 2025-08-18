@@ -286,6 +286,22 @@ RSpec.describe 'DSPy::CodeAct' do
     end
   end
 
+  describe 'signature name tracking' do
+    let(:agent) { DSPy::CodeAct.new(CodeActMathProblem) }
+
+    it 'stores the original signature name' do
+      expect(agent.signature_class.original_signature_name).to eq('CodeActMathProblem')
+    end
+
+    it 'overrides the name method to return original signature name' do
+      expect(agent.signature_class.name).to eq('CodeActMathProblem')
+    end
+
+    it 'preserves access to original signature name' do
+      expect(agent.signature_class.original_signature_name).to eq('CodeActMathProblem')
+    end
+  end
+
   describe 'private method unit tests' do
     let(:agent) { DSPy::CodeAct.new(CodeActMathProblem, max_iterations: 2) }
     let(:task) { "Calculate 2 + 2" }
