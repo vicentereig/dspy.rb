@@ -257,4 +257,40 @@ RSpec.describe DSPy::Storage::ProgramStorage do
       end
     end
   end
+
+  describe 'signature class validation' do
+    it 'extracts signature class name successfully' do
+      storage.save_program(mock_program, mock_optimization_result)
+
+      programs = storage.list_programs
+      expect(programs).not_to be_empty
+      expect(programs.first[:signature_class]).to eq('MockSignature')
+    end
+
+    it 'raises descriptive error when signature class name is nil' do
+      program_with_nil_name = double('Program',
+        class: double(name: 'BadProgram'),
+        signature_class: double(name: nil),
+        prompt: double(instruction: 'Test'),
+        few_shot_examples: []
+      )
+
+      expect {
+        storage.save_program(program_with_nil_name, mock_optimization_result)
+      }.to raise_error(RuntimeError, /Program BadProgram has a signature class that does not provide a name/)
+    end
+
+    it 'raises descriptive error when signature class name is empty string' do
+      program_with_empty_name = double('Program',
+        class: double(name: 'EmptyNameProgram'),
+        signature_class: double(name: ''),
+        prompt: double(instruction: 'Test'),
+        few_shot_examples: []
+      )
+
+      expect {
+        storage.save_program(program_with_empty_name, mock_optimization_result)
+      }.to raise_error(RuntimeError, /Program EmptyNameProgram has a signature class that does not provide a name/)
+    end
+  end
 end

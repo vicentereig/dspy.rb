@@ -14,12 +14,18 @@ RSpec.describe DSPy::Storage::StorageManager do
   let(:storage_manager) { DSPy::Storage::StorageManager.new(config: config) }
   
   let(:mock_program) do
-    double('Program', 
-      class: double(name: 'MockProgram'),
-      signature_class: double(name: 'MockSignature'),
-      prompt: double(instruction: 'Test instruction'),
-      few_shot_examples: []
-    )
+    program = double('Program')
+    allow(program).to receive(:class).and_return(double(name: 'MockProgram'))
+    allow(program).to receive(:signature_class).and_return(double(name: 'MockSignature'))
+    allow(program).to receive(:prompt).and_return(double(instruction: 'Test instruction'))
+    allow(program).to receive(:few_shot_examples).and_return([])
+    
+    # Make respond_to? work properly for the methods we've stubbed
+    allow(program).to receive(:respond_to?) do |method_name|
+      [:signature_class, :prompt, :few_shot_examples, :class].include?(method_name)
+    end
+    
+    program
   end
   
   let(:mock_optimization_result) do
@@ -134,12 +140,21 @@ RSpec.describe DSPy::Storage::StorageManager do
       # Save multiple programs with different characteristics
       storage_manager.save_optimization_result(
         mock_optimization_result,
-        tags: ['mipro', 'test'],
-        metadata: { signature_class: 'QASignature' }
+        tags: ['mipro', 'test']
       )
       
+      # Create a different mock program with different signature class
+      different_program = double('DifferentProgram')
+      allow(different_program).to receive(:class).and_return(double(name: 'DifferentProgram'))
+      allow(different_program).to receive(:signature_class).and_return(double(name: 'ClassifySignature'))
+      allow(different_program).to receive(:prompt).and_return(double(instruction: 'Different instruction'))
+      allow(different_program).to receive(:few_shot_examples).and_return([])
+      allow(different_program).to receive(:respond_to?) do |method_name|
+        [:signature_class, :prompt, :few_shot_examples, :class].include?(method_name)
+      end
+
       high_score_result = double('HighScoreResult',
-        optimized_program: mock_program,
+        optimized_program: different_program,
         best_score_value: 0.95,
         metadata: { optimizer: 'SimpleOptimizer' },
         class: double(name: 'SimpleOptimizerResult'),
@@ -148,8 +163,7 @@ RSpec.describe DSPy::Storage::StorageManager do
       
       storage_manager.save_optimization_result(
         high_score_result,
-        tags: ['simple'],
-        metadata: { signature_class: 'ClassifySignature' }
+        tags: ['simple']
       )
     end
 
@@ -171,8 +185,9 @@ RSpec.describe DSPy::Storage::StorageManager do
     end
 
     it 'finds programs by signature class' do
-      programs = storage_manager.find_programs(signature_class: 'QASignature')
+      programs = storage_manager.find_programs(signature_class: 'MockSignature')
       expect(programs.size).to eq(1)
+      expect(programs.first[:signature_class]).to eq('MockSignature')
     end
 
     it 'filters by age in days' do
@@ -188,8 +203,7 @@ RSpec.describe DSPy::Storage::StorageManager do
     before do
       # Save programs with different scores for same signature
       storage_manager.save_optimization_result(
-        mock_optimization_result, # score: 0.85
-        metadata: { signature_class: 'QASignature' }
+        mock_optimization_result # score: 0.85
       )
       
       better_result = double('BetterResult',
@@ -201,13 +215,12 @@ RSpec.describe DSPy::Storage::StorageManager do
       )
       
       storage_manager.save_optimization_result(
-        better_result,
-        metadata: { signature_class: 'QASignature' }
+        better_result
       )
     end
 
     it 'returns the highest scoring program for signature class' do
-      best = storage_manager.get_best_program('QASignature')
+      best = storage_manager.get_best_program('MockSignature')
       
       expect(best).to be_a(DSPy::Storage::ProgramStorage::SavedProgram)
       expect(best.optimization_result[:best_score_value]).to eq(0.95)

@@ -90,11 +90,17 @@ module DSPy
 
         sig { params(program: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
         def serialize_program(program)
-          # Basic serialization - can be enhanced for specific program types
-          {
-            class_name: program.class.name,
-            state: extract_program_state(program)
-          }
+          # Basic serialization
+          if program.is_a?(Hash)
+            # Already serialized - return as-is to preserve state
+            program
+          else
+            # Real program object - serialize it
+            {
+              class_name: program.class.name,
+              state: extract_program_state(program)
+            }
+          end
         end
 
         sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
@@ -310,6 +316,24 @@ module DSPy
           { programs: [], summary: { total_programs: 0, avg_score: 0.0 } }
         end
         
+        # Extract signature class name from program or fallback for imported programs
+        signature_class_name = if saved_program.program.respond_to?(:signature_class)
+          # Real program object
+          saved_program.program.signature_class.name
+        else
+          # Imported program (Hash) - get from stored state
+          # TODO: remove this once SavedProgram#deserialize_program is fixed
+          saved_program.program.dig(:state, :signature_class) || 
+          saved_program.program.dig('state', 'signature_class')
+        end
+        
+        if signature_class_name.nil? || signature_class_name.empty?
+          raise(
+            "Program #{saved_program.program.class.name} has a signature class that does not provide a name.\n" \
+            "Ensure the signature class responds to #name or that signature_class_name is stored in program state."
+          )
+        end
+        
         # Add or update program entry
         program_entry = {
           program_id: saved_program.program_id,
@@ -317,7 +341,7 @@ module DSPy
           best_score: saved_program.optimization_result[:best_score_value],
           score_name: saved_program.optimization_result[:best_score_name],
           optimizer: saved_program.optimization_result[:metadata]&.dig(:optimizer),
-          signature_class: saved_program.metadata[:signature_class],
+          signature_class: signature_class_name,
           metadata: saved_program.metadata
         }
         
