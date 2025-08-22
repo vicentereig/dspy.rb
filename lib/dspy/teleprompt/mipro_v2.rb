@@ -751,10 +751,25 @@ module DSPy
           best_score_value: best_score,
           metadata: metadata,
           evaluated_candidates: @evaluated_candidates,
-          optimization_trace: optimization_result[:optimization_state] || {},
+          optimization_trace: serialize_optimization_trace(optimization_result[:optimization_state]),
           bootstrap_statistics: bootstrap_result.statistics,
           proposal_statistics: proposal_result.analysis
         )
+      end
+
+      # Serialize optimization trace for better JSON output
+      sig { params(optimization_state: T.nilable(T::Hash[Symbol, T.untyped])).returns(T::Hash[Symbol, T.untyped]) }
+      def serialize_optimization_trace(optimization_state)
+        return {} unless optimization_state
+        
+        serialized_trace = optimization_state.dup
+        
+        # Convert candidate objects to their hash representations
+        if serialized_trace[:candidates]
+          serialized_trace[:candidates] = serialized_trace[:candidates].map(&:to_h)
+        end
+        
+        serialized_trace
       end
 
       # Helper methods
