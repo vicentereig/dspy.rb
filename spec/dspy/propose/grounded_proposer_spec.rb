@@ -33,6 +33,42 @@ class GroundedClassify < DSPy::Signature
   end
 end
 
+# Test enums for enum extraction testing
+module TestEnums
+  class EmailCategory < T::Enum
+    enums do
+      Technical = new("technical")
+      Billing = new("billing")
+      General = new("general")
+    end
+  end
+
+  class Priority < T::Enum
+    enums do
+      Low = new("low")
+      Medium = new("medium")
+      High = new("high")
+      Critical = new("critical")
+    end
+  end
+end
+
+# Signature with enum fields for testing enum extraction
+class EmailClassification < DSPy::Signature
+  description "Classify email support tickets by category and priority"
+
+  input do
+    const :email_content, String, description: "The email content to classify"
+    const :subject, String, description: "The email subject line"
+  end
+
+  output do
+    const :category, TestEnums::EmailCategory, description: "The email category"
+    const :priority, TestEnums::Priority, description: "The priority level"
+    const :summary, String, description: "Brief summary of the email"
+  end
+end
+
 # Mock predictor that simulates instruction generation
 class MockInstructionGenerator
   def call(task_context:, requirements:, candidate_number:)
@@ -104,6 +140,47 @@ RSpec.describe DSPy::Propose::GroundedProposer do
         signature_class: GroundedClassify,
         input: { text: "This is terrible." },
         expected: { sentiment: "negative" }
+      )
+    ]
+  end
+
+  let(:email_examples) do
+    [
+      DSPy::Example.new(
+        signature_class: EmailClassification,
+        input: { 
+          email_content: "Hi, I'm having trouble logging into my account and can't access my billing information.",
+          subject: "Login issues - can't see billing"
+        },
+        expected: { 
+          category: TestEnums::EmailCategory::Billing,
+          priority: TestEnums::Priority::High,
+          summary: "User cannot access account to view billing information"
+        }
+      ),
+      DSPy::Example.new(
+        signature_class: EmailClassification,
+        input: { 
+          email_content: "The new API endpoint is returning 500 errors when I send POST requests with large payloads.",
+          subject: "API 500 errors with large requests"
+        },
+        expected: { 
+          category: TestEnums::EmailCategory::Technical,
+          priority: TestEnums::Priority::Critical,
+          summary: "API endpoint failing with 500 errors for large POST requests"
+        }
+      ),
+      DSPy::Example.new(
+        signature_class: EmailClassification,
+        input: { 
+          email_content: "I just wanted to say thanks for the great service. Keep up the good work!",
+          subject: "Thank you!"
+        },
+        expected: { 
+          category: TestEnums::EmailCategory::General,
+          priority: TestEnums::Priority::Low,
+          summary: "Customer appreciation message"
+        }
       )
     ]
   end
@@ -239,6 +316,27 @@ RSpec.describe DSPy::Propose::GroundedProposer do
       expect(result.metadata[:original_instruction]).to eq(current)
     end
 
+    it 'generates instructions with enum-specific context for enum-based signatures' do
+      result = proposer.propose_instructions(EmailClassification, email_examples)
+
+      expect(result).to be_a(DSPy::Propose::GroundedProposer::ProposalResult)
+      expect(result.num_candidates).to be > 0
+      
+      # Analysis should contain enum field information
+      expect(result.analysis).to include(:input_fields, :output_fields)
+      
+      category_field = result.analysis[:output_fields].find { |f| f[:name] == :category }
+      priority_field = result.analysis[:output_fields].find { |f| f[:name] == :priority }
+      
+      expect(category_field).to be_truthy
+      expect(category_field[:is_enum]).to be(true)
+      expect(category_field[:enum_values]).to eq(["technical", "billing", "general"])
+      
+      expect(priority_field).to be_truthy
+      expect(priority_field[:is_enum]).to be(true)
+      expect(priority_field[:enum_values]).to eq(["low", "medium", "high", "critical"])
+    end
+
     it 'handles LLM generation failures gracefully' do
       # Mock LLM to raise an error
       allow_any_instance_of(DSPy::Predict).to receive(:call).and_raise("API Error")
@@ -317,6 +415,106 @@ RSpec.describe DSPy::Propose::GroundedProposer do
         expect(fields.size).to eq(3)
         expect(fields.map { |f| f[:name] }).to include(:answer, :reasoning, :confidence)
       end
+
+      it 'extracts enum field information with enum values' do
+        fields = proposer.send(:extract_field_info, EmailClassification.output_struct_class)
+        
+        category_field = fields.find { |f| f[:name] == :category }
+        priority_field = fields.find { |f| f[:name] == :priority }
+        summary_field = fields.find { |f| f[:name] == :summary }
+
+        expect(category_field).to be_truthy
+        expect(category_field[:is_enum]).to be(true)
+        expect(category_field[:enum_values]).to eq(["technical", "billing", "general"])
+
+        expect(priority_field).to be_truthy
+        expect(priority_field[:is_enum]).to be(true)
+        expect(priority_field[:enum_values]).to eq(["low", "medium", "high", "critical"])
+
+        expect(summary_field).to be_truthy
+        expect(summary_field[:is_enum]).to be_nil
+        expect(summary_field[:enum_values]).to be_nil
+      end
+
+      it 'preserves non-enum field information' do
+        fields = proposer.send(:extract_field_info, EmailClassification.input_struct_class)
+        
+        fields.each do |field|
+          expect(field).to include(:name, :type, :description, :required)
+          expect(field[:is_enum]).to be_nil
+          expect(field[:enum_values]).to be_nil
+        end
+      end
+    end
+
+    describe 'enum value extraction' do
+      it 'extracts enum values from T::Enum types' do
+        email_category_values = proposer.send(:extract_enum_values, TestEnums::EmailCategory)
+        priority_values = proposer.send(:extract_enum_values, TestEnums::Priority)
+
+        expect(email_category_values).to eq(["technical", "billing", "general"])
+        expect(priority_values).to eq(["low", "medium", "high", "critical"])
+      end
+
+      it 'returns nil for non-enum types' do
+        string_values = proposer.send(:extract_enum_values, String)
+        integer_values = proposer.send(:extract_enum_values, Integer)
+
+        expect(string_values).to be_nil
+        expect(integer_values).to be_nil
+      end
+
+      it 'returns nil for nil input' do
+        expect(proposer.send(:extract_enum_values, nil)).to be_nil
+      end
+    end
+
+    describe 'field description formatting' do
+      it 'formats enum fields with enum values' do
+        enum_field = {
+          name: :category,
+          type: "TestEnums::EmailCategory",
+          is_enum: true,
+          enum_values: ["technical", "billing", "general"]
+        }
+
+        formatted = proposer.send(:format_field_description, enum_field)
+        expect(formatted).to eq("category (TestEnums::EmailCategory) [values: technical, billing, general]")
+      end
+
+      it 'formats non-enum fields without enum values' do
+        regular_field = {
+          name: :summary,
+          type: "String"
+        }
+
+        formatted = proposer.send(:format_field_description, regular_field)
+        expect(formatted).to eq("summary (String)")
+      end
+
+      it 'handles enum fields without enum_values gracefully' do
+        enum_field_no_values = {
+          name: :status,
+          type: "StatusEnum",
+          is_enum: true,
+          enum_values: nil
+        }
+
+        formatted = proposer.send(:format_field_description, enum_field_no_values)
+        expect(formatted).to eq("status (StatusEnum)")
+      end
+
+      it 'handles enum fields with empty enum_values' do
+        enum_field_empty = {
+          name: :status,
+          type: "StatusEnum",
+          is_enum: true,
+          enum_values: []
+        }
+
+        formatted = proposer.send(:format_field_description, enum_field_empty)
+        expect(formatted).to eq("status (StatusEnum)")
+      end
     end
   end
 
@@ -329,6 +527,29 @@ RSpec.describe DSPy::Propose::GroundedProposer do
       expect(context).to include("Input fields:")
       expect(context).to include("Output fields:")
       expect(context).to include(ProposerQA.description)
+    end
+
+    it 'builds context with enum field descriptions including enum values' do
+      analysis = proposer.send(:analyze_task, EmailClassification, email_examples, nil)
+      context = proposer.send(:build_generation_context, EmailClassification, analysis, nil)
+
+      expect(context).to include("Task:")
+      expect(context).to include("Input fields:")
+      expect(context).to include("Output fields:")
+      expect(context).to include(EmailClassification.description)
+      
+      # Verify enum fields include their values in the context
+      expect(context).to include("category (TestEnums::EmailCategory) [values: technical, billing, general]")
+      expect(context).to include("priority (TestEnums::Priority) [values: low, medium, high, critical]")
+      
+      # Verify non-enum fields don't have enum values
+      expect(context).to include("email_content (String)")
+      expect(context).to include("subject (String)")
+      expect(context).to include("summary (String)")
+      
+      # Make sure the old placeholder format is not present
+      expect(context).not_to include("[List possible TestEnums::EmailCategory options here]")
+      expect(context).not_to include("[List possible TestEnums::Priority options here]")
     end
 
     it 'builds requirements based on task complexity' do
