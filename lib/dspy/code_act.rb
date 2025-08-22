@@ -148,8 +148,6 @@ module DSPy
 
     sig { params(kwargs: T.untyped).returns(T.untyped).override }
     def forward(**kwargs)
-      lm = config.lm || DSPy.config.lm
-
       # Validate input and serialize all fields as task context
       input_struct = @original_signature_class.input_struct_class.new(**kwargs)
       task = DSPy::TypeSerializer.serialize(input_struct).to_json

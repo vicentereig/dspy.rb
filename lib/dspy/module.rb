@@ -49,10 +49,10 @@ module DSPy
       forward_untyped(**input_values)
     end
 
-    # Get the configured LM for this instance, falling back to global
+    # Get the configured LM for this instance, checking fiber-local context first
     sig { returns(T.untyped) }
     def lm
-      config.lm || DSPy.config.lm
+      config.lm || DSPy.current_lm
     end
   end
 end

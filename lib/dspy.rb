@@ -74,6 +74,20 @@ module DSPy
     end
   end
 
+  # Fiber-local LM context for temporary model overrides
+  FIBER_LM_KEY = :dspy_fiber_lm
+
+  def self.current_lm
+    Fiber[FIBER_LM_KEY] || config.lm
+  end
+
+  def self.with_lm(lm)
+    previous_lm = Fiber[FIBER_LM_KEY]
+    Fiber[FIBER_LM_KEY] = lm
+    yield
+  ensure
+    Fiber[FIBER_LM_KEY] = previous_lm
+  end
 end
 
 require_relative 'dspy/module'

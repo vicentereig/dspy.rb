@@ -48,4 +48,91 @@ RSpec.describe DSPy do
       end
     end
   end
+
+  describe 'fiber-local LM context' do
+    let(:mock_lm1) { double('LM1', model: 'model1') }
+    let(:mock_lm2) { double('LM2', model: 'model2') }
+    let(:mock_global_lm) { double('GlobalLM', model: 'global') }
+
+    before do
+      # Clear any existing fiber-local context
+      Fiber[:dspy_fiber_lm] = nil
+      
+      # Set global LM
+      DSPy.configure do |config|
+        config.lm = mock_global_lm
+      end
+    end
+
+    after do
+      # Clean up fiber-local context
+      Fiber[:dspy_fiber_lm] = nil
+      
+      # Reset global config
+      DSPy.configure do |config|
+        config.lm = nil
+      end
+    end
+
+    describe '.current_lm' do
+      it 'returns global LM when no fiber-local context' do
+        expect(DSPy.current_lm).to eq(mock_global_lm)
+      end
+
+      it 'returns fiber-local LM when set' do
+        Fiber[:dspy_fiber_lm] = mock_lm1
+        expect(DSPy.current_lm).to eq(mock_lm1)
+      end
+
+      it 'returns global LM when fiber-local is nil' do
+        Fiber[:dspy_fiber_lm] = nil
+        expect(DSPy.current_lm).to eq(mock_global_lm)
+      end
+    end
+
+    describe '.with_lm' do
+      it 'temporarily sets fiber-local LM' do
+        expect(DSPy.current_lm).to eq(mock_global_lm)
+        
+        DSPy.with_lm(mock_lm1) do
+          expect(DSPy.current_lm).to eq(mock_lm1)
+        end
+        
+        expect(DSPy.current_lm).to eq(mock_global_lm)
+      end
+
+      it 'supports nested with_lm calls' do
+        DSPy.with_lm(mock_lm1) do
+          expect(DSPy.current_lm).to eq(mock_lm1)
+          
+          DSPy.with_lm(mock_lm2) do
+            expect(DSPy.current_lm).to eq(mock_lm2)
+          end
+          
+          expect(DSPy.current_lm).to eq(mock_lm1)
+        end
+        
+        expect(DSPy.current_lm).to eq(mock_global_lm)
+      end
+
+      it 'restores previous context even when exception occurs' do
+        expect do
+          DSPy.with_lm(mock_lm1) do
+            expect(DSPy.current_lm).to eq(mock_lm1)
+            raise StandardError, "test error"
+          end
+        end.to raise_error(StandardError, "test error")
+        
+        expect(DSPy.current_lm).to eq(mock_global_lm)
+      end
+
+      it 'returns the block result' do
+        result = DSPy.with_lm(mock_lm1) do
+          "block result"
+        end
+        
+        expect(result).to eq("block result")
+      end
+    end
+  end
 end 
