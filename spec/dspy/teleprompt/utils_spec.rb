@@ -177,6 +177,135 @@ RSpec.describe DSPy::Teleprompt::Utils do
       expect(result.statistics[:success_rate]).to be > 0.5
     end
 
+    it 'filters input fields from bootstrap examples to prevent validation errors' do
+      # This test verifies the fix for the MIPROv2 hanging issue
+      # The mock predictor returns predictions that include both input and output fields
+      # The bootstrap process should filter out input fields to prevent DSPy::Example validation errors
+      
+      examples_with_matching_outputs = [
+        create_test_example("2 + 3", 5), # This will match prediction: {answer: 5, explanation: "Add 2 and 3 to get 5"}
+        create_test_example("10 - 4", 6) # This will match prediction: {answer: 6, explanation: "Subtract 4 from 10 to get 6"}
+      ]
+
+      result = DSPy::Teleprompt::Utils.create_n_fewshot_demo_sets(
+        mock_predictor,
+        examples_with_matching_outputs,
+        config: config
+      )
+
+      # Verify that bootstrap examples were created successfully
+      expect(result.successful_examples.size).to be >= 2
+      
+      # Verify that successful bootstrap examples only contain output fields
+      bootstrap_example = result.successful_examples.first
+      expect(bootstrap_example.expected_values).to include(:answer, :explanation)
+      expect(bootstrap_example.expected_values).not_to include(:problem) # input field should be filtered out
+      
+      # Verify input fields are preserved in input_values 
+      expect(bootstrap_example.input_values).to include(:problem)
+      expect(bootstrap_example.input_values).not_to include(:answer, :explanation)
+    end
+
+    it 'handles bootstrap process when predictions include extra input fields' do
+      # Create a mock predictor that includes input fields in its output
+      # This simulates the exact scenario that caused the hanging bug
+      problematic_predictor = Class.new do
+        def call(problem:)
+          result = case problem
+          when "2 + 3"
+            OpenStruct.new(
+              problem: problem,     # INPUT field contaminating the prediction
+              answer: 5,           # OUTPUT field  
+              explanation: "Add 2 and 3 to get 5" # OUTPUT field
+            )
+          when "10 - 4"  
+            OpenStruct.new(
+              problem: problem,     # INPUT field contaminating the prediction
+              answer: 6,           # OUTPUT field
+              explanation: "Subtract 4 from 10 to get 6" # OUTPUT field
+            )
+          else
+            OpenStruct.new(
+              problem: problem,
+              answer: 0, 
+              explanation: "Unknown problem"
+            )
+          end
+          
+          # Add to_h method that includes ALL fields (input + output)
+          result.define_singleton_method(:to_h) do
+            { problem: self.problem, answer: self.answer, explanation: self.explanation }
+          end
+          
+          result
+        end
+      end.new
+
+      examples = [
+        create_test_example("2 + 3", 5),
+        create_test_example("10 - 4", 6)
+      ]
+
+      # This should NOT hang and should complete successfully
+      result = DSPy::Teleprompt::Utils.create_n_fewshot_demo_sets(
+        problematic_predictor,
+        examples,
+        config: config
+      )
+
+      # Verify successful completion without hanging
+      expect(result).to be_a(DSPy::Teleprompt::Utils::BootstrapResult)
+      expect(result.successful_examples.size).to eq(2)
+      expect(result.statistics[:success_rate]).to eq(1.0)
+      
+      # Verify that each bootstrap example only contains output fields in expected_values
+      result.successful_examples.each do |bootstrap_example|
+        expect(bootstrap_example.expected_values.keys).to contain_exactly(:answer, :explanation)
+        expect(bootstrap_example.input_values.keys).to contain_exactly(:problem)
+      end
+    end
+
+    it 'prevents infinite loops when prediction validation consistently fails' do
+      # Create a predictor that always produces predictions that would fail validation
+      # without field filtering (because it includes input fields)
+      always_contaminated_predictor = Class.new do
+        def call(problem:)
+          # Always return prediction with contaminating input field
+          # But make sure the output matches expected values for successful bootstrap
+          result = OpenStruct.new(
+            problem: "contaminated_#{problem}", # This would cause DSPy::Example validation to fail
+            answer: 1, # This matches the expected value from create_test_example("test", 1)
+            explanation: "Unknown problem" # This matches MockMathPredictor behavior for "test"
+          )
+          
+          result.define_singleton_method(:to_h) do
+            { problem: self.problem, answer: self.answer, explanation: self.explanation }
+          end
+          
+          result
+        end
+      end.new
+
+      # Use expected values that match the predictor output
+      examples = [create_test_example("test", 1)] # This will match predictor's answer: 1
+      
+      config_with_low_limits = DSPy::Teleprompt::Utils::BootstrapConfig.new
+      config_with_low_limits.max_labeled_examples = 1
+      config_with_low_limits.max_errors = 2
+
+      # This should complete without hanging, even though predictions are "contaminated"
+      result = DSPy::Teleprompt::Utils.create_n_fewshot_demo_sets(
+        always_contaminated_predictor,
+        examples,
+        config: config_with_low_limits
+      )
+
+      # Should successfully create bootstrap examples because field filtering removes contamination
+      expect(result.successful_examples.size).to eq(1)
+      expect(result.successful_examples.first.expected_values).not_to include(:problem)
+      expect(result.successful_examples.first.expected_values).to include(:answer, :explanation)
+    end
+
     it 'handles prediction errors gracefully' do
       error_examples = [
         create_test_example("error_case", 0),
@@ -306,12 +435,12 @@ RSpec.describe DSPy::Teleprompt::Utils do
     describe '.create_successful_bootstrap_example' do
       it 'creates bootstrap example with metadata' do
         original = create_test_example("2 + 2", 4)
-        prediction = OpenStruct.new(answer: 4, explanation: "Two plus two equals four")
+        prediction_hash = { answer: 4, explanation: "Two plus two equals four" }
 
         result = DSPy::Teleprompt::Utils.send(
           :create_successful_bootstrap_example,
           original,
-          prediction
+          prediction_hash
         )
 
         expect(result).to be_a(DSPy::Example)
@@ -319,6 +448,165 @@ RSpec.describe DSPy::Teleprompt::Utils do
         expect(result.expected_values[:answer]).to eq(4)
         expect(result.metadata[:source]).to eq("bootstrap")
         expect(result.metadata).to include(:original_expected, :bootstrap_timestamp)
+      end
+
+      it 'accepts pre-filtered prediction hash directly' do
+        original = create_test_example("5 + 7", 12)
+        filtered_prediction = { answer: 12, explanation: "Add five and seven" }
+
+        result = DSPy::Teleprompt::Utils.send(
+          :create_successful_bootstrap_example,
+          original,
+          filtered_prediction
+        )
+
+        expect(result.expected_values).to eq(filtered_prediction)
+        expect(result.input_values).to eq(original.input_values)
+        expect(result.metadata[:source]).to eq("bootstrap")
+      end
+    end
+
+    describe '.extract_output_fields_from_prediction' do
+      let(:prediction) do
+        OpenStruct.new(
+          problem: "2 + 3", # input field - should be filtered out
+          answer: 5,        # output field - should be kept
+          explanation: "Add 2 and 3 to get 5" # output field - should be kept
+        ).tap do |pred|
+          pred.define_singleton_method(:to_h) do
+            { problem: problem, answer: answer, explanation: explanation }
+          end
+        end
+      end
+
+      it 'extracts only output fields from prediction' do
+        result = DSPy::Teleprompt::Utils.send(
+          :extract_output_fields_from_prediction,
+          prediction,
+          BootstrapMath
+        )
+
+        expect(result).to eq({
+          answer: 5,
+          explanation: "Add 2 and 3 to get 5"
+        })
+        expect(result).not_to include(:problem)
+      end
+
+      it 'handles missing output fields gracefully' do
+        incomplete_prediction = OpenStruct.new(
+          problem: "incomplete",
+          answer: 42
+          # missing explanation field
+        ).tap do |pred|
+          pred.define_singleton_method(:to_h) do
+            { problem: problem, answer: answer }
+          end
+        end
+
+        result = DSPy::Teleprompt::Utils.send(
+          :extract_output_fields_from_prediction,
+          incomplete_prediction,
+          BootstrapMath
+        )
+
+        expect(result).to eq({ answer: 42 })
+        expect(result).not_to include(:explanation)
+        expect(result).not_to include(:problem)
+      end
+
+      it 'returns empty hash when no output fields match' do
+        input_only_prediction = OpenStruct.new(
+          problem: "test",
+          unrelated_field: "value"
+        ).tap do |pred|
+          pred.define_singleton_method(:to_h) do
+            { problem: problem, unrelated_field: unrelated_field }
+          end
+        end
+
+        result = DSPy::Teleprompt::Utils.send(
+          :extract_output_fields_from_prediction,
+          input_only_prediction,
+          BootstrapMath
+        )
+
+        expect(result).to eq({})
+      end
+
+      it 'works with different signature classes' do
+        # Create a signature with different output fields
+        sentiment_signature = Class.new(DSPy::Signature) do
+          description "Analyze sentiment"
+          
+          input do
+            const :text, String
+          end
+
+          output do
+            const :sentiment, String
+            const :confidence, Float
+          end
+        end
+
+        sentiment_prediction = OpenStruct.new(
+          text: "This is great!", # input field
+          sentiment: "positive",  # output field
+          confidence: 0.95,      # output field
+          extra_field: "ignored" # unrecognized field
+        ).tap do |pred|
+          pred.define_singleton_method(:to_h) do
+            { text: text, sentiment: sentiment, confidence: confidence, extra_field: extra_field }
+          end
+        end
+
+        result = DSPy::Teleprompt::Utils.send(
+          :extract_output_fields_from_prediction,
+          sentiment_prediction,
+          sentiment_signature
+        )
+
+        expect(result).to eq({
+          sentiment: "positive",
+          confidence: 0.95
+        })
+        expect(result).not_to include(:text)
+        expect(result).not_to include(:extra_field)
+      end
+
+      it 'handles nil prediction values safely' do
+        nil_prediction = OpenStruct.new(
+          problem: "test",
+          answer: nil,
+          explanation: "no answer"
+        ).tap do |pred|
+          pred.define_singleton_method(:to_h) do
+            { problem: problem, answer: answer, explanation: explanation }
+          end
+        end
+
+        result = DSPy::Teleprompt::Utils.send(
+          :extract_output_fields_from_prediction,
+          nil_prediction,
+          BootstrapMath
+        )
+
+        expect(result).to eq({
+          answer: nil,
+          explanation: "no answer"
+        })
+      end
+
+      it 'handles prediction objects that cannot be converted to hash' do
+        broken_prediction = Object.new
+
+        expect {
+          DSPy::Teleprompt::Utils.send(
+            :extract_output_fields_from_prediction,
+            broken_prediction,
+            BootstrapMath
+          )
+        }.to raise_error(NoMethodError, /undefined method `to_h'/)
       end
     end
 

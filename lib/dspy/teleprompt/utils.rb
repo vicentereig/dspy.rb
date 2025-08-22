@@ -247,15 +247,17 @@ module DSPy
             prediction = program.call(**example.input_values)
             
             # Check if prediction matches expected output
+            prediction_hash = extract_output_fields_from_prediction(prediction, example.signature_class)
+            
             if metric
-              success = metric.call(example, prediction.to_h)
+              success = metric.call(example, prediction_hash)
             else
-              success = example.matches_prediction?(prediction.to_h)
+              success = example.matches_prediction?(prediction_hash)
             end
 
             if success
               # Create a new example with the successful prediction as reasoning/context
-              successful_example = create_successful_bootstrap_example(example, prediction)
+              successful_example = create_successful_bootstrap_example(example, prediction_hash)
               successful << successful_example
               
               emit_bootstrap_example_event(index, true, nil)
@@ -311,7 +313,7 @@ module DSPy
       sig do
         params(
           original_example: DSPy::Example,
-          prediction: T.untyped
+          prediction: T::Hash[Symbol, T.untyped]
         ).returns(DSPy::Example)
       end
       def self.create_successful_bootstrap_example(original_example, prediction)
@@ -319,7 +321,7 @@ module DSPy
         DSPy::Example.new(
           signature_class: original_example.signature_class,
           input: original_example.input_values,
-          expected: prediction.to_h,
+          expected: prediction,
           id: "bootstrap_#{original_example.id || SecureRandom.uuid}",
           metadata: {
             source: "bootstrap",
@@ -329,6 +331,29 @@ module DSPy
         )
       end
 
+      # Extract only output fields from prediction (exclude input fields)
+      sig do
+        params(
+          prediction: T.untyped,
+          signature_class: T.class_of(DSPy::Signature)
+        ).returns(T::Hash[Symbol, T.untyped])
+      end
+      def self.extract_output_fields_from_prediction(prediction, signature_class)
+        prediction_hash = prediction.to_h
+        
+        # Get output field names from signature
+        output_fields = signature_class.output_field_descriptors.keys
+        
+        # Filter prediction to only include output fields
+        filtered_expected = {}
+        output_fields.each do |field_name|
+          if prediction_hash.key?(field_name)
+            filtered_expected[field_name] = prediction_hash[field_name]
+          end
+        end
+        
+        filtered_expected
+      end
 
       # Create default metric for examples
       sig { params(examples: T::Array[T.untyped]).returns(T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean))) }
