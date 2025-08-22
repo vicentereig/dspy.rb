@@ -131,9 +131,6 @@ module DSPy
 
     sig { params(kwargs: T.untyped).returns(T.untyped).override }
     def forward(**kwargs)
-      lm = config.lm || DSPy.config.lm
-      available_tools = @tools.keys
-
       # Validate input
       input_struct = @original_signature_class.input_struct_class.new(**kwargs)
 

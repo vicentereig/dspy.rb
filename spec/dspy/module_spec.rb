@@ -25,6 +25,13 @@ RSpec.describe DSPy::Module do
   end
 
   describe '#lm' do
+    let(:fiber_lm) { DSPy::LM.new('anthropic/claude-3', api_key: 'fiber-key') }
+
+    after do
+      # Clean up fiber-local context
+      Fiber[:dspy_fiber_lm] = nil
+    end
+
     it 'returns global LM when no instance LM is configured' do
       expect(test_module.lm).to eq(global_lm)
     end
@@ -37,6 +44,45 @@ RSpec.describe DSPy::Module do
     it 'falls back to global LM when instance LM is nil' do
       test_module.config.lm = nil
       expect(test_module.lm).to eq(global_lm)
+    end
+
+    it 'returns fiber-local LM when no instance LM is configured' do
+      DSPy.with_lm(fiber_lm) do
+        expect(test_module.lm).to eq(fiber_lm)
+      end
+    end
+
+    it 'prefers instance LM over fiber-local LM' do
+      test_module.config.lm = instance_lm
+      
+      DSPy.with_lm(fiber_lm) do
+        expect(test_module.lm).to eq(instance_lm)
+      end
+    end
+
+    it 'falls back to fiber-local LM when instance LM is nil' do
+      test_module.config.lm = nil
+      
+      DSPy.with_lm(fiber_lm) do
+        expect(test_module.lm).to eq(fiber_lm)
+      end
+    end
+
+    it 'hierarchy: instance > fiber-local > global' do
+      # Only global
+      expect(test_module.lm).to eq(global_lm)
+      
+      # Fiber-local overrides global
+      DSPy.with_lm(fiber_lm) do
+        expect(test_module.lm).to eq(fiber_lm)
+        
+        # Instance overrides fiber-local
+        test_module.config.lm = instance_lm
+        expect(test_module.lm).to eq(instance_lm)
+      end
+      
+      # Back to instance (fiber-local context ended)
+      expect(test_module.lm).to eq(instance_lm)
     end
   end
 
