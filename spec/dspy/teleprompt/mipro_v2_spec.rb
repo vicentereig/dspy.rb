@@ -502,6 +502,52 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
 
       mipro.compile(test_program, trainset: training_examples, valset: validation_examples)
     end
+
+    it 'produces serialized optimization trace in final result' do
+      config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
+      config.num_trials = 2
+      config.num_instruction_candidates = 2
+      
+      mipro = DSPy::Teleprompt::MIPROv2.new(config: config)
+      result = mipro.compile(test_program, trainset: training_examples, valset: validation_examples)
+
+      # Verify optimization trace contains serialized candidates
+      expect(result.optimization_trace).to be_a(Hash)
+      
+      if result.optimization_trace[:candidates]
+        expect(result.optimization_trace[:candidates]).to be_an(Array)
+        
+        # Check that candidates are serialized as hashes, not objects
+        if result.optimization_trace[:candidates].any?
+          first_candidate = result.optimization_trace[:candidates].first
+          expect(first_candidate).to be_a(Hash)
+          expect(first_candidate).to include(:instruction, :few_shot_examples, :metadata, :config_id)
+          expect(first_candidate[:instruction]).to be_a(String)
+          expect(first_candidate[:few_shot_examples]).to be_a(Integer)
+          expect(first_candidate[:metadata]).to be_a(Hash)
+          expect(first_candidate[:config_id]).to be_a(String)
+        end
+      end
+
+      # Verify the result can be serialized to JSON without object references
+      json_output = nil
+      expect { json_output = JSON.generate(result.to_h) }.not_to raise_error
+      
+      # Parse back and verify no object references remain
+      parsed = JSON.parse(json_output)
+      expect(json_output).not_to include("#<DSPy::Teleprompt::MIPROv2::CandidateConfig:")
+      expect(json_output).not_to include("#<Object:")
+      
+      # Verify optimization trace structure in JSON
+      if parsed["optimization_trace"] && parsed["optimization_trace"]["candidates"]
+        candidates = parsed["optimization_trace"]["candidates"]
+        expect(candidates).to be_an(Array)
+        candidates.each do |candidate|
+          expect(candidate).to be_a(Hash)
+          expect(candidate.keys).to include("instruction", "few_shot_examples", "metadata", "config_id")
+        end
+      end
+    end
   end
 
   describe 'optimization strategies' do
@@ -625,6 +671,158 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
 
       should_stop = mipro.send(:should_early_stop?, state_early_trial, 1) # Trial 1
       expect(should_stop).to be(false)
+    end
+  end
+
+  describe '#serialize_optimization_trace' do
+    let(:mipro) { DSPy::Teleprompt::MIPROv2.new }
+    
+    let(:mock_candidates) do
+      [
+        DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+          instruction: "Analyze step by step with detailed reasoning",
+          few_shot_examples: training_examples.take(2),
+          metadata: { type: "combined", instruction_rank: 2 }
+        ),
+        DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+          instruction: "Provide concise answer based on context",
+          few_shot_examples: [],
+          metadata: { type: "instruction_only", instruction_rank: 1 }
+        )
+      ]
+    end
+
+    it 'returns empty hash when optimization_state is nil' do
+      result = mipro.send(:serialize_optimization_trace, nil)
+      expect(result).to eq({})
+    end
+
+    it 'returns empty hash when optimization_state is empty' do
+      result = mipro.send(:serialize_optimization_trace, {})
+      expect(result).to eq({})
+    end
+
+    it 'preserves optimization state without candidates' do
+      optimization_state = {
+        temperature: 0.8,
+        best_score_history: [0.6, 0.7, 0.8],
+        exploration_counts: { "abc123" => 2, "def456" => 1 },
+        diversity_scores: { "abc123" => 0.4, "def456" => 0.7 }
+      }
+
+      result = mipro.send(:serialize_optimization_trace, optimization_state)
+      
+      expect(result).to eq(optimization_state)
+      expect(result[:temperature]).to eq(0.8)
+      expect(result[:best_score_history]).to eq([0.6, 0.7, 0.8])
+      expect(result[:exploration_counts]).to eq({ "abc123" => 2, "def456" => 1 })
+      expect(result[:diversity_scores]).to eq({ "abc123" => 0.4, "def456" => 0.7 })
+    end
+
+    it 'serializes candidates array to hash format' do
+      optimization_state = {
+        candidates: mock_candidates,
+        temperature: 0.5,
+        scores: { mock_candidates.first.config_id => 0.85 }
+      }
+
+      result = mipro.send(:serialize_optimization_trace, optimization_state)
+      
+      expect(result[:candidates]).to be_an(Array)
+      expect(result[:candidates].size).to eq(2)
+      
+      # Check first candidate serialization
+      first_candidate = result[:candidates][0]
+      expect(first_candidate).to be_a(Hash)
+      expect(first_candidate[:instruction]).to eq("Analyze step by step with detailed reasoning")
+      expect(first_candidate[:few_shot_examples]).to eq(2) # Count, not actual examples
+      expect(first_candidate[:metadata]).to eq({ type: "combined", instruction_rank: 2 })
+      expect(first_candidate[:config_id]).to be_a(String)
+      expect(first_candidate[:config_id].length).to eq(12)
+      
+      # Check second candidate serialization
+      second_candidate = result[:candidates][1]
+      expect(second_candidate).to be_a(Hash)
+      expect(second_candidate[:instruction]).to eq("Provide concise answer based on context")
+      expect(second_candidate[:few_shot_examples]).to eq(0) # No examples
+      expect(second_candidate[:metadata]).to eq({ type: "instruction_only", instruction_rank: 1 })
+      expect(second_candidate[:config_id]).to be_a(String)
+      
+      # Verify other state is preserved
+      expect(result[:temperature]).to eq(0.5)
+      expect(result[:scores]).to eq({ mock_candidates.first.config_id => 0.85 })
+    end
+
+    it 'does not modify the original optimization_state' do
+      original_state = {
+        candidates: mock_candidates,
+        temperature: 0.7,
+        immutable_data: { nested: "value" }
+      }
+      
+      original_candidates = original_state[:candidates]
+      original_temperature = original_state[:temperature]
+      
+      result = mipro.send(:serialize_optimization_trace, original_state)
+      
+      # Original state should be unchanged
+      expect(original_state[:candidates]).to equal(original_candidates) # Same object reference
+      expect(original_state[:temperature]).to eq(original_temperature)
+      expect(original_state[:immutable_data][:nested]).to eq("value")
+      
+      # Result should be different
+      expect(result[:candidates]).not_to equal(original_candidates)
+      expect(result[:candidates]).to be_an(Array)
+      expect(result[:candidates].first).to be_a(Hash)
+    end
+
+    it 'handles empty candidates array' do
+      optimization_state = {
+        candidates: [],
+        temperature: 0.9,
+        other_data: "preserved"
+      }
+
+      result = mipro.send(:serialize_optimization_trace, optimization_state)
+      
+      expect(result[:candidates]).to eq([])
+      expect(result[:temperature]).to eq(0.9)
+      expect(result[:other_data]).to eq("preserved")
+    end
+
+    it 'creates serializable JSON output for complex optimization trace' do
+      complex_state = {
+        candidates: mock_candidates,
+        temperature: 0.6,
+        best_score_history: [0.5, 0.7, 0.8, 0.82],
+        exploration_counts: { 
+          mock_candidates[0].config_id => 3, 
+          mock_candidates[1].config_id => 2 
+        },
+        diversity_scores: { 
+          mock_candidates[0].config_id => 0.45, 
+          mock_candidates[1].config_id => 0.72 
+        },
+        no_improvement_count: 1,
+        phase_timestamps: {
+          bootstrap_start: "2024-01-01T10:00:00Z",
+          optimization_start: "2024-01-01T10:05:00Z"
+        }
+      }
+
+      result = mipro.send(:serialize_optimization_trace, complex_state)
+      
+      # Test that the result can be converted to JSON without errors
+      json_output = nil
+      expect { json_output = JSON.generate(result) }.not_to raise_error
+      
+      # Verify JSON can be parsed back
+      parsed = JSON.parse(json_output, symbolize_names: true)
+      expect(parsed[:candidates]).to be_an(Array)
+      expect(parsed[:candidates].size).to eq(2)
+      expect(parsed[:candidates][0][:instruction]).to eq("Analyze step by step with detailed reasoning")
+      expect(parsed[:temperature]).to eq(0.6)
+      expect(parsed[:best_score_history]).to eq([0.5, 0.7, 0.8, 0.82])
     end
   end
 
