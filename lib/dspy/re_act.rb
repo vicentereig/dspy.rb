@@ -112,8 +112,16 @@ module DSPy
         # Use the enhanced output struct with ReAct fields
         @output_struct_class = enhanced_output_struct
 
+        # Store original signature name
+        @original_signature_name = signature_class.name
+
         class << self
-          attr_reader :input_struct_class, :output_struct_class
+          attr_reader :input_struct_class, :output_struct_class, :original_signature_name
+          
+          # Override name to return the original signature name
+          def name
+            @original_signature_name || super
+          end
         end
       end
 

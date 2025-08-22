@@ -633,4 +633,23 @@ RSpec.describe DSPy::ReAct do
     end
   end
 
+  describe 'signature name tracking' do
+    let(:date_tool) { SorbetGetTodaysDate.new }
+    let(:add_tool) { SorbetAddNumbers.new }
+    let(:tools) { [date_tool, add_tool] }
+    let(:agent) { DSPy::ReAct.new(DeepQA, tools: tools) }
+
+    it 'stores the original signature name' do
+      expect(agent.signature_class.original_signature_name).to eq('DeepQA')
+    end
+
+    it 'overrides the name method to return original signature name' do
+      expect(agent.signature_class.name).to eq('DeepQA')
+    end
+
+    it 'preserves access to original signature name' do
+      expect(agent.signature_class.original_signature_name).to eq('DeepQA')
+    end
+  end
+
 end
