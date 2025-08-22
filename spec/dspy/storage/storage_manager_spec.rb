@@ -162,7 +162,7 @@ end
         mock_optimization_result,
         tags: ['mipro', 'test']
       )
-      
+
       high_score_result = double('HighScoreResult',
         optimized_program: different_program,
         best_score_value: 0.95,
