@@ -3,17 +3,30 @@ require 'tempfile'
 require 'tmpdir'
 require 'dspy/storage/program_storage'
 
+# Test signature class for deserialization tests
+class ManageExtractionConversation < DSPy::Signature
+  description "Manage conversation flow for entity extraction tasks"
+
+  input do
+    const :conversation_history, String, description: "Previous conversation context including latest user input"
+    const :target_schema, T::Hash[String, T.untyped], description: "Schema defining required entities to extract"
+    const :personality, String, description: "Conversation personality and tone to adopt"
+  end
+
+  output do
+    const :intent_changed, String, description: "yes if user changed intent or wants to do something else, no if continuing current task"
+    const :extraction_ready, String, description: "yes if all required fields collected and ready to extract, no if still collecting information"
+    const :next_question, String, description: "Natural follow-up question to ask user (only if intent unchanged and extraction not ready)"
+    const :missing_fields, T::Array[String], description: "List of required field paths still missing"
+  end
+end
+
 RSpec.describe DSPy::Storage::ProgramStorage do
   let(:temp_dir) { Dir.mktmpdir }
   let(:storage) { DSPy::Storage::ProgramStorage.new(storage_path: temp_dir) }
   
-  let(:mock_program) do
-    double('Program', 
-      class: double(name: 'MockProgram'),
-      signature_class: double(name: 'MockSignature'),
-      prompt: double(instruction: 'Test instruction'),
-      few_shot_examples: []
-    )
+  let(:test_program) do
+    DSPy::ChainOfThought.new(ManageExtractionConversation)
   end
   
   let(:mock_optimization_result) do
@@ -52,17 +65,17 @@ RSpec.describe DSPy::Storage::ProgramStorage do
 
   describe '#save_program' do
     it 'saves a program with optimization results' do
-      saved_program = storage.save_program(mock_program, mock_optimization_result)
+      saved_program = storage.save_program(test_program, mock_optimization_result)
       
       expect(saved_program).to be_a(DSPy::Storage::ProgramStorage::SavedProgram)
-      expect(saved_program.program).to eq(mock_program)
+      expect(saved_program.program).to eq(test_program)
       expect(saved_program.optimization_result).to eq(mock_optimization_result)
       expect(saved_program.program_id).to be_a(String)
       expect(saved_program.program_id.length).to eq(16)
     end
 
     it 'saves program data to file' do
-      saved_program = storage.save_program(mock_program, mock_optimization_result)
+      saved_program = storage.save_program(test_program, mock_optimization_result)
       
       file_path = File.join(temp_dir, 'programs', "#{saved_program.program_id}.json")
       expect(File.exist?(file_path)).to be(true)
@@ -73,7 +86,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
     end
 
     it 'updates history when saving' do
-      storage.save_program(mock_program, mock_optimization_result)
+      storage.save_program(test_program, mock_optimization_result)
       
       history_path = File.join(temp_dir, 'history.json')
       expect(File.exist?(history_path)).to be(true)
@@ -87,7 +100,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
   end
 
   describe '#load_program' do
-    let(:saved_program) { storage.save_program(mock_program, mock_optimization_result) }
+    let(:saved_program) { storage.save_program(test_program, mock_optimization_result) }
 
     it 'loads a saved program by ID' do
       loaded_program = storage.load_program(saved_program.program_id)
@@ -110,8 +123,8 @@ RSpec.describe DSPy::Storage::ProgramStorage do
     end
 
     it 'returns list of saved programs' do
-      saved1 = storage.save_program(mock_program, mock_optimization_result)
-      saved2 = storage.save_program(mock_program, mock_optimization_result.merge(best_score_value: 0.9))
+      saved1 = storage.save_program(test_program, mock_optimization_result)
+      saved2 = storage.save_program(test_program, mock_optimization_result.merge(best_score_value: 0.9))
       
       programs = storage.list_programs
       expect(programs.size).to eq(2)
@@ -130,7 +143,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
 
     it 'returns comprehensive history with multiple programs' do
       3.times do |i|
-        storage.save_program(mock_program, mock_optimization_result.merge(best_score_value: 0.7 + i * 0.1))
+        storage.save_program(test_program, mock_optimization_result.merge(best_score_value: 0.7 + i * 0.1))
       end
       
       history = storage.get_history
@@ -141,7 +154,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
   end
 
   describe '#delete_program' do
-    let(:saved_program) { storage.save_program(mock_program, mock_optimization_result) }
+    let(:saved_program) { storage.save_program(test_program, mock_optimization_result) }
 
     it 'deletes existing program' do
       result = storage.delete_program(saved_program.program_id)
@@ -170,8 +183,8 @@ RSpec.describe DSPy::Storage::ProgramStorage do
     let(:temp_export_file) { File.join(temp_dir, 'export.json') }
     
     it 'exports multiple programs to file' do
-      saved1 = storage.save_program(mock_program, mock_optimization_result)
-      saved2 = storage.save_program(mock_program, mock_optimization_result.merge(best_score_value: 0.9))
+      saved1 = storage.save_program(test_program, mock_optimization_result)
+      saved2 = storage.save_program(test_program, mock_optimization_result.merge(best_score_value: 0.9))
       
       storage.export_programs([saved1.program_id, saved2.program_id], temp_export_file)
       
@@ -189,7 +202,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
     
     it 'imports programs from exported file' do
       # First export some programs
-      saved = storage.save_program(mock_program, mock_optimization_result)
+      saved = storage.save_program(test_program, mock_optimization_result)
       storage.export_programs([saved.program_id], temp_export_file)
       
       # Clear storage
@@ -210,7 +223,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
     describe '#initialize' do
       it 'generates program ID if not provided' do
         saved_program = DSPy::Storage::ProgramStorage::SavedProgram.new(
-          program: mock_program,
+          program: test_program,
           optimization_result: mock_optimization_result
         )
         
@@ -221,7 +234,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
       it 'uses provided program ID' do
         custom_id = 'custom_test_id'
         saved_program = DSPy::Storage::ProgramStorage::SavedProgram.new(
-          program: mock_program,
+          program: test_program,
           optimization_result: mock_optimization_result,
           program_id: custom_id
         )
@@ -231,7 +244,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
 
       it 'includes version metadata' do
         saved_program = DSPy::Storage::ProgramStorage::SavedProgram.new(
-          program: mock_program,
+          program: test_program,
           optimization_result: mock_optimization_result
         )
         
@@ -243,7 +256,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
     describe '#to_h and #from_h' do
       it 'serializes and deserializes correctly' do
         original = DSPy::Storage::ProgramStorage::SavedProgram.new(
-          program: mock_program,
+          program: test_program,
           optimization_result: mock_optimization_result,
           metadata: { test: 'value' }
         )
@@ -254,6 +267,103 @@ RSpec.describe DSPy::Storage::ProgramStorage do
         expect(restored.program_id).to eq(original.program_id)
         expect(restored.optimization_result).to eq(original.optimization_result)
         expect(restored.saved_at.to_i).to eq(original.saved_at.to_i) # Compare as integers to avoid precision issues
+      end
+    end
+  end
+
+  describe 'signature class validation' do
+    it 'extracts signature class name successfully' do
+      storage.save_program(test_program, mock_optimization_result)
+
+      programs = storage.list_programs
+      expect(programs).not_to be_empty
+      expect(programs.first[:signature_class]).to eq('ManageExtractionConversation')
+    end
+
+    it 'raises descriptive error when signature class name is nil' do
+      program_with_nil_name = double('Program',
+        class: double(name: 'BadProgram'),
+        signature_class: double(name: nil),
+        prompt: double(instruction: 'Test'),
+        few_shot_examples: []
+      )
+
+      expect {
+        storage.save_program(program_with_nil_name, mock_optimization_result)
+      }.to raise_error(RuntimeError, /Program BadProgram has a signature class that does not provide a name/)
+    end
+
+    it 'raises descriptive error when signature class name is empty string' do
+      program_with_empty_name = double('Program',
+        class: double(name: 'EmptyNameProgram'),
+        signature_class: double(name: ''),
+        prompt: double(instruction: 'Test'),
+        few_shot_examples: []
+      )
+
+      expect {
+        storage.save_program(program_with_empty_name, mock_optimization_result)
+      }.to raise_error(RuntimeError, /Program EmptyNameProgram has a signature class that does not provide a name/)
+    end
+  end
+
+  describe 'program serialization/deserialization' do
+    describe 'SavedProgram.deserialize_program' do
+      it 'raises error for missing class_name' do
+        data = { state: { signature_class: 'TestClass' } }
+        
+        expect {
+          DSPy::Storage::ProgramStorage::SavedProgram.deserialize_program(data)
+        }.to raise_error(ArgumentError, /Missing class_name in serialized data/)
+      end
+
+      it 'raises error when class does not support from_h' do
+        data = { class_name: 'String', state: {} }
+        
+        expect {
+          DSPy::Storage::ProgramStorage::SavedProgram.deserialize_program(data)
+        }.to raise_error(ArgumentError, /does not support deserialization/)
+      end
+
+      it 'raises error for non-Hash input' do
+        program = test_program
+        
+        expect {
+          DSPy::Storage::ProgramStorage::SavedProgram.deserialize_program(program)
+        }.to raise_error(ArgumentError, /Expected Hash for program data/)
+      end
+    end
+
+    describe 'real program deserialization' do
+      it 'deserializes a real ChainOfThought program from fixture' do
+        # Load the fixture data
+        fixture_path = File.join(__dir__, '../../fixtures/saved_program.json')
+        fixture_data = JSON.parse(File.read(fixture_path), symbolize_names: true)
+        program_data = fixture_data[:program_data]
+        
+        # Test deserialization
+        result = DSPy::Storage::ProgramStorage::SavedProgram.deserialize_program(program_data)
+        
+        # Verify the deserialized program
+        expect(result).to be_a(DSPy::ChainOfThought)
+        expect(result.signature_class.name).to eq('ManageExtractionConversation')
+        
+        # Verify the instruction was restored
+        expect(result.prompt.instruction).to include('Think step by step')
+      end
+      
+      it 'preserves program state structure through serialize/deserialize cycle' do
+        # Test that serialization creates expected structure
+        serialized = DSPy::Storage::ProgramStorage::SavedProgram.new(
+          program: test_program,
+          optimization_result: mock_optimization_result
+        ).send(:serialize_program, test_program)
+        
+        expect(serialized).to have_key(:class_name)
+        expect(serialized).to have_key(:state)
+        expect(serialized[:class_name]).to eq('DSPy::ChainOfThought')
+        expect(serialized[:state]).to have_key(:signature_class)
+        expect(serialized[:state][:signature_class]).to eq('ManageExtractionConversation')
       end
     end
   end
