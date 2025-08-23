@@ -1,0 +1,383 @@
+{
+    "program_id": "0d57c1025e05f5f3",
+    "saved_at": "2025-08-18T13:44:42+00:00",
+    "program_data": {
+        "class_name": "DSPy::ChainOfThought",
+        "state": {
+            "signature_class": "ManageExtractionConversation",
+            "instruction": "For the given conversation history and target schema, determine if the user's intent has changed. Then, assess if enough information has been gathered to begin entity extraction. If not, formulate a clear and concise next question to elicit the missing information. Finally, explicitly list the names of any missing fields from the target schema. Document your reasoning for each step. Think step by step."
+        }
+    },
+    "optimization_result": {
+        "scores": {
+            "pass_rate": 1.0
+        },
+        "history": {
+            "total_trials": 4,
+            "optimization_strategy": "greedy",
+            "early_stopped": true,
+            "score_history": [
+                0.5,
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "best_score_name": "pass_rate",
+        "best_score_value": 1.0,
+        "metadata": {
+            "optimizer": "MIPROv2",
+            "auto_mode": "light",
+            "best_instruction": "For the given conversation history and target schema, determine if the user's intent has changed. Then, assess if enough information has been gathered to begin entity extraction. If not, formulate a clear and concise next question to elicit the missing information. Finally, explicitly list the names of any missing fields from the target schema. Document your reasoning for each step. Think step by step.",
+            "best_few_shot_count": 2,
+            "best_candidate_type": "combined",
+            "optimization_timestamp": "2025-08-18T13:44:42+00:00"
+        },
+        "evaluated_candidates": [
+            {
+                "instruction": "For an entity extraction task, manage the conversation flow step-by-step. Consider the conversation history, the target schema, and the agent's personality. First, reason about whether the user's intent has changed based on the conversation history and the target schema, and output 'yes' or 'no' for `intent_changed`. Next, determine if all required fields in the target schema have been extracted, outputting 'yes' or 'no' for `extraction_ready`. If `extraction_ready` is 'no', identify the `missing_fields` as a list of strings. Generate the `next_question` to guide the user towards providing the missing information. Finally, document your `reasoning` for each step, explaining how you arrived at your decisions.",
+                "few_shot_examples": 0,
+                "metadata": {
+                    "type": "instruction_only",
+                    "proposal_rank": 0
+                },
+                "config_id": "448d32c233b2"
+            },
+            {
+                "instruction": "For the given conversation history and target schema, determine if the user's intent has changed. Then, assess if enough information has been gathered to begin entity extraction. If not, formulate a clear and concise next question to elicit the missing information. Finally, explicitly list the names of any missing fields from the target schema. Document your reasoning for each step. Think step by step.",
+                "few_shot_examples": 2,
+                "metadata": {
+                    "type": "combined",
+                    "instruction_rank": 2,
+                    "bootstrap_rank": 1
+                },
+                "config_id": "c2642be0b169"
+            },
+            {
+                "instruction": "For this entity extraction task, carefully manage the conversation flow. First, analyze the 'conversation_history' and 'target_schema', considering the defined 'personality'. Step-by-step, determine if the user's intent has changed ('intent_changed'), if sufficient information is available for extraction ('extraction_ready'), and what the 'next_question' should be to gather missing information. Identify any 'missing_fields' in the 'target_schema'. Document your 'reasoning' for each decision.",
+                "few_shot_examples": 2,
+                "metadata": {
+                    "type": "combined",
+                    "instruction_rank": 1,
+                    "bootstrap_rank": 2
+                },
+                "config_id": "031e3695f4ee"
+            },
+            {
+                "instruction": "",
+                "few_shot_examples": 2,
+                "metadata": {
+                    "type": "few_shot_only",
+                    "bootstrap_rank": 0
+                },
+                "config_id": "041abb831f82"
+            }
+        ],
+        "optimization_trace": {
+            "candidates": [
+                {
+                    "instruction": "",
+                    "few_shot_examples": 0,
+                    "metadata": {
+                        "type": "baseline"
+                    },
+                    "config_id": "f1657a4bb052"
+                },
+                {
+                    "instruction": "For an entity extraction task, manage the conversation flow step-by-step. Consider the conversation history, the target schema, and the agent's personality. First, reason about whether the user's intent has changed based on the conversation history and the target schema, and output 'yes' or 'no' for `intent_changed`. Next, determine if all required fields in the target schema have been extracted, outputting 'yes' or 'no' for `extraction_ready`. If `extraction_ready` is 'no', identify the `missing_fields` as a list of strings. Generate the `next_question` to guide the user towards providing the missing information. Finally, document your `reasoning` for each step, explaining how you arrived at your decisions.",
+                    "few_shot_examples": 0,
+                    "metadata": {
+                        "type": "instruction_only",
+                        "proposal_rank": 0
+                    },
+                    "config_id": "448d32c233b2"
+                },
+                {
+                    "instruction": "For this entity extraction task, carefully manage the conversation flow. First, analyze the 'conversation_history' and 'target_schema', considering the defined 'personality'. Step-by-step, determine if the user's intent has changed ('intent_changed'), if sufficient information is available for extraction ('extraction_ready'), and what the 'next_question' should be to gather missing information. Identify any 'missing_fields' in the 'target_schema'. Document your 'reasoning' for each decision.",
+                    "few_shot_examples": 0,
+                    "metadata": {
+                        "type": "instruction_only",
+                        "proposal_rank": 1
+                    },
+                    "config_id": "cbe31fd9c943"
+                },
+                {
+                    "instruction": "For the given conversation history and target schema, determine if the user's intent has changed. Then, assess if enough information has been gathered to begin entity extraction. If not, formulate a clear and concise next question to elicit the missing information. Finally, explicitly list the names of any missing fields from the target schema. Document your reasoning for each step. Think step by step.",
+                    "few_shot_examples": 0,
+                    "metadata": {
+                        "type": "instruction_only",
+                        "proposal_rank": 2
+                    },
+                    "config_id": "7472315bc6df"
+                },
+                {
+                    "instruction": "",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "few_shot_only",
+                        "bootstrap_rank": 0
+                    },
+                    "config_id": "041abb831f82"
+                },
+                {
+                    "instruction": "",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "few_shot_only",
+                        "bootstrap_rank": 1
+                    },
+                    "config_id": "a87d56bca3c5"
+                },
+                {
+                    "instruction": "",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "few_shot_only",
+                        "bootstrap_rank": 2
+                    },
+                    "config_id": "28e646477c7b"
+                },
+                {
+                    "instruction": "For an entity extraction task, manage the conversation flow step-by-step. Consider the conversation history, the target schema, and the agent's personality. First, reason about whether the user's intent has changed based on the conversation history and the target schema, and output 'yes' or 'no' for `intent_changed`. Next, determine if all required fields in the target schema have been extracted, outputting 'yes' or 'no' for `extraction_ready`. If `extraction_ready` is 'no', identify the `missing_fields` as a list of strings. Generate the `next_question` to guide the user towards providing the missing information. Finally, document your `reasoning` for each step, explaining how you arrived at your decisions.",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "combined",
+                        "instruction_rank": 0,
+                        "bootstrap_rank": 0
+                    },
+                    "config_id": "9101e8e88c1f"
+                },
+                {
+                    "instruction": "For an entity extraction task, manage the conversation flow step-by-step. Consider the conversation history, the target schema, and the agent's personality. First, reason about whether the user's intent has changed based on the conversation history and the target schema, and output 'yes' or 'no' for `intent_changed`. Next, determine if all required fields in the target schema have been extracted, outputting 'yes' or 'no' for `extraction_ready`. If `extraction_ready` is 'no', identify the `missing_fields` as a list of strings. Generate the `next_question` to guide the user towards providing the missing information. Finally, document your `reasoning` for each step, explaining how you arrived at your decisions.",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "combined",
+                        "instruction_rank": 0,
+                        "bootstrap_rank": 1
+                    },
+                    "config_id": "45f475e41cab"
+                },
+                {
+                    "instruction": "For an entity extraction task, manage the conversation flow step-by-step. Consider the conversation history, the target schema, and the agent's personality. First, reason about whether the user's intent has changed based on the conversation history and the target schema, and output 'yes' or 'no' for `intent_changed`. Next, determine if all required fields in the target schema have been extracted, outputting 'yes' or 'no' for `extraction_ready`. If `extraction_ready` is 'no', identify the `missing_fields` as a list of strings. Generate the `next_question` to guide the user towards providing the missing information. Finally, document your `reasoning` for each step, explaining how you arrived at your decisions.",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "combined",
+                        "instruction_rank": 0,
+                        "bootstrap_rank": 2
+                    },
+                    "config_id": "72af8d327392"
+                },
+                {
+                    "instruction": "For this entity extraction task, carefully manage the conversation flow. First, analyze the 'conversation_history' and 'target_schema', considering the defined 'personality'. Step-by-step, determine if the user's intent has changed ('intent_changed'), if sufficient information is available for extraction ('extraction_ready'), and what the 'next_question' should be to gather missing information. Identify any 'missing_fields' in the 'target_schema'. Document your 'reasoning' for each decision.",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "combined",
+                        "instruction_rank": 1,
+                        "bootstrap_rank": 0
+                    },
+                    "config_id": "54db1c69de33"
+                },
+                {
+                    "instruction": "For this entity extraction task, carefully manage the conversation flow. First, analyze the 'conversation_history' and 'target_schema', considering the defined 'personality'. Step-by-step, determine if the user's intent has changed ('intent_changed'), if sufficient information is available for extraction ('extraction_ready'), and what the 'next_question' should be to gather missing information. Identify any 'missing_fields' in the 'target_schema'. Document your 'reasoning' for each decision.",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "combined",
+                        "instruction_rank": 1,
+                        "bootstrap_rank": 1
+                    },
+                    "config_id": "f270639c2499"
+                },
+                {
+                    "instruction": "For this entity extraction task, carefully manage the conversation flow. First, analyze the 'conversation_history' and 'target_schema', considering the defined 'personality'. Step-by-step, determine if the user's intent has changed ('intent_changed'), if sufficient information is available for extraction ('extraction_ready'), and what the 'next_question' should be to gather missing information. Identify any 'missing_fields' in the 'target_schema'. Document your 'reasoning' for each decision.",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "combined",
+                        "instruction_rank": 1,
+                        "bootstrap_rank": 2
+                    },
+                    "config_id": "031e3695f4ee"
+                },
+                {
+                    "instruction": "For the given conversation history and target schema, determine if the user's intent has changed. Then, assess if enough information has been gathered to begin entity extraction. If not, formulate a clear and concise next question to elicit the missing information. Finally, explicitly list the names of any missing fields from the target schema. Document your reasoning for each step. Think step by step.",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "combined",
+                        "instruction_rank": 2,
+                        "bootstrap_rank": 0
+                    },
+                    "config_id": "8f94525db97d"
+                },
+                {
+                    "instruction": "For the given conversation history and target schema, determine if the user's intent has changed. Then, assess if enough information has been gathered to begin entity extraction. If not, formulate a clear and concise next question to elicit the missing information. Finally, explicitly list the names of any missing fields from the target schema. Document your reasoning for each step. Think step by step.",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "combined",
+                        "instruction_rank": 2,
+                        "bootstrap_rank": 1
+                    },
+                    "config_id": "c2642be0b169"
+                },
+                {
+                    "instruction": "For the given conversation history and target schema, determine if the user's intent has changed. Then, assess if enough information has been gathered to begin entity extraction. If not, formulate a clear and concise next question to elicit the missing information. Finally, explicitly list the names of any missing fields from the target schema. Document your reasoning for each step. Think step by step.",
+                    "few_shot_examples": 2,
+                    "metadata": {
+                        "type": "combined",
+                        "instruction_rank": 2,
+                        "bootstrap_rank": 2
+                    },
+                    "config_id": "eb7facda7d57"
+                }
+            ],
+            "scores": {
+                "448d32c233b2": 0.5,
+                "c2642be0b169": 1.0,
+                "031e3695f4ee": 1.0,
+                "041abb831f82": 1.0
+            },
+            "exploration_counts": {
+                "448d32c233b2": 1,
+                "c2642be0b169": 1,
+                "031e3695f4ee": 1,
+                "041abb831f82": 1
+            },
+            "temperature": 1.0,
+            "best_score_history": [
+                0.5,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "diversity_scores": {
+                "448d32c233b2": 1.0,
+                "c2642be0b169": 1.0,
+                "031e3695f4ee": 1.0,
+                "041abb831f82": 0.2
+            },
+            "no_improvement_count": 2
+        },
+        "bootstrap_statistics": {
+            "total_trainset": 8,
+            "successful_count": 7,
+            "failed_count": 1,
+            "success_rate": 0.875,
+            "candidate_sets_created": 3,
+            "average_set_size": 2.0
+        },
+        "proposal_statistics": {
+            "task_description": "Manage conversation flow for entity extraction tasks Think step by step.",
+            "input_fields": [
+                {
+                    "name": "conversation_history",
+                    "type": "String",
+                    "description": "",
+                    "required": true
+                },
+                {
+                    "name": "target_schema",
+                    "type": "T::Hash[String, T.untyped]",
+                    "description": "",
+                    "required": true
+                },
+                {
+                    "name": "personality",
+                    "type": "String",
+                    "description": "",
+                    "required": true
+                }
+            ],
+            "output_fields": [
+                {
+                    "name": "intent_changed",
+                    "type": "String",
+                    "description": "",
+                    "required": true
+                },
+                {
+                    "name": "extraction_ready",
+                    "type": "String",
+                    "description": "",
+                    "required": true
+                },
+                {
+                    "name": "next_question",
+                    "type": "String",
+                    "description": "",
+                    "required": true
+                },
+                {
+                    "name": "missing_fields",
+                    "type": "T::Array[String]",
+                    "description": "",
+                    "required": true
+                },
+                {
+                    "name": "reasoning",
+                    "type": "String",
+                    "description": "",
+                    "required": true
+                }
+            ],
+            "example_patterns": {
+                "total_examples": 8,
+                "analyzed_examples": 8,
+                "input_patterns": {
+                    "avg_input_length": 104.125,
+                    "common_input_types": {
+                        "String": 16,
+                        "Hash": 8
+                    },
+                    "frequent_keywords": {
+                        "user": 12,
+                        "your": 8,
+                        "need": 7,
+                        "what": 6,
+                        "friendly": 4,
+                        "medication": 4,
+                        "customer": 3,
+                        "manager": 3,
+                        "sarah": 3,
+                        "information": 3
+                    }
+                },
+                "output_patterns": {
+                    "avg_output_length": 22.75,
+                    "common_output_types": {
+                        "String": 24,
+                        "Array": 8
+                    }
+                },
+                "common_themes": [
+                    "question_answering",
+                    "mathematical_reasoning"
+                ]
+            },
+            "complexity_indicators": {
+                "num_input_fields": 3,
+                "num_output_fields": 5,
+                "has_complex_outputs": true,
+                "requires_reasoning": true
+            },
+            "few_shot_patterns": {
+                "num_examples": 5,
+                "demonstrates_reasoning": false,
+                "example_variety": "high"
+            }
+        }
+    },
+    "metadata": {
+        "optimizer": "DSPy::Teleprompt::MIPROv2",
+        "signature_class": "ManageExtractionConversation",
+        "strategy": "greedy",
+        "trials": 6,
+        "duration_seconds": 33.23,
+        "dataset_size": 10,
+        "tags": [],
+        "description": null,
+        "optimizer_class": "DSPy::Teleprompt::MIPROv2::MIPROv2Result",
+        "saved_by": "StorageManager",
+        "optimization_timestamp": "2025-08-18T13:44:42+00:00",
+        "dspy_version": "0.19.1",
+        "ruby_version": "3.3.5",
+        "saved_with": "DSPy::Storage::ProgramStorage"
+    }
+}

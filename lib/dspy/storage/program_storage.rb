@@ -90,18 +90,39 @@ module DSPy
 
         sig { params(program: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
         def serialize_program(program)
-          # Basic serialization - can be enhanced for specific program types
-          {
-            class_name: program.class.name,
-            state: extract_program_state(program)
-          }
+          # Basic serialization
+          if program.is_a?(Hash)
+            # Already serialized - return as-is to preserve state
+            program
+          else
+            # Real program object - serialize it
+            {
+              class_name: program.class.name,
+              state: extract_program_state(program)
+            }
+          end
         end
 
-        sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+        sig { params(data: T.untyped).returns(T.untyped) }
         def self.deserialize_program(data)
-          # Basic deserialization - would need enhancement for complex programs
-          # For now, return the serialized state
-          data
+          # Ensure data is a Hash
+          unless data.is_a?(Hash)
+            raise ArgumentError, "Expected Hash for program data, got #{data.class.name}"
+          end
+          
+          # Get class name from the serialized data
+          class_name = data[:class_name]
+          raise ArgumentError, "Missing class_name in serialized data" unless class_name
+          
+          # Get the class constant
+          program_class = Object.const_get(class_name)
+          
+          # Use the class's from_h method
+          unless program_class.respond_to?(:from_h)
+            raise ArgumentError, "Class #{class_name} does not support deserialization (missing from_h method)"
+          end
+          
+          program_class.from_h(data)
         end
 
         sig { params(program: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
@@ -310,6 +331,20 @@ module DSPy
           { programs: [], summary: { total_programs: 0, avg_score: 0.0 } }
         end
         
+        # Extract signature class name from program object
+        unless saved_program.program.respond_to?(:signature_class)
+          raise ArgumentError, "Program #{saved_program.program.class.name} does not respond to signature_class method"
+        end
+        
+        signature_class_name = saved_program.program.signature_class.name
+        
+        if signature_class_name.nil? || signature_class_name.empty?
+          raise(
+            "Program #{saved_program.program.class.name} has a signature class that does not provide a name.\n" \
+            "Ensure the signature class responds to #name or that signature_class_name is stored in program state."
+          )
+        end
+        
         # Add or update program entry
         program_entry = {
           program_id: saved_program.program_id,
@@ -317,7 +352,7 @@ module DSPy
           best_score: saved_program.optimization_result[:best_score_value],
           score_name: saved_program.optimization_result[:best_score_name],
           optimizer: saved_program.optimization_result[:metadata]&.dig(:optimizer),
-          signature_class: saved_program.metadata[:signature_class],
+          signature_class: signature_class_name,
           metadata: saved_program.metadata
         }
         

@@ -12,19 +12,45 @@ RSpec.describe DSPy::Storage::StorageManager do
     config
   end
   let(:storage_manager) { DSPy::Storage::StorageManager.new(config: config) }
-  
-  let(:mock_program) do
-    double('Program', 
-      class: double(name: 'MockProgram'),
-      signature_class: double(name: 'MockSignature'),
-      prompt: double(instruction: 'Test instruction'),
-      few_shot_examples: []
-    )
+
+# Test signature class for deserialization tests
+class MockSignature < DSPy::Signature
+  description "Test signature for storage manager specs"
+
+  input do
+    const :test_input, String, description: "Test input field"
   end
+
+  output do
+    const :test_output, String, description: "Test output field"
+  end
+end
+
+# Different signature class for testing signature-specific queries
+class ClassifySignature < DSPy::Signature
+  description "Test signature for classification tasks"
+
+  input do
+    const :text, String, description: "Text to classify"
+  end
+
+  output do
+    const :category, String, description: "Classification category"
+  end
+end
+
+  let(:test_program) do
+    DSPy::ChainOfThought.new(MockSignature)
+  end
+  
+  let(:different_program) do
+    DSPy::ChainOfThought.new(ClassifySignature)
+  end
+  
   
   let(:mock_optimization_result) do
     double('OptimizationResult',
-      optimized_program: mock_program,
+      optimized_program: test_program,
       best_score_value: 0.85,
       best_score_name: 'accuracy',
       scores: { accuracy: 0.85 },
@@ -32,7 +58,7 @@ RSpec.describe DSPy::Storage::StorageManager do
       metadata: { optimizer: 'TestOptimizer', optimization_timestamp: Time.now.iso8601 },
       class: double(name: 'MockOptimizationResult'),
       to_h: {
-        optimized_program: mock_program,
+        optimized_program: test_program,
         best_score_value: 0.85,
         best_score_name: 'accuracy',
         scores: { accuracy: 0.85 },
@@ -134,12 +160,11 @@ RSpec.describe DSPy::Storage::StorageManager do
       # Save multiple programs with different characteristics
       storage_manager.save_optimization_result(
         mock_optimization_result,
-        tags: ['mipro', 'test'],
-        metadata: { signature_class: 'QASignature' }
+        tags: ['mipro', 'test']
       )
       
       high_score_result = double('HighScoreResult',
-        optimized_program: mock_program,
+        optimized_program: different_program,
         best_score_value: 0.95,
         metadata: { optimizer: 'SimpleOptimizer' },
         class: double(name: 'SimpleOptimizerResult'),
@@ -148,8 +173,7 @@ RSpec.describe DSPy::Storage::StorageManager do
       
       storage_manager.save_optimization_result(
         high_score_result,
-        tags: ['simple'],
-        metadata: { signature_class: 'ClassifySignature' }
+        tags: ['simple']
       )
     end
 
@@ -171,8 +195,9 @@ RSpec.describe DSPy::Storage::StorageManager do
     end
 
     it 'finds programs by signature class' do
-      programs = storage_manager.find_programs(signature_class: 'QASignature')
+      programs = storage_manager.find_programs(signature_class: 'MockSignature')
       expect(programs.size).to eq(1)
+      expect(programs.first[:signature_class]).to eq('MockSignature')
     end
 
     it 'filters by age in days' do
@@ -188,12 +213,11 @@ RSpec.describe DSPy::Storage::StorageManager do
     before do
       # Save programs with different scores for same signature
       storage_manager.save_optimization_result(
-        mock_optimization_result, # score: 0.85
-        metadata: { signature_class: 'QASignature' }
+        mock_optimization_result # score: 0.85
       )
       
       better_result = double('BetterResult',
-        optimized_program: mock_program,
+        optimized_program: test_program,
         best_score_value: 0.95,
         metadata: {},
         class: double(name: 'BetterResult'),
@@ -201,13 +225,12 @@ RSpec.describe DSPy::Storage::StorageManager do
       )
       
       storage_manager.save_optimization_result(
-        better_result,
-        metadata: { signature_class: 'QASignature' }
+        better_result
       )
     end
 
     it 'returns the highest scoring program for signature class' do
-      best = storage_manager.get_best_program('QASignature')
+      best = storage_manager.get_best_program('MockSignature')
       
       expect(best).to be_a(DSPy::Storage::ProgramStorage::SavedProgram)
       expect(best.optimization_result[:best_score_value]).to eq(0.95)
@@ -260,7 +283,7 @@ RSpec.describe DSPy::Storage::StorageManager do
       # Save programs with different optimizers and times
       3.times do |i|
         result = double("Result#{i}",
-          optimized_program: mock_program,
+          optimized_program: test_program,
           best_score_value: 0.7 + i * 0.1,
           metadata: { optimizer: i.even? ? 'MIPROv2' : 'SimpleOptimizer' },
           class: double(name: "Result#{i}"),
@@ -299,7 +322,7 @@ RSpec.describe DSPy::Storage::StorageManager do
       # Save 3 programs with different scores
       3.times do |i|
         result = double("Result#{i}",
-          optimized_program: mock_program,
+          optimized_program: test_program,
           best_score_value: 0.5 + i * 0.2, # 0.5, 0.7, 0.9
           metadata: {},
           class: double(name: "Result#{i}"),
@@ -330,7 +353,7 @@ RSpec.describe DSPy::Storage::StorageManager do
     let(:program1_id) { storage_manager.save_optimization_result(mock_optimization_result).program_id }
     let(:program2_result) do
       double('Result2',
-        optimized_program: mock_program,
+        optimized_program: test_program,
         best_score_value: 0.75,
         metadata: { optimizer: 'SimpleOptimizer' },
         class: double(name: 'Result2'),
