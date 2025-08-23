@@ -24,7 +24,7 @@ DSPy.rb modules provide a foundation for building reusable LLM components. The `
 
 DSPy modules enable:
 - **Custom Predictors**: Build specialized LLM components
-- **Configuration**: Per-instance and global language model configuration
+- **Configuration**: Per-instance, fiber-local, and global language model configuration
 - **Manual Composition**: Combine multiple modules through explicit method calls
 - **Type Safety**: Sorbet integration for type-safe interfaces
 
@@ -100,6 +100,119 @@ end
 classifier = ConfigurableClassifier.new
 result = classifier.call(text: "This is a technical document")
 puts result.reasoning
+```
+
+## Fiber-Local LM Context
+
+DSPy.rb supports temporary language model overrides using fiber-local storage through `DSPy.with_lm`. This is particularly useful for optimization workflows, testing different models, or using specialized models for specific tasks.
+
+### Basic Usage
+
+```ruby
+# Configure a global default model
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new("openai/gpt-4o", api_key: ENV['OPENAI_API_KEY'])
+end
+
+# Create a module that uses the global LM by default
+class Classifier < DSPy::Module
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(ClassificationSignature)
+  end
+
+  def forward(text:)
+    @predictor.call(text: text)
+  end
+end
+
+classifier = Classifier.new
+
+# Use the global LM (gpt-4o)
+result1 = classifier.call(text: "This is great!")
+
+# Temporarily override with a different model
+fast_model = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
+
+DSPy.with_lm(fast_model) do
+  # Inside this block, all modules use the fast model
+  result2 = classifier.call(text: "This is great!")
+  # result2 was generated using gpt-4o-mini
+end
+
+# Back to using the global LM (gpt-4o)
+result3 = classifier.call(text: "This is great!")
+```
+
+### LM Resolution Hierarchy
+
+DSPy resolves language models in this order:
+1. **Instance-level LM** - Set directly on a module instance
+2. **Fiber-local LM** - Set via `DSPy.with_lm`
+3. **Global LM** - Set via `DSPy.configure`
+
+```ruby
+# Global configuration
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new("openai/gpt-4o", api_key: ENV['OPENAI_API_KEY'])
+end
+
+# Create module with instance-level LM
+classifier = Classifier.new
+classifier.config.lm = DSPy::LM.new("anthropic/claude-3-sonnet-20240229", api_key: ENV['ANTHROPIC_API_KEY'])
+
+# Instance-level LM takes precedence
+result1 = classifier.call(text: "Test") # Uses Claude Sonnet
+
+# Fiber-local LM doesn't override instance-level
+fast_model = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
+DSPy.with_lm(fast_model) do
+  result2 = classifier.call(text: "Test") # Still uses Claude Sonnet
+end
+
+# Create module without instance-level LM
+classifier2 = Classifier.new
+
+DSPy.with_lm(fast_model) do
+  result3 = classifier2.call(text: "Test") # Uses gpt-4o-mini (fiber-local)
+end
+
+result4 = classifier2.call(text: "Test") # Uses gpt-4o (global)
+```
+
+### Using with Different Model Types
+
+```ruby
+# Fast model for quick iterations
+fast_model = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
+
+# Powerful model for final results
+powerful_model = DSPy::LM.new("anthropic/claude-3-opus-20240229", api_key: ENV['ANTHROPIC_API_KEY'])
+
+# Local model for privacy-sensitive tasks
+local_model = DSPy::LM.new("ollama/llama3.1:8b", base_url: "http://localhost:11434")
+
+classifier = Classifier.new
+
+# Use fast model for testing
+DSPy.with_lm(fast_model) do
+  test_results = test_cases.map do |test_case|
+    classifier.call(text: test_case.text)
+  end
+  puts "Fast model accuracy: #{calculate_accuracy(test_results)}"
+end
+
+# Use powerful model for production
+DSPy.with_lm(powerful_model) do
+  production_result = classifier.call(text: user_input)
+  send_response(production_result)
+end
+
+# Use local model for sensitive data
+DSPy.with_lm(local_model) do
+  sensitive_result = classifier.call(text: sensitive_document)
+  store_locally(sensitive_result)
+end
 ```
 
 ## Manual Module Composition
