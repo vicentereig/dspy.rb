@@ -195,7 +195,11 @@ module DSPy
       begin
         combined_struct = create_combined_struct_class
         all_attributes = input_values.merge(output_attributes)
-        combined_struct.new(**all_attributes)
+        
+        # Preprocess nilable attributes before struct instantiation
+        processed_attributes = preprocess_nilable_attributes(all_attributes, combined_struct)
+        
+        combined_struct.new(**processed_attributes)
       rescue ArgumentError => e
         raise PredictionInvalidError.new({ output: e.message })
       rescue TypeError => e
@@ -230,6 +234,37 @@ module DSPy
       end
       
       output_attributes
+    end
+
+    # Preprocesses attributes to handle nilable fields properly before struct instantiation
+    sig { params(attributes: T::Hash[Symbol, T.untyped], struct_class: T.class_of(T::Struct)).returns(T::Hash[Symbol, T.untyped]) }
+    def preprocess_nilable_attributes(attributes, struct_class)
+      processed = attributes.dup
+      struct_props = struct_class.props
+
+      # Process each attribute based on its type in the struct
+      processed.each do |key, value|
+        prop_info = struct_props[key]
+        next unless prop_info
+
+        prop_type = prop_info[:type_object] || prop_info[:type]
+        next unless prop_type
+
+        # For nilable fields with nil values, ensure proper handling
+        if value.nil? && is_nilable_type?(prop_type)
+          # For nilable fields, nil is valid - keep it as is
+          next
+        elsif value.nil? && prop_info[:fully_optional]
+          # For fully optional fields, nil is valid - keep it as is
+          next
+        elsif value.nil? && prop_info[:default]
+          # Use default value if available
+          default_value = prop_info[:default]
+          processed[key] = default_value.is_a?(Proc) ? default_value.call : default_value
+        end
+      end
+
+      processed
     end
   end
 end

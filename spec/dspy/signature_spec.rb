@@ -73,7 +73,7 @@ RSpec.describe DSPy::Signature do
         type: "object",
         properties: {
           sentence: { type: "string" },
-          context: { type: "string" }
+          context: { type: ["string", "null"] }  # T.nilable(String) correctly generates nilable type
         },
         required: ["sentence"]  # context is not required due to default
       })
@@ -86,7 +86,7 @@ RSpec.describe DSPy::Signature do
         properties: {
           sentiment: { type: "string" },  # For now, just string type
           confidence: { type: "number" },
-          explanation: { type: "string" }
+          explanation: { type: ["string", "null"] }  # T.nilable(String) correctly generates nilable type
         },
         required: ["sentiment", "confidence"]  # explanation is not required due to default
       })

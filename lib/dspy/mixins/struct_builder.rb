@@ -80,7 +80,8 @@ module DSPy
       def extract_type_from_prop(prop)
         case prop
         when Hash
-          prop[:type]
+          # Prefer type_object for nilable types, fallback to type
+          prop[:type_object] || prop[:type]
         when Array
           # Handle [Type, description] format
           prop.first
@@ -94,7 +95,18 @@ module DSPy
       def extract_options_from_prop(prop)
         case prop
         when Hash
-          prop.except(:type, :type_object, :accessor_key, :sensitivity, :redaction)
+          # Preserve important flags like fully_optional for nilable types
+          extracted = prop.except(:type, :type_object, :accessor_key, :sensitivity, :redaction, :setter_proc, :value_validate_proc, :serialized_form, :need_nil_read_check, :immutable, :pii, :extra)
+          
+          # Handle default values properly
+          if prop[:default]
+            extracted[:default] = prop[:default]
+          elsif prop[:fully_optional]
+            # For fully optional fields (nilable), set default to nil
+            extracted[:default] = nil
+          end
+          
+          extracted
         else
           {}
         end
