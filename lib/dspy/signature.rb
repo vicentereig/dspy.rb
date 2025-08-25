@@ -257,17 +257,87 @@ module DSPy
             # Add a more explicit description of the expected structure
             description: "A mapping where keys are #{key_schema[:type]}s and values are #{value_schema[:description] || value_schema[:type]}s"
           }
+        elsif type.class.name == "T::Private::Types::SimplePairUnion"
+          # Handle T.nilable types (T::Private::Types::SimplePairUnion)
+          # This is the actual implementation of T.nilable(SomeType)
+          has_nil = type.respond_to?(:types) && type.types.any? do |t| 
+            (t.respond_to?(:raw_type) && t.raw_type == NilClass) ||
+            (t.respond_to?(:name) && t.name == "NilClass")
+          end
+          
+          if has_nil
+            # Find the non-nil type
+            non_nil_type = type.types.find do |t|
+              !(t.respond_to?(:raw_type) && t.raw_type == NilClass) &&
+              !(t.respond_to?(:name) && t.name == "NilClass")
+            end
+            
+            if non_nil_type
+              base_schema = type_to_json_schema(non_nil_type)
+              if base_schema[:type].is_a?(String)
+                # Convert single type to array with null
+                { type: [base_schema[:type], "null"] }.merge(base_schema.except(:type))
+              else
+                # For complex schemas, use anyOf to allow null
+                { anyOf: [base_schema, { type: "null" }] }
+              end
+            else
+              { type: "string" } # Fallback
+            end
+          else
+            # Not nilable SimplePairUnion - this is a regular T.any() union
+            # Generate oneOf schema for all types
+            if type.respond_to?(:types) && type.types.length > 1
+              {
+                oneOf: type.types.map { |t| type_to_json_schema(t) },
+                description: "Union of multiple types"
+              }
+            else
+              # Single type or fallback
+              first_type = type.respond_to?(:types) ? type.types.first : type
+              type_to_json_schema(first_type)
+            end
+          end
         elsif type.is_a?(T::Types::Union)
-          # For optional types (T.nilable), just use the non-nil type
+          # Check if this is a nilable type (contains NilClass)
+          is_nilable = type.types.any? { |t| t == T::Utils.coerce(NilClass) }
           non_nil_types = type.types.reject { |t| t == T::Utils.coerce(NilClass) }
-          if non_nil_types.size == 1
+          
+          # Special case: check if we have TrueClass + FalseClass (T.nilable(T::Boolean))
+          if non_nil_types.size == 2 && is_nilable
+            true_class_type = non_nil_types.find { |t| t.respond_to?(:raw_type) && t.raw_type == TrueClass }
+            false_class_type = non_nil_types.find { |t| t.respond_to?(:raw_type) && t.raw_type == FalseClass }
+            
+            if true_class_type && false_class_type
+              # This is T.nilable(T::Boolean) - treat as nilable boolean
+              return { type: ["boolean", "null"] }
+            end
+          end
+          
+          if non_nil_types.size == 1 && is_nilable
+            # This is T.nilable(SomeType) - generate proper schema with null allowed
+            base_schema = type_to_json_schema(non_nil_types.first)
+            if base_schema[:type].is_a?(String)
+              # Convert single type to array with null
+              { type: [base_schema[:type], "null"] }.merge(base_schema.except(:type))
+            else
+              # For complex schemas, use anyOf to allow null
+              { anyOf: [base_schema, { type: "null" }] }
+            end
+          elsif non_nil_types.size == 1
+            # Non-nilable single type union (shouldn't happen in practice)
             type_to_json_schema(non_nil_types.first)
           elsif non_nil_types.size > 1
             # Handle complex unions with oneOf for better JSON schema compliance
-            {
+            base_schema = {
               oneOf: non_nil_types.map { |t| type_to_json_schema(t) },
               description: "Union of multiple types"
             }
+            if is_nilable
+              # Add null as an option for complex nilable unions
+              base_schema[:oneOf] << { type: "null" }
+            end
+            base_schema
           else
             { type: "string" }  # Fallback for complex unions
           end

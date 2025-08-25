@@ -3,6 +3,29 @@ require 'tempfile'
 require 'tmpdir'
 require 'dspy/storage/program_storage'
 
+# Mock program class for serialization tests
+class MockProgram
+  extend T::Sig
+
+  sig { returns(T.class_of(DSPy::Signature)) }
+  def signature_class
+    ManageExtractionConversation
+  end
+
+  sig { returns(T::Hash[Symbol, T.untyped]) }
+  def to_h
+    {
+      class_name: self.class.name,
+      signature_class_name: signature_class.name
+    }
+  end
+
+  sig { params(data: T::Hash[Symbol, T.untyped]).returns(MockProgram) }
+  def self.from_h(data)
+    new
+  end
+end
+
 # Test signature class for deserialization tests
 class ManageExtractionConversation < DSPy::Signature
   description "Manage conversation flow for entity extraction tasks"

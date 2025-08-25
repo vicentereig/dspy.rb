@@ -123,7 +123,8 @@ module DSPy
             end
           elsif is_enum_type?(prop_type) && value.is_a?(String)
             # Convert string to enum
-            converted[key] = prop_type.raw_type.deserialize(value)
+            enum_class = extract_enum_class(prop_type)
+            converted[key] = enum_class.deserialize(value)
           elsif value.is_a?(Hash) && needs_struct_conversion?(prop_type)
             # Regular struct field that needs conversion
             converted[key] = convert_to_struct(value, prop_type)
@@ -188,15 +189,58 @@ module DSPy
     sig { params(type: T.untyped).returns(T::Boolean) }
     def is_enum_type?(type)
       return false if type.nil?
-      return false unless type.is_a?(T::Types::Simple)
       
-      begin
-        raw_type = type.raw_type
-        return false unless raw_type.is_a?(Class)
-        result = raw_type < T::Enum
-        return result == true # Force conversion to boolean
-      rescue StandardError
+      case type
+      when T::Types::Simple
+        # Handle regular enum types
+        begin
+          raw_type = type.raw_type
+          return false unless raw_type.is_a?(Class)
+          result = raw_type < T::Enum
+          return result == true # Force conversion to boolean
+        rescue StandardError
+          return false
+        end
+      when T::Private::Types::SimplePairUnion, T::Types::Union
+        # Handle T.nilable enum types
+        # Find the non-nil type and check if it's an enum
+        non_nil_types = if type.respond_to?(:types)
+          type.types.reject { |t| t.respond_to?(:raw_type) && t.raw_type == NilClass }
+        else
+          []
+        end
+        
+        # For nilable types, we expect exactly one non-nil type
+        return false unless non_nil_types.size == 1
+        
+        non_nil_type = non_nil_types.first
+        return is_enum_type?(non_nil_type) # Recursively check
+      else
         return false
+      end
+    end
+
+    sig { params(type: T.untyped).returns(T.untyped) }
+    def extract_enum_class(type)
+      case type
+      when T::Types::Simple
+        # Regular enum type
+        type.raw_type
+      when T::Private::Types::SimplePairUnion, T::Types::Union
+        # Nilable enum type - find the non-nil type
+        non_nil_types = if type.respond_to?(:types)
+          type.types.reject { |t| t.respond_to?(:raw_type) && t.raw_type == NilClass }
+        else
+          []
+        end
+        
+        if non_nil_types.size == 1
+          extract_enum_class(non_nil_types.first)
+        else
+          raise ArgumentError, "Unable to extract enum class from complex union type: #{type.inspect}"
+        end
+      else
+        raise ArgumentError, "Not an enum type: #{type.inspect}"
       end
     end
 
@@ -303,7 +347,12 @@ module DSPy
     def needs_struct_conversion?(type)
       case type
       when T::Types::Simple
-        type.raw_type < T::Struct
+        # Use !! to convert nil result of < comparison to false
+        begin
+          !!(type.raw_type < T::Struct)
+        rescue
+          false
+        end
       when T::Types::Union
         # Check if any type in the union is a struct
         type.types.any? { |t| needs_struct_conversion?(t) }
@@ -352,7 +401,7 @@ module DSPy
         end
         begin
           struct_class.new(**converted_hash)
-        rescue => e
+        rescue
           # Return original value if conversion fails
           value
         end
