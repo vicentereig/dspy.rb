@@ -188,6 +188,11 @@ module DSPy
           return { type: "boolean" }
         end
 
+        # Handle type aliases by resolving to their underlying type
+        if type.is_a?(T::Private::Types::TypeAlias)
+          return type_to_json_schema(type.aliased_type)
+        end
+
         # Handle raw class types first
         if type.is_a?(Class)
           if type < T::Enum
@@ -256,6 +261,22 @@ module DSPy
             additionalProperties: value_schema,
             # Add a more explicit description of the expected structure
             description: "A mapping where keys are #{key_schema[:type]}s and values are #{value_schema[:description] || value_schema[:type]}s"
+          }
+        elsif type.is_a?(T::Types::FixedHash)
+          # Handle fixed hashes (from type aliases like { "key" => Type })
+          properties = {}
+          required = []
+          
+          type.types.each do |key, value_type|
+            properties[key] = type_to_json_schema(value_type)
+            required << key
+          end
+          
+          {
+            type: "object",
+            properties: properties,
+            required: required,
+            additionalProperties: false
           }
         elsif type.class.name == "T::Private::Types::SimplePairUnion"
           # Handle T.nilable types (T::Private::Types::SimplePairUnion)
