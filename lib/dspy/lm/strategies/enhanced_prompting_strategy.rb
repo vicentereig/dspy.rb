@@ -114,24 +114,55 @@ module DSPy
 
           example = {}
           schema[:properties].each do |field_name, field_schema|
-            example[field_name.to_s] = case field_schema[:type]
-            when "string"
-              field_schema[:description] || "example string"
-            when "integer"
-              42
-            when "number"
-              3.14
-            when "boolean"
-              true
-            when "array"
+            example[field_name.to_s] = generate_example_value(field_schema)
+          end
+          example
+        end
+
+        sig { params(field_schema: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
+        def generate_example_value(field_schema)
+          case field_schema[:type]
+          when "string"
+            field_schema[:description] || "example string"
+          when "integer"
+            42
+          when "number"
+            3.14
+          when "boolean"
+            true
+          when "array"
+            if field_schema[:items]
+              [generate_example_value(field_schema[:items])]
+            else
               ["example item"]
-            when "object"
+            end
+          when "object"
+            if field_schema[:properties]
+              # Generate proper nested object example
+              nested_example = {}
+              field_schema[:properties].each do |prop_name, prop_schema|
+                nested_example[prop_name.to_s] = generate_example_value(prop_schema)
+              end
+              nested_example
+            else
               { "nested" => "object" }
+            end
+          when Array
+            # Handle union types like ["object", "null"]
+            if field_schema[:type].include?("object") && field_schema[:properties]
+              nested_example = {}
+              field_schema[:properties].each do |prop_name, prop_schema|
+                nested_example[prop_name.to_s] = generate_example_value(prop_schema)
+              end
+              nested_example
+            elsif field_schema[:type].include?("string")
+              "example string"
             else
               "example value"
             end
+          else
+            "example value"
           end
-          example
         end
 
         sig { params(content: String).returns(T::Boolean) }
