@@ -203,6 +203,9 @@ module DSPy
         sig { returns(T::Hash[Symbol, T.untyped]) }
         attr_reader :proposal_statistics
 
+        sig { returns(T.nilable(DSPy::Evaluate::BatchEvaluationResult)) }
+        attr_reader :best_evaluation_result
+
         sig do
           params(
             optimized_program: T.untyped,
@@ -214,10 +217,11 @@ module DSPy
             proposal_statistics: T::Hash[Symbol, T.untyped],
             best_score_name: T.nilable(String),
             best_score_value: T.nilable(Float),
-            metadata: T::Hash[Symbol, T.untyped]
+            metadata: T::Hash[Symbol, T.untyped],
+            best_evaluation_result: T.nilable(DSPy::Evaluate::BatchEvaluationResult)
           ).void
         end
-        def initialize(optimized_program:, scores:, history:, evaluated_candidates:, optimization_trace:, bootstrap_statistics:, proposal_statistics:, best_score_name: nil, best_score_value: nil, metadata: {})
+        def initialize(optimized_program:, scores:, history:, evaluated_candidates:, optimization_trace:, bootstrap_statistics:, proposal_statistics:, best_score_name: nil, best_score_value: nil, metadata: {}, best_evaluation_result: nil)
           super(
             optimized_program: optimized_program,
             scores: scores,
@@ -230,6 +234,7 @@ module DSPy
           @optimization_trace = optimization_trace.freeze
           @bootstrap_statistics = bootstrap_statistics.freeze
           @proposal_statistics = proposal_statistics.freeze
+          @best_evaluation_result = best_evaluation_result&.freeze
         end
 
         sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -238,7 +243,8 @@ module DSPy
             evaluated_candidates: @evaluated_candidates.map(&:to_h),
             optimization_trace: @optimization_trace,
             bootstrap_statistics: @bootstrap_statistics,
-            proposal_statistics: @proposal_statistics
+            proposal_statistics: @proposal_statistics,
+            best_evaluation_result: @best_evaluation_result&.to_h
           })
         end
       end
@@ -399,6 +405,7 @@ module DSPy
         best_score = 0.0
         best_candidate = nil
         best_program = nil
+        best_evaluation_result = nil
         
         @mipro_config.num_trials.times do |trial_idx|
           trials_completed = trial_idx + 1
@@ -415,7 +422,7 @@ module DSPy
 
           begin
             # Evaluate candidate
-            score, modified_program = evaluate_candidate(program, candidate, evaluation_set)
+            score, modified_program, evaluation_result = evaluate_candidate(program, candidate, evaluation_set)
             
             # Update optimization state
             update_optimization_state(optimization_state, candidate, score)
@@ -426,6 +433,7 @@ module DSPy
               best_score = score
               best_candidate = candidate
               best_program = modified_program
+              best_evaluation_result = evaluation_result
             end
 
             emit_event('trial_complete', {
@@ -456,6 +464,7 @@ module DSPy
           best_score: best_score,
           best_candidate: best_candidate,
           best_program: best_program,
+          best_evaluation_result: best_evaluation_result,
           trials_completed: trials_completed,
           optimization_state: optimization_state,
           evaluated_candidates: @evaluated_candidates
@@ -626,7 +635,7 @@ module DSPy
           program: T.untyped,
           candidate: CandidateConfig,
           evaluation_set: T::Array[DSPy::Example]
-        ).returns([Float, T.untyped])
+        ).returns([Float, T.untyped, DSPy::Evaluate::BatchEvaluationResult])
       end
       def evaluate_candidate(program, candidate, evaluation_set)
         # Apply candidate configuration to program
@@ -638,7 +647,7 @@ module DSPy
         # Store evaluation details
         @evaluated_candidates << candidate
         
-        [evaluation_result.pass_rate, modified_program]
+        [evaluation_result.pass_rate, modified_program, evaluation_result]
       end
 
       # Apply candidate configuration to program
@@ -724,6 +733,7 @@ module DSPy
         best_candidate = optimization_result[:best_candidate]
         best_program = optimization_result[:best_program]
         best_score = optimization_result[:best_score]
+        best_evaluation_result = optimization_result[:best_evaluation_result]
         
         scores = { pass_rate: best_score }
         
@@ -753,7 +763,8 @@ module DSPy
           evaluated_candidates: @evaluated_candidates,
           optimization_trace: serialize_optimization_trace(optimization_result[:optimization_state]),
           bootstrap_statistics: bootstrap_result.statistics,
-          proposal_statistics: proposal_result.analysis
+          proposal_statistics: proposal_result.analysis,
+          best_evaluation_result: best_evaluation_result
         )
       end
 

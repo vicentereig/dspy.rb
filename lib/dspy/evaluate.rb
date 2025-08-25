@@ -49,7 +49,7 @@ module DSPy
       def to_h
         {
           example: @example,
-          prediction: @prediction,
+          prediction: @prediction.respond_to?(:to_h) ? @prediction.to_h : @prediction,
           trace: @trace,
           metrics: @metrics,
           passed: @passed

@@ -351,6 +351,96 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
       expect(result.bootstrap_statistics).to be_frozen
       expect(result.proposal_statistics).to be_frozen
     end
+
+    it 'handles nil best_evaluation_result' do
+      expect(result.best_evaluation_result).to be_nil
+    end
+
+    context 'with best_evaluation_result' do
+      let(:mock_evaluation_result) do
+        mock_results = [
+          DSPy::Evaluate::EvaluationResult.new(
+            example: training_examples.first,
+            prediction: OpenStruct.new(answer: "Test answer", confidence: 0.9),
+            trace: nil,
+            metrics: { passed: true, confidence_score: 0.9, answer_length: 11 },
+            passed: true
+          ),
+          DSPy::Evaluate::EvaluationResult.new(
+            example: training_examples.last,
+            prediction: OpenStruct.new(answer: "Another answer", confidence: 0.7),
+            trace: nil,
+            metrics: { passed: true, confidence_score: 0.7, answer_length: 14 },
+            passed: true
+          )
+        ]
+        
+        DSPy::Evaluate::BatchEvaluationResult.new(
+          results: mock_results,
+          aggregated_metrics: { avg_confidence: 0.8, avg_length: 12.5 }
+        )
+      end
+
+      let(:result_with_evaluation) do
+        DSPy::Teleprompt::MIPROv2::MIPROv2Result.new(
+          optimized_program: test_program,
+          scores: { pass_rate: 1.0 },
+          history: { total_trials: 3 },
+          best_score_name: "pass_rate",
+          best_score_value: 1.0,
+          metadata: { optimizer: "MIPROv2" },
+          evaluated_candidates: mock_candidates,
+          optimization_trace: { temperature_history: [1.0, 0.5] },
+          bootstrap_statistics: { success_rate: 1.0 },
+          proposal_statistics: { num_candidates: 3 },
+          best_evaluation_result: mock_evaluation_result
+        )
+      end
+
+      it 'stores best_evaluation_result correctly' do
+        expect(result_with_evaluation.best_evaluation_result).to eq(mock_evaluation_result)
+        expect(result_with_evaluation.best_evaluation_result).to be_frozen
+      end
+
+      it 'provides access to detailed evaluation metrics' do
+        eval_result = result_with_evaluation.best_evaluation_result
+        
+        expect(eval_result.total_examples).to eq(2)
+        expect(eval_result.passed_examples).to eq(2)
+        expect(eval_result.pass_rate).to eq(1.0)
+        expect(eval_result.aggregated_metrics[:avg_confidence]).to eq(0.8)
+      end
+
+      it 'provides access to individual example results' do
+        eval_result = result_with_evaluation.best_evaluation_result
+        individual_results = eval_result.results
+        
+        expect(individual_results.length).to eq(2)
+        
+        first_result = individual_results.first
+        expect(first_result.passed).to be(true)
+        expect(first_result.metrics[:confidence_score]).to eq(0.9)
+        expect(first_result.metrics[:answer_length]).to eq(11)
+        expect(first_result.prediction.answer).to eq("Test answer")
+      end
+
+      it 'includes best_evaluation_result in hash serialization' do
+        hash = result_with_evaluation.to_h
+        
+        expect(hash).to include(:best_evaluation_result)
+        expect(hash[:best_evaluation_result]).to be_a(Hash)
+        expect(hash[:best_evaluation_result]).to include(:total_examples, :pass_rate, :results)
+        expect(hash[:best_evaluation_result][:total_examples]).to eq(2)
+        expect(hash[:best_evaluation_result][:pass_rate]).to eq(1.0)
+      end
+
+      it 'handles hash serialization when best_evaluation_result is nil' do
+        hash = result.to_h
+        
+        expect(hash).to include(:best_evaluation_result)
+        expect(hash[:best_evaluation_result]).to be_nil
+      end
+    end
   end
 
   describe '#initialize' do
@@ -546,6 +636,78 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
           expect(candidate).to be_a(Hash)
           expect(candidate.keys).to include("instruction", "few_shot_examples", "metadata", "config_id")
         end
+      end
+    end
+
+    context 'with detailed hash metrics' do
+      it 'stores detailed evaluation of best candidate' do
+        # Configure for minimal trials
+        config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
+        config.num_trials = 1
+        config.num_instruction_candidates = 1
+        config.bootstrap_sets = 1
+        config.require_validation_examples = false
+
+        # Create hash metric that returns detailed evaluation data
+        detailed_metric = proc do |example, prediction|
+          {
+            passed: prediction.confidence && prediction.confidence > 0.6,
+            confidence_score: prediction.confidence || 0.0,
+            answer_length: prediction.answer&.length || 0,
+            has_reasoning: !!(prediction.reasoning&.include?("step")),
+            evaluation_timestamp: Time.now.iso8601
+          }
+        end
+
+        mipro = DSPy::Teleprompt::MIPROv2.new(metric: detailed_metric, config: config)
+        result = mipro.compile(test_program, trainset: training_examples)
+
+        # Verify detailed evaluation was captured
+        expect(result.best_evaluation_result).not_to be_nil
+        
+        eval_result = result.best_evaluation_result
+        expect(eval_result.total_examples).to eq(training_examples.length)
+        expect(eval_result.results).to be_an(Array)
+        expect(eval_result.results.length).to eq(training_examples.length)
+
+        # Verify hash metrics are preserved
+        individual_result = eval_result.results.first
+        expect(individual_result.metrics).to include(:passed, :confidence_score, :answer_length, :has_reasoning, :evaluation_timestamp)
+        expect(individual_result.metrics[:confidence_score]).to be_a(Numeric)
+        expect(individual_result.metrics[:answer_length]).to be_a(Integer)
+        expect([true, false]).to include(individual_result.metrics[:has_reasoning])
+        expect(individual_result.metrics[:evaluation_timestamp]).to match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
+      end
+
+      it 'preserves hash metrics across serialization' do
+        config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
+        config.num_trials = 1
+        config.num_instruction_candidates = 1
+        config.bootstrap_sets = 1
+        config.require_validation_examples = false
+
+        hash_metric = proc do |example, prediction|
+          {
+            passed: true,
+            custom_score: 0.95,
+            metadata: { test: "value" }
+          }
+        end
+
+        mipro = DSPy::Teleprompt::MIPROv2.new(metric: hash_metric, config: config)
+        result = mipro.compile(test_program, trainset: training_examples)
+
+        # Test serialization roundtrip
+        result_hash = result.to_h
+        expect(result_hash[:best_evaluation_result]).not_to be_nil
+        
+        best_eval_hash = result_hash[:best_evaluation_result]
+        expect(best_eval_hash[:results]).to be_an(Array)
+        
+        first_example_metrics = best_eval_hash[:results].first[:metrics]
+        expect(first_example_metrics).to include(:passed, :custom_score, :metadata)
+        expect(first_example_metrics[:custom_score]).to eq(0.95)
+        expect(first_example_metrics[:metadata][:test]).to eq("value")
       end
     end
   end
