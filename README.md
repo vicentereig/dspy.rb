@@ -3,11 +3,7 @@
 [![Gem Version](https://img.shields.io/gem/v/dspy)](https://rubygems.org/gems/dspy)
 [![Total Downloads](https://img.shields.io/gem/dt/dspy)](https://rubygems.org/gems/dspy)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/vicentereig/dspy.rb/ruby.yml?branch=main&label=build)](https://github.com/vicentereig/dspy.rb/actions/workflows/ruby.yml)
-[![Ruby Version](https://img.shields.io/badge/ruby-%3E%3D%203.3.0-red)](https://www.ruby-lang.org/)
-[![License](https://img.shields.io/github/license/vicentereig/dspy.rb)](https://github.com/vicentereig/dspy.rb/blob/main/LICENSE.txt)
-[![GitHub stars](https://img.shields.io/github/stars/vicentereig/dspy.rb?style=social)](https://github.com/vicentereig/dspy.rb/stargazers)
 [![Documentation](https://img.shields.io/badge/docs-vicentereig.github.io%2Fdspy.rb-blue)](https://vicentereig.github.io/dspy.rb/)
-[![Last Commit](https://img.shields.io/github/last-commit/vicentereig/dspy.rb)](https://github.com/vicentereig/dspy.rb/commits/main)
 
 **Build reliable LLM applications in Ruby using composable, type-safe modules.**
 
