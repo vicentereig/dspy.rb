@@ -19,7 +19,19 @@ next:
 
 ## Installation
 
-Skip the gem for now - install straight from this repo while I prep the first release:
+Add DSPy.rb to your Gemfile:
+
+```ruby
+gem 'dspy', '~> 0.20.0'
+```
+
+Or install it directly:
+
+```bash
+gem install dspy
+```
+
+For bleeding-edge features, you can install from GitHub:
 
 ```ruby
 gem 'dspy', github: 'vicentereig/dspy.rb'

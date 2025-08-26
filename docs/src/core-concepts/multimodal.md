@@ -22,6 +22,11 @@ DSPy.rb supports multimodal inputs, allowing you to work with both text and imag
 - Claude 3.5 series (Sonnet, Haiku)
 - Claude 4 (latest)
 
+### Google Gemini Models
+- `gemini-1.5-flash` (fast, efficient)
+- `gemini-1.5-pro` (advanced reasoning)
+- `gemini-1.0-pro` (previous generation)
+
 ## Working with Images
 
 ### Creating Images
@@ -245,6 +250,56 @@ File.open('image.jpg', 'rb') do |file|
 end
 ```
 
+## Working with Google Gemini Models
+
+Google Gemini models are designed with multimodal capabilities from the ground up:
+
+```ruby
+# Configure Gemini model
+lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'])
+
+# Load and encode image as base64
+File.open('product_image.jpg', 'rb') do |file|
+  image_data = file.read
+  base64_data = Base64.strict_encode64(image_data)
+  
+  image = DSPy::Image.new(
+    base64: base64_data,
+    content_type: 'image/jpeg'
+  )
+  
+  response = lm.raw_chat do |messages|
+    messages.system('You are a product analysis expert.')
+    messages.user_with_image('Analyze this product image for e-commerce listing.', image)
+  end
+  
+  puts response
+end
+```
+
+### Multiple Images with Gemini
+
+```ruby
+# Analyze multiple product angles
+images = ['front.jpg', 'back.jpg', 'side.jpg'].map do |filename|
+  File.open(filename, 'rb') do |file|
+    DSPy::Image.new(
+      base64: Base64.strict_encode64(file.read),
+      content_type: 'image/jpeg'
+    )
+  end
+end
+
+response = lm.raw_chat do |messages|
+  messages.user_with_images(
+    'Compare these product images and identify any defects or quality issues.',
+    images
+  )
+end
+
+puts response
+```
+
 ## Platform Differences
 
 ### OpenAI
@@ -257,6 +312,12 @@ end
 - **No URL Support**: URLs are not supported directly
 - **No Detail Parameter**: The `detail` parameter is not supported
 - **Token Costs**: Approximately `(width × height) / 750` tokens
+
+### Google Gemini
+- **Base64 Only**: Images must be base64-encoded, URL references not supported
+- **No Detail Parameter**: The `detail` parameter is not supported
+- **Native Multimodal**: Built for multimodal from the ground up
+- **Token Usage**: Tracks token usage in response metadata
 
 ## Error Handling
 
@@ -285,6 +346,18 @@ begin
   end
 rescue DSPy::LM::IncompatibleImageFeatureError => e
   puts "Error: #{e.message}"  # Anthropic doesn't support image URLs
+end
+
+begin
+  # Attempt to use URL with Gemini (not supported)
+  gemini_lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'])
+  image = DSPy::Image.new(url: 'https://example.com/image.jpg')
+  
+  gemini_lm.raw_chat do |messages|
+    messages.user_with_image('What is this?', image)
+  end
+rescue DSPy::LM::IncompatibleImageFeatureError => e
+  puts "Error: #{e.message}"  # Gemini doesn't support image URLs
 end
 ```
 

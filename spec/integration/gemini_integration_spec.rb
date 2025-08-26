@@ -10,6 +10,7 @@ RSpec.describe 'Gemini Integration' do
   
   describe 'basic text generation' do
     it 'generates text response' do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       SSEVCR.use_cassette('gemini_basic_text') do
         lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
         
@@ -23,6 +24,7 @@ RSpec.describe 'Gemini Integration' do
     end
     
     it 'handles conversation with system messages' do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       SSEVCR.use_cassette('gemini_conversation') do
         lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
         
@@ -39,6 +41,7 @@ RSpec.describe 'Gemini Integration' do
   
   describe 'multimodal capabilities' do
     it 'analyzes an image from base64 data' do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       SSEVCR.use_cassette('gemini_multimodal_base64') do
         lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
         
@@ -60,6 +63,7 @@ RSpec.describe 'Gemini Integration' do
     end
     
     it 'compares multiple images' do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       SSEVCR.use_cassette('gemini_multimodal_multiple') do
         lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
         
@@ -80,6 +84,7 @@ RSpec.describe 'Gemini Integration' do
     end
     
     it 'raises error when trying to use URL images' do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
       
       image = DSPy::Image.new(url: 'https://example.com/image.jpg')
@@ -92,6 +97,7 @@ RSpec.describe 'Gemini Integration' do
     end
     
     it 'raises error when trying to use detail parameter' do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
       
       base64_image = TestImages.create_base64_png(color: :red, width: 16, height: 16)
@@ -164,6 +170,7 @@ RSpec.describe 'Gemini Integration' do
 
   describe 'error handling' do
     it 'handles authentication errors' do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       lm = DSPy::LM.new("gemini/#{model}", api_key: 'invalid-key')
       
       expect {
@@ -174,6 +181,7 @@ RSpec.describe 'Gemini Integration' do
     end
     
     it 'handles safety filter errors gracefully' do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       SSEVCR.use_cassette('gemini_safety_error') do
         lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
         
@@ -191,6 +199,7 @@ RSpec.describe 'Gemini Integration' do
 
   describe 'usage tracking' do
     it 'tracks token usage correctly' do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       SSEVCR.use_cassette('gemini_usage_tracking') do
         lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
         

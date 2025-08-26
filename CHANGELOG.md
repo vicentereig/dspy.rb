@@ -5,6 +5,83 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2025-08-26
+
+### Added
+- **Google Gemini API Integration** (by [@TheDumbTechGuy](https://github.com/TheDumbTechGuy))
+  - Complete support for Google's Gemini models (`gemini-1.5-flash`, `gemini-1.5-pro`, `gemini-1.0-pro`)
+  - Dual client architecture with streaming and non-streaming support
+  - Comprehensive error handling with Gemini-specific error messages
+  - Token usage tracking and response metadata for cost monitoring
+  - Multimodal image support with base64 encoding (URLs not supported)
+  - Provider compatibility validation with clear error messages
+  - Integration with DSPy's instrumentation and observability system
+
+- **Fiber-Local LM Context Management** (by [@TheDumbTechGuy](https://github.com/TheDumbTechGuy))  
+  - New `DSPy.with_lm` method for temporary language model overrides
+  - Uses Ruby's fiber-local storage for clean, thread-safe context management
+  - Supports nested contexts with automatic cleanup on exceptions
+  - Enables concurrent LM usage patterns without complex configuration
+  - Clear hierarchy: instance-level > fiber-local > global LM resolution
+  - Perfect for A/B testing, environment switching, and privacy-sensitive processing
+
+- **Program Serialization and Persistence** (by [@TheDumbTechGuy](https://github.com/TheDumbTechGuy))
+  - Implemented `from_h` method for restoring saved programs from serialized data
+  - Complete program state preservation including instructions, examples, and configuration
+  - Enhanced `ProgramStorage` with better error handling and metadata tracking
+  - Version compatibility tracking with DSPy and Ruby version information
+  - Support for program import/export across environments
+  - Automatic state extraction and reconstruction for all module types
+
+- **Documentation and Community**
+  - **CONTRIBUTORS.md** - New contributor recognition file highlighting Stefan Froelich's major contributions
+  - **Google Gemini Provider Documentation** - Comprehensive guide with examples and best practices
+  - **Fiber-Local LM Context Guide** - Detailed documentation with use cases and patterns
+  - **Program Persistence Guide** - Complete documentation for saving and loading optimized programs
+  - Updated multimodal documentation with Gemini provider information
+  - Updated installation guide to reflect gem availability
+
+### Enhanced
+- **MIPROv2 Optimizer Improvements** (by [@TheDumbTechGuy](https://github.com/TheDumbTechGuy))
+  - Fixed critical bootstrap phase hanging issue that could cause infinite loops
+  - Added metric parameter support to AutoMode factories for flexible optimization
+  - Improved optimization trace serialization for JSON output and debugging
+  - Better error handling and recovery during optimization phases
+  - Enhanced observability events for optimization tracking
+
+### Fixed
+- **CodeAct and ReAct Signature Name Tracking** - Fixed agent signature name tracking in observability
+- **Grounded Proposer Enum Value Extraction** - Improved enum value extraction for instruction generation
+- **Observability Code Cleanup** - Refined event emission and instrumentation accuracy
+
+### Documentation
+- Enhanced OG meta tags support for better social media sharing
+- Modernized README with current shields.io badges
+- Updated installation instructions to remove pre-release warnings
+- Comprehensive provider comparison matrix (OpenAI vs Anthropic vs Gemini)
+- New evaluation framework blog article
+- Updated multimodal examples with type-safe struct demonstrations
+
+### Contributors
+This release features significant contributions from:
+- **[@TheDumbTechGuy](https://github.com/TheDumbTechGuy)** (Stefan Froelich) - 9 transformational commits including Gemini integration, fiber-local contexts, program persistence, and MIPROv2 improvements
+- **[@vicentereig](https://github.com/vicentereig)** - 16 commits for documentation, multimodal features, and site improvements
+
+### Roadmap Progress
+This release advances key roadmap priorities:
+- ✅ **Provider Expansion** - Added Google Gemini support
+- ✅ **Better Context Management** - Fiber-local LM contexts  
+- ✅ **Improved Persistence** - Program serialization system
+- ✅ **Optimizer Reliability** - MIPROv2 stability fixes
+
+### Breaking Changes
+None - this release maintains full backward compatibility with existing DSPy.rb applications.
+
+### Migration Notes
+- Gemini models require base64-encoded images (no URL support)
+- Program serialization requires implementing `from_h` for custom modules
+- New fiber-local LM contexts provide cleaner patterns than manual model passing
+
 ## [0.18.1] - 2025-08-10
 
 ### Fixed
