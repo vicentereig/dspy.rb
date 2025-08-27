@@ -8,7 +8,11 @@ category: "Features"
 reading_time: "4 min read"
 ---
 
-I'm thrilled to announce that DSPy.rb v0.20.0 brings complete support for Google Gemini! Thanks to the excellent work by Stefan Froelich (@TheDumbTechGuy), you can now harness Google's cutting-edge multimodal AI models while maintaining all the type safety and structured outputs that make DSPy.rb unique.
+
+A project outgrows you the moment the first contributor merges to `main`. I'm thrilled to announce that DSPy.rb 
+v0.20.0 brings complete support for Google Gemini! Thanks to the excellent work by Stefan Froelich ([@TheDumbTechGuy](https://github.com/thedumbtechguy)), 
+you can now harness Google's cutting-edge multimodal AI models while maintaining all the type safety
+and structured outputs that make DSPy.rb unique.
 
 ## Why Google Gemini?
 

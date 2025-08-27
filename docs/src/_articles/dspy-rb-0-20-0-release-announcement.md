@@ -7,8 +7,6 @@ author: Vicente Reig
 tags: ["release", "features", "ruby", "ai"]
 ---
 
-# DSPy.rb v0.20.0: Multi-Provider AI, Better Context Management, and Production Persistence
-
 Three months ago, if you wanted to switch between OpenAI and Anthropic models mid-optimization, manage contexts across concurrent workflows, or persist your trained programs—you'd write a lot of glue code. Not anymore.
 
 DSPy.rb v0.20.0 ships with Google Gemini support, fiber-local context management, and production-ready program serialization. Here's what you can build now.
@@ -76,9 +74,10 @@ result = restored_program.call(input: "test query")
 
 This works across program restarts. Store the hash in Redis, PostgreSQL, or files—your choice.
 
-## MIPROv2 Actually Works Now
+## MIPROv2 Works Now
 
-The optimizer had a nasty bootstrap hanging bug that made it unusable in production. Stefan tracked it down to malformed example creation during the bootstrap phase. Fixed in this release.
+The optimizer had a nasty bootstrap hanging bug that made it unusable in production under some circumstances. 
+Stefan tracked it down to malformed example creation during the bootstrap phase. Fixed in this release.
 
 MIPROv2 now includes metric parameter support and better trace serialization. Your optimization runs complete reliably.
 
@@ -106,7 +105,7 @@ Storage system improvements will bring Rails-like patterns to program management
 gem install dspy
 ```
 
-The [documentation](https://dspy.vicentereig.com) covers everything. The [examples](https://github.com/vicentereig/dspy.rb/tree/main/examples) show real usage patterns.
+The [documentation](https://vicentereig.github.io/dspy.rb/) covers everything. The [examples](https://github.com/vicentereig/dspy.rb/tree/main/examples) show real usage patterns.
 
 Found a bug or want a feature? [Open an issue](https://github.com/vicentereig/dspy.rb/issues). Pull requests welcome.
 
