@@ -5,6 +5,7 @@ description: "Major release brings Google Gemini support, fiber-local contexts, 
 date: 2025-08-26
 author: Vicente Reig
 tags: ["release", "features", "ruby", "ai"]
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/dspy-rb-0-20-0-release-announcement/"
 ---
 
 Three months ago, if you wanted to switch between OpenAI and Anthropic models mid-optimization, manage contexts across concurrent workflows, or persist your trained programs—you'd write a lot of glue code. Not anymore.

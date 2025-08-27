@@ -210,7 +210,7 @@ and ecosystem integration.
 
 ### Ecosystem Expansion  
 - 🚧 **Model Context Protocol (MCP)** - Integration with MCP ecosystem
-- 🚧 **Additional Provider Support** - Google Gemini, Azure OpenAI, local models beyond Ollama
+- 🚧 **Additional Provider Support** - Azure OpenAI, local models beyond Ollama
 - 🚧 **Tool Ecosystem** - Expanded tool integrations for ReAct agents
 
 ### Community & Adoption

@@ -4,6 +4,7 @@ title: "Stop Fighting JSON Parsing Errors in Your LLM Apps"
 date: 2025-07-11
 description: "How DSPy.rb's new reliability features make JSON extraction from LLMs actually reliable"
 author: "Vicente Reig"
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-parsing-reliability/"
 ---
 
 # Stop Fighting JSON Parsing Errors in Your LLM Apps

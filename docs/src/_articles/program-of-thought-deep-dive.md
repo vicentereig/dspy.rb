@@ -6,6 +6,7 @@ date: 2025-07-12
 author: "Vicente Reig"
 category: "Research"
 reading_time: "12 min read"
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/program-of-thought-deep-dive/"
 ---
 
 ## TL;DR

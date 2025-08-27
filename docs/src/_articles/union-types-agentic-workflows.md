@@ -6,6 +6,7 @@ categories: [patterns, agents]
 description: How DSPy.rb's single-field union types with automatic type detection simplify AI agent development
 toc: true
 permalink: /blog/union-types-agentic-workflows/
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/union-types-agentic-workflows/"
 image:
   path: /assets/images/blog/union-types-agent.jpg
   alt: AI agent workflow with union types

@@ -6,6 +6,7 @@ date: 2025-07-15
 author: "Vicente Reig"
 category: "Features"
 reading_time: "6 min read"
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/type-safe-prediction-objects/"
 ---
 
 Building AI applications shouldn't feel like walking a tightrope. Every time you deploy a new prompt or integrate an LLM response, you're wondering: "Will this break in production?" 

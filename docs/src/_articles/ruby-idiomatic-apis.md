@@ -6,6 +6,7 @@ date: 2025-06-05
 author: "Vicente Reig"
 category: "Design"
 reading_time: "8 min read"
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/ruby-idiomatic-apis/"
 ---
 
 When we started building DSPy.rb, we had a choice: create a direct port of the Python library or reimagine it through a Ruby lens. We chose the latter, and today I want to share how that decision shaped the library.

@@ -27,6 +27,7 @@ module DSPy
       ].freeze
       
       # Gemini vision-capable models (all Gemini models support vision)
+      # Based on official Google AI API documentation (March 2025)
       GEMINI_VISION_MODELS = [
         # Gemini 2.5 series (2025)
         'gemini-2.5-pro',
@@ -34,17 +35,11 @@ module DSPy
         'gemini-2.5-flash-lite',
         # Gemini 2.0 series (2024-2025)
         'gemini-2.0-flash',
-        'gemini-2.0-flash-experimental',
-        'gemini-2.0-flash-lite', 
-        'gemini-2.0-pro-experimental',
+        'gemini-2.0-flash-lite',
         # Gemini 1.5 series
         'gemini-1.5-pro',
         'gemini-1.5-flash',
-        'gemini-1.5-pro-latest',
-        'gemini-1.5-flash-latest',
-        # Legacy models
-        'gemini-pro-vision',
-        'gemini-1.0-pro-vision'
+        'gemini-1.5-flash-8b'
       ].freeze
       
       def self.supports_vision?(provider, model)

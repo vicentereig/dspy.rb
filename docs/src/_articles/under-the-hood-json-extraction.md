@@ -5,6 +5,7 @@ date: 2025-07-25
 description: "A technical deep-dive into DSPy.rb's multi-strategy JSON extraction system, showing exactly how it handles OpenAI, Anthropic, and other providers"
 author: "Vicente Reig"
 draft: true
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/under-the-hood-json-extraction/"
 ---
 
 DSPy.rb uses 4 different strategies to extract JSON from LLMs. Here's how each one works.

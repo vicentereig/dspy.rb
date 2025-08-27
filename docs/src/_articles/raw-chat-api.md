@@ -8,6 +8,7 @@ tags: [api, benchmarking, migration, observability]
 excerpt: |
   The raw_chat API lets you run existing prompts through DSPy's observability system to compare token usage and performance against modular implementations.
 permalink: /blog/raw-chat-api/
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/raw-chat-api/"
 ---
 
 DSPy.rb 0.12.0 introduces the `raw_chat` API for benchmarking existing prompts and migrating to DSPy's modular approach.

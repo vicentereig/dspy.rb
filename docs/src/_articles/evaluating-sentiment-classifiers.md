@@ -1,11 +1,12 @@
 ---
-layout: article
+layout: blog
 title: "Evaluating Sentiment Classifiers: Beyond Simple Accuracy"
 description: "Learn how to systematically evaluate LLM applications using DSPy.rb's evaluation framework, from basic metrics to advanced quality assessment."
-date: 2024-12-19
-author: DSPy.rb Team
+date: 2025-06-01
+author: Vicente Reig
 categories: [evaluation, sentiment-analysis, tutorial]
 featured: true
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluating-sentiment-classifiers/"
 ---
 
 # Evaluating Sentiment Classifiers: Beyond Simple Accuracy

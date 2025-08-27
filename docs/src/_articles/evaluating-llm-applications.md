@@ -1,10 +1,11 @@
 ---
-layout: article
+layout: blog
 title: "Evaluating LLM Applications: From Basic Metrics to Custom Quality Assessment"
 description: "Learn how to systematically test and measure your LLM applications using DSPy.rb's evaluation framework"
-date: 2024-01-15
-author: "DSPy.rb Team"
+date: 2025-06-01
+author: Vicente Reig
 tags: ["evaluation", "metrics", "testing", "quality"]
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluating-llm-applications/"
 ---
 
 # Evaluating LLM Applications: From Basic Metrics to Custom Quality Assessment
@@ -100,7 +101,7 @@ test_examples = [
 
 ## Basic Evaluation with Built-in Metrics
 
-The simplest way to evaluate is using DSPy's built-in metrics:
+The simplest way to evaluate is using DSPy.rb's built-in metrics:
 
 ```ruby
 classifier = SentimentClassifier.new
@@ -289,6 +290,6 @@ The evaluation framework supports many more features:
 - **Integration with CI/CD**: Automate evaluation in your deployment pipeline
 - **Comparison Testing**: Compare different models, prompts, or configurations
 
-Check out the [comprehensive evaluation guide](/optimization/evaluation/) and [custom metrics documentation](/advanced/custom-metrics/) for more advanced techniques.
+Check out the [comprehensive evaluation guide](/dspy.rb/optimization/evaluation/) and [custom metrics documentation](/dspy.rb/advanced/custom-metrics/) for more advanced techniques.
 
 Systematic evaluation is the foundation of reliable LLM applications. With DSPy.rb's evaluation framework, you can move from "it seems to work" to "I know exactly how well it works"—and that makes all the difference in production.

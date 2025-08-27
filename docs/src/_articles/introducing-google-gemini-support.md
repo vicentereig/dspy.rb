@@ -6,6 +6,7 @@ date: 2025-08-26
 author: "Vicente Reig"
 category: "Features"
 reading_time: "4 min read"
+canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/introducing-google-gemini-support/"
 ---
 
 
@@ -51,13 +52,25 @@ end
 
 ## Available Models
 
-DSPy.rb supports the full range of Gemini models:
+DSPy.rb supports all stable Gemini models from the official Google AI API:
 
-- **gemini-1.5-flash** - Fast, efficient model for most tasks
-- **gemini-1.5-pro** - More capable model for complex reasoning
-- **gemini-1.0-pro** - Previous generation, still highly capable
+### Latest Models (2025)
+- **gemini-2.5-pro** - Latest flagship model with enhanced reasoning
+- **gemini-2.5-flash** - Fast variant of the 2.5 series
+- **gemini-2.5-flash-lite** - Lightweight version for high-throughput
 
-All Gemini models support multimodal inputs (text and images) out of the box.
+### 2.0 Series (2024-2025)
+- **gemini-2.0-flash** - Current fast model with multimodal capabilities
+- **gemini-2.0-flash-lite** - Lightweight variant optimized for cost efficiency
+
+### 1.5 Series (Production Ready)
+- **gemini-1.5-pro** - Proven model for complex reasoning tasks
+- **gemini-1.5-flash** - Fast, efficient model for most applications
+- **gemini-1.5-flash-8b** - Smaller 8-billion parameter efficient variant
+
+All Gemini models support multimodal inputs (text and images) natively.
+
+**Note**: We only support stable models from the official API. Preview and experimental models are not included for reliability.
 
 ## Type-Safe Text Generation
 
@@ -168,9 +181,9 @@ class ProductImageAnalysis < DSPy::Signature
   end
 end
 
-# Load an image (from file, URL, or base64)
+# Load an image (from file as base64)
 product_image = DSPy::Image.new(
-  base64: File.read('product_photo.jpg', mode: 'rb'),
+  base64: Base64.strict_encode64(File.read('product_photo.jpg', mode: 'rb')),
   content_type: 'image/jpeg'
 )
 
@@ -219,9 +232,9 @@ end
 
 # Load multiple product images
 images = [
-  DSPy::Image.new(base64: File.read('laptop1.jpg', mode: 'rb'), content_type: 'image/jpeg'),
-  DSPy::Image.new(base64: File.read('laptop2.jpg', mode: 'rb'), content_type: 'image/jpeg'), 
-  DSPy::Image.new(base64: File.read('laptop3.jpg', mode: 'rb'), content_type: 'image/jpeg')
+  DSPy::Image.new(base64: Base64.strict_encode64(File.read('laptop1.jpg', mode: 'rb')), content_type: 'image/jpeg'),
+  DSPy::Image.new(base64: Base64.strict_encode64(File.read('laptop2.jpg', mode: 'rb')), content_type: 'image/jpeg'), 
+  DSPy::Image.new(base64: Base64.strict_encode64(File.read('laptop3.jpg', mode: 'rb')), content_type: 'image/jpeg')
 ]
 
 comparator = DSPy::Predict.new(ImageComparison)
@@ -284,33 +297,32 @@ end
 
 ### Custom Request Parameters
 
-You can pass Gemini-specific parameters for fine-tuning:
+Generation parameters (temperature, top_p, top_k, max_output_tokens) are not currently supported at the DSPy API level for Gemini. The adapter accepts these parameters internally, but they're not exposed through the `forward()` method.
 
 ```ruby
-# Configure with custom generation parameters
+# Standard configuration - no generation parameters at DSPy level
 DSPy.configure do |c|
-  c.lm = DSPy::LM.new('gemini/gemini-1.5-pro', 
-    api_key: ENV['GEMINI_API_KEY'],
-    temperature: 0.2,        # More focused responses
-    top_p: 0.8,             # Control nucleus sampling
-    top_k: 40,              # Limit vocabulary choices
-    max_output_tokens: 1000  # Control response length
-  )
+  c.lm = DSPy::LM.new('gemini/gemini-1.5-pro', api_key: ENV['GEMINI_API_KEY'])
 end
+
+predictor = DSPy::Predict.new(YourSignature)
+result = predictor.forward(input: "Your input text")
 ```
 
-### Safety Settings
+For custom generation parameters, you would need to modify the adapter implementation directly, as neither `forward()` nor `raw_chat()` currently expose these parameters at the DSPy API level.
 
-Gemini includes built-in safety filtering. You can adjust these settings:
+### Safety Filtering
+
+Gemini includes built-in safety filtering that cannot be configured but provides helpful error handling:
 
 ```ruby
-# The adapter handles safety errors gracefully
+# Safety errors are automatically handled by the adapter
 begin
-  result = predictor.forward(content: "Potentially sensitive content")
+  result = predictor.forward(input: "Your content")
 rescue DSPy::LM::AdapterError => e
   if e.message.include?('blocked by safety filters')
     puts "Content was filtered for safety reasons"
-    # Handle appropriately for your use case
+    # Handle appropriately - perhaps rephrase or provide alternative content
   else
     raise e
   end
