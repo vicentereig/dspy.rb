@@ -5,6 +5,18 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.1] - 2025-08-27
+
+### Fixed
+- Corrected canonical URLs for 16 blog articles for proper SEO
+- Fixed article layout configuration from 'article' to 'blog'
+- Removed non-existent Gemini models from vision_models.rb
+- Corrected misleading raw_chat API documentation
+
+### Documentation
+- Added v0.20.0 release announcement blog post
+- Various documentation improvements and edits
+
 ## [0.20.0] - 2025-08-26
 
 ### Added
