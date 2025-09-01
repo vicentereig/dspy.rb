@@ -2,8 +2,9 @@
 layout: docs
 title: Troubleshooting
 description: Common issues and solutions for DSPy.rb
+date: 2025-07-20 00:00:00 +0000
+last_modified_at: 2025-08-08 00:00:00 +0000
 ---
-
 # Troubleshooting Guide
 
 This guide covers common issues you might encounter when using DSPy.rb and their solutions.

@@ -3,18 +3,18 @@ layout: docs
 name: Retrieval Augmented Generation (RAG)
 description: Build RAG applications with DSPy.rb
 breadcrumb:
-  - name: Advanced
-    url: /advanced/
-  - name: RAG
-    url: /advanced/rag/
+- name: Advanced
+  url: "/advanced/"
+- name: RAG
+  url: "/advanced/rag/"
 prev:
   name: Multi-stage Pipelines
-  url: /advanced/pipelines/
+  url: "/advanced/pipelines/"
 next:
   name: Custom Metrics
-  url: /advanced/custom-metrics/
+  url: "/advanced/custom-metrics/"
+date: 2025-07-10 00:00:00 +0000
 ---
-
 # Retrieval Augmented Generation (RAG)
 
 DSPy.rb supports building RAG (Retrieval Augmented Generation) applications by combining retrieval systems with LLM-powered reasoning. While the framework doesn't provide built-in vector stores or embedding models, you can integrate external retrieval services and build sophisticated RAG pipelines.

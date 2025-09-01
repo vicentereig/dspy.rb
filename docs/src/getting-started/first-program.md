@@ -1,10 +1,10 @@
 ---
 layout: docs
-title: "Your First Structured AI Program"
-description: "Building a simple Q&A system that actually works"
+title: Your First Structured AI Program
+description: Building a simple Q&A system that actually works
 section: getting-started
+date: 2025-06-28 00:00:00 +0000
 ---
-
 # Your First Structured AI Program
 
 *From prompt strings to reliable systems in 10 minutes*

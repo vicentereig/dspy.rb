@@ -3,10 +3,11 @@ layout: docs
 name: Getting Started
 description: Get up and running with DSPy.rb in minutes
 breadcrumb:
-  - name: Getting Started
-    url: /getting-started/
+- name: Getting Started
+  url: "/getting-started/"
+date: 2025-06-28 00:00:00 +0000
+last_modified_at: 2025-07-11 00:00:00 +0000
 ---
-
 # Getting Started with DSPy.rb
 
 Welcome to DSPy.rb! This guide will help you get up and running with building reliable LLM applications in Ruby.

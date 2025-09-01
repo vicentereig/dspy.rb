@@ -2,8 +2,9 @@
 layout: docs
 title: Advanced Topics
 description: Explore advanced patterns and techniques in DSPy.rb
+date: 2025-07-10 00:00:00 +0000
+last_modified_at: 2025-07-11 00:00:00 +0000
 ---
-
 # Advanced Topics
 
 Ready to take your DSPy.rb applications to the next level? This section covers advanced patterns and techniques for building sophisticated LLM systems.

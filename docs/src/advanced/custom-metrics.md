@@ -3,18 +3,18 @@ layout: docs
 name: Custom Metrics
 description: Define domain-specific evaluation metrics
 breadcrumb:
-  - name: Advanced
-    url: /advanced/
-  - name: Custom Metrics
-    url: /advanced/custom-metrics/
+- name: Advanced
+  url: "/advanced/"
+- name: Custom Metrics
+  url: "/advanced/custom-metrics/"
 prev:
   name: Retrieval Augmented Generation
-  url: /advanced/rag/
+  url: "/advanced/rag/"
 next:
   name: Production
-  url: /production/
+  url: "/production/"
+date: 2025-07-10 00:00:00 +0000
 ---
-
 # Custom Metrics
 
 DSPy.rb's evaluation framework allows you to define custom metrics for domain-specific evaluation scenarios. While the framework provides basic built-in metrics, you can create sophisticated evaluation logic tailored to your specific use cases and business requirements.

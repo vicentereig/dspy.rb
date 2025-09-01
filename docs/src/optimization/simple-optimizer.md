@@ -3,18 +3,18 @@ layout: docs
 name: Simple Optimizer
 description: Quick optimization with random search
 breadcrumb:
-  - name: Optimization
-    url: /optimization/
-  - name: Simple Optimizer
-    url: /optimization/simple-optimizer/
+- name: Optimization
+  url: "/optimization/"
+- name: Simple Optimizer
+  url: "/optimization/simple-optimizer/"
 prev:
   name: MIPROv2 Optimizer
-  url: /optimization/miprov2/
+  url: "/optimization/miprov2/"
 next:
   name: Production
-  url: /production/
+  url: "/production/"
+date: 2025-07-10 00:00:00 +0000
 ---
-
 # Simple Optimizer
 
 The Simple Optimizer provides a straightforward approach to optimizing DSPy predictors through random search. It's ideal for quick experimentation, baseline establishment, and scenarios where you need fast results without the complexity of more advanced optimizers.

@@ -3,18 +3,18 @@ layout: docs
 name: Multi-stage Pipelines
 description: Build complex workflows by composing DSPy modules
 breadcrumb:
-  - name: Advanced
-    url: /advanced/
-  - name: Multi-stage Pipelines
-    url: /advanced/pipelines/
+- name: Advanced
+  url: "/advanced/"
+- name: Multi-stage Pipelines
+  url: "/advanced/pipelines/"
 prev:
   name: Complex Types
-  url: /advanced/complex-types/
+  url: "/advanced/complex-types/"
 next:
   name: Retrieval Augmented Generation
-  url: /advanced/rag/
+  url: "/advanced/rag/"
+date: 2025-07-10 00:00:00 +0000
 ---
-
 # Multi-stage Pipelines
 
 DSPy.rb supports building complex, multi-stage pipelines by composing multiple DSPy modules together. You can create sequential workflows, conditional processing, and reusable pipeline components for sophisticated LLM applications.

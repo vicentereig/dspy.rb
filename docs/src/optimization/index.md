@@ -2,8 +2,9 @@
 layout: docs
 title: Optimization
 description: Learn how to optimize your DSPy.rb applications for better performance
+date: 2025-07-10 00:00:00 +0000
+last_modified_at: 2025-07-23 00:00:00 +0000
 ---
-
 # Optimization
 
 One of DSPy.rb's most powerful features is automatic optimization. Instead of manually tweaking prompts, you can use optimizers to systematically improve your modules.

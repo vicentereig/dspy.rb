@@ -3,18 +3,19 @@ layout: docs
 name: Complex Types
 description: Working with enums, structs, and collections in DSPy.rb
 breadcrumb:
-  - name: Advanced
-    url: /advanced/
-  - name: Complex Types
-    url: /advanced/complex-types/
+- name: Advanced
+  url: "/advanced/"
+- name: Complex Types
+  url: "/advanced/complex-types/"
 prev:
   name: Advanced
-  url: /advanced/
+  url: "/advanced/"
 next:
   name: Multi-stage Pipelines
-  url: /advanced/pipelines/
+  url: "/advanced/pipelines/"
+date: 2025-07-10 00:00:00 +0000
+last_modified_at: 2025-07-21 00:00:00 +0000
 ---
-
 # Complex Types
 
 DSPy.rb provides support for structured data types beyond simple strings through integration with Sorbet's type system. You can use enums, structs, arrays, and hashes to create well-defined interfaces for your LLM applications.

@@ -3,19 +3,20 @@ layout: docs
 name: Predictors
 description: Execution engines that generate structured results using language models
 breadcrumb:
-  - name: Core Concepts
-    url: /core-concepts/
-  - name: Predictors
-    url: /core-concepts/predictors/
+- name: Core Concepts
+  url: "/core-concepts/"
+- name: Predictors
+  url: "/core-concepts/predictors/"
 nav:
   prev:
     name: Modules
-    url: /core-concepts/modules/
+    url: "/core-concepts/modules/"
   next:
     name: Examples
-    url: /core-concepts/examples/
+    url: "/core-concepts/examples/"
+date: 2025-07-10 00:00:00 +0000
+last_modified_at: 2025-08-09 00:00:00 +0000
 ---
-
 # Predictors
 
 Predictors are the execution engines that take your signatures and generate structured results using language models. DSPy.rb provides three predictor types for different use cases.

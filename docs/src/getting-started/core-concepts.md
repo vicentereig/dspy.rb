@@ -3,18 +3,19 @@ layout: docs
 name: Core Concepts
 description: Understand the fundamental building blocks of DSPy.rb
 breadcrumb:
-  - name: Getting Started
-    url: /getting-started/
-  - name: Core Concepts
-    url: /getting-started/core-concepts/
+- name: Getting Started
+  url: "/getting-started/"
+- name: Core Concepts
+  url: "/getting-started/core-concepts/"
 prev:
   name: Quick Start
-  url: /getting-started/quick-start/
+  url: "/getting-started/quick-start/"
 next:
   name: Signatures
-  url: /core-concepts/signatures/
+  url: "/core-concepts/signatures/"
+date: 2025-07-10 00:00:00 +0000
+last_modified_at: 2025-08-08 00:00:00 +0000
 ---
-
 # Core Concepts
 
 DSPy.rb is built around composable, type-safe modules that make LLM programming predictable and reliable. This guide covers the fundamental concepts you need to understand to build effective DSPy applications.

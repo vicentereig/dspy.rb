@@ -1,9 +1,11 @@
 ---
 layout: docs
-title: "Rails Integration Guide"
-description: Seamlessly integrate DSPy.rb with Ruby on Rails applications, including enum handling and best practices
+title: Rails Integration Guide
+description: Seamlessly integrate DSPy.rb with Ruby on Rails applications, including
+  enum handling and best practices
+date: 2025-07-11 00:00:00 +0000
+last_modified_at: 2025-08-13 00:00:00 +0000
 ---
-
 # Rails Integration Guide
 
 DSPy.rb is designed to work seamlessly with Ruby on Rails applications. This guide covers common integration patterns and solutions to potential issues.

@@ -3,18 +3,18 @@ layout: docs
 name: Prompt Optimization
 description: Programmatically optimize prompts for better performance
 breadcrumb:
-  - name: Optimization
-    url: /optimization/
-  - name: Prompt Optimization
-    url: /optimization/prompt-optimization/
+- name: Optimization
+  url: "/optimization/"
+- name: Prompt Optimization
+  url: "/optimization/prompt-optimization/"
 prev:
   name: Evaluation Framework
-  url: /optimization/evaluation/
+  url: "/optimization/evaluation/"
 next:
   name: MIPROv2 Optimizer
-  url: /optimization/miprov2/
+  url: "/optimization/miprov2/"
+date: 2025-07-10 00:00:00 +0000
 ---
-
 # Prompt Optimization
 
 DSPy.rb treats prompts as first-class objects that can be manipulated, analyzed, and optimized programmatically. Rather than hand-crafting prompt strings, you work with structured prompt objects that contain instructions, few-shot examples, and schema information.

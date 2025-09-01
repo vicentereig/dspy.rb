@@ -3,18 +3,18 @@ layout: docs
 name: Advanced Observability Interception
 description: Real-time event interception and custom instrumentation patterns
 breadcrumb:
-  - name: Advanced
-    url: /advanced/
-  - name: Observability Interception
-    url: /advanced/observability-interception/
+- name: Advanced
+  url: "/advanced/"
+- name: Observability Interception
+  url: "/advanced/observability-interception/"
 prev:
   name: Stateful Agents
-  url: /advanced/stateful-agents/
+  url: "/advanced/stateful-agents/"
 next:
   name: Python Comparison
-  url: /advanced/python-comparison/
+  url: "/advanced/python-comparison/"
+date: 2025-08-12 00:00:00 +0000
 ---
-
 # Advanced Observability Interception
 
 How to intercept DSPy.rb events before they're logged. Based on the current implementation in `lib/dspy/context.rb` and `lib/dspy/observability.rb`.

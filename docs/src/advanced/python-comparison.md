@@ -3,12 +3,12 @@ layout: docs
 name: Python DSPy Comparison
 description: Comprehensive comparison between DSPy Python and DSPy.rb
 breadcrumb:
-  - name: Advanced
-    url: /advanced/
-  - name: Python Comparison
-    url: /advanced/python-comparison/
+- name: Advanced
+  url: "/advanced/"
+- name: Python Comparison
+  url: "/advanced/python-comparison/"
+date: 2025-07-11 00:00:00 +0000
 ---
-
 # DSPy Python vs DSPy.rb Feature Comparison
 
 This document provides a comprehensive comparison between the original DSPy Python library and the DSPy.rb implementation, highlighting what's available, what's missing, and what should be prioritized.

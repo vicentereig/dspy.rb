@@ -1,21 +1,22 @@
 ---
 layout: docs
-title: "Memory Systems"
+title: Memory Systems
 description: Advanced memory management and compaction for stateful agents
 breadcrumb:
-  - name: Advanced
-    url: /advanced/
-  - name: Memory Systems
-    url: /advanced/memory-systems/
+- name: Advanced
+  url: "/advanced/"
+- name: Memory Systems
+  url: "/advanced/memory-systems/"
 nav:
   prev:
     name: Complex Types
-    url: /advanced/complex-types/
+    url: "/advanced/complex-types/"
   next:
     name: RAG
-    url: /advanced/rag/
+    url: "/advanced/rag/"
+date: 2025-07-11 00:00:00 +0000
+last_modified_at: 2025-08-08 00:00:00 +0000
 ---
-
 # Memory Systems
 
 DSPy.rb includes a memory compaction system that helps manage memory usage by automatically removing old, duplicated, or rarely accessed memories. The system runs inline during normal operations to prevent memory stores from growing indefinitely.

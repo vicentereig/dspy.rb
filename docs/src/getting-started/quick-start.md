@@ -3,18 +3,19 @@ layout: docs
 name: Quick Start
 description: Build your first DSPy.rb application in 5 minutes
 breadcrumb:
-  - name: Getting Started
-    url: /getting-started/
-  - name: Quick Start
-    url: /getting-started/quick-start/
+- name: Getting Started
+  url: "/getting-started/"
+- name: Quick Start
+  url: "/getting-started/quick-start/"
 prev:
   name: Installation
-  url: /getting-started/installation/
+  url: "/getting-started/installation/"
 next:
   name: Core Concepts
-  url: /getting-started/core-concepts/
+  url: "/getting-started/core-concepts/"
+date: 2025-07-10 00:00:00 +0000
+last_modified_at: 2025-08-08 00:00:00 +0000
 ---
-
 # Quick Start Guide
 
 Get up and running with DSPy.rb in minutes. This guide shows Ruby-idiomatic patterns for building AI applications.

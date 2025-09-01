@@ -3,19 +3,19 @@ layout: docs
 name: Toolsets
 description: Group related tools in a single class for agent integration
 breadcrumb:
-  - name: Core Concepts
-    url: /core-concepts/
-  - name: Toolsets
-    url: /core-concepts/toolsets/
+- name: Core Concepts
+  url: "/core-concepts/"
+- name: Toolsets
+  url: "/core-concepts/toolsets/"
 nav:
   prev:
     name: Memory
-    url: /core-concepts/memory/
+    url: "/core-concepts/memory/"
   next:
     name: Predictors
-    url: /core-concepts/predictors/
+    url: "/core-concepts/predictors/"
+date: 2025-07-11 00:00:00 +0000
 ---
-
 # Toolsets
 
 DSPy.rb's Toolset pattern lets you group related tools in a single class. Instead of creating separate tool classes for each operation, you can expose multiple methods from one class as individual tools.

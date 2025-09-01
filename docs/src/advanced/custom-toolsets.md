@@ -1,21 +1,21 @@
 ---
 layout: docs
-title: "Custom Toolsets"
+title: Custom Toolsets
 description: Build advanced toolsets for specialized agent capabilities
 breadcrumb:
-  - name: Advanced
-    url: /advanced/
-  - name: Custom Toolsets
-    url: /advanced/custom-toolsets/
+- name: Advanced
+  url: "/advanced/"
+- name: Custom Toolsets
+  url: "/advanced/custom-toolsets/"
 nav:
   prev:
     name: Stateful Agents
-    url: /advanced/stateful-agents/
+    url: "/advanced/stateful-agents/"
   next:
     name: RAG
-    url: /advanced/rag/
+    url: "/advanced/rag/"
+date: 2025-07-11 00:00:00 +0000
 ---
-
 # Custom Toolsets
 
 Custom toolsets allow you to extend agents with specialized capabilities by grouping related operations into cohesive tool collections. This guide covers advanced patterns for building production-ready toolsets.

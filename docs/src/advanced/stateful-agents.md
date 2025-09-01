@@ -1,21 +1,21 @@
 ---
 layout: docs
-title: "Stateful Agents"
+title: Stateful Agents
 description: Production patterns for building agents that maintain context and state
 breadcrumb:
-  - name: Advanced
-    url: /advanced/
-  - name: Stateful Agents
-    url: /advanced/stateful-agents/
+- name: Advanced
+  url: "/advanced/"
+- name: Stateful Agents
+  url: "/advanced/stateful-agents/"
 nav:
   prev:
     name: Memory Systems
-    url: /advanced/memory-systems/
+    url: "/advanced/memory-systems/"
   next:
     name: Custom Toolsets
-    url: /advanced/custom-toolsets/
+    url: "/advanced/custom-toolsets/"
+date: 2025-07-11 00:00:00 +0000
 ---
-
 # Stateful Agents
 
 Stateful agents maintain context and information across multiple interactions, enabling them to provide responses that take into account previous conversations and user preferences. This guide covers production patterns for building robust stateful agents using DSPy.rb's memory system.

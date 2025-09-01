@@ -3,18 +3,18 @@ layout: docs
 name: MIPROv2 Optimizer
 description: Advanced prompt optimization with MIPROv2
 breadcrumb:
-  - name: Optimization
-    url: /optimization/
-  - name: MIPROv2 Optimizer
-    url: /optimization/miprov2/
+- name: Optimization
+  url: "/optimization/"
+- name: MIPROv2 Optimizer
+  url: "/optimization/miprov2/"
 prev:
   name: Prompt Optimization
-  url: /optimization/prompt-optimization/
+  url: "/optimization/prompt-optimization/"
 next:
   name: Simple Optimizer
-  url: /optimization/simple-optimizer/
+  url: "/optimization/simple-optimizer/"
+date: 2025-07-10 00:00:00 +0000
 ---
-
 # MIPROv2 Optimizer
 
 MIPROv2 (Multi-stage Instruction Proposal and Refinement Optimizer v2) is the primary optimization algorithm in DSPy.rb. It automatically improves your predictor's performance through a three-phase optimization process: bootstrap training, instruction optimization, and few-shot example refinement.

@@ -3,19 +3,19 @@ layout: docs
 name: Examples
 description: Type-safe training and evaluation data objects
 breadcrumb:
-  - name: Core Concepts
-    url: /core-concepts/
-  - name: Examples
-    url: /core-concepts/examples/
+- name: Core Concepts
+  url: "/core-concepts/"
+- name: Examples
+  url: "/core-concepts/examples/"
 nav:
   prev:
     name: Predictors
-    url: /core-concepts/predictors/
+    url: "/core-concepts/predictors/"
   next:
     name: Optimization
-    url: /optimization/
+    url: "/optimization/"
+date: 2025-07-10 00:00:00 +0000
 ---
-
 # Examples
 
 Examples are type-safe training and evaluation data objects. DSPy.rb provides two types of examples: basic examples for evaluation and few-shot examples for prompt enhancement.

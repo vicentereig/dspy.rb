@@ -3,18 +3,19 @@ layout: docs
 name: Observability
 description: Monitor and trace your DSPy applications in production
 breadcrumb:
-  - name: Production
-    url: /production/
-  - name: Observability
-    url: /production/observability/
+- name: Production
+  url: "/production/"
+- name: Observability
+  url: "/production/observability/"
 prev:
   name: Storage System
-  url: /production/storage/
+  url: "/production/storage/"
 next:
   name: Registry
-  url: /production/registry/
+  url: "/production/registry/"
+date: 2025-07-10 00:00:00 +0000
+last_modified_at: 2025-08-09 00:00:00 +0000
 ---
-
 # Observability
 
 DSPy.rb provides a simple, lightweight observability system based on structured logging and span tracking. The system is designed to be OTEL/Langfuse compatible while maintaining minimal overhead.

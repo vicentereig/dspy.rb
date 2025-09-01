@@ -1,9 +1,10 @@
 ---
 layout: home
-title: "DSPy.rb - Program LLMs, Don't Prompt Them"
-description: "Write modular, testable Ruby code instead of tweaking prompts"
+title: DSPy.rb - Program LLMs, Don't Prompt Them
+description: Write modular, testable Ruby code instead of tweaking prompts
+date: 2025-06-28 00:00:00 +0000
+last_modified_at: 2025-09-01 00:00:00 +0000
 ---
-
 <div class="mx-auto max-w-2xl py-16 sm:py-24 lg:py-32">
   <div class="mb-6 flex justify-center sm:mb-8">
     <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">

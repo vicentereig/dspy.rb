@@ -9,9 +9,15 @@ Bridgetown.configure do |config|
   config.dspy_version = DSPy::VERSION
   config.dspy_release_url = "https://github.com/vicentereig/dspy.rb/releases/tag/v#{DSPy::VERSION}"
   
-  # Initialize sitemap plugin
+  # Initialize sitemap plugin  
   init :"bridgetown-sitemap"
   
   # Initialize SEO tag plugin
   init :"bridgetown-seo-tag"
+  
+  # Exclude Google verification file from sitemap
+  config.defaults << {
+    "scope" => { "path" => "google14d877f2b5b0c1a7.html" },
+    "values" => { "sitemap" => false }
+  }
 end

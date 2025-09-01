@@ -51,6 +51,8 @@ plugins:
   - bridgetown-builder
   - bridgetown-sitemap
 
+# Sitemap configuration handled via config/initializers.rb
+
 # Development settings
 livereload: true
 show_drafts: false

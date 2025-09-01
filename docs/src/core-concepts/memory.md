@@ -3,19 +3,19 @@ layout: docs
 name: Memory
 description: Persistent memory for stateful agents
 breadcrumb:
-  - name: Core Concepts
-    url: /core-concepts/
-  - name: Memory
-    url: /core-concepts/memory/
+- name: Core Concepts
+  url: "/core-concepts/"
+- name: Memory
+  url: "/core-concepts/memory/"
 nav:
   prev:
     name: Modules
-    url: /core-concepts/modules/
+    url: "/core-concepts/modules/"
   next:
     name: Toolsets
-    url: /core-concepts/toolsets/
+    url: "/core-concepts/toolsets/"
+date: 2025-07-11 00:00:00 +0000
 ---
-
 # Memory
 
 DSPy.rb provides a memory system that allows agents to store and retrieve information across interactions. The memory system includes data structures for storing memories, storage backends, and tools for agent integration.

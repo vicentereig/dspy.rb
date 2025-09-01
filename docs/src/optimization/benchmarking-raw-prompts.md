@@ -1,10 +1,11 @@
 ---
 layout: docs
-title: "Benchmarking Raw Prompts"
-description: "Compare monolithic prompts against modular DSPy implementations"
+title: Benchmarking Raw Prompts
+description: Compare monolithic prompts against modular DSPy implementations
 order: 6
+date: 2025-07-23 00:00:00 +0000
+last_modified_at: 2025-08-09 00:00:00 +0000
 ---
-
 # Benchmarking Raw Prompts
 
 When migrating from monolithic prompts to modular DSPy implementations, it's crucial to measure and compare their performance. DSPy.rb provides the `raw_chat` method specifically for this purpose, allowing you to run existing prompts through the same observability system as your DSPy modules.

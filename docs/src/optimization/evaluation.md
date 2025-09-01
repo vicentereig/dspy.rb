@@ -3,18 +3,18 @@ layout: docs
 name: Evaluation Framework
 description: Systematically test and measure your LLM applications
 breadcrumb:
-  - name: Optimization
-    url: /optimization/
-  - name: Evaluation Framework
-    url: /optimization/evaluation/
+- name: Optimization
+  url: "/optimization/"
+- name: Evaluation Framework
+  url: "/optimization/evaluation/"
 prev:
   name: Optimization
-  url: /optimization/
+  url: "/optimization/"
 next:
   name: Prompt Optimization
-  url: /optimization/prompt-optimization/
+  url: "/optimization/prompt-optimization/"
+date: 2025-07-10 00:00:00 +0000
 ---
-
 # Evaluation Framework
 
 DSPy.rb provides a comprehensive evaluation framework for systematically testing and measuring the performance of your LLM applications. It supports both simple and complex evaluation scenarios with built-in and custom metrics.

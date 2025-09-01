@@ -3,18 +3,19 @@ layout: docs
 name: Storage System
 description: Persist and manage optimized programs
 breadcrumb:
-  - name: Production
-    url: /production/
-  - name: Storage System
-    url: /production/storage/
+- name: Production
+  url: "/production/"
+- name: Storage System
+  url: "/production/storage/"
 prev:
   name: Production
-  url: /production/
+  url: "/production/"
 next:
   name: Observability
-  url: /production/observability/
+  url: "/production/observability/"
+date: 2025-07-10 00:00:00 +0000
+last_modified_at: 2025-08-09 00:00:00 +0000
 ---
-
 # Storage System
 
 DSPy.rb provides a storage system for persisting optimization results and program states. This enables saving and reloading optimized predictors, tracking optimization history, and managing multiple versions of your programs.
