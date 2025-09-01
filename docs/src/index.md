@@ -22,6 +22,8 @@ description: "Write modular, testable Ruby code instead of tweaking prompts"
 
 <div class="mx-auto max-w-5xl px-6 lg:px-8">
   <div class="mx-auto max-w-3xl">
+    <p class="text-sm text-gray-500 mb-8">DSPy.rb is a Ruby port of Stanford's <a href="https://dspy.ai" class="underline">DSPy framework</a>, adapted to Ruby idioms and enhanced with production-ready features.</p>
+    
     <h2 class="text-2xl font-bold text-gray-900 mb-6">Why programmatic prompts?</h2>
     <p class="text-lg text-gray-600 mb-12">Because prompt engineering is a nightmare. You tweak words, cross your fingers, and deploy. When it breaks in production (and it will), you're back to square one. DSPy.rb fixes this by letting you define what you want, not how to ask for it.</p>
     

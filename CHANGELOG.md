@@ -5,6 +5,33 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.0] - 2025-09-01
+
+### Added
+- **Comprehensive Type Alias Support** - DSPy.rb now fully supports Sorbet type aliases (T.type_alias)
+  - Added type alias detection and resolution in signature.rb for proper JSON schema generation
+  - Enhanced T::Types::FixedHash handling with specific properties and required fields
+  - Improved example generation in enhanced prompting strategy with recursive generate_example_value method
+  - Proper handling of nested objects, arrays, and union types in type alias examples
+  - LLMs now receive structured JSON schemas with realistic examples instead of generic "example value" placeholders
+  - Enables developers to use type aliases for structured responses while maintaining proper LLM communication
+
+### Enhanced
+- **Documentation Clarity** - Improved attribution and relationship clarity with Stanford DSPy
+  - Updated README.md to explicitly state DSPy.rb is an "idiomatic Ruby port" of Stanford's DSPy framework
+  - Added Stanford attribution to documentation homepage
+  - Clarified Ruby-specific innovations and enhancements
+
+### Contributors
+This release features a major contribution from:
+- **[@TheDumbTechGuy](https://github.com/TheDumbTechGuy)** (Stefan Froelich) - Complete type alias support implementation with comprehensive test coverage
+
+### Technical Details
+- Type aliases (T.type_alias) are now properly resolved to their underlying T::Types::FixedHash structures
+- Enhanced prompting strategy generates proper examples for complex nested structures
+- Added 9 new comprehensive tests covering schema generation and example generation scenarios
+- Maintains backward compatibility with existing DSPy.rb applications
+
 ## [0.20.1] - 2025-08-27
 
 ### Fixed

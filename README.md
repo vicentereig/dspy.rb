@@ -14,6 +14,10 @@ Traditional prompting is like writing code with string concatenation: it works u
 the programming approach pioneered by [dspy.ai](https://dspy.ai/): instead of crafting fragile prompts, you define modular 
 signatures and let the framework handle the messy details.
 
+DSPy.rb is an idiomatic Ruby port of Stanford's [DSPy framework](https://github.com/stanfordnlp/dspy). While implementing 
+the core concepts of signatures, predictors, and optimization from the original Python library, DSPy.rb embraces Ruby 
+conventions and adds Ruby-specific innovations like CodeAct agents and enhanced production instrumentation.
+
 The result? LLM applications that actually scale and don't break when you sneeze.
 
 ## Your First DSPy Program
