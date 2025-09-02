@@ -28,8 +28,11 @@
     <a href="{{ '/blog/' | relative_url }}" class="text-sm font-semibold leading-6 text-gray-900 {% if page.url contains '/blog/' %}text-dspy-ruby{% endif %}">Blog</a>
   </div>
   
-  <!-- GitHub link -->
-  <div class="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
+  <!-- GitHub link and star button -->
+  <div class="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6 lg:items-center">
+    <!-- GitHub star button -->
+    <a class="github-button" href="https://github.com/vicentereig/dspy.rb" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" data-show-count="true" aria-label="Star vicentereig/dspy.rb on GitHub">Star</a>
+    
     <a href="https://github.com/vicentereig/dspy.rb" class="text-gray-400 hover:text-gray-500">
       <span class="sr-only">GitHub</span>
       <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

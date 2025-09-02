@@ -16,7 +16,7 @@ last_modified_at: 2025-09-01 00:00:00 +0000
     <p class="mt-6 text-lg leading-8 text-gray-600">Tired of copy-pasting prompts and hoping they work? DSPy.rb lets you write modular, type-safe Ruby code that handles the LLM stuff for you. Test it, optimize it, ship it.</p>
     <div class="mt-10 flex items-center justify-center gap-x-6">
       <a href="{{ '/getting-started/' | relative_url }}" class="rounded-md bg-dspy-ruby px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-ruby">Get started</a>
-      <a href="{{ '/getting-started/quick-start/' | relative_url }}" class="inline-flex items-center py-2.5 text-sm font-semibold text-gray-900 hover:text-dspy-ruby">View examples <span aria-hidden="true">→</span></a>
+      <a href="{{ '/llms-full.txt' | relative_url }}" target="_blank" class="inline-flex items-center py-2.5 text-sm font-semibold text-gray-900 hover:text-dspy-ruby">llms-full.txt <span aria-hidden="true" class="ml-2">→</span></a>
     </div>
   </div>
 </div>
