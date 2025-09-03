@@ -46,6 +46,17 @@ module DSPy
     logger.info(attributes)
   end
 
+  def self.event(event_name, attributes = {})
+    raise ArgumentError, "Event name cannot be nil" if event_name.nil?
+    
+    # Handle nil attributes
+    attributes = {} if attributes.nil?
+    
+    # For now, forward to the existing log method to maintain compatibility
+    # This ensures all existing logging behavior continues to work
+    log(event_name, **attributes)
+  end
+
   def self.create_logger
     env = ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'
     log_output = ENV['DSPY_LOG'] # Allow override
