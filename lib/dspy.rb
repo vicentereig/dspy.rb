@@ -57,12 +57,52 @@ module DSPy
     # This ensures all existing logging behavior continues to work
     log(event_name, **attributes)
     
+    # Create OpenTelemetry span for the event if observability is enabled
+    create_event_span(event_name, attributes)
+    
     # Notify event listeners
     events.notify(event_name, attributes)
   end
 
   def self.events
     @event_registry ||= DSPy::EventRegistry.new
+  end
+
+  private
+
+  def self.create_event_span(event_name, attributes)
+    return unless DSPy::Observability.enabled?
+    
+    begin
+      # Flatten nested hashes for OpenTelemetry span attributes
+      flattened_attributes = flatten_attributes(attributes)
+      
+      # Create and immediately finish a span for this event
+      # Events are instant moments in time, not ongoing operations
+      span = DSPy::Observability.start_span(event_name, flattened_attributes)
+      DSPy::Observability.finish_span(span) if span
+    rescue => e
+      # Log error but don't let it break the event system
+      log('event.span_creation_error', 
+        error_class: e.class.name,
+        error_message: e.message,
+        event_name: event_name
+      )
+    end
+  end
+
+  def self.flatten_attributes(attributes, parent_key = '', result = {})
+    attributes.each do |key, value|
+      new_key = parent_key.empty? ? key.to_s : "#{parent_key}.#{key}"
+      
+      if value.is_a?(Hash)
+        flatten_attributes(value, new_key, result)
+      else
+        result[new_key] = value
+      end
+    end
+    
+    result
   end
 
   def self.create_logger
