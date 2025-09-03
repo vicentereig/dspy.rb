@@ -7,31 +7,42 @@ module DSPy
     def initialize
       @listeners = {}
       @subscription_counter = 0
+      @mutex = Mutex.new
     end
 
     def subscribe(pattern, &block)
       return unless block_given?
       
       subscription_id = SecureRandom.uuid
-      @listeners[subscription_id] = {
-        pattern: pattern,
-        block: block
-      }
+      @mutex.synchronize do
+        @listeners[subscription_id] = {
+          pattern: pattern,
+          block: block
+        }
+      end
       
       subscription_id
     end
 
     def unsubscribe(subscription_id)
-      @listeners.delete(subscription_id)
+      @mutex.synchronize do
+        @listeners.delete(subscription_id)
+      end
     end
 
     def clear_listeners
-      @listeners.clear
+      @mutex.synchronize do
+        @listeners.clear
+      end
     end
 
     def notify(event_name, attributes)
-      matching_listeners = @listeners.select do |id, listener|
-        pattern_matches?(listener[:pattern], event_name)
+      # Take a snapshot of current listeners to avoid holding the mutex during execution
+      # This allows listeners to be modified while others are executing
+      matching_listeners = @mutex.synchronize do
+        @listeners.select do |id, listener|
+          pattern_matches?(listener[:pattern], event_name)
+        end.dup  # Create a copy to avoid shared state
       end
 
       matching_listeners.each do |id, listener|
