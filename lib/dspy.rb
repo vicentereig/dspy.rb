@@ -10,6 +10,7 @@ require_relative 'dspy/type_serializer'
 require_relative 'dspy/observability'
 require_relative 'dspy/context'
 require_relative 'dspy/events'
+require_relative 'dspy/events/types'
 
 module DSPy
   extend Dry::Configurable
@@ -35,22 +36,45 @@ module DSPy
   end
 
   def self.log(event, **attributes)
+    # Return nil early if logger is not configured (backward compatibility)
+    return nil unless logger
+    
     # Forward to event system - this maintains backward compatibility
     # while providing all new event system benefits
     event(event, attributes)
+    
+    # Return nil to maintain backward compatibility
+    nil
   end
 
-  def self.event(event_name, attributes = {})
-    raise ArgumentError, "Event name cannot be nil" if event_name.nil?
-    
-    # Handle nil attributes
-    attributes = {} if attributes.nil?
+  def self.event(event_name_or_object, attributes = {})
+    # Handle typed event objects
+    if event_name_or_object.respond_to?(:name) && event_name_or_object.respond_to?(:to_attributes)
+      event_obj = event_name_or_object
+      event_name = event_obj.name
+      attributes = event_obj.to_attributes
+      
+      # For LLM events, use OpenTelemetry semantic conventions for spans
+      if event_obj.is_a?(DSPy::Events::LLMEvent)
+        otel_attributes = event_obj.to_otel_attributes
+        create_event_span(event_name, otel_attributes)
+      else
+        create_event_span(event_name, attributes)
+      end
+    else
+      # Handle string event names (backward compatibility)
+      event_name = event_name_or_object
+      raise ArgumentError, "Event name cannot be nil" if event_name.nil?
+      
+      # Handle nil attributes
+      attributes = {} if attributes.nil?
+      
+      # Create OpenTelemetry span for the event if observability is enabled
+      create_event_span(event_name, attributes)
+    end
     
     # Perform the actual logging (original DSPy.log behavior)
     emit_log(event_name, attributes)
-    
-    # Create OpenTelemetry span for the event if observability is enabled
-    create_event_span(event_name, attributes)
     
     # Notify event listeners
     events.notify(event_name, attributes)
@@ -166,6 +190,7 @@ require_relative 'dspy/image'
 require_relative 'dspy/strategy'
 require_relative 'dspy/prediction'
 require_relative 'dspy/predict'
+require_relative 'dspy/events/subscribers'
 require_relative 'dspy/chain_of_thought'
 require_relative 'dspy/re_act'
 require_relative 'dspy/code_act'
