@@ -540,20 +540,37 @@ class InstrumentedTool < DSPy::Tools::Base
 
   sig { params(data: String).returns(T.any(OperationSuccess, OperationError)) }
   def call(data:)
-    DSPy::Context.with_span(operation: 'tool.instrumented_operation', tool_input: data) do
-        started_at = Time.now
-        DSPy.log('tool.started', tool_name: 'instrumented_operation', input: data)
-        
-        result = perform_operation(data)
-        duration = Time.now - started_at
-        
-        DSPy.log('tool.completed', tool_name: 'instrumented_operation', duration: duration, result: result)
-        OperationSuccess.new(result: result, duration: duration)
-      rescue => e
-        duration = Time.now - started_at
-        DSPy.log('tool.failed', tool_name: 'instrumented_operation', error: e.message, duration: duration)
-        OperationError.new(error: e.message, duration: duration)
-      end
+    started_at = Time.now
+    
+    # Emit start event - automatically creates OpenTelemetry span
+    DSPy.event('tool.started', tool_name: 'instrumented_operation', input: data)
+    
+    begin
+      result = perform_operation(data)
+      duration = Time.now - started_at
+      
+      # Success event - includes performance metrics  
+      DSPy.event('tool.completed', {
+        tool_name: 'instrumented_operation',
+        duration_ms: (duration * 1000).round(2),
+        result_size: result.length,
+        status: 'success'
+      })
+      
+      OperationSuccess.new(result: result, duration: duration)
+    rescue => e
+      duration = Time.now - started_at
+      
+      # Error event - includes failure details
+      DSPy.event('tool.failed', {
+        tool_name: 'instrumented_operation', 
+        error: e.message,
+        error_class: e.class.name,
+        duration_ms: (duration * 1000).round(2),
+        status: 'error'
+      })
+      
+      OperationError.new(error: e.message, duration: duration)
     end
   end
 
@@ -564,6 +581,34 @@ class InstrumentedTool < DSPy::Tools::Base
     "Processed: #{data}"
   end
 end
+
+# Track tool performance with event subscribers
+class ToolPerformanceTracker < DSPy::Events::BaseSubscriber
+  attr_reader :tool_stats
+  
+  def initialize
+    super
+    @tool_stats = Hash.new { |h, k| h[k] = { calls: 0, total_duration: 0, errors: 0 } }
+    subscribe
+  end
+  
+  def subscribe
+    add_subscription('tool.*') do |event_name, attributes|
+      tool_name = attributes[:tool_name]
+      
+      case event_name
+      when 'tool.completed'
+        @tool_stats[tool_name][:calls] += 1
+        @tool_stats[tool_name][:total_duration] += attributes[:duration_ms]
+      when 'tool.failed'
+        @tool_stats[tool_name][:errors] += 1
+      end
+    end
+  end
+end
+
+tracker = ToolPerformanceTracker.new
+# Now automatically tracks all instrumented tools
 
 # 3. Inspect failed iterations
 result = agent.forward(question: "Complex question")

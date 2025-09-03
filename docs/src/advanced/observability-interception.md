@@ -1,11 +1,11 @@
 ---
 layout: docs
-name: Advanced Observability Interception
-description: Real-time event interception and custom instrumentation patterns
+name: Event System vs Monkey-Patching
+description: Compare the new event system with old interception approaches
 breadcrumb:
 - name: Advanced
   url: "/advanced/"
-- name: Observability Interception
+- name: Event System vs Monkey-Patching
   url: "/advanced/observability-interception/"
 prev:
   name: Stateful Agents
@@ -13,371 +13,176 @@ prev:
 next:
   name: Python Comparison
   url: "/advanced/python-comparison/"
-date: 2025-08-12 00:00:00 +0000
+date: 2025-09-03 00:00:00 +0000
 ---
-# Advanced Observability Interception
+# Event System vs Monkey-Patching
 
-How to intercept DSPy.rb events before they're logged. Based on the current implementation in `lib/dspy/context.rb` and `lib/dspy/observability.rb`.
+The DSPy.rb event system eliminates the need for complex monkey-patching and override techniques that were previously required for custom observability.
 
-## Three Interception Points
+## The Problem with Monkey-Patching
 
-1. **Logger Backend** - Override `Dry::Logger::Backends::Stream#call`
-2. **Context.with_span** - Prepend to intercept span creation
-3. **OpenTelemetry** - Add custom `SpanProcessor` (when Langfuse configured)
+Before the event system, intercepting DSPy events required complex approaches:
 
-## Method 1: Custom Logger Backend
+### ❌ Old Approach: Complex Logger Backend Override
 
 ```ruby
-require 'dry/logger'
-
+# Required custom backend classes
 class EventInterceptorBackend < Dry::Logger::Backends::Stream
-  def initialize(stream:, **options)
-    super
-    @event_handlers = {}
-  end
-  
-  # Register a handler for specific events
-  def on_event(event_name, &block)
-    @event_handlers[event_name] = block
-  end
-  
   def call(entry)
-    # Process the event before logging
+    # Complex interception logic
     if handler = @event_handlers[entry[:event]]
       handler.call(entry)
     end
-    
-    # Continue with normal logging
     super
   end
 end
 
-# Configure DSPy with custom backend
-backend = EventInterceptorBackend.new(stream: "log/production.log")
-
-# Register event handlers
-backend.on_event('span.attributes') do |entry|
-  if entry['gen_ai.usage.total_tokens']
-    puts "Tokens used: #{entry['gen_ai.usage.total_tokens']}"
-  end
-end
-
+# Fragile configuration
 DSPy.configure do |config|
   config.logger = Dry.Logger(:dspy) do |logger|
-    logger.add_backend(backend)
+    logger.add_backend(EventInterceptorBackend.new(stream: "log/production.log"))
   end
 end
-```
+## ✅ New Approach: Event System
 
-### Example: Filter Sensitive Data
+The new event system provides clean, simple observability without monkey-patching:
 
-```ruby
-class FilteringBackend < Dry::Logger::Backends::Stream
-  SENSITIVE_KEYS = %w[api_key password token secret email ssn].freeze
-  
-  def call(entry)
-    # Deep clone to avoid modifying original
-    filtered_entry = entry.dup
-    
-    # Recursively filter sensitive keys
-    filter_sensitive!(filtered_entry)
-    
-    # Log the filtered version
-    super(filtered_entry)
-  end
-  
-  private
-  
-  def filter_sensitive!(obj)
-    case obj
-    when Hash
-      obj.each do |key, value|
-        if SENSITIVE_KEYS.any? { |k| key.to_s.downcase.include?(k) }
-          obj[key] = '[REDACTED]'
-        else
-          filter_sensitive!(value)
-        end
-      end
-    when Array
-      obj.each { |item| filter_sensitive!(item) }
-    end
-  end
-end
-```
-
-### Example: Collect Metrics
+### Token Cost Tracking
 
 ```ruby
-class MetricsBackend < Dry::Logger::Backends::Stream
-  def initialize(stream:, metrics_client: nil, **options)
-    super(stream: stream, **options)
-    @metrics = metrics_client || StatsD.new
-    @token_totals = Concurrent::Hash.new(0)
-  end
-  
-  def call(entry)
-    # Extract metrics asynchronously
-    Concurrent::Promise.execute do
-      extract_metrics(entry)
-    end
-    
-    # Don't block on metrics collection
+# From spec/support/event_subscriber_examples.rb
+class TokenCostTracker < DSPy::Events::BaseSubscriber
+  def initialize
     super
+    @costs = Hash.new(0.0)
+    subscribe
   end
   
-  private
+  def subscribe
+    add_subscription('llm.*') do |event_name, attributes|
+      model = attributes['gen_ai.request.model']
+      input_tokens = attributes['gen_ai.usage.prompt_tokens'] || 0
+      output_tokens = attributes['gen_ai.usage.completion_tokens'] || 0
+      
+      cost = calculate_cost(model, input_tokens, output_tokens)
+      @costs[model] += cost
+      
+      puts "#{model}: $#{cost.round(4)} (total: $#{@costs[model].round(2)})"
+    end
+  end
+end
+
+tracker = TokenCostTracker.new
+# Automatically tracks all LLM costs - no configuration needed
+```
+
+### Rate Limiting
+
+```ruby
+# Simple, testable rate limiter
+class RateLimiter < DSPy::Events::BaseSubscriber
+  def initialize(limit: 100)
+    super
+    @requests = Hash.new(0)
+    @limit = limit
+    subscribe
+  end
   
-  def extract_metrics(entry)
-    case entry[:event]
-    when 'span.end'
-      if entry[:operation] == 'llm.generate'
-        @metrics.timing('llm.duration', entry[:duration_ms])
-      end
-    when 'span.attributes'
-      if tokens = entry['gen_ai.usage.total_tokens']
-        model = entry['gen_ai.request.model']
-        @metrics.increment('llm.tokens', tokens, tags: ["model:#{model}"])
-        @token_totals[model] += tokens
+  def subscribe
+    add_subscription('llm.generate') do |event_name, attributes|
+      model = attributes['gen_ai.request.model']
+      key = "#{model}:#{Time.now.to_i / 60}"
+      
+      @requests[key] += 1
+      if @requests[key] > @limit
+        DSPy.event('rate_limit.exceeded', model: model, count: @requests[key])
       end
     end
-  rescue => e
-    # Never let metrics break the main flow
-    DSPy.logger.error("Metrics extraction failed: #{e.message}")
   end
 end
 ```
 
-## Method 2: Context.with_span Prepend
+### Audit Logging
 
 ```ruby
-module ContextInterceptor
-  def with_span(operation:, **attributes)
-    before_span(operation, attributes)
-    result = super
-    after_span(operation, attributes, result)
-    result
-  rescue => e
-    on_span_error(operation, attributes, e)
-    raise
-  end
-  
-  private
-  
-  def before_span(operation, attributes)
-    if operation == 'llm.generate'
-      RateLimiter.check!(attributes['gen_ai.request.model'])
-    end
-  end
-  
-  def after_span(operation, attributes, result)
-    if operation == 'llm.generate' && attributes['gen_ai.usage.total_tokens']
-      CostTracker.record(
+class AuditLogger < DSPy::Events::BaseSubscriber
+  def subscribe
+    add_subscription('llm.*') do |event_name, attributes|
+      AuditLog.create!(
+        event: event_name,
         model: attributes['gen_ai.request.model'],
-        tokens: attributes['gen_ai.usage.total_tokens']
+        tokens: attributes['gen_ai.usage.total_tokens'],
+        user_id: Current.user&.id,
+        timestamp: Time.current
       )
     end
   end
-  
-  def on_span_error(operation, attributes, error)
-    AlertManager.notify(operation: operation, error: error.message)
+end
+```
+
+## Why the Event System is Better
+
+### ✅ Advantages
+
+1. **Discoverable**: `DSPy.events.subscribe()` is explicit and searchable
+2. **Testable**: Easy to test subscribers in isolation  
+3. **Type Safe**: Sorbet T::Struct validation for event structures
+4. **Thread Safe**: Built-in concurrency protection
+5. **Error Isolated**: Failing listeners don't break others
+6. **No Dependencies**: Doesn't require custom backend classes
+
+### ❌ Problems with Monkey-Patching
+
+1. **Hidden behavior**: Prepend modules are invisible in code
+2. **Testing complexity**: Hard to test interceptors in isolation  
+3. **Fragility**: Breaks when internal APIs change
+4. **Performance overhead**: Every call goes through override chain
+5. **Debugging difficulty**: Stack traces become confusing
+
+## Migration Guide
+
+### Before (Complex)
+```ruby
+# Required monkey-patching
+module ContextInterceptor
+  def with_span(operation:, **attributes)
+    # Complex interception logic
+    super  
   end
 end
-
 DSPy::Context.singleton_class.prepend(ContextInterceptor)
 ```
 
-### Example: Add Attributes
-
+### After (Simple)  
 ```ruby
-module SpanEnricher
-  def with_span(operation:, **attributes)
-    attributes[:environment] = Rails.env
-    attributes[:user_id] = Current.user&.id
-    super
+# Clean subscriber pattern
+class MyTracker < DSPy::Events::BaseSubscriber
+  def subscribe
+    add_subscription('llm.*') { |name, attrs| handle_event(attrs) }
   end
 end
 
-DSPy::Context.singleton_class.prepend(SpanEnricher)
+tracker = MyTracker.new
 ```
 
-## Method 3: OpenTelemetry Processor
+## When to Use Each Approach
 
-```ruby
-class CustomSpanProcessor < OpenTelemetry::SDK::Trace::Export::SimpleSpanProcessor
-  def on_end(span)
-    if span.name == 'llm.generate'
-      tokens = span.attributes['gen_ai.usage.total_tokens']
-      if tokens
-        Metrics.increment('llm.tokens', tokens)
-      end
-    end
-    super
-  end
-end
+### Use Event System (Recommended)
+- Token tracking and budget management
+- Custom analytics and reporting  
+- Integration with external services
+- Performance monitoring
+- User-facing observability features
 
-OpenTelemetry::SDK.configure do |config|
-  exporter = OpenTelemetry::Exporter::OTLP::Exporter.new
-  config.add_span_processor(CustomSpanProcessor.new(exporter))
-end
-```
+### Use Monkey-Patching (Legacy)
+- Deep system modifications (not recommended)
+- Intercepting internal APIs (brittle)
+- When event system doesn't provide needed hooks
 
-### Example: Sampling
+## Examples in Source
 
-```ruby
-class SamplingSpanProcessor < OpenTelemetry::SDK::Trace::Export::SimpleSpanProcessor
-  def on_end(span)
-    # Always export errors, sample 10% of others
-    if span.status.code == OpenTelemetry::Trace::Status::ERROR || rand < 0.1
-      super
-    end
-  end
-end
-```
-
-## Complete Example: Token Cost Tracker
-
-```ruby
-class TokenCostTracker
-  PRICING = { # per 1K tokens
-    'gpt-4' => { input: 0.03, output: 0.06 },
-    'gpt-3.5-turbo' => { input: 0.0005, output: 0.0015 }
-  }
-  
-  def self.install!
-    @costs = Hash.new(0.0)
-    
-    # Custom logger backend
-    backend = Class.new(Dry::Logger::Backends::Stream) do
-      def call(entry)
-        if entry[:event] == 'span.attributes' && entry['gen_ai.usage.total_tokens']
-          TokenCostTracker.track(entry)
-        end
-        super
-      end
-    end
-    
-    DSPy.configure do |config|
-      config.logger = Dry.Logger(:dspy) do |logger|
-        logger.add_backend(backend.new(stream: "log/dspy.log"))
-      end
-    end
-  end
-  
-  def self.track(entry)
-    model = entry['gen_ai.request.model']
-    input = entry['gen_ai.usage.prompt_tokens'] || 0
-    output = entry['gen_ai.usage.completion_tokens'] || 0
-    
-    pricing = PRICING[model] || PRICING['gpt-3.5-turbo']
-    cost = (input / 1000.0) * pricing[:input] + (output / 1000.0) * pricing[:output]
-    
-    @costs[model] += cost
-    puts "#{model}: $#{'%.4f' % cost} (total: $#{'%.2f' % @costs[model]})"
-  end
-end
-
-TokenCostTracker.install!
-```
-
-## Error Handling
-
-```ruby
-module SafeInterceptor
-  def with_span(operation:, **attributes)
-    super
-  rescue => e
-    DSPy.logger.error("Interceptor error: #{e.message}")
-    # Continue without interception
-    yield
-  end
-end
-```
-
-## Testing
-
-```ruby
-RSpec.describe "Custom Interceptor" do
-  let(:interceptor) { EventInterceptorBackend.new(stream: StringIO.new) }
-  
-  it "processes events correctly" do
-    events_received = []
-    
-    interceptor.on_event('test.event') do |entry|
-      events_received << entry
-    end
-    
-    interceptor.call(event: 'test.event', data: 'test')
-    
-    expect(events_received).to have(1).item
-    expect(events_received.first[:data]).to eq('test')
-  end
-end
-```
-
-## Example: Rate Limiting
-
-```ruby
-class RateLimitInterceptor
-  def self.install!
-    DSPy::Context.singleton_class.prepend(Module.new do
-      def with_span(operation:, **attributes)
-        if operation == 'llm.generate'
-          model = attributes['gen_ai.request.model']
-          
-          Redis.current.multi do |r|
-            key = "rate_limit:#{model}:#{Time.now.to_i / 60}"
-            r.incr(key)
-            r.expire(key, 120)
-          end.tap do |count, _|
-            if count > 100 # 100 requests per minute
-              raise "Rate limit exceeded for #{model}"
-            end
-          end
-        end
-        
-        super
-      end
-    end)
-  end
-end
-```
-
-## Example: Audit Log
-
-```ruby
-class AuditInterceptor
-  def self.install!
-    backend = Class.new(Dry::Logger::Backends::Stream) do
-      def call(entry)
-        if entry[:event] == 'llm.generate'
-          AuditLog.create!(
-            user_id: Current.user&.id,
-            action: 'llm_request',
-            model: entry['gen_ai.request.model'],
-            tokens: entry['gen_ai.usage.total_tokens'],
-            timestamp: Time.current
-          )
-        end
-        super
-      end
-    end
-    
-    # Add to existing logger configuration
-    DSPy.logger.add_backend(backend.new(stream: "log/audit.log"))
-  end
-end
-```
-
-## Troubleshooting
-
-- **Not firing**: Install interceptor before DSPy operations
-- **Performance**: Use async/sampling for heavy work
-- **Memory**: Clear state periodically
-
-## References
-
-- `lib/dspy/context.rb:15-60` - Context implementation
-- `lib/dspy/observability.rb:76-92` - OpenTelemetry integration
-- `lib/dspy/lm.rb:231-239` - Token usage attributes
-- [ADR-007](/adr/007-observability-event-interception-architecture/) - Architecture decision
-- [GitHub Issue #69](https://github.com/vicentereig/dspy.rb/issues/69) - Proposed middleware API
+See working implementations:
+- `spec/unit/event_system_spec.rb` - Thread safety tests
+- `spec/unit/event_subscribers_spec.rb` - Subscriber patterns
+- `spec/support/event_subscriber_examples.rb` - Complete implementations
+- `examples/event_system_demo.rb` - Live demonstration

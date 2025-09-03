@@ -18,355 +18,446 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Observability
 
-DSPy.rb provides a simple, lightweight observability system based on structured logging and span tracking. The system is designed to be OTEL/Langfuse compatible while maintaining minimal overhead.
+DSPy.rb provides an event-driven observability system based on OpenTelemetry. The system eliminates complex monkey-patching while providing powerful, extensible observability features.
 
 ## Overview
 
 The observability system offers:
-- **Span Tracking**: Trace operations with parent-child relationships
-- **Structured Logging**: JSON or key=value format based on environment
-- **Context Propagation**: Automatic trace correlation across operations
-- **GenAI Conventions**: Following OpenTelemetry semantic conventions for LLMs
-- **Zero Dependencies**: No external instrumentation libraries required
-- **Thread-Safe**: Isolated context per thread
+- **Event System**: Simple `DSPy.event()` API for structured event emission
+- **Pluggable Listeners**: Subscribe to events with pattern matching
+- **OpenTelemetry Integration**: Automatic span creation with semantic conventions  
+- **Langfuse Export**: Zero-config export to Langfuse via OpenTelemetry
+- **Type Safety**: Sorbet T::Struct event validation
+- **Thread Safe**: Concurrent access with mutex protection
+- **Zero Breaking Changes**: All existing `DSPy.log()` calls work unchanged
 
 ## Architecture
 
-DSPy.rb uses a simple Context system for observability:
+The event system is built around three core components:
 
 ```ruby
-# lib/dspy/context.rb - ~50 lines total
-module DSPy
-  class Context
-    # Thread-local storage for trace context
-    # Manages span stack and trace IDs
+# Event emission
+DSPy.event('llm.generate', provider: 'openai', tokens: 150)
+
+# Event listening  
+DSPy.events.subscribe('llm.*') { |name, attrs| track_usage(attrs) }
+
+# Custom subscribers
+class MyTracker < DSPy::Events::BaseSubscriber
+  def subscribe
+    add_subscription('optimization.*') { |name, attrs| handle_trial(attrs) }
   end
 end
 ```
 
-## Basic Configuration
+## Quick Start
 
-### Enable Logging
+### Basic Event Emission
 
 ```ruby
-DSPy.configure do |config|
-  # Configure logger (uses Dry::Logger)
-  config.logger = Dry.Logger(:dspy)
+# Emit events with attributes
+DSPy.event('llm.response', {
+  provider: 'openai',
+  model: 'gpt-4', 
+  tokens: 150,
+  duration_ms: 1200
+})
+
+# Events automatically create OpenTelemetry spans and log entries
+```
+
+### Event Listeners
+
+```ruby
+# Subscribe to specific events
+DSPy.events.subscribe('llm.response') do |event_name, attributes|
+  puts "LLM call: #{attributes[:model]} used #{attributes[:tokens]} tokens"
+end
+
+# Pattern matching with wildcards
+DSPy.events.subscribe('llm.*') do |event_name, attributes|
+  track_llm_usage(attributes)
+end
+
+# Unsubscribe when done
+subscription_id = DSPy.events.subscribe('test.*') { |name, attrs| }
+DSPy.events.unsubscribe(subscription_id)
+```
+
+### Custom Subscribers
+
+```ruby
+class TokenTracker < DSPy::Events::BaseSubscriber
+  attr_reader :total_tokens
   
-  # Or with custom configuration
-  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
-    logger.add_backend(stream: "log/production.log")
+  def initialize
+    super
+    @total_tokens = 0
+    subscribe
+  end
+  
+  def subscribe
+    add_subscription('llm.*') do |event_name, attributes|
+      tokens = attributes['gen_ai.usage.total_tokens'] || 0
+      @total_tokens += tokens
+    end
   end
 end
+
+tracker = TokenTracker.new
+# Now automatically tracks token usage from any LLM events
 ```
 
-### Environment-Aware Formatting
+## Built-in Events
 
-The logger automatically detects the environment:
-- **Production** (`RAILS_ENV=production` or `RACK_ENV=production`): JSON format
-- **Development/Test**: Key=value format for readability
+DSPy modules automatically emit events following OpenTelemetry semantic conventions:
 
-## Using the Context System
-
-### Basic Span Tracking
+### LLM Events
 
 ```ruby
-# Wrap any operation in a span
-DSPy::Context.with_span(
-  operation: 'my_operation',
-  'my.attribute' => 'value'
-) do
-  # Your code here
-  result = perform_work()
-  
-  # Log events within the span
-  DSPy.log('my.event', result: result, status: 'success')
-  
-  result
-end
-```
-
-### Nested Spans
-
-Spans automatically track parent-child relationships:
-
-```ruby
-DSPy::Context.with_span(operation: 'parent_operation') do
-  # Parent span
-  
-  DSPy::Context.with_span(operation: 'child_operation') do
-    # Child span - automatically linked to parent
-  end
-end
-```
-
-### Accessing Current Context
-
-```ruby
-# Get current trace context
-context = DSPy::Context.current
-# => { trace_id: "uuid", span_stack: ["parent_id", "current_id"] }
-
-# Check if in a span
-if DSPy::Context.current[:span_stack].any?
-  # Currently within a span
-end
-```
-
-## Semantic Conventions
-
-DSPy.rb follows GenAI semantic conventions for LLM operations:
-
-### LLM Operations
-
-```ruby
-# Automatically added by DSPy::LM
-DSPy::Context.with_span(
-  operation: 'llm.generate',
+# Emitted automatically by DSPy::LM (lib/dspy/lm.rb:254)
+DSPy.event('lm.tokens', {
   'gen_ai.system' => 'openai',
-  'gen_ai.request.model' => 'gpt-4',
+  'gen_ai.request.model' => 'gpt-4', 
   'gen_ai.usage.prompt_tokens' => 150,
-  'gen_ai.usage.completion_tokens' => 50
-) do
-  # LLM call
-end
-```
-
-### Module Operations
-
-```ruby
-# Automatically added by DSPy modules
-DSPy::Context.with_span(
-  operation: 'dspy.predict',
-  'dspy.module' => 'ChainOfThought',
+  'gen_ai.usage.completion_tokens' => 50,
+  'gen_ai.usage.total_tokens' => 200,
   'dspy.signature' => 'QuestionAnswering'
-) do
-  # Module execution
-end
+})
 ```
 
-## Reading Logs
-
-### JSON Format (Production)
-
-```json
-{
-  "timestamp": "2024-01-15T10:30:45.123Z",
-  "level": "INFO",
-  "event": "llm.generate",
-  "trace_id": "123e4567-e89b-12d3-a456-426614174000",
-  "span_id": "987fcdeb-51a2-43f1-9012-345678901234",
-  "parent_span_id": "abcdef12-3456-7890-abcd-ef1234567890",
-  "gen_ai.system": "openai",
-  "gen_ai.request.model": "gpt-4",
-  "duration_ms": 1250
-}
-```
-
-### Key=Value Format (Development)
-
-```
-timestamp=2024-01-15T10:30:45.123Z level=INFO event=llm.generate trace_id=123e4567 span_id=987fcdeb parent_span_id=abcdef12 gen_ai.system=openai gen_ai.request.model=gpt-4 duration_ms=1250
-```
-
-## Integration with External Systems
-
-### Exporting to OpenTelemetry
-
-Since DSPy.rb logs follow OTEL conventions, you can use log forwarding:
+### Module Events  
 
 ```ruby
-# Use a log forwarder to send JSON logs to OTEL collector
-# Configure your infrastructure to forward logs from:
-DSPy.configure do |config|
-  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
-    logger.add_backend(stream: "/var/log/dspy/traces.json")
-  end
-end
+# ChainOfThought reasoning (lib/dspy/chain_of_thought.rb:176)
+DSPy.event('chain_of_thought.reasoning_complete', {
+  'dspy.signature' => 'QuestionAnswering',
+  'cot.reasoning_steps' => 3,
+  'cot.reasoning_length' => 245,
+  'cot.has_reasoning' => true
+})
+
+# ReAct iterations (lib/dspy/re_act.rb:422)  
+DSPy.event('react.iteration_complete', {
+  iteration: 2,
+  thought: 'I need to search for information',
+  action: 'search',
+  observation: 'Found relevant results'
+})
+
+# CodeAct code execution (lib/dspy/code_act.rb:358)
+DSPy.event('codeact.iteration_complete', {
+  iteration: 1,
+  code_executed: 'puts "Hello World"',
+  execution_result: 'Hello World'
+})
 ```
 
-### Langfuse Integration
+## Type-Safe Events
 
-Langfuse can ingest the JSON logs directly:
-
-```bash
-# Forward logs to Langfuse using their log ingestion API
-tail -f log/production.log | \
-  jq -c 'select(.event | startswith("llm"))' | \
-  curl -X POST https://api.langfuse.com/logs \
-    -H "Authorization: Bearer $LANGFUSE_API_KEY" \
-    -H "Content-Type: application/json" \
-    -d @-
-```
-
-### Custom Processing
-
-Process logs with your preferred tools:
+Create structured events with validation:
 
 ```ruby
-# Parse and analyze logs
-File.foreach("log/production.log") do |line|
-  event = JSON.parse(line)
-  
-  if event["event"] == "llm.generate"
-    # Track LLM usage
-    tokens = event["gen_ai.usage.total_tokens"]
-    model = event["gen_ai.request.model"]
-    # ... your analytics
-  end
-end
+# Type-safe LLM event
+llm_event = DSPy::Events::LLMEvent.new(
+  name: 'llm.generate',
+  provider: 'openai',
+  model: 'gpt-4',
+  usage: DSPy::Events::TokenUsage.new(
+    prompt_tokens: 150,
+    completion_tokens: 75
+  ),
+  duration_ms: 1250
+)
+
+DSPy.event(llm_event)
+# Automatically includes OpenTelemetry semantic conventions
+```
+
+### Available Event Types
+
+```ruby
+# Basic event
+DSPy::Events::Event.new(name: 'custom.event', attributes: { key: 'value' })
+
+# Module execution event
+DSPy::Events::ModuleEvent.new(
+  name: 'module.forward', 
+  module_name: 'ChainOfThought',
+  signature_name: 'QuestionAnswering'
+)
+
+# Optimization event
+DSPy::Events::OptimizationEvent.new(
+  name: 'optimization.trial_complete',
+  optimizer_name: 'MIPROv2',
+  score: 0.85
+)
 ```
 
 ## Common Patterns
 
-### Adding Custom Attributes
+### Token Budget Tracking
 
 ```ruby
-class MyModule < DSPy::Module
-  def forward(**inputs)
-    DSPy::Context.with_span(
-      operation: 'my_module.process',
-      'module.version' => '1.0',
-      'module.customer_id' => customer_id
-    ) do
-      # Your logic
-      result = process(inputs)
+# From spec/support/event_subscriber_examples.rb
+class TokenBudgetTracker < DSPy::Events::BaseSubscriber
+  attr_reader :total_tokens, :total_cost
+  
+  def initialize(budget_limit: 10000)
+    super
+    @budget_limit = budget_limit
+    @total_tokens = 0
+    @total_cost = 0.0
+    subscribe
+  end
+  
+  def subscribe
+    add_subscription('llm.*') do |event_name, attributes|
+      prompt_tokens = attributes['gen_ai.usage.prompt_tokens'] || 0
+      completion_tokens = attributes['gen_ai.usage.completion_tokens'] || 0
+      @total_tokens += prompt_tokens + completion_tokens
       
-      # Log custom metrics
-      DSPy.log('my_module.complete', 
-        items_processed: result.count,
-        processing_time: elapsed_time
-      )
+      # Calculate cost (example pricing)
+      model = attributes['gen_ai.request.model']
+      cost_per_1k = model == 'gpt-4' ? 0.03 : 0.002
+      @total_cost += (@total_tokens / 1000.0) * cost_per_1k
+    end
+  end
+  
+  def budget_exceeded?
+    @total_tokens > @budget_limit
+  end
+end
+
+tracker = TokenBudgetTracker.new(budget_limit: 5000)
+# Automatically tracks all LLM token usage
+```
+
+### Optimization Progress Tracking
+
+```ruby
+# From spec/unit/module_event_integration_spec.rb
+class OptimizationTracker < DSPy::Events::BaseSubscriber
+  attr_reader :trials, :best_score
+  
+  def initialize
+    super
+    @trials = []
+    @best_score = nil
+    subscribe
+  end
+  
+  def subscribe
+    add_subscription('optimization.*') do |event_name, attributes|
+      case event_name
+      when 'optimization.trial_complete'
+        score = attributes[:score]
+        @trials << { trial: attributes[:trial_number], score: score }
+        @best_score = score if !@best_score || score > @best_score
+      end
+    end
+  end
+end
+
+tracker = OptimizationTracker.new
+# Automatically tracks MIPROv2, SimpleOptimizer, etc.
+```
+
+### Module Performance Tracking
+
+```ruby
+# From spec/unit/module_event_integration_spec.rb  
+class ModulePerformanceTracker < DSPy::Events::BaseSubscriber
+  attr_reader :module_stats
+  
+  def initialize
+    super
+    @module_stats = Hash.new { |h, k| 
+      h[k] = { total_calls: 0, total_duration: 0, avg_duration: 0 } 
+    }
+    subscribe
+  end
+  
+  def subscribe
+    add_subscription('*.complete') do |event_name, attributes|
+      module_name = event_name.split('.').first
+      duration = attributes[:duration_ms] || 0
       
-      result
+      stats = @module_stats[module_name]
+      stats[:total_calls] += 1
+      stats[:total_duration] += duration
+      stats[:avg_duration] = stats[:total_duration] / stats[:total_calls].to_f
+    end
+  end
+end
+
+tracker = ModulePerformanceTracker.new
+# Tracks ChainOfThought, ReAct, CodeAct performance
+```
+
+## Integration with External Systems
+
+### Event Filtering and Routing
+
+```ruby
+# Route different events to different systems
+class EventRouter < DSPy::Events::BaseSubscriber
+  def initialize(datadog_client:, slack_webhook:)
+    super
+    @datadog = datadog_client
+    @slack = slack_webhook
+    subscribe
+  end
+  
+  def subscribe
+    # Send LLM events to Datadog for cost tracking
+    add_subscription('llm.*') do |event_name, attributes|
+      @datadog.increment('dspy.llm.requests', tags: [
+        "provider:#{attributes['gen_ai.system']}",
+        "model:#{attributes['gen_ai.request.model']}"
+      ])
+    end
+    
+    # Send optimization events to Slack
+    add_subscription('optimization.trial_complete') do |event_name, attributes|
+      if attributes[:score] > 0.9
+        @slack.send("🎉 Trial #{attributes[:trial_number]} achieved #{attributes[:score]} score!")
+      end
     end
   end
 end
 ```
 
-### Error Tracking
+### Custom Analytics
 
 ```ruby
-DSPy::Context.with_span(operation: 'risky_operation') do
-  begin
-    perform_operation()
-  rescue => e
-    DSPy.log('error.occurred',
-      error_class: e.class.name,
-      error_message: e.message,
-      error_backtrace: e.backtrace.first(5)
-    )
-    raise
+# From spec/unit/event_system_spec.rb (Thread and Fiber Safety tests)
+class EventAnalytics < DSPy::Events::BaseSubscriber
+  def initialize
+    super
+    @analytics = Concurrent::Hash.new
+    subscribe
+  end
+  
+  def subscribe
+    add_subscription('*') do |event_name, attributes|
+      # Thread-safe analytics collection
+      category = event_name.split('.').first
+      @analytics.compute(category) { |old_val| (old_val || 0) + 1 }
+    end
+  end
+  
+  def report
+    @analytics.to_h
   end
 end
 ```
 
-### Performance Monitoring
+## Backward Compatibility
+
+All existing `DSPy.log()` calls automatically benefit from the event system:
 
 ```ruby
-start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+# Existing code (unchanged)
+DSPy.log('chain_of_thought.reasoning_complete', {
+  signature_name: 'QuestionAnswering', 
+  reasoning_steps: 3
+})
 
-DSPy::Context.with_span(operation: 'batch_process') do
-  results = process_batch(items)
-  
-  duration = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time
-  
-  DSPy.log('batch.complete',
-    duration_ms: (duration * 1000).round(2),
-    items_count: items.size,
-    success_rate: results.count(&:success?) / items.size.to_f
-  )
-  
-  results
-end
+# Now automatically:
+# ✅ Logs to stdout/file (same as before)
+# ✅ Creates OpenTelemetry spans  
+# ✅ Notifies event listeners
+# ✅ Exports to Langfuse when configured
 ```
 
-## Migration from Old Instrumentation
+No code changes required - existing modules get enhanced observability automatically.
 
-If you were using the old instrumentation system:
+## Configuration
 
-### Before (Old System)
 ```ruby
-# Complex configuration
 DSPy.configure do |config|
-  config.instrumentation.enabled = true
-  config.instrumentation.subscribers = [:logger, :otel]
-  config.instrumentation.sampling_rate = 0.1
+  # Logger configuration (same as before)
+  config.logger = Dry.Logger(:dspy, formatter: :json)
 end
 
-# Event emission
-DSPy::Instrumentation.instrument('my.event', payload) do
-  work()
-end
-```
-
-### After (New System)
-```ruby
-# Simple configuration
-DSPy.configure do |config|
-  config.logger = Dry.Logger(:dspy)
-end
-
-# Span tracking
-DSPy::Context.with_span(operation: 'my.event', **payload) do
-  work()
-end
+# Events work immediately - no additional setup needed
+# Langfuse: Just set environment variables
+# Custom subscribers: Create and they start working
 ```
 
 ## Best Practices
 
-1. **Use Semantic Names**: Follow dot notation for operations (e.g., `user.signup`, `llm.generate`)
+1. **Use Semantic Names**: Follow dot notation (`llm.generate`, `module.forward`)
 
-2. **Keep Attributes Flat**: Avoid deeply nested attribute structures
-
-3. **Limit Attribute Size**: Don't log large payloads as span attributes
-
-4. **Use Consistent Keys**: Maintain consistent attribute naming across your application
-
-5. **Sample in Production**: For high-volume applications, implement sampling:
+2. **Clean Up Subscribers**: Always call `unsubscribe()` when done
    ```ruby
-   # Simple sampling
-   if rand < 0.1  # 10% sampling
-     DSPy::Context.with_span(operation: 'sampled_op') do
-       # ...
-     end
-   else
-     # Execute without span tracking
+   tracker = MyTracker.new
+   # ... use tracker
+   tracker.unsubscribe  # Clean up listeners
+   ```
+
+3. **Handle Listener Errors**: Event system isolates failures
+   ```ruby
+   add_subscription('llm.*') do |name, attrs|
+     risky_operation(attrs)
+   rescue => e
+     # Error logged automatically, other listeners continue
    end
+   ```
+
+4. **Use OpenTelemetry Conventions**: Follow semantic naming for LLM events
+   ```ruby
+   DSPy.event('llm.generate', {
+     'gen_ai.system' => 'openai',           # Required
+     'gen_ai.request.model' => 'gpt-4',     # Required  
+     'gen_ai.usage.prompt_tokens' => 100    # Recommended
+   })
+   ```
+
+5. **Pattern Matching**: Use wildcards for broad tracking
+   ```ruby
+   add_subscription('optimization.*')  # All optimization events
+   add_subscription('llm.*')          # All LLM events
+   add_subscription('*')              # All events (careful!)
    ```
 
 ## Troubleshooting
 
-### No Logs Appearing
+### Events Not Triggering Listeners
 
-Check that logger is configured:
+Check subscription patterns:
 ```ruby
-DSPy.config.logger # Should not be nil
+# Make sure pattern matches event names
+DSPy.events.subscribe('llm.*')    # Matches llm.generate, llm.stream
+DSPy.events.subscribe('llm')      # Only matches exact 'llm'
 ```
 
-### Missing Trace Correlation
+### Memory Leaks with Subscribers
 
-Ensure operations are wrapped in spans:
+Always unsubscribe when done:
 ```ruby
-# Correct - with span
-DSPy::Context.with_span(operation: 'my_op') do
-  DSPy.log('my.event', data: 'value')
-end
-
-# Incorrect - no span context
-DSPy.log('my.event', data: 'value')  # Will log but no trace_id
-```
-
-### Thread Safety Issues
-
-Context is thread-local, so each thread has isolated context:
-```ruby
-Thread.new do
-  # This thread has its own context
-  DSPy::Context.with_span(operation: 'thread_op') do
-    # ...
+class MyClass
+  def initialize
+    @tracker = TokenTracker.new
+  end
+  
+  def cleanup
+    @tracker.unsubscribe  # Important!
   end
 end
+```
+
+### Thread Safety
+
+Event system is thread-safe by design:
+```ruby
+# Multiple threads can safely emit events
+threads = 10.times.map do |i|
+  Thread.new { DSPy.event('test.event', thread_id: i) }
+end
+threads.each(&:join)
 ```
 
 ## Langfuse Integration (Zero Configuration)
@@ -481,17 +572,20 @@ If these gems are not available, DSPy gracefully falls back to logging-only mode
 
 ## Summary
 
-The observability system in DSPy.rb provides three modes of operation:
+The DSPy.rb event system provides:
 
-1. **Logging Only** (default): Structured logs with span tracking
-2. **Langfuse Integration** (zero-config): Logs + automatic OpenTelemetry export
-3. **Custom OTEL** (advanced): Full control over OpenTelemetry configuration
+1. **Event API**: Simple `DSPy.event()` for structured emission
+2. **Pluggable Listeners**: Subscribe to events with pattern matching
+3. **OpenTelemetry Integration**: Automatic span creation and Langfuse export
+4. **Type Safety**: Sorbet T::Struct event validation
+5. **Backward Compatibility**: Existing `DSPy.log()` calls enhanced automatically
 
 Key benefits:
-- **Zero-config Langfuse**: Just set env vars and it works
-- **Non-invasive**: Logging still works without Langfuse
-- **Standards-compliant**: Uses OpenTelemetry GenAI semantic conventions
-- **Graceful degradation**: Falls back to logging if anything fails
-- **Minimal overhead**: ~100 lines of observability code total
+- **Zero breaking changes**: All existing code works unchanged
+- **Clean API**: Rails-like event system developers expect  
+- **Extensible**: Easy to add custom observability providers
+- **Type safe**: Structured events with validation
+- **Thread safe**: Production-ready concurrent access
+- **No dependencies**: Uses existing OpenTelemetry gems
 
-For most applications, the zero-config Langfuse integration provides production-ready observability with minimal setup.
+The system eliminates complex monkey-patching while providing powerful observability features. See `examples/event_system_demo.rb` for hands-on demonstration.
