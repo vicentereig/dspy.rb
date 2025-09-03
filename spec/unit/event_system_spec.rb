@@ -214,4 +214,111 @@ RSpec.describe 'DSPy Event System' do
       end
     end
   end
+
+  describe 'OpenTelemetry Integration' do
+    describe 'span creation from events' do
+      let(:mock_tracer) { double('tracer') }
+      let(:mock_span) { double('span') }
+
+      before do
+        # Mock observability being enabled
+        allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+        allow(DSPy::Observability).to receive(:tracer).and_return(mock_tracer)
+        allow(DSPy::Observability).to receive(:start_span).and_return(mock_span)
+        allow(DSPy::Observability).to receive(:finish_span)
+      end
+
+      it 'creates OpenTelemetry spans for events when observability is enabled' do
+        expect(DSPy::Observability).to receive(:start_span).with(
+          'llm.response',
+          hash_including(
+            'provider' => 'openai',
+            'model' => 'gpt-4',
+            'duration_ms' => 1250
+          )
+        ).and_return(mock_span)
+        
+        expect(DSPy::Observability).to receive(:finish_span).with(mock_span)
+
+        DSPy.event('llm.response', {
+          provider: 'openai',
+          model: 'gpt-4',
+          duration_ms: 1250
+        })
+      end
+
+      it 'does not create spans when observability is disabled' do
+        allow(DSPy::Observability).to receive(:enabled?).and_return(false)
+        
+        expect(DSPy::Observability).not_to receive(:start_span)
+        expect(DSPy::Observability).not_to receive(:finish_span)
+
+        DSPy.event('llm.response', provider: 'openai')
+      end
+
+      it 'handles errors in span creation gracefully' do
+        allow(DSPy::Observability).to receive(:start_span).and_raise(StandardError, "OTEL error")
+        
+        # Should not raise an error
+        expect {
+          DSPy.event('llm.response', provider: 'openai')
+        }.not_to raise_error
+      end
+
+      it 'creates spans with proper semantic conventions for LLM events' do
+        expect(DSPy::Observability).to receive(:start_span).with(
+          'llm.generate',
+          hash_including(
+            'gen_ai.system' => 'openai',
+            'gen_ai.request.model' => 'gpt-4',
+            'gen_ai.usage.prompt_tokens' => 100,
+            'gen_ai.usage.completion_tokens' => 50,
+            'gen_ai.usage.total_tokens' => 150
+          )
+        )
+
+        DSPy.event('llm.generate', {
+          'gen_ai.system' => 'openai',
+          'gen_ai.request.model' => 'gpt-4',
+          'gen_ai.usage.prompt_tokens' => 100,
+          'gen_ai.usage.completion_tokens' => 50,
+          'gen_ai.usage.total_tokens' => 150
+        })
+      end
+    end
+
+    describe 'event attributes handling' do
+      let(:mock_tracer) { double('tracer') }
+      let(:mock_span) { double('span') }
+
+      before do
+        allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+        allow(DSPy::Observability).to receive(:start_span).and_return(mock_span)
+        allow(DSPy::Observability).to receive(:finish_span)
+      end
+
+      it 'converts nested hashes to flat attributes for spans' do
+        expect(DSPy::Observability).to receive(:start_span).with(
+          'test.event',
+          hash_including(
+            'usage.prompt_tokens' => 100,
+            'usage.completion_tokens' => 50
+          )
+        )
+
+        DSPy.event('test.event', {
+          usage: { prompt_tokens: 100, completion_tokens: 50 }
+        })
+      end
+
+      it 'handles nil and empty attributes' do
+        expect(DSPy::Observability).to receive(:start_span).with(
+          'test.event',
+          {}
+        )
+
+        DSPy.event('test.event', nil)
+      end
+    end
+  end
 end
