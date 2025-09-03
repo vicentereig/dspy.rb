@@ -11,6 +11,7 @@ claude-flow.ps1
 .DS_Store
 .claude
 log/*.log
+log/*.log.*
 .idea
 .byebug_history
 .env
