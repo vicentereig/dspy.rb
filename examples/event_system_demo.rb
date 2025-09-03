@@ -167,6 +167,39 @@ DSPy.event('optimization.complete', optimizer_name: 'MIPROv2')
 puts "🏆 Optimization complete: #{optimizer_tracker.progress_summary}"
 puts
 
+# Bonus: Full-featured optimization reporter example
+puts "📄 Generating detailed optimization report..."
+full_reporter = EventSubscriberExamples::OptimizationReporter.new(
+  output_path: File.join(__dir__, 'demo_optimization_report.md'),
+  auto_write: false
+)
+
+# Re-run the optimization to generate a full report
+DSPy.event('optimization.start', optimizer_name: 'DetailedMIPROv2')
+5.times do |i|
+  score = 0.65 + (i * 0.04) + (rand * 0.02)
+  DSPy.event('optimization.trial_complete', {
+    optimizer_name: 'DetailedMIPROv2',
+    trial_number: i + 1,
+    score: score.round(4),
+    best_score: [0.65 + (i * 0.04), score].max.round(4),
+    parameters: {
+      temperature: 0.9 - (i * 0.1),
+      max_tokens: 100 + (i * 20),
+      top_p: 0.9 - (i * 0.05)
+    },
+    duration_ms: 1200 + rand(800)
+  })
+end
+DSPy.event('optimization.complete', optimizer_name: 'DetailedMIPROv2')
+
+report = full_reporter.generate_report
+puts "📊 Generated detailed report (#{report.length} characters)"
+puts "💾 Saved to: examples/demo_optimization_report.md"
+
+full_reporter.unsubscribe
+puts
+
 # 5. Integration Demo: Multiple Subscribers
 puts "5. Multiple Subscribers Integration"
 puts "-" * 30
