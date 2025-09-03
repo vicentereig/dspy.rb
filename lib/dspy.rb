@@ -9,6 +9,7 @@ require_relative 'dspy/errors'
 require_relative 'dspy/type_serializer'
 require_relative 'dspy/observability'
 require_relative 'dspy/context'
+require_relative 'dspy/events'
 
 module DSPy
   extend Dry::Configurable
@@ -52,9 +53,16 @@ module DSPy
     # Handle nil attributes
     attributes = {} if attributes.nil?
     
-    # For now, forward to the existing log method to maintain compatibility
+    # Forward to the existing log method to maintain compatibility
     # This ensures all existing logging behavior continues to work
     log(event_name, **attributes)
+    
+    # Notify event listeners
+    events.notify(event_name, attributes)
+  end
+
+  def self.events
+    @event_registry ||= DSPy::EventRegistry.new
   end
 
   def self.create_logger

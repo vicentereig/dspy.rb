@@ -87,4 +87,131 @@ RSpec.describe 'DSPy Event System' do
       end
     end
   end
+
+  describe 'Event Listener System' do
+    describe '.events' do
+      after do
+        # Clean up listeners after each test
+        DSPy.events.clear_listeners
+      end
+
+      it 'returns an event registry object' do
+        expect(DSPy.events).to respond_to(:subscribe)
+        expect(DSPy.events).to respond_to(:unsubscribe)
+        expect(DSPy.events).to respond_to(:clear_listeners)
+      end
+    end
+
+    describe '.events.subscribe' do
+      after do
+        DSPy.events.clear_listeners
+      end
+
+      it 'registers a listener for exact event names' do
+        received_events = []
+        
+        DSPy.events.subscribe('llm.response') do |event_name, attributes|
+          received_events << [event_name, attributes]
+        end
+        
+        DSPy.event('llm.response', provider: 'openai')
+        DSPy.event('other.event', data: 'ignored')
+        
+        expect(received_events.length).to eq(1)
+        expect(received_events[0][0]).to eq('llm.response')
+        expect(received_events[0][1][:provider]).to eq('openai')
+      end
+      
+      it 'registers a listener for pattern matching with wildcards' do
+        received_events = []
+        
+        DSPy.events.subscribe('llm.*') do |event_name, attributes|
+          received_events << [event_name, attributes]
+        end
+        
+        DSPy.event('llm.response', provider: 'openai')
+        DSPy.event('llm.request', model: 'gpt-4')
+        DSPy.event('module.forward', data: 'ignored')
+        
+        expect(received_events.length).to eq(2)
+        expect(received_events.map { |e| e[0] }).to match_array(['llm.response', 'llm.request'])
+      end
+      
+      it 'supports multiple listeners for the same event' do
+        listener1_calls = []
+        listener2_calls = []
+        
+        DSPy.events.subscribe('test.event') do |event_name, attributes|
+          listener1_calls << [event_name, attributes]
+        end
+        
+        DSPy.events.subscribe('test.event') do |event_name, attributes|
+          listener2_calls << [event_name, attributes]
+        end
+        
+        DSPy.event('test.event', data: 'value')
+        
+        expect(listener1_calls.length).to eq(1)
+        expect(listener2_calls.length).to eq(1)
+        expect(listener1_calls[0]).to eq(listener2_calls[0])
+      end
+      
+      it 'returns a subscription ID for later unsubscription' do
+        subscription_id = DSPy.events.subscribe('test.event') do |event_name, attributes|
+          # listener block
+        end
+        
+        expect(subscription_id).to be_a(String)
+        expect(subscription_id).not_to be_empty
+      end
+    end
+
+    describe '.events.unsubscribe' do
+      after do
+        DSPy.events.clear_listeners
+      end
+
+      it 'removes a specific listener by subscription ID' do
+        received_events = []
+        
+        subscription_id = DSPy.events.subscribe('test.event') do |event_name, attributes|
+          received_events << [event_name, attributes]
+        end
+        
+        DSPy.event('test.event', data: 'before_unsubscribe')
+        expect(received_events.length).to eq(1)
+        
+        DSPy.events.unsubscribe(subscription_id)
+        DSPy.event('test.event', data: 'after_unsubscribe')
+        expect(received_events.length).to eq(1) # Should not increase
+      end
+    end
+
+    describe 'error handling in listeners' do
+      after do
+        DSPy.events.clear_listeners
+      end
+
+      it 'continues processing other listeners if one fails' do
+        successful_listener_calls = []
+        
+        # First listener that will fail
+        DSPy.events.subscribe('test.event') do |event_name, attributes|
+          raise StandardError, "Listener failure"
+        end
+        
+        # Second listener that should still get called
+        DSPy.events.subscribe('test.event') do |event_name, attributes|
+          successful_listener_calls << [event_name, attributes]
+        end
+        
+        # Should not raise an error and should call the successful listener
+        expect {
+          DSPy.event('test.event', data: 'value')
+        }.not_to raise_error
+        
+        expect(successful_listener_calls.length).to eq(1)
+      end
+    end
+  end
 end
