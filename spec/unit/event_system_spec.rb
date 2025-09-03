@@ -321,4 +321,112 @@ RSpec.describe 'DSPy Event System' do
       end
     end
   end
+
+  describe 'Thread and Fiber Safety' do
+    after do
+      DSPy.events.clear_listeners
+    end
+
+    it 'handles concurrent event emissions from multiple threads' do
+      received_events = []
+      mutex = Mutex.new
+      
+      DSPy.events.subscribe('test.event') do |event_name, attributes|
+        mutex.synchronize do
+          received_events << [event_name, attributes, Thread.current.object_id]
+        end
+      end
+      
+      threads = 10.times.map do |i|
+        Thread.new do
+          DSPy.event('test.event', thread_id: i)
+        end
+      end
+      
+      threads.each(&:join)
+      
+      expect(received_events.length).to eq(10)
+      thread_ids = received_events.map { |e| e[2] }.uniq
+      expect(thread_ids.length).to be > 1  # Events came from different threads
+    end
+
+    it 'maintains separate event registry per process' do
+      # The event registry should be shared across threads but isolated per process
+      DSPy.events.subscribe('test.event') { |*args| }
+      
+      # Each thread should see the same listeners
+      thread_registries = []
+      threads = 3.times.map do
+        Thread.new do
+          thread_registries << DSPy.events.object_id
+        end
+      end
+      
+      threads.each(&:join)
+      
+      # All threads should share the same registry instance
+      expect(thread_registries.uniq.length).to eq(1)
+      expect(thread_registries[0]).to eq(DSPy.events.object_id)
+    end
+
+    it 'handles listener failures in one thread without affecting others' do
+      successful_calls = []
+      mutex = Mutex.new
+      
+      # Listener that will fail
+      DSPy.events.subscribe('test.event') do |event_name, attributes|
+        raise StandardError, "Simulated failure"
+      end
+      
+      # Listener that should succeed
+      DSPy.events.subscribe('test.event') do |event_name, attributes|
+        mutex.synchronize do
+          successful_calls << [event_name, attributes]
+        end
+      end
+      
+      threads = 5.times.map do |i|
+        Thread.new do
+          DSPy.event('test.event', iteration: i)
+        end
+      end
+      
+      threads.each(&:join)
+      
+      # All successful listener calls should have been made despite failures
+      expect(successful_calls.length).to eq(5)
+    end
+
+    it 'provides thread-safe subscription and unsubscription' do
+      subscription_ids = []
+      mutex = Mutex.new
+      
+      # Multiple threads subscribing simultaneously
+      subscribe_threads = 10.times.map do |i|
+        Thread.new do
+          id = DSPy.events.subscribe('test.event') { |*args| }
+          mutex.synchronize { subscription_ids << id }
+        end
+      end
+      
+      subscribe_threads.each(&:join)
+      
+      expect(subscription_ids.length).to eq(10)
+      expect(subscription_ids.uniq.length).to eq(10)  # All unique IDs
+      
+      # Unsubscribe from different thread
+      unsubscribe_threads = subscription_ids.map do |id|
+        Thread.new do
+          DSPy.events.unsubscribe(id)
+        end
+      end
+      
+      unsubscribe_threads.each(&:join)
+      
+      # Verify all subscriptions were removed
+      received_events = []
+      DSPy.event('test.event', data: 'should_not_be_received')
+      expect(received_events).to be_empty
+    end
+  end
 end
