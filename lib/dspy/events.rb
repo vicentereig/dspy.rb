@@ -3,6 +3,11 @@
 require 'securerandom'
 
 module DSPy
+  # Events module to hold typed event structures
+  module Events
+    # Will be defined in events/types.rb
+  end
+  
   class EventRegistry
     def initialize
       @listeners = {}
