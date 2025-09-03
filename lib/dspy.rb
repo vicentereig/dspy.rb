@@ -35,16 +35,9 @@ module DSPy
   end
 
   def self.log(event, **attributes)
-    return unless logger
-    
-    # Merge context automatically (but don't include span_stack)
-    context = Context.current.dup
-    context.delete(:span_stack)
-    attributes = context.merge(attributes)
-    attributes[:event] = event
-    
-    # Use Dry::Logger's structured logging
-    logger.info(attributes)
+    # Forward to event system - this maintains backward compatibility
+    # while providing all new event system benefits
+    event(event, attributes)
   end
 
   def self.event(event_name, attributes = {})
@@ -53,9 +46,8 @@ module DSPy
     # Handle nil attributes
     attributes = {} if attributes.nil?
     
-    # Forward to the existing log method to maintain compatibility
-    # This ensures all existing logging behavior continues to work
-    log(event_name, **attributes)
+    # Perform the actual logging (original DSPy.log behavior)
+    emit_log(event_name, attributes)
     
     # Create OpenTelemetry span for the event if observability is enabled
     create_event_span(event_name, attributes)
@@ -70,6 +62,19 @@ module DSPy
 
   private
 
+  def self.emit_log(event_name, attributes)
+    return unless logger
+    
+    # Merge context automatically (but don't include span_stack)
+    context = Context.current.dup
+    context.delete(:span_stack)
+    attributes = context.merge(attributes)
+    attributes[:event] = event_name
+    
+    # Use Dry::Logger's structured logging
+    logger.info(attributes)
+  end
+
   def self.create_event_span(event_name, attributes)
     return unless DSPy::Observability.enabled?
     
@@ -83,11 +88,12 @@ module DSPy
       DSPy::Observability.finish_span(span) if span
     rescue => e
       # Log error but don't let it break the event system
-      log('event.span_creation_error', 
+      # Use emit_log directly to avoid infinite recursion
+      emit_log('event.span_creation_error', {
         error_class: e.class.name,
         error_message: e.message,
         event_name: event_name
-      )
+      })
     end
   end
 

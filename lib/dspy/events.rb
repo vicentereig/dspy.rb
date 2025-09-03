@@ -50,12 +50,13 @@ module DSPy
           listener[:block].call(event_name, attributes)
         rescue => e
           # Log the error but continue processing other listeners
-          DSPy.log('event.listener.error', 
+          # Use emit_log directly to avoid infinite recursion
+          DSPy.send(:emit_log, 'event.listener.error', {
             subscription_id: id,
             error_class: e.class.name,
             error_message: e.message,
             event_name: event_name
-          )
+          })
         end
       end
     end
