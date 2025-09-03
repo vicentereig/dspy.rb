@@ -12,6 +12,8 @@ claude-flow.ps1
 .claude
 log/*.log
 log/*.log.*
+spec/*_report.md
+spec/*_report.html
 .idea
 .byebug_history
 .env
