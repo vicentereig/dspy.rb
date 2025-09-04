@@ -558,6 +558,9 @@ module DSPy
         sig { returns(T::Boolean) }
         attr_accessor :use_pareto_selection
 
+        sig { returns(T::Boolean) }
+        attr_accessor :simple_mode
+
         sig { void }
         def initialize
           super
@@ -566,6 +569,7 @@ module DSPy
           @population_size = 8
           @mutation_rate = 0.7
           @use_pareto_selection = true
+          @simple_mode = false
         end
 
         sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -575,7 +579,8 @@ module DSPy
             num_generations: @num_generations,
             population_size: @population_size,
             mutation_rate: @mutation_rate,
-            use_pareto_selection: @use_pareto_selection
+            use_pareto_selection: @use_pareto_selection,
+            simple_mode: @simple_mode
           })
         end
       end
@@ -611,26 +616,153 @@ module DSPy
           num_generations: @config.num_generations,
           population_size: @config.population_size
         }) do
-          # For Phase 1, return a basic optimization result
-          # Future phases will implement the full genetic algorithm
-          
-          OptimizationResult.new(
-            optimized_program: program,
-            scores: { gepa_score: 0.0 },
-            history: { 
-              num_generations: @config.num_generations,
-              population_size: @config.population_size,
-              phase: 'Phase 1 - Basic Structure'
-            },
-            best_score_name: 'gepa_score',
-            best_score_value: 0.0,
-            metadata: {
-              optimizer: 'GEPA',
-              reflection_lm: @config.reflection_lm,
-              implementation_status: 'Phase 1 - Infrastructure Complete'
-            }
-          )
+          # Simple optimization for Phase 1.5 - basic instruction optimization
+          if @config.simple_mode
+            perform_simple_optimization(program, trainset, valset)
+          else
+            # Return basic result for Phase 1
+            OptimizationResult.new(
+              optimized_program: program,
+              scores: { gepa_score: 0.0 },
+              history: { 
+                num_generations: @config.num_generations,
+                population_size: @config.population_size,
+                phase: 'Phase 1 - Basic Structure'
+              },
+              best_score_name: 'gepa_score',
+              best_score_value: 0.0,
+              metadata: {
+                optimizer: 'GEPA',
+                reflection_lm: @config.reflection_lm,
+                implementation_status: 'Phase 1 - Infrastructure Complete'
+              }
+            )
+          end
         end
+      end
+
+      private
+
+      # Simple optimization implementation for testing
+      sig do
+        params(
+          program: T.untyped,
+          trainset: T::Array[T.untyped],
+          valset: T.nilable(T::Array[T.untyped])
+        ).returns(OptimizationResult)
+      end
+      def perform_simple_optimization(program, trainset, valset)
+        return basic_result(program) unless program.respond_to?(:signature_class)
+        
+        original_description = program.signature_class.description
+        best_program = program
+        best_score = simple_evaluate_program(program, trainset)
+        
+        # Try different instruction variations
+        instruction_variants = generate_instruction_variants(original_description)
+        
+        instruction_variants.each_with_index do |variant, index|
+          emit_event('instruction_variant_test', {
+            variant: variant,
+            iteration: index + 1,
+            total_variants: instruction_variants.size
+          })
+          
+          # Create modified program
+          modified_program = create_program_with_instruction(program, variant)
+          score = simple_evaluate_program(modified_program, trainset)
+          
+          if score > best_score
+            best_program = modified_program
+            best_score = score
+            
+            emit_event('improvement_found', {
+              new_score: score,
+              previous_score: best_score,
+              instruction: variant
+            })
+          end
+        end
+        
+        OptimizationResult.new(
+          optimized_program: best_program,
+          scores: { accuracy: best_score },
+          history: {
+            original_score: simple_evaluate_program(program, trainset),
+            variants_tested: instruction_variants.size,
+            best_instruction: best_program.signature_class.description
+          },
+          best_score_name: 'accuracy',
+          best_score_value: best_score,
+          metadata: {
+            optimizer: 'GEPA',
+            mode: 'Simple Optimization',
+            reflection_lm: @config.reflection_lm
+          }
+        )
+      end
+
+      # Generate variations of the instruction
+      sig { params(original_instruction: String).returns(T::Array[String]) }
+      def generate_instruction_variants(original_instruction)
+        variants = []
+        
+        # Add "step by step" variant
+        unless original_instruction.include?("step")
+          variants << "#{original_instruction} Think step by step."
+        end
+        
+        # Add "detailed" variant  
+        unless original_instruction.include?("detail")
+          variants << "#{original_instruction} Provide detailed reasoning."
+        end
+        
+        # Add "careful" variant
+        unless original_instruction.include?("careful")
+          variants << "Be careful and accurate. #{original_instruction}"
+        end
+        
+        variants.take(3) # Limit to 3 variants for simple mode
+      end
+
+      # Create a new program instance with modified instruction
+      sig { params(original_program: T.untyped, new_instruction: String).returns(T.untyped) }
+      def create_program_with_instruction(original_program, new_instruction)
+        # This is a simplified approach - in real implementation we'd need
+        # more sophisticated program modification
+        original_program
+      end
+
+      # Simple evaluation for testing (different from base class evaluate_program)
+      sig { params(program: T.untyped, trainset: T::Array[T.untyped]).returns(Float) }
+      def simple_evaluate_program(program, trainset)
+        return 0.0 unless @metric
+        
+        scores = trainset.map do |example|
+          prediction = program.call(**example.input_values)
+          @metric.call(example, prediction).to_f
+        rescue => e
+          emit_event('evaluation_error', { error: e.message, example: example })
+          0.0
+        end
+        
+        scores.sum / scores.size
+      end
+
+      # Return basic result when simple optimization isn't applicable
+      sig { params(program: T.untyped).returns(OptimizationResult) }
+      def basic_result(program)
+        OptimizationResult.new(
+          optimized_program: program,
+          scores: { gepa_score: 0.0 },
+          history: { phase: 'Phase 1 - Basic Structure' },
+          best_score_name: 'gepa_score',
+          best_score_value: 0.0,
+          metadata: {
+            optimizer: 'GEPA',
+            implementation_status: 'Phase 1 - Infrastructure Complete'
+          }
+        )
       end
     end
   end
