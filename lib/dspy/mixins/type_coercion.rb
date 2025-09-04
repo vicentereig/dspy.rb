@@ -140,8 +140,28 @@ module DSPy
         # Convert string keys to symbols
         symbolized_hash = value.transform_keys(&:to_sym)
         
+        # Get struct properties to understand what fields are expected
+        struct_props = struct_class.props
+        
+        # Remove the _type field that DSPy adds for discriminating structs,
+        # but only if it's NOT a legitimate field in the struct definition
+        if !struct_props.key?(:_type) && symbolized_hash.key?(:_type)
+          symbolized_hash = symbolized_hash.except(:_type)
+        end
+        
+        # Recursively coerce nested struct fields
+        coerced_hash = symbolized_hash.map do |key, val|
+          prop_info = struct_props[key]
+          if prop_info && prop_info[:type]
+            coerced_value = coerce_value_to_type(val, prop_info[:type])
+            [key, coerced_value]
+          else
+            [key, val]
+          end
+        end.to_h
+        
         # Create the struct instance
-        struct_class.new(**symbolized_hash)
+        struct_class.new(**coerced_hash)
       rescue ArgumentError => e
         # If struct creation fails, return the original value
         DSPy.logger.debug("Failed to coerce to struct #{struct_class}: #{e.message}")
