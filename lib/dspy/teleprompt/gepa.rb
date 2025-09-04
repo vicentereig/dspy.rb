@@ -561,6 +561,8 @@ module DSPy
         
         # LLM-based reflection methods for Phase 2
         
+        public
+        
         # Perform LLM-based reflection on execution traces
         sig { params(traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
         def reflect_with_llm(traces)
@@ -794,6 +796,8 @@ module DSPy
         end
         
         # LLM-based reflection methods for Phase 2
+        
+        public
         
         # Perform LLM-based reflection on execution traces
         sig { params(traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }

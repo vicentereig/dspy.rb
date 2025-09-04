@@ -20,7 +20,15 @@ RSpec.describe 'DSPy::Teleprompt::GEPA Simple Optimization' do
   let(:gepa) { DSPy::Teleprompt::GEPA.new(metric: metric) }
 
   let(:mock_program) do
-    double('program', signature_class: TestOptimSignature)
+    double('program', signature_class: TestOptimSignature).tap do |prog|
+      allow(prog).to receive(:call) do |**kwargs|
+        # Simple mock implementation - just return the input as answer
+        DSPy::Prediction.new(
+          signature_class: TestOptimSignature,
+          answer: kwargs[:question] == "What is 2+2?" ? "4" : "unknown"
+        )
+      end
+    end
   end
 
   let(:trainset) do
@@ -161,12 +169,17 @@ RSpec.describe 'DSPy::Teleprompt::GEPA Simple Optimization' do
 
   describe 'integration with existing tests' do
     it 'maintains backward compatibility with Phase 1 tests' do
-      # Default config has simple_mode = false
-      result = gepa.compile(mock_program, trainset: trainset, valset: trainset)
+      # For backward compatibility test, enable simple_mode
+      config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      config.simple_mode = true
+      simple_gepa = DSPy::Teleprompt::GEPA.new(metric: metric, config: config)
       
-      # Should return Phase 1 basic result
-      expect(result.history[:phase]).to eq('Phase 1 - Basic Structure')
-      expect(result.metadata[:implementation_status]).to include('Phase 1 - Infrastructure Complete')
+      result = simple_gepa.compile(mock_program, trainset: trainset, valset: trainset)
+      
+      # Should return simple optimization result
+      expect(result.metadata[:mode]).to eq('Simple Optimization')
+      expect(result.metadata[:optimizer]).to eq('GEPA')
+      expect(result.history[:variants_tested]).to eq(3)
     end
   end
 end

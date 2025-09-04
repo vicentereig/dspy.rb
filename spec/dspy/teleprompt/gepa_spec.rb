@@ -75,7 +75,24 @@ RSpec.describe DSPy::Teleprompt::GEPA do
   end
   
   describe '#compile' do
-    let(:program) { double('program') }
+    let(:program) do
+      double('program', signature_class: TestQuestionAnswering).tap do |prog|
+        allow(prog).to receive(:call) do |**kwargs|
+          # Mock implementation for testing
+          answer = case kwargs[:question]
+          when 'What is 2+2?' then '4'
+          when 'What is the capital of France?' then 'Paris'
+          when 'What is 3+3?' then '6'
+          else 'I don\'t know'
+          end
+          
+          DSPy::Prediction.new(
+            signature_class: TestQuestionAnswering,
+            answer: answer
+          )
+        end
+      end
+    end
     let(:trainset) do
       [
         DSPy::Example.new(
