@@ -2400,23 +2400,8 @@ module DSPy
           if @config.simple_mode
             perform_simple_optimization(program, trainset, valset)
           else
-            # Return basic result for Phase 1
-            OptimizationResult.new(
-              optimized_program: program,
-              scores: { gepa_score: 0.0 },
-              history: { 
-                num_generations: @config.num_generations,
-                population_size: @config.population_size,
-                phase: 'Phase 1 - Basic Structure'
-              },
-              best_score_name: 'gepa_score',
-              best_score_value: 0.0,
-              metadata: {
-                optimizer: 'GEPA',
-                reflection_lm: @config.reflection_lm,
-                implementation_status: 'Phase 1 - Infrastructure Complete'
-              }
-            )
+            # Phase 2 - Full GEPA genetic algorithm implementation
+            perform_gepa_optimization(program, trainset, valset)
           end
         end
       end
@@ -2543,6 +2528,195 @@ module DSPy
             implementation_status: 'Phase 1 - Infrastructure Complete'
           }
         )
+      end
+      
+      # Complete GEPA genetic algorithm optimization
+      sig do
+        params(
+          program: T.untyped,
+          trainset: T::Array[T.untyped],
+          valset: T.nilable(T::Array[T.untyped])
+        ).returns(OptimizationResult)
+      end
+      def perform_gepa_optimization(program, trainset, valset)
+        # Initialize all GEPA components
+        fitness_evaluator = create_fitness_evaluator
+        genetic_engine = create_genetic_engine(fitness_evaluator)
+        reflection_engine = create_reflection_engine
+        mutation_engine = create_mutation_engine
+        crossover_engine = create_crossover_engine
+        pareto_selector = create_pareto_selector(fitness_evaluator)
+        
+        # Initialize trace collection for reflection
+        trace_collector = TraceCollector.new
+        optimization_run_id = "gepa-run-#{SecureRandom.hex(4)}"
+        
+        emit_event('gepa_optimization_start', {
+          optimization_run_id: optimization_run_id,
+          num_generations: @config.num_generations,
+          population_size: @config.population_size,
+          mutation_rate: @config.mutation_rate,
+          crossover_rate: @config.crossover_rate
+        })
+        
+        begin
+          # Run the complete genetic algorithm evolution
+          evolution_result = genetic_engine.run_evolution(program, trainset)
+          
+          # Collect traces for reflection analysis
+          execution_traces = trace_collector.traces_for_run(optimization_run_id)
+          
+          # Generate reflection insights on the optimization process
+          reflection_result = reflection_engine.reflect_with_llm(execution_traces)
+          
+          # Evaluate final candidate on validation set if provided
+          final_validation_score = if valset && !valset.empty?
+            validation_fitness = fitness_evaluator.evaluate_candidate(evolution_result[:best_candidate], valset)
+            validation_fitness.overall_score
+          else
+            evolution_result[:best_fitness].overall_score
+          end
+          
+          emit_event('gepa_optimization_complete', {
+            optimization_run_id: optimization_run_id,
+            best_fitness: evolution_result[:best_fitness].overall_score,
+            final_generation: evolution_result[:generation_count],
+            validation_score: final_validation_score,
+            reflection_confidence: reflection_result.confidence
+          })
+          
+          # Create comprehensive optimization result
+          OptimizationResult.new(
+            optimized_program: evolution_result[:best_candidate],
+            scores: {
+              fitness_score: evolution_result[:best_fitness].overall_score,
+              validation_score: final_validation_score,
+              primary_score: evolution_result[:best_fitness].primary_score,
+              **evolution_result[:best_fitness].secondary_scores
+            },
+            history: {
+              num_generations: evolution_result[:generation_count],
+              population_size: @config.population_size,
+              generation_history: evolution_result[:generation_history],
+              final_population: evolution_result[:final_population],
+              phase: 'Phase 2 - Complete GEPA',
+              mutation_rate: @config.mutation_rate,
+              crossover_rate: @config.crossover_rate,
+              selection_strategy: @config.use_pareto_selection ? 'pareto' : 'tournament'
+            },
+            best_score_name: 'fitness_score',
+            best_score_value: evolution_result[:best_fitness].overall_score,
+            metadata: {
+              optimizer: 'GEPA',
+              reflection_lm: @config.reflection_lm,
+              implementation_status: 'Phase 2 - Complete Implementation',
+              optimization_run_id: optimization_run_id,
+              reflection_insights: {
+                diagnosis: reflection_result.diagnosis,
+                improvements: reflection_result.improvements,
+                confidence: reflection_result.confidence,
+                suggested_mutations: reflection_result.suggested_mutations
+              },
+              trace_analysis: {
+                total_traces: execution_traces.size,
+                llm_traces: execution_traces.count(&:llm_trace?),
+                module_traces: execution_traces.count(&:module_trace?),
+                execution_timespan: calculate_execution_timespan(execution_traces)
+              },
+              component_versions: {
+                genetic_engine: 'v2.0',
+                fitness_evaluator: 'v2.0', 
+                reflection_engine: 'v2.0',
+                mutation_engine: 'v2.0',
+                crossover_engine: 'v2.0',
+                pareto_selector: 'v2.0'
+              }
+            }
+          )
+          
+        rescue => e
+          emit_event('gepa_optimization_error', {
+            optimization_run_id: optimization_run_id,
+            error: e.message,
+            backtrace: e.backtrace&.take(5)
+          })
+          
+          # Return fallback result on optimization failure
+          fallback_fitness = fitness_evaluator.evaluate_candidate(program, trainset)
+          
+          OptimizationResult.new(
+            optimized_program: program,
+            scores: { 
+              fitness_score: fallback_fitness.overall_score,
+              primary_score: fallback_fitness.primary_score,
+              **fallback_fitness.secondary_scores
+            },
+            history: {
+              num_generations: 0,
+              population_size: @config.population_size,
+              phase: 'Phase 2 - Error Recovery',
+              error: e.message
+            },
+            best_score_name: 'fitness_score', 
+            best_score_value: fallback_fitness.overall_score,
+            metadata: {
+              optimizer: 'GEPA',
+              reflection_lm: @config.reflection_lm,
+              implementation_status: 'Phase 2 - Error Recovery',
+              optimization_run_id: optimization_run_id,
+              error_details: {
+                message: e.message,
+                class: e.class.name,
+                recovery_strategy: 'fallback_to_original'
+              }
+            }
+          )
+        end
+      end
+      
+      # Create and configure fitness evaluator
+      sig { returns(FitnessEvaluator) }
+      def create_fitness_evaluator
+        FitnessEvaluator.new(primary_metric: @metric, config: @config)
+      end
+      
+      # Create and configure genetic engine
+      sig { params(fitness_evaluator: FitnessEvaluator).returns(GeneticEngine) }
+      def create_genetic_engine(fitness_evaluator)
+        GeneticEngine.new(config: @config, metric: @metric)
+      end
+      
+      # Create and configure reflection engine
+      sig { returns(ReflectionEngine) }
+      def create_reflection_engine
+        ReflectionEngine.new(@config)
+      end
+      
+      # Create and configure mutation engine  
+      sig { returns(MutationEngine) }
+      def create_mutation_engine
+        MutationEngine.new(config: @config)
+      end
+      
+      # Create and configure crossover engine
+      sig { returns(CrossoverEngine) }
+      def create_crossover_engine
+        CrossoverEngine.new(config: @config)
+      end
+      
+      # Create and configure pareto selector
+      sig { params(fitness_evaluator: FitnessEvaluator).returns(ParetoSelector) }
+      def create_pareto_selector(fitness_evaluator)
+        ParetoSelector.new(evaluator: fitness_evaluator, config: @config)
+      end
+      
+      # Calculate execution timespan from traces
+      sig { params(traces: T::Array[ExecutionTrace]).returns(Float) }
+      def calculate_execution_timespan(traces)
+        return 0.0 if traces.size < 2
+        
+        timestamps = traces.map(&:timestamp).sort
+        (timestamps.last - timestamps.first).to_f
       end
     end
   end
