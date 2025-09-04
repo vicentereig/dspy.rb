@@ -82,8 +82,12 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
     it 'creates diverse instruction variants for initial population' do
       engine.initialize_population(mock_program)
       
-      # All population members should exist (diversity is internal)
-      expect(engine.population.all? { |p| p == mock_program }).to be(true) # Simplified for now
+      # Population should be created with the correct size
+      expect(engine.population.size).to eq(config.population_size)
+      # Original program should be in population
+      expect(engine.population).to include(mock_program)
+      # Should have at least some diversity (not all the same object)
+      expect(engine.population.uniq.size).to be > 1
     end
 
     it 'includes original program in population' do
@@ -160,12 +164,18 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
     end
 
     it 'applies selection pressure' do
+      # Initialize population first
+      engine.initialize_population(mock_program)
+      original_population_size = engine.population.size
+      
       # Higher fitness candidates should survive more often
       engine.evolve_generation(trainset)
       
-      # Population should still exist and be valid
+      # Population should still exist and maintain size
       expect(engine.population).not_to be_empty
-      expect(engine.population.all? { |p| p == mock_program }).to be(true) # Simplified for now
+      expect(engine.population.size).to eq(original_population_size)
+      # Generation should increment
+      expect(engine.generation).to be > 0
     end
   end
 
