@@ -43,7 +43,24 @@ RSpec.describe 'GEPA Phase 1 Integration' do
   end
 
   describe 'Full GEPA workflow integration' do
-    let(:program) { double('program') }
+    let(:program) do
+      double('program', signature_class: IntegrationTestSignature).tap do |prog|
+        allow(prog).to receive(:call) do |**kwargs|
+          # Mock implementation for testing
+          answer = case kwargs[:question]
+          when 'What is 2+2?' then '4'
+          when 'What is the capital of France?' then 'Paris'
+          when 'What is 3+3?' then '6'
+          else 'I don\'t know'
+          end
+          
+          DSPy::Prediction.new(
+            signature_class: IntegrationTestSignature,
+            answer: answer
+          )
+        end
+      end
+    end
 
     it 'executes complete Phase 1 workflow without errors' do
       expect { gepa.compile(program, trainset: trainset, valset: valset) }.not_to raise_error
@@ -54,7 +71,7 @@ RSpec.describe 'GEPA Phase 1 Integration' do
       
       expect(result).to be_a(DSPy::Teleprompt::Teleprompter::OptimizationResult)
       expect(result.optimized_program).to eq(program)
-      expect(result.scores).to include(:gepa_score)
+      expect(result.scores).to include(:fitness_score, :primary_score, :token_efficiency)
       expect(result.metadata).to include(
         :optimizer,
         :reflection_lm,
