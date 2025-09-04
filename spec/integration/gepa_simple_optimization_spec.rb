@@ -18,9 +18,7 @@ RSpec.describe 'GEPA Simple Optimization Integration', vcr: { cassette_name: 'ge
   end
 
   # Simple program that can be optimized
-  class SimpleMathProgram
-    include DSPy::Module
-    
+  class SimpleMathProgram    
     attr_accessor :signature_class
     
     def initialize
