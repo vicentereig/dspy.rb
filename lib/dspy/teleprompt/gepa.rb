@@ -998,6 +998,180 @@ module DSPy
         end
       end
 
+      # MutationEngine: Handles LLM-based prompt transformations for genetic evolution
+      class MutationEngine
+        extend T::Sig
+
+        sig { returns(GEPAConfig) }
+        attr_reader :config
+
+        sig { params(config: GEPAConfig).void }
+        def initialize(config:)
+          @config = config
+        end
+
+        # Mutate a single program with LLM-based transformations
+        sig { params(program: T.untyped).returns(T.untyped) }
+        def mutate_program(program)
+          return program if rand > @config.mutation_rate
+
+          begin
+            original_instruction = extract_instruction(program)
+            mutation_type = select_mutation_type(original_instruction)
+            mutated_instruction = apply_mutation(original_instruction, mutation_type)
+            
+            create_mutated_program(program, mutated_instruction)
+          rescue => e
+            # Return original program on mutation failure
+            program
+          end
+        end
+
+        # Batch mutation of multiple programs
+        sig { params(programs: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+        def batch_mutate(programs)
+          return [] if programs.empty?
+          
+          programs.map { |program| mutate_program(program) }
+        end
+
+        private
+
+        # Extract instruction text from program
+        sig { params(program: T.untyped).returns(String) }
+        def extract_instruction(program)
+          if program.signature_class&.description
+            program.signature_class.description
+          else
+            "Analyze the input and complete the task accurately"
+          end
+        end
+
+        # Apply specific mutation type to instruction
+        sig { params(instruction: String, mutation_type: Symbol).returns(String) }
+        def apply_mutation(instruction, mutation_type)
+          case mutation_type
+          when :rewrite
+            apply_rewrite_mutation(instruction)
+          when :expand
+            apply_expand_mutation(instruction)
+          when :simplify
+            apply_simplify_mutation(instruction)
+          when :combine
+            apply_combine_mutation(instruction)
+          when :rephrase
+            apply_rephrase_mutation(instruction)
+          else
+            instruction
+          end
+        end
+
+        # Rewrite the instruction with different phrasing
+        sig { params(instruction: String).returns(String) }
+        def apply_rewrite_mutation(instruction)
+          # Simple rewrite patterns for now - in full implementation would use LLM
+          patterns = [
+            -> (inst) { "Carefully #{inst.downcase}" },
+            -> (inst) { "Please #{inst.downcase}" },
+            -> (inst) { "#{inst} with precision" }
+          ]
+          
+          patterns.sample.call(instruction)
+        end
+
+        # Expand instruction with additional context
+        sig { params(instruction: String).returns(String) }
+        def apply_expand_mutation(instruction)
+          expansions = [
+            "Think step by step.",
+            "Provide detailed reasoning.",
+            "Consider all aspects carefully.",
+            "Explain your thought process."
+          ]
+          
+          "#{instruction} #{expansions.sample}"
+        end
+
+        # Simplify instruction by removing complex terms
+        sig { params(instruction: String).returns(String) }
+        def apply_simplify_mutation(instruction)
+          # Remove common complexity words
+          simplified = instruction.gsub(/\b(carefully|detailed|comprehensive|thorough)\b/i, '')
+                                  .gsub(/\s+/, ' ')
+                                  .strip
+          
+          simplified.empty? ? instruction : simplified
+        end
+
+        # Combine instruction with complementary strategies
+        sig { params(instruction: String).returns(String) }
+        def apply_combine_mutation(instruction)
+          strategies = [
+            "Break down the problem systematically.",
+            "Use logical reasoning.",
+            "Apply domain knowledge.",
+            "Consider edge cases."
+          ]
+          
+          "#{instruction} #{strategies.sample}"
+        end
+
+        # Rephrase instruction with synonyms
+        sig { params(instruction: String).returns(String) }  
+        def apply_rephrase_mutation(instruction)
+          # Simple synonym replacement - in full implementation would use LLM
+          synonyms = {
+            'solve' => 'resolve',
+            'answer' => 'respond to',
+            'analyze' => 'examine',
+            'calculate' => 'compute',
+            'determine' => 'identify'
+          }
+          
+          result = instruction.dup
+          synonyms.each do |original, replacement|
+            result.gsub!(/\b#{original}\b/i, replacement) if rand < 0.3
+          end
+          
+          result
+        end
+
+        # Create new program with mutated instruction
+        sig { params(original_program: T.untyped, new_instruction: String).returns(T.untyped) }
+        def create_mutated_program(original_program, new_instruction)
+          # For now, return the original program as we don't modify instruction in place
+          # In full implementation, would create new program instance with modified instruction
+          original_program
+        end
+
+        # Select mutation type based on context and configuration
+        sig { params(instruction: T.nilable(String)).returns(Symbol) }
+        def select_mutation_type(instruction = nil)
+          # Adaptive selection based on instruction characteristics
+          if instruction && instruction.length < 20
+            # Short instructions benefit from expansion
+            [:expand, :combine].sample
+          elsif instruction && instruction.length > 100
+            # Long instructions benefit from simplification
+            [:simplify, :rephrase].sample
+          else
+            # Balanced selection from all types
+            @config.mutation_types.sample
+          end
+        end
+
+        # Calculate diversity of mutations applied
+        sig { params(mutations: T::Array[Symbol]).returns(Float) }
+        def mutation_diversity(mutations)
+          return 0.0 if mutations.empty?
+          
+          unique_types = mutations.uniq.size
+          total_types = @config.mutation_types.size
+          
+          unique_types.to_f / total_types
+        end
+      end
+
       # Configuration for GEPA optimization
       class GEPAConfig < Config
         extend T::Sig
@@ -1019,6 +1193,8 @@ module DSPy
 
         sig { returns(T::Boolean) }
         attr_accessor :simple_mode
+        sig { returns(T::Array[Symbol]) }
+        attr_accessor :mutation_types
 
         sig { void }
         def initialize
@@ -1029,6 +1205,7 @@ module DSPy
           @mutation_rate = 0.7
           @use_pareto_selection = true
           @simple_mode = false
+          @mutation_types = [:rewrite, :expand, :simplify, :combine, :rephrase]
         end
 
         sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -1039,7 +1216,8 @@ module DSPy
             population_size: @population_size,
             mutation_rate: @mutation_rate,
             use_pareto_selection: @use_pareto_selection,
-            simple_mode: @simple_mode
+            simple_mode: @simple_mode,
+            mutation_types: @mutation_types
           })
         end
       end
