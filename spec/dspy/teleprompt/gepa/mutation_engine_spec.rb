@@ -64,15 +64,15 @@ RSpec.describe DSPy::Teleprompt::GEPA::MutationEngine do
       high_rate_config = DSPy::Teleprompt::GEPA::GEPAConfig.new.tap { |c| c.mutation_rate = 1.0 }
       engine = described_class.new(config: high_rate_config)
       
-      # Mock the instruction extraction and mutation
+      # Mock the instruction proposer to return an improved instruction
+      allow(engine.instruction_proposer).to receive(:propose_instruction).and_return("Solve the problem step by step")
       allow(engine).to receive(:extract_instruction).with(mock_program).and_return("Solve the problem")
-      allow(engine).to receive(:apply_mutation).and_return("Solve the problem step by step")
       allow(engine).to receive(:create_mutated_program).and_return(mock_program)
       
       mutated = engine.mutate_program(mock_program)
       
       expect(mutated).not_to be_nil
-      expect(engine).to have_received(:apply_mutation)
+      expect(engine.instruction_proposer).to have_received(:propose_instruction)
     end
 
     it 'handles mutation failures gracefully' do
