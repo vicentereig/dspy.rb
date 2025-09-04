@@ -316,7 +316,7 @@ module DSPy
           operation: "optimization.#{step_name}",
           'dspy.module' => 'Teleprompter',
           'teleprompter.class' => self.class.name,
-          'teleprompter.config' => @config.to_h,
+          'teleprompter.config' => @config.to_h.to_json,
           **payload
         ) do
           yield
