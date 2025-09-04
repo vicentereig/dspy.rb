@@ -167,6 +167,134 @@ RSpec.describe 'DSPy::Teleprompt::GEPA Simple Optimization' do
     end
   end
 
+  describe 'MutationEngine#create_mutated_program' do
+    let(:mutation_engine) { gepa.send(:create_mutation_engine) }
+    
+    it 'creates new DSPy::Predict with modified instruction' do
+      original_program = DSPy::Predict.new(TestOptimSignature)
+      new_instruction = "Think carefully and solve step by step."
+      
+      mutated_program = mutation_engine.send(:create_mutated_program, original_program, new_instruction)
+      
+      expect(mutated_program).to be_a(DSPy::Predict)
+      expect(mutated_program).not_to equal(original_program) # Different object
+      expect(mutated_program.signature_class).to eq(TestOptimSignature)
+      expect(mutated_program.prompt.instruction).to eq(new_instruction)
+    end
+
+    it 'handles programs with with_instruction method' do
+      mock_program = double('program')
+      allow(mock_program).to receive(:with_instruction).with("New instruction").and_return("mutated_program")
+      
+      result = mutation_engine.send(:create_mutated_program, mock_program, "New instruction")
+      
+      expect(result).to eq("mutated_program")
+    end
+
+    it 'handles programs with signature_class but no with_instruction' do
+      mock_program = double('program')
+      allow(mock_program).to receive(:respond_to?).with(:with_instruction).and_return(false)
+      allow(mock_program).to receive(:respond_to?).with(:signature_class).and_return(true)
+      allow(mock_program).to receive(:signature_class).and_return(TestOptimSignature)
+      
+      mutated_program = mutation_engine.send(:create_mutated_program, mock_program, "New instruction")
+      
+      expect(mutated_program).to be_a(DSPy::Predict)
+      expect(mutated_program.signature_class).to eq(TestOptimSignature)
+      expect(mutated_program.prompt.instruction).to eq("New instruction")
+    end
+
+    it 'falls back to original program when no mutation method available' do
+      unmutatable_program = "not a program"
+      
+      expect(mutation_engine).to receive(:emit_event).with('mutation_fallback', hash_including(
+        program_type: String,
+        reason: 'No mutation method available'
+      ))
+      
+      result = mutation_engine.send(:create_mutated_program, unmutatable_program, "New instruction")
+      
+      expect(result).to eq(unmutatable_program)
+    end
+
+    it 'handles errors gracefully and returns original program' do
+      mock_program = double('program')
+      allow(mock_program).to receive(:respond_to?).and_raise(StandardError, "Test error")
+      
+      expect(mutation_engine).to receive(:emit_event).with('mutation_error', hash_including(
+        error: 'Test error',
+        program_type: String
+      ))
+      
+      result = mutation_engine.send(:create_mutated_program, mock_program, "New instruction")
+      
+      expect(result).to eq(mock_program)
+    end
+  end
+
+  describe '#create_program_with_instruction' do
+    it 'creates new DSPy::Predict with modified instruction' do
+      original_program = DSPy::Predict.new(TestOptimSignature)
+      new_instruction = "Solve this problem with careful analysis."
+      
+      modified_program = gepa.send(:create_program_with_instruction, original_program, new_instruction)
+      
+      expect(modified_program).to be_a(DSPy::Predict)
+      expect(modified_program).not_to equal(original_program) # Different object
+      expect(modified_program.signature_class).to eq(TestOptimSignature)
+      expect(modified_program.prompt.instruction).to eq(new_instruction)
+    end
+
+    it 'handles programs with with_instruction method' do
+      mock_program = double('program')
+      allow(mock_program).to receive(:with_instruction).with("New instruction").and_return("modified_program")
+      
+      result = gepa.send(:create_program_with_instruction, mock_program, "New instruction")
+      
+      expect(result).to eq("modified_program")
+    end
+
+    it 'handles programs with signature_class but no with_instruction' do
+      mock_program = double('program')
+      allow(mock_program).to receive(:respond_to?).with(:with_instruction).and_return(false)
+      allow(mock_program).to receive(:respond_to?).with(:signature_class).and_return(true)
+      allow(mock_program).to receive(:signature_class).and_return(TestOptimSignature)
+      
+      modified_program = gepa.send(:create_program_with_instruction, mock_program, "New instruction")
+      
+      expect(modified_program).to be_a(DSPy::Predict)
+      expect(modified_program.signature_class).to eq(TestOptimSignature)
+      expect(modified_program.prompt.instruction).to eq("New instruction")
+    end
+
+    it 'falls back to original program when no modification method available' do
+      unmutatable_program = "not a program"
+      
+      expect(gepa).to receive(:emit_event).with('program_modification_fallback', hash_including(
+        program_type: String,
+        reason: 'No modification method available'
+      ))
+      
+      result = gepa.send(:create_program_with_instruction, unmutatable_program, "New instruction")
+      
+      expect(result).to eq(unmutatable_program)
+    end
+
+    it 'handles errors gracefully and returns original program' do
+      mock_program = double('program')
+      allow(mock_program).to receive(:respond_to?).and_raise(StandardError, "Test error")
+      
+      expect(gepa).to receive(:emit_event).with('program_modification_error', hash_including(
+        error: 'Test error',
+        program_type: String
+      ))
+      
+      result = gepa.send(:create_program_with_instruction, mock_program, "New instruction")
+      
+      expect(result).to eq(mock_program)
+    end
+  end
+
   describe 'integration with existing tests' do
     it 'maintains backward compatibility with Phase 1 tests' do
       # For backward compatibility test, enable simple_mode

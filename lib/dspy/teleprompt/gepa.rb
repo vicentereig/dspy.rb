@@ -1441,23 +1441,71 @@ module DSPy
           variants.shuffle.take(5) # Return up to 5 variants, shuffled
         end
 
-        # Create program copy with modified instruction (simplified for Phase 2)
+        # Create program copy with modified instruction using DSPy.rb dynamic capabilities
         sig { params(original_program: T.untyped, new_instruction: String).returns(T.untyped) }
         def create_program_with_instruction(original_program, new_instruction)
-          # For Phase 2, return the original program
-          # Future implementation will create actual modified programs
+          case original_program
+          when DSPy::Predict
+            # DSPy::Predict has built-in support for instruction modification
+            original_program.with_instruction(new_instruction)
+          when DSPy::Module
+            # For custom DSPy::Module classes, create new instance with updated predictors
+            create_modified_module(original_program, new_instruction)
+          else
+            # For other types (like test doubles), check available methods
+            if original_program.respond_to?(:with_instruction)
+              original_program.with_instruction(new_instruction)
+            elsif original_program.respond_to?(:signature_class)
+              # Create new DSPy::Predict with the same signature but new instruction
+              signature_class = original_program.signature_class
+              DSPy::Predict.new(signature_class).with_instruction(new_instruction)
+            else
+              # Fallback: return original if we can't modify
+              original_program
+            end
+          end
+        rescue => e
+          # Return original program on error
           original_program
+        end
+
+        # Create modified version of custom DSPy::Module (for GeneticEngine)
+        sig { params(original_module: DSPy::Module, new_instruction: String).returns(DSPy::Module) }
+        def create_modified_module(original_module, new_instruction)
+          begin
+            # Create a new instance of the same class
+            new_module = original_module.class.new
+            
+            # Try to find and update any internal predictors
+            original_module.instance_variables.each do |var_name|
+              var_value = original_module.instance_variable_get(var_name)
+              
+              if var_value.is_a?(DSPy::Predict)
+                # Update the instruction for internal predictors
+                modified_predictor = var_value.with_instruction(new_instruction)
+                new_module.instance_variable_set(var_name, modified_predictor)
+              else
+                # Copy other instance variables as-is
+                new_module.instance_variable_set(var_name, var_value)
+              end
+            end
+            
+            new_module
+          rescue => e
+            # Fallback to original module
+            original_module
+          end
         end
       end
 
       # FitnessScore represents multi-dimensional evaluation results
-      class FitnessScore < Data.define(
-        :primary_score,
-        :secondary_scores,
-        :overall_score,
-        :metadata
-      )
+      class FitnessScore < T::Struct
         extend T::Sig
+
+        const :primary_score, Float
+        const :secondary_scores, T::Hash[Symbol, Float]
+        const :overall_score, Float
+        const :metadata, T::Hash[Symbol, T.untyped]
 
         sig do
           params(
@@ -1467,7 +1515,7 @@ module DSPy
             metadata: T.nilable(T::Hash[Symbol, T.untyped])
           ).void
         end
-        def initialize(primary_score:, secondary_scores:, overall_score:, metadata: {})
+        def initialize(primary_score:, secondary_scores:, overall_score:, metadata: nil)
           # Validate score ranges
           [primary_score, overall_score].each do |score|
             if score < 0.0 || score > 1.0
@@ -1846,9 +1894,74 @@ module DSPy
         # Create new program with mutated instruction
         sig { params(original_program: T.untyped, new_instruction: String).returns(T.untyped) }
         def create_mutated_program(original_program, new_instruction)
-          # For now, return the original program as we don't modify instruction in place
-          # In full implementation, would create new program instance with modified instruction
+          case original_program
+          when DSPy::Predict
+            # DSPy::Predict has built-in support for instruction modification
+            original_program.with_instruction(new_instruction)
+          when DSPy::Module
+            # For custom DSPy::Module classes, we need to create a new instance
+            # and update any internal predictors that have instruction-based signatures
+            create_mutated_module(original_program, new_instruction)
+          else
+            # For other types (like test doubles), check if they respond to with_instruction
+            if original_program.respond_to?(:with_instruction)
+              original_program.with_instruction(new_instruction)
+            elsif original_program.respond_to?(:signature_class)
+              # Try to create a new DSPy::Predict with the same signature but new instruction
+              signature_class = original_program.signature_class
+              DSPy::Predict.new(signature_class).with_instruction(new_instruction)
+            else
+              # Fallback: return original if we can't mutate
+              emit_event('mutation_fallback', {
+                program_type: original_program.class.name,
+                reason: 'No mutation method available'
+              })
+              original_program
+            end
+          end
+        rescue => e
+          emit_event('mutation_error', {
+            error: e.message,
+            program_type: original_program.class.name,
+            backtrace: e.backtrace&.first(3)
+          })
+          # Return original program on error
           original_program
+        end
+
+        # Create mutated version of custom DSPy::Module
+        sig { params(original_module: DSPy::Module, new_instruction: String).returns(DSPy::Module) }
+        def create_mutated_module(original_module, new_instruction)
+          # For custom modules, we need to create a new instance
+          # This is a simplified approach - in practice, modules might need
+          # more sophisticated copying of their internal state
+          begin
+            # Create a new instance of the same class
+            new_module = original_module.class.new
+            
+            # Try to find and update any internal predictors
+            original_module.instance_variables.each do |var_name|
+              var_value = original_module.instance_variable_get(var_name)
+              
+              if var_value.is_a?(DSPy::Predict)
+                # Update the instruction for internal predictors
+                mutated_predictor = var_value.with_instruction(new_instruction)
+                new_module.instance_variable_set(var_name, mutated_predictor)
+              else
+                # Copy other instance variables as-is
+                new_module.instance_variable_set(var_name, var_value)
+              end
+            end
+            
+            new_module
+          rescue => e
+            emit_event('module_mutation_error', {
+              error: e.message,
+              module_class: original_module.class.name
+            })
+            # Fallback to original module
+            original_module
+          end
         end
 
         # Select mutation type based on context and configuration
@@ -2494,12 +2607,72 @@ module DSPy
         variants.take(3) # Limit to 3 variants for simple mode
       end
 
-      # Create a new program instance with modified instruction
+      # Create a new program instance with modified instruction using DSPy.rb dynamic capabilities
       sig { params(original_program: T.untyped, new_instruction: String).returns(T.untyped) }
       def create_program_with_instruction(original_program, new_instruction)
-        # This is a simplified approach - in real implementation we'd need
-        # more sophisticated program modification
+        case original_program
+        when DSPy::Predict
+          # DSPy::Predict has built-in support for instruction modification
+          original_program.with_instruction(new_instruction)
+        when DSPy::Module
+          # For custom DSPy::Module classes, create new instance with updated predictors
+          create_modified_module_instance(original_program, new_instruction)
+        else
+          # For other types (like test doubles), check available methods
+          if original_program.respond_to?(:with_instruction)
+            original_program.with_instruction(new_instruction)
+          elsif original_program.respond_to?(:signature_class)
+            # Create new DSPy::Predict with the same signature but new instruction
+            signature_class = original_program.signature_class
+            DSPy::Predict.new(signature_class).with_instruction(new_instruction)
+          else
+            # Fallback: return original if we can't modify
+            emit_event('program_modification_fallback', {
+              program_type: original_program.class.name,
+              reason: 'No modification method available'
+            })
+            original_program
+          end
+        end
+      rescue => e
+        emit_event('program_modification_error', {
+          error: e.message,
+          program_type: original_program.class.name
+        })
+        # Return original program on error
         original_program
+      end
+
+      # Create modified version of custom DSPy::Module instance (for main GEPA class)
+      sig { params(original_module: DSPy::Module, new_instruction: String).returns(DSPy::Module) }
+      def create_modified_module_instance(original_module, new_instruction)
+        begin
+          # Create a new instance of the same class
+          new_module = original_module.class.new
+          
+          # Try to find and update any internal predictors
+          original_module.instance_variables.each do |var_name|
+            var_value = original_module.instance_variable_get(var_name)
+            
+            if var_value.is_a?(DSPy::Predict)
+              # Update the instruction for internal predictors
+              modified_predictor = var_value.with_instruction(new_instruction)
+              new_module.instance_variable_set(var_name, modified_predictor)
+            else
+              # Copy other instance variables as-is
+              new_module.instance_variable_set(var_name, var_value)
+            end
+          end
+          
+          new_module
+        rescue => e
+          emit_event('module_modification_error', {
+            error: e.message,
+            module_class: original_module.class.name
+          })
+          # Fallback to original module
+          original_module
+        end
       end
 
       # Simple evaluation for testing (different from base class evaluate_program)
