@@ -1421,6 +1421,209 @@ module DSPy
         end
       end
 
+      # ParetoSelector: Multi-objective optimization using Pareto frontier analysis
+      class ParetoSelector
+        extend T::Sig
+
+        sig { returns(FitnessEvaluator) }
+        attr_reader :evaluator
+
+        sig { returns(GEPAConfig) }
+        attr_reader :config
+
+        sig { params(evaluator: FitnessEvaluator, config: GEPAConfig).void }
+        def initialize(evaluator:, config:)
+          @evaluator = evaluator
+          @config = config
+        end
+
+        # Select parents for breeding using Pareto-based selection
+        sig { params(population_with_scores: T::Array[T::Array[T.untyped]], count: Integer).returns(T::Array[T.untyped]) }
+        def select_parents(population_with_scores, count:)
+          return [] if population_with_scores.empty?
+          return population_with_scores.map(&:first) if count >= population_with_scores.size
+          
+          # Combine tournament and Pareto-based selection for parent selection
+          selected = []
+          
+          count.times do
+            parent = tournament_selection(population_with_scores)
+            selected << parent
+          end
+          
+          selected
+        end
+
+        # Select survivors for next generation balancing elite and diversity
+        sig { params(population_with_scores: T::Array[T::Array[T.untyped]], count: Integer).returns(T::Array[T.untyped]) }
+        def select_survivors(population_with_scores, count:)
+          return [] if population_with_scores.empty?
+          return population_with_scores.map(&:first) if count >= population_with_scores.size
+          
+          scores = population_with_scores.map(&:last)
+          
+          # Find Pareto frontier first
+          pareto_frontier = find_pareto_frontier(scores)
+          frontier_indices = scores.each_index.select { |i| pareto_frontier.include?(scores[i]) }
+          frontier_programs = frontier_indices.map { |i| population_with_scores[i].first }
+          
+          if frontier_programs.size >= count
+            # Use diversity selection within frontier
+            frontier_with_scores = frontier_indices.map { |i| population_with_scores[i] }
+            return diversity_selection(frontier_with_scores, count: count)
+          else
+            # Include all frontier + fill remaining with elite selection
+            remaining_count = count - frontier_programs.size
+            remaining_population = population_with_scores.reject.with_index { |_, i| frontier_indices.include?(i) }
+            
+            additional = elite_selection(remaining_population, count: remaining_count)
+            frontier_programs + additional
+          end
+        end
+
+        private
+
+        # Find Pareto frontier (non-dominated solutions)
+        sig { params(fitness_scores: T::Array[FitnessScore]).returns(T::Array[FitnessScore]) }
+        def find_pareto_frontier(fitness_scores)
+          return [] if fitness_scores.empty?
+          return fitness_scores if fitness_scores.size == 1
+          
+          frontier = []
+          
+          fitness_scores.each do |candidate|
+            # Check if candidate is dominated by any other solution
+            is_dominated = fitness_scores.any? do |other|
+              other != candidate && candidate.dominated_by?(other)
+            end
+            
+            frontier << candidate unless is_dominated
+          end
+          
+          frontier
+        end
+
+        # Calculate crowding distance for diversity preservation
+        sig { params(fitness_scores: T::Array[FitnessScore]).returns(T::Hash[FitnessScore, Float]) }
+        def calculate_crowding_distance(fitness_scores)
+          distances = {}
+          
+          # Initialize distances for all solutions
+          fitness_scores.each { |score| distances[score] = 0.0 }
+          
+          return distances if fitness_scores.size <= 2
+          
+          # Calculate crowding distance for each objective
+          objectives = [:primary_score, :overall_score]
+          secondary_objectives = fitness_scores.first.secondary_scores.keys
+          all_objectives = objectives + secondary_objectives
+          
+          all_objectives.each do |objective|
+            # Sort by current objective
+            sorted_scores = fitness_scores.sort_by do |score|
+              case objective
+              when :primary_score
+                score.primary_score
+              when :overall_score
+                score.overall_score
+              else
+                score.secondary_scores[objective] || 0.0
+              end
+            end
+            
+            # Set boundary solutions to high distance
+            distances[sorted_scores.first] = Float::INFINITY if sorted_scores.size > 0
+            distances[sorted_scores.last] = Float::INFINITY if sorted_scores.size > 1
+            
+            next if sorted_scores.size <= 2
+            
+            # Calculate range for normalization
+            min_val = get_objective_value(sorted_scores.first, objective)
+            max_val = get_objective_value(sorted_scores.last, objective)
+            range = max_val - min_val
+            
+            next if range <= 0
+            
+            # Calculate crowding distance for intermediate solutions
+            (1...(sorted_scores.size - 1)).each do |i|
+              prev_val = get_objective_value(sorted_scores[i - 1], objective)
+              next_val = get_objective_value(sorted_scores[i + 1], objective)
+              
+              distances[sorted_scores[i]] += (next_val - prev_val) / range
+            end
+          end
+          
+          distances
+        end
+
+        # Get objective value from fitness score
+        sig { params(score: FitnessScore, objective: Symbol).returns(Float) }
+        def get_objective_value(score, objective)
+          case objective
+          when :primary_score
+            score.primary_score
+          when :overall_score
+            score.overall_score
+          else
+            score.secondary_scores[objective] || 0.0
+          end
+        end
+
+        # Tournament selection with Pareto preference
+        sig { params(population_with_scores: T::Array[T::Array[T.untyped]]).returns(T.untyped) }
+        def tournament_selection(population_with_scores)
+          return population_with_scores.first.first if population_with_scores.size == 1
+          
+          tournament_size = [3, population_with_scores.size].min
+          tournament = population_with_scores.sample(tournament_size)
+          
+          # Select best from tournament based on Pareto dominance and crowding
+          best_program, best_score = tournament.first
+          
+          tournament[1..].each do |program, score|
+            if score.dominated_by?(best_score)
+              # Current best dominates this candidate, keep current
+              next
+            elsif best_score.dominated_by?(score)
+              # This candidate dominates current best, replace
+              best_program, best_score = program, score
+            else
+              # Non-dominated comparison, use overall score as tiebreaker
+              if score.overall_score > best_score.overall_score
+                best_program, best_score = program, score
+              end
+            end
+          end
+          
+          best_program
+        end
+
+        # Diversity-based selection using crowding distance
+        sig { params(population_with_scores: T::Array[T::Array[T.untyped]], count: Integer).returns(T::Array[T.untyped]) }
+        def diversity_selection(population_with_scores, count:)
+          return population_with_scores.map(&:first) if count >= population_with_scores.size
+          
+          scores = population_with_scores.map(&:last)
+          distances = calculate_crowding_distance(scores)
+          
+          # Sort by crowding distance (descending - prefer more diverse)
+          sorted_pairs = population_with_scores.sort_by { |_, score| -distances[score] }
+          
+          sorted_pairs.take(count).map(&:first)
+        end
+
+        # Elite selection based on overall fitness
+        sig { params(population_with_scores: T::Array[T::Array[T.untyped]], count: Integer).returns(T::Array[T.untyped]) }
+        def elite_selection(population_with_scores, count:)
+          return population_with_scores.map(&:first) if count >= population_with_scores.size
+          
+          # Sort by overall score (descending - best first)
+          sorted_pairs = population_with_scores.sort_by { |_, score| -score.overall_score }
+          
+          sorted_pairs.take(count).map(&:first)
+        end
+      end
+
       # Configuration for GEPA optimization
       class GEPAConfig < Config
         extend T::Sig
