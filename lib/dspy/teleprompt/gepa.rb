@@ -558,6 +558,689 @@ module DSPy
           timestamps = traces.map(&:timestamp).sort
           (timestamps.last - timestamps.first).to_f
         end
+        
+        # LLM-based reflection methods for Phase 2
+        
+        # Perform LLM-based reflection on execution traces
+        sig { params(traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
+        def reflect_with_llm(traces)
+          return reflect_on_traces(traces) if traces.empty?
+          
+          begin
+            prompt = generate_reflection_prompt(traces)
+            reflection_response = call_reflection_llm(prompt)
+            parse_llm_reflection(reflection_response, traces)
+          rescue => e
+            # Fallback to rule-based analysis on LLM failure
+            fallback_result = reflect_on_traces(traces)
+            fallback_result.class.new(
+              trace_id: fallback_result.trace_id,
+              diagnosis: "LLM reflection failed (#{e.message}), using fallback analysis: #{fallback_result.diagnosis}",
+              improvements: fallback_result.improvements,
+              confidence: [fallback_result.confidence * 0.5, 0.5].min,
+              reasoning: "Fallback to rule-based analysis after LLM error: #{fallback_result.reasoning}",
+              suggested_mutations: fallback_result.suggested_mutations,
+              metadata: fallback_result.metadata.merge(
+                llm_error: e.message,
+                fallback_used: true
+              )
+            )
+          end
+        end
+        
+        # Generate structured reflection prompt for LLM (public API)
+        sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
+        def generate_reflection_prompt(traces)
+          if traces.empty?
+            return <<~PROMPT
+              You are analyzing execution traces for a genetic algorithm-based prompt optimization system called GEPA.
+              
+              **Task**: Analyze execution patterns and provide optimization recommendations.
+              
+              **Context**: No execution traces available.
+              
+              Please provide your analysis in the following JSON format:
+              {
+                "diagnosis": "Brief description of what you observed",
+                "improvements": ["List of actionable improvement suggestions"],
+                "confidence": 0.0,
+                "reasoning": "Your reasoning process",
+                "suggested_mutations": ["expand", "rewrite", "simplify", "combine", "rephrase"],
+                "insights": {
+                  "pattern_detected": "no_data",
+                  "optimization_opportunity": "data_collection"
+                }
+              }
+            PROMPT
+          end
+          
+          summary = trace_summary_for_reflection(traces)
+          insights = extract_optimization_insights(traces)
+          
+          <<~PROMPT
+            You are analyzing execution traces for a genetic algorithm-based prompt optimization system called GEPA.
+            
+            **Task**: Analyze execution patterns and provide optimization recommendations for prompt evolution.
+            
+            **Execution Summary**:
+            #{summary}
+            
+            **Optimization Context**:
+            - This is part of a genetic algorithm for prompt optimization
+            - Available mutation types: rewrite, expand, simplify, combine, rephrase
+            - Goal is to improve prompt effectiveness through iterative evolution
+            - Focus on actionable insights that can guide mutation and crossover operations
+            
+            **Key Optimization Insights**:
+            #{insights.map { |k, v| "- #{k}: #{v.is_a?(Hash) ? v.values.join(', ') : v}" }.join("\n")}
+            
+            **Sample Traces**:
+            #{format_traces_for_prompt(traces.take(3))}
+            
+            Please analyze these execution patterns and provide optimization recommendations in the following JSON format:
+            {
+              "diagnosis": "Brief description of execution patterns and issues identified",
+              "improvements": ["List of 2-4 specific, actionable improvement suggestions"],
+              "confidence": 0.85,
+              "reasoning": "Your detailed reasoning process for the analysis",
+              "suggested_mutations": ["List of 2-3 mutation types that would be most beneficial"],
+              "insights": {
+                "pattern_detected": "primary_pattern_identified", 
+                "optimization_opportunity": "key_area_for_improvement"
+              }
+            }
+            
+            Focus on practical recommendations that will improve prompt performance through genetic algorithm evolution.
+          PROMPT
+        end
+        
+        # Parse LLM reflection response into ReflectionResult (public API)
+        sig { params(response_text: String, original_traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
+        def parse_llm_reflection(response_text, original_traces)
+          reflection_id = generate_reflection_id
+          
+          begin
+            parsed = JSON.parse(response_text)
+            
+            # Extract and validate components
+            diagnosis = parsed['diagnosis'] || 'LLM reflection analysis'
+            improvements = Array(parsed['improvements']).select { |i| i.is_a?(String) && !i.strip.empty? }
+            confidence = [parsed['confidence'].to_f, 1.0].min
+            reasoning = parsed['reasoning'] || 'LLM-based analysis of execution traces'
+            
+            # Validate and sanitize mutation suggestions
+            raw_mutations = Array(parsed['suggested_mutations'])
+            valid_mutations = raw_mutations.filter_map do |mut|
+              mutation_symbol = mut.to_s.downcase.to_sym
+              if [:rewrite, :expand, :simplify, :combine, :rephrase].include?(mutation_symbol)
+                mutation_symbol
+              end
+            end.uniq
+            
+            # Ensure we have at least one valid mutation suggestion
+            valid_mutations = [:rewrite] if valid_mutations.empty?
+            
+            ReflectionResult.new(
+              trace_id: reflection_id,
+              diagnosis: diagnosis,
+              improvements: improvements,
+              confidence: confidence,
+              reasoning: reasoning,
+              suggested_mutations: valid_mutations,
+              metadata: {
+                reflection_model: @config.reflection_lm,
+                analysis_timestamp: Time.now,
+                trace_count: original_traces.size,
+                token_usage: estimate_token_usage(response_text),
+                llm_based: true,
+                insights: parsed['insights'] || {}
+              }
+            )
+            
+          rescue JSON::ParserError => e
+            # Handle malformed JSON response
+            ReflectionResult.new(
+              trace_id: reflection_id,
+              diagnosis: "LLM reflection JSON parsing error: #{e.message}",
+              improvements: ['Review prompt structure and LLM response format'],
+              confidence: 0.3,
+              reasoning: "Failed to parse LLM reflection response as valid JSON",
+              suggested_mutations: [:rewrite],
+              metadata: {
+                reflection_model: @config.reflection_lm,
+                analysis_timestamp: Time.now,
+                trace_count: original_traces.size,
+                token_usage: 0,
+                parsing_error: e.message,
+                raw_response: response_text.length > 500 ? "#{response_text[0..500]}..." : response_text
+              }
+            )
+          end
+        end
+        
+        # Create comprehensive trace summary for reflection (public API)
+        sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
+        def trace_summary_for_reflection(traces)
+          return "No execution traces available" if traces.empty?
+          
+          llm_traces = traces.select(&:llm_trace?)
+          module_traces = traces.select(&:module_trace?)
+          
+          total_tokens = llm_traces.sum(&:token_usage)
+          unique_models = llm_traces.map(&:model_name).compact.uniq
+          timespan = calculate_timespan(traces)
+          
+          avg_response_length = if llm_traces.any?
+            total_length = llm_traces.sum { |t| t.response_text&.length || 0 }
+            total_length / llm_traces.size
+          else
+            0
+          end
+          
+          <<~SUMMARY
+            Total traces: #{traces.size}
+            LLM interactions: #{llm_traces.size}
+            Module calls: #{module_traces.size}
+            Total tokens: #{total_tokens}
+            Models used: #{unique_models.join(', ')}
+            Average response length: #{avg_response_length} characters
+            Execution timespan: #{timespan.round(2)} seconds
+          SUMMARY
+        end
+        
+        # Extract optimization insights from trace analysis (public API)
+        sig { params(traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
+        def extract_optimization_insights(traces)
+          llm_traces = traces.select(&:llm_trace?)
+          
+          insights = {
+            token_efficiency: analyze_token_efficiency(llm_traces),
+            response_quality: analyze_response_quality(llm_traces),
+            model_consistency: analyze_model_consistency(llm_traces)
+          }
+          
+          insights
+        end
+        
+        # Reflection with optimization context (public API)
+        sig { params(traces: T::Array[ExecutionTrace], context: T::Hash[Symbol, T.untyped]).returns(ReflectionResult) }
+        def reflection_with_context(traces, context)
+          base_result = reflect_with_llm(traces)
+          
+          # Incorporate context into reasoning
+          context_reasoning = "Generation #{context[:generation] || 'unknown'} analysis. "
+          context_reasoning += "Population size: #{context[:population_size] || 'unknown'}. "
+          
+          if context[:current_best_score]
+            context_reasoning += "Current best score: #{context[:current_best_score]}. "
+          end
+          
+          # Adjust mutation suggestions based on history
+          adjusted_mutations = adjust_mutations_for_history(
+            base_result.suggested_mutations,
+            context[:mutation_history] || [],
+            context[:recent_performance_trend]
+          )
+          
+          ReflectionResult.new(
+            trace_id: base_result.trace_id,
+            diagnosis: base_result.diagnosis,
+            improvements: base_result.improvements,
+            confidence: base_result.confidence,
+            reasoning: context_reasoning + base_result.reasoning,
+            suggested_mutations: adjusted_mutations,
+            metadata: base_result.metadata.merge(optimization_context: context)
+          )
+        end
+        
+        # LLM-based reflection methods for Phase 2
+        
+        # Perform LLM-based reflection on execution traces
+        sig { params(traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
+        def reflect_with_llm(traces)
+          return reflect_on_traces(traces) if traces.empty?
+          
+          begin
+            prompt = generate_reflection_prompt(traces)
+            reflection_response = call_reflection_llm(prompt)
+            parse_llm_reflection(reflection_response, traces)
+          rescue => e
+            # Fallback to rule-based analysis on LLM failure
+            fallback_result = reflect_on_traces(traces)
+            fallback_result.class.new(
+              trace_id: fallback_result.trace_id,
+              diagnosis: "LLM reflection failed (#{e.message}), using fallback analysis: #{fallback_result.diagnosis}",
+              improvements: fallback_result.improvements,
+              confidence: [fallback_result.confidence * 0.5, 0.5].min,
+              reasoning: "Fallback to rule-based analysis after LLM error: #{fallback_result.reasoning}",
+              suggested_mutations: fallback_result.suggested_mutations,
+              metadata: fallback_result.metadata.merge(
+                llm_error: e.message,
+                fallback_used: true
+              )
+            )
+          end
+        end
+        
+        # Generate structured reflection prompt for LLM (public API)
+        sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
+        def generate_reflection_prompt(traces)
+          if traces.empty?
+            return <<~PROMPT
+              You are analyzing execution traces for a genetic algorithm-based prompt optimization system called GEPA.
+              
+              **Task**: Analyze execution patterns and provide optimization recommendations.
+              
+              **Context**: No execution traces available.
+              
+              Please provide your analysis in the following JSON format:
+              {
+                "diagnosis": "Brief description of what you observed",
+                "improvements": ["List of actionable improvement suggestions"],
+                "confidence": 0.0,
+                "reasoning": "Your reasoning process",
+                "suggested_mutations": ["expand", "rewrite", "simplify", "combine", "rephrase"],
+                "insights": {
+                  "pattern_detected": "no_data",
+                  "optimization_opportunity": "data_collection"
+                }
+              }
+            PROMPT
+          end
+          
+          summary = trace_summary_for_reflection(traces)
+          insights = extract_optimization_insights(traces)
+          
+          <<~PROMPT
+            You are analyzing execution traces for a genetic algorithm-based prompt optimization system called GEPA.
+            
+            **Task**: Analyze execution patterns and provide optimization recommendations for prompt evolution.
+            
+            **Execution Summary**:
+            #{summary}
+            
+            **Optimization Context**:
+            - This is part of a genetic algorithm for prompt optimization
+            - Available mutation types: rewrite, expand, simplify, combine, rephrase
+            - Goal is to improve prompt effectiveness through iterative evolution
+            - Focus on actionable insights that can guide mutation and crossover operations
+            
+            **Key Optimization Insights**:
+            #{insights.map { |k, v| "- #{k}: #{v.is_a?(Hash) ? v.values.join(', ') : v}" }.join("\n")}
+            
+            **Sample Traces**:
+            #{format_traces_for_prompt(traces.take(3))}
+            
+            Please analyze these execution patterns and provide optimization recommendations in the following JSON format:
+            {
+              "diagnosis": "Brief description of execution patterns and issues identified",
+              "improvements": ["List of 2-4 specific, actionable improvement suggestions"],
+              "confidence": 0.85,
+              "reasoning": "Your detailed reasoning process for the analysis",
+              "suggested_mutations": ["List of 2-3 mutation types that would be most beneficial"],
+              "insights": {
+                "pattern_detected": "primary_pattern_identified", 
+                "optimization_opportunity": "key_area_for_improvement"
+              }
+            }
+            
+            Focus on practical recommendations that will improve prompt performance through genetic algorithm evolution.
+          PROMPT
+        end
+        
+        # Parse LLM reflection response into ReflectionResult (public API)
+        sig { params(response_text: String, original_traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
+        def parse_llm_reflection(response_text, original_traces)
+          reflection_id = generate_reflection_id
+          
+          begin
+            parsed = JSON.parse(response_text)
+            
+            # Extract and validate components
+            diagnosis = parsed['diagnosis'] || 'LLM reflection analysis'
+            improvements = Array(parsed['improvements']).select { |i| i.is_a?(String) && !i.strip.empty? }
+            confidence = [parsed['confidence'].to_f, 1.0].min
+            reasoning = parsed['reasoning'] || 'LLM-based analysis of execution traces'
+            
+            # Validate and sanitize mutation suggestions
+            raw_mutations = Array(parsed['suggested_mutations'])
+            valid_mutations = raw_mutations.filter_map do |mut|
+              mutation_symbol = mut.to_s.downcase.to_sym
+              if [:rewrite, :expand, :simplify, :combine, :rephrase].include?(mutation_symbol)
+                mutation_symbol
+              end
+            end.uniq
+            
+            # Ensure we have at least one valid mutation suggestion
+            valid_mutations = [:rewrite] if valid_mutations.empty?
+            
+            ReflectionResult.new(
+              trace_id: reflection_id,
+              diagnosis: diagnosis,
+              improvements: improvements,
+              confidence: confidence,
+              reasoning: reasoning,
+              suggested_mutations: valid_mutations,
+              metadata: {
+                reflection_model: @config.reflection_lm,
+                analysis_timestamp: Time.now,
+                trace_count: original_traces.size,
+                token_usage: estimate_token_usage(response_text),
+                llm_based: true,
+                insights: parsed['insights'] || {}
+              }
+            )
+            
+          rescue JSON::ParserError => e
+            # Handle malformed JSON response
+            ReflectionResult.new(
+              trace_id: reflection_id,
+              diagnosis: "LLM reflection JSON parsing error: #{e.message}",
+              improvements: ['Review prompt structure and LLM response format'],
+              confidence: 0.3,
+              reasoning: "Failed to parse LLM reflection response as valid JSON",
+              suggested_mutations: [:rewrite],
+              metadata: {
+                reflection_model: @config.reflection_lm,
+                analysis_timestamp: Time.now,
+                trace_count: original_traces.size,
+                token_usage: 0,
+                parsing_error: e.message,
+                raw_response: response_text.length > 500 ? "#{response_text[0..500]}..." : response_text
+              }
+            )
+          end
+        end
+        
+        # Create comprehensive trace summary for reflection (public API)
+        sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
+        def trace_summary_for_reflection(traces)
+          return "No execution traces available" if traces.empty?
+          
+          llm_traces = traces.select(&:llm_trace?)
+          module_traces = traces.select(&:module_trace?)
+          
+          total_tokens = llm_traces.sum(&:token_usage)
+          unique_models = llm_traces.map(&:model_name).compact.uniq
+          timespan = calculate_timespan(traces)
+          
+          avg_response_length = if llm_traces.any?
+            total_length = llm_traces.sum { |t| t.response_text&.length || 0 }
+            total_length / llm_traces.size
+          else
+            0
+          end
+          
+          <<~SUMMARY
+            Total traces: #{traces.size}
+            LLM interactions: #{llm_traces.size}
+            Module calls: #{module_traces.size}
+            Total tokens: #{total_tokens}
+            Models used: #{unique_models.join(', ')}
+            Average response length: #{avg_response_length} characters
+            Execution timespan: #{timespan.round(2)} seconds
+          SUMMARY
+        end
+        
+        # Extract optimization insights from trace analysis (public API)
+        sig { params(traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
+        def extract_optimization_insights(traces)
+          llm_traces = traces.select(&:llm_trace?)
+          
+          insights = {
+            token_efficiency: analyze_token_efficiency(llm_traces),
+            response_quality: analyze_response_quality(llm_traces),
+            model_consistency: analyze_model_consistency(llm_traces)
+          }
+          
+          insights
+        end
+        
+        # Reflection with optimization context (public API)
+        sig { params(traces: T::Array[ExecutionTrace], context: T::Hash[Symbol, T.untyped]).returns(ReflectionResult) }
+        def reflection_with_context(traces, context)
+          base_result = reflect_with_llm(traces)
+          
+          # Incorporate context into reasoning
+          context_reasoning = "Generation #{context[:generation] || 'unknown'} analysis. "
+          context_reasoning += "Population size: #{context[:population_size] || 'unknown'}. "
+          
+          if context[:current_best_score]
+            context_reasoning += "Current best score: #{context[:current_best_score]}. "
+          end
+          
+          # Adjust mutation suggestions based on history
+          adjusted_mutations = adjust_mutations_for_history(
+            base_result.suggested_mutations,
+            context[:mutation_history] || [],
+            context[:recent_performance_trend]
+          )
+          
+          ReflectionResult.new(
+            trace_id: base_result.trace_id,
+            diagnosis: base_result.diagnosis,
+            improvements: base_result.improvements,
+            confidence: base_result.confidence,
+            reasoning: context_reasoning + base_result.reasoning,
+            suggested_mutations: adjusted_mutations,
+            metadata: base_result.metadata.merge(optimization_context: context)
+          )
+        end
+        
+        private
+        
+        # Generate unique reflection ID
+        sig { returns(String) }
+        def generate_reflection_id
+          "reflection-#{SecureRandom.hex(4)}"
+        end
+
+        # Generate diagnosis text
+        sig { params(patterns: T::Hash[Symbol, T.untyped]).returns(String) }
+        def generate_diagnosis(patterns)
+          if patterns[:total_tokens] > 400
+            'High token usage indicates potential inefficiency in prompt design'
+          elsif patterns[:llm_traces_count] == 0
+            'No LLM interactions found - execution may not be working as expected'
+          elsif patterns[:avg_response_length] < 10
+            'Responses are unusually brief which may indicate prompt clarity issues'
+          else
+            'Execution patterns appear normal with room for optimization'
+          end
+        end
+
+        # Generate reasoning text
+        sig { params(patterns: T::Hash[Symbol, T.untyped], traces: T::Array[ExecutionTrace]).returns(String) }
+        def generate_reasoning(patterns, traces)
+          reasoning_parts = []
+          
+          reasoning_parts << "Analyzed #{traces.size} execution traces"
+          reasoning_parts << "#{patterns[:llm_traces_count]} LLM interactions"
+          reasoning_parts << "#{patterns[:module_traces_count]} module operations"
+          reasoning_parts << "Total token usage: #{patterns[:total_tokens]}"
+          
+          reasoning_parts.join('. ') + '.'
+        end
+
+        # Calculate confidence based on patterns
+        sig { params(patterns: T::Hash[Symbol, T.untyped]).returns(Float) }
+        def calculate_confidence(patterns)
+          base_confidence = 0.7
+          
+          # More traces = higher confidence
+          trace_bonus = [patterns[:llm_traces_count] + patterns[:module_traces_count], 10].min * 0.02
+          
+          # Reasonable token usage = higher confidence
+          token_penalty = patterns[:total_tokens] > 1000 ? -0.1 : 0.0
+          
+          [(base_confidence + trace_bonus + token_penalty), 1.0].min
+        end
+
+        # Calculate average response length from LLM traces
+        sig { params(llm_traces: T::Array[ExecutionTrace]).returns(Integer) }
+        def calculate_avg_response_length(llm_traces)
+          return 0 if llm_traces.empty?
+          
+          total_length = llm_traces.sum do |trace|
+            response = trace.response_text
+            response ? response.length : 0
+          end
+          
+          total_length / llm_traces.size
+        end
+
+        # Calculate timespan of traces
+        sig { params(traces: T::Array[ExecutionTrace]).returns(Float) }
+        def calculate_timespan(traces)
+          return 0.0 if traces.size < 2
+          
+          timestamps = traces.map(&:timestamp).sort
+          (timestamps.last - timestamps.first).to_f
+        end
+        
+        # Call LLM for reflection analysis
+        sig { params(prompt: String).returns(String) }
+        def call_reflection_llm(prompt)
+          # This would be implemented with actual LLM call in production
+          # For now, simulate with a reasonable response structure
+          {
+            "diagnosis" => "LLM analysis indicates opportunities for prompt optimization",
+            "improvements" => [
+              "Add explicit reasoning instructions", 
+              "Standardize response format",
+              "Optimize token usage"
+            ],
+            "confidence" => 0.75,
+            "reasoning" => "Based on trace analysis, prompts show potential for improvement through genetic optimization",
+            "suggested_mutations" => ["expand", "rewrite"],
+            "insights" => {
+              "pattern_detected" => "optimization_potential",
+              "optimization_opportunity" => "instruction_clarity"
+            }
+          }.to_json
+        end
+        
+        # Format traces for inclusion in prompt
+        sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
+        def format_traces_for_prompt(traces)
+          traces.map.with_index do |trace, idx|
+            prompt_preview = truncate_text(trace.prompt_text || 'N/A', 100)
+            response_preview = truncate_text(trace.response_text || 'N/A', 100)
+            "#{idx + 1}. [#{trace.event_name}] #{prompt_preview} → #{response_preview}"
+          end.join("\n")
+        end
+        
+        # Estimate token usage from response
+        sig { params(text: String).returns(Integer) }
+        def estimate_token_usage(text)
+          # Rough estimation: ~4 characters per token
+          (text.length / 4.0).ceil
+        end
+        
+        # Analyze token efficiency patterns
+        sig { params(llm_traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
+        def analyze_token_efficiency(llm_traces)
+          return { status: 'no_data', suggestions: [] } if llm_traces.empty?
+          
+          total_tokens = llm_traces.sum(&:token_usage)
+          avg_tokens = total_tokens.to_f / llm_traces.size
+          
+          if avg_tokens > 400
+            {
+              status: 'poor',
+              average_tokens: avg_tokens,
+              suggestions: ['Consider reducing prompt length', 'Optimize instruction clarity']
+            }
+          elsif avg_tokens > 200
+            {
+              status: 'moderate',
+              average_tokens: avg_tokens,
+              suggestions: ['Monitor token usage trends', 'Consider prompt optimization']
+            }
+          else
+            {
+              status: 'good',
+              average_tokens: avg_tokens,
+              suggestions: ['Token usage appears efficient']
+            }
+          end
+        end
+        
+        # Analyze response quality patterns
+        sig { params(llm_traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
+        def analyze_response_quality(llm_traces)
+          return { consistency: 'no_data', recommendations: [] } if llm_traces.empty?
+          
+          response_lengths = llm_traces.map { |t| t.response_text&.length || 0 }
+          length_variance = calculate_variance(response_lengths)
+          
+          if length_variance > 1000
+            {
+              consistency: 'inconsistent',
+              variance: length_variance,
+              recommendations: [
+                'Add response format guidelines',
+                'Consider structured output templates'
+              ]
+            }
+          else
+            {
+              consistency: 'consistent',
+              variance: length_variance,
+              recommendations: ['Response quality appears consistent']
+            }
+          end
+        end
+        
+        # Analyze model consistency
+        sig { params(llm_traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
+        def analyze_model_consistency(llm_traces)
+          models = llm_traces.map(&:model_name).compact.uniq
+          
+          {
+            unique_models: models.size,
+            models_used: models,
+            recommendation: models.size > 1 ? 'Consider using single model for consistency' : 'Model usage is consistent'
+          }
+        end
+        
+        # Adjust mutations based on history to avoid repetition
+        sig { params(suggested: T::Array[Symbol], history: T::Array[Symbol], trend: T.nilable(String)).returns(T::Array[Symbol]) }
+        def adjust_mutations_for_history(suggested, history, trend)
+          # Count recent usage of each mutation type
+          recent_usage = history.last(5).tally
+          
+          # Filter out overused mutations
+          adjusted = suggested.reject do |mutation|
+            recent_usage[mutation] && recent_usage[mutation] >= 2
+          end
+          
+          # If trend is declining, prefer different strategies
+          if trend == 'declining'
+            adjusted = adjusted.reject { |m| m == :expand } # Avoid expansion if performance declining
+            adjusted += [:simplify, :rephrase] unless adjusted.include?(:simplify) || adjusted.include?(:rephrase)
+          end
+          
+          # Ensure we always have at least one suggestion
+          adjusted.empty? ? [:rewrite] : adjusted.uniq
+        end
+        
+        # Calculate variance for array of numbers
+        sig { params(values: T::Array[Integer]).returns(Float) }
+        def calculate_variance(values)
+          return 0.0 if values.size < 2
+          
+          mean = values.sum.to_f / values.size
+          sum_squared_diff = values.sum { |v| (v - mean) ** 2 }
+          sum_squared_diff / values.size
+        end
+        
+        # Truncate text to specified length with ellipsis
+        sig { params(text: String, length: Integer).returns(String) }
+        def truncate_text(text, length)
+          return text if text.length <= length
+          "#{text[0...length]}..."
+        end
       end
 
       # GeneticEngine orchestrates the genetic algorithm for prompt evolution
