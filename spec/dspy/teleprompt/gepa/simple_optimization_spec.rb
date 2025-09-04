@@ -150,6 +150,7 @@ RSpec.describe 'DSPy::Teleprompt::GEPA Simple Optimization' do
 
     it 'uses simple optimization when simple_mode is enabled' do
       allow(mock_program).to receive(:respond_to?).with(:signature_class).and_return(true)
+      allow(mock_program).to receive(:respond_to?).with(:with_instruction).and_return(false)
       allow(mock_program).to receive(:signature_class).and_return(TestOptimSignature)
       allow(mock_program).to receive(:call).and_return(double('prediction', answer: '4'))
       

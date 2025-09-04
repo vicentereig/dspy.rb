@@ -1753,6 +1753,152 @@ module DSPy
         end
       end
 
+      # InstructionProposer: Analyzes execution traces and generates improved instructions using LLM reflection
+      class InstructionProposer
+        extend T::Sig
+
+        sig { params(config: GEPAConfig).void }
+        def initialize(config:)
+          @config = config
+        end
+
+        # Generate improved instruction based on execution traces and failures
+        sig { params(original_instruction: String, execution_traces: T::Array[ExecutionTrace], failed_examples: T::Array[T.untyped]).returns(String) }
+        def propose_instruction(original_instruction:, execution_traces:, failed_examples:)
+          if execution_traces.empty? && failed_examples.empty?
+            # No traces or failures to analyze, return original
+            return original_instruction
+          end
+
+          # Use LLM-based reflection to generate improved instruction
+          reflect_and_propose(
+            original_instruction: original_instruction,
+            execution_traces: execution_traces,
+            failed_examples: failed_examples
+          )
+        rescue => e
+          # Fallback to original instruction on error
+          original_instruction
+        end
+
+        private
+
+        sig { returns(GEPAConfig) }
+        attr_reader :config
+
+        # Use LLM reflection to propose improved instruction
+        sig { params(original_instruction: String, execution_traces: T::Array[ExecutionTrace], failed_examples: T::Array[T.untyped]).returns(String) }
+        def reflect_and_propose(original_instruction:, execution_traces:, failed_examples:)
+          # Create signature for instruction improvement
+          improvement_signature = create_instruction_improvement_signature
+
+          # Create predictor for instruction proposal
+          proposer = DSPy::Predict.new(improvement_signature)
+
+          # Analyze traces and failures
+          trace_analysis = analyze_execution_traces(execution_traces)
+          failure_analysis = analyze_failed_examples(failed_examples)
+
+          # Generate improved instruction
+          result = proposer.call(
+            original_instruction: original_instruction,
+            trace_analysis: trace_analysis,
+            failure_analysis: failure_analysis,
+            improvement_context: "GEPA prompt optimization for better performance"
+          )
+
+          result.improved_instruction || original_instruction
+        rescue => e
+          # Return original instruction if LLM call fails
+          original_instruction
+        end
+
+        # Create signature for instruction improvement
+        sig { returns(T.class_of(DSPy::Signature)) }
+        def create_instruction_improvement_signature
+          Class.new(DSPy::Signature) do
+            description "Analyze execution traces and propose improved instructions for better AI system performance"
+
+            input do
+              const :original_instruction, String, description: "The current instruction/prompt being used"
+              const :trace_analysis, String, description: "Analysis of execution traces showing patterns and issues"
+              const :failure_analysis, String, description: "Analysis of failed examples and their patterns"
+              const :improvement_context, String, description: "Context about what kind of improvement is needed"
+            end
+
+            output do
+              const :improved_instruction, String, description: "Improved instruction that addresses identified issues"
+              const :reasoning, String, description: "Explanation of why this improvement should work better"
+              const :confidence, Float, description: "Confidence in the improvement (0.0-1.0)"
+            end
+          end
+        end
+
+        # Analyze execution traces to identify patterns
+        sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
+        def analyze_execution_traces(traces)
+          return "No execution traces available" if traces.empty?
+
+          llm_traces = traces.select(&:llm_trace?)
+          module_traces = traces.select(&:module_trace?)
+
+          analysis = []
+          analysis << "Execution Trace Analysis:"
+          analysis << "- Total traces: #{traces.size}"
+          analysis << "- LLM interactions: #{llm_traces.size}"
+          analysis << "- Module calls: #{module_traces.size}"
+
+          if llm_traces.any?
+            token_usage = llm_traces.sum(&:token_usage)
+            avg_response_length = llm_traces.map { |t| t.attributes['response']&.to_s&.length || 0 }.sum / llm_traces.size
+            
+            analysis << "- Total tokens used: #{token_usage}"
+            analysis << "- Average response length: #{avg_response_length} characters"
+            
+            # Identify models used
+            models = llm_traces.map { |t| t.attributes['gen_ai.request.model'] }.compact.uniq
+            analysis << "- Models used: #{models.join(', ')}" if models.any?
+          end
+
+          # Analyze timing patterns
+          if traces.size > 1
+            timespan = traces.max_by(&:timestamp).timestamp - traces.min_by(&:timestamp).timestamp
+            analysis << "- Execution timespan: #{timespan.round(2)} seconds"
+          end
+
+          analysis.join("\n")
+        end
+
+        # Analyze failed examples to identify failure patterns
+        sig { params(failed_examples: T::Array[T.untyped]).returns(String) }
+        def analyze_failed_examples(failed_examples)
+          return "No failed examples to analyze" if failed_examples.empty?
+
+          analysis = []
+          analysis << "Failure Pattern Analysis:"
+          analysis << "- Failed examples count: #{failed_examples.size}"
+
+          # Group failures by type if possible
+          if failed_examples.first.respond_to?(:input)
+            input_patterns = failed_examples.map { |ex| ex.input.keys }.flatten.uniq
+            analysis << "- Input fields involved: #{input_patterns.join(', ')}"
+          end
+
+          # Sample some failure cases for context
+          sample_size = [failed_examples.size, 3].min
+          analysis << "- Sample failures:"
+          failed_examples.take(sample_size).each_with_index do |example, idx|
+            if example.respond_to?(:input) && example.respond_to?(:expected_values)
+              input_summary = example.input.values.first.to_s[0..50] + "..."
+              expected = example.expected_values.values.first.to_s[0..30] + "..."
+              analysis << "  #{idx + 1}. Input: #{input_summary} | Expected: #{expected}"
+            end
+          end
+
+          analysis.join("\n")
+        end
+      end
+
       # MutationEngine: Handles LLM-based prompt transformations for genetic evolution
       class MutationEngine
         extend T::Sig
@@ -1760,34 +1906,54 @@ module DSPy
         sig { returns(GEPAConfig) }
         attr_reader :config
 
+        sig { returns(InstructionProposer) }
+        attr_reader :instruction_proposer
+
         sig { params(config: GEPAConfig).void }
         def initialize(config:)
           @config = config
+          @instruction_proposer = InstructionProposer.new(config: config)
         end
 
-        # Mutate a single program with LLM-based transformations
-        sig { params(program: T.untyped).returns(T.untyped) }
-        def mutate_program(program)
+        # Mutate a single program with LLM-based instruction proposal
+        sig { params(program: T.untyped, execution_traces: T::Array[ExecutionTrace], failed_examples: T::Array[T.untyped]).returns(T.untyped) }
+        def mutate_program(program, execution_traces: [], failed_examples: [])
           return program if rand > @config.mutation_rate
 
           begin
             original_instruction = extract_instruction(program)
-            mutation_type = select_mutation_type(original_instruction)
-            mutated_instruction = apply_mutation(original_instruction, mutation_type)
             
-            create_mutated_program(program, mutated_instruction)
+            # Use LLM-based instruction proposal instead of hardcoded mutations
+            improved_instruction = @instruction_proposer.propose_instruction(
+              original_instruction: original_instruction,
+              execution_traces: execution_traces,
+              failed_examples: failed_examples
+            )
+            
+            create_mutated_program(program, improved_instruction)
           rescue => e
+            emit_event('mutation_error', {
+              error: e.message,
+              program_type: program.class.name
+            })
             # Return original program on mutation failure
             program
           end
         end
 
-        # Batch mutation of multiple programs
-        sig { params(programs: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
-        def batch_mutate(programs)
+        # Batch mutation of multiple programs with shared execution context
+        sig { params(programs: T::Array[T.untyped], execution_traces: T::Array[ExecutionTrace], failed_examples: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+        def batch_mutate(programs, execution_traces: [], failed_examples: [])
           return [] if programs.empty?
           
-          programs.map { |program| mutate_program(program) }
+          programs.map { |program| mutate_program(program, execution_traces: execution_traces, failed_examples: failed_examples) }
+        end
+
+        # Emit events for logging and monitoring
+        sig { params(event_name: String, data: T::Hash[Symbol, T.untyped]).void }
+        def emit_event(event_name, data = {})
+          # For now, just a placeholder - could integrate with DSPy event system
+          # In full implementation, this would emit events for monitoring
         end
 
         private
