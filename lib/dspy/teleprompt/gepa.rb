@@ -12,6 +12,26 @@ module DSPy
     class GEPA < Teleprompter
       extend T::Sig
 
+      # Enum for mutation operation types
+      class MutationType < T::Enum
+        enums do
+          Rewrite = new
+          Expand = new
+          Simplify = new
+          Combine = new
+          Rephrase = new
+        end
+      end
+
+      # Enum for crossover operation types  
+      class CrossoverType < T::Enum
+        enums do
+          Uniform = new
+          Blend = new
+          Structured = new
+        end
+      end
+
       # Immutable execution trace record using Ruby's Data class
       # Captures execution events for GEPA's reflective analysis
       class ExecutionTrace < Data.define(
@@ -1048,18 +1068,18 @@ module DSPy
         end
 
         # Apply specific mutation type to instruction
-        sig { params(instruction: String, mutation_type: Symbol).returns(String) }
+        sig { params(instruction: String, mutation_type: MutationType).returns(String) }
         def apply_mutation(instruction, mutation_type)
           case mutation_type
-          when :rewrite
+          when MutationType::Rewrite
             apply_rewrite_mutation(instruction)
-          when :expand
+          when MutationType::Expand
             apply_expand_mutation(instruction)
-          when :simplify
+          when MutationType::Simplify
             apply_simplify_mutation(instruction)
-          when :combine
+          when MutationType::Combine
             apply_combine_mutation(instruction)
-          when :rephrase
+          when MutationType::Rephrase
             apply_rephrase_mutation(instruction)
           else
             instruction
@@ -1145,15 +1165,15 @@ module DSPy
         end
 
         # Select mutation type based on context and configuration
-        sig { params(instruction: T.nilable(String)).returns(Symbol) }
+        sig { params(instruction: T.nilable(String)).returns(MutationType) }
         def select_mutation_type(instruction = nil)
           # Adaptive selection based on instruction characteristics
           if instruction && instruction.length < 20
             # Short instructions benefit from expansion
-            [:expand, :combine].sample
+            [MutationType::Expand, MutationType::Combine].sample
           elsif instruction && instruction.length > 100
             # Long instructions benefit from simplification
-            [:simplify, :rephrase].sample
+            [MutationType::Simplify, MutationType::Rephrase].sample
           else
             # Balanced selection from all types
             @config.mutation_types.sample
@@ -1161,12 +1181,241 @@ module DSPy
         end
 
         # Calculate diversity of mutations applied
-        sig { params(mutations: T::Array[Symbol]).returns(Float) }
+        sig { params(mutations: T::Array[MutationType]).returns(Float) }
         def mutation_diversity(mutations)
           return 0.0 if mutations.empty?
           
           unique_types = mutations.uniq.size
           total_types = @config.mutation_types.size
+          
+          unique_types.to_f / total_types
+        end
+      end
+
+      # CrossoverEngine: Handles genetic recombination of prompts for diversity
+      class CrossoverEngine
+        extend T::Sig
+
+        # Struct for instruction components
+        class InstructionComponents < T::Struct
+          prop :action, String
+          prop :modifiers, String
+        end
+
+        sig { returns(GEPAConfig) }
+        attr_reader :config
+
+        sig { params(config: GEPAConfig).void }
+        def initialize(config:)
+          @config = config
+        end
+
+        # Perform crossover between two parent programs
+        sig { params(parent_a: T.untyped, parent_b: T.untyped).returns(T::Array[T.untyped]) }
+        def crossover_programs(parent_a, parent_b)
+          return [parent_a, parent_b] if rand > @config.crossover_rate
+
+          begin
+            instruction_a = extract_instruction(parent_a)
+            instruction_b = extract_instruction(parent_b)
+            
+            crossover_type = select_crossover_type(instruction_a, instruction_b)
+            offspring_instructions = apply_crossover(instruction_a, instruction_b, crossover_type)
+            
+            offspring = [
+              create_crossover_program(parent_a, offspring_instructions[0]),
+              create_crossover_program(parent_b, offspring_instructions[1])
+            ]
+            
+            offspring
+          rescue => e
+            # Return original parents on crossover failure
+            [parent_a, parent_b]
+          end
+        end
+
+        # Batch crossover for entire population
+        sig { params(population: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+        def batch_crossover(population)
+          return [] if population.empty?
+          return [population.first] if population.size == 1
+          
+          offspring = []
+          
+          # Pair up population for crossover
+          population.each_slice(2) do |pair|
+            if pair.size == 2
+              crossed = crossover_programs(pair[0], pair[1])
+              offspring.concat(crossed)
+            else
+              offspring << pair[0] # Unpaired individual passes through
+            end
+          end
+          
+          offspring
+        end
+
+        private
+
+        # Extract instruction text from program
+        sig { params(program: T.untyped).returns(String) }
+        def extract_instruction(program)
+          if program.signature_class&.description
+            program.signature_class.description
+          else
+            "Analyze the input and complete the task accurately"
+          end
+        end
+
+        # Apply specific crossover type to two instructions
+        sig { params(instruction_a: String, instruction_b: String, crossover_type: CrossoverType).returns(T::Array[String]) }
+        def apply_crossover(instruction_a, instruction_b, crossover_type)
+          case crossover_type
+          when CrossoverType::Uniform
+            uniform_crossover(instruction_a, instruction_b)
+          when CrossoverType::Blend
+            blend_crossover(instruction_a, instruction_b)
+          when CrossoverType::Structured
+            structured_crossover(instruction_a, instruction_b)
+          else
+            [instruction_a, instruction_b]
+          end
+        end
+
+        # Uniform crossover: Exchange elements randomly at word level
+        sig { params(instruction_a: String, instruction_b: String).returns(T::Array[String]) }
+        def uniform_crossover(instruction_a, instruction_b)
+          return [instruction_a, instruction_b] if instruction_a == instruction_b
+          
+          words_a = instruction_a.split
+          words_b = instruction_b.split
+          
+          # Create offspring by randomly selecting words from parents
+          offspring_a_words = []
+          offspring_b_words = []
+          
+          max_length = [words_a.size, words_b.size].max
+          
+          max_length.times do |i|
+            word_a = words_a[i]
+            word_b = words_b[i]
+            
+            if rand < 0.5
+              offspring_a_words << (word_a || word_b)
+              offspring_b_words << (word_b || word_a)
+            else
+              offspring_a_words << (word_b || word_a)
+              offspring_b_words << (word_a || word_b)
+            end
+          end
+          
+          [
+            offspring_a_words.compact.join(' '),
+            offspring_b_words.compact.join(' ')
+          ]
+        end
+
+        # Blend crossover: Semantically combine instructions
+        sig { params(instruction_a: String, instruction_b: String).returns(T::Array[String]) }
+        def blend_crossover(instruction_a, instruction_b)
+          # Simple blending patterns - in full implementation would use LLM
+          patterns = [
+            -> (a, b) { "#{a} and #{b}" },
+            -> (a, b) { "#{a}, specifically #{b}" },
+            -> (a, b) { "#{b} while #{a.downcase}" },
+            -> (a, b) { "Combine #{a.downcase} with #{b.downcase}" }
+          ]
+          
+          pattern = patterns.sample
+          
+          [
+            pattern.call(instruction_a, instruction_b),
+            pattern.call(instruction_b, instruction_a)
+          ]
+        end
+
+        # Structured crossover: Maintain grammatical and logical structure
+        sig { params(instruction_a: String, instruction_b: String).returns(T::Array[String]) }
+        def structured_crossover(instruction_a, instruction_b)
+          # Extract structural components
+          components_a = extract_components(instruction_a)
+          components_b = extract_components(instruction_b)
+          
+          # Cross structural components
+          offspring_a = combine_components(components_a.action, components_b.modifiers)
+          offspring_b = combine_components(components_b.action, components_a.modifiers)
+          
+          [offspring_a, offspring_b]
+        end
+
+        # Extract structural components from instruction
+        sig { params(instruction: String).returns(InstructionComponents) }
+        def extract_components(instruction)
+          words = instruction.split
+          
+          # Simple heuristic: first verb-like word is action, rest are modifiers
+          action_idx = words.find_index { |word| verb_like?(word) } || 0
+          
+          InstructionComponents.new(
+            action: words[action_idx] || words.first || "complete",
+            modifiers: (words - [words[action_idx]]).join(' ')
+          )
+        end
+
+        # Combine action and modifiers into coherent instruction
+        sig { params(action: String, modifiers: String).returns(String) }
+        def combine_components(action, modifiers)
+          if modifiers.empty?
+            "#{action.capitalize} the task"
+          else
+            "#{action.capitalize} #{modifiers}"
+          end
+        end
+
+        # Simple heuristic to identify verb-like words
+        sig { params(word: String).returns(T::Boolean) }
+        def verb_like?(word)
+          verb_patterns = %w[solve answer calculate determine analyze compute resolve examine]
+          verb_patterns.any? { |pattern| word.downcase.include?(pattern) }
+        end
+
+        # Create new program with crossover instruction
+        sig { params(original_program: T.untyped, new_instruction: String).returns(T.untyped) }
+        def create_crossover_program(original_program, new_instruction)
+          # For now, return the original program as we don't modify instruction in place
+          # In full implementation, would create new program instance with modified instruction
+          original_program
+        end
+
+        # Select crossover type based on instruction characteristics
+        sig { params(instruction_a: T.nilable(String), instruction_b: T.nilable(String)).returns(CrossoverType) }
+        def select_crossover_type(instruction_a = nil, instruction_b = nil)
+          # Adaptive selection based on instruction characteristics
+          if instruction_a && instruction_b
+            combined_length = instruction_a.length + instruction_b.length
+            
+            if combined_length < 40
+              # Short instructions benefit from blending
+              [CrossoverType::Blend, CrossoverType::Uniform].sample
+            elsif combined_length > 200
+              # Long instructions benefit from structured crossover
+              [CrossoverType::Structured, CrossoverType::Uniform].sample
+            else
+              # Balanced selection
+              @config.crossover_types.sample
+            end
+          else
+            @config.crossover_types.sample
+          end
+        end
+
+        # Calculate diversity of crossover operations
+        sig { params(crossovers: T::Array[CrossoverType]).returns(Float) }
+        def crossover_diversity(crossovers)
+          return 0.0 if crossovers.empty?
+          
+          unique_types = crossovers.uniq.size
+          total_types = @config.crossover_types.size
           
           unique_types.to_f / total_types
         end
@@ -1193,8 +1442,12 @@ module DSPy
 
         sig { returns(T::Boolean) }
         attr_accessor :simple_mode
-        sig { returns(T::Array[Symbol]) }
+        sig { returns(T::Array[MutationType]) }
         attr_accessor :mutation_types
+        sig { returns(Float) }
+        attr_accessor :crossover_rate
+        sig { returns(T::Array[CrossoverType]) }
+        attr_accessor :crossover_types
 
         sig { void }
         def initialize
@@ -1205,7 +1458,9 @@ module DSPy
           @mutation_rate = 0.7
           @use_pareto_selection = true
           @simple_mode = false
-          @mutation_types = [:rewrite, :expand, :simplify, :combine, :rephrase]
+          @mutation_types = [MutationType::Rewrite, MutationType::Expand, MutationType::Simplify, MutationType::Combine, MutationType::Rephrase]
+          @crossover_rate = 0.6
+          @crossover_types = [CrossoverType::Uniform, CrossoverType::Blend, CrossoverType::Structured]
         end
 
         sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -1217,7 +1472,9 @@ module DSPy
             mutation_rate: @mutation_rate,
             use_pareto_selection: @use_pareto_selection,
             simple_mode: @simple_mode,
-            mutation_types: @mutation_types
+            mutation_types: @mutation_types,
+            crossover_rate: @crossover_rate,
+            crossover_types: @crossover_types
           })
         end
       end
