@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'ostruct'
 require 'sorbet-runtime'
 require_relative 'teleprompter'
 
@@ -739,6 +740,261 @@ module DSPy
           # For Phase 2, return the original program
           # Future implementation will create actual modified programs
           original_program
+        end
+      end
+
+      # FitnessScore represents multi-dimensional evaluation results
+      class FitnessScore < Data.define(
+        :primary_score,
+        :secondary_scores,
+        :overall_score,
+        :metadata
+      )
+        extend T::Sig
+
+        sig do
+          params(
+            primary_score: Float,
+            secondary_scores: T::Hash[Symbol, Float],
+            overall_score: Float,
+            metadata: T.nilable(T::Hash[Symbol, T.untyped])
+          ).void
+        end
+        def initialize(primary_score:, secondary_scores:, overall_score:, metadata: {})
+          # Validate score ranges
+          [primary_score, overall_score].each do |score|
+            if score < 0.0 || score > 1.0
+              raise ArgumentError, "Score must be between 0.0 and 1.0, got #{score}"
+            end
+          end
+
+          secondary_scores.each do |name, score|
+            if score < 0.0 || score > 1.0
+              raise ArgumentError, "Secondary score #{name} must be between 0.0 and 1.0, got #{score}"
+            end
+          end
+
+          super(
+            primary_score: primary_score,
+            secondary_scores: secondary_scores.freeze,
+            overall_score: overall_score,
+            metadata: (metadata || {}).freeze
+          )
+        end
+
+        # Check if this score is dominated by another (for Pareto analysis)
+        sig { params(other: FitnessScore).returns(T::Boolean) }
+        def dominated_by?(other)
+          return false if overall_score > other.overall_score
+          return true if overall_score < other.overall_score
+
+          # If overall scores are equal, check secondary metrics
+          secondary_scores.all? do |metric, score|
+            other_score = other.secondary_scores[metric] || 0.0
+            score <= other_score
+          end
+        end
+
+        # Get combined score for specific objectives
+        sig { params(objectives: T::Array[Symbol]).returns(Float) }
+        def score_for_objectives(objectives)
+          relevant_scores = objectives.map { |obj| secondary_scores[obj] || 0.0 }
+          return primary_score if relevant_scores.empty?
+
+          (primary_score + relevant_scores.sum) / (objectives.size + 1)
+        end
+      end
+
+      # FitnessEvaluator provides multi-dimensional evaluation of prompt candidates
+      class FitnessEvaluator
+        extend T::Sig
+
+        sig { returns(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)) }
+        attr_reader :primary_metric
+
+        sig { returns(GEPAConfig) }
+        attr_reader :config
+
+        sig { returns(T::Hash[Symbol, T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)]) }
+        attr_reader :secondary_metrics
+
+        sig do
+          params(
+            primary_metric: T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped),
+            config: GEPAConfig,
+            secondary_metrics: T.nilable(T::Hash[Symbol, T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)])
+          ).void
+        end
+        def initialize(primary_metric:, config:, secondary_metrics: nil)
+          @primary_metric = primary_metric
+          @config = config
+          @secondary_metrics = secondary_metrics || default_secondary_metrics
+          @trace_collector = TraceCollector.new
+        end
+
+        # Evaluate a single candidate program
+        sig { params(program: T.untyped, trainset: T::Array[T.untyped]).returns(FitnessScore) }
+        def evaluate_candidate(program, trainset)
+          start_time = Time.now
+          predictions = []
+          traces = []
+
+          # Collect primary metric scores and execution data
+          primary_scores = trainset.map do |example|
+            prediction_start = Time.now
+            prediction = program.call(**example.input_values)
+            prediction_time = Time.now - prediction_start
+
+            predictions << {
+              prediction: prediction,
+              latency: prediction_time,
+              example: example
+            }
+
+            @primary_metric.call(example, prediction).to_f
+          rescue => e
+            # Handle prediction errors
+            predictions << {
+              prediction: nil,
+              latency: 0.0,
+              example: example,
+              error: e.message
+            }
+            0.0
+          end
+
+          primary_score = primary_scores.sum / primary_scores.size
+
+          # Calculate secondary metrics
+          secondary_scores = {}
+          
+          # Token efficiency (mock data for now - will be replaced with real trace collection)
+          mock_traces = predictions.map.with_index do |pred, i|
+            OpenStruct.new(token_usage: 50 + rand(100))
+          end
+          secondary_scores[:token_efficiency] = calculate_token_efficiency(mock_traces, predictions.size)
+
+          # Response consistency
+          response_texts = predictions.map { |p| p[:prediction]&.answer&.to_s || '' }
+          secondary_scores[:consistency] = calculate_consistency(response_texts)
+
+          # Latency performance
+          latencies = predictions.map { |p| p[:latency] }
+          secondary_scores[:latency] = calculate_latency_score(latencies)
+
+          # Calculate weighted overall score
+          overall_score = calculate_overall_score(primary_score, secondary_scores)
+
+          FitnessScore.new(
+            primary_score: primary_score,
+            secondary_scores: secondary_scores,
+            overall_score: overall_score,
+            metadata: {
+              evaluation_time: Time.now - start_time,
+              examples_count: trainset.size,
+              errors_count: predictions.count { |p| p[:error] }
+            }
+          )
+        end
+
+        # Evaluate multiple candidates in batch
+        sig { params(programs: T::Array[T.untyped], trainset: T::Array[T.untyped]).returns(T::Array[FitnessScore]) }
+        def batch_evaluate(programs, trainset)
+          programs.map { |program| evaluate_candidate(program, trainset) }
+        end
+
+        # Compare two fitness scores (positive if first is better)
+        sig { params(score1: FitnessScore, score2: FitnessScore).returns(Float) }
+        def compare_candidates(score1, score2)
+          score1.overall_score - score2.overall_score
+        end
+
+        # Rank candidates by fitness (returns indices sorted by fitness, best first)
+        sig { params(scores: T::Array[FitnessScore]).returns(T::Array[Integer]) }
+        def rank_candidates(scores)
+          scores.each_with_index.sort_by { |score, _| -score.overall_score }.map(&:last)
+        end
+
+        private
+
+        # Default secondary metrics for fitness evaluation
+        sig { returns(T::Hash[Symbol, T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)]) }
+        def default_secondary_metrics
+          {
+            token_efficiency: proc { |traces, count| calculate_token_efficiency(traces, count) },
+            consistency: proc { |responses| calculate_consistency(responses) },
+            latency: proc { |latencies| calculate_latency_score(latencies) }
+          }
+        end
+
+        # Calculate token usage efficiency (lower usage = higher score)
+        sig { params(traces: T::Array[T.untyped], example_count: Integer).returns(Float) }
+        def calculate_token_efficiency(traces, example_count)
+          return 1.0 if traces.empty? || example_count == 0
+
+          total_tokens = traces.sum(&:token_usage)
+          avg_tokens_per_example = total_tokens.to_f / example_count
+
+          # Efficiency decreases as token usage increases
+          # Assume 100 tokens per example is baseline (score 0.5)
+          baseline_tokens = 100.0
+          efficiency = baseline_tokens / (baseline_tokens + avg_tokens_per_example)
+
+          [efficiency, 1.0].min
+        end
+
+        # Calculate consistency of responses (similar structure = higher score)
+        sig { params(responses: T::Array[String]).returns(Float) }
+        def calculate_consistency(responses)
+          return 1.0 if responses.empty? || responses.size == 1
+
+          # Simple consistency measure: average word overlap between responses
+          word_sets = responses.map { |response| response.downcase.split.to_set }
+          
+          total_similarity = 0.0
+          comparisons = 0
+
+          word_sets.each_with_index do |set1, i|
+            word_sets[(i+1)..-1].each do |set2|
+              intersection = set1 & set2
+              union = set1 | set2
+              
+              similarity = union.empty? ? 0.0 : intersection.size.to_f / union.size
+              total_similarity += similarity
+              comparisons += 1
+            end
+          end
+
+          comparisons == 0 ? 1.0 : total_similarity / comparisons
+        end
+
+        # Calculate latency performance score (faster = higher score)
+        sig { params(latencies: T::Array[Float]).returns(Float) }
+        def calculate_latency_score(latencies)
+          return 1.0 if latencies.empty?
+
+          avg_latency = latencies.sum / latencies.size
+          
+          # Penalize high latencies (assume 2 seconds is baseline for 0.5 score)
+          baseline_latency = 2.0
+          latency_score = baseline_latency / (baseline_latency + avg_latency)
+
+          [latency_score, 1.0].min
+        end
+
+        # Calculate weighted overall score combining primary and secondary metrics
+        sig { params(primary_score: Float, secondary_scores: T::Hash[Symbol, Float]).returns(Float) }
+        def calculate_overall_score(primary_score, secondary_scores)
+          # Weight primary metric at 70%, secondary metrics at 30%
+          primary_weight = 0.7
+          secondary_weight = 0.3
+
+          return primary_score if secondary_scores.empty?
+
+          avg_secondary = secondary_scores.values.sum / secondary_scores.size
+          overall = (primary_score * primary_weight) + (avg_secondary * secondary_weight)
+
+          [overall, 1.0].min
         end
       end
 
