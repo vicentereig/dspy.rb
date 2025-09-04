@@ -539,6 +539,209 @@ module DSPy
         end
       end
 
+      # GeneticEngine orchestrates the genetic algorithm for prompt evolution
+      # Manages population, selection, and evolution across generations
+      class GeneticEngine
+        extend T::Sig
+
+        sig { returns(GEPAConfig) }
+        attr_reader :config
+
+        sig { returns(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)) }
+        attr_reader :metric
+
+        sig { returns(T::Array[T.untyped]) }
+        attr_reader :population
+
+        sig { returns(Integer) }
+        attr_reader :generation
+
+        sig { params(config: GEPAConfig, metric: T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)).void }
+        def initialize(config:, metric:)
+          @config = config
+          @metric = metric
+          @population = T.let([], T::Array[T.untyped])
+          @generation = 0
+          @fitness_scores = T.let([], T::Array[Float])
+        end
+
+        # Initialize population with diverse instruction variants
+        sig { params(program: T.untyped).void }
+        def initialize_population(program)
+          @population = []
+          
+          # Start with original program
+          @population << program
+          
+          # Generate instruction variants to fill population
+          original_instruction = program.signature_class.description
+          variants = generate_instruction_variants(original_instruction)
+          
+          # Create program copies with different instructions
+          variants.take(@config.population_size - 1).each do |variant|
+            variant_program = create_program_with_instruction(program, variant)
+            @population << variant_program
+          end
+          
+          # If we need more candidates, duplicate and mutate
+          while @population.size < @config.population_size
+            base_program = @population.sample
+            mutated = create_program_with_instruction(base_program, 
+              generate_instruction_variants(base_program.signature_class.description).first)
+            @population << mutated
+          end
+          
+          @generation = 0
+        end
+
+        # Evaluate all population members on the training set
+        sig { params(trainset: T::Array[T.untyped]).returns(T::Array[Float]) }
+        def evaluate_population(trainset)
+          @fitness_scores = @population.map do |candidate|
+            scores = trainset.map do |example|
+              prediction = candidate.call(**example.input_values)
+              @metric.call(example, prediction).to_f
+            rescue => e
+              # Handle evaluation errors gracefully
+              0.0
+            end
+            
+            scores.sum / scores.size
+          end
+          
+          @fitness_scores
+        end
+
+        # Evolve to next generation using selection and mutation
+        sig { params(trainset: T::Array[T.untyped]).void }
+        def evolve_generation(trainset)
+          current_scores = evaluate_population(trainset)
+          
+          # Simple selection: keep top 50% and mutate them
+          sorted_indices = (0...@population.size).sort_by { |i| -current_scores[i] }
+          survivors = sorted_indices.take(@config.population_size / 2)
+          
+          new_population = []
+          
+          # Keep best performers
+          survivors.each { |i| new_population << @population[i] }
+          
+          # Fill rest with mutations of survivors
+          while new_population.size < @config.population_size
+            parent_index = survivors.sample
+            parent = @population[parent_index]
+            
+            # Generate mutation
+            variants = generate_instruction_variants(parent.signature_class.description)
+            mutated = create_program_with_instruction(parent, variants.first || parent.signature_class.description)
+            new_population << mutated
+          end
+          
+          @population = new_population
+          @generation += 1
+        end
+
+        # Run complete evolution process
+        sig { params(program: T.untyped, trainset: T::Array[T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+        def run_evolution(program, trainset)
+          initialize_population(program)
+          
+          history = []
+          
+          # Initial evaluation
+          initial_scores = evaluate_population(trainset)
+          history << {
+            generation: 0,
+            best_fitness: initial_scores.max,
+            avg_fitness: initial_scores.sum / initial_scores.size,
+            diversity: population_diversity
+          }
+          
+          # Evolution loop
+          @config.num_generations.times do
+            evolve_generation(trainset)
+            scores = evaluate_population(trainset)
+            
+            history << {
+              generation: @generation,
+              best_fitness: scores.max,
+              avg_fitness: scores.sum / scores.size,
+              diversity: population_diversity
+            }
+          end
+          
+          {
+            best_candidate: get_best_candidate,
+            best_fitness: @fitness_scores.max,
+            generation_history: history,
+            final_population: @population.dup
+          }
+        end
+
+        # Get the best performing candidate from current population
+        sig { returns(T.untyped) }
+        def get_best_candidate
+          return @population.first if @fitness_scores.empty?
+          
+          best_index = @fitness_scores.each_with_index.max_by { |score, _| score }[1]
+          @population[best_index]
+        end
+
+        # Measure diversity of instructions in current population
+        sig { returns(Float) }
+        def population_diversity
+          return 0.0 if @population.empty?
+          
+          instructions = @population.map(&:signature_class).map(&:description)
+          unique_instructions = instructions.uniq.size
+          
+          unique_instructions.to_f / @population.size.to_f
+        end
+
+        private
+
+        # Generate instruction variants (similar to simple optimization)
+        sig { params(original_instruction: String).returns(T::Array[String]) }
+        def generate_instruction_variants(original_instruction)
+          variants = []
+          
+          # Add "step by step" variant
+          unless original_instruction.include?("step")
+            variants << "#{original_instruction} Think step by step."
+          end
+          
+          # Add "detailed" variant
+          unless original_instruction.include?("detail")
+            variants << "#{original_instruction} Provide detailed reasoning."
+          end
+          
+          # Add "careful" variant
+          unless original_instruction.include?("careful")
+            variants << "Be careful and accurate. #{original_instruction}"
+          end
+          
+          # Add "examples" variant
+          unless original_instruction.include?("example")
+            variants << "#{original_instruction} Use examples in your response."
+          end
+          
+          # Add "precise" variant
+          unless original_instruction.include?("precise")
+            variants << "Be precise and specific. #{original_instruction}"
+          end
+          
+          variants.shuffle.take(5) # Return up to 5 variants, shuffled
+        end
+
+        # Create program copy with modified instruction (simplified for Phase 2)
+        sig { params(original_program: T.untyped, new_instruction: String).returns(T.untyped) }
+        def create_program_with_instruction(original_program, new_instruction)
+          # For Phase 2, return the original program
+          # Future implementation will create actual modified programs
+          original_program
+        end
+      end
+
       # Configuration for GEPA optimization
       class GEPAConfig < Config
         extend T::Sig
