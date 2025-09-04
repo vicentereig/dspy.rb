@@ -563,15 +563,15 @@ module DSPy
         
         public
         
-        # Perform LLM-based reflection on execution traces
+        # Perform LLM-based reflection on execution traces using DSPy::Predict
         sig { params(traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
         def reflect_with_llm(traces)
           return reflect_on_traces(traces) if traces.empty?
           
           begin
-            prompt = generate_reflection_prompt(traces)
-            reflection_response = call_reflection_llm(prompt)
-            parse_llm_reflection(reflection_response, traces)
+            # Use DSPy::Predict for analysis instead of raw prompts
+            prediction = analyze_traces_with_dspy(traces)
+            convert_prediction_to_reflection_result(prediction, traces)
           rescue => e
             # Fallback to rule-based analysis on LLM failure
             fallback_result = reflect_on_traces(traces)
@@ -799,15 +799,15 @@ module DSPy
         
         public
         
-        # Perform LLM-based reflection on execution traces
+        # Perform LLM-based reflection on execution traces using DSPy::Predict
         sig { params(traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
         def reflect_with_llm(traces)
           return reflect_on_traces(traces) if traces.empty?
           
           begin
-            prompt = generate_reflection_prompt(traces)
-            reflection_response = call_reflection_llm(prompt)
-            parse_llm_reflection(reflection_response, traces)
+            # Use DSPy::Predict for analysis instead of raw prompts
+            prediction = analyze_traces_with_dspy(traces)
+            convert_prediction_to_reflection_result(prediction, traces)
           rescue => e
             # Fallback to rule-based analysis on LLM failure
             fallback_result = reflect_on_traces(traces)
@@ -1031,6 +1031,96 @@ module DSPy
           )
         end
         
+        public
+        
+        # Create signature for trace reflection analysis (public API)
+        sig { returns(T.class_of(DSPy::Signature)) }
+        def create_trace_reflection_signature
+          @trace_reflection_signature ||= Class.new(DSPy::Signature) do
+            description "Analyze execution traces from GEPA optimization system and provide actionable optimization insights"
+            
+            input do
+              const :execution_summary, String, description: "Summary of execution traces and performance patterns"
+              const :optimization_context, String, description: "Context about the genetic algorithm optimization goals"
+              const :key_insights, String, description: "Key insights extracted from trace analysis" 
+              const :sample_traces, String, description: "Representative execution trace samples"
+            end
+            
+            output do
+              const :diagnosis, String, description: "Brief description of execution patterns and issues identified"
+              const :improvements, T::Array[String], description: "List of 2-4 specific actionable improvement suggestions"
+              const :confidence, Float, description: "Confidence level in analysis (0.0 to 1.0)"
+              const :reasoning, String, description: "Detailed reasoning process for the analysis"
+              const :suggested_mutations, T::Array[String], description: "List of 2-3 most beneficial mutation types from: rewrite, expand, simplify, combine, rephrase"
+              const :pattern_detected, String, description: "Primary pattern identified in execution traces"
+              const :optimization_opportunity, String, description: "Key area identified for performance improvement"
+            end
+          end
+        end
+
+        # Perform LLM analysis using DSPy::Predict (public API)
+        sig { params(traces: T::Array[ExecutionTrace]).returns(DSPy::Prediction) }
+        def analyze_traces_with_dspy(traces)
+          predictor = DSPy::Predict.new(create_trace_reflection_signature)
+          
+          # Prepare input data
+          summary = trace_summary_for_reflection(traces)
+          insights = extract_optimization_insights(traces)
+          insights_text = insights.map { |k, v| "- #{k}: #{v.is_a?(Hash) ? v.values.join(', ') : v}" }.join("\n")
+          
+          # Get LLM analysis
+          predictor.call(
+            execution_summary: summary,
+            optimization_context: "GEPA genetic algorithm for prompt optimization. Available mutations: rewrite, expand, simplify, combine, rephrase. Goal: improve prompt effectiveness through iterative evolution.",
+            key_insights: insights_text,
+            sample_traces: format_traces_for_prompt(traces.take(3))
+          )
+        end
+
+        # Convert DSPy prediction to ReflectionResult (public API)
+        sig { params(prediction: DSPy::Prediction, original_traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
+        def convert_prediction_to_reflection_result(prediction, original_traces)
+          reflection_id = generate_reflection_id
+          
+          # Extract and validate prediction results
+          diagnosis = prediction.diagnosis || 'DSPy reflection analysis'
+          improvements = Array(prediction.improvements).select { |i| i.is_a?(String) && !i.strip.empty? }
+          confidence = [[prediction.confidence&.to_f || 0.0, 1.0].min, 0.0].max
+          reasoning = prediction.reasoning || 'DSPy-based analysis of execution traces'
+          
+          # Validate mutation suggestions
+          valid_mutations = Array(prediction.suggested_mutations).filter_map do |mut|
+            mutation_symbol = mut.to_s.downcase.to_sym
+            if [:rewrite, :expand, :simplify, :combine, :rephrase].include?(mutation_symbol)
+              mutation_symbol
+            end
+          end.uniq
+          
+          # Ensure we have at least one valid mutation suggestion
+          valid_mutations = [:rewrite] if valid_mutations.empty?
+          
+          ReflectionResult.new(
+            trace_id: reflection_id,
+            diagnosis: diagnosis,
+            improvements: improvements,
+            confidence: confidence,
+            reasoning: reasoning,
+            suggested_mutations: valid_mutations,
+            metadata: {
+              reflection_model: @config.reflection_lm,
+              analysis_timestamp: Time.now,
+              trace_count: original_traces.size,
+              token_usage: estimate_token_usage(prediction.to_s),
+              llm_based: true,
+              dspy_prediction: true,
+              insights: {
+                pattern_detected: prediction.pattern_detected || "unknown_pattern",
+                optimization_opportunity: prediction.optimization_opportunity || "general_optimization"
+              }
+            }
+          )
+        end
+        
         private
         
         # Generate unique reflection ID
@@ -1102,28 +1192,7 @@ module DSPy
           (timestamps.last - timestamps.first).to_f
         end
         
-        # Call LLM for reflection analysis
-        sig { params(prompt: String).returns(String) }
-        def call_reflection_llm(prompt)
-          # This would be implemented with actual LLM call in production
-          # For now, simulate with a reasonable response structure
-          {
-            "diagnosis" => "LLM analysis indicates opportunities for prompt optimization",
-            "improvements" => [
-              "Add explicit reasoning instructions", 
-              "Standardize response format",
-              "Optimize token usage"
-            ],
-            "confidence" => 0.75,
-            "reasoning" => "Based on trace analysis, prompts show potential for improvement through genetic optimization",
-            "suggested_mutations" => ["expand", "rewrite"],
-            "insights" => {
-              "pattern_detected" => "optimization_potential",
-              "optimization_opportunity" => "instruction_clarity"
-            }
-          }.to_json
-        end
-        
+
         # Format traces for inclusion in prompt
         sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
         def format_traces_for_prompt(traces)
