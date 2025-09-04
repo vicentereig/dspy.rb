@@ -240,6 +240,305 @@ module DSPy
         end
       end
 
+      # TraceCollector aggregates execution traces from DSPy events
+      # Uses SubscriberMixin for class-level event subscriptions
+      class TraceCollector
+        include DSPy::Events::SubscriberMixin
+        extend T::Sig
+
+        sig { void }
+        def initialize
+          @traces = T.let([], T::Array[ExecutionTrace])
+          @traces_mutex = T.let(Mutex.new, Mutex)
+          setup_subscriptions
+        end
+
+        sig { returns(T::Array[ExecutionTrace]) }
+        attr_reader :traces
+
+        # Get count of collected traces
+        sig { returns(Integer) }
+        def collected_count
+          @traces_mutex.synchronize { @traces.size }
+        end
+
+        # Collect trace from event data
+        sig { params(event_name: String, event_data: T::Hash[T.any(String, Symbol), T.untyped]).void }
+        def collect_trace(event_name, event_data)
+          @traces_mutex.synchronize do
+            trace_id = event_data['trace_id'] || event_data[:trace_id] || generate_trace_id
+            
+            # Avoid duplicates
+            return if @traces.any? { |t| t.trace_id == trace_id }
+
+            timestamp = event_data['timestamp'] || event_data[:timestamp] || Time.now
+            span_id = event_data['span_id'] || event_data[:span_id]
+            attributes = event_data['attributes'] || event_data[:attributes] || {}
+            metadata = event_data['metadata'] || event_data[:metadata] || {}
+
+            trace = ExecutionTrace.new(
+              trace_id: trace_id,
+              event_name: event_name,
+              timestamp: timestamp,
+              span_id: span_id,
+              attributes: attributes,
+              metadata: metadata
+            )
+
+            @traces << trace
+          end
+        end
+
+        # Get traces for a specific optimization run
+        sig { params(run_id: String).returns(T::Array[ExecutionTrace]) }
+        def traces_for_run(run_id)
+          @traces_mutex.synchronize do
+            @traces.select do |trace|
+              metadata = trace.metadata
+              metadata && metadata[:optimization_run_id] == run_id
+            end
+          end
+        end
+
+        # Get only LLM traces
+        sig { returns(T::Array[ExecutionTrace]) }
+        def llm_traces
+          @traces_mutex.synchronize { @traces.select(&:llm_trace?) }
+        end
+
+        # Get only module traces
+        sig { returns(T::Array[ExecutionTrace]) }
+        def module_traces
+          @traces_mutex.synchronize { @traces.select(&:module_trace?) }
+        end
+
+        # Clear all collected traces
+        sig { void }
+        def clear
+          @traces_mutex.synchronize { @traces.clear }
+        end
+
+        private
+
+        # Set up event subscriptions using SubscriberMixin
+        sig { void }
+        def setup_subscriptions
+          # Subscribe to LLM events
+          self.class.add_subscription('llm.*') do |name, attrs|
+            collect_trace(name, attrs)
+          end
+
+          # Subscribe to module events  
+          self.class.add_subscription('*.reasoning_complete') do |name, attrs|
+            collect_trace(name, attrs)
+          end
+
+          self.class.add_subscription('*.predict_complete') do |name, attrs|
+            collect_trace(name, attrs)
+          end
+        end
+
+        # Generate unique trace ID
+        sig { returns(String) }
+        def generate_trace_id
+          "gepa-trace-#{SecureRandom.hex(4)}"
+        end
+      end
+
+      # ReflectionEngine performs natural language reflection on execution traces
+      # This is the core component that analyzes traces and generates improvement insights
+      class ReflectionEngine
+        extend T::Sig
+
+        sig { returns(GEPAConfig) }
+        attr_reader :config
+
+        sig { params(config: T.nilable(GEPAConfig)).void }
+        def initialize(config = nil)
+          @config = config || GEPAConfig.new
+        end
+
+        # Perform reflective analysis on execution traces
+        sig { params(traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
+        def reflect_on_traces(traces)
+          reflection_id = generate_reflection_id
+
+          if traces.empty?
+            return ReflectionResult.new(
+              trace_id: reflection_id,
+              diagnosis: 'No traces available for analysis',
+              improvements: [],
+              confidence: 0.0,
+              reasoning: 'Cannot provide reflection without execution traces',
+              suggested_mutations: [],
+              metadata: {
+                reflection_model: @config.reflection_lm,
+                analysis_timestamp: Time.now,
+                trace_count: 0
+              }
+            )
+          end
+
+          patterns = analyze_execution_patterns(traces)
+          improvements = generate_improvement_suggestions(patterns)
+          mutations = suggest_mutations(patterns)
+          
+          # For Phase 1, we generate a simple rule-based analysis
+          # Future phases will use LLM-based reflection
+          diagnosis = generate_diagnosis(patterns)
+          reasoning = generate_reasoning(patterns, traces)
+          confidence = calculate_confidence(patterns)
+
+          ReflectionResult.new(
+            trace_id: reflection_id,
+            diagnosis: diagnosis,
+            improvements: improvements,
+            confidence: confidence,
+            reasoning: reasoning,
+            suggested_mutations: mutations,
+            metadata: {
+              reflection_model: @config.reflection_lm,
+              analysis_timestamp: Time.now,
+              trace_count: traces.size,
+              token_usage: 0 # Phase 1 doesn't use actual LLM reflection
+            }
+          )
+        end
+
+        # Analyze patterns in execution traces
+        sig { params(traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
+        def analyze_execution_patterns(traces)
+          llm_traces = traces.select(&:llm_trace?)
+          module_traces = traces.select(&:module_trace?)
+
+          total_tokens = llm_traces.sum(&:token_usage)
+          unique_models = llm_traces.map(&:model_name).compact.uniq
+
+          {
+            llm_traces_count: llm_traces.size,
+            module_traces_count: module_traces.size,
+            total_tokens: total_tokens,
+            unique_models: unique_models,
+            avg_response_length: calculate_avg_response_length(llm_traces),
+            trace_timespan: calculate_timespan(traces)
+          }
+        end
+
+        # Generate improvement suggestions based on patterns
+        sig { params(patterns: T::Hash[Symbol, T.untyped]).returns(T::Array[String]) }
+        def generate_improvement_suggestions(patterns)
+          suggestions = []
+
+          if patterns[:total_tokens] > 500
+            suggestions << 'Consider reducing prompt length to lower token usage'
+          end
+
+          if patterns[:avg_response_length] < 10
+            suggestions << 'Responses seem brief - consider asking for more detailed explanations'
+          end
+
+          if patterns[:llm_traces_count] > patterns[:module_traces_count] * 3
+            suggestions << 'High LLM usage detected - consider optimizing reasoning chains'
+          end
+
+          if patterns[:unique_models].size > 1
+            suggestions << 'Multiple models used - consider standardizing on one model for consistency'
+          end
+
+          suggestions << 'Add step-by-step reasoning instructions' if suggestions.empty?
+          suggestions
+        end
+
+        # Suggest mutation operations based on patterns
+        sig { params(patterns: T::Hash[Symbol, T.untyped]).returns(T::Array[Symbol]) }
+        def suggest_mutations(patterns)
+          mutations = []
+
+          avg_length = patterns[:avg_response_length] || 0
+          total_tokens = patterns[:total_tokens] || 0
+          llm_count = patterns[:llm_traces_count] || 0
+
+          mutations << :expand if avg_length < 15
+          mutations << :simplify if total_tokens > 300
+          mutations << :combine if llm_count > 2
+          mutations << :rewrite if llm_count == 1
+          mutations << :rephrase if mutations.empty?
+          
+          mutations.uniq
+        end
+
+        private
+
+        # Generate unique reflection ID
+        sig { returns(String) }
+        def generate_reflection_id
+          "reflection-#{SecureRandom.hex(4)}"
+        end
+
+        # Generate diagnosis text
+        sig { params(patterns: T::Hash[Symbol, T.untyped]).returns(String) }
+        def generate_diagnosis(patterns)
+          if patterns[:total_tokens] > 400
+            'High token usage indicates potential inefficiency in prompt design'
+          elsif patterns[:llm_traces_count] == 0
+            'No LLM interactions found - execution may not be working as expected'
+          elsif patterns[:avg_response_length] < 10
+            'Responses are unusually brief which may indicate prompt clarity issues'
+          else
+            'Execution patterns appear normal with room for optimization'
+          end
+        end
+
+        # Generate reasoning text
+        sig { params(patterns: T::Hash[Symbol, T.untyped], traces: T::Array[ExecutionTrace]).returns(String) }
+        def generate_reasoning(patterns, traces)
+          reasoning_parts = []
+          
+          reasoning_parts << "Analyzed #{traces.size} execution traces"
+          reasoning_parts << "#{patterns[:llm_traces_count]} LLM interactions"
+          reasoning_parts << "#{patterns[:module_traces_count]} module operations"
+          reasoning_parts << "Total token usage: #{patterns[:total_tokens]}"
+          
+          reasoning_parts.join('. ') + '.'
+        end
+
+        # Calculate confidence based on patterns
+        sig { params(patterns: T::Hash[Symbol, T.untyped]).returns(Float) }
+        def calculate_confidence(patterns)
+          base_confidence = 0.7
+          
+          # More traces = higher confidence
+          trace_bonus = [patterns[:llm_traces_count] + patterns[:module_traces_count], 10].min * 0.02
+          
+          # Reasonable token usage = higher confidence
+          token_penalty = patterns[:total_tokens] > 1000 ? -0.1 : 0.0
+          
+          [(base_confidence + trace_bonus + token_penalty), 1.0].min
+        end
+
+        # Calculate average response length from LLM traces
+        sig { params(llm_traces: T::Array[ExecutionTrace]).returns(Integer) }
+        def calculate_avg_response_length(llm_traces)
+          return 0 if llm_traces.empty?
+          
+          total_length = llm_traces.sum do |trace|
+            response = trace.response_text
+            response ? response.length : 0
+          end
+          
+          total_length / llm_traces.size
+        end
+
+        # Calculate timespan of traces
+        sig { params(traces: T::Array[ExecutionTrace]).returns(Float) }
+        def calculate_timespan(traces)
+          return 0.0 if traces.size < 2
+          
+          timestamps = traces.map(&:timestamp).sort
+          (timestamps.last - timestamps.first).to_f
+        end
+      end
+
       # Configuration for GEPA optimization
       class GEPAConfig < Config
         extend T::Sig
