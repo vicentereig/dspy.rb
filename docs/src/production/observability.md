@@ -464,6 +464,8 @@ threads.each(&:join)
 
 DSPy.rb includes **zero-config Langfuse integration** via OpenTelemetry. Simply set your Langfuse environment variables and DSPy will automatically export spans to Langfuse alongside the normal logging.
 
+**🆕 Enhanced in v0.24.1**: Comprehensive span reporting improvements including proper input/output capture, hierarchical nesting, accurate timing, token usage tracking, and correct Langfuse observation types (`generation`, `chain`, `span`).
+
 ### Setup
 
 ```bash

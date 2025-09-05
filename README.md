@@ -191,6 +191,7 @@ DSPy.rb has rapidly evolved from experimental to production-ready:
 - ✅ **Optimization Framework** - MIPROv2 algorithm with storage & persistence
 
 ### Recent Advances  
+- ✅ **Enhanced Langfuse Integration (v0.24.1)** - Comprehensive OpenTelemetry span reporting with proper input/output, hierarchical nesting, accurate timing, and observation types
 - ✅ **Comprehensive Multimodal Framework** - Complete image analysis with `DSPy::Image`, type-safe bounding boxes, vision model integration
 - ✅ **Advanced Type System** - `T::Enum` integration, union types for agentic workflows, complex type coercion
 - ✅ **Production-Ready Evaluation** - Multi-factor metrics beyond accuracy, error-resilient evaluation pipelines
