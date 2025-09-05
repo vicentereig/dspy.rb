@@ -3168,8 +3168,8 @@ module DSPy
       end
     end
 
-    # DSPy Adapter - Bridge between DSPy modules and GEPA optimization engine
-    class DspyAdapter
+    # Module Evaluator - Evaluates DSPy modules with metrics and feedback
+    class ModuleEvaluator
       extend T::Sig
       
       sig do
