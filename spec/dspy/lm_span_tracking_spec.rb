@@ -52,18 +52,15 @@ RSpec.describe 'DSPy::LM span tracking' do
 
     # Skip temperature/max_tokens test since they're hardcoded in adapters currently
 
-    it 'logs usage data as span attributes' do
+    it 'no longer logs span.attributes separately (now set directly on span)' do
+      # This test verifies that we don't emit span.attributes events anymore
+      # since attributes are now set directly on OpenTelemetry spans
+      
       expect(DSPy).to receive(:log).with('span.start', anything)
-      
-      expect(DSPy).to receive(:log).with('span.attributes', hash_including(
-        span_id: anything,
-        'gen_ai.response.model' => 'gpt-4-0613',
-        'gen_ai.usage.prompt_tokens' => 10,
-        'gen_ai.usage.completion_tokens' => 20,
-        'gen_ai.usage.total_tokens' => 30
-      ))
-      
       expect(DSPy).to receive(:log).with('span.end', anything)
+      
+      # Verify that span.attributes is NOT called
+      expect(DSPy).not_to receive(:log).with('span.attributes', anything)
 
       lm.raw_chat(messages)
     end

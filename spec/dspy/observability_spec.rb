@@ -21,13 +21,13 @@ RSpec.describe DSPy::Observability do
       it 'configures OpenTelemetry with OTLP exporter' do
         expect { described_class.configure! }.not_to raise_error
         expect(described_class.enabled?).to be true
-        expect(described_class.endpoint).to eq('https://test.langfuse.com/api/public/otel')
+        expect(described_class.endpoint).to eq('https://test.langfuse.com/api/public/otel/v1/traces')
       end
 
       it 'uses default Langfuse cloud endpoint when LANGFUSE_HOST not set' do
         ENV.delete('LANGFUSE_HOST')
         described_class.configure!
-        expect(described_class.endpoint).to eq('https://cloud.langfuse.com/api/public/otel')
+        expect(described_class.endpoint).to eq('https://cloud.langfuse.com/api/public/otel/v1/traces')
       end
     end
 

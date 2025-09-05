@@ -170,36 +170,39 @@ RSpec.describe DSPy::Context do
 
   describe 'OpenTelemetry integration' do
     let(:mock_span) { double('otel_span') }
+    let(:mock_tracer) { double('otel_tracer') }
 
     before { described_class.clear! }
 
     context 'when Observability is enabled' do
       before do
         allow(DSPy::Observability).to receive(:enabled?).and_return(true)
-        allow(DSPy::Observability).to receive(:start_span).and_return(mock_span)
-        allow(DSPy::Observability).to receive(:finish_span)
+        allow(DSPy::Observability).to receive(:tracer).and_return(mock_tracer)
       end
 
-      it 'creates OTEL span alongside logging' do
-        expect(DSPy::Observability).to receive(:start_span).with(
+      it 'creates OTEL span alongside logging using tracer.in_span' do
+        expect(mock_tracer).to receive(:in_span).with(
           'test.operation',
-          hash_including(
-            trace_id: anything,
-            span_id: anything,
-            parent_span_id: nil,
-            operation: 'test.operation',
-            custom_attr: 'value'
-          )
-        )
-
-        expect(DSPy::Observability).to receive(:finish_span).with(mock_span)
+          {
+            attributes: hash_including(
+              'custom_attr' => 'value',
+              'langfuse.trace.name' => 'test.operation'
+            ),
+            kind: :internal
+          }
+        ).and_yield(mock_span)
 
         described_class.with_span(operation: 'test.operation', custom_attr: 'value') { }
       end
 
-      it 'finishes OTEL span even when block raises exception' do
-        expect(DSPy::Observability).to receive(:start_span).and_return(mock_span)
-        expect(DSPy::Observability).to receive(:finish_span).with(mock_span)
+      it 'handles exceptions in tracer.in_span' do
+        expect(mock_tracer).to receive(:in_span).with(
+          'failing',
+          {
+            attributes: { 'langfuse.trace.name' => 'failing' },
+            kind: :internal
+          }
+        ).and_yield(mock_span)
 
         expect do
           described_class.with_span(operation: 'failing') do
@@ -209,13 +212,17 @@ RSpec.describe DSPy::Context do
       end
 
       it 'passes GenAI semantic attributes to OTEL span' do
-        expect(DSPy::Observability).to receive(:start_span).with(
+        expect(mock_tracer).to receive(:in_span).with(
           'llm.generate',
-          hash_including(
-            'gen_ai.system' => 'openai',
-            'gen_ai.request.model' => 'gpt-4'
-          )
-        )
+          {
+            attributes: hash_including(
+              'gen_ai.system' => 'openai',
+              'gen_ai.request.model' => 'gpt-4',
+              'langfuse.trace.name' => 'llm.generate'
+            ),
+            kind: :internal
+          }
+        ).and_yield(mock_span)
 
         described_class.with_span(
           operation: 'llm.generate',
