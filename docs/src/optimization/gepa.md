@@ -81,8 +81,12 @@ class ExactMatchMetric
   end
 end
 
+# Configure reflection LM (required)
+config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
+
 # Optimize with GEPA (Genetic-Pareto)
-gepa = DSPy::Teleprompt::GEPA.new(metric: ExactMatchMetric.new)
+gepa = DSPy::Teleprompt::GEPA.new(metric: ExactMatchMetric.new, config: config)
 optimized_program = gepa.compile(program, trainset: trainset)
 
 # Use the optimized program
@@ -96,11 +100,13 @@ puts result.answer
 
 ```ruby
 config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-config.population_size = 8      # Number of program variants
-config.num_generations = 5      # Optimization rounds  
-config.mutation_rate = 0.7      # Probability of mutation
-config.crossover_rate = 0.6     # Probability of crossover
-config.reflection_lm = "openai/gpt-4o"  # LM for reflection
+config.population_size = 8      # Number of program variants (default: 8)
+config.num_generations = 10     # Optimization rounds (default: 10)
+config.mutation_rate = 0.7      # Probability of mutation (default: 0.7)
+config.crossover_rate = 0.6     # Probability of crossover (default: 0.6)
+config.use_pareto_selection = true  # Use Pareto frontier selection (default: true)
+config.simple_mode = false      # Use simple optimization without full genetic algorithm (default: false)
+config.reflection_lm = DSPy::LM.new("openai/gpt-4o", api_key: ENV['OPENAI_API_KEY'])  # LM for reflection (required)
 
 gepa = DSPy::Teleprompt::GEPA.new(metric: metric, config: config)
 ```
@@ -112,7 +118,7 @@ config = DSPy::Teleprompt::GEPA::GEPAConfig.new
 config.population_size = 4
 config.num_generations = 2
 config.mutation_rate = 0.8
-config.reflection_lm = "openai/gpt-4o-mini"
+config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
 
 gepa = DSPy::Teleprompt::GEPA.new(metric: metric, config: config)
 ```
@@ -122,27 +128,72 @@ gepa = DSPy::Teleprompt::GEPA.new(metric: metric, config: config)
 ```ruby
 config = DSPy::Teleprompt::GEPA::GEPAConfig.new
 config.population_size = 12
-config.num_generations = 10
+config.num_generations = 15
 config.mutation_rate = 0.6
 config.crossover_rate = 0.8
-config.reflection_lm = "openai/gpt-4o"
+config.reflection_lm = DSPy::LM.new("openai/gpt-4o", api_key: ENV['OPENAI_API_KEY'])
 
 gepa = DSPy::Teleprompt::GEPA.new(metric: metric, config: config)
 ```
 
-## Writing Metrics
-
-### Simple Metric (for MIPROv2)
+### All Configuration Options
 
 ```ruby
-simple_metric = proc do |example, prediction|
+config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+
+# Core genetic algorithm settings
+config.population_size = 8          # Number of program variants in each generation
+config.num_generations = 10         # Number of evolution iterations
+config.mutation_rate = 0.7          # Probability of mutation (0.0-1.0)
+config.crossover_rate = 0.6         # Probability of crossover (0.0-1.0)
+
+# Algorithm behavior
+config.use_pareto_selection = true  # Use Pareto frontier for multi-objective optimization
+config.simple_mode = false          # If true, uses simplified optimization without full GA
+
+# LM for reflection (required - no default)
+config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
+
+# Advanced: Mutation types (default: all types)
+config.mutation_types = [
+  DSPy::Teleprompt::GEPA::MutationType::Rewrite,   # Complete rewording
+  DSPy::Teleprompt::GEPA::MutationType::Expand,    # Add detail/context
+  DSPy::Teleprompt::GEPA::MutationType::Simplify,  # Remove complexity
+  DSPy::Teleprompt::GEPA::MutationType::Combine,   # Merge with another
+  DSPy::Teleprompt::GEPA::MutationType::Rephrase   # Minor rewording
+]
+
+# Advanced: Crossover types (default: all types)
+config.crossover_types = [
+  DSPy::Teleprompt::GEPA::CrossoverType::Uniform,    # Random selection
+  DSPy::Teleprompt::GEPA::CrossoverType::Blend,      # Weighted combination
+  DSPy::Teleprompt::GEPA::CrossoverType::Structured  # Structure-aware
+]
+```
+
+## Writing Metrics
+
+GEPA can work with two types of metrics:
+
+### Option 1: Simple Proc Metric (Easiest)
+
+For basic use cases, you can use a simple proc that returns a float score:
+
+```ruby
+# Simple accuracy metric
+metric = proc do |example, prediction|
   expected = example.expected_values[:answer]
   actual = prediction.answer
   expected == actual ? 1.0 : 0.0
 end
+
+# Use with GEPA
+gepa = DSPy::Teleprompt::GEPA.new(metric: metric, config: config)
 ```
 
-### Feedback Metric (for GEPA)
+Note: When using a simple proc, GEPA will still perform optimization but without detailed feedback for reflection.
+
+### Option 2: Feedback Metric with GEPAFeedbackMetric (Advanced)
 
 ```ruby
 class FeedbackMetric
@@ -295,7 +346,8 @@ end
 
 ### GEPA (Genetic-Pareto) Takes Too Long
 - Reduce `population_size` and `num_generations`
-- Use `config.reflection_lm = "openai/gpt-4o-mini"`
+- Use a faster model: `config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])`
+- Enable simple mode: `config.simple_mode = true`
 - Use fewer training examples
 
 ### Poor Optimization Results
