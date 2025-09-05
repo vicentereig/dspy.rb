@@ -3,6 +3,7 @@
 require 'ostruct'
 require 'sorbet-runtime'
 require_relative 'teleprompter'
+require_relative '../events/subscriber_mixin'
 
 module DSPy
   module Teleprompt
@@ -3129,6 +3130,259 @@ module DSPy
         
         timestamps = traces.map(&:timestamp).sort
         (timestamps.last - timestamps.first).to_f
+      end
+    end
+
+    # GEPA Feedback Metric Protocol
+    # Defines interface for providing scores with optional textual feedback
+    module GEPAFeedbackMetric
+      extend T::Sig
+      extend T::Helpers
+      
+      interface!
+      
+      # Evaluates prediction and provides score with optional feedback
+      sig do
+        abstract
+        .params(
+          example: DSPy::Example,
+          prediction: DSPy::Prediction,
+          trace: T.nilable(T::Array[ExecutionTrace])
+        )
+        .returns(T.any(Float, ScoreWithFeedback))
+      end
+      def call(example, prediction, trace = nil); end
+    end
+
+    # Extended prediction result with score and feedback
+    class ScoreWithFeedback < T::Struct
+      extend T::Sig
+      
+      const :score, Float
+      const :feedback, T.nilable(String)
+      const :prediction, T.nilable(DSPy::Prediction)
+      
+      sig { params(score: Float, feedback: T.nilable(String), prediction: T.nilable(DSPy::Prediction)).void }
+      def initialize(score:, feedback: nil, prediction: nil)
+        super
+      end
+    end
+
+    # DSPy Adapter - Bridge between DSPy modules and GEPA optimization engine
+    class DspyAdapter
+      extend T::Sig
+      
+      sig do
+        params(
+          student: T.untyped, # DSPy::Module or similar callable
+          metric: T.untyped,
+          feedback_map: T::Hash[String, String],
+          custom_instruction_proposer: T.nilable(T.untyped)
+        ).void
+      end
+      def initialize(student:, metric:, feedback_map: {}, custom_instruction_proposer: nil)
+        @student = student
+        @metric = metric
+        @feedback_map = feedback_map
+        @custom_instruction_proposer = custom_instruction_proposer
+        @trace_collector = GEPA::TraceCollector.new
+      end
+
+      # Build program with candidate instruction
+      sig { params(candidate_instruction: String).returns(T.untyped) }
+      def build_program(candidate_instruction)
+        # For DSPy::Module compatibility, we'll need to create a new instance
+        # with modified signature description
+        if @student.respond_to?(:signature_class) && @student.signature_class.respond_to?(:description=)
+          modified_student = @student.class.new
+          modified_student.signature_class.description = candidate_instruction
+          modified_student
+        else
+          # Fallback: return student as-is for non-standard modules
+          @student
+        end
+      end
+
+      # Evaluate program on batch with trace capture
+      sig do
+        params(
+          batch: T::Array[DSPy::Example],
+          candidate_instruction: String,
+          capture_traces: T::Boolean
+        )
+        .returns(T::Array[T.any(Float, ScoreWithFeedback)])
+      end
+      def evaluate_batch(batch, candidate_instruction, capture_traces: true)
+        program = build_program(candidate_instruction)
+        results = []
+        
+        batch.each do |example|
+          begin            
+            # Execute program on example
+            prediction = if program.respond_to?(:call)
+                          program.call(**example.input_values)
+                        elsif program.respond_to?(:forward)
+                          program.forward(**example.input_values)
+                        else
+                          raise "Program must respond to :call or :forward"
+                        end
+            
+            # Get collected traces (if trace collection is enabled)
+            # Note: TraceCollector automatically collects via event subscriptions
+            traces = capture_traces ? @trace_collector.traces : []
+            
+            # Evaluate with metric
+            # Try with traces first (for GEPAFeedbackMetric), fallback to standard metric
+            begin
+              # Check if metric can accept 3 parameters (example, prediction, traces)
+              if @metric.respond_to?(:arity) && (@metric.arity == 3 || @metric.arity < 0)
+                score_result = @metric.call(example, prediction, traces)
+              else
+                score_result = @metric.call(example, prediction)
+              end
+            rescue ArgumentError => arg_error
+              # If 3-arg call fails, try 2-arg call
+              if arg_error.message.include?('wrong number of arguments')
+                score_result = @metric.call(example, prediction)
+              else
+                raise arg_error
+              end
+            end
+            
+            results << score_result
+            
+          rescue => e
+            DSPy.logger.error("Evaluation error: #{e.message}")
+            # Return zero score on failure
+            results << 0.0
+          end
+        end
+        
+        results
+      end
+
+      # Create reflective dataset from failed predictions
+      sig do
+        params(
+          examples: T::Array[DSPy::Example],
+          predictions: T::Array[DSPy::Prediction],
+          scores: T::Array[T.any(Float, ScoreWithFeedback)],
+          threshold: Float
+        )
+        .returns(T::Array[T::Hash[String, T.untyped]])
+      end
+      def make_reflective_dataset(examples, predictions, scores, threshold: 0.5)
+        reflective_data = []
+        
+        examples.zip(predictions, scores).each do |example, prediction, score|
+          # Extract score value
+          score_value = score.is_a?(ScoreWithFeedback) ? score.score : score
+          
+          # Include failed predictions (below threshold)
+          next if score_value >= threshold
+          
+          # Extract feedback if available
+          feedback = if score.is_a?(ScoreWithFeedback) && score.feedback
+                      score.feedback
+                    else
+                      "Low performance (score: #{score_value.round(2)})"
+                    end
+          
+          reflective_data << {
+            'input' => example.input_values,
+            'expected' => example.expected_values,
+            'prediction' => extract_prediction_values(prediction),
+            'score' => score_value,
+            'feedback' => feedback
+          }
+        end
+        
+        reflective_data
+      end
+
+      # Propose new instruction texts based on reflective dataset
+      sig do
+        params(
+          current_instruction: String,
+          reflective_dataset: T::Array[T::Hash[String, T.untyped]],
+          components_to_update: T::Array[String]
+        )
+        .returns(T::Array[String])
+      end
+      def propose_new_texts(current_instruction, reflective_dataset, components_to_update = ['instruction'])
+        if @custom_instruction_proposer
+          # Use custom proposer if provided
+          proposed = @custom_instruction_proposer.call(current_instruction, reflective_dataset)
+          [proposed].compact
+        else
+          # Use built-in proposal logic
+          analyze_failures_and_propose(current_instruction, reflective_dataset)
+        end
+      end
+
+      private
+
+      # Extract prediction values for reflective analysis
+      sig { params(prediction: DSPy::Prediction).returns(T::Hash[String, T.untyped]) }
+      def extract_prediction_values(prediction)
+        begin
+          if prediction.respond_to?(:to_h)
+            prediction.to_h.transform_keys(&:to_s)
+          elsif prediction.respond_to?(:attributes)
+            prediction.attributes
+          else
+            # Fallback: extract known fields from prediction
+            result = {}
+            if prediction.respond_to?(:answer)
+              result['answer'] = prediction.answer
+            end
+            if prediction.respond_to?(:reasoning)
+              result['reasoning'] = prediction.reasoning
+            end
+            result['output'] = prediction.to_s if result.empty?
+            result
+          end
+        rescue => e
+          DSPy.logger.error("Error extracting prediction values: #{e.message}")
+          { 'output' => prediction.to_s }
+        end
+      end
+
+      # Analyze failures and propose improvements
+      sig do
+        params(
+          current_instruction: String,
+          reflective_dataset: T::Array[T::Hash[String, T.untyped]]
+        )
+        .returns(T::Array[String])
+      end
+      def analyze_failures_and_propose(current_instruction, reflective_dataset)
+        return [current_instruction] if reflective_dataset.empty?
+        
+        # Extract common failure patterns
+        feedback_texts = reflective_dataset.map { |data| data['feedback'] }.compact
+        
+        # Simple heuristic-based proposals
+        proposals = []
+        
+        # If many failures, suggest more detailed instruction
+        if reflective_dataset.size >= 3
+          proposals << "#{current_instruction} Please provide step-by-step reasoning."
+        end
+        
+        # If feedback mentions specific issues, address them
+        if feedback_texts.any? { |fb| fb.include?('unclear') || fb.include?('ambiguous') }
+          proposals << "#{current_instruction} Be specific and clear in your response."
+        end
+        
+        if feedback_texts.any? { |fb| fb.include?('incomplete') || fb.include?('missing') }
+          proposals << "#{current_instruction} Ensure your answer is complete and addresses all aspects."
+        end
+        
+        # Always include at least one proposal
+        proposals << "#{current_instruction.strip}. Think carefully before responding." if proposals.empty?
+        
+        proposals.uniq.take(3) # Return up to 3 proposals
       end
     end
   end

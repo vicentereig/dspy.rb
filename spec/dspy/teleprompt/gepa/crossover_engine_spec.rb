@@ -27,13 +27,8 @@ RSpec.describe DSPy::Teleprompt::GEPA::CrossoverEngine do
     end
   end
 
-  let(:mock_program_a) do
-    double('program_a', signature_class: CrossoverTestSignature)
-  end
-
-  let(:mock_program_b) do
-    double('program_b', signature_class: CrossoverTestSignature)
-  end
+  let(:program_a) { MockableTestModule.new(CrossoverTestSignature) }
+  let(:program_b) { MockableTestModule.new(CrossoverTestSignature) }
 
   describe 'initialization' do
     it 'creates engine with config' do
@@ -66,12 +61,12 @@ RSpec.describe DSPy::Teleprompt::GEPA::CrossoverEngine do
       high_rate_config = DSPy::Teleprompt::GEPA::GEPAConfig.new.tap { |c| c.crossover_rate = 1.0 }
       engine = described_class.new(config: high_rate_config)
       
-      allow(engine).to receive(:extract_instruction).with(mock_program_a).and_return("Solve carefully")
-      allow(engine).to receive(:extract_instruction).with(mock_program_b).and_return("Answer step by step")
+      allow(engine).to receive(:extract_instruction).with(program_a).and_return("Solve carefully")
+      allow(engine).to receive(:extract_instruction).with(program_b).and_return("Answer step by step")
       allow(engine).to receive(:apply_crossover).and_return(["Solve carefully step by step", "Answer carefully"])
-      allow(engine).to receive(:create_crossover_program).and_return(mock_program_a)
+      allow(engine).to receive(:create_crossover_program).and_return(program_a)
       
-      offspring = engine.crossover_programs(mock_program_a, mock_program_b)
+      offspring = engine.crossover_programs(program_a, program_b)
       
       expect(offspring).to be_an(Array)
       expect(offspring.size).to eq(2) # Two offspring
@@ -81,9 +76,9 @@ RSpec.describe DSPy::Teleprompt::GEPA::CrossoverEngine do
     it 'handles crossover failures gracefully' do
       allow(engine).to receive(:extract_instruction).and_raise(StandardError, 'Crossover error')
       
-      offspring = engine.crossover_programs(mock_program_a, mock_program_b)
+      offspring = engine.crossover_programs(program_a, program_b)
       
-      expect(offspring).to eq([mock_program_a, mock_program_b]) # Returns parents on failure
+      expect(offspring).to eq([program_a, program_b]) # Returns parents on failure
     end
 
     it 'respects crossover rate configuration' do
@@ -91,17 +86,17 @@ RSpec.describe DSPy::Teleprompt::GEPA::CrossoverEngine do
       engine = described_class.new(config: low_rate_config)
       
       # With 0% crossover rate, should return original parents
-      offspring = engine.crossover_programs(mock_program_a, mock_program_b)
-      expect(offspring).to eq([mock_program_a, mock_program_b])
+      offspring = engine.crossover_programs(program_a, program_b)
+      expect(offspring).to eq([program_a, program_b])
     end
   end
 
   describe '#batch_crossover' do
     let(:engine) { described_class.new(config: config) }
-    let(:population) { [mock_program_a, mock_program_b, mock_program_a, mock_program_b] }
+    let(:population) { [program_a, program_b, program_a, program_b] }
 
     it 'performs crossover on population pairs' do
-      allow(engine).to receive(:crossover_programs).and_return([mock_program_a, mock_program_b])
+      allow(engine).to receive(:crossover_programs).and_return([program_a, program_b])
       
       offspring_population = engine.batch_crossover(population)
       
@@ -110,8 +105,8 @@ RSpec.describe DSPy::Teleprompt::GEPA::CrossoverEngine do
     end
 
     it 'handles odd population sizes' do
-      odd_population = [mock_program_a, mock_program_b, mock_program_a]
-      allow(engine).to receive(:crossover_programs).and_return([mock_program_a, mock_program_b])
+      odd_population = [program_a, program_b, program_a]
+      allow(engine).to receive(:crossover_programs).and_return([program_a, program_b])
       
       offspring = engine.batch_crossover(odd_population)
       
@@ -124,8 +119,8 @@ RSpec.describe DSPy::Teleprompt::GEPA::CrossoverEngine do
     end
 
     it 'handles single program population' do
-      offspring = engine.batch_crossover([mock_program_a])
-      expect(offspring).to eq([mock_program_a])
+      offspring = engine.batch_crossover([program_a])
+      expect(offspring).to eq([program_a])
     end
   end
 
@@ -284,7 +279,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::CrossoverEngine do
     it 'creates new program with crossover instruction' do
       new_instruction = "Solve systematically with detailed reasoning"
       
-      crossover_program = engine.send(:create_crossover_program, mock_program_a, new_instruction)
+      crossover_program = engine.send(:create_crossover_program, program_a, new_instruction)
       
       expect(crossover_program).not_to be_nil
       # In real implementation, this would create a new program instance
