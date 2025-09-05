@@ -53,22 +53,9 @@ module DSPy
       def embed_batch(texts)
         ensure_ready!
         
-        # Preprocess all texts
-        cleaned_texts = texts.map { |text| preprocess_text(text) }
-        
-        # Generate embeddings in batch
-        results = @model.call(cleaned_texts)
-        
-        # Extract and normalize embeddings
-        results.map do |result|
-          # Handle both single embeddings and batch results
-          embedding = case result
-                     when Array
-                       result.flatten  # Flatten in case of nested arrays
-                     else
-                       result.to_a.flatten
-                     end
-          normalize_vector(embedding)
+        # Generate embeddings one by one (informers doesn't support true batch processing)
+        texts.map do |text|
+          embed(text)
         end
       end
 
