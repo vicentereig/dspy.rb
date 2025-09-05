@@ -145,7 +145,7 @@ def run_simple_benchmark
     # 4) Instantiate GEPA and compile (optimize) the program
     # Ruby DSPy.rb doesn't have auto='light' yet, so we configure manually
     config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-    config.reflection_lm = "openai/gpt-4o-mini"  # Equivalent to reflection_lm parameter
+    config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])  # Equivalent to reflection_lm parameter
     config.population_size = 4  # Light mode - smaller population
     config.num_generations = 2  # Light mode - fewer generations
     config.mutation_rate = 0.8

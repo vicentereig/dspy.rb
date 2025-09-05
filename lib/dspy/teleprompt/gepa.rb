@@ -394,7 +394,7 @@ module DSPy
               reasoning: 'Cannot provide reflection without execution traces',
               suggested_mutations: [],
               metadata: {
-                reflection_model: @config.reflection_lm,
+                reflection_model: @config.reflection_lm&.model,
                 analysis_timestamp: Time.now,
                 trace_count: 0
               }
@@ -419,7 +419,7 @@ module DSPy
             reasoning: reasoning,
             suggested_mutations: mutations,
             metadata: {
-              reflection_model: @config.reflection_lm,
+              reflection_model: @config.reflection_lm&.model,
               analysis_timestamp: Time.now,
               trace_count: traces.size,
               token_usage: 0 # Phase 1 doesn't use actual LLM reflection
@@ -691,7 +691,7 @@ module DSPy
               reasoning: reasoning,
               suggested_mutations: valid_mutations,
               metadata: {
-                reflection_model: @config.reflection_lm,
+                reflection_model: @config.reflection_lm&.model,
                 analysis_timestamp: Time.now,
                 trace_count: original_traces.size,
                 token_usage: estimate_token_usage(response_text),
@@ -710,7 +710,7 @@ module DSPy
               reasoning: "Failed to parse LLM reflection response as valid JSON",
               suggested_mutations: [:rewrite],
               metadata: {
-                reflection_model: @config.reflection_lm,
+                reflection_model: @config.reflection_lm&.model,
                 analysis_timestamp: Time.now,
                 trace_count: original_traces.size,
                 token_usage: 0,
@@ -927,7 +927,7 @@ module DSPy
               reasoning: reasoning,
               suggested_mutations: valid_mutations,
               metadata: {
-                reflection_model: @config.reflection_lm,
+                reflection_model: @config.reflection_lm&.model,
                 analysis_timestamp: Time.now,
                 trace_count: original_traces.size,
                 token_usage: estimate_token_usage(response_text),
@@ -946,7 +946,7 @@ module DSPy
               reasoning: "Failed to parse LLM reflection response as valid JSON",
               suggested_mutations: [:rewrite],
               metadata: {
-                reflection_model: @config.reflection_lm,
+                reflection_model: @config.reflection_lm&.model,
                 analysis_timestamp: Time.now,
                 trace_count: original_traces.size,
                 token_usage: 0,
@@ -1062,7 +1062,12 @@ module DSPy
         # Perform LLM analysis using DSPy::Predict (public API)
         sig { params(traces: T::Array[ExecutionTrace]).returns(DSPy::Prediction) }
         def analyze_traces_with_dspy(traces)
+          raise ArgumentError, "reflection_lm must be configured on GEPAConfig for LLM-based reflection" unless @config.reflection_lm
+          
           predictor = DSPy::Predict.new(create_trace_reflection_signature)
+          
+          # Configure predictor to use reflection-specific LM
+          predictor.config.lm = @config.reflection_lm
           
           # Prepare input data
           summary = trace_summary_for_reflection(traces)
@@ -1108,7 +1113,7 @@ module DSPy
             reasoning: reasoning,
             suggested_mutations: valid_mutations,
             metadata: {
-              reflection_model: @config.reflection_lm,
+              reflection_model: @config.reflection_lm&.model,
               analysis_timestamp: Time.now,
               trace_count: original_traces.size,
               token_usage: estimate_token_usage(prediction.to_s),
@@ -2673,7 +2678,7 @@ module DSPy
       class GEPAConfig < Config
         extend T::Sig
 
-        sig { returns(String) }
+        sig { returns(DSPy::LM) }
         attr_accessor :reflection_lm
 
         sig { returns(Integer) }
@@ -2700,7 +2705,9 @@ module DSPy
         sig { void }
         def initialize
           super
-          @reflection_lm = 'gpt-4o'
+          # reflection_lm must be explicitly set by user - no default provided
+          # Use T.let to satisfy Sorbet that this will be set before use
+          @reflection_lm = T.unsafe(nil)  # Must be set by user before use
           @num_generations = 10
           @population_size = 8
           @mutation_rate = 0.7
@@ -2714,7 +2721,7 @@ module DSPy
         sig { returns(T::Hash[Symbol, T.untyped]) }
         def to_h
           super.merge({
-            reflection_lm: @reflection_lm,
+            reflection_lm: @reflection_lm&.model,  # Serialize the model name for hash representation
             num_generations: @num_generations,
             population_size: @population_size,
             mutation_rate: @mutation_rate,
@@ -2824,7 +2831,7 @@ module DSPy
           metadata: {
             optimizer: 'GEPA',
             mode: 'Simple Optimization',
-            reflection_lm: @config.reflection_lm
+            reflection_lm: @config.reflection_lm&.model
           }
         )
       end
@@ -3030,7 +3037,7 @@ module DSPy
             best_score_value: evolution_result[:best_fitness].overall_score,
             metadata: {
               optimizer: 'GEPA',
-              reflection_lm: @config.reflection_lm,
+              reflection_lm: @config.reflection_lm&.model,
               implementation_status: 'Phase 2 - Complete Implementation',
               optimization_run_id: optimization_run_id,
               reflection_insights: {
@@ -3083,7 +3090,7 @@ module DSPy
             best_score_value: fallback_fitness.overall_score,
             metadata: {
               optimizer: 'GEPA',
-              reflection_lm: @config.reflection_lm,
+              reflection_lm: @config.reflection_lm&.model,
               implementation_status: 'Phase 2 - Error Recovery',
               optimization_run_id: optimization_run_id,
               error_details: {

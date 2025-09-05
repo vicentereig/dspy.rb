@@ -52,8 +52,7 @@ RSpec.describe 'GEPA Minimal Optimization (Python Parity)', vcr: { cassette_name
 
     # 4) Instantiate GEPA and compile (optimize) the program  
     config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-    config.reflection_lm = "openai/gpt-4o-mini"
-    config.simple_mode = true  # Match Python's auto='light'
+    config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
     config.population_size = 2
     config.num_generations = 1
     

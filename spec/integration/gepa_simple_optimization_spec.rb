@@ -89,7 +89,7 @@ RSpec.describe 'GEPA Simple Optimization Integration', vcr: { cassette_name: 'ge
       
       # Create GEPA with simple optimization enabled
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-      config.simple_mode = true
+      config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
       config.num_generations = 3  # Just a few iterations
       config.population_size = 2  # Minimal population
       
@@ -139,6 +139,7 @@ RSpec.describe 'GEPA Simple Optimization Integration', vcr: { cassette_name: 'ge
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
       
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
       config.num_generations = 2
       config.population_size = 1
       
@@ -167,7 +168,9 @@ RSpec.describe 'GEPA Simple Optimization Integration', vcr: { cassette_name: 'ge
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
       
       # Create reflection engine
-      engine = DSPy::Teleprompt::GEPA::ReflectionEngine.new
+      config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
+      engine = DSPy::Teleprompt::GEPA::ReflectionEngine.new(config)
       
       # Create sample traces that might occur during optimization
       traces = [

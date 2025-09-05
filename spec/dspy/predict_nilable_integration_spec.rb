@@ -129,7 +129,7 @@ RSpec.describe 'DSPy::Predict with T.nilable fields integration' do
         expect(prediction_result.confidence).to be_nil
         expect(prediction_result.explanation).to be_nil
         expect(prediction_result.metadata).to be_nil
-      }.not_to raise_error(DSPy::PredictionInvalidError)
+      }.not_to raise_error
     end
   end
 end

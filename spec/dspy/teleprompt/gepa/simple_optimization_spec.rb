@@ -142,7 +142,7 @@ RSpec.describe 'DSPy::Teleprompt::GEPA Simple Optimization' do
   describe 'simple optimization mode' do
     let(:simple_config) do
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-      config.simple_mode = true
+      config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key')
       config
     end
     
@@ -300,7 +300,7 @@ RSpec.describe 'DSPy::Teleprompt::GEPA Simple Optimization' do
     it 'maintains backward compatibility with Phase 1 tests' do
       # For backward compatibility test, enable simple_mode
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-      config.simple_mode = true
+      config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key')
       simple_gepa = DSPy::Teleprompt::GEPA.new(metric: metric, config: config)
       
       result = simple_gepa.compile(mock_program, trainset: trainset, valset: trainset)

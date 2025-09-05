@@ -64,7 +64,7 @@ def test_gepa_minimal
   
   # Test GEPA with minimal settings
   config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-  config.reflection_lm = "openai/gpt-4o-mini"
+  config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
   config.population_size = 2  # Light mode
   config.num_generations = 1  # Light mode
   

@@ -141,6 +141,7 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
 
       # Create GEPA with full genetic algorithm enabled
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
       config.simple_mode = false  # Enable full GEPA
       config.num_generations = 3   # Reduced for testing
       config.population_size = 4   # Reduced for testing
@@ -244,6 +245,7 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
 
       # Create GEPA with invalid configuration to trigger error
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
       config.simple_mode = false
       config.num_generations = -1  # Invalid value to trigger error
 
@@ -269,6 +271,7 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
 
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
       config.simple_mode = false
       config.num_generations = 2
       config.population_size = 3

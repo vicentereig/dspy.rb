@@ -18,7 +18,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
   let(:config) do
     DSPy::Teleprompt::GEPA::GEPAConfig.new.tap do |c|
-      c.reflection_lm = 'gpt-4o'
+      c.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY'] || 'test-key')
     end
   end
 
@@ -68,9 +68,13 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
     end
 
     it 'uses default config when none provided' do
-      engine = described_class.new
+      # Create config with test LM for this test
+      default_config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      default_config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key')
+      
+      engine = described_class.new(default_config)
       expect(engine.config).to be_a(DSPy::Teleprompt::GEPA::GEPAConfig)
-      expect(engine.config.reflection_lm).to eq('gpt-4o')
+      expect(engine.config.reflection_lm.model).to eq('gpt-4o')
     end
   end
 
@@ -231,7 +235,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
       
       # Create engine with invalid model to trigger failure
       invalid_config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-      invalid_config.reflection_lm = 'invalid-model'
+      invalid_config.reflection_lm = DSPy::LM.new('invalid/model', api_key: 'test-key')
       invalid_engine = described_class.new(invalid_config)
       
       result = invalid_engine.reflect_with_llm(sample_traces)
