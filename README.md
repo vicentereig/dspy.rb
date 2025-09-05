@@ -74,6 +74,7 @@ puts result.confidence   # => 0.85
 - **Typed Examples** - Type-safe training data with automatic validation
 - **Evaluation Framework** - Advanced metrics beyond simple accuracy with error-resilient pipelines
 - **MIPROv2 Optimization** - Automatic prompt optimization with storage and persistence
+- **GEPA Optimization** - Genetic-Pareto optimization for multi-objective prompt improvement
 
 **Production Features:**
 - **Reliable JSON Extraction** - Native OpenAI structured outputs, Anthropic extraction patterns, and automatic strategy selection with fallback
@@ -128,6 +129,7 @@ For LLMs and AI assistants working with DSPy.rb:
 - **[Evaluation Framework](docs/src/optimization/evaluation.md)** - Advanced metrics beyond simple accuracy
 - **[Prompt Optimization](docs/src/optimization/prompt-optimization.md)** - Manipulate prompts as objects
 - **[MIPROv2 Optimizer](docs/src/optimization/miprov2.md)** - Automatic optimization algorithms
+- **[GEPA Optimizer](docs/src/optimization/gepa.md)** - Genetic-Pareto optimization for multi-objective prompt optimization
 
 ### Production Features
 - **[Storage System](docs/src/production/storage.md)** - Persistence and optimization result storage
