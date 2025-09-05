@@ -88,9 +88,10 @@ module DSPy
       # Wrap in chain-specific span tracking (overrides parent's span attributes)
       DSPy::Context.with_span(
         operation: "#{self.class.name}.forward",
-        'langfuse.observation.type' => 'chain',
+        'langfuse.observation.type' => 'span',  # Use 'span' for proper timing
         'langfuse.observation.input' => input_values.to_json,
         'dspy.module' => 'ChainOfThought',
+        'dspy.module_type' => 'chain_of_thought',  # Semantic identifier
         'dspy.signature' => @original_signature.name
       ) do |span|
         # Call parent prediction logic (which will create its own nested span)
