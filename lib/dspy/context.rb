@@ -26,37 +26,45 @@ module DSPy
           **attributes
         }
         
-        # Log span start with proper hierarchy
+        # Log span start with proper hierarchy (internal logging only)
         DSPy.log('span.start', **span_attributes)
         
-        # Create OpenTelemetry span if observability is enabled
-        otel_span = nil
-        if DSPy::Observability.enabled?
-          otel_span = DSPy::Observability.start_span(operation, span_attributes)
-        end
-        
-        # Push to stack for child spans
+        # Push to stack for child spans tracking
         current[:span_stack].push(span_id)
         
         begin
-          result = yield
+          # Use OpenTelemetry's proper context management for nesting
+          if DSPy::Observability.enabled? && DSPy::Observability.tracer
+            # Prepare attributes and add trace name for root spans
+            span_attributes = attributes.transform_keys(&:to_s).reject { |k, v| v.nil? }
+            
+            # Set trace name if this is likely a root span (no parent in our stack)
+            if current[:span_stack].length == 1  # This will be the first span
+              span_attributes['langfuse.trace.name'] = operation
+            end
+            
+            DSPy::Observability.tracer.in_span(
+              operation,
+              attributes: span_attributes,
+              kind: :internal
+            ) do |span|
+              yield(span)
+            end
+          else
+            yield(nil)
+          end
         ensure
           # Pop from stack
           current[:span_stack].pop
           
-          # Log span end with duration
+          # Log span end with duration (internal logging only)
           duration_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time) * 1000).round(2)
           DSPy.log('span.end',
             trace_id: current[:trace_id],
             span_id: span_id,
             duration_ms: duration_ms
           )
-          
-          # Finish OpenTelemetry span
-          DSPy::Observability.finish_span(otel_span) if otel_span
         end
-        
-        result
       end
       
       def clear!

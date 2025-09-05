@@ -99,8 +99,21 @@ module DSPy
     logger.info(attributes)
   end
 
+  # Internal events that should not create OpenTelemetry spans
+  INTERNAL_EVENTS = [
+    'span.start', 
+    'span.end', 
+    'span.attributes',
+    'observability.disabled',
+    'observability.error',
+    'observability.span_error',
+    'observability.span_finish_error',
+    'event.span_creation_error'
+  ].freeze
+
   def self.create_event_span(event_name, attributes)
     return unless DSPy::Observability.enabled?
+    return if INTERNAL_EVENTS.include?(event_name)
     
     begin
       # Flatten nested hashes for OpenTelemetry span attributes

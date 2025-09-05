@@ -141,9 +141,11 @@ module DSPy
       # Wrap prediction in span tracking
       DSPy::Context.with_span(
         operation: "#{self.class.name}.forward",
+        'langfuse.observation.type' => 'span',
+        'langfuse.observation.input' => input_values.to_json,
         'dspy.module' => self.class.name,
         'dspy.signature' => @signature_class.name
-      ) do
+      ) do |span|
         # Validate input
         validate_input_struct(input_values)
         
@@ -158,7 +160,15 @@ module DSPy
         processed_output = process_lm_output(output_attributes)
         
         # Create combined result struct
-        create_prediction_result(input_values, processed_output)
+        prediction_result = create_prediction_result(input_values, processed_output)
+        
+        # Add output to span
+        if span && prediction_result
+          output_hash = prediction_result.respond_to?(:to_h) ? prediction_result.to_h : prediction_result.to_s
+          span.set_attribute('langfuse.observation.output', output_hash.to_json)
+        end
+        
+        prediction_result
       end
     end
 

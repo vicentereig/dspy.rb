@@ -60,7 +60,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 05 Sep 2025 14:28:23 GMT
+      - Fri, 05 Sep 2025 14:56:01 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -72,23 +72,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '457'
+      - '539'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '461'
+      - '543'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9647'
+      - '9648'
       X-Ratelimit-Remaining-Tokens:
       - '199676'
       X-Ratelimit-Reset-Requests:
-      - 50m41.328s
+      - 50m34.516s
       X-Ratelimit-Reset-Tokens:
       - 97ms
       X-Request-Id:
@@ -105,16 +105,16 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97a669aacb72f7bd-LAX
+      - 97a69224ce8be9e5-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCRiJ1KUKD1EAf7bpZ5amDs0ogGWk",
+          "id": "chatcmpl-CCS92YR4EOvEd5dlFGbDBVa7eSp2O",
           "object": "chat.completion",
-          "created": 1757082503,
+          "created": 1757084160,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -147,7 +147,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Fri, 05 Sep 2025 14:28:23 GMT
+  recorded_at: Fri, 05 Sep 2025 14:56:01 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -208,7 +208,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 05 Sep 2025 14:28:24 GMT
+      - Fri, 05 Sep 2025 14:56:03 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -220,13 +220,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '451'
+      - '473'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '456'
+      - '2145'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -236,7 +236,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199671'
       X-Ratelimit-Reset-Requests:
-      - 50m49.808s
+      - 50m42.32s
       X-Ratelimit-Reset-Tokens:
       - 98ms
       X-Request-Id:
@@ -253,16 +253,16 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97a669b09c0ff7bd-LAX
+      - 97a6922a1cc1e9e5-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCRiKasnLgfR9fgnMb6yZmjiYTmoG",
+          "id": "chatcmpl-CCS95FM03NMxSJ5gMOfHYoGMNIgmM",
           "object": "chat.completion",
-          "created": 1757082504,
+          "created": 1757084163,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -295,7 +295,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Fri, 05 Sep 2025 14:28:24 GMT
+  recorded_at: Fri, 05 Sep 2025 14:56:03 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -356,7 +356,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 05 Sep 2025 14:28:25 GMT
+      - Fri, 05 Sep 2025 14:56:04 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -368,13 +368,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '643'
+      - '387'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '646'
+      - '391'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -384,7 +384,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199669'
       X-Ratelimit-Reset-Requests:
-      - 50m48.954s
+      - 50m48.549s
       X-Ratelimit-Reset-Tokens:
       - 99ms
       X-Request-Id:
@@ -401,23 +401,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97a669b5cc8ef7bd-LAX
+      - 97a692392c87e9e5-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCRiKWqTAbhkTMPmoIyQDSIabxRjx",
+          "id": "chatcmpl-CCS9638iywPhq3HcOThdfg5mTIwsJ",
           "object": "chat.completion",
-          "created": 1757082504,
+          "created": 1757084164,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"2 + 2 equals 4.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"a\": \"4\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -427,8 +427,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 348,
-            "completion_tokens": 23,
-            "total_tokens": 371,
+            "completion_tokens": 17,
+            "total_tokens": 365,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -443,7 +443,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Fri, 05 Sep 2025 14:28:25 GMT
+  recorded_at: Fri, 05 Sep 2025 14:56:04 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -504,7 +504,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 05 Sep 2025 14:28:26 GMT
+      - Fri, 05 Sep 2025 14:56:05 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -516,23 +516,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '576'
+      - '441'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '586'
+      - '457'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9645'
+      - '9646'
       X-Ratelimit-Remaining-Tokens:
       - '199670'
       X-Ratelimit-Reset-Requests:
-      - 51m5.163s
+      - 50m56.352s
       X-Ratelimit-Reset-Tokens:
       - 99ms
       X-Request-Id:
@@ -549,16 +549,16 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97a669bc5869f7bd-LAX
+      - 97a6923d9f72e9e5-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCRiLIlYorHuO11vFw8nUxBdRH4Yt",
+          "id": "chatcmpl-CCS97kjVXHGvlZtRiXIKGP2UQQM82",
           "object": "chat.completion",
-          "created": 1757082505,
+          "created": 1757084165,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -591,7 +591,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Fri, 05 Sep 2025 14:28:26 GMT
+  recorded_at: Fri, 05 Sep 2025 14:56:05 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -652,7 +652,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 05 Sep 2025 14:28:27 GMT
+      - Fri, 05 Sep 2025 14:56:06 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -664,23 +664,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '610'
+      - '605'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '618'
+      - '609'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9644'
+      - '9645'
       X-Ratelimit-Remaining-Tokens:
       - '199676'
       X-Ratelimit-Reset-Requests:
-      - 51m13.539s
+      - 51m4.273s
       X-Ratelimit-Reset-Tokens:
       - 97ms
       X-Request-Id:
@@ -697,16 +697,16 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97a669c2bb5af7bd-LAX
+      - 97a69242ed92e9e5-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCRiNPHok0DLPpUKh7QvUK461vONw",
+          "id": "chatcmpl-CCS97JtyuV3ZgDjAARZDEQlnb4vSR",
           "object": "chat.completion",
-          "created": 1757082507,
+          "created": 1757084165,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -739,7 +739,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Fri, 05 Sep 2025 14:28:27 GMT
+  recorded_at: Fri, 05 Sep 2025 14:56:06 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -800,7 +800,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 05 Sep 2025 14:28:28 GMT
+      - Fri, 05 Sep 2025 14:56:07 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -812,23 +812,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '465'
+      - '861'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '468'
+      - '864'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9643'
+      - '9645'
       X-Ratelimit-Remaining-Tokens:
       - '199676'
       X-Ratelimit-Reset-Requests:
-      - 51m20.432s
+      - 51m3.273s
       X-Ratelimit-Reset-Tokens:
       - 97ms
       X-Request-Id:
@@ -845,16 +845,16 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97a669c93e17f7bd-LAX
+      - 97a692492de1e9e5-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCRiNRbkRMrNmILzuJS7iSwGRW7MB",
+          "id": "chatcmpl-CCS98TpLkfuEsSBjSdgD3e7nQOUZp",
           "object": "chat.completion",
-          "created": 1757082507,
+          "created": 1757084166,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
@@ -887,5 +887,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Fri, 05 Sep 2025 14:28:28 GMT
+  recorded_at: Fri, 05 Sep 2025 14:56:07 GMT
 recorded_with: VCR 6.3.1

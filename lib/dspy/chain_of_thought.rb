@@ -82,16 +82,45 @@ module DSPy
     sig { returns(T.class_of(DSPy::Signature)) }
     attr_reader :original_signature
 
-    # Override forward_untyped to add ChainOfThought-specific analysis
+    # Override forward_untyped to add ChainOfThought-specific analysis and tracing
     sig { override.params(input_values: T.untyped).returns(T.untyped) }
     def forward_untyped(**input_values)
-      # Call parent prediction logic
-      prediction_result = super(**input_values)
-      
-      # Analyze reasoning if present
-      analyze_reasoning(prediction_result)
-      
-      prediction_result
+      # Wrap in chain-specific span tracking (overrides parent's span attributes)
+      DSPy::Context.with_span(
+        operation: "ChainOfThought.forward",
+        'langfuse.observation.type' => 'chain',
+        'langfuse.observation.input' => input_values.to_json,
+        'dspy.module' => 'ChainOfThought',
+        'dspy.signature' => @original_signature.name
+      ) do |span|
+        # Call parent prediction logic (which will create its own nested span)
+        prediction_result = super(**input_values)
+        
+        # Enhance span with reasoning data
+        if span && prediction_result
+          # Include reasoning in output for chain observation
+          output_with_reasoning = if prediction_result.respond_to?(:reasoning) && prediction_result.reasoning
+            output_hash = prediction_result.respond_to?(:to_h) ? prediction_result.to_h : {}
+            output_hash.merge(reasoning: prediction_result.reasoning)
+          else
+            prediction_result.respond_to?(:to_h) ? prediction_result.to_h : prediction_result.to_s
+          end
+          
+          span.set_attribute('langfuse.observation.output', output_with_reasoning.to_json)
+          
+          # Add reasoning metrics
+          if prediction_result.respond_to?(:reasoning) && prediction_result.reasoning
+            span.set_attribute('cot.reasoning_length', prediction_result.reasoning.length)
+            span.set_attribute('cot.has_reasoning', true)
+            span.set_attribute('cot.reasoning_steps', count_reasoning_steps(prediction_result.reasoning))
+          end
+        end
+        
+        # Analyze reasoning (emits events for backwards compatibility)
+        analyze_reasoning(prediction_result)
+        
+        prediction_result
+      end
     end
 
     private

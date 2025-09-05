@@ -209,35 +209,48 @@ module DSPy
 
     # Common instrumentation method for LM requests
     def instrument_lm_request(messages, signature_class_name, &execution_block)
-      # Handle both Message objects and hash format
-      input_text = messages.map do |m|
+      # Prepare input for tracing - convert messages to JSON for input tracking
+      input_messages = messages.map do |m|
         if m.is_a?(Message)
-          m.content
+          { role: m.role, content: m.content }
         else
-          m[:content]
+          m
         end
-      end.join(' ')
-      input_size = input_text.length
+      end
+      input_json = input_messages.to_json
       
       # Wrap LLM call in span tracking
       response = DSPy::Context.with_span(
         operation: 'llm.generate',
+        'langfuse.observation.type' => 'generation',
+        'langfuse.observation.input' => input_json,
         'gen_ai.system' => provider,
         'gen_ai.request.model' => model,
+        'gen_ai.prompt' => input_json,
         'dspy.signature' => signature_class_name
-      ) do
+      ) do |span|
         result = execution_block.call
         
-        # Add usage data if available
-        if result.respond_to?(:usage) && result.usage
-          usage = result.usage
-          DSPy.log('span.attributes',
-            span_id: DSPy::Context.current[:span_stack].last,
-            'gen_ai.response.model' => result.metadata.model,
-            'gen_ai.usage.prompt_tokens' => usage.input_tokens,
-            'gen_ai.usage.completion_tokens' => usage.output_tokens,
-            'gen_ai.usage.total_tokens' => usage.total_tokens
-          )
+        # Add output and usage data directly to span
+        if span && result
+          # Add completion output
+          if result.content
+            span.set_attribute('langfuse.observation.output', result.content)
+            span.set_attribute('gen_ai.completion', result.content)
+          end
+          
+          # Add response model if available
+          if result.respond_to?(:metadata) && result.metadata&.model
+            span.set_attribute('gen_ai.response.model', result.metadata.model)
+          end
+          
+          # Add token usage
+          if result.respond_to?(:usage) && result.usage
+            usage = result.usage
+            span.set_attribute('gen_ai.usage.prompt_tokens', usage.input_tokens) if usage.input_tokens
+            span.set_attribute('gen_ai.usage.completion_tokens', usage.output_tokens) if usage.output_tokens
+            span.set_attribute('gen_ai.usage.total_tokens', usage.total_tokens) if usage.total_tokens
+          end
         end
         
         result

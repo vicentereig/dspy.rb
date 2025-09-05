@@ -73,6 +73,10 @@ module DSPy
         @enabled == true
       end
 
+      def tracer
+        @tracer
+      end
+
       def start_span(operation_name, attributes = {})
         return nil unless enabled? && tracer
 
