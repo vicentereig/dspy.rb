@@ -5,6 +5,9 @@ require 'webmock/rspec'
 
 require 'dspy'
 
+# Disable observability during tests to avoid telemetry overhead
+DSPy::Observability.reset!
+
 # Load support files and tools
 Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |f| require f }
 
