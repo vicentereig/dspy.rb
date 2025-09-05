@@ -27,14 +27,14 @@ RSpec.describe DSPy::Teleprompt::DspyAdapter do
       if expected == actual
         DSPy::Teleprompt::ScoreWithFeedback.new(
           score: 1.0,
-          feedback: "Perfect match",
-          prediction: prediction
+          prediction: prediction,
+          feedback: "Perfect match"
         )
       else
         DSPy::Teleprompt::ScoreWithFeedback.new(
           score: 0.0,
-          feedback: "Expected '#{expected}' but got '#{actual}'",
-          prediction: prediction
+          prediction: prediction,
+          feedback: "Expected '#{expected}' but got '#{actual}'"
         )
       end
     end
@@ -105,7 +105,8 @@ RSpec.describe DSPy::Teleprompt::DspyAdapter do
       
       expect(results).to be_an(Array)
       expect(results.size).to eq(1)
-      expect(results.first).to eq(1.0)
+      expect(results.first).to be_a(DSPy::Teleprompt::ScoreWithFeedback)
+      expect(results.first.score).to eq(1.0)
     end
 
     it 'evaluates batch with feedback metric' do
@@ -127,7 +128,8 @@ RSpec.describe DSPy::Teleprompt::DspyAdapter do
       
       results = adapter.evaluate_batch(batch, "Test instruction")
       
-      expect(results).to eq([0.0])
+      expect(results).to be_an(Array)
+      expect(results.first).to eq(0.0)
     end
 
     it 'can disable trace capture' do
@@ -135,7 +137,8 @@ RSpec.describe DSPy::Teleprompt::DspyAdapter do
       
       results = adapter.evaluate_batch(batch, "Answer the question", capture_traces: false)
       
-      expect(results.first).to eq(1.0)
+      expect(results.first).to be_a(DSPy::Teleprompt::ScoreWithFeedback)
+      expect(results.first.score).to eq(1.0)
     end
   end
 
@@ -144,13 +147,13 @@ RSpec.describe DSPy::Teleprompt::DspyAdapter do
     
     let(:examples) { [example] }
     let(:predictions) do
-      [DSPy::Prediction.new(signature_class: AdapterTestSignature, answer: "wrong")]
+      [DSPy::Prediction.new(AdapterTestSignature, answer: "wrong")]
     end
     let(:scores) do
       [DSPy::Teleprompt::ScoreWithFeedback.new(
         score: 0.2,
-        feedback: "Incorrect answer provided",
-        prediction: predictions.first
+        prediction: predictions.first,
+        feedback: "Incorrect answer provided"
       )]
     end
 
@@ -168,7 +171,11 @@ RSpec.describe DSPy::Teleprompt::DspyAdapter do
     end
 
     it 'filters out successful predictions above threshold' do
-      good_scores = [DSPy::Teleprompt::ScoreWithFeedback.new(score: 0.8, feedback: "Good")]
+      good_scores = [DSPy::Teleprompt::ScoreWithFeedback.new(
+        score: 0.8, 
+        prediction: predictions.first,
+        feedback: "Good"
+      )]
       
       dataset = adapter.make_reflective_dataset(examples, predictions, good_scores, threshold: 0.5)
       
@@ -247,11 +254,13 @@ RSpec.describe DSPy::Teleprompt::DspyAdapter do
         if expected == actual
           DSPy::Teleprompt::ScoreWithFeedback.new(
             score: 1.0,
+            prediction: prediction,
             feedback: "Correct answer provided"
           )
         else
           DSPy::Teleprompt::ScoreWithFeedback.new(
             score: 0.0,
+            prediction: prediction,
             feedback: "Expected #{expected}, got #{actual}. Consider the mathematical operation more carefully."
           )
         end

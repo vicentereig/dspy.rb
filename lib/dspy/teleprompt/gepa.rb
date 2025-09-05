@@ -2920,7 +2920,7 @@ module DSPy
           prediction = program.call(**example.input_values)
           @metric.call(example, prediction).to_f
         rescue => e
-          emit_event('evaluation_error', { error: e.message, example: example })
+          emit_event('evaluation_error', { error: e.message, example_id: example.object_id.to_s })
           0.0
         end
         
@@ -3149,7 +3149,7 @@ module DSPy
           prediction: DSPy::Prediction,
           trace: T.nilable(T::Array[ExecutionTrace])
         )
-        .returns(T.any(Float, ScoreWithFeedback))
+        .returns(ScoreWithFeedback)
       end
       def call(example, prediction, trace = nil); end
     end
@@ -3160,10 +3160,10 @@ module DSPy
       
       const :score, Float
       const :feedback, T.nilable(String)
-      const :prediction, T.nilable(DSPy::Prediction)
+      const :prediction, DSPy::Prediction
       
-      sig { params(score: Float, feedback: T.nilable(String), prediction: T.nilable(DSPy::Prediction)).void }
-      def initialize(score:, feedback: nil, prediction: nil)
+      sig { params(score: Float, prediction: DSPy::Prediction, feedback: T.nilable(String)).void }
+      def initialize(score:, prediction:, feedback: nil)
         super
       end
     end
@@ -3249,7 +3249,17 @@ module DSPy
               end
             end
             
-            results << score_result
+            # Ensure we always have a ScoreWithFeedback object
+            if score_result.is_a?(ScoreWithFeedback)
+              results << score_result
+            else
+              # Wrap plain float scores in ScoreWithFeedback
+              results << ScoreWithFeedback.new(
+                score: score_result.to_f,
+                prediction: prediction,
+                feedback: nil
+              )
+            end
             
           rescue => e
             DSPy.logger.error("Evaluation error: #{e.message}")
@@ -3325,27 +3335,8 @@ module DSPy
       # Extract prediction values for reflective analysis
       sig { params(prediction: DSPy::Prediction).returns(T::Hash[String, T.untyped]) }
       def extract_prediction_values(prediction)
-        begin
-          if prediction.respond_to?(:to_h)
-            prediction.to_h.transform_keys(&:to_s)
-          elsif prediction.respond_to?(:attributes)
-            prediction.attributes
-          else
-            # Fallback: extract known fields from prediction
-            result = {}
-            if prediction.respond_to?(:answer)
-              result['answer'] = prediction.answer
-            end
-            if prediction.respond_to?(:reasoning)
-              result['reasoning'] = prediction.reasoning
-            end
-            result['output'] = prediction.to_s if result.empty?
-            result
-          end
-        rescue => e
-          DSPy.logger.error("Error extracting prediction values: #{e.message}")
-          { 'output' => prediction.to_s }
-        end
+        # DSPy::Prediction implements to_h which returns the underlying struct's data
+        prediction.to_h.transform_keys(&:to_s)
       end
 
       # Analyze failures and propose improvements

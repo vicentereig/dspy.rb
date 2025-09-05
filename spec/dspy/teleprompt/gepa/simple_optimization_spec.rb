@@ -96,7 +96,7 @@ RSpec.describe 'DSPy::Teleprompt::GEPA Simple Optimization' do
     it 'handles program call errors gracefully' do
       allow(mock_program).to receive(:call).and_raise(StandardError, 'Test error')
       
-      expect(gepa).to receive(:emit_event).with('evaluation_error', hash_including(error: 'Test error'))
+      expect(gepa).to receive(:emit_event).with('evaluation_error', hash_including(error: 'Test error', example_id: kind_of(String)))
       
       score = gepa.send(:simple_evaluate_program, mock_program, trainset)
       expect(score).to eq(0.0)

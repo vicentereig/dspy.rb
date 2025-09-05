@@ -54,7 +54,7 @@ module DSPy
 
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def to_h
-      @_struct.to_h
+      @_struct.serialize
     end
 
     private
