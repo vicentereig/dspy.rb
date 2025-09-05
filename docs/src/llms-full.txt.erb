@@ -548,7 +548,53 @@ class BusinessAnalysis < DSPy::Signature
 end
 ```
 
-**LLM Response with Nested `_type` Fields:**
+**JSON Schema Generated for Union Types:**
+The `T.any(Person, Company)` generates a `oneOf` schema:
+```json
+{
+  "type": "object",
+  "properties": {
+    "entity": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "_type": { "type": "string", "const": "Person" },
+            "name": { "type": "string" },
+            "address": {
+              "type": "object", 
+              "properties": {
+                "_type": { "type": "string", "const": "CompanyAddress" },
+                "street": { "type": "string" },
+                "city": { "type": "string" },
+                "postal_code": { "type": "string" }
+              },
+              "required": ["_type", "street", "city", "postal_code"]
+            }
+          },
+          "required": ["_type", "name", "address"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "_type": { "type": "string", "const": "Company" },
+            "name": { "type": "string" },
+            "address": { /* same CompanyAddress schema */ },
+            "employees": {
+              "type": "array",
+              "items": { /* Person schema with _type: "Person" */ }
+            }
+          },
+          "required": ["_type", "name", "address", "employees"]
+        }
+      ]
+    },
+    "confidence": { "type": "number" }
+  }
+}
+```
+
+**LLM Response Format:**
 ```json
 {
   "entity": {
@@ -557,7 +603,7 @@ end
     "address": {
       "_type": "CompanyAddress",
       "street": "123 Business Ave",
-      "city": "Tech City",
+      "city": "Tech City", 
       "postal_code": "12345"
     },
     "employees": [
@@ -565,8 +611,8 @@ end
         "_type": "Person",
         "name": "John Doe",
         "address": {
-          "_type": "CompanyAddress", 
-          "street": "456 Home St",
+          "_type": "CompanyAddress",
+          "street": "456 Home St", 
           "city": "Residential Area",
           "postal_code": "67890"
         }
@@ -577,11 +623,11 @@ end
 }
 ```
 
-**Automatic Processing:**
-- DSPy recognizes `"_type": "Company"` and creates a Company struct
-- Nested `CompanyAddress` structs are created from their `_type` discriminators
-- Array elements are processed recursively
-- All `_type` fields are filtered out from the final structs
+**Key Points:**
+- Each struct in the schema requires its exact `_type` const value
+- Union types use `oneOf` with separate schema variants
+- Direct struct fields get a single schema with required `_type`
+- All `_type` fields are automatically filtered during deserialization
 
 ### Nested Structures
 
