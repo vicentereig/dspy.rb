@@ -20,7 +20,7 @@ module DSPy
 
         # Determine endpoint based on host
         host = ENV['LANGFUSE_HOST'] || 'https://cloud.langfuse.com'
-        @endpoint = "#{host}/api/public/otel"
+        @endpoint = "#{host}/api/public/otel/v1/traces"
 
         begin
           # Load OpenTelemetry gems
