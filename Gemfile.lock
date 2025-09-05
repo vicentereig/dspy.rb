@@ -8,7 +8,7 @@ PATH
       dry-logger (~> 1.0)
       gemini-ai (~> 4.3)
       informers (~> 1.2)
-      openai (~> 0.16.0)
+      openai (~> 0.22.0)
       opentelemetry-exporter-otlp (~> 0.30)
       opentelemetry-sdk (~> 1.8)
       polars-df (~> 0.20.0)
@@ -111,7 +111,7 @@ GEM
       ffi
     onnxruntime (0.10.0-arm64-darwin)
       ffi
-    openai (0.16.0)
+    openai (0.22.0)
       connection_pool
     opentelemetry-api (1.6.0)
     opentelemetry-common (0.22.0)

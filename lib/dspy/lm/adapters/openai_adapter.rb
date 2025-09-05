@@ -16,18 +16,26 @@ module DSPy
 
       def chat(messages:, signature: nil, response_format: nil, &block)
         normalized_messages = normalize_messages(messages)
-        
+
         # Validate vision support if images are present
         if contains_images?(normalized_messages)
           VisionModels.validate_vision_support!('openai', model)
           # Convert messages to OpenAI format with proper image handling
           normalized_messages = format_multimodal_messages(normalized_messages)
         end
-        
+
+        # Set temperature based on model capabilities
+        temperature = case model
+        when /^gpt-5/, /^gpt-4o/
+          1.0 # GPT-5 and GPT-4o models only support default temperature of 1.0
+        else
+          0.0 # Near-deterministic for other models (0.0 no longer universally supported)
+        end
+
         request_params = {
           model: model,
           messages: normalized_messages,
-          temperature: 0.0 # DSPy default for deterministic responses
+          temperature: temperature
         }
 
         # Add response format if provided by strategy
@@ -48,7 +56,7 @@ module DSPy
 
         begin
           response = @client.chat.completions.create(**request_params)
-          
+
           if response.respond_to?(:error) && response.error
             raise AdapterError, "OpenAI API error: #{response.error}"
           end
@@ -65,7 +73,7 @@ module DSPy
 
           # Convert usage data to typed struct
           usage_struct = UsageFactory.create('openai', usage)
-          
+
           # Create typed metadata
           metadata = ResponseMetadataFactory.create('openai', {
             model: model,
@@ -75,7 +83,7 @@ module DSPy
             system_fingerprint: response.system_fingerprint,
             finish_reason: choice.finish_reason
           })
-          
+
           Response.new(
             content: content,
             usage: usage_struct,
@@ -84,14 +92,14 @@ module DSPy
         rescue => e
           # Check for specific error types and messages
           error_msg = e.message.to_s
-          
+
           # Try to parse error body if it looks like JSON
           error_body = if error_msg.start_with?('{')
                          JSON.parse(error_msg) rescue nil
                        elsif e.respond_to?(:response) && e.response
                          e.response[:body] rescue nil
                        end
-          
+
           # Check for specific image-related errors
           if error_msg.include?('image_parse_error') || error_msg.include?('unsupported image')
             raise AdapterError, "Image processing failed: #{error_msg}. Ensure your image is a valid PNG, JPEG, GIF, or WebP format and under 5MB."
@@ -113,7 +121,7 @@ module DSPy
       def supports_structured_outputs?
         DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?(model)
       end
-      
+
       def format_multimodal_messages(messages)
         messages.map do |msg|
           if msg[:content].is_a?(Array)
@@ -130,7 +138,7 @@ module DSPy
                 item
               end
             end
-            
+
             {
               role: msg[:role],
               content: formatted_content

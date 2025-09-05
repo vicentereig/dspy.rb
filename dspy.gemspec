@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "async", "~> 2.23"
 
   # Official LM provider clients
-  spec.add_dependency "openai", "~> 0.16.0"
+  spec.add_dependency "openai", "~> 0.22.0"
   spec.add_dependency "anthropic", "~> 1.5.0"
   spec.add_dependency "gemini-ai", "~> 4.3"
 

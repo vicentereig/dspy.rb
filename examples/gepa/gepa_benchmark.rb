@@ -173,7 +173,11 @@ def run_benchmark
   gepa_start_time = Time.now
 
   gepa = DSPy::Teleprompt::GEPA.new(
-    metric: gepa_metric
+    metric: gepa_metric,
+    config: DSPy::Teleprompt::GEPA::GEPAConfig.new.tap do |config|
+      config.num_generations = 3  # Reduced from default 10 for faster benchmarking
+      config.population_size = 4  # Reduced from default 8 for faster benchmarking
+    end
   )
 
   gepa_result = gepa.compile(baseline, trainset: trainset, valset: valset)
