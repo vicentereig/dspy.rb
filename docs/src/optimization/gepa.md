@@ -1,6 +1,23 @@
-# GEPA Usage Guide
+---
+layout: docs
+name: GEPA Optimizer
+description: Advanced prompt optimization with genetic algorithms and LLM reflection
+breadcrumb:
+- name: Optimization
+  url: "/optimization/"
+- name: GEPA Optimizer
+  url: "/optimization/gepa/"
+prev:
+- name: MIPROv2
+  url: "/optimization/miprov2/"
+next:
+- name: Benchmarking Raw Prompts
+  url: "/optimization/benchmarking-raw-prompts/"
+---
 
-GEPA (Genetic-Pareto Reflective Prompt Evolution) is a prompt optimizer that uses genetic algorithms and LLM reflection to improve DSPy programs.
+# GEPA (Genetic-Pareto Reflective Prompt Evolution)
+
+GEPA is a prompt optimizer that uses genetic algorithms and LLM reflection to improve DSPy programs. Unlike simpler optimizers, GEPA provides detailed feedback on why examples fail and uses iterative refinement to achieve better results.
 
 ## Quick Start
 
