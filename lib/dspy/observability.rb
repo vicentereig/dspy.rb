@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'base64'
+require_relative 'observability/async_span_processor'
 
 module DSPy
   class Observability
@@ -35,18 +36,26 @@ module DSPy
             config.service_name = 'dspy-ruby'
             config.service_version = DSPy::VERSION
             
-            # Add OTLP exporter for Langfuse
+            # Add OTLP exporter for Langfuse using AsyncSpanProcessor
+            exporter = OpenTelemetry::Exporter::OTLP::Exporter.new(
+              endpoint: @endpoint,
+              headers: {
+                'Authorization' => "Basic #{auth_string}",
+                'Content-Type' => 'application/x-protobuf'
+              },
+              compression: 'gzip'
+            )
+            
+            # Configure AsyncSpanProcessor with environment variables
+            async_config = {
+              queue_size: (ENV['DSPY_TELEMETRY_QUEUE_SIZE'] || AsyncSpanProcessor::DEFAULT_QUEUE_SIZE).to_i,
+              export_interval: (ENV['DSPY_TELEMETRY_EXPORT_INTERVAL'] || AsyncSpanProcessor::DEFAULT_EXPORT_INTERVAL).to_f,
+              export_batch_size: (ENV['DSPY_TELEMETRY_BATCH_SIZE'] || AsyncSpanProcessor::DEFAULT_EXPORT_BATCH_SIZE).to_i,
+              shutdown_timeout: (ENV['DSPY_TELEMETRY_SHUTDOWN_TIMEOUT'] || AsyncSpanProcessor::DEFAULT_SHUTDOWN_TIMEOUT).to_f
+            }
+            
             config.add_span_processor(
-              OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
-                OpenTelemetry::Exporter::OTLP::Exporter.new(
-                  endpoint: @endpoint,
-                  headers: {
-                    'Authorization' => "Basic #{auth_string}",
-                    'Content-Type' => 'application/x-protobuf'
-                  },
-                  compression: 'gzip'
-                )
-              )
+              AsyncSpanProcessor.new(exporter, **async_config)
             )
             
             # Add resource attributes

@@ -3,7 +3,7 @@ PATH
   specs:
     dspy (0.24.2)
       anthropic (~> 1.5.0)
-      async (~> 2.23)
+      async (~> 2.29)
       dry-configurable (~> 1.0)
       dry-logger (~> 1.0)
       gemini-ai (~> 4.3)
