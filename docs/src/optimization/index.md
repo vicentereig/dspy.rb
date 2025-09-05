@@ -32,6 +32,9 @@ Start with BootstrapFewShot - the easiest optimizer that generates effective few
 ### [MIPROv2](./miprov2/)
 Advanced optimization with MIPROv2 for production-grade performance and reliability.
 
+### [GEPA](./gepa/)
+Genetic-Pareto Reflective Prompt Evolution with feedback-driven optimization and detailed failure analysis.
+
 ### [Evaluation](./evaluation/)
 Build metrics and evaluation frameworks to measure and improve your modules systematically.
 
@@ -45,3 +48,4 @@ We recommend starting with:
 2. Trying the [Simple Optimizer](./simple-optimizer/) on your modules
 3. Building proper [Evaluation](./evaluation/) metrics
 4. Graduating to [MIPROv2](./miprov2/) for production use
+5. Using [GEPA](./gepa/) when you need detailed feedback and iterative refinement
