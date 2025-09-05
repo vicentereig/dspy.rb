@@ -27,9 +27,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::MutationEngine do
     end
   end
 
-  let(:mock_program) do
-    double('program', signature_class: MutationTestSignature)
-  end
+  let(:test_program) { MockableTestModule.new(MutationTestSignature) }
 
   describe 'initialization' do
     it 'creates engine with config' do
@@ -66,10 +64,10 @@ RSpec.describe DSPy::Teleprompt::GEPA::MutationEngine do
       
       # Mock the instruction proposer to return an improved instruction
       allow(engine.instruction_proposer).to receive(:propose_instruction).and_return("Solve the problem step by step")
-      allow(engine).to receive(:extract_instruction).with(mock_program).and_return("Solve the problem")
-      allow(engine).to receive(:create_mutated_program).and_return(mock_program)
+      allow(engine).to receive(:extract_instruction).with(test_program).and_return("Solve the problem")
+      allow(engine).to receive(:create_mutated_program).and_return(test_program)
       
-      mutated = engine.mutate_program(mock_program)
+      mutated = engine.mutate_program(test_program)
       
       expect(mutated).not_to be_nil
       expect(engine.instruction_proposer).to have_received(:propose_instruction)
@@ -78,9 +76,9 @@ RSpec.describe DSPy::Teleprompt::GEPA::MutationEngine do
     it 'handles mutation failures gracefully' do
       allow(engine).to receive(:extract_instruction).and_raise(StandardError, 'Mutation error')
       
-      mutated = engine.mutate_program(mock_program)
+      mutated = engine.mutate_program(test_program)
       
-      expect(mutated).to eq(mock_program) # Returns original on failure
+      expect(mutated).to eq(test_program) # Returns original on failure
     end
 
     it 'respects mutation rate configuration' do
@@ -88,17 +86,17 @@ RSpec.describe DSPy::Teleprompt::GEPA::MutationEngine do
       engine = described_class.new(config: low_rate_config)
       
       # With 0% mutation rate, should return original program
-      mutated = engine.mutate_program(mock_program)
-      expect(mutated).to eq(mock_program)
+      mutated = engine.mutate_program(test_program)
+      expect(mutated).to eq(test_program)
     end
   end
 
   describe '#batch_mutate' do
     let(:engine) { described_class.new(config: config) }
-    let(:programs) { [mock_program, mock_program, mock_program] }
+    let(:programs) { [test_program, test_program, test_program] }
 
     it 'mutates multiple programs' do
-      allow(engine).to receive(:mutate_program).and_return(mock_program)
+      allow(engine).to receive(:mutate_program).and_return(test_program)
       
       mutated_programs = engine.batch_mutate(programs)
       
@@ -195,7 +193,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::MutationEngine do
     it 'creates new program with mutated instruction' do
       new_instruction = "Solve step by step with detailed reasoning"
       
-      mutated_program = engine.send(:create_mutated_program, mock_program, new_instruction)
+      mutated_program = engine.send(:create_mutated_program, test_program, new_instruction)
       
       expect(mutated_program).not_to be_nil
       # In real implementation, this would create a new program instance
