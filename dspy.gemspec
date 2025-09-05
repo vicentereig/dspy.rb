@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   # Runtime dependencies
   spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-logger", "~> 1.0"
-  spec.add_dependency "async", "~> 2.23"
+  spec.add_dependency "async", "~> 2.29"
 
   # Official LM provider clients
   spec.add_dependency "openai", "~> 0.22.0"
