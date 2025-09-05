@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'dspy/teleprompt/gepa'
 
-RSpec.describe DSPy::Teleprompt::DspyAdapter do
+RSpec.describe DSPy::Teleprompt::ModuleEvaluator do
   # Test signature for adapter testing
   class AdapterTestSignature < DSPy::Signature
     description "Test signature for DSPy adapter"
@@ -55,7 +55,7 @@ RSpec.describe DSPy::Teleprompt::DspyAdapter do
         metric: simple_metric
       )
       
-      expect(adapter).to be_a(DSPy::Teleprompt::DspyAdapter)
+      expect(adapter).to be_a(DSPy::Teleprompt::ModuleEvaluator)
     end
 
     it 'accepts optional feedback_map and custom_instruction_proposer' do
@@ -69,7 +69,7 @@ RSpec.describe DSPy::Teleprompt::DspyAdapter do
         custom_instruction_proposer: custom_proposer
       )
       
-      expect(adapter).to be_a(DSPy::Teleprompt::DspyAdapter)
+      expect(adapter).to be_a(DSPy::Teleprompt::ModuleEvaluator)
     end
   end
 
