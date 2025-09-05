@@ -5,16 +5,15 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/vicentereig/dspy.rb/ruby.yml?branch=main&label=build)](https://github.com/vicentereig/dspy.rb/actions/workflows/ruby.yml)
 [![Documentation](https://img.shields.io/badge/docs-vicentereig.github.io%2Fdspy.rb-blue)](https://vicentereig.github.io/dspy.rb/)
 
-**Build reliable LLM applications in Ruby using composable, type-safe modules.**
+**Build reliable LLM applications in idiomatic Ruby using composable, type-safe modules.**
 
-DSPy.rb brings structured LLM programming to Ruby developers. Instead of wrestling with prompt strings and parsing 
-responses, you define typed signatures and compose them into pipelines that just work.
+The Ruby framework for programming with large language models. DSPy.rb brings structured LLM programming to Ruby developers. Instead of wrestling with prompt strings and parsing responses, you define typed signatures using idiomatic Ruby to compose and decompose AI Worklows and AI Agents.
 
-Traditional prompting is like writing code with string concatenation: it works until it doesn't. DSPy.rb brings you 
+**Prompts are the just Functions.** Traditional prompting is like writing code with string concatenation: it works until it doesn't. DSPy.rb brings you 
 the programming approach pioneered by [dspy.ai](https://dspy.ai/): instead of crafting fragile prompts, you define modular 
 signatures and let the framework handle the messy details.
 
-DSPy.rb is an idiomatic Ruby port of Stanford's [DSPy framework](https://github.com/stanfordnlp/dspy). While implementing 
+DSPy.rb is an idiomatic Ruby surgical port of Stanford's [DSPy framework](https://github.com/stanfordnlp/dspy). While implementing 
 the core concepts of signatures, predictors, and optimization from the original Python library, DSPy.rb embraces Ruby 
 conventions and adds Ruby-specific innovations like CodeAct agents and enhanced production instrumentation.
 

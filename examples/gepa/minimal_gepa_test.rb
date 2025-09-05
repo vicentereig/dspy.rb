@@ -2,7 +2,9 @@
 # frozen_string_literal: true
 
 # Minimal GEPA test - Ruby equivalent of Python example
-require_relative '../lib/dspy'
+require_relative '../../lib/dspy'
+require 'dotenv'
+Dotenv.load(File.join(File.dirname(__FILE__), '..', '..', '.env'))
 
 # Skip if no API key available
 unless ENV['OPENAI_API_KEY']
@@ -28,25 +30,13 @@ class QASignature < DSPy::Signature
   end
 end
 
-# Define metric with feedback
+# Define simple metric (proc format expected by GEPA)
 def create_test_metric
-  Class.new do
-    include DSPy::Teleprompt::GEPAFeedbackMetric
-    
-    def call(example, prediction, trace = nil)
-      expected = example.expected_values[:a]
-      actual = prediction.a
-      
-      score = expected == actual ? 1.0 : 0.0
-      feedback = score > 0 ? "Correct" : "Expected #{expected}, got #{actual}"
-      
-      DSPy::Teleprompt::ScoreWithFeedback.new(
-        score: score,
-        prediction: prediction,
-        feedback: feedback
-      )
-    end
-  end.new
+  proc do |example, prediction|
+    expected = example.expected_values[:a]
+    actual = prediction.a
+    expected == actual ? 1.0 : 0.0
+  end
 end
 
 def test_gepa_minimal
@@ -58,7 +48,12 @@ def test_gepa_minimal
   # 3) Define the tiny program and a one-shot train example
   program = DSPy::Predict.new(QASignature)
   trainset = [
-    DSPy::Example.new(QASignature, input: { q: '2+2?' }, expected: { a: '4' })
+    DSPy::Example.new(signature_class: QASignature, input: { q: '2+2?' }, expected: { a: '4' })
+  ]
+  
+  # Add validation set
+  valset = [
+    DSPy::Example.new(signature_class: QASignature, input: { q: '3+3?' }, expected: { a: '6' })
   ]
   
   metric = create_test_metric
@@ -79,9 +74,10 @@ def test_gepa_minimal
   )
   
   puts "Running GEPA optimization..."
-  optimized = gepa.compile(program, trainset: trainset)
+  optimization_result = gepa.compile(program, trainset: trainset, valset: valset)
   
   # Test optimized result
+  optimized = optimization_result.optimized_program
   optimized_result = optimized.call(q: '2+2?')
   puts "Optimized result: #{optimized_result.a}"
   

@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["hey@vicente.services"]
 
   spec.summary = "The Ruby framework for programming—rather than prompting—language models."
-  spec.description = "The Ruby framework for programming with large language models. Includes event-driven observability system with OpenTelemetry integration and Langfuse export."
+  spec.description = "The Ruby framework for programming with large language models. DSPy.rb brings structured LLM programming to Ruby developers. Instead of wrestling with prompt strings and parsing responses, you define typed signatures using idiomatic Ruby to compose and decompose AI Worklows and AI Agents."
   spec.homepage = "https://github.com/vicentereig/dspy.rb"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"

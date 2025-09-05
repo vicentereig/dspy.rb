@@ -4,8 +4,10 @@
 # Simple GEPA Benchmark - Ruby equivalent of the Python DSPy example
 # This mirrors the exact structure from the Python screenshot
 
-require_relative '../lib/dspy'
+require_relative '../../lib/dspy'
 require 'benchmark'
+require 'dotenv'
+Dotenv.load(File.join(File.dirname(__FILE__), '..', '..', '.env'))
 
 # Skip if no API key available
 unless ENV['OPENAI_API_KEY']
@@ -33,25 +35,11 @@ end
 
 # 3) Exact-match metric (GEPA expects feedback format)
 def create_exact_match_metric
-  Class.new do
-    include DSPy::Teleprompt::GEPAFeedbackMetric
-    
-    def call(example, prediction, trace = nil)
-      expected = example.expected_values[:a]
-      actual = prediction.a
-      
-      # Ruby DSPy.rb uses 3 args: example, prediction, trace
-      # Python DSPy uses 5 args: gold, pred, trace, pred_name, pred_trace
-      score = (expected == actual) ? 1.0 : 0.0
-      feedback = score > 0 ? "Correct answer" : "Expected '#{expected}', got '#{actual}'"
-      
-      DSPy::Teleprompt::ScoreWithFeedback.new(
-        score: score,
-        prediction: prediction,
-        feedback: feedback
-      )
-    end
-  end.new
+  proc do |example, prediction|
+    expected = example.expected_values[:a]
+    actual = prediction.a
+    (expected == actual) ? 1.0 : 0.0
+  end
 end
 
 # Simple metric for MIPROv2 comparison
@@ -71,7 +59,7 @@ def run_simple_benchmark
   program = DSPy::Predict.new(SimpleQASignature)
   trainset = [
     DSPy::Example.new(
-      SimpleQASignature,
+      signature_class: SimpleQASignature,
       input: { q: '2+2?' },
       expected: { a: '4' }
     )
@@ -80,12 +68,12 @@ def run_simple_benchmark
   # Create a small validation set
   valset = [
     DSPy::Example.new(
-      SimpleQASignature,
+      signature_class: SimpleQASignature,
       input: { q: '3+3?' },
       expected: { a: '6' }
     ),
     DSPy::Example.new(
-      SimpleQASignature,
+      signature_class: SimpleQASignature,
       input: { q: '5-2?' },
       expected: { a: '3' }
     )
@@ -122,13 +110,11 @@ def run_simple_benchmark
   
   begin
     mipro = DSPy::Teleprompt::MIPROv2.new(
-      metric: simple_metric,
-      num_candidates: 3,
-      init_temperature: 1.0,
-      verbose: false
+      metric: simple_metric
     )
     
-    mipro_optimized = mipro.compile(program, trainset: trainset, valset: valset)
+    mipro_optimization = mipro.compile(program, trainset: trainset, valset: valset)
+    mipro_optimized = mipro_optimization.optimized_program
     mipro_time = Time.now - mipro_start
     
     # Test MIPROv2 result
@@ -170,7 +156,8 @@ def run_simple_benchmark
       config: config
     )
     
-    gepa_optimized = gepa.compile(program, trainset: trainset, valset: valset)
+    gepa_optimization = gepa.compile(program, trainset: trainset, valset: valset)
+    gepa_optimized = gepa_optimization.optimized_program
     gepa_time = Time.now - gepa_start
     
     # 5) Run the optimized program

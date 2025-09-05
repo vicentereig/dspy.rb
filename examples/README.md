@@ -1,166 +1,105 @@
-# GEPA Examples
+# DSPy.rb Examples
 
-This directory contains practical examples of using GEPA (Genetic-Pareto Reflective Prompt Evolution) with DSPy.rb.
+This directory contains practical examples for using DSPy.rb features.
 
-## Prerequisites
+## Setup
 
-Set your OpenAI API key:
+Create a `.env` file in the project root with your API keys:
 ```bash
-export OPENAI_API_KEY="your-api-key-here"
+OPENAI_API_KEY=your-openai-key
+ANTHROPIC_API_KEY=your-anthropic-key
 ```
 
-## Examples
+## Examples by Category
 
-### `minimal_gepa_test.rb` - Basic GEPA Test
+### GEPA Optimization (`gepa/`)
 
-A minimal example that mirrors the Python DSPy GEPA usage pattern:
+Examples using GEPA (Genetic-Pareto) optimization for prompt improvement:
 
-```bash
-ruby examples/minimal_gepa_test.rb
-```
-
-**What it does:**
-- Creates a simple Q&A program
-- Optimizes it with GEPA using one training example
-- Shows before/after results
-
-**Good for:** Understanding basic GEPA workflow
-
-### `simple_gepa_benchmark.rb` - GEPA vs MIPROv2
-
-Direct Ruby equivalent of the Python GEPA example from the DSPy documentation:
+- **`minimal_gepa_test.rb`** - Basic GEPA usage with one training example
+- **`simple_gepa_benchmark.rb`** - Compare GEPA vs MIPROv2 performance  
+- **`gepa_benchmark.rb`** - Comprehensive math word problem benchmark
 
 ```bash
-ruby examples/simple_gepa_benchmark.rb
+bundle exec ruby examples/gepa/minimal_gepa_test.rb
 ```
 
-**What it does:**
-- Compares GEPA vs MIPROv2 on simple math questions
-- Shows accuracy and timing for both optimizers
-- Uses the same structure as Python DSPy examples
+### Multimodal (`multimodal/`)
 
-**Good for:** Comparing optimizer performance
+Examples for working with images and vision models:
 
-### `gepa_benchmark.rb` - Comprehensive Benchmark
+- **`image_analysis.rb`** - Analyze images for objects, colors, and mood
+- **`bounding_box_detection.rb`** - Detect objects and return coordinates
 
-A more thorough benchmark with multiple test cases:
+### Agent Examples (`coffee-shop-agent/`)
 
-```bash
-ruby examples/gepa_benchmark.rb
-```
+- **`coffee_shop_agent.rb`** - Interactive coffee ordering chatbot with memory
 
-**What it does:**
-- Tests on math word problems
-- Uses multiple training and validation examples
-- Provides detailed performance analysis
-- Shows optimized instructions
+### Evaluation (`sentiment-evaluation/`)
 
-**Good for:** Production evaluation scenarios
+- **`sentiment_classifier.rb`** - Tweet sentiment classification with evaluation
 
-## Key Differences from Python DSPy
+## Quick Start
 
-| Python DSPy | Ruby DSPy.rb |
-|------------|--------------|
-| `d.Predict('q -> a')` | `DSPy::Predict.new(QASignature)` |
-| `auto='light'` | Manual config setup |
-| 5-arg metric | 3-arg metric with ScoreWithFeedback |
-| `d.GEPA(metric=..., reflection_lm=...)` | `DSPy::Teleprompt::GEPA.new(metric:, config:)` |
-
-## Example Output
-
-```
-🚀 Simple GEPA Benchmark (Ruby version of Python example)
-============================================================
-
-📊 Dataset:
-  Training examples: 1
-  Validation examples: 3
-
-🔍 Testing baseline program:
-  Input: '2+2?'
-  Baseline output: '4'
-  Expected: '4'
-
-  Baseline validation accuracy: 66.7%
-
-⚡ Optimizing with MIPROv2...
-  MIPROv2 output: '4'
-  Optimization time: 2.34s
-  MIPROv2 validation accuracy: 100.0%
-
-🧬 Optimizing with GEPA...
-  GEPA output: '4'
-  Optimization time: 5.67s
-  GEPA validation accuracy: 100.0%
-
-📈 Final Results:
-========================================
-  Method       Accuracy    Time (s)
-----------------------------------------
-  Baseline       66.7%           -
-  MIPROv2       100.0%        2.34
-  GEPA          100.0%        5.67
-
-🤝 It's a tie!
-
-✅ Simple GEPA benchmark completed!
-```
-
-## Creating Your Own Examples
-
-1. **Start with a signature:**
+1. **Basic prediction:**
 ```ruby
-class MySignature < DSPy::Signature
-  description "Your task description"
+require 'dspy'
+
+class QASignature < DSPy::Signature
+  description "Answer questions concisely"
   
   input do
-    const :input_field, String
+    const :question, String
   end
   
   output do
-    const :output_field, String
+    const :answer, String
   end
 end
+
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new('openai/gpt-4o-mini')
+end
+
+predictor = DSPy::Predict.new(QASignature)
+result = predictor.call(question: "What is 2+2?")
+puts result.answer
 ```
 
-2. **Create training examples:**
+2. **Chain of thought reasoning:**
 ```ruby
-trainset = [
-  DSPy::Example.new(MySignature,
-    input: { input_field: "example input" },
-    expected: { output_field: "expected output" }
+cot = DSPy::ChainOfThought.new(QASignature)
+result = cot.call(question: "Explain why 2+2=4")
+puts result.reasoning  # Shows step-by-step thinking
+puts result.answer     # Shows final answer
+```
+
+3. **Creating training examples:**
+```ruby
+examples = [
+  DSPy::Example.new(
+    signature_class: QASignature,
+    input: { question: "What is the capital of France?" },
+    expected: { answer: "Paris" }
   )
 ]
 ```
 
-3. **Define a metric with feedback:**
-```ruby
-class MyMetric
-  include DSPy::Teleprompt::GEPAFeedbackMetric
-  
-  def call(example, prediction, trace = nil)
-    # Your evaluation logic
-    score = calculate_score(example, prediction)
-    feedback = generate_feedback(example, prediction, score)
-    
-    DSPy::Teleprompt::ScoreWithFeedback.new(
-      score: score,
-      prediction: prediction,
-      feedback: feedback
-    )
-  end
-end
-```
+## Running Examples
 
-4. **Run optimization:**
-```ruby
-gepa = DSPy::Teleprompt::GEPA.new(metric: MyMetric.new)
-optimized = gepa.compile(program, trainset: trainset)
+All examples check for required API keys and will exit with a helpful message if missing.
+
+```bash
+# Run a specific example
+bundle exec ruby examples/gepa/minimal_gepa_test.rb
+
+# Run with debug output
+DEBUG=true bundle exec ruby examples/sentiment-evaluation/sentiment_classifier.rb
 ```
 
 ## Tips
 
-- Start with `minimal_gepa_test.rb` to understand the basics
-- Use smaller configurations for testing (`population_size: 2, num_generations: 1`)
-- Check your metric logic with simple examples first
-- GEPA works best with specific, actionable feedback in your metric
+- Start with simple examples before trying optimization
+- Use `DSPy::ChainOfThought` for complex reasoning tasks
+- Check example outputs for expected data structures
+- Examples use realistic datasets and evaluation metrics

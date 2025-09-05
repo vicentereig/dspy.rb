@@ -1699,8 +1699,17 @@ module DSPy
           end
           secondary_scores[:token_efficiency] = calculate_token_efficiency(mock_traces, predictions.size)
 
-          # Response consistency
-          response_texts = predictions.map { |p| p[:prediction]&.answer&.to_s || '' }
+          # Response consistency - use first output field for any signature
+          response_texts = predictions.map do |p|
+            pred = p[:prediction]
+            if pred && pred.respond_to?(:class) && pred.class.respond_to?(:props)
+              # Get first output field name and value
+              first_field = pred.class.props.keys.first
+              first_field ? (pred.send(first_field)&.to_s || '') : ''
+            else
+              ''
+            end
+          end
           secondary_scores[:consistency] = calculate_consistency(response_texts)
 
           # Latency performance

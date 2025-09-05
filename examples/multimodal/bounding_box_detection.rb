@@ -4,6 +4,8 @@
 require 'bundler/setup'
 require 'dspy'
 require 'json'
+require 'dotenv'
+Dotenv.load(File.join(File.dirname(__FILE__), '..', '..', '.env'))
 
 # Example: Bounding Box Detection in Aerial Images
 # This example demonstrates how to use DSPy's multimodal capabilities
