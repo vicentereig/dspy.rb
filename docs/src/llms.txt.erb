@@ -75,7 +75,15 @@ class CalculatorTool < DSPy::Tools::Base
 end
 ```
 
-### 4. Optimization
+### 4. Type System & Discriminators
+DSPy.rb uses sophisticated type discrimination for complex data structures:
+
+- **Automatic `_type` field injection** - DSPy adds discriminator fields to structs for type safety
+- **Union type support** - T.any() types automatically disambiguated by `_type` 
+- **Reserved field name** - Avoid defining your own `_type` fields in structs
+- **Recursive filtering** - `_type` fields filtered during deserialization at all nesting levels
+
+### 5. Optimization
 Improve accuracy with real data:
 
 - **SimpleOptimizer** - Basic prompt tuning
@@ -146,6 +154,7 @@ end
 ### Type Safety
 - Sorbet integration for compile-time checks
 - Automatic JSON schema generation
+- Type discrimination with `_type` field handling for union types and structs
 - Enum types for controlled outputs
 - Struct types for complex data
 

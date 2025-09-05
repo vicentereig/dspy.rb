@@ -275,7 +275,59 @@ class TaskAction < DSPy::Signature
     const :action, T.any(CreateTask, UpdateTask, DeleteTask)
   end
 end
+
+# DSPy automatically adds a _type discriminator field to distinguish
+# between different struct types in unions
 ```
+
+#### Type Discrimination with `_type` Fields
+
+DSPy.rb uses sophisticated type discrimination to handle complex data structures reliably:
+
+```ruby
+# Example structs for demonstration
+class SearchAction < T::Struct
+  const :query, String
+  const :max_results, Integer, default: 10
+end
+
+class AnswerAction < T::Struct  
+  const :content, String
+  const :confidence, Float
+end
+
+# Union type signature
+class ActionSignature < DSPy::Signature
+  output do
+    const :action, T.any(SearchAction, AnswerAction)
+  end
+end
+```
+
+**How `_type` Fields Work:**
+
+1. **Automatic Injection**: DSPy adds `_type` fields to JSON schemas with `const` constraints
+2. **Type Resolution**: LLMs include the `_type` field in responses to indicate struct type  
+3. **Automatic Filtering**: DSPy filters out `_type` fields during deserialization for all structs
+4. **Recursive Handling**: Works at any nesting level in complex data structures
+
+**JSON Response Example:**
+```json
+{
+  "action": {
+    "_type": "SearchAction",
+    "query": "Ruby programming",
+    "max_results": 5
+  }
+}
+```
+
+**Important Considerations:**
+
+- **Reserved Field**: Never define your own `_type` fields in T::Struct classes
+- **Automatic Filtering**: `_type` is automatically removed during struct creation
+- **Union vs Direct**: Both union types and direct struct fields handle `_type` filtering
+- **Error Prevention**: Prevents type mismatch errors during deserialization
 
 ## Modules
 
@@ -463,6 +515,73 @@ when ErrorResult
   puts "Error: #{result.result.error}"
 end
 ```
+
+#### Advanced Type Discrimination Examples
+
+```ruby
+# Nested structures with automatic _type handling
+class CompanyAddress < T::Struct
+  const :street, String
+  const :city, String
+  const :postal_code, String
+end
+
+class Person < T::Struct
+  const :name, String
+  const :address, CompanyAddress
+end
+
+class Company < T::Struct
+  const :name, String
+  const :address, CompanyAddress
+  const :employees, T::Array[Person]
+end
+
+# Complex signature with nested discriminated types
+class BusinessAnalysis < DSPy::Signature
+  description "Analyze business entities with nested address data"
+  
+  output do
+    const :entity, T.any(Person, Company)  # Union with complex nested types
+    const :confidence, Float
+  end
+end
+```
+
+**LLM Response with Nested `_type` Fields:**
+```json
+{
+  "entity": {
+    "_type": "Company",
+    "name": "Tech Corp",
+    "address": {
+      "_type": "CompanyAddress",
+      "street": "123 Business Ave",
+      "city": "Tech City",
+      "postal_code": "12345"
+    },
+    "employees": [
+      {
+        "_type": "Person",
+        "name": "John Doe",
+        "address": {
+          "_type": "CompanyAddress", 
+          "street": "456 Home St",
+          "city": "Residential Area",
+          "postal_code": "67890"
+        }
+      }
+    ]
+  },
+  "confidence": 0.95
+}
+```
+
+**Automatic Processing:**
+- DSPy recognizes `"_type": "Company"` and creates a Company struct
+- Nested `CompanyAddress` structs are created from their `_type` discriminators
+- Array elements are processed recursively
+- All `_type` fields are filtered out from the final structs
 
 ### Nested Structures
 
