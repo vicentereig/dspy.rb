@@ -5,6 +5,51 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.1] - 2025-09-05
+
+### Fixed
+- **Type Coercion Bug** - Direct T::Struct fields now properly handle `_type` discriminator filtering (by [@liorbrauer](https://github.com/liorbrauer))
+  - Previously only union types (T.any) correctly filtered out DSPy's internal `_type` field
+  - Direct struct fields would fail with "Can't set field to {\"_type\"=>...}" errors
+  - Added recursive type coercion for nested structs at any depth
+  - Smart filtering preserves legitimate user-defined `_type` fields
+
+### Documentation
+- **Type Discriminator Pattern** - Comprehensive documentation of DSPy's `_type` field handling
+  - Explains automatic discriminator field injection for JSON schemas
+  - Documents reserved `_type` field name and filtering behavior
+  - Shows real JSON schema structure with `oneOf` and `const` constraints
+  - Covers both union types and direct struct fields
+
+### Technical Details
+- Enhanced `coerce_struct_value` method to match `coerce_union_value` behavior
+- Added 15+ comprehensive tests covering direct struct coercion scenarios
+- Maintains backward compatibility - no breaking changes
+
+## [0.22.0] - 2025-09-04
+
+### Added
+- **GEPA (Generalized Event Pattern Analysis) Phase 1** - Advanced telemetry and event processing system
+  - TraceCollector for comprehensive application monitoring
+  - ReflectionEngine for runtime behavior analysis
+  - Event-driven architecture for LLM application insights
+  - Integration with OpenTelemetry for production observability
+
+### Enhanced
+- **Telemetry System** - Improved OpenTelemetry span attribute serialization
+  - Configuration hash properly serialized to JSON format
+  - Better structured logging for debugging and monitoring
+  - Enhanced span tracking for complex LLM workflows
+
+### Contributors
+This release features contributions from:
+- [@liorbrauer](https://github.com/liorbrauer) (Lior Brauer) - Critical type coercion bug fix
+
+### Technical Details
+- GEPA Phase 1 provides foundation for advanced LLM application analytics
+- Event system enables real-time monitoring and optimization
+- Structured telemetry data improves production debugging capabilities
+
 ## [0.21.0] - 2025-09-01
 
 ### Added
