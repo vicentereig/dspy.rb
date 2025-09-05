@@ -87,7 +87,7 @@ module DSPy
     def forward_untyped(**input_values)
       # Wrap in chain-specific span tracking (overrides parent's span attributes)
       DSPy::Context.with_span(
-        operation: "ChainOfThought.forward",
+        operation: "#{self.class.name}.forward",
         'langfuse.observation.type' => 'chain',
         'langfuse.observation.input' => input_values.to_json,
         'dspy.module' => 'ChainOfThought',

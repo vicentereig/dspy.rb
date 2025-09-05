@@ -192,6 +192,11 @@ RSpec.describe DSPy::Context do
           }
         ).and_yield(mock_span)
 
+        # Expect timing attributes to be set
+        expect(mock_span).to receive(:set_attribute).with('duration.ms', anything)
+        expect(mock_span).to receive(:set_attribute).with('langfuse.observation.startTime', anything)
+        expect(mock_span).to receive(:set_attribute).with('langfuse.observation.endTime', anything)
+
         described_class.with_span(operation: 'test.operation', custom_attr: 'value') { }
       end
 
@@ -223,6 +228,11 @@ RSpec.describe DSPy::Context do
             kind: :internal
           }
         ).and_yield(mock_span)
+
+        # Expect timing attributes to be set
+        expect(mock_span).to receive(:set_attribute).with('duration.ms', anything)
+        expect(mock_span).to receive(:set_attribute).with('langfuse.observation.startTime', anything)
+        expect(mock_span).to receive(:set_attribute).with('langfuse.observation.endTime', anything)
 
         described_class.with_span(
           operation: 'llm.generate',

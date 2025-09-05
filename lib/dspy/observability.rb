@@ -103,6 +103,15 @@ module DSPy
         DSPy.log('observability.span_finish_error', error: e.message)
       end
 
+      def flush!
+        return unless enabled?
+        
+        # Force flush any pending spans
+        OpenTelemetry.tracer_provider.force_flush
+      rescue StandardError => e
+        DSPy.log('observability.flush_error', error: e.message)
+      end
+
       def reset!
         @enabled = false
         @tracer = nil

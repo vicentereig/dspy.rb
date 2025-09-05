@@ -43,12 +43,25 @@ module DSPy
               span_attributes['langfuse.trace.name'] = operation
             end
             
+            # Record start time for explicit duration tracking
+            otel_start_time = Time.now
+            
             DSPy::Observability.tracer.in_span(
               operation,
               attributes: span_attributes,
               kind: :internal
             ) do |span|
-              yield(span)
+              result = yield(span)
+              
+              # Add explicit timing information to help Langfuse
+              if span
+                duration_ms = ((Time.now - otel_start_time) * 1000).round(3)
+                span.set_attribute('duration.ms', duration_ms)
+                span.set_attribute('langfuse.observation.startTime', otel_start_time.iso8601(3))
+                span.set_attribute('langfuse.observation.endTime', Time.now.iso8601(3))
+              end
+              
+              result
             end
           else
             yield(nil)
