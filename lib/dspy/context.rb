@@ -27,7 +27,7 @@ module DSPy
         }
         
         # Log span start with proper hierarchy (internal logging only)
-        DSPy.log('span.start', **span_attributes)
+        DSPy.log('span.start', **span_attributes) if DSPy::Observability.enabled?
         
         # Push to stack for child spans tracking
         current[:span_stack].push(span_id)
@@ -71,12 +71,14 @@ module DSPy
           current[:span_stack].pop
           
           # Log span end with duration (internal logging only)
-          duration_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time) * 1000).round(2)
-          DSPy.log('span.end',
-            trace_id: current[:trace_id],
-            span_id: span_id,
-            duration_ms: duration_ms
-          )
+          if DSPy::Observability.enabled?
+            duration_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time) * 1000).round(2)
+            DSPy.log('span.end',
+              trace_id: current[:trace_id],
+              span_id: span_id,
+              duration_ms: duration_ms
+            )
+          end
         end
       end
       
