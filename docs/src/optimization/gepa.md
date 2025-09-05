@@ -15,9 +15,9 @@ next:
   url: "/optimization/benchmarking-raw-prompts/"
 ---
 
-# GEPA (Genetic-Pareto Reflective Prompt Evolution)
+# GEPA (Genetic-Pareto)
 
-GEPA is a prompt optimizer that uses genetic algorithms and LLM reflection to improve DSPy programs. Unlike simpler optimizers, GEPA provides detailed feedback on why examples fail and uses iterative refinement to achieve better results.
+GEPA (Genetic-Pareto) is an advanced prompt optimizer that uses genetic algorithms for multi-objective optimization of DSPy programs. It combines evolutionary computation with Pareto-optimal solution selection to find the best trade-offs between different optimization objectives.
 
 ## Quick Start
 
@@ -81,7 +81,7 @@ class ExactMatchMetric
   end
 end
 
-# Optimize with GEPA
+# Optimize with GEPA (Genetic-Pareto)
 gepa = DSPy::Teleprompt::GEPA.new(metric: ExactMatchMetric.new)
 optimized_program = gepa.compile(program, trainset: trainset)
 
@@ -192,19 +192,19 @@ mipro = DSPy::Teleprompt::MIPROv2.new(metric: simple_metric)
 mipro_optimized = mipro.compile(program, trainset: trainset)
 mipro_score = evaluate_program(mipro_optimized, testset, simple_metric)
 
-# Optimize with GEPA
+# Optimize with GEPA (Genetic-Pareto)
 gepa = DSPy::Teleprompt::GEPA.new(metric: feedback_metric)
 gepa_optimized = gepa.compile(program, trainset: trainset)
 gepa_score = evaluate_program(gepa_optimized, testset, simple_metric)
 
 puts "Baseline: #{baseline_score}"
 puts "MIPROv2:  #{mipro_score}"
-puts "GEPA:     #{gepa_score}"
+puts "GEPA (Genetic-Pareto): #{gepa_score}"
 ```
 
-## When to Use GEPA
+## When to Use GEPA (Genetic-Pareto)
 
-### Use GEPA when:
+### Use GEPA (Genetic-Pareto) when:
 - You want detailed feedback on why examples fail
 - Your task benefits from iterative prompt refinement
 - You have complex evaluation criteria
@@ -293,7 +293,7 @@ end
 
 ## Troubleshooting
 
-### GEPA Takes Too Long
+### GEPA (Genetic-Pareto) Takes Too Long
 - Reduce `population_size` and `num_generations`
 - Use `config.reflection_lm = "openai/gpt-4o-mini"`
 - Use fewer training examples
@@ -318,8 +318,8 @@ end
 
 See the `examples/` directory for complete working examples:
 
-- `minimal_gepa_test.rb` - Basic GEPA usage
-- `simple_gepa_benchmark.rb` - GEPA vs MIPROv2 comparison
+- `minimal_gepa_test.rb` - Basic GEPA (Genetic-Pareto) usage
+- `simple_gepa_benchmark.rb` - GEPA (Genetic-Pareto) vs MIPROv2 comparison
 - `gepa_benchmark.rb` - Comprehensive benchmarking
 
 These examples show real usage patterns and can be run with your API keys.
