@@ -27,7 +27,7 @@ http_interactions:
         objective is: Test mixed required and optional fields"},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"query\": \"Generate data with some optional
         fields\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"mixedfieldsoutput","strict":true,"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"_type":{"type":"string","const":"MixedFieldsStruct"},"required_field":{"type":"string"},"optional_field":{"type":["string","null"]},"required_number":{"type":"integer"},"optional_array":{"type":["array","null"],"items":{"type":"string"}}},"required":["_type","required_field","required_number"],"description":"Mixed
+        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"mixedfieldsoutput","strict":true,"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"_type":{"type":"string","const":"MixedFieldsStruct"},"required_field":{"type":"string"},"optional_field":{"type":["string","null"]},"required_number":{"type":"integer"},"optional_array":{"type":["array","null"],"items":{"type":"string"}}},"required":["_type","required_field","optional_field","required_number","optional_array"],"description":"Mixed
         fields data","additionalProperties":false}},"required":["data"],"additionalProperties":false}}}}'
     headers:
       Accept-Encoding:
@@ -59,18 +59,18 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '2615'
+      - '2649'
   response:
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 16:36:16 GMT
+      - Sat, 06 Sep 2025 16:58:07 GMT
       Content-Type:
       - application/json
-      Content-Length:
-      - '333'
+      Transfer-Encoding:
+      - chunked
       Connection:
       - keep-alive
       Access-Control-Expose-Headers:
@@ -78,13 +78,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '27'
+      - '779'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '33'
+      - '785'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -111,551 +111,47 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97af625ebb88142d-LAX
+      - 97af825ecfbf3f37-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
-      encoding: UTF-8
-      string: |-
+      encoding: ASCII-8BIT
+      string: |
         {
-          "error": {
-            "message": "Invalid schema for response_format 'mixedfieldsoutput': In context=('properties', 'data'), 'required' is required to be supplied and to be an array including every key in properties. Missing 'optional_field'.",
-            "type": "invalid_request_error",
-            "param": "response_format",
-            "code": null
-          }
+          "id": "chatcmpl-CCqWkdoslSy7RFrGWKKYmu5wi6sY1",
+          "object": "chat.completion",
+          "created": 1757177886,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "{\"data\":{\"_type\":\"MixedFieldsStruct\",\"required_field\":\"Example required field\",\"optional_field\":\"Example optional field\",\"required_number\":42,\"optional_array\":[\"item1\",\"item2\"]}}",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 519,
+            "completion_tokens": 39,
+            "total_tokens": 558,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 16:36:15 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Query\"\n    }\n  },\n  \"required\": [\n    \"query\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
-        \"MixedFieldsStruct\"\n        },\n        \"required_field\": {\n          \"type\":
-        \"string\"\n        },\n        \"optional_field\": {\n          \"type\":
-        [\n            \"string\",\n            \"null\"\n          ]\n        },\n        \"required_number\":
-        {\n          \"type\": \"integer\"\n        },\n        \"optional_array\":
-        {\n          \"type\": [\n            \"array\",\n            \"null\"\n          ],\n          \"items\":
-        {\n            \"type\": \"string\"\n          }\n        }\n      },\n      \"required\":
-        [\n        \"_type\",\n        \"required_field\",\n        \"required_number\"\n      ],\n      \"description\":
-        \"Mixed fields data\"\n    }\n  },\n  \"required\": [\n    \"data\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Test mixed required and optional fields"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"query\": \"Generate data with some optional
-        fields\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
-        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"data\":
-        {\n    \"_type\": \"example string\",\n    \"required_field\": \"example string\",\n    \"optional_field\":
-        \"example string\",\n    \"required_number\": 42,\n    \"optional_array\":
-        \"example value\"\n  }\n}\n```\n\nRequired fields: data\n\nEnsure your response:\n1.
-        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
-        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
-        in ```json``` markdown code blocks\n"}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"mixedfieldsoutput","strict":true,"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"_type":{"type":"string","const":"MixedFieldsStruct"},"required_field":{"type":"string"},"optional_field":{"type":["string","null"]},"required_number":{"type":"integer"},"optional_array":{"type":["array","null"],"items":{"type":"string"}}},"required":["_type","required_field","required_number"],"description":"Mixed
-        fields data","additionalProperties":false}},"required":["data"],"additionalProperties":false}}}}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '3176'
-  response:
-    status:
-      code: 400
-      message: Bad Request
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 16:36:16 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '333'
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '12'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '14'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9999'
-      X-Ratelimit-Remaining-Tokens:
-      - '199436'
-      X-Ratelimit-Reset-Requests:
-      - 8.64s
-      X-Ratelimit-Reset-Tokens:
-      - 169ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97af62616a24142d-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: UTF-8
-      string: |-
-        {
-          "error": {
-            "message": "Invalid schema for response_format 'mixedfieldsoutput': In context=('properties', 'data'), 'required' is required to be supplied and to be an array including every key in properties. Missing 'optional_field'.",
-            "type": "invalid_request_error",
-            "param": "response_format",
-            "code": null
-          }
-        }
-  recorded_at: Sat, 06 Sep 2025 16:36:16 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Query\"\n    }\n  },\n  \"required\": [\n    \"query\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
-        \"MixedFieldsStruct\"\n        },\n        \"required_field\": {\n          \"type\":
-        \"string\"\n        },\n        \"optional_field\": {\n          \"type\":
-        [\n            \"string\",\n            \"null\"\n          ]\n        },\n        \"required_number\":
-        {\n          \"type\": \"integer\"\n        },\n        \"optional_array\":
-        {\n          \"type\": [\n            \"array\",\n            \"null\"\n          ],\n          \"items\":
-        {\n            \"type\": \"string\"\n          }\n        }\n      },\n      \"required\":
-        [\n        \"_type\",\n        \"required_field\",\n        \"required_number\"\n      ],\n      \"description\":
-        \"Mixed fields data\"\n    }\n  },\n  \"required\": [\n    \"data\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Test mixed required and optional fields"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"query\": \"Generate data with some optional
-        fields\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
-        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"data\":
-        {\n    \"_type\": \"example string\",\n    \"required_field\": \"example string\",\n    \"optional_field\":
-        \"example string\",\n    \"required_number\": 42,\n    \"optional_array\":
-        \"example value\"\n  }\n}\n```\n\nRequired fields: data\n\nEnsure your response:\n1.
-        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
-        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
-        in ```json``` markdown code blocks\n"}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"mixedfieldsoutput","strict":true,"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"_type":{"type":"string","const":"MixedFieldsStruct"},"required_field":{"type":"string"},"optional_field":{"type":["string","null"]},"required_number":{"type":"integer"},"optional_array":{"type":["array","null"],"items":{"type":"string"}}},"required":["_type","required_field","required_number"],"description":"Mixed
-        fields data","additionalProperties":false}},"required":["data"],"additionalProperties":false}}}}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '3176'
-  response:
-    status:
-      code: 400
-      message: Bad Request
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 16:36:17 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '333'
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '14'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '16'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9999'
-      X-Ratelimit-Remaining-Tokens:
-      - '199436'
-      X-Ratelimit-Reset-Requests:
-      - 8.64s
-      X-Ratelimit-Reset-Tokens:
-      - 169ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97af6267790a142d-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: UTF-8
-      string: |-
-        {
-          "error": {
-            "message": "Invalid schema for response_format 'mixedfieldsoutput': In context=('properties', 'data'), 'required' is required to be supplied and to be an array including every key in properties. Missing 'optional_field'.",
-            "type": "invalid_request_error",
-            "param": "response_format",
-            "code": null
-          }
-        }
-  recorded_at: Sat, 06 Sep 2025 16:36:17 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Query\"\n    }\n  },\n  \"required\": [\n    \"query\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
-        \"MixedFieldsStruct\"\n        },\n        \"required_field\": {\n          \"type\":
-        \"string\"\n        },\n        \"optional_field\": {\n          \"type\":
-        [\n            \"string\",\n            \"null\"\n          ]\n        },\n        \"required_number\":
-        {\n          \"type\": \"integer\"\n        },\n        \"optional_array\":
-        {\n          \"type\": [\n            \"array\",\n            \"null\"\n          ],\n          \"items\":
-        {\n            \"type\": \"string\"\n          }\n        }\n      },\n      \"required\":
-        [\n        \"_type\",\n        \"required_field\",\n        \"required_number\"\n      ],\n      \"description\":
-        \"Mixed fields data\"\n    }\n  },\n  \"required\": [\n    \"data\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Test mixed required and optional fields"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"query\": \"Generate data with some optional
-        fields\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
-        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"data\":
-        {\n    \"_type\": \"example string\",\n    \"required_field\": \"example string\",\n    \"optional_field\":
-        \"example string\",\n    \"required_number\": 42,\n    \"optional_array\":
-        \"example value\"\n  }\n}\n```\n\nRequired fields: data\n\nEnsure your response:\n1.
-        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
-        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
-        in ```json``` markdown code blocks\n"}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"mixedfieldsoutput","strict":true,"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"_type":{"type":"string","const":"MixedFieldsStruct"},"required_field":{"type":"string"},"optional_field":{"type":["string","null"]},"required_number":{"type":"integer"},"optional_array":{"type":["array","null"],"items":{"type":"string"}}},"required":["_type","required_field","required_number"],"description":"Mixed
-        fields data","additionalProperties":false}},"required":["data"],"additionalProperties":false}}}}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '3176'
-  response:
-    status:
-      code: 400
-      message: Bad Request
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 16:36:18 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '333'
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '13'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '16'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9996'
-      X-Ratelimit-Remaining-Tokens:
-      - '199436'
-      X-Ratelimit-Reset-Requests:
-      - 33.099s
-      X-Ratelimit-Reset-Tokens:
-      - 169ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97af627148da142d-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: UTF-8
-      string: |-
-        {
-          "error": {
-            "message": "Invalid schema for response_format 'mixedfieldsoutput': In context=('properties', 'data'), 'required' is required to be supplied and to be an array including every key in properties. Missing 'optional_field'.",
-            "type": "invalid_request_error",
-            "param": "response_format",
-            "code": null
-          }
-        }
-  recorded_at: Sat, 06 Sep 2025 16:36:18 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Query\"\n    }\n  },\n  \"required\": [\n    \"query\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
-        \"MixedFieldsStruct\"\n        },\n        \"required_field\": {\n          \"type\":
-        \"string\"\n        },\n        \"optional_field\": {\n          \"type\":
-        [\n            \"string\",\n            \"null\"\n          ]\n        },\n        \"required_number\":
-        {\n          \"type\": \"integer\"\n        },\n        \"optional_array\":
-        {\n          \"type\": [\n            \"array\",\n            \"null\"\n          ],\n          \"items\":
-        {\n            \"type\": \"string\"\n          }\n        }\n      },\n      \"required\":
-        [\n        \"_type\",\n        \"required_field\",\n        \"required_number\"\n      ],\n      \"description\":
-        \"Mixed fields data\"\n    }\n  },\n  \"required\": [\n    \"data\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Test mixed required and optional fields"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"query\": \"Generate data with some optional
-        fields\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
-        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"data\":
-        {\n    \"_type\": \"example string\",\n    \"required_field\": \"example string\",\n    \"optional_field\":
-        \"example string\",\n    \"required_number\": 42,\n    \"optional_array\":
-        \"example value\"\n  }\n}\n```\n\nRequired fields: data\n\nEnsure your response:\n1.
-        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
-        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
-        in ```json``` markdown code blocks\n"}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"mixedfieldsoutput","strict":true,"schema":{"type":"object","properties":{"data":{"type":"object","properties":{"_type":{"type":"string","const":"MixedFieldsStruct"},"required_field":{"type":"string"},"optional_field":{"type":["string","null"]},"required_number":{"type":"integer"},"optional_array":{"type":["array","null"],"items":{"type":"string"}}},"required":["_type","required_field","required_number"],"description":"Mixed
-        fields data","additionalProperties":false}},"required":["data"],"additionalProperties":false}}}}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '3176'
-  response:
-    status:
-      code: 400
-      message: Bad Request
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 16:36:21 GMT
-      Content-Type:
-      - application/json
-      Content-Length:
-      - '333'
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '12'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '15'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9995'
-      X-Ratelimit-Remaining-Tokens:
-      - '199436'
-      X-Ratelimit-Reset-Requests:
-      - 38.293s
-      X-Ratelimit-Reset-Tokens:
-      - 169ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97af6280bea5142d-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: UTF-8
-      string: |-
-        {
-          "error": {
-            "message": "Invalid schema for response_format 'mixedfieldsoutput': In context=('properties', 'data'), 'required' is required to be supplied and to be an array including every key in properties. Missing 'optional_field'.",
-            "type": "invalid_request_error",
-            "param": "response_format",
-            "code": null
-          }
-        }
-  recorded_at: Sat, 06 Sep 2025 16:36:20 GMT
+  recorded_at: Sat, 06 Sep 2025 16:58:07 GMT
 recorded_with: VCR 6.3.1

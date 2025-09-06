@@ -27,7 +27,7 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
       @predict = DSPy::Predict.new(CompleteOptimizationSignature)
     end
 
-    def call(problem:)¡
+    def call(problem:)
       prediction = @predict.call(problem: problem)
 
       # Extract confidence from reasoning or default to 0.7
@@ -140,7 +140,6 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
       # Create GEPA with full genetic algorithm enabled
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
       config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
-      config.simple_mode = false  # Enable full GEPA
       config.num_generations = 2   # Reduced for testing
       config.population_size = 2   # Reduced for testing
       config.mutation_rate = 0.8   # High mutation for exploration
@@ -238,11 +237,10 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
   end
 
   describe 'GEPA error handling and recovery' do
-    it 'handles optimization failures gracefully'do
+    it 'handles optimization failures gracefully' do
       # Create GEPA with invalid configuration to trigger error
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
       config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
-      config.simple_mode = false
       config.num_generations = -1  # Invalid value to trigger error
 
       gepa = DSPy::Teleprompt::GEPA.new(metric: comprehensive_metric, config: config)
@@ -266,7 +264,6 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
     it 'validates all GEPA components work together' do
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
       config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
-      config.simple_mode = false
       config.num_generations = 2
       config.population_size = 3
 

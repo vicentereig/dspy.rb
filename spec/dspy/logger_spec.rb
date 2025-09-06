@@ -101,36 +101,48 @@ RSpec.describe 'DSPy.logger' do
   end
 
   describe 'DSPy.log method' do
-    it 'publishes events to event system (logs are event consumers)' do
-      events_mock = double('events')
-      allow(DSPy).to receive(:events).and_return(events_mock)
+    it 'logs directly to configured logger' do
+      logger_output = StringIO.new
+      test_logger = Dry.Logger(:test, formatter: :string) do |config|
+        config.add_backend(stream: logger_output)
+      end
+      
+      allow(DSPy).to receive(:logger).and_return(test_logger)
       
       # Mock the Context.current to return specific values
       allow(DSPy::Context).to receive(:current).and_return({
-        trace_id: 'test-trace-123',
-        span_stack: ['span-456']
+        trace_id: 'test-trace-123'
       })
       
-      expect(events_mock).to receive(:notify).with(
-        'test.event',
-        hash_including(custom: 'value')
-      )
-      
       DSPy.log('test.event', custom: 'value')
+      
+      # Verify direct logging occurred
+      log_output = logger_output.string
+      expect(log_output).to include('event="test.event"')
+      expect(log_output).to include('custom="value"')
+      expect(log_output).to include('trace_id="test-trace-123"')
     end
 
-    it 'publishes events to event system without span_stack' do
-      events_mock = double('events')
-      allow(DSPy).to receive(:events).and_return(events_mock)
+    it 'excludes span_stack from log output' do
+      logger_output = StringIO.new
+      test_logger = Dry.Logger(:test, formatter: :string) do |config|
+        config.add_backend(stream: logger_output)
+      end
+      
+      allow(DSPy).to receive(:logger).and_return(test_logger)
       
       allow(DSPy::Context).to receive(:current).and_return({
         trace_id: 'test-trace-123',
         span_stack: ['span-456']
       })
       
-      expect(events_mock).to receive(:notify).with('test.event', anything)
-      
       DSPy.log('test.event')
+      
+      # Verify span_stack is excluded but other context is included
+      log_output = logger_output.string
+      expect(log_output).to include('event="test.event"')
+      expect(log_output).to include('trace_id="test-trace-123"')
+      expect(log_output).not_to include('span_stack')
     end
 
     it 'returns nil when logger is not configured' do
