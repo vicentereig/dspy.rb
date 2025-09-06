@@ -183,4 +183,7 @@ if __FILE__ == $0
     mood: CustomerMood::Happy,
     time: TimeOfDay::Evening
   )
+  
+  # Flush observability data before process exits
+  DSPy::Observability.flush!
 end
