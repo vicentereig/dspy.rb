@@ -1167,7 +1167,7 @@ module DSPy
           best_fitness_score = @fitness_scores.max_by(&:overall_score)
           {
             best_candidate: get_best_candidate,
-            best_fitness: best_fitness_score,
+            best_fitness: best_fitness_score&.overall_score || 0.0,
             generation_history: history,
             generation_count: @generation,
             final_population: @population.dup
