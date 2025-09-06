@@ -1,0 +1,186 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o","messages":[{"role":"system","content":"Your input
+        schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"execution_summary\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Summary of execution traces and performance
+        patterns\"\n    },\n    \"optimization_context\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Context about the genetic algorithm optimization goals\"\n    },\n    \"key_insights\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Key insights extracted
+        from trace analysis\"\n    },\n    \"sample_traces\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Representative execution trace samples\"\n    }\n  },\n  \"required\": [\n    \"execution_summary\",\n    \"optimization_context\",\n    \"key_insights\",\n    \"sample_traces\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"diagnosis\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Brief description of execution patterns and issues identified\"\n    },\n    \"improvements\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"List of 2-4 specific actionable improvement suggestions\"\n    },\n    \"confidence\":
+        {\n      \"type\": \"number\",\n      \"description\": \"Confidence level
+        in analysis (0.0 to 1.0)\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Detailed reasoning process for the analysis\"\n    },\n    \"suggested_mutations\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"List of 2-3 most beneficial mutation types from: rewrite, expand, simplify,
+        combine, rephrase\"\n    },\n    \"pattern_detected\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Primary pattern identified in execution
+        traces\"\n    },\n    \"optimization_opportunity\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Key area identified for performance improvement\"\n    }\n  },\n  \"required\":
+        [\n    \"diagnosis\",\n    \"improvements\",\n    \"confidence\",\n    \"reasoning\",\n    \"suggested_mutations\",\n    \"pattern_detected\",\n    \"optimization_opportunity\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Analyze execution traces from GEPA optimization system and provide
+        actionable optimization insights"},{"role":"user","content":"## Input Values\n```json\n{\n  \"execution_summary\":
+        \"Total traces: 3\\nLLM interactions: 2\\nModule calls: 0\\nTotal tokens:
+        97\\nModels used: gpt-4o\\nAverage response length: 25 characters\\nExecution
+        timespan: 10.0 seconds\\n\",\n  \"optimization_context\": \"GEPA genetic algorithm
+        for prompt optimization. Available mutations: rewrite, expand, simplify, combine,
+        rephrase. Goal: improve prompt effectiveness through iterative evolution.\",\n  \"key_insights\":
+        \"- token_efficiency: good, 48.5, Token usage appears efficient\\n- response_quality:
+        consistent, 256.0, Response quality appears consistent\\n- model_consistency:
+        1, gpt-4o, Model usage is consistent\",\n  \"sample_traces\": \"1. [llm.response]
+        Solve: What is 5 + 3? → 5 + 3 = 8\\n2. [llm.response] Solve: What is 12 -
+        4? → Let me calculate step by step. 12 - 4 = 8\\n3. [module.call] N/A → N/A\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"diagnosis\": \"Brief description
+        of execution patterns and issues identified\",\n  \"improvements\": [\n    \"example
+        string\"\n  ],\n  \"confidence\": 3.14,\n  \"reasoning\": \"Detailed reasoning
+        process for the analysis\",\n  \"suggested_mutations\": [\n    \"example string\"\n  ],\n  \"pattern_detected\":
+        \"Primary pattern identified in execution traces\",\n  \"optimization_opportunity\":
+        \"Key area identified for performance improvement\"\n}\n```\n\nRequired fields:
+        diagnosis, improvements, confidence, reasoning, suggested_mutations, pattern_detected,
+        optimization_opportunity\n\nEnsure your response:\n1. Is valid JSON (properly
+        quoted strings, no trailing commas)\n2. Includes all required fields\n3. Uses
+        the correct data types for each field\n4. Is wrapped in ```json``` markdown
+        code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4822'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 10:54:42 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3495'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3498'
+      X-Ratelimit-Limit-Requests:
+      - '500'
+      X-Ratelimit-Limit-Tokens:
+      - '30000'
+      X-Ratelimit-Remaining-Requests:
+      - '499'
+      X-Ratelimit-Remaining-Tokens:
+      - '28907'
+      X-Ratelimit-Reset-Requests:
+      - 120ms
+      X-Ratelimit-Reset-Tokens:
+      - 2.186s
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97ad6df2bb582b4d-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCkr0PdNSsjEST8c7aiDHxFrDWOZP",
+          "object": "chat.completion",
+          "created": 1757156078,
+          "model": "gpt-4o-2024-08-06",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"diagnosis\": \"The execution traces indicate efficient token usage and consistent response quality from the model, with no module calls present.\",\n  \"improvements\": [\n    \"Increase the complexity of tasks to better <GEMINI_API_KEY>t model response diversity.\",\n    \"Incorporate module calls to broaden the scope of operations.\",\n    \"Enhance prompt variation to stimulate different mutation outcomes.\"\n  ],\n  \"confidence\": 0.9,\n  \"reasoning\": \"The analysis is based on the execution summary that shows efficient token usage and a consistent quality of responses, which suggests good baseline performance. However, the absence of module calls and the simplicity of the tasks indicate an opportunity to further challenge and evolve prompt structures.\",\n  \"suggested_mutations\": [\n    \"expand\",\n    \"rephrase\",\n    \"combine\"\n  ],\n  \"pattern_detected\": \"The traces predominantly show basic arithmetic queries with very simple problem-solving steps.\",\n  \"optimization_opportunity\": \"Increase task complexity and introduce module calls to enhance the breadth of capabilities <GEMINI_API_KEY>ted.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1065,
+            "completion_tokens": 216,
+            "total_tokens": 1281,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_07871e2ad8"
+        }
+  recorded_at: Sat, 06 Sep 2025 10:54:41 GMT
+recorded_with: VCR 6.3.1

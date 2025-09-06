@@ -51,17 +51,14 @@ end
 
 RSpec.describe "OpenAI Structured Outputs Integration" do
   describe "with structured outputs enabled" do
-    let(:api_key) { ENV['OPENAI_API_KEY'] || 'test-key' }
-    let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: api_key, structured_outputs: true) }
-    
-    before do
-      # Configure DSPy with the LM instance
-      DSPy.configure do |config|
-        config.lm = lm
-      end
-    end
+    # No fallback key - tests will skip if ENV key is not available
     
     it "generates valid JSON with simple enum output", vcr: { cassette_name: "openai_structured_simple" } do
+      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
+      
       predictor = DSPy::Predict.new(SentimentAnalysis)
       result = predictor.call(text: "I absolutely love this product! It exceeded all my expectations.")
       
@@ -74,6 +71,11 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
     end
     
     it "generates valid JSON with complex nested structures (OpenAI bug with nested arrays)", vcr: { cassette_name: "openai_structured_complex" } do
+      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
+      
       predictor = DSPy::Predict.new(ComplexOutput)
       result = predictor.call(query: "List three popular programming languages with their usage")
       
@@ -97,6 +99,11 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
     end
     
     it "handles structured output responses correctly", vcr: { cassette_name: "openai_structured_simple_response" } do
+      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
+      
       # Test that structured outputs work with a simple signature
       simple_test_class = Class.new(DSPy::Signature) do
         description "Generate a simple response"
@@ -121,16 +128,14 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
   end
   
   describe "with structured outputs disabled (backward compatibility)" do
-    let(:api_key) { ENV['OPENAI_API_KEY'] || 'test-key' }
-    let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: api_key, structured_outputs: false) }
-    
-    before do
-      DSPy.configure do |config|
-        config.lm = lm
-      end
-    end
+    # No fallback key - tests will skip if ENV key is not available
     
     it "falls back to JSON parsing from response", vcr: { cassette_name: "openai_no_structured" } do
+      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: false)
+      DSPy.configure { |config| config.lm = lm }
+      
       predictor = DSPy::Predict.new(SentimentAnalysis)
       result = predictor.call(text: "This product is okay, nothing special.")
       
@@ -192,6 +197,11 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
     end
     
     it "handles mixed required and optional (T.nilable) fields", vcr: { cassette_name: "openai_mixed_fields" } do
+      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      
+      lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
+      
       predictor = DSPy::Predict.new(MixedFieldsOutput)
       result = predictor.call(query: "Generate data with some optional fields")
       

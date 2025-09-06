@@ -1060,7 +1060,7 @@ module DSPy
         end
 
         # Perform LLM analysis using DSPy::Predict (public API)
-        sig { params(traces: T::Array[ExecutionTrace]).returns(DSPy::Prediction) }
+        sig { params(traces: T::Array[ExecutionTrace]).returns(T.untyped) }
         def analyze_traces_with_dspy(traces)
           raise ArgumentError, "reflection_lm must be configured on GEPAConfig for LLM-based reflection" unless @config.reflection_lm
           
@@ -1075,16 +1075,16 @@ module DSPy
           insights_text = insights.map { |k, v| "- #{k}: #{v.is_a?(Hash) ? v.values.join(', ') : v}" }.join("\n")
           
           # Get LLM analysis
-          predictor.call(
+          T.unsafe(predictor.call(
             execution_summary: summary,
             optimization_context: "GEPA genetic algorithm for prompt optimization. Available mutations: rewrite, expand, simplify, combine, rephrase. Goal: improve prompt effectiveness through iterative evolution.",
             key_insights: insights_text,
             sample_traces: format_traces_for_prompt(traces.take(3))
-          )
+          ))
         end
 
         # Convert DSPy prediction to ReflectionResult (public API)
-        sig { params(prediction: DSPy::Prediction, original_traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
+        sig { params(prediction: T.untyped, original_traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
         def convert_prediction_to_reflection_result(prediction, original_traces)
           reflection_id = generate_reflection_id
           
@@ -1356,9 +1356,13 @@ module DSPy
           # Start with original program
           @population << program
           
-          # Generate instruction variants to fill population
-          original_instruction = program.signature_class.description
-          variants = generate_instruction_variants(original_instruction)
+          # Generate instruction variants to fill population if program has signature_class
+          if program.respond_to?(:signature_class) && program.signature_class.respond_to?(:description)
+            original_instruction = program.signature_class.description
+            variants = generate_instruction_variants(original_instruction)
+          else
+            variants = []
+          end
           
           # Create program copies with different instructions
           variants.take(@config.population_size - 1).each do |variant|
@@ -1369,9 +1373,19 @@ module DSPy
           # If we need more candidates, duplicate and mutate
           while @population.size < @config.population_size
             base_program = @population.sample
-            mutated = create_program_with_instruction(base_program, 
-              generate_instruction_variants(base_program.signature_class.description).first)
-            @population << mutated
+            if base_program.respond_to?(:signature_class) && base_program.signature_class.respond_to?(:description)
+              instruction_variants = generate_instruction_variants(base_program.signature_class.description)
+              if instruction_variants.any?
+                mutated = create_program_with_instruction(base_program, instruction_variants.first)
+                @population << mutated
+              else
+                # If no variants available, just duplicate the base program
+                @population << base_program
+              end
+            else
+              # If no signature_class available, just duplicate the base program
+              @population << base_program
+            end
           end
           
           @generation = 0
@@ -1414,10 +1428,15 @@ module DSPy
             parent_index = survivors.sample
             parent = @population[parent_index]
             
-            # Generate mutation
-            variants = generate_instruction_variants(parent.signature_class.description)
-            mutated = create_program_with_instruction(parent, variants.first || parent.signature_class.description)
-            new_population << mutated
+            # Generate mutation if parent has signature_class
+            if parent.respond_to?(:signature_class) && parent.signature_class.respond_to?(:description)
+              variants = generate_instruction_variants(parent.signature_class.description)
+              mutated = create_program_with_instruction(parent, variants.first || parent.signature_class.description)
+              new_population << mutated
+            else
+              # If no signature_class, just duplicate the parent
+              new_population << parent
+            end
           end
           
           @population = new_population
@@ -1475,10 +1494,19 @@ module DSPy
         def population_diversity
           return 0.0 if @population.empty?
           
-          instructions = @population.map(&:signature_class).map(&:description)
-          unique_instructions = instructions.uniq.size
+          # Only calculate diversity for programs that have signature_class
+          instructions = @population.filter_map do |program|
+            if program.respond_to?(:signature_class) && program.signature_class.respond_to?(:description)
+              program.signature_class.description
+            else
+              nil
+            end
+          end
           
-          unique_instructions.to_f / @population.size.to_f
+          return 0.0 if instructions.empty?
+          
+          unique_instructions = instructions.uniq.size
+          unique_instructions.to_f / instructions.size.to_f
         end
 
         private
@@ -2693,8 +2721,6 @@ module DSPy
         sig { returns(T::Boolean) }
         attr_accessor :use_pareto_selection
 
-        sig { returns(T::Boolean) }
-        attr_accessor :simple_mode
         sig { returns(T::Array[MutationType]) }
         attr_accessor :mutation_types
         sig { returns(Float) }
@@ -2706,13 +2732,11 @@ module DSPy
         def initialize
           super
           # reflection_lm must be explicitly set by user - no default provided
-          # Use T.let to satisfy Sorbet that this will be set before use
-          @reflection_lm = T.unsafe(nil)  # Must be set by user before use
+          @reflection_lm = nil
           @num_generations = 10
           @population_size = 8
           @mutation_rate = 0.7
           @use_pareto_selection = true
-          @simple_mode = false
           @mutation_types = [MutationType::Rewrite, MutationType::Expand, MutationType::Simplify, MutationType::Combine, MutationType::Rephrase]
           @crossover_rate = 0.6
           @crossover_types = [CrossoverType::Uniform, CrossoverType::Blend, CrossoverType::Structured]
@@ -2726,7 +2750,6 @@ module DSPy
             population_size: @population_size,
             mutation_rate: @mutation_rate,
             use_pareto_selection: @use_pareto_selection,
-            simple_mode: @simple_mode,
             mutation_types: @mutation_types,
             crossover_rate: @crossover_rate,
             crossover_types: @crossover_types
@@ -2745,6 +2768,12 @@ module DSPy
       end
       def initialize(metric: nil, config: nil)
         @config = config || GEPAConfig.new
+        
+        # Validate that reflection_lm is configured
+        unless @config.reflection_lm
+          raise ArgumentError, "reflection_lm must be configured for GEPA optimization. Set config.reflection_lm to a DSPy::LM instance."
+        end
+        
         super(metric: metric, config: @config)
       end
 
@@ -2765,199 +2794,12 @@ module DSPy
           num_generations: @config.num_generations,
           population_size: @config.population_size
         }) do
-          # Simple optimization for Phase 1.5 - basic instruction optimization
-          if @config.simple_mode
-            perform_simple_optimization(program, trainset, valset)
-          else
-            # Phase 2 - Full GEPA genetic algorithm implementation
-            perform_gepa_optimization(program, trainset, valset)
-          end
+          # Always perform full GEPA genetic algorithm optimization
+          perform_gepa_optimization(program, trainset, valset)
         end
       end
 
       private
-
-      # Simple optimization implementation for testing
-      sig do
-        params(
-          program: T.untyped,
-          trainset: T::Array[T.untyped],
-          valset: T.nilable(T::Array[T.untyped])
-        ).returns(OptimizationResult)
-      end
-      def perform_simple_optimization(program, trainset, valset)
-        return basic_result(program) unless program.respond_to?(:signature_class)
-        
-        original_description = program.signature_class.description
-        best_program = program
-        best_score = simple_evaluate_program(program, trainset)
-        
-        # Try different instruction variations
-        instruction_variants = generate_instruction_variants(original_description)
-        
-        instruction_variants.each_with_index do |variant, index|
-          emit_event('instruction_variant_test', {
-            variant: variant,
-            iteration: index + 1,
-            total_variants: instruction_variants.size
-          })
-          
-          # Create modified program
-          modified_program = create_program_with_instruction(program, variant)
-          score = simple_evaluate_program(modified_program, trainset)
-          
-          if score > best_score
-            best_program = modified_program
-            best_score = score
-            
-            emit_event('improvement_found', {
-              new_score: score,
-              previous_score: best_score,
-              instruction: variant
-            })
-          end
-        end
-        
-        OptimizationResult.new(
-          optimized_program: best_program,
-          scores: { accuracy: best_score },
-          history: {
-            original_score: simple_evaluate_program(program, trainset),
-            variants_tested: instruction_variants.size,
-            best_instruction: best_program.signature_class.description
-          },
-          best_score_name: 'accuracy',
-          best_score_value: best_score,
-          metadata: {
-            optimizer: 'GEPA',
-            mode: 'Simple Optimization',
-            reflection_lm: @config.reflection_lm&.model
-          }
-        )
-      end
-
-      # Generate variations of the instruction
-      sig { params(original_instruction: String).returns(T::Array[String]) }
-      def generate_instruction_variants(original_instruction)
-        variants = []
-        
-        # Add "step by step" variant
-        unless original_instruction.include?("step")
-          variants << "#{original_instruction} Think step by step."
-        end
-        
-        # Add "detailed" variant  
-        unless original_instruction.include?("detail")
-          variants << "#{original_instruction} Provide detailed reasoning."
-        end
-        
-        # Add "careful" variant
-        unless original_instruction.include?("careful")
-          variants << "Be careful and accurate. #{original_instruction}"
-        end
-        
-        variants.take(3) # Limit to 3 variants for simple mode
-      end
-
-      # Create a new program instance with modified instruction using DSPy.rb dynamic capabilities
-      sig { params(original_program: T.untyped, new_instruction: String).returns(T.untyped) }
-      def create_program_with_instruction(original_program, new_instruction)
-        case original_program
-        when DSPy::Predict
-          # DSPy::Predict has built-in support for instruction modification
-          original_program.with_instruction(new_instruction)
-        when DSPy::Module
-          # For custom DSPy::Module classes, create new instance with updated predictors
-          create_modified_module_instance(original_program, new_instruction)
-        else
-          # For other types (like test doubles), check available methods
-          if original_program.respond_to?(:with_instruction)
-            original_program.with_instruction(new_instruction)
-          elsif original_program.respond_to?(:signature_class)
-            # Create new DSPy::Predict with the same signature but new instruction
-            signature_class = original_program.signature_class
-            DSPy::Predict.new(signature_class).with_instruction(new_instruction)
-          else
-            # Fallback: return original if we can't modify
-            emit_event('program_modification_fallback', {
-              program_type: original_program.class.name,
-              reason: 'No modification method available'
-            })
-            original_program
-          end
-        end
-      rescue => e
-        emit_event('program_modification_error', {
-          error: e.message,
-          program_type: original_program.class.name
-        })
-        # Return original program on error
-        original_program
-      end
-
-      # Create modified version of custom DSPy::Module instance (for main GEPA class)
-      sig { params(original_module: DSPy::Module, new_instruction: String).returns(DSPy::Module) }
-      def create_modified_module_instance(original_module, new_instruction)
-        begin
-          # Create a new instance of the same class
-          new_module = original_module.class.new
-          
-          # Try to find and update any internal predictors
-          original_module.instance_variables.each do |var_name|
-            var_value = original_module.instance_variable_get(var_name)
-            
-            if var_value.is_a?(DSPy::Predict)
-              # Update the instruction for internal predictors
-              modified_predictor = var_value.with_instruction(new_instruction)
-              new_module.instance_variable_set(var_name, modified_predictor)
-            else
-              # Copy other instance variables as-is
-              new_module.instance_variable_set(var_name, var_value)
-            end
-          end
-          
-          new_module
-        rescue => e
-          emit_event('module_modification_error', {
-            error: e.message,
-            module_class: original_module.class.name
-          })
-          # Fallback to original module
-          original_module
-        end
-      end
-
-      # Simple evaluation for testing (different from base class evaluate_program)
-      sig { params(program: T.untyped, trainset: T::Array[T.untyped]).returns(Float) }
-      def simple_evaluate_program(program, trainset)
-        return 0.0 unless @metric
-        
-        scores = trainset.map do |example|
-          prediction = program.call(**example.input_values)
-          @metric.call(example, prediction).to_f
-        rescue => e
-          emit_event('evaluation_error', { error: e.message, example_id: example.object_id.to_s })
-          0.0
-        end
-        
-        scores.sum / scores.size
-      end
-
-      # Return basic result when simple optimization isn't applicable
-      sig { params(program: T.untyped).returns(OptimizationResult) }
-      def basic_result(program)
-        OptimizationResult.new(
-          optimized_program: program,
-          scores: { gepa_score: 0.0 },
-          history: { phase: 'Phase 1 - Basic Structure' },
-          best_score_name: 'gepa_score',
-          best_score_value: 0.0,
-          metadata: {
-            optimizer: 'GEPA',
-            implementation_status: 'Phase 1 - Infrastructure Complete'
-          }
-        )
-      end
       
       # Complete GEPA genetic algorithm optimization
       sig do

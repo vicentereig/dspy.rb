@@ -14,10 +14,10 @@ require_relative 'dspy/events/types'
 
 module DSPy
   extend Dry::Configurable
-  
+
   setting :lm
   setting :logger, default: Dry.Logger(:dspy, formatter: :string)
-  
+
   # Structured output configuration for LLM providers
   setting :structured_outputs do
     setting :openai, default: false
@@ -27,7 +27,7 @@ module DSPy
     setting :max_retries, default: 3
     setting :fallback_enabled, default: true
   end
-  
+
   # Test mode disables sleeps in retry logic
   setting :test_mode, default: false
 
@@ -35,14 +35,14 @@ module DSPy
     @logger ||= create_logger
   end
 
-  def self.log(event, **attributes)
+  def self.log(event_name, **attributes)
     # Return nil early if logger is not configured (backward compatibility)
     return nil unless logger
-    
+
     # Forward to event system - this maintains backward compatibility
     # while providing all new event system benefits
-    event(event, attributes)
-    
+    event(event_name, attributes)
+
     # Return nil to maintain backward compatibility
     nil
   end
@@ -53,7 +53,7 @@ module DSPy
       event_obj = event_name_or_object
       event_name = event_obj.name
       attributes = event_obj.to_attributes
-      
+
       # For LLM events, use OpenTelemetry semantic conventions for spans
       if event_obj.is_a?(DSPy::Events::LLMEvent)
         otel_attributes = event_obj.to_otel_attributes
@@ -65,17 +65,17 @@ module DSPy
       # Handle string event names (backward compatibility)
       event_name = event_name_or_object
       raise ArgumentError, "Event name cannot be nil" if event_name.nil?
-      
+
       # Handle nil attributes
       attributes = {} if attributes.nil?
-      
+
       # Create OpenTelemetry span for the event if observability is enabled
       create_event_span(event_name, attributes)
     end
-    
+
     # Perform the actual logging (original DSPy.log behavior)
-    emit_log(event_name, attributes)
-    
+    # emit_log(event_name, attributes)
+
     # Notify event listeners
     events.notify(event_name, attributes)
   end
@@ -88,21 +88,21 @@ module DSPy
 
   def self.emit_log(event_name, attributes)
     return unless logger
-    
+
     # Merge context automatically (but don't include span_stack)
     context = Context.current.dup
     context.delete(:span_stack)
     attributes = context.merge(attributes)
     attributes[:event] = event_name
-    
+
     # Use Dry::Logger's structured logging
     logger.info(attributes)
   end
 
   # Internal events that should not create OpenTelemetry spans
   INTERNAL_EVENTS = [
-    'span.start', 
-    'span.end', 
+    'span.start',
+    'span.end',
     'span.attributes',
     'observability.disabled',
     'observability.error',
@@ -114,11 +114,11 @@ module DSPy
   def self.create_event_span(event_name, attributes)
     return unless DSPy::Observability.enabled?
     return if INTERNAL_EVENTS.include?(event_name)
-    
+
     begin
       # Flatten nested hashes for OpenTelemetry span attributes
       flattened_attributes = flatten_attributes(attributes)
-      
+
       # Create and immediately finish a span for this event
       # Events are instant moments in time, not ongoing operations
       span = DSPy::Observability.start_span(event_name, flattened_attributes)
@@ -137,21 +137,21 @@ module DSPy
   def self.flatten_attributes(attributes, parent_key = '', result = {})
     attributes.each do |key, value|
       new_key = parent_key.empty? ? key.to_s : "#{parent_key}.#{key}"
-      
+
       if value.is_a?(Hash)
         flatten_attributes(value, new_key, result)
       else
         result[new_key] = value
       end
     end
-    
+
     result
   end
 
   def self.create_logger
     env = ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'
     log_output = ENV['DSPY_LOG'] # Allow override
-    
+
     case env
     when 'test'
       # Test: key=value format to log/test.log (or override)

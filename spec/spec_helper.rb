@@ -5,6 +5,10 @@ require 'webmock/rspec'
 
 require 'dspy'
 
+require 'newrelic_rpm'
+
+NewRelic::Agent.manual_start
+
 # Disable observability during tests to avoid telemetry overhead
 DSPy::Observability.reset!
 
@@ -18,14 +22,14 @@ end
 # Pre-download embedding model for tests
 begin
   require 'dspy/memory/local_embedding_engine'
-  
+
   # Allow HTTP connections temporarily to download the model
   original_allow_setting = WebMock.net_connect_allowed?
   WebMock.allow_net_connect!
-  
+
   # Pre-download the model so it's available for tests
   DSPy::Memory::LocalEmbeddingEngine.new
-  
+
   puts "✓ Embedding model pre-downloaded successfully"
 rescue => e
   puts "⚠ Could not pre-download embedding model: #{e.message}"
@@ -47,7 +51,7 @@ VCR.configure do |config|
   config.filter_sensitive_data('<OPENAI_API_KEY>') { ENV['OPENAI_API_KEY'] }
   config.filter_sensitive_data('<ANTHROPIC_API_KEY>') { ENV['ANTHROPIC_API_KEY'] }
   config.filter_sensitive_data('<GEMINI_API_KEY>') { ENV['GEMINI_API_KEY'] }
-  
+
   # Filter out sensitive headers and response data
   # Organization IDs in OpenAI responses
   config.filter_sensitive_data('<OPENAI_ORGANIZATION>') do |interaction|
@@ -55,21 +59,21 @@ VCR.configure do |config|
       interaction.response.headers['Openai-Organization'].first
     end
   end
-  
+
   # Organization IDs in Anthropic responses
   config.filter_sensitive_data('<ANTHROPIC_ORGANIZATION>') do |interaction|
     if interaction.response.headers['Anthropic-Organization']
       interaction.response.headers['Anthropic-Organization'].first
     end
   end
-  
+
   # Request IDs that might be sensitive
   config.filter_sensitive_data('<REQUEST_ID>') do |interaction|
     if interaction.response.headers['X-Request-Id']
       interaction.response.headers['X-Request-Id'].first
     end
   end
-  
+
   # Filter out cookies - use a more comprehensive approach
   config.before_record do |interaction|
     # Redact Set-Cookie headers
@@ -80,16 +84,16 @@ VCR.configure do |config|
         "#{cookie_name}=<REDACTED>"
       end
     end
-    
+
     # Redact organization IDs (backup approach)
     if interaction.response.headers['Openai-Organization']
       interaction.response.headers['Openai-Organization'] = ['<OPENAI_ORGANIZATION>']
     end
-    
+
     if interaction.response.headers['Anthropic-Organization']
       interaction.response.headers['Anthropic-Organization'] = ['<ANTHROPIC_ORGANIZATION>']
     end
-    
+
     # Redact request IDs
     if interaction.response.headers['X-Request-Id']
       interaction.response.headers['X-Request-Id'] = ['<REQUEST_ID>']
@@ -107,7 +111,7 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
-  
+
   # Store and restore DSPy configuration to prevent test interference
   config.before(:each) do |example|
     # Save original configuration before each test
@@ -120,7 +124,7 @@ RSpec.configure do |config|
                              nil
                            end
   end
-  
+
   config.after(:each) do |example|
     # Restore original configuration after each test unless it's an integration test
     if @original_dspy_config && !example.metadata[:vcr]

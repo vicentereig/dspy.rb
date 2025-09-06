@@ -15,7 +15,14 @@ RSpec.describe 'GEPA Phase 1 Integration' do
   end
 
   let(:metric) { proc { |example, prediction| example.expected_values[:answer] == prediction.answer } }
-  let(:gepa) { DSPy::Teleprompt::GEPA.new(metric: metric) }
+  let(:gepa_config) do
+    config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+    # Use a mock LM instance for testing
+    mock_lm = double('LM', model: 'gpt-4o-mini')
+    config.reflection_lm = mock_lm
+    config
+  end
+  let(:gepa) { DSPy::Teleprompt::GEPA.new(metric: metric, config: gepa_config) }
 
   let(:trainset) do
     [
@@ -131,7 +138,13 @@ RSpec.describe 'GEPA Phase 1 Integration' do
   end
 
   describe 'ReflectionEngine integration' do
-    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new }
+    let(:engine_config) do
+      config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      mock_lm = instance_double(DSPy::LM, model: 'gpt-4o-mini')
+      T.unsafe(config).reflection_lm = mock_lm
+      config
+    end
+    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new(engine_config) }
     let(:sample_traces) do
       [
         DSPy::Teleprompt::GEPA::ExecutionTrace.new(
@@ -214,7 +227,13 @@ RSpec.describe 'GEPA Phase 1 Integration' do
 
   describe 'Component interaction integration' do
     let(:collector) { DSPy::Teleprompt::GEPA::TraceCollector.new }
-    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new }
+    let(:engine_config) do
+      config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      mock_lm = instance_double(DSPy::LM, model: 'gpt-4o-mini')
+      T.unsafe(config).reflection_lm = mock_lm
+      config
+    end
+    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new(engine_config) }
 
     it 'works with TraceCollector feeding ReflectionEngine' do
       # Collect some traces
@@ -259,7 +278,13 @@ RSpec.describe 'GEPA Phase 1 Integration' do
 
   describe 'Error handling and edge cases' do
     let(:collector) { DSPy::Teleprompt::GEPA::TraceCollector.new }
-    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new }
+    let(:engine_config) do
+      config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      mock_lm = instance_double(DSPy::LM, model: 'gpt-4o-mini')
+      T.unsafe(config).reflection_lm = mock_lm
+      config
+    end
+    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new(engine_config) }
 
     it 'handles empty trace collection gracefully' do
       expect(collector.collected_count).to eq(0)
