@@ -20,6 +20,9 @@ RSpec.describe 'DSPy::Teleprompt::GEPA Simple Optimization' do
   let(:gepa_config) do
     config = DSPy::Teleprompt::GEPA::GEPAConfig.new
     config.reflection_lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+    # Reduce complexity for faster test execution and VCR recording
+    config.num_generations = 2  # Reduced from default 10
+    config.population_size = 2  # Reduced from default 8
     config
   end
   let(:gepa) { DSPy::Teleprompt::GEPA.new(metric: metric, config: gepa_config) }
@@ -140,6 +143,9 @@ RSpec.describe 'DSPy::Teleprompt::GEPA Simple Optimization' do
     let(:full_config) do
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
       config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY'])
+      # Reduce complexity for faster test execution and VCR recording
+      config.num_generations = 1  # Minimal for testing
+      config.population_size = 2  # Minimal for testing
       config
     end
     
