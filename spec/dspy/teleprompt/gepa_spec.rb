@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe DSPy::Teleprompt::GEPA do
   # Simple signature for testing
   class TestQuestionAnswering < DSPy::Signature
+    description "Answer questions based on knowledge"
+
     input do
       const :question, String
     end
