@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
   describe 'basic T.nilable types' do
     class BasicNilableSchemaSignature < DSPy::Signature
+      description "Test signature with basic nilable types"
+
       output do
         const :name, T.nilable(String)
         const :count, T.nilable(Integer)  
@@ -57,6 +59,8 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
     end
 
     class NilableEnumSignature < DSPy::Signature
+      description "Test signature with nilable enum types"
+
       output do
         const :status, T.nilable(Status)
       end
@@ -74,6 +78,8 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
 
   describe 'T.nilable with arrays' do
     class NilableArraySchemaSignature < DSPy::Signature
+      description "Test signature with nilable array types"
+
       output do
         const :items, T.nilable(T::Array[String])
         const :numbers, T.nilable(T::Array[Integer])
@@ -106,6 +112,8 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
     end
 
     class NilableStructSchemaSignature < DSPy::Signature
+      description "Test signature with nilable custom struct types"
+
       output do
         const :data, T.nilable(TestStruct)
       end
@@ -132,6 +140,8 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
 
   describe 'T.nilable with hash types' do
     class NilableHashSchemaSignature < DSPy::Signature
+      description "Test signature with nilable hash types"
+
       output do
         const :metadata, T.nilable(T::Hash[String, Integer])
       end
@@ -161,6 +171,8 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
     end
 
     class NilableUnionSchemaSignature < DSPy::Signature
+      description "Test signature with nilable union types"
+
       output do
         const :choice, T.nilable(T.any(UnionTypeA, UnionTypeB))
       end
@@ -206,6 +218,8 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
     end
 
     class NestedNilableSignature < DSPy::Signature
+      description "Test signature with nested nilable structures"
+
       output do
         const :wrapper, T.nilable(NestedStruct)
         const :array_of_nilable, T::Array[T.nilable(String)]
@@ -244,6 +258,8 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
 
   describe 'required field handling with nilable types' do
     class RequiredNilableSignature < DSPy::Signature
+      description "Test signature for required field handling with nilable types"
+
       output do
         const :required_nilable, T.nilable(String)
         const :optional_nilable, T.nilable(String), default: nil
