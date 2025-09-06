@@ -24,7 +24,7 @@ module DSPy
         end
       end
 
-      # Enum for crossover operation types  
+      # Enum for crossover operation types
       class CrossoverType < T::Enum
         enums do
           Uniform = new
@@ -59,6 +59,7 @@ module DSPy
             metadata: T.nilable(MetadataHash)
           ).void
         end
+        
         def initialize(trace_id:, event_name:, timestamp:, span_id: nil, attributes: {}, metadata: nil)
           # Freeze nested structures for true immutability
           frozen_attributes = attributes.freeze
@@ -236,7 +237,7 @@ module DSPy
         def summary
           confidence_pct = (confidence * 100).round
           mutation_list = suggested_mutations.map(&:to_s).join(', ')
-          
+
           "#{diagnosis.split('.').first}. " \
           "Confidence: #{confidence_pct}%. " \
           "#{improvements.size} improvements suggested. " \
@@ -289,7 +290,7 @@ module DSPy
         def collect_trace(event_name, event_data)
           @traces_mutex.synchronize do
             trace_id = event_data['trace_id'] || event_data[:trace_id] || generate_trace_id
-            
+
             # Avoid duplicates
             return if @traces.any? { |t| t.trace_id == trace_id }
 
@@ -350,7 +351,7 @@ module DSPy
             collect_trace(name, attrs)
           end
 
-          # Subscribe to module events  
+          # Subscribe to module events
           self.class.add_subscription('*.reasoning_complete') do |name, attrs|
             collect_trace(name, attrs)
           end
@@ -404,7 +405,7 @@ module DSPy
           patterns = analyze_execution_patterns(traces)
           improvements = generate_improvement_suggestions(patterns)
           mutations = suggest_mutations(patterns)
-          
+
           # For Phase 1, we generate a simple rule-based analysis
           # Future phases will use LLM-based reflection
           diagnosis = generate_diagnosis(patterns)
@@ -485,90 +486,17 @@ module DSPy
           mutations << :combine if llm_count > 2
           mutations << :rewrite if llm_count == 1
           mutations << :rephrase if mutations.empty?
-          
+
           mutations.uniq
         end
 
-        private
-
-        # Generate unique reflection ID
-        sig { returns(String) }
-        def generate_reflection_id
-          "reflection-#{SecureRandom.hex(4)}"
-        end
-
-        # Generate diagnosis text
-        sig { params(patterns: T::Hash[Symbol, T.untyped]).returns(String) }
-        def generate_diagnosis(patterns)
-          if patterns[:total_tokens] > 400
-            'High token usage indicates potential inefficiency in prompt design'
-          elsif patterns[:llm_traces_count] == 0
-            'No LLM interactions found - execution may not be working as expected'
-          elsif patterns[:avg_response_length] < 10
-            'Responses are unusually brief which may indicate prompt clarity issues'
-          else
-            'Execution patterns appear normal with room for optimization'
-          end
-        end
-
-        # Generate reasoning text
-        sig { params(patterns: T::Hash[Symbol, T.untyped], traces: T::Array[ExecutionTrace]).returns(String) }
-        def generate_reasoning(patterns, traces)
-          reasoning_parts = []
-          
-          reasoning_parts << "Analyzed #{traces.size} execution traces"
-          reasoning_parts << "#{patterns[:llm_traces_count]} LLM interactions"
-          reasoning_parts << "#{patterns[:module_traces_count]} module operations"
-          reasoning_parts << "Total token usage: #{patterns[:total_tokens]}"
-          
-          reasoning_parts.join('. ') + '.'
-        end
-
-        # Calculate confidence based on patterns
-        sig { params(patterns: T::Hash[Symbol, T.untyped]).returns(Float) }
-        def calculate_confidence(patterns)
-          base_confidence = 0.7
-          
-          # More traces = higher confidence
-          trace_bonus = [patterns[:llm_traces_count] + patterns[:module_traces_count], 10].min * 0.02
-          
-          # Reasonable token usage = higher confidence
-          token_penalty = patterns[:total_tokens] > 1000 ? -0.1 : 0.0
-          
-          [(base_confidence + trace_bonus + token_penalty), 1.0].min
-        end
-
-        # Calculate average response length from LLM traces
-        sig { params(llm_traces: T::Array[ExecutionTrace]).returns(Integer) }
-        def calculate_avg_response_length(llm_traces)
-          return 0 if llm_traces.empty?
-          
-          total_length = llm_traces.sum do |trace|
-            response = trace.response_text
-            response ? response.length : 0
-          end
-          
-          total_length / llm_traces.size
-        end
-
-        # Calculate timespan of traces
-        sig { params(traces: T::Array[ExecutionTrace]).returns(Float) }
-        def calculate_timespan(traces)
-          return 0.0 if traces.size < 2
-          
-          timestamps = traces.map(&:timestamp).sort
-          (timestamps.last - timestamps.first).to_f
-        end
-        
-        # LLM-based reflection methods for Phase 2
-        
         public
-        
+
         # Perform LLM-based reflection on execution traces using DSPy::Predict
         sig { params(traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
         def reflect_with_llm(traces)
           return reflect_on_traces(traces) if traces.empty?
-          
+
           begin
             # Use DSPy::Predict for analysis instead of raw prompts
             prediction = analyze_traces_with_dspy(traces)
@@ -590,7 +518,7 @@ module DSPy
             )
           end
         end
-        
+
         # Generate structured reflection prompt for LLM (public API)
         sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
         def generate_reflection_prompt(traces)
@@ -616,10 +544,10 @@ module DSPy
               }
             PROMPT
           end
-          
+
           summary = trace_summary_for_reflection(traces)
           insights = extract_optimization_insights(traces)
-          
+
           <<~PROMPT
             You are analyzing execution traces for a genetic algorithm-based prompt optimization system called GEPA.
             
@@ -656,21 +584,21 @@ module DSPy
             Focus on practical recommendations that will improve prompt performance through genetic algorithm evolution.
           PROMPT
         end
-        
+
         # Parse LLM reflection response into ReflectionResult (public API)
         sig { params(response_text: String, original_traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
         def parse_llm_reflection(response_text, original_traces)
           reflection_id = generate_reflection_id
-          
+
           begin
             parsed = JSON.parse(response_text)
-            
+
             # Extract and validate components
             diagnosis = parsed['diagnosis'] || 'LLM reflection analysis'
             improvements = Array(parsed['improvements']).select { |i| i.is_a?(String) && !i.strip.empty? }
             confidence = [parsed['confidence'].to_f, 1.0].min
             reasoning = parsed['reasoning'] || 'LLM-based analysis of execution traces'
-            
+
             # Validate and sanitize mutation suggestions
             raw_mutations = Array(parsed['suggested_mutations'])
             valid_mutations = raw_mutations.filter_map do |mut|
@@ -679,10 +607,10 @@ module DSPy
                 mutation_symbol
               end
             end.uniq
-            
+
             # Ensure we have at least one valid mutation suggestion
             valid_mutations = [:rewrite] if valid_mutations.empty?
-            
+
             ReflectionResult.new(
               trace_id: reflection_id,
               diagnosis: diagnosis,
@@ -699,7 +627,7 @@ module DSPy
                 insights: parsed['insights'] || {}
               }
             )
-            
+
           rescue JSON::ParserError => e
             # Handle malformed JSON response
             ReflectionResult.new(
@@ -720,26 +648,26 @@ module DSPy
             )
           end
         end
-        
+
         # Create comprehensive trace summary for reflection (public API)
         sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
         def trace_summary_for_reflection(traces)
           return "No execution traces available" if traces.empty?
-          
+
           llm_traces = traces.select(&:llm_trace?)
           module_traces = traces.select(&:module_trace?)
-          
+
           total_tokens = llm_traces.sum(&:token_usage)
           unique_models = llm_traces.map(&:model_name).compact.uniq
           timespan = calculate_timespan(traces)
-          
+
           avg_response_length = if llm_traces.any?
             total_length = llm_traces.sum { |t| t.response_text&.length || 0 }
             total_length / llm_traces.size
           else
             0
           end
-          
+
           <<~SUMMARY
             Total traces: #{traces.size}
             LLM interactions: #{llm_traces.size}
@@ -750,41 +678,41 @@ module DSPy
             Execution timespan: #{timespan.round(2)} seconds
           SUMMARY
         end
-        
+
         # Extract optimization insights from trace analysis (public API)
         sig { params(traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
         def extract_optimization_insights(traces)
           llm_traces = traces.select(&:llm_trace?)
-          
+
           insights = {
             token_efficiency: analyze_token_efficiency(llm_traces),
             response_quality: analyze_response_quality(llm_traces),
             model_consistency: analyze_model_consistency(llm_traces)
           }
-          
+
           insights
         end
-        
+
         # Reflection with optimization context (public API)
         sig { params(traces: T::Array[ExecutionTrace], context: T::Hash[Symbol, T.untyped]).returns(ReflectionResult) }
         def reflection_with_context(traces, context)
           base_result = reflect_with_llm(traces)
-          
+
           # Incorporate context into reasoning
           context_reasoning = "Generation #{context[:generation] || 'unknown'} analysis. "
           context_reasoning += "Population size: #{context[:population_size] || 'unknown'}. "
-          
+
           if context[:current_best_score]
             context_reasoning += "Current best score: #{context[:current_best_score]}. "
           end
-          
+
           # Adjust mutation suggestions based on history
           adjusted_mutations = adjust_mutations_for_history(
             base_result.suggested_mutations,
             context[:mutation_history] || [],
             context[:recent_performance_trend]
           )
-          
+
           ReflectionResult.new(
             trace_id: base_result.trace_id,
             diagnosis: base_result.diagnosis,
@@ -795,258 +723,22 @@ module DSPy
             metadata: base_result.metadata.merge(optimization_context: context)
           )
         end
-        
-        # LLM-based reflection methods for Phase 2
-        
+
         public
-        
-        # Perform LLM-based reflection on execution traces using DSPy::Predict
-        sig { params(traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
-        def reflect_with_llm(traces)
-          return reflect_on_traces(traces) if traces.empty?
-          
-          begin
-            # Use DSPy::Predict for analysis instead of raw prompts
-            prediction = analyze_traces_with_dspy(traces)
-            convert_prediction_to_reflection_result(prediction, traces)
-          rescue => e
-            # Fallback to rule-based analysis on LLM failure
-            fallback_result = reflect_on_traces(traces)
-            fallback_result.class.new(
-              trace_id: fallback_result.trace_id,
-              diagnosis: "LLM reflection failed (#{e.message}), using fallback analysis: #{fallback_result.diagnosis}",
-              improvements: fallback_result.improvements,
-              confidence: [fallback_result.confidence * 0.5, 0.5].min,
-              reasoning: "Fallback to rule-based analysis after LLM error: #{fallback_result.reasoning}",
-              suggested_mutations: fallback_result.suggested_mutations,
-              metadata: fallback_result.metadata.merge(
-                llm_error: e.message,
-                fallback_used: true
-              )
-            )
-          end
-        end
-        
-        # Generate structured reflection prompt for LLM (public API)
-        sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
-        def generate_reflection_prompt(traces)
-          if traces.empty?
-            return <<~PROMPT
-              You are analyzing execution traces for a genetic algorithm-based prompt optimization system called GEPA.
-              
-              **Task**: Analyze execution patterns and provide optimization recommendations.
-              
-              **Context**: No execution traces available.
-              
-              Please provide your analysis in the following JSON format:
-              {
-                "diagnosis": "Brief description of what you observed",
-                "improvements": ["List of actionable improvement suggestions"],
-                "confidence": 0.0,
-                "reasoning": "Your reasoning process",
-                "suggested_mutations": ["expand", "rewrite", "simplify", "combine", "rephrase"],
-                "insights": {
-                  "pattern_detected": "no_data",
-                  "optimization_opportunity": "data_collection"
-                }
-              }
-            PROMPT
-          end
-          
-          summary = trace_summary_for_reflection(traces)
-          insights = extract_optimization_insights(traces)
-          
-          <<~PROMPT
-            You are analyzing execution traces for a genetic algorithm-based prompt optimization system called GEPA.
-            
-            **Task**: Analyze execution patterns and provide optimization recommendations for prompt evolution.
-            
-            **Execution Summary**:
-            #{summary}
-            
-            **Optimization Context**:
-            - This is part of a genetic algorithm for prompt optimization
-            - Available mutation types: rewrite, expand, simplify, combine, rephrase
-            - Goal is to improve prompt effectiveness through iterative evolution
-            - Focus on actionable insights that can guide mutation and crossover operations
-            
-            **Key Optimization Insights**:
-            #{insights.map { |k, v| "- #{k}: #{v.is_a?(Hash) ? v.values.join(', ') : v}" }.join("\n")}
-            
-            **Sample Traces**:
-            #{format_traces_for_prompt(traces.take(3))}
-            
-            Please analyze these execution patterns and provide optimization recommendations in the following JSON format:
-            {
-              "diagnosis": "Brief description of execution patterns and issues identified",
-              "improvements": ["List of 2-4 specific, actionable improvement suggestions"],
-              "confidence": 0.85,
-              "reasoning": "Your detailed reasoning process for the analysis",
-              "suggested_mutations": ["List of 2-3 mutation types that would be most beneficial"],
-              "insights": {
-                "pattern_detected": "primary_pattern_identified", 
-                "optimization_opportunity": "key_area_for_improvement"
-              }
-            }
-            
-            Focus on practical recommendations that will improve prompt performance through genetic algorithm evolution.
-          PROMPT
-        end
-        
-        # Parse LLM reflection response into ReflectionResult (public API)
-        sig { params(response_text: String, original_traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
-        def parse_llm_reflection(response_text, original_traces)
-          reflection_id = generate_reflection_id
-          
-          begin
-            parsed = JSON.parse(response_text)
-            
-            # Extract and validate components
-            diagnosis = parsed['diagnosis'] || 'LLM reflection analysis'
-            improvements = Array(parsed['improvements']).select { |i| i.is_a?(String) && !i.strip.empty? }
-            confidence = [parsed['confidence'].to_f, 1.0].min
-            reasoning = parsed['reasoning'] || 'LLM-based analysis of execution traces'
-            
-            # Validate and sanitize mutation suggestions
-            raw_mutations = Array(parsed['suggested_mutations'])
-            valid_mutations = raw_mutations.filter_map do |mut|
-              mutation_symbol = mut.to_s.downcase.to_sym
-              if [:rewrite, :expand, :simplify, :combine, :rephrase].include?(mutation_symbol)
-                mutation_symbol
-              end
-            end.uniq
-            
-            # Ensure we have at least one valid mutation suggestion
-            valid_mutations = [:rewrite] if valid_mutations.empty?
-            
-            ReflectionResult.new(
-              trace_id: reflection_id,
-              diagnosis: diagnosis,
-              improvements: improvements,
-              confidence: confidence,
-              reasoning: reasoning,
-              suggested_mutations: valid_mutations,
-              metadata: {
-                reflection_model: @config.reflection_lm&.model,
-                analysis_timestamp: Time.now,
-                trace_count: original_traces.size,
-                token_usage: estimate_token_usage(response_text),
-                llm_based: true,
-                insights: parsed['insights'] || {}
-              }
-            )
-            
-          rescue JSON::ParserError => e
-            # Handle malformed JSON response
-            ReflectionResult.new(
-              trace_id: reflection_id,
-              diagnosis: "LLM reflection JSON parsing error: #{e.message}",
-              improvements: ['Review prompt structure and LLM response format'],
-              confidence: 0.3,
-              reasoning: "Failed to parse LLM reflection response as valid JSON",
-              suggested_mutations: [:rewrite],
-              metadata: {
-                reflection_model: @config.reflection_lm&.model,
-                analysis_timestamp: Time.now,
-                trace_count: original_traces.size,
-                token_usage: 0,
-                parsing_error: e.message,
-                raw_response: response_text.length > 500 ? "#{response_text[0..500]}..." : response_text
-              }
-            )
-          end
-        end
-        
-        # Create comprehensive trace summary for reflection (public API)
-        sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
-        def trace_summary_for_reflection(traces)
-          return "No execution traces available" if traces.empty?
-          
-          llm_traces = traces.select(&:llm_trace?)
-          module_traces = traces.select(&:module_trace?)
-          
-          total_tokens = llm_traces.sum(&:token_usage)
-          unique_models = llm_traces.map(&:model_name).compact.uniq
-          timespan = calculate_timespan(traces)
-          
-          avg_response_length = if llm_traces.any?
-            total_length = llm_traces.sum { |t| t.response_text&.length || 0 }
-            total_length / llm_traces.size
-          else
-            0
-          end
-          
-          <<~SUMMARY
-            Total traces: #{traces.size}
-            LLM interactions: #{llm_traces.size}
-            Module calls: #{module_traces.size}
-            Total tokens: #{total_tokens}
-            Models used: #{unique_models.join(', ')}
-            Average response length: #{avg_response_length} characters
-            Execution timespan: #{timespan.round(2)} seconds
-          SUMMARY
-        end
-        
-        # Extract optimization insights from trace analysis (public API)
-        sig { params(traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
-        def extract_optimization_insights(traces)
-          llm_traces = traces.select(&:llm_trace?)
-          
-          insights = {
-            token_efficiency: analyze_token_efficiency(llm_traces),
-            response_quality: analyze_response_quality(llm_traces),
-            model_consistency: analyze_model_consistency(llm_traces)
-          }
-          
-          insights
-        end
-        
-        # Reflection with optimization context (public API)
-        sig { params(traces: T::Array[ExecutionTrace], context: T::Hash[Symbol, T.untyped]).returns(ReflectionResult) }
-        def reflection_with_context(traces, context)
-          base_result = reflect_with_llm(traces)
-          
-          # Incorporate context into reasoning
-          context_reasoning = "Generation #{context[:generation] || 'unknown'} analysis. "
-          context_reasoning += "Population size: #{context[:population_size] || 'unknown'}. "
-          
-          if context[:current_best_score]
-            context_reasoning += "Current best score: #{context[:current_best_score]}. "
-          end
-          
-          # Adjust mutation suggestions based on history
-          adjusted_mutations = adjust_mutations_for_history(
-            base_result.suggested_mutations,
-            context[:mutation_history] || [],
-            context[:recent_performance_trend]
-          )
-          
-          ReflectionResult.new(
-            trace_id: base_result.trace_id,
-            diagnosis: base_result.diagnosis,
-            improvements: base_result.improvements,
-            confidence: base_result.confidence,
-            reasoning: context_reasoning + base_result.reasoning,
-            suggested_mutations: adjusted_mutations,
-            metadata: base_result.metadata.merge(optimization_context: context)
-          )
-        end
-        
-        public
-        
+
         # Create signature for trace reflection analysis (public API)
         sig { returns(T.class_of(DSPy::Signature)) }
         def create_trace_reflection_signature
           @trace_reflection_signature ||= Class.new(DSPy::Signature) do
             description "Analyze execution traces from GEPA optimization system and provide actionable optimization insights"
-            
+
             input do
               const :execution_summary, String, description: "Summary of execution traces and performance patterns"
               const :optimization_context, String, description: "Context about the genetic algorithm optimization goals"
-              const :key_insights, String, description: "Key insights extracted from trace analysis" 
+              const :key_insights, String, description: "Key insights extracted from trace analysis"
               const :sample_traces, String, description: "Representative execution trace samples"
             end
-            
+
             output do
               const :diagnosis, String, description: "Brief description of execution patterns and issues identified"
               const :improvements, T::Array[String], description: "List of 2-4 specific actionable improvement suggestions"
@@ -1063,17 +755,17 @@ module DSPy
         sig { params(traces: T::Array[ExecutionTrace]).returns(T.untyped) }
         def analyze_traces_with_dspy(traces)
           raise ArgumentError, "reflection_lm must be configured on GEPAConfig for LLM-based reflection" unless @config.reflection_lm
-          
+
           predictor = DSPy::Predict.new(create_trace_reflection_signature)
-          
+
           # Configure predictor to use reflection-specific LM
           predictor.config.lm = @config.reflection_lm
-          
+
           # Prepare input data
           summary = trace_summary_for_reflection(traces)
           insights = extract_optimization_insights(traces)
           insights_text = insights.map { |k, v| "- #{k}: #{v.is_a?(Hash) ? v.values.join(', ') : v}" }.join("\n")
-          
+
           # Get LLM analysis
           T.unsafe(predictor.call(
             execution_summary: summary,
@@ -1087,13 +779,13 @@ module DSPy
         sig { params(prediction: T.untyped, original_traces: T::Array[ExecutionTrace]).returns(ReflectionResult) }
         def convert_prediction_to_reflection_result(prediction, original_traces)
           reflection_id = generate_reflection_id
-          
+
           # Extract and validate prediction results
           diagnosis = prediction.diagnosis || 'DSPy reflection analysis'
           improvements = Array(prediction.improvements).select { |i| i.is_a?(String) && !i.strip.empty? }
           confidence = [[prediction.confidence&.to_f || 0.0, 1.0].min, 0.0].max
           reasoning = prediction.reasoning || 'DSPy-based analysis of execution traces'
-          
+
           # Validate mutation suggestions
           valid_mutations = Array(prediction.suggested_mutations).filter_map do |mut|
             mutation_symbol = mut.to_s.downcase.to_sym
@@ -1101,10 +793,10 @@ module DSPy
               mutation_symbol
             end
           end.uniq
-          
+
           # Ensure we have at least one valid mutation suggestion
           valid_mutations = [:rewrite] if valid_mutations.empty?
-          
+
           ReflectionResult.new(
             trace_id: reflection_id,
             diagnosis: diagnosis,
@@ -1126,9 +818,9 @@ module DSPy
             }
           )
         end
-        
+
         private
-        
+
         # Generate unique reflection ID
         sig { returns(String) }
         def generate_reflection_id
@@ -1153,12 +845,12 @@ module DSPy
         sig { params(patterns: T::Hash[Symbol, T.untyped], traces: T::Array[ExecutionTrace]).returns(String) }
         def generate_reasoning(patterns, traces)
           reasoning_parts = []
-          
+
           reasoning_parts << "Analyzed #{traces.size} execution traces"
           reasoning_parts << "#{patterns[:llm_traces_count]} LLM interactions"
           reasoning_parts << "#{patterns[:module_traces_count]} module operations"
           reasoning_parts << "Total token usage: #{patterns[:total_tokens]}"
-          
+
           reasoning_parts.join('. ') + '.'
         end
 
@@ -1166,13 +858,13 @@ module DSPy
         sig { params(patterns: T::Hash[Symbol, T.untyped]).returns(Float) }
         def calculate_confidence(patterns)
           base_confidence = 0.7
-          
+
           # More traces = higher confidence
           trace_bonus = [patterns[:llm_traces_count] + patterns[:module_traces_count], 10].min * 0.02
-          
+
           # Reasonable token usage = higher confidence
           token_penalty = patterns[:total_tokens] > 1000 ? -0.1 : 0.0
-          
+
           [(base_confidence + trace_bonus + token_penalty), 1.0].min
         end
 
@@ -1180,12 +872,12 @@ module DSPy
         sig { params(llm_traces: T::Array[ExecutionTrace]).returns(Integer) }
         def calculate_avg_response_length(llm_traces)
           return 0 if llm_traces.empty?
-          
+
           total_length = llm_traces.sum do |trace|
             response = trace.response_text
             response ? response.length : 0
           end
-          
+
           total_length / llm_traces.size
         end
 
@@ -1193,11 +885,11 @@ module DSPy
         sig { params(traces: T::Array[ExecutionTrace]).returns(Float) }
         def calculate_timespan(traces)
           return 0.0 if traces.size < 2
-          
+
           timestamps = traces.map(&:timestamp).sort
           (timestamps.last - timestamps.first).to_f
         end
-        
+
 
         # Format traces for inclusion in prompt
         sig { params(traces: T::Array[ExecutionTrace]).returns(String) }
@@ -1208,22 +900,22 @@ module DSPy
             "#{idx + 1}. [#{trace.event_name}] #{prompt_preview} → #{response_preview}"
           end.join("\n")
         end
-        
+
         # Estimate token usage from response
         sig { params(text: String).returns(Integer) }
         def estimate_token_usage(text)
           # Rough estimation: ~4 characters per token
           (text.length / 4.0).ceil
         end
-        
+
         # Analyze token efficiency patterns
         sig { params(llm_traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
         def analyze_token_efficiency(llm_traces)
           return { status: 'no_data', suggestions: [] } if llm_traces.empty?
-          
+
           total_tokens = llm_traces.sum(&:token_usage)
           avg_tokens = total_tokens.to_f / llm_traces.size
-          
+
           if avg_tokens > 400
             {
               status: 'poor',
@@ -1244,15 +936,15 @@ module DSPy
             }
           end
         end
-        
+
         # Analyze response quality patterns
         sig { params(llm_traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
         def analyze_response_quality(llm_traces)
           return { consistency: 'no_data', recommendations: [] } if llm_traces.empty?
-          
+
           response_lengths = llm_traces.map { |t| t.response_text&.length || 0 }
           length_variance = calculate_variance(response_lengths)
-          
+
           if length_variance > 1000
             {
               consistency: 'inconsistent',
@@ -1270,50 +962,50 @@ module DSPy
             }
           end
         end
-        
+
         # Analyze model consistency
         sig { params(llm_traces: T::Array[ExecutionTrace]).returns(T::Hash[Symbol, T.untyped]) }
         def analyze_model_consistency(llm_traces)
           models = llm_traces.map(&:model_name).compact.uniq
-          
+
           {
             unique_models: models.size,
             models_used: models,
             recommendation: models.size > 1 ? 'Consider using single model for consistency' : 'Model usage is consistent'
           }
         end
-        
+
         # Adjust mutations based on history to avoid repetition
         sig { params(suggested: T::Array[Symbol], history: T::Array[Symbol], trend: T.nilable(String)).returns(T::Array[Symbol]) }
         def adjust_mutations_for_history(suggested, history, trend)
           # Count recent usage of each mutation type
           recent_usage = history.last(5).tally
-          
+
           # Filter out overused mutations
           adjusted = suggested.reject do |mutation|
             recent_usage[mutation] && recent_usage[mutation] >= 2
           end
-          
+
           # If trend is declining, prefer different strategies
           if trend == 'declining'
             adjusted = adjusted.reject { |m| m == :expand } # Avoid expansion if performance declining
             adjusted += [:simplify, :rephrase] unless adjusted.include?(:simplify) || adjusted.include?(:rephrase)
           end
-          
+
           # Ensure we always have at least one suggestion
           adjusted.empty? ? [:rewrite] : adjusted.uniq
         end
-        
+
         # Calculate variance for array of numbers
         sig { params(values: T::Array[Integer]).returns(Float) }
         def calculate_variance(values)
           return 0.0 if values.size < 2
-          
+
           mean = values.sum.to_f / values.size
           sum_squared_diff = values.sum { |v| (v - mean) ** 2 }
           sum_squared_diff / values.size
         end
-        
+
         # Truncate text to specified length with ellipsis
         sig { params(text: String, length: Integer).returns(String) }
         def truncate_text(text, length)
@@ -1352,10 +1044,10 @@ module DSPy
         sig { params(program: T.untyped).void }
         def initialize_population(program)
           @population = []
-          
+
           # Start with original program
           @population << program
-          
+
           # Generate instruction variants to fill population if program has signature_class
           if program.respond_to?(:signature_class) && program.signature_class.respond_to?(:description)
             original_instruction = program.signature_class.description
@@ -1363,13 +1055,13 @@ module DSPy
           else
             variants = []
           end
-          
+
           # Create program copies with different instructions
           variants.take(@config.population_size - 1).each do |variant|
             variant_program = create_program_with_instruction(program, variant)
             @population << variant_program
           end
-          
+
           # If we need more candidates, duplicate and mutate
           while @population.size < @config.population_size
             base_program = @population.sample
@@ -1387,7 +1079,7 @@ module DSPy
               @population << base_program
             end
           end
-          
+
           @generation = 0
         end
 
@@ -1402,10 +1094,10 @@ module DSPy
               # Handle evaluation errors gracefully
               0.0
             end
-            
+
             scores.sum / scores.size
           end
-          
+
           @fitness_scores
         end
 
@@ -1413,21 +1105,21 @@ module DSPy
         sig { params(trainset: T::Array[T.untyped]).void }
         def evolve_generation(trainset)
           current_scores = evaluate_population(trainset)
-          
+
           # Simple selection: keep top 50% and mutate them
           sorted_indices = (0...@population.size).sort_by { |i| -current_scores[i] }
           survivors = sorted_indices.take(@config.population_size / 2)
-          
+
           new_population = []
-          
+
           # Keep best performers
           survivors.each { |i| new_population << @population[i] }
-          
+
           # Fill rest with mutations of survivors
           while new_population.size < @config.population_size
             parent_index = survivors.sample
             parent = @population[parent_index]
-            
+
             # Generate mutation if parent has signature_class
             if parent.respond_to?(:signature_class) && parent.signature_class.respond_to?(:description)
               variants = generate_instruction_variants(parent.signature_class.description)
@@ -1438,7 +1130,7 @@ module DSPy
               new_population << parent
             end
           end
-          
+
           @population = new_population
           @generation += 1
         end
@@ -1447,9 +1139,9 @@ module DSPy
         sig { params(program: T.untyped, trainset: T::Array[T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
         def run_evolution(program, trainset)
           initialize_population(program)
-          
+
           history = []
-          
+
           # Initial evaluation
           initial_scores = evaluate_population(trainset)
           history << {
@@ -1458,12 +1150,12 @@ module DSPy
             avg_fitness: initial_scores.sum / initial_scores.size,
             diversity: population_diversity
           }
-          
+
           # Evolution loop
           @config.num_generations.times do
             evolve_generation(trainset)
             scores = evaluate_population(trainset)
-            
+
             history << {
               generation: @generation,
               best_fitness: scores.max,
@@ -1471,7 +1163,7 @@ module DSPy
               diversity: population_diversity
             }
           end
-          
+
           {
             best_candidate: get_best_candidate,
             best_fitness: @fitness_scores.max,
@@ -1484,7 +1176,7 @@ module DSPy
         sig { returns(T.untyped) }
         def get_best_candidate
           return @population.first if @fitness_scores.empty?
-          
+
           best_index = @fitness_scores.each_with_index.max_by { |score, _| score }[1]
           @population[best_index]
         end
@@ -1493,7 +1185,7 @@ module DSPy
         sig { returns(Float) }
         def population_diversity
           return 0.0 if @population.empty?
-          
+
           # Only calculate diversity for programs that have signature_class
           instructions = @population.filter_map do |program|
             if program.respond_to?(:signature_class) && program.signature_class.respond_to?(:description)
@@ -1502,9 +1194,9 @@ module DSPy
               nil
             end
           end
-          
+
           return 0.0 if instructions.empty?
-          
+
           unique_instructions = instructions.uniq.size
           unique_instructions.to_f / instructions.size.to_f
         end
@@ -1515,32 +1207,32 @@ module DSPy
         sig { params(original_instruction: String).returns(T::Array[String]) }
         def generate_instruction_variants(original_instruction)
           variants = []
-          
+
           # Add "step by step" variant
           unless original_instruction.include?("step")
             variants << "#{original_instruction} Think step by step."
           end
-          
+
           # Add "detailed" variant
           unless original_instruction.include?("detail")
             variants << "#{original_instruction} Provide detailed reasoning."
           end
-          
+
           # Add "careful" variant
           unless original_instruction.include?("careful")
             variants << "Be careful and accurate. #{original_instruction}"
           end
-          
+
           # Add "examples" variant
           unless original_instruction.include?("example")
             variants << "#{original_instruction} Use examples in your response."
           end
-          
+
           # Add "precise" variant
           unless original_instruction.include?("precise")
             variants << "Be precise and specific. #{original_instruction}"
           end
-          
+
           variants.shuffle.take(5) # Return up to 5 variants, shuffled
         end
 
@@ -1578,11 +1270,11 @@ module DSPy
           begin
             # Create a new instance of the same class
             new_module = original_module.class.new
-            
+
             # Try to find and update any internal predictors
             original_module.instance_variables.each do |var_name|
               var_value = original_module.instance_variable_get(var_name)
-              
+
               if var_value.is_a?(DSPy::Predict)
                 # Update the instruction for internal predictors
                 modified_predictor = var_value.with_instruction(new_instruction)
@@ -1592,7 +1284,7 @@ module DSPy
                 new_module.instance_variable_set(var_name, var_value)
               end
             end
-            
+
             new_module
           rescue => e
             # Fallback to original module
@@ -1725,7 +1417,7 @@ module DSPy
 
           # Calculate secondary metrics
           secondary_scores = {}
-          
+
           # Token efficiency (mock data for now - will be replaced with real trace collection)
           mock_traces = predictions.map.with_index do |pred, i|
             OpenStruct.new(token_usage: 50 + rand(100))
@@ -1817,7 +1509,7 @@ module DSPy
 
           # Simple consistency measure: average word overlap between responses
           word_sets = responses.map { |response| response.downcase.split.to_set }
-          
+
           total_similarity = 0.0
           comparisons = 0
 
@@ -1825,7 +1517,7 @@ module DSPy
             word_sets[(i+1)..-1].each do |set2|
               intersection = set1 & set2
               union = set1 | set2
-              
+
               similarity = union.empty? ? 0.0 : intersection.size.to_f / union.size
               total_similarity += similarity
               comparisons += 1
@@ -1841,7 +1533,7 @@ module DSPy
           return 1.0 if latencies.empty?
 
           avg_latency = latencies.sum / latencies.size
-          
+
           # Penalize high latencies (assume 2 seconds is baseline for 0.5 score)
           baseline_latency = 2.0
           latency_score = baseline_latency / (baseline_latency + avg_latency)
@@ -1963,10 +1655,10 @@ module DSPy
           if llm_traces.any?
             token_usage = llm_traces.sum(&:token_usage)
             avg_response_length = llm_traces.map { |t| t.attributes['response']&.to_s&.length || 0 }.sum / llm_traces.size
-            
+
             analysis << "- Total tokens used: #{token_usage}"
             analysis << "- Average response length: #{avg_response_length} characters"
-            
+
             # Identify models used
             models = llm_traces.map { |t| t.attributes['gen_ai.request.model'] }.compact.uniq
             analysis << "- Models used: #{models.join(', ')}" if models.any?
@@ -2034,14 +1726,14 @@ module DSPy
 
           begin
             original_instruction = extract_instruction(program)
-            
+
             # Use LLM-based instruction proposal instead of hardcoded mutations
             improved_instruction = @instruction_proposer.propose_instruction(
               original_instruction: original_instruction,
               execution_traces: execution_traces,
               failed_examples: failed_examples
             )
-            
+
             create_mutated_program(program, improved_instruction)
           rescue => e
             emit_event('mutation_error', {
@@ -2057,7 +1749,7 @@ module DSPy
         sig { params(programs: T::Array[T.untyped], execution_traces: T::Array[ExecutionTrace], failed_examples: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
         def batch_mutate(programs, execution_traces: [], failed_examples: [])
           return [] if programs.empty?
-          
+
           programs.map { |program| mutate_program(program, execution_traces: execution_traces, failed_examples: failed_examples) }
         end
 
@@ -2108,7 +1800,7 @@ module DSPy
             -> (inst) { "Please #{inst.downcase}" },
             -> (inst) { "#{inst} with precision" }
           ]
-          
+
           patterns.sample.call(instruction)
         end
 
@@ -2121,7 +1813,7 @@ module DSPy
             "Consider all aspects carefully.",
             "Explain your thought process."
           ]
-          
+
           "#{instruction} #{expansions.sample}"
         end
 
@@ -2132,7 +1824,7 @@ module DSPy
           simplified = instruction.gsub(/\b(carefully|detailed|comprehensive|thorough)\b/i, '')
                                   .gsub(/\s+/, ' ')
                                   .strip
-          
+
           simplified.empty? ? instruction : simplified
         end
 
@@ -2145,12 +1837,12 @@ module DSPy
             "Apply domain knowledge.",
             "Consider edge cases."
           ]
-          
+
           "#{instruction} #{strategies.sample}"
         end
 
         # Rephrase instruction with synonyms
-        sig { params(instruction: String).returns(String) }  
+        sig { params(instruction: String).returns(String) }
         def apply_rephrase_mutation(instruction)
           # Simple synonym replacement - in full implementation would use LLM
           synonyms = {
@@ -2160,12 +1852,12 @@ module DSPy
             'calculate' => 'compute',
             'determine' => 'identify'
           }
-          
+
           result = instruction.dup
           synonyms.each do |original, replacement|
             result.gsub!(/\b#{original}\b/i, replacement) if rand < 0.3
           end
-          
+
           result
         end
 
@@ -2216,11 +1908,11 @@ module DSPy
           begin
             # Create a new instance of the same class
             new_module = original_module.class.new
-            
+
             # Try to find and update any internal predictors
             original_module.instance_variables.each do |var_name|
               var_value = original_module.instance_variable_get(var_name)
-              
+
               if var_value.is_a?(DSPy::Predict)
                 # Update the instruction for internal predictors
                 mutated_predictor = var_value.with_instruction(new_instruction)
@@ -2230,7 +1922,7 @@ module DSPy
                 new_module.instance_variable_set(var_name, var_value)
               end
             end
-            
+
             new_module
           rescue => e
             emit_event('module_mutation_error', {
@@ -2262,10 +1954,10 @@ module DSPy
         sig { params(mutations: T::Array[MutationType]).returns(Float) }
         def mutation_diversity(mutations)
           return 0.0 if mutations.empty?
-          
+
           unique_types = mutations.uniq.size
           total_types = @config.mutation_types.size
-          
+
           unique_types.to_f / total_types
         end
       end
@@ -2296,15 +1988,15 @@ module DSPy
           begin
             instruction_a = extract_instruction(parent_a)
             instruction_b = extract_instruction(parent_b)
-            
+
             crossover_type = select_crossover_type(instruction_a, instruction_b)
             offspring_instructions = apply_crossover(instruction_a, instruction_b, crossover_type)
-            
+
             offspring = [
               create_crossover_program(parent_a, offspring_instructions[0]),
               create_crossover_program(parent_b, offspring_instructions[1])
             ]
-            
+
             offspring
           rescue => e
             # Return original parents on crossover failure
@@ -2317,9 +2009,9 @@ module DSPy
         def batch_crossover(population)
           return [] if population.empty?
           return [population.first] if population.size == 1
-          
+
           offspring = []
-          
+
           # Pair up population for crossover
           population.each_slice(2) do |pair|
             if pair.size == 2
@@ -2329,7 +2021,7 @@ module DSPy
               offspring << pair[0] # Unpaired individual passes through
             end
           end
-          
+
           offspring
         end
 
@@ -2364,20 +2056,20 @@ module DSPy
         sig { params(instruction_a: String, instruction_b: String).returns(T::Array[String]) }
         def uniform_crossover(instruction_a, instruction_b)
           return [instruction_a, instruction_b] if instruction_a == instruction_b
-          
+
           words_a = instruction_a.split
           words_b = instruction_b.split
-          
+
           # Create offspring by randomly selecting words from parents
           offspring_a_words = []
           offspring_b_words = []
-          
+
           max_length = [words_a.size, words_b.size].max
-          
+
           max_length.times do |i|
             word_a = words_a[i]
             word_b = words_b[i]
-            
+
             if rand < 0.5
               offspring_a_words << (word_a || word_b)
               offspring_b_words << (word_b || word_a)
@@ -2386,7 +2078,7 @@ module DSPy
               offspring_b_words << (word_a || word_b)
             end
           end
-          
+
           [
             offspring_a_words.compact.join(' '),
             offspring_b_words.compact.join(' ')
@@ -2403,9 +2095,9 @@ module DSPy
             -> (a, b) { "#{b} while #{a.downcase}" },
             -> (a, b) { "Combine #{a.downcase} with #{b.downcase}" }
           ]
-          
+
           pattern = patterns.sample
-          
+
           [
             pattern.call(instruction_a, instruction_b),
             pattern.call(instruction_b, instruction_a)
@@ -2418,11 +2110,11 @@ module DSPy
           # Extract structural components
           components_a = extract_components(instruction_a)
           components_b = extract_components(instruction_b)
-          
+
           # Cross structural components
           offspring_a = combine_components(components_a.action, components_b.modifiers)
           offspring_b = combine_components(components_b.action, components_a.modifiers)
-          
+
           [offspring_a, offspring_b]
         end
 
@@ -2430,10 +2122,10 @@ module DSPy
         sig { params(instruction: String).returns(InstructionComponents) }
         def extract_components(instruction)
           words = instruction.split
-          
+
           # Simple heuristic: first verb-like word is action, rest are modifiers
           action_idx = words.find_index { |word| verb_like?(word) } || 0
-          
+
           InstructionComponents.new(
             action: words[action_idx] || words.first || "complete",
             modifiers: (words - [words[action_idx]]).join(' ')
@@ -2471,7 +2163,7 @@ module DSPy
           # Adaptive selection based on instruction characteristics
           if instruction_a && instruction_b
             combined_length = instruction_a.length + instruction_b.length
-            
+
             if combined_length < 40
               # Short instructions benefit from blending
               [CrossoverType::Blend, CrossoverType::Uniform].sample
@@ -2491,10 +2183,10 @@ module DSPy
         sig { params(crossovers: T::Array[CrossoverType]).returns(Float) }
         def crossover_diversity(crossovers)
           return 0.0 if crossovers.empty?
-          
+
           unique_types = crossovers.uniq.size
           total_types = @config.crossover_types.size
-          
+
           unique_types.to_f / total_types
         end
       end
@@ -2520,15 +2212,15 @@ module DSPy
         def select_parents(population_with_scores, count:)
           return [] if population_with_scores.empty?
           return population_with_scores.map(&:first) if count >= population_with_scores.size
-          
+
           # Combine tournament and Pareto-based selection for parent selection
           selected = []
-          
+
           count.times do
             parent = tournament_selection(population_with_scores)
             selected << parent
           end
-          
+
           selected
         end
 
@@ -2537,14 +2229,14 @@ module DSPy
         def select_survivors(population_with_scores, count:)
           return [] if population_with_scores.empty?
           return population_with_scores.map(&:first) if count >= population_with_scores.size
-          
+
           scores = population_with_scores.map(&:last)
-          
+
           # Find Pareto frontier first
           pareto_frontier = find_pareto_frontier(scores)
           frontier_indices = scores.each_index.select { |i| pareto_frontier.include?(scores[i]) }
           frontier_programs = frontier_indices.map { |i| population_with_scores[i].first }
-          
+
           if frontier_programs.size >= count
             # Use diversity selection within frontier
             frontier_with_scores = frontier_indices.map { |i| population_with_scores[i] }
@@ -2553,7 +2245,7 @@ module DSPy
             # Include all frontier + fill remaining with elite selection
             remaining_count = count - frontier_programs.size
             remaining_population = population_with_scores.reject.with_index { |_, i| frontier_indices.include?(i) }
-            
+
             additional = elite_selection(remaining_population, count: remaining_count)
             frontier_programs + additional
           end
@@ -2566,18 +2258,18 @@ module DSPy
         def find_pareto_frontier(fitness_scores)
           return [] if fitness_scores.empty?
           return fitness_scores if fitness_scores.size == 1
-          
+
           frontier = []
-          
+
           fitness_scores.each do |candidate|
             # Check if candidate is dominated by any other solution
             is_dominated = fitness_scores.any? do |other|
               other != candidate && candidate.dominated_by?(other)
             end
-            
+
             frontier << candidate unless is_dominated
           end
-          
+
           frontier
         end
 
@@ -2585,17 +2277,17 @@ module DSPy
         sig { params(fitness_scores: T::Array[FitnessScore]).returns(T::Hash[FitnessScore, Float]) }
         def calculate_crowding_distance(fitness_scores)
           distances = {}
-          
+
           # Initialize distances for all solutions
           fitness_scores.each { |score| distances[score] = 0.0 }
-          
+
           return distances if fitness_scores.size <= 2
-          
+
           # Calculate crowding distance for each objective
           objectives = [:primary_score, :overall_score]
           secondary_objectives = fitness_scores.first.secondary_scores.keys
           all_objectives = objectives + secondary_objectives
-          
+
           all_objectives.each do |objective|
             # Sort by current objective
             sorted_scores = fitness_scores.sort_by do |score|
@@ -2608,29 +2300,29 @@ module DSPy
                 score.secondary_scores[objective] || 0.0
               end
             end
-            
+
             # Set boundary solutions to high distance
             distances[sorted_scores.first] = Float::INFINITY if sorted_scores.size > 0
             distances[sorted_scores.last] = Float::INFINITY if sorted_scores.size > 1
-            
+
             next if sorted_scores.size <= 2
-            
+
             # Calculate range for normalization
             min_val = get_objective_value(sorted_scores.first, objective)
             max_val = get_objective_value(sorted_scores.last, objective)
             range = max_val - min_val
-            
+
             next if range <= 0
-            
+
             # Calculate crowding distance for intermediate solutions
             (1...(sorted_scores.size - 1)).each do |i|
               prev_val = get_objective_value(sorted_scores[i - 1], objective)
               next_val = get_objective_value(sorted_scores[i + 1], objective)
-              
+
               distances[sorted_scores[i]] += (next_val - prev_val) / range
             end
           end
-          
+
           distances
         end
 
@@ -2651,13 +2343,13 @@ module DSPy
         sig { params(population_with_scores: T::Array[T::Array[T.untyped]]).returns(T.untyped) }
         def tournament_selection(population_with_scores)
           return population_with_scores.first.first if population_with_scores.size == 1
-          
+
           tournament_size = [3, population_with_scores.size].min
           tournament = population_with_scores.sample(tournament_size)
-          
+
           # Select best from tournament based on Pareto dominance and crowding
           best_program, best_score = tournament.first
-          
+
           tournament[1..].each do |program, score|
             if score.dominated_by?(best_score)
               # Current best dominates this candidate, keep current
@@ -2672,7 +2364,7 @@ module DSPy
               end
             end
           end
-          
+
           best_program
         end
 
@@ -2680,13 +2372,13 @@ module DSPy
         sig { params(population_with_scores: T::Array[T::Array[T.untyped]], count: Integer).returns(T::Array[T.untyped]) }
         def diversity_selection(population_with_scores, count:)
           return population_with_scores.map(&:first) if count >= population_with_scores.size
-          
+
           scores = population_with_scores.map(&:last)
           distances = calculate_crowding_distance(scores)
-          
+
           # Sort by crowding distance (descending - prefer more diverse)
           sorted_pairs = population_with_scores.sort_by { |_, score| -distances[score] }
-          
+
           sorted_pairs.take(count).map(&:first)
         end
 
@@ -2694,10 +2386,10 @@ module DSPy
         sig { params(population_with_scores: T::Array[T::Array[T.untyped]], count: Integer).returns(T::Array[T.untyped]) }
         def elite_selection(population_with_scores, count:)
           return population_with_scores.map(&:first) if count >= population_with_scores.size
-          
+
           # Sort by overall score (descending - best first)
           sorted_pairs = population_with_scores.sort_by { |_, score| -score.overall_score }
-          
+
           sorted_pairs.take(count).map(&:first)
         end
       end
@@ -2768,12 +2460,12 @@ module DSPy
       end
       def initialize(metric: nil, config: nil)
         @config = config || GEPAConfig.new
-        
+
         # Validate that reflection_lm is configured
         unless @config.reflection_lm
           raise ArgumentError, "reflection_lm must be configured for GEPA optimization. Set config.reflection_lm to a DSPy::LM instance."
         end
-        
+
         super(metric: metric, config: @config)
       end
 
@@ -2785,6 +2477,7 @@ module DSPy
           valset: T.nilable(T::Array[T.untyped])
         ).returns(OptimizationResult)
       end
+
       def compile(program, trainset:, valset: nil)
         validate_inputs(program, trainset, valset)
 
@@ -2800,7 +2493,7 @@ module DSPy
       end
 
       private
-      
+
       # Complete GEPA genetic algorithm optimization
       sig do
         params(
@@ -2817,11 +2510,11 @@ module DSPy
         mutation_engine = create_mutation_engine
         crossover_engine = create_crossover_engine
         pareto_selector = create_pareto_selector(fitness_evaluator)
-        
+
         # Initialize trace collection for reflection
         trace_collector = TraceCollector.new
         optimization_run_id = "gepa-run-#{SecureRandom.hex(4)}"
-        
+
         emit_event('gepa_optimization_start', {
           optimization_run_id: optimization_run_id,
           num_generations: @config.num_generations,
@@ -2829,17 +2522,17 @@ module DSPy
           mutation_rate: @config.mutation_rate,
           crossover_rate: @config.crossover_rate
         })
-        
+
         begin
           # Run the complete genetic algorithm evolution
           evolution_result = genetic_engine.run_evolution(program, trainset)
-          
+
           # Collect traces for reflection analysis
           execution_traces = trace_collector.traces_for_run(optimization_run_id)
-          
+
           # Generate reflection insights on the optimization process
           reflection_result = reflection_engine.reflect_with_llm(execution_traces)
-          
+
           # Evaluate final candidate on validation set if provided
           final_validation_score = if valset && !valset.empty?
             validation_fitness = fitness_evaluator.evaluate_candidate(evolution_result[:best_candidate], valset)
@@ -2847,7 +2540,7 @@ module DSPy
           else
             evolution_result[:best_fitness].overall_score
           end
-          
+
           emit_event('gepa_optimization_complete', {
             optimization_run_id: optimization_run_id,
             best_fitness: evolution_result[:best_fitness].overall_score,
@@ -2855,7 +2548,7 @@ module DSPy
             validation_score: final_validation_score,
             reflection_confidence: reflection_result.confidence
           })
-          
+
           # Create comprehensive optimization result
           OptimizationResult.new(
             optimized_program: evolution_result[:best_candidate],
@@ -2896,7 +2589,7 @@ module DSPy
               },
               component_versions: {
                 genetic_engine: 'v2.0',
-                fitness_evaluator: 'v2.0', 
+                fitness_evaluator: 'v2.0',
                 reflection_engine: 'v2.0',
                 mutation_engine: 'v2.0',
                 crossover_engine: 'v2.0',
@@ -2904,20 +2597,20 @@ module DSPy
               }
             }
           )
-          
+
         rescue => e
           emit_event('gepa_optimization_error', {
             optimization_run_id: optimization_run_id,
             error: e.message,
             backtrace: e.backtrace&.take(5)
           })
-          
+
           # Return fallback result on optimization failure
           fallback_fitness = fitness_evaluator.evaluate_candidate(program, trainset)
-          
+
           OptimizationResult.new(
             optimized_program: program,
-            scores: { 
+            scores: {
               fitness_score: fallback_fitness.overall_score,
               primary_score: fallback_fitness.primary_score,
               **fallback_fitness.secondary_scores
@@ -2928,7 +2621,7 @@ module DSPy
               phase: 'Phase 2 - Error Recovery',
               error: e.message
             },
-            best_score_name: 'fitness_score', 
+            best_score_name: 'fitness_score',
             best_score_value: fallback_fitness.overall_score,
             metadata: {
               optimizer: 'GEPA',
@@ -2944,48 +2637,48 @@ module DSPy
           )
         end
       end
-      
+
       # Create and configure fitness evaluator
       sig { returns(FitnessEvaluator) }
       def create_fitness_evaluator
         FitnessEvaluator.new(primary_metric: @metric, config: @config)
       end
-      
+
       # Create and configure genetic engine
       sig { params(fitness_evaluator: FitnessEvaluator).returns(GeneticEngine) }
       def create_genetic_engine(fitness_evaluator)
         GeneticEngine.new(config: @config, metric: @metric)
       end
-      
+
       # Create and configure reflection engine
       sig { returns(ReflectionEngine) }
       def create_reflection_engine
         ReflectionEngine.new(@config)
       end
-      
-      # Create and configure mutation engine  
+
+      # Create and configure mutation engine
       sig { returns(MutationEngine) }
       def create_mutation_engine
         MutationEngine.new(config: @config)
       end
-      
+
       # Create and configure crossover engine
       sig { returns(CrossoverEngine) }
       def create_crossover_engine
         CrossoverEngine.new(config: @config)
       end
-      
+
       # Create and configure pareto selector
       sig { params(fitness_evaluator: FitnessEvaluator).returns(ParetoSelector) }
       def create_pareto_selector(fitness_evaluator)
         ParetoSelector.new(evaluator: fitness_evaluator, config: @config)
       end
-      
+
       # Calculate execution timespan from traces
       sig { params(traces: T::Array[ExecutionTrace]).returns(Float) }
       def calculate_execution_timespan(traces)
         return 0.0 if traces.size < 2
-        
+
         timestamps = traces.map(&:timestamp).sort
         (timestamps.last - timestamps.first).to_f
       end
@@ -2996,9 +2689,9 @@ module DSPy
     module GEPAFeedbackMetric
       extend T::Sig
       extend T::Helpers
-      
+
       interface!
-      
+
       # Evaluates prediction and provides score with optional feedback
       sig do
         abstract
@@ -3015,11 +2708,11 @@ module DSPy
     # Extended prediction result with score and feedback
     class ScoreWithFeedback < T::Struct
       extend T::Sig
-      
+
       const :score, Float
       const :feedback, T.nilable(String)
       const :prediction, DSPy::Prediction
-      
+
       sig { params(score: Float, prediction: DSPy::Prediction, feedback: T.nilable(String)).void }
       def initialize(score:, prediction:, feedback: nil)
         super
@@ -3029,7 +2722,7 @@ module DSPy
     # Module Evaluator - Evaluates DSPy modules with metrics and feedback
     class ModuleEvaluator
       extend T::Sig
-      
+
       sig do
         params(
           student: T.untyped, # DSPy::Module or similar callable
@@ -3073,9 +2766,9 @@ module DSPy
       def evaluate_batch(batch, candidate_instruction, capture_traces: true)
         program = build_program(candidate_instruction)
         results = []
-        
+
         batch.each do |example|
-          begin            
+          begin
             # Execute program on example
             prediction = if program.respond_to?(:call)
                           program.call(**example.input_values)
@@ -3084,11 +2777,11 @@ module DSPy
                         else
                           raise "Program must respond to :call or :forward"
                         end
-            
+
             # Get collected traces (if trace collection is enabled)
             # Note: TraceCollector automatically collects via event subscriptions
             traces = capture_traces ? @trace_collector.traces : []
-            
+
             # Evaluate with metric
             # Try with traces first (for GEPAFeedbackMetric), fallback to standard metric
             begin
@@ -3106,7 +2799,7 @@ module DSPy
                 raise arg_error
               end
             end
-            
+
             # Ensure we always have a ScoreWithFeedback object
             if score_result.is_a?(ScoreWithFeedback)
               results << score_result
@@ -3118,14 +2811,14 @@ module DSPy
                 feedback: nil
               )
             end
-            
+
           rescue => e
             DSPy.logger.error("Evaluation error: #{e.message}")
             # Return zero score on failure
             results << 0.0
           end
         end
-        
+
         results
       end
 
@@ -3141,21 +2834,21 @@ module DSPy
       end
       def make_reflective_dataset(examples, predictions, scores, threshold: 0.5)
         reflective_data = []
-        
+
         examples.zip(predictions, scores).each do |example, prediction, score|
           # Extract score value
           score_value = score.is_a?(ScoreWithFeedback) ? score.score : score
-          
+
           # Include failed predictions (below threshold)
           next if score_value >= threshold
-          
+
           # Extract feedback if available
           feedback = if score.is_a?(ScoreWithFeedback) && score.feedback
                       score.feedback
                     else
                       "Low performance (score: #{score_value.round(2)})"
                     end
-          
+
           reflective_data << {
             'input' => example.input_values,
             'expected' => example.expected_values,
@@ -3164,7 +2857,7 @@ module DSPy
             'feedback' => feedback
           }
         end
-        
+
         reflective_data
       end
 
@@ -3207,30 +2900,30 @@ module DSPy
       end
       def analyze_failures_and_propose(current_instruction, reflective_dataset)
         return [current_instruction] if reflective_dataset.empty?
-        
+
         # Extract common failure patterns
         feedback_texts = reflective_dataset.map { |data| data['feedback'] }.compact
-        
+
         # Simple heuristic-based proposals
         proposals = []
-        
+
         # If many failures, suggest more detailed instruction
         if reflective_dataset.size >= 3
           proposals << "#{current_instruction} Please provide step-by-step reasoning."
         end
-        
+
         # If feedback mentions specific issues, address them
         if feedback_texts.any? { |fb| fb.include?('unclear') || fb.include?('ambiguous') }
           proposals << "#{current_instruction} Be specific and clear in your response."
         end
-        
+
         if feedback_texts.any? { |fb| fb.include?('incomplete') || fb.include?('missing') }
           proposals << "#{current_instruction} Ensure your answer is complete and addresses all aspects."
         end
-        
+
         # Always include at least one proposal
         proposals << "#{current_instruction.strip}. Think carefully before responding." if proposals.empty?
-        
+
         proposals.uniq.take(3) # Return up to 3 proposals
       end
     end
