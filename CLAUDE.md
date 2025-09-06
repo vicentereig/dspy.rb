@@ -310,3 +310,68 @@ Output a comprehensive list of scenarios you would test, sorted by highest prior
 Add all changes to staging, create a commit, and push to remote.
 Follow Conventional Commits format: https://www.conventionalcommits.org/en/v1.0.0
 ```
+
+## Test Debugging Learnings
+
+### Event System Architecture Best Practices
+
+**Problem**: Event logging tests failing because `emit_log` was commented out.
+
+**Solution**: Implemented publisher-subscriber pattern where logger becomes an event consumer:
+```ruby
+def self.events
+  @event_registry ||= DSPy::EventRegistry.new.tap do |registry|
+    # Subscribe logger to all events - use a proc that calls logger each time
+    # to support mocking in tests
+    registry.subscribe('*') { |event_name, attributes| 
+      emit_log(event_name, attributes) if logger
+    }
+  end
+end
+```
+
+**Key Learning**: Don't call logging directly in event system. Let logger subscribe to events for complete coverage.
+
+### Sorbet Type System + Testing Anti-patterns
+
+**Problem**: GEPA tests failed with Sorbet type errors when using RSpec mocks for `DSPy::LM` instances.
+
+**Root Cause**: Sorbet runtime checking expects real `DSPy::LM` instances, not test doubles.
+
+**Solution**: Use real LM instances with VCR for integration tests:
+```ruby
+# ❌ Bad - Fails Sorbet type checking
+mock_lm = double('LM', model: 'gpt-4o-mini')
+config.reflection_lm = mock_lm
+
+# ✅ Good - Real instance with VCR
+reflection_lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+config.reflection_lm = reflection_lm
+```
+
+**Key Learning**: With Sorbet runtime checks enabled, integration tests should use real instances with VCR, not mocks.
+
+### VCR Test Configuration Pattern
+
+**Pattern**: For integration tests touching LLMs:
+- Use real `DSPy::LM` instances, not mocks
+- Add VCR cassette configurations: `vcr: { cassette_name: "descriptive_name" }`
+- Reduce generation counts for faster testing: `config.num_generations = 2; config.population_size = 2`
+- No need for API key skip guards - let VCR handle missing keys gracefully
+
+### Test Isolation Issues
+
+**Problem**: Some tests pass in isolation but fail in the full suite.
+
+**Root Cause**: Singleton patterns (`@event_registry`) capture references at creation time, causing issues with mocking.
+
+**Solution**: Design singletons to resolve dependencies dynamically:
+```ruby
+# ❌ Bad - captures logger reference at creation time
+registry.subscribe('*') { emit_log(event_name, attributes) }
+
+# ✅ Good - resolves logger each time
+registry.subscribe('*') { emit_log(event_name, attributes) if logger }
+```
+
+**Key Learning**: Avoid capturing method/instance references in closures within singleton initialization.

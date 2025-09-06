@@ -136,15 +136,13 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
   end
 
   describe 'Complete GEPA genetic algorithm optimization' do
-    it 'performs full genetic optimization with all components', skip: 'Requires API key' do
-      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
-
+    it 'performs full genetic optimization with all components' do
       # Create GEPA with full genetic algorithm enabled
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
       config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
       config.simple_mode = false  # Enable full GEPA
-      config.num_generations = 3   # Reduced for testing
-      config.population_size = 4   # Reduced for testing
+      config.num_generations = 2   # Reduced for testing
+      config.population_size = 2   # Reduced for testing
       config.mutation_rate = 0.8   # High mutation for exploration
       config.crossover_rate = 0.6  # Moderate crossover
       config.use_pareto_selection = true
@@ -240,9 +238,7 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
   end
 
   describe 'GEPA error handling and recovery' do
-    it 'handles optimization failures gracefully', skip: 'Requires API key' do
-      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
-
+    it 'handles optimization failures gracefully'do
       # Create GEPA with invalid configuration to trigger error
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
       config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
@@ -267,9 +263,7 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
   end
 
   describe 'Component integration validation' do
-    it 'validates all GEPA components work together', skip: 'Requires API key' do
-      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
-
+    it 'validates all GEPA components work together' do
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
       config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
       config.simple_mode = false

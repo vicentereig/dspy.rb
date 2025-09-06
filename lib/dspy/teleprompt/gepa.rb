@@ -59,7 +59,7 @@ module DSPy
             metadata: T.nilable(MetadataHash)
           ).void
         end
-        
+
         def initialize(trace_id:, event_name:, timestamp:, span_id: nil, attributes: {}, metadata: nil)
           # Freeze nested structures for true immutability
           frozen_attributes = attributes.freeze

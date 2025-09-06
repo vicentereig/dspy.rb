@@ -39,9 +39,8 @@ module DSPy
     # Return nil early if logger is not configured (backward compatibility)
     return nil unless logger
 
-    # Forward to event system - this maintains backward compatibility
-    # while providing all new event system benefits
-    event(event_name, attributes)
+    # Direct logging - simple and straightforward
+    emit_log(event_name, attributes)
 
     # Return nil to maintain backward compatibility
     nil
@@ -81,7 +80,13 @@ module DSPy
   end
 
   def self.events
-    @event_registry ||= DSPy::EventRegistry.new
+    @event_registry ||= DSPy::EventRegistry.new.tap do |registry|
+      # Subscribe logger to all events - use a proc that calls logger each time
+      # to support mocking in tests
+      registry.subscribe('*') { |event_name, attributes| 
+        emit_log(event_name, attributes) if logger
+      }
+    end
   end
 
   private
