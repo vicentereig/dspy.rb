@@ -48,6 +48,9 @@ module DSPy
       end
 
       def on_finish(span)
+        # Only process sampled spans to match BatchSpanProcessor behavior
+        return unless span.context.trace_flags.sampled?
+        
         # Non-blocking enqueue with overflow protection
         # Note: on_finish is only called for already ended spans
         begin
@@ -174,8 +177,11 @@ module DSPy
       def export_spans_with_retry(spans)
         retries = 0
         
+        # Convert spans to SpanData objects (required by OTLP exporter)
+        span_data_batch = spans.map(&:to_span_data)
+        
         loop do
-          result = @exporter.export(spans, timeout: @shutdown_timeout)
+          result = @exporter.export(span_data_batch, timeout: @shutdown_timeout)
           
           case result
           when OpenTelemetry::SDK::Trace::Export::SUCCESS
@@ -188,7 +194,7 @@ module DSPy
               next
             else
               DSPy.log('observability.export_failed',
-                       spans_count: spans.size,
+                       spans_count: span_data_batch.size,
                        retries: retries)
               return result
             end
@@ -204,9 +210,12 @@ module DSPy
       def export_spans_with_retry_async(spans)
         retries = 0
         
+        # Convert spans to SpanData objects (required by OTLP exporter)
+        span_data_batch = spans.map(&:to_span_data)
+        
         loop do
           # Use current async task for potentially non-blocking export
-          result = @exporter.export(spans, timeout: @shutdown_timeout)
+          result = @exporter.export(span_data_batch, timeout: @shutdown_timeout)
           
           case result
           when OpenTelemetry::SDK::Trace::Export::SUCCESS
@@ -219,7 +228,7 @@ module DSPy
               next
             else
               DSPy.log('observability.export_failed',
-                       spans_count: spans.size,
+                       spans_count: span_data_batch.size,
                        retries: retries)
               return result
             end
