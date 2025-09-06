@@ -1,0 +1,4499 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Provide detailed reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If a train travels 120 miles in 2 hours, what is its speed in mph?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2164'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:23 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1381'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1388'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199526'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 142ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87240f472eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqZushWc3eK8dJYRVdov4Cj3Bj1t",
+          "object": "chat.completion",
+          "created": 1757178082,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"60 mph\",\n  \"reasoning\": \"To find the speed of the train, we use the formula: Speed = Distance / Time. The train travels 120 miles in 2 hours, so we substitute these values into the formula: Speed = 120 miles / 2 hours = 60 miles per hour.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 477,
+            "completion_tokens": 88,
+            "total_tokens": 565,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:23 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Provide detailed reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What is 15% of 200?\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`.\n\nIMPORTANT: You must respond with valid JSON that matches this
+        structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2117'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:25 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1304'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1312'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '199537'
+      X-Ratelimit-Reset-Requests:
+      - 15.466s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af872e8bb12eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqZvnLBYUrGG1MyFW1J7i68fUhhB",
+          "object": "chat.completion",
+          "created": 1757178083,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"30\",\n  \"reasoning\": \"To find 15% of 200, first convert the percentage to a decimal by dividing by 100, which gives 0.15. Then, multiply 200 by 0.15: 200 * 0.15 = 30.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 467,
+            "completion_tokens": 83,
+            "total_tokens": 550,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:24 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Provide detailed reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If it takes 3 painters 4 hours to paint a wall, how long would it take 6
+        painters?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"The final answer\",\n  \"reasoning\": \"Step-by-step reasoning process\",\n  \"confidence\":
+        3.14\n}\n```\n\nRequired fields: answer, reasoning, confidence\n\nEnsure your
+        response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2180'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:27 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1980'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1983'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '199521'
+      X-Ratelimit-Reset-Requests:
+      - 22.526s
+      X-Ratelimit-Reset-Tokens:
+      - 143ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87394f072eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqZxkG7QBDjwDwomlHkceekAMR0B",
+          "object": "chat.completion",
+          "created": 1757178085,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"2.67 hours\",\n  \"reasoning\": \"First, we calculate the total painter-hours needed to paint the wall. If 3 painters take 4 hours, the total work is 3 painters * 4 hours = 12 painter-hours. If we now have 6 painters, we can find the time it takes for them to complete the same work by dividing the total painter-hours by the number of painters: 12 painter-hours / 6 painters = 2 hours. Therefore, it takes 2 hours for 6 painters to paint the wall, making the equivalent in hours 2.67 hours when considering efficiency adjustments.\",\n  \"confidence\": 0.9\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 481,
+            "completion_tokens": 153,
+            "total_tokens": 634,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:27 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Provide detailed reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What comes next in the sequence: 2, 6, 18, 54, ?\"\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2146'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:29 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1904'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1910'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9996'
+      X-Ratelimit-Remaining-Tokens:
+      - '199530'
+      X-Ratelimit-Reset-Requests:
+      - 28.722s
+      X-Ratelimit-Reset-Tokens:
+      - 141ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af8747ffc32eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqZzeXCb1Dl79uDrqvSZBCbxYqbE",
+          "object": "chat.completion",
+          "created": 1757178087,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"162\",\n  \"reasoning\": \"To find the next number in the sequence, we need to identify the pattern. The sequence provided is: 2, 6, 18, 54. Let's examine the ratios: 6 is 2 times 3, 18 is 6 times 3, and 54 is 18 times 3. Each number is multiplied by 3 to get the next number. Therefore, to find the next number, we multiply the last number (54) by 3, which gives us 162.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 479,
+            "completion_tokens": 137,
+            "total_tokens": 616,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:29 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Use examples in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If a train travels 120 miles in 2 hours, what is its speed in mph?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2167'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:31 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1581'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1584'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9995'
+      X-Ratelimit-Remaining-Tokens:
+      - '199525'
+      X-Ratelimit-Reset-Requests:
+      - 35.069s
+      X-Ratelimit-Reset-Tokens:
+      - 142ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87564f1a2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqa2bg4UD4NuOvCHoIwDvbnwU7m9",
+          "object": "chat.completion",
+          "created": 1757178090,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"60 mph\",\n  \"reasoning\": \"To find the speed of the train in miles per hour (mph), we can use the formula: speed = distance / time. Here, the distance traveled by the train is 120 miles and the time taken is 2 hours. Therefore, speed = 120 miles / 2 hours = 60 mph.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 479,
+            "completion_tokens": 96,
+            "total_tokens": 575,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:31 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Use examples in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What is 15% of 200?\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`.\n\nIMPORTANT: You must respond with valid JSON that matches this
+        structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2120'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:33 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1585'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1590'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9995'
+      X-Ratelimit-Remaining-Tokens:
+      - '199537'
+      X-Ratelimit-Reset-Requests:
+      - 41.488s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87627ddc2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqa4PNzMVZc7bxqfRF9IvHV2QJDx",
+          "object": "chat.completion",
+          "created": 1757178092,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"30\",\n  \"reasoning\": \"To find 15% of 200, first convert the percentage to a decimal by dividing by 100, which gives 0.15. Next, multiply 0.15 by 200: 0.15 * 200 = 30.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 469,
+            "completion_tokens": 83,
+            "total_tokens": 552,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:33 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Use examples in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If it takes 3 painters 4 hours to paint a wall, how long would it take 6
+        painters?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"The final answer\",\n  \"reasoning\": \"Step-by-step reasoning process\",\n  \"confidence\":
+        3.14\n}\n```\n\nRequired fields: answer, reasoning, confidence\n\nEnsure your
+        response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2183'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:35 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1348'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1353'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '199521'
+      X-Ratelimit-Reset-Requests:
+      - 48.24s
+      X-Ratelimit-Reset-Tokens:
+      - 143ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87707d1b2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqa6Gb0TrFMJZzviRAeJ9GDe2LIz",
+          "object": "chat.completion",
+          "created": 1757178094,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"2 hours\",\n  \"reasoning\": \"First, determine the total painting hours needed by 3 painters to paint the wall: 3 painters * 4 hours = 12 painter-hours. Next, calculate how long it would take for 6 painters to complete the same task. Divide the total painter-hours by the number of painters: 12 painter-hours / 6 painters = 2 hours.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 483,
+            "completion_tokens": 105,
+            "total_tokens": 588,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:35 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Use examples in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What comes next in the sequence: 2, 6, 18, 54, ?\"\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2149'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:37 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1754'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1757'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9993'
+      X-Ratelimit-Remaining-Tokens:
+      - '199529'
+      X-Ratelimit-Reset-Requests:
+      - 55.11s
+      X-Ratelimit-Reset-Tokens:
+      - 141ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af877ac8992eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqa8m1hm8Pdxtvq764gEwN4Vbeut",
+          "object": "chat.completion",
+          "created": 1757178096,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"162\",\n  \"reasoning\": \"To uncover the pattern in the sequence: 2, 6, 18, 54, we can observe the following relationships: each term seems to be multiplied by 3 to get the next term. Specifically, 2 * 3 = 6, 6 * 3 = 18, and 18 * 3 = 54. Continuing this pattern: 54 * 3 = 162.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 481,
+            "completion_tokens": 117,
+            "total_tokens": 598,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:37 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be precise and specific. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If a train travels 120 miles in 2 hours, what is its speed in mph?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2161'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:39 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1320'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1324'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '199526'
+      X-Ratelimit-Reset-Requests:
+      - 1m1.715s
+      X-Ratelimit-Reset-Tokens:
+      - 142ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af8788582f2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaAmy2E1hJcOAyf5vIewInHx2AV",
+          "object": "chat.completion",
+          "created": 1757178098,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"60 mph\",\n  \"reasoning\": \"To find the speed of the train, we can use the formula: speed = distance / time. The distance traveled is 120 miles and the time taken is 2 hours. Therefore, speed = 120 miles / 2 hours = 60 mph.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 478,
+            "completion_tokens": 85,
+            "total_tokens": 563,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:39 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be precise and specific. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What is 15% of 200?\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`.\n\nIMPORTANT: You must respond with valid JSON that matches this
+        structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2114'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:40 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1224'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1226'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '199538'
+      X-Ratelimit-Reset-Requests:
+      - 1m8.742s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87925b452eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaBNEWZGFR3eXEbZFnuoOWschTm",
+          "object": "chat.completion",
+          "created": 1757178099,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"30\",\n  \"reasoning\": \"To find 15% of 200, convert the percentage to a decimal: 15% = 0.15. Then, multiply by 200: 0.15 * 200 = 30.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 468,
+            "completion_tokens": 75,
+            "total_tokens": 543,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:40 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be precise and specific. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If it takes 3 painters 4 hours to paint a wall, how long would it take 6
+        painters?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"The final answer\",\n  \"reasoning\": \"Step-by-step reasoning process\",\n  \"confidence\":
+        3.14\n}\n```\n\nRequired fields: answer, reasoning, confidence\n\nEnsure your
+        response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2177'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:43 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1744'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1746'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9991'
+      X-Ratelimit-Remaining-Tokens:
+      - '199522'
+      X-Ratelimit-Reset-Requests:
+      - 1m15.759s
+      X-Ratelimit-Reset-Tokens:
+      - 143ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af879bcd2e2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaDIn2lBtsHbxb38ynl2vvsShKx",
+          "object": "chat.completion",
+          "created": 1757178101,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"2 hours\",\n  \"reasoning\": \"The work done can be calculated using the concept of man-hours. If 3 painters can complete the work in 4 hours, they provide a total of 3 painters * 4 hours = 12 painter-hours of work. With 6 painters, the same amount of work (12 painter-hours) can be completed in 12 painter-hours / 6 painters = 2 hours.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 482,
+            "completion_tokens": 111,
+            "total_tokens": 593,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:42 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be precise and specific. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What comes next in the sequence: 2, 6, 18, 54, ?\"\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2143'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:45 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2384'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2387'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9990'
+      X-Ratelimit-Remaining-Tokens:
+      - '199531'
+      X-Ratelimit-Reset-Requests:
+      - 1m22.362s
+      X-Ratelimit-Reset-Tokens:
+      - 140ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87a93d822eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaFMkn0P9wa55DTxft5EUc7Yk9p",
+          "object": "chat.completion",
+          "created": 1757178103,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"162\",\n  \"reasoning\": \"To find the next number in the sequence, we can observe the pattern: each number is multiplied by 3 to get the next number. Starting with 2: 2 * 3 = 6, 6 * 3 = 18, 18 * 3 = 54. Following this pattern, the next number after 54 would be 54 * 3 = 162.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 480,
+            "completion_tokens": 113,
+            "total_tokens": 593,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:45 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be careful and accurate. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If a train travels 120 miles in 2 hours, what is its speed in mph?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2161'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:48 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1964'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1969'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9989'
+      X-Ratelimit-Remaining-Tokens:
+      - '199526'
+      X-Ratelimit-Reset-Requests:
+      - 1m28.222s
+      X-Ratelimit-Reset-Tokens:
+      - 142ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87bab9d02eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaITagE4iGHqzBZ471dkAp6unz3",
+          "object": "chat.completion",
+          "created": 1757178106,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"60 mph\",\n  \"reasoning\": \"To find the speed of the train, we use the formula: Speed = Distance / Time. Here, the distance is 120 miles and the time is 2 hours. Therefore, Speed = 120 miles / 2 hours = 60 miles per hour.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 478,
+            "completion_tokens": 86,
+            "total_tokens": 564,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:47 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be careful and accurate. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What is 15% of 200?\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`.\n\nIMPORTANT: You must respond with valid JSON that matches this
+        structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2114'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:49 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1568'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1571'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9989'
+      X-Ratelimit-Remaining-Tokens:
+      - '199538'
+      X-Ratelimit-Reset-Requests:
+      - 1m34.613s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87c8aaf92eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaKtQ8GyMjGslQ2AL7TJl795Z6Z",
+          "object": "chat.completion",
+          "created": 1757178108,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"30\",\n  \"reasoning\": \"To find 15% of 200, we first convert the percentage to a decimal by dividing by 100, which gives us 0.15. Next, we multiply 0.15 by 200: 0.15 * 200 = 30.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 468,
+            "completion_tokens": 86,
+            "total_tokens": 554,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:49 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be careful and accurate. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If it takes 3 painters 4 hours to paint a wall, how long would it take 6
+        painters?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"The final answer\",\n  \"reasoning\": \"Step-by-step reasoning process\",\n  \"confidence\":
+        3.14\n}\n```\n\nRequired fields: answer, reasoning, confidence\n\nEnsure your
+        response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2177'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:52 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1959'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1964'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9988'
+      X-Ratelimit-Remaining-Tokens:
+      - '199522'
+      X-Ratelimit-Reset-Requests:
+      - 1m40.905s
+      X-Ratelimit-Reset-Tokens:
+      - 143ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87d61b152eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaM1reB5gMhQsvwEgcojhXhwAyN",
+          "object": "chat.completion",
+          "created": 1757178110,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"2 hours\",\n  \"reasoning\": \"To determine how long it would take 6 painters to paint the wall, we start by calculating the total amount of work done in painter-hours. For 3 painters working for 4 hours, the total painter-hours are 3 painters * 4 hours = 12 painter-hours. If 6 painters are now painting the same wall, we divide the total painter-hours by the number of painters: 12 painter-hours / 6 painters = 2 hours. Therefore, it would take 6 painters 2 hours to paint the wall.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 482,
+            "completion_tokens": 142,
+            "total_tokens": 624,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:52 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be careful and accurate. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What comes next in the sequence: 2, 6, 18, 54, ?\"\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2143'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:54 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1728'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1735'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9987'
+      X-Ratelimit-Remaining-Tokens:
+      - '199531'
+      X-Ratelimit-Reset-Requests:
+      - 1m47.275s
+      X-Ratelimit-Reset-Tokens:
+      - 140ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87e59c7c2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaOP7eebkKMMcMlg2jMPWmIHBYW",
+          "object": "chat.completion",
+          "created": 1757178112,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"162\",\n  \"reasoning\": \"To find the next number, we observe the pattern in the sequence: each number is multiplied by 3 to get the next number. Starting with 2: 2 * 3 = 6, 6 * 3 = 18, 18 * 3 = 54. Therefore, 54 * 3 = 162.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 480,
+            "completion_tokens": 102,
+            "total_tokens": 582,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:54 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be careful and accurate. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If a train travels 120 miles in 2 hours, what is its speed in mph?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2161'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:56 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1346'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1352'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9986'
+      X-Ratelimit-Remaining-Tokens:
+      - '199526'
+      X-Ratelimit-Reset-Requests:
+      - 1m53.855s
+      X-Ratelimit-Reset-Tokens:
+      - 142ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87f26b7c2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaRsGOhKgajcVnbpLVXL6VGmdGl",
+          "object": "chat.completion",
+          "created": 1757178115,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"60 mph\",\n  \"reasoning\": \"To find the speed of the train, we use the formula: Speed = Distance / Time. Here, the distance traveled is 120 miles, and the time taken is 2 hours. Thus, Speed = 120 miles / 2 hours = 60 mph.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 478,
+            "completion_tokens": 87,
+            "total_tokens": 565,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:56 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be careful and accurate. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What is 15% of 200?\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`.\n\nIMPORTANT: You must respond with valid JSON that matches this
+        structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2114'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:01:57 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1206'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1209'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9987'
+      X-Ratelimit-Remaining-Tokens:
+      - '199538'
+      X-Ratelimit-Reset-Requests:
+      - 1m52.203s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af87fcce8e2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaSYOuvQdNQkF01bFDjtrs4v3F5",
+          "object": "chat.completion",
+          "created": 1757178116,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"30\",\n  \"reasoning\": \"To find 15% of 200, we convert the percentage to a decimal by dividing by 100 (15/100 = 0.15). Then we multiply this decimal by the number: 0.15 * 200 = 30.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 468,
+            "completion_tokens": 83,
+            "total_tokens": 551,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:01:57 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be careful and accurate. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If it takes 3 painters 4 hours to paint a wall, how long would it take 6
+        painters?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"The final answer\",\n  \"reasoning\": \"Step-by-step reasoning process\",\n  \"confidence\":
+        3.14\n}\n```\n\nRequired fields: answer, reasoning, confidence\n\nEnsure your
+        response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2177'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:03 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '5268'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '5273'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9985'
+      X-Ratelimit-Remaining-Tokens:
+      - '199522'
+      X-Ratelimit-Reset-Requests:
+      - 2m7.909s
+      X-Ratelimit-Reset-Tokens:
+      - 143ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af8806288f2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaUNl1oBEbTzbEUbt5eoo2oO9jE",
+          "object": "chat.completion",
+          "created": 1757178118,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"2.67 hours\",\n  \"reasoning\": \"To solve the problem, first calculate the total painter-hours needed to paint the wall. Three painters take 4 hours, so total painter-hours = 3 painters * 4 hours = 12 painter-hours. Now, with 6 painters, the time taken can be calculated by dividing total painter-hours by the number of painters: 12 painter-hours / 6 painters = 2 hours. This is equivalent to 2.67 hours when expressed in decimal format.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 482,
+            "completion_tokens": 129,
+            "total_tokens": 611,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:03 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be careful and accurate. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What comes next in the sequence: 2, 6, 18, 54, ?\"\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2143'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:05 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2010'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2013'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9984'
+      X-Ratelimit-Remaining-Tokens:
+      - '199531'
+      X-Ratelimit-Reset-Requests:
+      - 2m10.981s
+      X-Ratelimit-Reset-Tokens:
+      - 140ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af882958192eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaZ56oG4zRelOGCO4ViQWhTkwZN",
+          "object": "chat.completion",
+          "created": 1757178123,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"162\",\n  \"reasoning\": \"To find the next number in the sequence, we first need to observe the pattern of multiplication. The sequence goes as follows: 2 * 3 = 6, 6 * 3 = 18, 18 * 3 = 54. Thus, each term is obtained by multiplying the previous term by 3. Continuing this pattern, 54 * 3 = 162. Therefore, the next number in the sequence is 162.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 480,
+            "completion_tokens": 124,
+            "total_tokens": 604,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:05 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Provide detailed reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If a train travels 120 miles in 2 hours, what is its speed in mph?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2164'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:07 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1315'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1322'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9984'
+      X-Ratelimit-Remaining-Tokens:
+      - '199526'
+      X-Ratelimit-Reset-Requests:
+      - 2m17.276s
+      X-Ratelimit-Reset-Tokens:
+      - 142ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af8837f8b92eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqacLVhF2rM8Cl2UaHCYlHMpIfJT",
+          "object": "chat.completion",
+          "created": 1757178126,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"60 mph\",\n  \"reasoning\": \"To find the speed of the train, we use the formula: Speed = Distance / Time. Here, the distance is 120 miles and the time taken is 2 hours. So, Speed = 120 miles / 2 hours = 60 mph.\",\n  \"confidence\": 1.0\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 477,
+            "completion_tokens": 85,
+            "total_tokens": 562,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:07 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Provide detailed reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What is 15% of 200?\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`.\n\nIMPORTANT: You must respond with valid JSON that matches this
+        structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2117'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:09 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1320'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1324'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9984'
+      X-Ratelimit-Remaining-Tokens:
+      - '199537'
+      X-Ratelimit-Reset-Requests:
+      - 2m15.649s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af88424c4a2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqadTnSUDwlGn8rqCxbzjCpZ5BOp",
+          "object": "chat.completion",
+          "created": 1757178127,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"30\",\n  \"reasoning\": \"To find 15% of 200, you first convert the percentage to a decimal, which gives you 0.15. Then, you multiply 200 by 0.15: 200 * 0.15 = 30.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 467,
+            "completion_tokens": 81,
+            "total_tokens": 548,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:08 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Provide detailed reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If it takes 3 painters 4 hours to paint a wall, how long would it take 6
+        painters?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"The final answer\",\n  \"reasoning\": \"Step-by-step reasoning process\",\n  \"confidence\":
+        3.14\n}\n```\n\nRequired fields: answer, reasoning, confidence\n\nEnsure your
+        response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2180'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:12 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2708'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2713'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9982'
+      X-Ratelimit-Remaining-Tokens:
+      - '199522'
+      X-Ratelimit-Reset-Requests:
+      - 2m31.27s
+      X-Ratelimit-Reset-Tokens:
+      - 143ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af884c9fc22eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqafEdtKawDpr6uwFPIHBgP2KMPT",
+          "object": "chat.completion",
+          "created": 1757178129,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"2.67 hours\",\n  \"reasoning\": \"To determine how long it will take 6 painters to paint the wall, we first calculate the total work in painter-hours. With 3 painters taking 4 hours, the total work is 3 painters * 4 hours = 12 painter-hours. Now, with 6 painters, we divide the total work by the number of painters: 12 painter-hours / 6 painters = 2 hours. Therefore, it will take 6 painters 2 hours to complete the work. However, I need to state that the answer needs to be more specific about how many hours it would be averaged over a full day, which would yield approximately 2.67 hours when most commonly referred if reaching out beyond an average work continuous time.\",\n  \"confidence\": 0.85\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 481,
+            "completion_tokens": 183,
+            "total_tokens": 664,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:11 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Provide detailed reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What comes next in the sequence: 2, 6, 18, 54, ?\"\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2146'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:14 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2149'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2156'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9981'
+      X-Ratelimit-Remaining-Tokens:
+      - '199530'
+      X-Ratelimit-Reset-Requests:
+      - 2m36.907s
+      X-Ratelimit-Reset-Tokens:
+      - 141ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af885f6e272eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaiu0FFQKTEObjVvSRnwJYzg8gF",
+          "object": "chat.completion",
+          "created": 1757178132,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"162\",\n  \"reasoning\": \"To find the next number in the sequence, we observe the relationship between consecutive numbers:\\n- 2 * 3 = 6\\n- 6 * 3 = 18\\n- 18 * 3 = 54\\nEach number is obtained by multiplying the previous number by 3. Following this pattern, the next number is obtained by multiplying 54 by 3:\\n54 * 3 = 162.\\nThus, the next number in the sequence is 162.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 479,
+            "completion_tokens": 132,
+            "total_tokens": 611,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:14 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Use examples in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If a train travels 120 miles in 2 hours, what is its speed in mph?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2167'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:16 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1591'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1595'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9981'
+      X-Ratelimit-Remaining-Tokens:
+      - '199525'
+      X-Ratelimit-Reset-Requests:
+      - 2m43.04s
+      X-Ratelimit-Reset-Tokens:
+      - 142ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af886ee8672eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqalU2U6XZEr8P9xHPIeqeSdwCe7",
+          "object": "chat.completion",
+          "created": 1757178135,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"60 mph\",\n  \"reasoning\": \"To find the speed of the train, we divide the distance traveled by the time taken. The train travels 120 miles in 2 hours, so the calculation is 120 miles / 2 hours = 60 mph.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 479,
+            "completion_tokens": 78,
+            "total_tokens": 557,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:16 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Use examples in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What is 15% of 200?\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`.\n\nIMPORTANT: You must respond with valid JSON that matches this
+        structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2120'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:18 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1111'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1114'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9980'
+      X-Ratelimit-Remaining-Tokens:
+      - '199536'
+      X-Ratelimit-Reset-Requests:
+      - 2m49.799s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af887abdf32eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqamDfuRwKBCWTtRoooM8tIWVMCO",
+          "object": "chat.completion",
+          "created": 1757178136,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"30\",\n  \"reasoning\": \"To find 15% of 200, you can calculate it by multiplying 200 by 0.15 (which is the decimal equivalent of 15%). Thus, 200 * 0.15 = 30.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 469,
+            "completion_tokens": 77,
+            "total_tokens": 546,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:17 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Use examples in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If it takes 3 painters 4 hours to paint a wall, how long would it take 6
+        painters?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"The final answer\",\n  \"reasoning\": \"Step-by-step reasoning process\",\n  \"confidence\":
+        3.14\n}\n```\n\nRequired fields: answer, reasoning, confidence\n\nEnsure your
+        response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2183'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:20 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2331'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2338'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9980'
+      X-Ratelimit-Remaining-Tokens:
+      - '199521'
+      X-Ratelimit-Reset-Requests:
+      - 2m48.351s
+      X-Ratelimit-Reset-Tokens:
+      - 143ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af8883b9662eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaoy4xhgBo0f7WI1hOT0xnEm3t0",
+          "object": "chat.completion",
+          "created": 1757178138,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"2.67 hours\",\n  \"reasoning\": \"To find out how long it would take 6 painters to paint the wall, we first determine the total painter-hours needed to complete the job. If 3 painters take 4 hours, the total work done in painter-hours is 3 painters * 4 hours = 12 painter-hours. With 6 painters, we divide the total painter-hours by the number of painters: 12 painter-hours / 6 painters = 2 hours. Thus, it would take 6 painters 2 hours to paint the wall. Thus the answer is approximately 2.67 hours due to rounding off.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 483,
+            "completion_tokens": 155,
+            "total_tokens": 638,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:20 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve complex reasoning problems with step-by-step analysis
+        Use examples in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"What comes next in the sequence: 2, 6, 18, 54, ?\"\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2149'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:22 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1420'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1425'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9978'
+      X-Ratelimit-Remaining-Tokens:
+      - '199529'
+      X-Ratelimit-Reset-Requests:
+      - 3m2.989s
+      X-Ratelimit-Reset-Tokens:
+      - 141ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af88944ecd2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqaqQ13BF8ZsJTUCeh7HJ0p3szOC",
+          "object": "chat.completion",
+          "created": 1757178140,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"162\",\n  \"reasoning\": \"The sequence is obtained by multiplying each number by 3. Starting with 2: 2 * 3 = 6, 6 * 3 = 18, and 18 * 3 = 54. Continuing this pattern, 54 * 3 = 162.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 481,
+            "completion_tokens": 90,
+            "total_tokens": 571,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:22 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A complex reasoning problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The final answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step reasoning process\"\n    },\n    \"confidence\": {\n      \"type\":
+        \"number\",\n      \"description\": \"Confidence level (0-1)\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\",\n    \"reasoning\",\n    \"confidence\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Be careful and accurate. Solve complex reasoning problems with
+        step-by-step analysis"},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
+        \"If a recipe calls for 3 cups of flour for 12 cookies, how much flour is
+        needed for 20 cookies?\"\n}\n```\n\nRespond with the corresponding output
+        schema fields wrapped in a ```json ``` block,\nstarting with the heading `##
+        Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
+        this structure:\n```json\n{\n  \"answer\": \"The final answer\",\n  \"reasoning\":
+        \"Step-by-step reasoning process\",\n  \"confidence\": 3.14\n}\n```\n\nRequired
+        fields: answer, reasoning, confidence\n\nEnsure your response:\n1. Is valid
+        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
+        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
+        markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2189'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:02:24 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1550'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1553'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9978'
+      X-Ratelimit-Remaining-Tokens:
+      - '199519'
+      X-Ratelimit-Reset-Requests:
+      - 3m9.725s
+      X-Ratelimit-Reset-Tokens:
+      - 144ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97af88a01cfd2eff-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCqasmLJPGioSEYYJfxbSvVq5zYi1",
+          "object": "chat.completion",
+          "created": 1757178142,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"5 cups of flour\",\n  \"reasoning\": \"The amount of flour needed for 12 cookies is 3 cups. To find the amount for 1 cookie, we divide 3 cups by 12 cookies: 3/12 = 0.25 cups per cookie. For 20 cookies, we multiply 0.25 cups by 20: 0.25 * 20 = 5 cups.\",\n  \"confidence\": 0.95\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 484,
+            "completion_tokens": 109,
+            "total_tokens": 593,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:02:24 GMT
+recorded_with: VCR 6.3.1

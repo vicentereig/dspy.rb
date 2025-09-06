@@ -7,7 +7,7 @@ RSpec.describe 'DSPy Module Event Integration' do
     DSPy.events.clear_listeners
   end
 
-  it 'verifies that existing DSPy.log calls in modules now emit events' do
+  it 'verifies that DSPy.event calls trigger event listeners' do
     # Create a simple event listener to capture module events
     received_events = []
     
@@ -15,21 +15,21 @@ RSpec.describe 'DSPy Module Event Integration' do
       received_events << [event_name, attributes]
     end
     
-    # Test that DSPy.log calls (which modules use) now trigger event listeners
-    DSPy.log('chain_of_thought.reasoning_complete', 
+    # Test that DSPy.event calls (which modules should use) trigger event listeners
+    DSPy.event('chain_of_thought.reasoning_complete', 
       signature_name: 'TestSignature',
       reasoning_steps: 3,
       duration_ms: 500
     )
     
-    DSPy.log('react.iteration_complete',
+    DSPy.event('react.iteration_complete',
       iteration: 2,
       thought: 'Testing thought',
       action: 'search',
       observation: 'Found results'
     )
     
-    DSPy.log('codeact.iteration_complete',
+    DSPy.event('codeact.iteration_complete',
       iteration: 1,
       code_generated: 'puts "hello"',
       execution_result: 'hello'

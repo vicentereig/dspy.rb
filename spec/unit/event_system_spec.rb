@@ -6,6 +6,9 @@ RSpec.describe 'DSPy Event System' do
   describe '.event' do
     context 'basic event emission' do
       it 'emits an event with name and attributes' do
+        # Reset event registry to pick up mocked logger
+        DSPy.instance_variable_set(:@event_registry, nil)
+        
         # Capture logger output to verify the event is logged
         logger_output = StringIO.new
         test_logger = Dry.Logger(:test, formatter: :string) do |config|
@@ -31,6 +34,9 @@ RSpec.describe 'DSPy Event System' do
       end
       
       it 'includes trace context when called within a span' do
+        # Reset event registry to pick up mocked logger
+        DSPy.instance_variable_set(:@event_registry, nil)
+        
         logger_output = StringIO.new
         test_logger = Dry.Logger(:test, formatter: :string) do |config|
           config.add_backend(stream: logger_output)
@@ -49,6 +55,9 @@ RSpec.describe 'DSPy Event System' do
       end
       
       it 'works without a span context' do
+        # Reset event registry to pick up mocked logger
+        DSPy.instance_variable_set(:@event_registry, nil)
+        
         logger_output = StringIO.new
         test_logger = Dry.Logger(:test, formatter: :string) do |config|
           config.add_backend(stream: logger_output)
