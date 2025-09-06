@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe 'GEPA Phase 1 Integration' do
   # Simple signature for integration testing
   class IntegrationTestSignature < DSPy::Signature
+    description "Answer questions accurately and concisely"
+
     input do
       const :question, String
     end
