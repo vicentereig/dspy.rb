@@ -5,14 +5,14 @@ require 'base64'
 require_relative '../support/test_images'
 
 RSpec.describe 'OpenAI Multimodal Integration', :vcr do
-  let(:api_key) { ENV['OPENAI_API_KEY'] || 'test-key' }
+  # No fallback key - tests will skip if ENV key is not available
   let(:model) { 'gpt-4o-mini' }
   
   describe 'image analysis' do
     it 'analyzes an image from URL', vcr: { cassette_name: 'openai_multimodal_url' } do
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
       
-      lm = DSPy::LM.new("openai/#{model}", api_key: api_key)
+      lm = DSPy::LM.new("openai/#{model}", api_key: ENV['OPENAI_API_KEY'])
       
       image = DSPy::Image.new(
         url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg'
@@ -29,7 +29,7 @@ RSpec.describe 'OpenAI Multimodal Integration', :vcr do
     it 'analyzes an image from base64 data', vcr: { cassette_name: 'openai_multimodal_base64' } do
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
       
-      lm = DSPy::LM.new("openai/#{model}", api_key: api_key)
+      lm = DSPy::LM.new("openai/#{model}", api_key: ENV['OPENAI_API_KEY'])
       
       # Create a simple red square image in base64
       base64_image = TestImages.create_base64_png(color: :red, width: 16, height: 16)
@@ -50,7 +50,7 @@ RSpec.describe 'OpenAI Multimodal Integration', :vcr do
     it 'compares multiple images', vcr: { cassette_name: 'openai_multimodal_multiple' } do
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
       
-      lm = DSPy::LM.new("openai/#{model}", api_key: api_key)
+      lm = DSPy::LM.new("openai/#{model}", api_key: ENV['OPENAI_API_KEY'])
       
       # Two different colored squares
       red_square = TestImages.create_base64_png(color: :red, width: 16, height: 16)
@@ -70,7 +70,7 @@ RSpec.describe 'OpenAI Multimodal Integration', :vcr do
     it 'raises error for non-vision model', vcr: { cassette_name: 'openai_multimodal_error' } do
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
       
-      non_vision_lm = DSPy::LM.new('openai/gpt-3.5-turbo', api_key: api_key)
+      non_vision_lm = DSPy::LM.new('openai/gpt-3.5-turbo', api_key: ENV['OPENAI_API_KEY'])
       
       image = DSPy::Image.new(url: 'https://example.com/image.jpg')
       
@@ -83,11 +83,10 @@ RSpec.describe 'OpenAI Multimodal Integration', :vcr do
   end
 
   describe 'provider compatibility validation' do
-    let(:api_key) { ENV['OPENAI_API_KEY'] }
 
     context 'when using OpenAI-specific features' do
       it 'allows URL images with detail parameter during validation' do
-        skip 'Requires OPENAI_API_KEY' unless api_key
+        skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
 
         image = DSPy::Image.new(
           url: 'https://example.com/image.jpg',
@@ -101,7 +100,7 @@ RSpec.describe 'OpenAI Multimodal Integration', :vcr do
       end
 
       it 'allows base64 images with detail parameter during validation' do
-        skip 'Requires OPENAI_API_KEY' unless api_key
+        skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
 
         image = DSPy::Image.new(
           base64: TestImages.create_solid_color_png,
