@@ -26,8 +26,8 @@ RSpec.describe DSPy::Teleprompt::GEPA do
     context 'with default config' do
       it 'creates a new instance' do
         config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-        mock_lm = instance_double(DSPy::LM, model: 'gpt-4o')
-        T.unsafe(config).reflection_lm = mock_lm
+        # Use a real LM object instead of a mock to satisfy Sorbet type checking
+        config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key-for-spec-only')
         gepa = described_class.new(metric: metric, config: config)
         expect(gepa).to be_a(described_class)
         expect(gepa.metric).to eq(metric)
@@ -38,8 +38,7 @@ RSpec.describe DSPy::Teleprompt::GEPA do
       let(:config) { DSPy::Teleprompt::GEPA::GEPAConfig.new }
       
       it 'accepts custom configuration' do
-        mock_lm = instance_double(DSPy::LM, model: 'gpt-4o')
-        T.unsafe(config).reflection_lm = mock_lm
+        config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key-for-spec-only')
         config.num_generations = 5
         
         gepa = described_class.new(metric: metric, config: config)
