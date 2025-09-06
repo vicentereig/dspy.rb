@@ -10,3 +10,5 @@ group :development, :test do
   gem "byebug", "~> 11.1"
   gem 'faraday', '~> 2.0'
 end
+
+gem "newrelic_rpm", "~> 9.21"

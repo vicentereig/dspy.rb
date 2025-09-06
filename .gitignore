@@ -1,6 +1,7 @@
+config/newrelic.yml
 .claude*
 docs/output/*
-memory/
+./memory/
 dspy_registry/
 dspy_storage/
 .hive-mind/

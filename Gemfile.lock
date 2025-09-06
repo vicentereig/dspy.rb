@@ -107,6 +107,7 @@ GEM
     multi_json (1.17.0)
     net-http (0.6.0)
       uri
+    newrelic_rpm (9.21.0)
     onnxruntime (0.10.0)
       ffi
     onnxruntime (0.10.0-arm64-darwin)
@@ -196,6 +197,7 @@ DEPENDENCIES
   dotenv (~> 2.8)
   dspy!
   faraday (~> 2.0)
+  newrelic_rpm (~> 9.21)
   rspec (~> 3.12)
   vcr (~> 6.2)
   webmock (~> 3.18)
