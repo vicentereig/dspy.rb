@@ -19,7 +19,7 @@ RSpec.describe 'DSPy Configuration Error Handling' do
   let(:test_module) { test_module_class.new }
   
   # Define a test signature
-  class TestSignature < DSPy::Signature
+  class ConfigTestSignature < DSPy::Signature
     input do
       const :query, String
     end
@@ -39,7 +39,8 @@ RSpec.describe 'DSPy Configuration Error Handling' do
   after do
     # Restore a default LM to avoid affecting other tests
     DSPy.configure do |config|
-      config.lm = DSPy::LM.new('openai/gpt-3.5-turbo', api_key: 'test-key')
+      mock_lm = instance_double(DSPy::LM, model: 'gpt-3.5-turbo')
+      config.lm = T.unsafe(mock_lm)
     end
   end
   
@@ -108,7 +109,7 @@ RSpec.describe 'DSPy Configuration Error Handling' do
   
   describe 'with real DSPy modules' do
     context 'with Predict module' do
-      let(:predict_module) { DSPy::Predict.new(TestSignature) }
+      let(:predict_module) { DSPy::Predict.new(ConfigTestSignature) }
       
       it 'raises ConfigurationError when no LM configured' do
         expect {
@@ -118,7 +119,7 @@ RSpec.describe 'DSPy Configuration Error Handling' do
     end
     
     context 'with ChainOfThought module' do
-      let(:cot_module) { DSPy::ChainOfThought.new(TestSignature) }
+      let(:cot_module) { DSPy::ChainOfThought.new(ConfigTestSignature) }
       
       it 'raises ConfigurationError when no LM configured' do
         expect {

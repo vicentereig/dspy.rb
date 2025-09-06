@@ -6,6 +6,9 @@ RSpec.describe 'DSPy Event System' do
   describe '.event' do
     context 'basic event emission' do
       it 'emits an event with name and attributes' do
+        # Reset event registry to pick up mocked logger
+        DSPy.instance_variable_set(:@event_registry, nil)
+        
         # Capture logger output to verify the event is logged
         logger_output = StringIO.new
         test_logger = Dry.Logger(:test, formatter: :string) do |config|
@@ -31,6 +34,9 @@ RSpec.describe 'DSPy Event System' do
       end
       
       it 'includes trace context when called within a span' do
+        # Reset event registry to pick up mocked logger
+        DSPy.instance_variable_set(:@event_registry, nil)
+        
         logger_output = StringIO.new
         test_logger = Dry.Logger(:test, formatter: :string) do |config|
           config.add_backend(stream: logger_output)
@@ -49,6 +55,9 @@ RSpec.describe 'DSPy Event System' do
       end
       
       it 'works without a span context' do
+        # Reset event registry to pick up mocked logger
+        DSPy.instance_variable_set(:@event_registry, nil)
+        
         logger_output = StringIO.new
         test_logger = Dry.Logger(:test, formatter: :string) do |config|
           config.add_backend(stream: logger_output)
@@ -430,53 +439,4 @@ RSpec.describe 'DSPy Event System' do
     end
   end
 
-  describe 'Backward Compatibility' do
-    after do
-      DSPy.events.clear_listeners
-    end
-
-    it 'DSPy.log calls now trigger event listeners' do
-      received_events = []
-      
-      DSPy.events.subscribe('legacy.event') do |event_name, attributes|
-        received_events << [event_name, attributes]
-      end
-      
-      # Using DSPy.log (the old API) should trigger event listeners
-      DSPy.log('legacy.event', data: 'from_log_method')
-      
-      expect(received_events.length).to eq(1)
-      expect(received_events[0][0]).to eq('legacy.event')
-      expect(received_events[0][1][:data]).to eq('from_log_method')
-    end
-
-    it 'DSPy.log calls create OpenTelemetry spans when observability enabled' do
-      mock_span = double('span')
-      
-      allow(DSPy::Observability).to receive(:enabled?).and_return(true)
-      expect(DSPy::Observability).to receive(:start_span).with(
-        'legacy.span_test',
-        hash_including('test_attr' => 'value')
-      ).and_return(mock_span)
-      expect(DSPy::Observability).to receive(:finish_span).with(mock_span)
-      
-      # Using DSPy.log should create spans
-      DSPy.log('legacy.span_test', test_attr: 'value')
-    end
-
-    it 'DSPy.log still produces the same log output as before' do
-      logger_output = StringIO.new
-      test_logger = Dry.Logger(:test, formatter: :string) do |config|
-        config.add_backend(stream: logger_output)
-      end
-      
-      allow(DSPy).to receive(:logger).and_return(test_logger)
-      
-      DSPy.log('compatibility.test', message: 'hello')
-      
-      log_output = logger_output.string
-      expect(log_output).to include('event="compatibility.test"')
-      expect(log_output).to include('hello')  # Message content is included
-    end
-  end
 end

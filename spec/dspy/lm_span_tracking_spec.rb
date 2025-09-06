@@ -9,6 +9,8 @@ RSpec.describe 'DSPy::LM span tracking' do
   
   before do
     DSPy::Context.clear!
+    # Enable observability for logging to occur
+    allow(DSPy::Observability).to receive(:enabled?).and_return(true)
     allow(DSPy).to receive(:log)
   end
 

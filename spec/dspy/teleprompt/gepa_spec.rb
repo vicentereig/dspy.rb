@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe DSPy::Teleprompt::GEPA do
   # Simple signature for testing
   class TestQuestionAnswering < DSPy::Signature
+    description "Answer questions based on knowledge"
+
     input do
       const :question, String
     end
@@ -26,7 +28,8 @@ RSpec.describe DSPy::Teleprompt::GEPA do
     context 'with default config' do
       it 'creates a new instance' do
         config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-        config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key')
+        # Use a real LM object instead of a mock to satisfy Sorbet type checking
+        config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key-for-spec-only')
         gepa = described_class.new(metric: metric, config: config)
         expect(gepa).to be_a(described_class)
         expect(gepa.metric).to eq(metric)
@@ -37,7 +40,7 @@ RSpec.describe DSPy::Teleprompt::GEPA do
       let(:config) { DSPy::Teleprompt::GEPA::GEPAConfig.new }
       
       it 'accepts custom configuration' do
-        config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key')
+        config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key-for-spec-only')
         config.num_generations = 5
         
         gepa = described_class.new(metric: metric, config: config)

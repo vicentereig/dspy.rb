@@ -31,12 +31,11 @@ class StrategyTestModule < DSPy::Module
 end
 
 RSpec.describe "Strategy Selection Integration" do
-  let(:api_key) { ENV['OPENAI_API_KEY'] || 'test-key' }
   let(:module_instance) { StrategyTestModule.new }
   
   describe "with OpenAI structured outputs" do
     context "when enabled" do
-      let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: api_key, structured_outputs: true) }
+      let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: true) }
       
       before do
         # Set both global and instance LM to ensure it's available
@@ -46,6 +45,8 @@ RSpec.describe "Strategy Selection Integration" do
       end
       
       it "selects OpenAI structured output strategy", vcr: { cassette_name: "strategy_selection_openai_structured" } do
+        skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+        
         result = module_instance.forward("What is 2+2?")
         
         expect(DSPy.logger).to have_received(:debug).with(/Selected JSON extraction strategy: openai_structured_output/)
@@ -55,7 +56,7 @@ RSpec.describe "Strategy Selection Integration" do
     end
     
     context "when disabled" do
-      let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: api_key, structured_outputs: false) }
+      let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: false) }
       
       before do
         # Set both global and instance LM to ensure it's available
@@ -65,6 +66,8 @@ RSpec.describe "Strategy Selection Integration" do
       end
       
       it "falls back to enhanced prompting strategy", vcr: { cassette_name: "strategy_selection_enhanced_prompting" } do
+        skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+        
         result = module_instance.forward("What is 2+2?")
         
         expect(DSPy.logger).to have_received(:debug).with(/Selected JSON extraction strategy: enhanced_prompting/)
@@ -75,8 +78,7 @@ RSpec.describe "Strategy Selection Integration" do
   end
   
   describe "with Anthropic" do
-    let(:api_key) { ENV['ANTHROPIC_API_KEY'] || 'test-key' }
-    let(:lm) { DSPy::LM.new('anthropic/claude-3-haiku-20240307', api_key: api_key) }
+    let(:lm) { DSPy::LM.new('anthropic/claude-3-haiku-20240307', api_key: ENV['ANTHROPIC_API_KEY']) }
     
     before do
       # Set both global and instance LM to ensure it's available
@@ -86,6 +88,8 @@ RSpec.describe "Strategy Selection Integration" do
     end
     
     it "selects Anthropic tool use strategy", vcr: { cassette_name: "strategy_selection_anthropic" } do
+      skip 'Requires ANTHROPIC_API_KEY' unless ENV['ANTHROPIC_API_KEY']
+      
       result = module_instance.forward("What is 2+2?")
       
       expect(DSPy.logger).to have_received(:debug).with(/Selected JSON extraction strategy: anthropic_tool_use/)
@@ -95,7 +99,7 @@ RSpec.describe "Strategy Selection Integration" do
   end
   
   describe "manual strategy override" do
-    let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: api_key, structured_outputs: true) }
+    let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: true) }
     
     before do
       # Set both global and instance LM to ensure it's available
@@ -116,6 +120,8 @@ RSpec.describe "Strategy Selection Integration" do
     end
     
     it "respects manual strategy selection", vcr: { cassette_name: "strategy_selection_manual_override" } do
+      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      
       # Verify the strategy was overridden by checking the actual strategy used
       strategy_selector = DSPy::LM::StrategySelector.new(lm.adapter, StrategyTestSignature)
       strategy = strategy_selector.select

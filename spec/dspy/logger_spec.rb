@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'tempfile'
+require 'stringio'
 
 RSpec.describe 'DSPy.logger' do
   before do
@@ -84,49 +85,64 @@ RSpec.describe 'DSPy.logger' do
 
     it 'respects DSPY_LOG environment variable override' do
       ENV['RACK_ENV'] = 'test'
-      ENV['DSPY_LOG'] = 'custom.log'
       
-      logger = DSPy.create_logger
-      expect(logger).not_to be_nil
+      # Use a temporary file path that will be cleaned up
+      temp_log_path = File.join(Dir.tmpdir, "test_dspy_log_#{Process.pid}_#{Time.now.to_f}.log")
+      ENV['DSPY_LOG'] = temp_log_path
+      
+      begin
+        logger = DSPy.create_logger
+        expect(logger).not_to be_nil
+      ensure
+        # Clean up the temporary log file
+        File.unlink(temp_log_path) if File.exist?(temp_log_path)
+      end
     end
   end
 
   describe 'DSPy.log method' do
-    it 'logs events with merged context' do
-      logger_mock = double('logger')
-      allow(DSPy).to receive(:logger).and_return(logger_mock)
+    it 'logs directly to configured logger' do
+      logger_output = StringIO.new
+      test_logger = Dry.Logger(:test, formatter: :string) do |config|
+        config.add_backend(stream: logger_output)
+      end
+      
+      allow(DSPy).to receive(:logger).and_return(test_logger)
       
       # Mock the Context.current to return specific values
       allow(DSPy::Context).to receive(:current).and_return({
-        trace_id: 'test-trace-123',
-        span_stack: ['span-456']
+        trace_id: 'test-trace-123'
       })
       
-      expect(logger_mock).to receive(:info).with(
-        hash_including(
-          event: 'test.event',
-          trace_id: 'test-trace-123',
-          custom: 'value'
-        )
-      )
-      
       DSPy.log('test.event', custom: 'value')
+      
+      # Verify direct logging occurred
+      log_output = logger_output.string
+      expect(log_output).to include('event="test.event"')
+      expect(log_output).to include('custom="value"')
+      expect(log_output).to include('trace_id="test-trace-123"')
     end
 
-    it 'excludes span_stack from logged attributes' do
-      logger_mock = double('logger')
-      allow(DSPy).to receive(:logger).and_return(logger_mock)
+    it 'excludes span_stack from log output' do
+      logger_output = StringIO.new
+      test_logger = Dry.Logger(:test, formatter: :string) do |config|
+        config.add_backend(stream: logger_output)
+      end
+      
+      allow(DSPy).to receive(:logger).and_return(test_logger)
       
       allow(DSPy::Context).to receive(:current).and_return({
         trace_id: 'test-trace-123',
         span_stack: ['span-456']
       })
       
-      expect(logger_mock).to receive(:info) do |attrs|
-        expect(attrs).not_to have_key(:span_stack)
-      end
-      
       DSPy.log('test.event')
+      
+      # Verify span_stack is excluded but other context is included
+      log_output = logger_output.string
+      expect(log_output).to include('event="test.event"')
+      expect(log_output).to include('trace_id="test-trace-123"')
+      expect(log_output).not_to include('span_stack')
     end
 
     it 'returns nil when logger is not configured' do
@@ -137,7 +153,7 @@ RSpec.describe 'DSPy.logger' do
   end
 
   describe 'log format output' do
-    it 'outputs key=value format in development' do
+    it 'outputs key=value format in development (when logs are event consumers)' do
       ENV['RACK_ENV'] = 'development'
       
       # Create a StringIO to capture output
@@ -152,7 +168,8 @@ RSpec.describe 'DSPy.logger' do
         span_stack: []
       })
       
-      DSPy.log('span.start', span_id: 'span-001', operation: 'test.op')
+      # Directly call emit_log to test format output (simulates log consumer behavior)
+      DSPy.emit_log('span.start', span_id: 'span-001', operation: 'test.op')
       
       output.rewind
       log_output = output.read
@@ -163,7 +180,7 @@ RSpec.describe 'DSPy.logger' do
       expect(log_output).to include('operation="test.op"')
     end
 
-    it 'outputs JSON format in production' do
+    it 'outputs JSON format in production (when logs are event consumers)' do
       ENV['RACK_ENV'] = 'production'
       
       # Create a StringIO to capture output
@@ -178,7 +195,8 @@ RSpec.describe 'DSPy.logger' do
         span_stack: []
       })
       
-      DSPy.log('span.start', span_id: 'span-001', operation: 'test.op')
+      # Directly call emit_log to test format output (simulates log consumer behavior)
+      DSPy.emit_log('span.start', span_id: 'span-001', operation: 'test.op')
       
       output.rewind
       log_output = output.read

@@ -25,6 +25,13 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
   end
 
   let(:metric) { proc { |example, prediction| example.expected_values[:answer] == prediction.answer ? 1.0 : 0.0 } }
+  
+  let(:fitness_evaluator) do
+    DSPy::Teleprompt::GEPA::FitnessEvaluator.new(
+      primary_metric: metric,
+      config: config
+    )
+  end
 
   let(:trainset) do
     [
@@ -46,31 +53,31 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
   end
 
   describe 'initialization' do
-    it 'creates engine with config and metric' do
-      engine = described_class.new(config: config, metric: metric)
+    it 'creates engine with config and fitness_evaluator' do
+      engine = described_class.new(config: config, fitness_evaluator: fitness_evaluator)
       
       expect(engine.config).to eq(config)
-      expect(engine.metric).to eq(metric)
+      expect(engine.fitness_evaluator).to eq(fitness_evaluator)
     end
 
     it 'initializes empty population' do
-      engine = described_class.new(config: config, metric: metric)
+      engine = described_class.new(config: config, fitness_evaluator: fitness_evaluator)
       
       expect(engine.population).to be_empty
       expect(engine.generation).to eq(0)
     end
 
     it 'requires config parameter' do
-      expect { described_class.new(metric: metric) }.to raise_error(ArgumentError)
+      expect { described_class.new(fitness_evaluator: fitness_evaluator) }.to raise_error(ArgumentError)
     end
 
-    it 'requires metric parameter' do
+    it 'requires fitness_evaluator parameter' do
       expect { described_class.new(config: config) }.to raise_error(ArgumentError)
     end
   end
 
   describe '#initialize_population' do
-    let(:engine) { described_class.new(config: config, metric: metric) }
+    let(:engine) { described_class.new(config: config, fitness_evaluator: fitness_evaluator) }
 
     it 'creates initial population from program' do
       engine.initialize_population(mock_program)
@@ -99,7 +106,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
   end
 
   describe '#evaluate_population' do
-    let(:engine) { described_class.new(config: config, metric: metric) }
+    let(:engine) { described_class.new(config: config, fitness_evaluator: fitness_evaluator) }
 
     before do
       engine.initialize_population(mock_program)
@@ -116,14 +123,15 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
       scores = engine.evaluate_population(trainset)
       
       expect(scores.size).to eq(config.population_size)
-      scores.each { |score| expect(score).to be_a(Float) }
+      scores.each { |score| expect(score).to be_a(DSPy::Teleprompt::GEPA::FitnessScore) }
     end
 
     it 'returns fitness scores between 0 and 1' do
       scores = engine.evaluate_population(trainset)
       
       scores.each do |score|
-        expect(score).to be_between(0.0, 1.0)
+        expect(score.overall_score).to be_between(0.0, 1.0)
+        expect(score.primary_score).to be_between(0.0, 1.0)
       end
     end
 
@@ -135,18 +143,27 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
       expect { engine.evaluate_population(trainset) }.not_to raise_error
       
       scores = engine.evaluate_population(trainset)
-      expect(scores.first).to eq(0.0) # Failed evaluation gets 0 score
+      expect(scores.first.overall_score).to be <= 1.0 # Failed evaluation gets a low score
+      expect(scores.first.metadata).to have_key(:errors_count) # Error tracking
     end
   end
 
   describe '#evolve_generation' do
-    let(:engine) { described_class.new(config: config, metric: metric) }
+    let(:engine) { described_class.new(config: config, fitness_evaluator: fitness_evaluator) }
 
     before do
       engine.initialize_population(mock_program)
       
-      # Mock fitness evaluator
-      allow(engine).to receive(:evaluate_population).and_return([0.8, 0.6, 0.4, 0.2])
+      # Mock fitness evaluator to return FitnessScore objects
+      fitness_scores = [0.8, 0.6, 0.4, 0.2].map do |score|
+        DSPy::Teleprompt::GEPA::FitnessScore.new(
+          primary_score: score,
+          secondary_scores: {},
+          overall_score: score,
+          metadata: {}
+        )
+      end
+      allow(engine).to receive(:evaluate_population).and_return(fitness_scores)
     end
 
     it 'advances to next generation' do
@@ -180,12 +197,21 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
   end
 
   describe '#run_evolution' do
-    let(:engine) { described_class.new(config: config, metric: metric) }
+    let(:engine) { described_class.new(config: config, fitness_evaluator: fitness_evaluator) }
 
     it 'runs complete evolution for specified generations' do
       # Mock the evaluation and evolution steps
       allow(engine).to receive(:initialize_population)
-      allow(engine).to receive(:evaluate_population).and_return([0.8, 0.6, 0.4, 0.2])
+      # Mock fitness scores
+      fitness_scores = [0.8, 0.6, 0.4, 0.2].map do |score|
+        DSPy::Teleprompt::GEPA::FitnessScore.new(
+          primary_score: score,
+          secondary_scores: {},
+          overall_score: score,
+          metadata: {}
+        )
+      end
+      allow(engine).to receive(:evaluate_population).and_return(fitness_scores)
       allow(engine).to receive(:evolve_generation)
       
       result = engine.run_evolution(mock_program, trainset)
@@ -203,11 +229,19 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
       call_count = 0
       allow(engine).to receive(:evaluate_population) do |trainset|
         call_count += 1
-        case call_count
+        scores = case call_count
         when 1 then [0.5, 0.3, 0.2, 0.1] # Initial
         when 2 then [0.7, 0.5, 0.4, 0.3] # Gen 1  
         when 3 then [0.9, 0.7, 0.6, 0.5] # Gen 2
         else [0.9, 0.8, 0.7, 0.6]       # Gen 3
+        end
+        scores.map do |score|
+          DSPy::Teleprompt::GEPA::FitnessScore.new(
+            primary_score: score,
+            secondary_scores: {},
+            overall_score: score,
+            metadata: {}
+          )
         end
       end
       
@@ -216,7 +250,15 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
       allow(engine).to receive(:population_diversity).and_return(0.8)
       
       # Set up fitness scores manually for the final result
-      engine.instance_variable_set(:@fitness_scores, [0.9, 0.8, 0.7, 0.6])
+      final_scores = [0.9, 0.8, 0.7, 0.6].map do |score|
+        DSPy::Teleprompt::GEPA::FitnessScore.new(
+          primary_score: score,
+          secondary_scores: {},
+          overall_score: score,
+          metadata: {}
+        )
+      end
+      engine.instance_variable_set(:@fitness_scores, final_scores)
       allow(engine).to receive(:get_best_candidate).and_return(mock_program)
       
       result = engine.run_evolution(mock_program, trainset)
@@ -226,7 +268,15 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
     end
 
     it 'tracks generation history' do
-      allow(engine).to receive(:evaluate_population).and_return([0.8, 0.6, 0.4, 0.2])
+      fitness_scores = [0.8, 0.6, 0.4, 0.2].map do |score|
+        DSPy::Teleprompt::GEPA::FitnessScore.new(
+          primary_score: score,
+          secondary_scores: {},
+          overall_score: score,
+          metadata: {}
+        )
+      end
+      allow(engine).to receive(:evaluate_population).and_return(fitness_scores)
       
       result = engine.run_evolution(mock_program, trainset)
       
@@ -236,13 +286,20 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
   end
 
   describe '#get_best_candidate' do
-    let(:engine) { described_class.new(config: config, metric: metric) }
+    let(:engine) { described_class.new(config: config, fitness_evaluator: fitness_evaluator) }
 
     before do
       engine.initialize_population(mock_program)
       
       # Mock different fitness scores
-      @fitness_scores = [0.9, 0.3, 0.7, 0.5]
+      @fitness_scores = [0.9, 0.3, 0.7, 0.5].map do |score|
+        DSPy::Teleprompt::GEPA::FitnessScore.new(
+          primary_score: score,
+          secondary_scores: {},
+          overall_score: score,
+          metadata: {}
+        )
+      end
       allow(engine).to receive(:evaluate_population).and_return(@fitness_scores)
     end
 
@@ -254,7 +311,14 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
     end
 
     it 'handles tied fitness scores' do
-      tied_scores = [0.8, 0.8, 0.6, 0.4]
+      tied_scores = [0.8, 0.8, 0.6, 0.4].map do |score|
+        DSPy::Teleprompt::GEPA::FitnessScore.new(
+          primary_score: score,
+          secondary_scores: {},
+          overall_score: score,
+          metadata: {}
+        )
+      end
       allow(engine).to receive(:evaluate_population).and_return(tied_scores)
       
       engine.evaluate_population(trainset)
@@ -266,7 +330,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::GeneticEngine do
   end
 
   describe '#population_diversity' do
-    let(:engine) { described_class.new(config: config, metric: metric) }
+    let(:engine) { described_class.new(config: config, fitness_evaluator: fitness_evaluator) }
 
     it 'measures instruction diversity in population' do
       engine.initialize_population(mock_program)

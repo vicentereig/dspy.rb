@@ -13,6 +13,8 @@ RSpec.describe "Single-field union types" do
       end
 
       class TestSignature < DSPy::Signature
+        description "Test signature for single field type discrimination"
+
         input do
           const :query, String
         end
@@ -47,6 +49,8 @@ RSpec.describe "Single-field union types" do
       end
 
       class UnionSignature < DSPy::Signature
+        description "Test signature for union types with type discrimination"
+
         input do
           const :query, String
         end
@@ -90,6 +94,8 @@ RSpec.describe "Single-field union types" do
       end
 
       class ConflictingSignature < DSPy::Signature
+        description "Test signature for _type field conflicts"
+
         output do
           const :result, ConflictingStruct
         end
@@ -160,6 +166,8 @@ RSpec.describe "Single-field union types" do
     end
 
     class DeserializeSignature < DSPy::Signature
+      description "Test signature for union type deserialization"
+
       output do
         const :action, T.any(DeserializeSpawn, DeserializeComplete)
       end
@@ -181,6 +189,8 @@ RSpec.describe "Single-field union types" do
 
     it "handles arrays of unions with _type" do
       class ArrayUnionSignature < DSPy::Signature
+        description "Test signature for arrays of union types"
+
         output do
           const :actions, T::Array[T.any(DeserializeSpawn, DeserializeComplete)]
         end

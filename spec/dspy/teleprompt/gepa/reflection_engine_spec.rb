@@ -3,14 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
-  # Test signature for reflection testing  
+  # Test signature for reflection testing
   class ReflectionTestSignature < DSPy::Signature
     description "Test signature for reflection analysis"
 
     input do
       const :question, String
     end
-    
+
     output do
       const :answer, String
     end
@@ -18,7 +18,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
   let(:config) do
     DSPy::Teleprompt::GEPA::GEPAConfig.new.tap do |c|
-      c.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY'] || 'test-key')
+      c.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY'])
     end
   end
 
@@ -37,7 +37,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
         metadata: { optimization_run_id: 'run-1' }
       ),
       DSPy::Teleprompt::GEPA::ExecutionTrace.new(
-        trace_id: 'trace-2', 
+        trace_id: 'trace-2',
         event_name: 'llm.response',
         timestamp: Time.now - 5,
         attributes: {
@@ -68,10 +68,12 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
     end
 
     it 'uses default config when none provided' do
-      # Create config with test LM for this test
+      # Create config with proper DSPy::LM that doesn't need API key for this test
       default_config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-      default_config.reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key')
-      
+      # Create a real LM instance with test model - this will work without API key since we're not calling it
+      reflection_lm = DSPy::LM.new('openai/gpt-4o', api_key: 'test-key-for-spec-only')
+      default_config.reflection_lm = reflection_lm
+
       engine = described_class.new(default_config)
       expect(engine.config).to be_a(DSPy::Teleprompt::GEPA::GEPAConfig)
       expect(engine.config.reflection_lm.model).to eq('gpt-4o')
@@ -83,7 +85,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'returns a ReflectionResult for given traces' do
       result = engine.reflect_on_traces(sample_traces)
-      
+
       expect(result).to be_a(DSPy::Teleprompt::GEPA::ReflectionResult)
       expect(result.trace_id).to match(/^reflection-\h{8}$/)
       expect(result.confidence).to be_between(0.0, 1.0)
@@ -91,7 +93,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'handles empty trace array' do
       result = engine.reflect_on_traces([])
-      
+
       expect(result).to be_a(DSPy::Teleprompt::GEPA::ReflectionResult)
       expect(result.diagnosis).to include('No traces')
       expect(result.confidence).to eq(0.0)
@@ -100,21 +102,21 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'includes trace analysis in diagnosis' do
       result = engine.reflect_on_traces(sample_traces)
-      
+
       expect(result.diagnosis).not_to be_empty
       expect(result.reasoning).not_to be_empty
     end
 
     it 'suggests actionable improvements' do
       result = engine.reflect_on_traces(sample_traces)
-      
+
       expect(result.improvements).to be_an(Array)
       expect(result.suggested_mutations).to be_an(Array)
     end
 
     it 'includes metadata about the reflection process' do
       result = engine.reflect_on_traces(sample_traces)
-      
+
       expect(result.metadata).to include(
         :reflection_model,
         :analysis_timestamp,
@@ -130,7 +132,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'extracts patterns from execution traces' do
       patterns = engine.analyze_execution_patterns(sample_traces)
-      
+
       expect(patterns).to be_a(Hash)
       expect(patterns).to include(
         :llm_traces_count,
@@ -142,7 +144,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'counts trace types correctly' do
       patterns = engine.analyze_execution_patterns(sample_traces)
-      
+
       expect(patterns[:llm_traces_count]).to eq(2)
       expect(patterns[:module_traces_count]).to eq(0) # 'module.call' doesn't match module_trace? logic
       expect(patterns[:unique_models]).to include('gpt-4o')
@@ -150,7 +152,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'handles empty traces' do
       patterns = engine.analyze_execution_patterns([])
-      
+
       expect(patterns[:llm_traces_count]).to eq(0)
       expect(patterns[:module_traces_count]).to eq(0)
       expect(patterns[:total_tokens]).to eq(0)
@@ -171,7 +173,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'returns array of improvement suggestions' do
       suggestions = engine.generate_improvement_suggestions(patterns)
-      
+
       expect(suggestions).to be_an(Array)
       expect(suggestions).not_to be_empty
       expect(suggestions.first).to be_a(String)
@@ -180,10 +182,10 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
     it 'suggests different improvements based on patterns' do
       high_token_patterns = patterns.merge(total_tokens: 1000)
       low_token_patterns = patterns.merge(total_tokens: 50)
-      
+
       high_suggestions = engine.generate_improvement_suggestions(high_token_patterns)
       low_suggestions = engine.generate_improvement_suggestions(low_token_patterns)
-      
+
       expect(high_suggestions).not_to eq(low_suggestions)
     end
   end
@@ -200,7 +202,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'returns array of mutation symbols' do
       mutations = engine.suggest_mutations(patterns)
-      
+
       expect(mutations).to be_an(Array)
       expect(mutations).not_to be_empty
       mutations.each { |m| expect(m).to be_a(Symbol) }
@@ -208,7 +210,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'suggests appropriate mutations based on patterns' do
       mutations = engine.suggest_mutations(patterns)
-      
+
       valid_mutations = [:rewrite, :expand, :combine, :simplify, :rephrase]
       mutations.each { |m| expect(valid_mutations).to include(m) }
     end
@@ -218,28 +220,29 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
   describe '#reflect_with_llm' do
     let(:engine) { described_class.new(config) }
 
-    it 'performs LLM-based reflection on traces', skip: 'Requires API key' do
+    it 'performs LLM-based reflection on traces', vcr: { cassette_name: 'reflection_engine_llm_reflection' } do
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
       
+      engine = described_class.new(config)
       result = engine.reflect_with_llm(sample_traces)
-      
+
       expect(result).to be_a(DSPy::Teleprompt::GEPA::ReflectionResult)
-      expect(result.diagnosis).to include('LLM analysis')
+      expect(result.diagnosis).not_to include('fallback analysis') # Should be LLM-generated, not fallback
       expect(result.improvements).not_to be_empty
       expect(result.confidence).to be_between(0.0, 1.0)
       expect(result.metadata[:token_usage]).to be > 0
     end
 
-    it 'handles API failures gracefully', skip: 'Requires API key' do
+    it 'handles API failures gracefully', vcr: { cassette_name: 'reflection_engine_api_failure' } do
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
-      
+
       # Create engine with invalid model to trigger failure
       invalid_config = DSPy::Teleprompt::GEPA::GEPAConfig.new
-      invalid_config.reflection_lm = DSPy::LM.new('invalid/model', api_key: 'test-key')
+      invalid_config.reflection_lm = DSPy::LM.new('openai/invalid-model', api_key: ENV['OPENAI_API_KEY'])
       invalid_engine = described_class.new(invalid_config)
-      
+
       result = invalid_engine.reflect_with_llm(sample_traces)
-      
+
       # Should fallback to rule-based analysis
       expect(result).to be_a(DSPy::Teleprompt::GEPA::ReflectionResult)
       expect(result.diagnosis).to include('fallback')
@@ -251,12 +254,12 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'creates structured reflection prompt from traces' do
       prompt = engine.generate_reflection_prompt(sample_traces)
-      
+
       expect(prompt).to be_a(String)
       expect(prompt).to include('execution traces')
       expect(prompt).to include('analysis')
       expect(prompt).to include('improvements')
-      
+
       # Should include trace details
       expect(prompt).to include('gpt-4o')
       expect(prompt).to include('5 + 3')
@@ -265,14 +268,14 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'handles empty traces in prompt generation' do
       prompt = engine.generate_reflection_prompt([])
-      
+
       expect(prompt).to be_a(String)
       expect(prompt).to include('No execution traces')
     end
 
     it 'includes optimization context in prompt' do
       prompt = engine.generate_reflection_prompt(sample_traces)
-      
+
       expect(prompt).to include('genetic algorithm')
       expect(prompt).to include('prompt optimization')
       expect(prompt).to include('mutation')
@@ -302,7 +305,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'parses structured LLM response correctly' do
       result = engine.parse_llm_reflection(sample_llm_response.to_json, sample_traces)
-      
+
       expect(result).to be_a(DSPy::Teleprompt::GEPA::ReflectionResult)
       expect(result.diagnosis).to include('inconsistent response length')
       expect(result.improvements).to include('Add explicit step-by-step reasoning instructions')
@@ -312,7 +315,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'handles malformed JSON gracefully' do
       result = engine.parse_llm_reflection('invalid json}', sample_traces)
-      
+
       expect(result).to be_a(DSPy::Teleprompt::GEPA::ReflectionResult)
       expect(result.diagnosis).to include('parsing error')
       expect(result.confidence).to be < 0.5
@@ -322,9 +325,9 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
       malformed_response = {
         "suggested_mutations" => ["expand", "invalid_mutation", "rewrite", "another_invalid"]
       }
-      
+
       result = engine.parse_llm_reflection(malformed_response.to_json, sample_traces)
-      
+
       # Should only include valid mutations
       valid_mutations = [:expand, :rewrite]
       expect(result.suggested_mutations).to match_array(valid_mutations)
@@ -336,7 +339,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'creates comprehensive summary of traces' do
       summary = engine.trace_summary_for_reflection(sample_traces)
-      
+
       expect(summary).to be_a(String)
       expect(summary).to include('Total traces: 3')
       expect(summary).to include('LLM interactions: 2')
@@ -347,7 +350,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'includes timing information in summary' do
       summary = engine.trace_summary_for_reflection(sample_traces)
-      
+
       expect(summary).to include('Execution timespan')
       expect(summary).to include('seconds')
     end
@@ -360,9 +363,9 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
         attributes: {},
         metadata: {}
       )
-      
+
       summary = engine.trace_summary_for_reflection([incomplete_trace])
-      
+
       expect(summary).to be_a(String)
       expect(summary).to include('Total traces: 1')
     end
@@ -373,7 +376,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'identifies optimization opportunities from traces' do
       insights = engine.extract_optimization_insights(sample_traces)
-      
+
       expect(insights).to be_a(Hash)
       expect(insights).to include(:token_efficiency, :response_quality, :model_consistency)
     end
@@ -391,9 +394,9 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
           metadata: {}
         )
       ]
-      
+
       insights = engine.extract_optimization_insights(high_token_traces)
-      
+
       expect(insights[:token_efficiency][:status]).to eq('poor')
       expect(insights[:token_efficiency][:suggestions]).to include(match(/reducing.*prompt/i))
     end
@@ -415,9 +418,9 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
           metadata: {}
         )
       ]
-      
+
       insights = engine.extract_optimization_insights(varied_traces)
-      
+
       expect(insights[:response_quality][:consistency]).to eq('inconsistent')
       expect(insights[:response_quality][:recommendations]).not_to be_empty
     end
@@ -434,9 +437,9 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
         mutation_history: [:expand, :rewrite],
         crossover_history: [:uniform, :blend]
       }
-      
+
       result = engine.reflection_with_context(sample_traces, context)
-      
+
       expect(result).to be_a(DSPy::Teleprompt::GEPA::ReflectionResult)
       expect(result.reasoning).to include('Generation 5')
       expect(result.metadata[:optimization_context]).to eq(context)
@@ -448,9 +451,9 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
         mutation_history: [:expand, :expand, :rewrite],
         recent_performance_trend: 'declining'
       }
-      
+
       result = engine.reflection_with_context(sample_traces, context)
-      
+
       # Should suggest different mutations since expand was used recently
       expect(result.suggested_mutations).not_to include(:expand)
       expect([:simplify, :rephrase, :combine].any? { |m| result.suggested_mutations.include?(m) }).to be(true)
@@ -462,13 +465,13 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'provides actionable insights for genetic operators' do
       result = engine.reflect_on_traces(sample_traces)
-      
+
       # Should provide specific mutation suggestions
       expect(result.suggested_mutations).to be_an(Array)
       result.suggested_mutations.each do |mutation|
         expect([:rewrite, :expand, :simplify, :combine, :rephrase]).to include(mutation)
       end
-      
+
       # Should provide improvement suggestions
       expect(result.improvements).to be_an(Array)
       expect(result.improvements).not_to be_empty
@@ -476,7 +479,7 @@ RSpec.describe DSPy::Teleprompt::GEPA::ReflectionEngine do
 
     it 'maintains consistency with GEPA configuration' do
       result = engine.reflect_on_traces(sample_traces)
-      
+
       # Should respect configured mutation types
       available_mutations = config.mutation_types.map(&:serialize)
       result.suggested_mutations.each do |suggestion|

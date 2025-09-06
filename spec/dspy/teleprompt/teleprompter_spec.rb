@@ -50,6 +50,10 @@ class MockMathProgram
       OpenStruct.new(problem: problem, answer: "unknown", explanation: "Cannot solve")
     end
   end
+
+  def signature_class
+    TeleprompterMath
+  end
 end
 
 RSpec.describe DSPy::Teleprompt::Teleprompter do
@@ -349,7 +353,10 @@ RSpec.describe DSPy::Teleprompt::Teleprompter do
       teleprompter.config.save_intermediate_results = true
       teleprompter.config.save_path = "/tmp/test_results.json"
       
-      expect(File).to receive(:open).with("/tmp/test_results.json", 'w')
+      # Allow other File.open calls but ensure our specific call happens
+      allow(File).to receive(:open).and_call_original
+      expect(File).to receive(:open).with("/tmp/test_results.json", 'w').and_call_original
+      
       teleprompter.save_results(result)
     end
   end

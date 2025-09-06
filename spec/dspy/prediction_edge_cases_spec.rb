@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe 'DSPy::Prediction edge cases' do
   describe 'handling nil and missing values' do
     class OptionalFieldSignature < DSPy::Signature
+      description "Test signature with optional fields and defaults"
+
       output do
         const :required_field, String
         const :optional_field, T.nilable(String)
@@ -57,6 +59,8 @@ RSpec.describe 'DSPy::Prediction edge cases' do
     end
 
     class DeepNestedSignature < DSPy::Signature
+      description "Test signature with deeply nested structures"
+
       output do
         const :data, DeepNesting::Level1
       end
@@ -102,6 +106,8 @@ RSpec.describe 'DSPy::Prediction edge cases' do
     end
 
     class ArrayUnionSignature < DSPy::Signature
+      description "Test signature with array of union types"
+
       output do
         const :items, T::Array[T.any(ArrayUnionTypes::TypeA, ArrayUnionTypes::TypeB)]
       end
@@ -133,6 +139,8 @@ RSpec.describe 'DSPy::Prediction edge cases' do
 
     context 'with nilable array of union types' do
       class NilableArrayUnionSignature < DSPy::Signature
+        description "Test signature with nilable array of union types"
+
         output do
           const :items, T.nilable(T::Array[T.any(ArrayUnionTypes::TypeA, ArrayUnionTypes::TypeB)])
         end
@@ -203,6 +211,8 @@ RSpec.describe 'DSPy::Prediction edge cases' do
     end
 
     class EnumEdgeSignature < DSPy::Signature
+      description "Test signature with enum and complex action types"
+
       output do
         const :status, EnumEdgeCases::Status
         const :action, EnumEdgeCases::ComplexAction
@@ -234,6 +244,8 @@ RSpec.describe 'DSPy::Prediction edge cases' do
     it 'handles case-insensitive enum matching as fallback' do
       # Testing the case-insensitive fallback in the enum mapping logic
       class CaseInsensitiveSignature < DSPy::Signature
+        description "Test signature for case-insensitive enum matching"
+
         output do
           const :action, EnumEdgeCases::ComplexAction
           const :details, T.any(
@@ -258,6 +270,8 @@ RSpec.describe 'DSPy::Prediction edge cases' do
 
   describe 'error handling' do
     class StrictStructSignature < DSPy::Signature
+      description "Test signature with strict struct validation"
+
       class StrictData < T::Struct
         const :required_field, String
         const :required_number, Integer
@@ -282,6 +296,8 @@ RSpec.describe 'DSPy::Prediction edge cases' do
 
     it 'handles invalid enum values gracefully' do
       class InvalidEnumSignature < DSPy::Signature
+        description "Test signature with enum validation errors"
+
         class Color < T::Enum
           enums do
             Red = new('red')
@@ -340,6 +356,8 @@ RSpec.describe 'DSPy::Prediction edge cases' do
     end
 
     class RealWorldSignature < DSPy::Signature
+      description "Test signature with complex real-world data structures"
+
       output do
         const :tasks, T::Array[RealWorldScenarios::Task]
         const :total_count, Integer

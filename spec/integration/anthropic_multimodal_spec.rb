@@ -5,14 +5,14 @@ require 'base64'
 require_relative '../support/test_images'
 
 RSpec.describe 'Anthropic Multimodal Integration', :vcr do
-  let(:api_key) { ENV['ANTHROPIC_API_KEY'] || 'test-key' }
+  # No fallback key - tests will skip if ENV key is not available
   let(:model) { 'claude-3-5-sonnet-20241022' }
   
   describe 'image analysis' do
     it 'analyzes an image from base64 data', vcr: { cassette_name: 'anthropic_multimodal_base64' } do
       skip 'Requires ANTHROPIC_API_KEY' unless ENV['ANTHROPIC_API_KEY']
       
-      lm = DSPy::LM.new("anthropic/#{model}", api_key: api_key)
+      lm = DSPy::LM.new("anthropic/#{model}", api_key: ENV['ANTHROPIC_API_KEY'])
       
       # Create a simple red square image in base64
       base64_image = TestImages.create_base64_png(color: :red, width: 16, height: 16)
@@ -33,7 +33,7 @@ RSpec.describe 'Anthropic Multimodal Integration', :vcr do
     it 'compares multiple images', vcr: { cassette_name: 'anthropic_multimodal_multiple' } do
       skip 'Requires ANTHROPIC_API_KEY' unless ENV['ANTHROPIC_API_KEY']
       
-      lm = DSPy::LM.new("anthropic/#{model}", api_key: api_key)
+      lm = DSPy::LM.new("anthropic/#{model}", api_key: ENV['ANTHROPIC_API_KEY'])
       
       # Two different colored squares
       red_square = TestImages.create_base64_png(color: :red, width: 16, height: 16)
@@ -53,7 +53,7 @@ RSpec.describe 'Anthropic Multimodal Integration', :vcr do
     it 'raises error for non-vision model', vcr: { cassette_name: 'anthropic_multimodal_error' } do
       skip 'Requires ANTHROPIC_API_KEY' unless ENV['ANTHROPIC_API_KEY']
       
-      non_vision_lm = DSPy::LM.new('anthropic/claude-2.1', api_key: api_key)
+      non_vision_lm = DSPy::LM.new('anthropic/claude-2.1', api_key: ENV['ANTHROPIC_API_KEY'])
       
       # Anthropic doesn't support URLs directly, so we use base64
       base64_image = TestImages.create_base64_png(color: :red, width: 16, height: 16)
@@ -69,7 +69,7 @@ RSpec.describe 'Anthropic Multimodal Integration', :vcr do
     it 'handles image with system prompt', vcr: { cassette_name: 'anthropic_multimodal_system' } do
       skip 'Requires ANTHROPIC_API_KEY' unless ENV['ANTHROPIC_API_KEY']
       
-      lm = DSPy::LM.new("anthropic/#{model}", api_key: api_key)
+      lm = DSPy::LM.new("anthropic/#{model}", api_key: ENV['ANTHROPIC_API_KEY'])
       
       base64_image = TestImages.create_base64_png(color: :red, width: 16, height: 16)
       image = DSPy::Image.new(base64: base64_image, content_type: 'image/png')
@@ -85,12 +85,11 @@ RSpec.describe 'Anthropic Multimodal Integration', :vcr do
   end
 
   describe 'provider compatibility validation' do
-    let(:api_key) { ENV['ANTHROPIC_API_KEY'] }
 
     context 'when using OpenAI-specific features' do
       it 'raises error for URL images' do
-        skip 'Requires ANTHROPIC_API_KEY' unless api_key
-        lm = DSPy::LM.new("anthropic/#{model}", api_key: api_key)
+        skip 'Requires ANTHROPIC_API_KEY' unless ENV['ANTHROPIC_API_KEY']
+        lm = DSPy::LM.new("anthropic/#{model}", api_key: ENV['ANTHROPIC_API_KEY'])
 
         image = DSPy::Image.new(url: 'https://example.com/image.jpg')
         
@@ -105,8 +104,8 @@ RSpec.describe 'Anthropic Multimodal Integration', :vcr do
       end
 
       it 'raises error for detail parameter' do
-        skip 'Requires ANTHROPIC_API_KEY' unless api_key
-        lm = DSPy::LM.new("anthropic/#{model}", api_key: api_key)
+        skip 'Requires ANTHROPIC_API_KEY' unless ENV['ANTHROPIC_API_KEY']
+        lm = DSPy::LM.new("anthropic/#{model}", api_key: ENV['ANTHROPIC_API_KEY'])
 
         image = DSPy::Image.new(
           base64: TestImages.create_solid_color_png,

@@ -7,22 +7,23 @@ http_interactions:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"q\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"q\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
         \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"a\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"a\"\n  ]\n}\n```\n\nAll interactions will be structured in the following
-        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
         Output values\nRespond exclusively with the output schema fields in the json
         block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Answer the question"},{"role":"user","content":"## Input
-        Values\n```json\n{\n  \"q\": \"2+2?\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
-        this structure:\n```json\n{\n  \"a\": \"example string\"\n}\n```\n\nRequired
-        fields: a\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        your objective is: Answer questions accurately and concisely Use examples
+        in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is 2+2?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"example string\"\n}\n```\n\nRequired fields: answer\n\nEnsure your response:\n1.
+        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
+        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
+        in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -53,14 +54,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '1510'
+      - '1612'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 10:31:52 GMT
+      - Sat, 06 Sep 2025 17:56:51 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -72,25 +73,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '636'
+      - '504'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '646'
+      - '507'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9990'
       X-Ratelimit-Remaining-Tokens:
-      - '199676'
+      - '199651'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 1m26.225s
       X-Ratelimit-Reset-Tokens:
-      - 97ms
+      - 104ms
       X-Request-Id:
       - "<REQUEST_ID>"
       Cf-Cache-Status:
@@ -105,23 +106,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97ad4c930f67b103-LAX
+      - 97afd86c5a7208d3-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCkUyUhN5LxK7LhjcabLYVyHlay1c",
+          "id": "chatcmpl-CCrRbMn6HyhKfE36r5MOYCkallVbr",
           "object": "chat.completion",
-          "created": 1757154712,
+          "created": 1757181411,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"4\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"2 + 2 equals 4.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -130,749 +131,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 344,
-            "completion_tokens": 17,
-            "total_tokens": 361,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 10:31:52 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"q\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"q\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
-        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"a\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"a\"\n  ]\n}\n```\n\nAll interactions will be structured in the following
-        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
-        Output values\nRespond exclusively with the output schema fields in the json
-        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Be precise and specific. Answer the question"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"q\": \"2+2?\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
-        this structure:\n```json\n{\n  \"a\": \"example string\"\n}\n```\n\nRequired
-        fields: a\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1535'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 10:31:54 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '446'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '452'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9998'
-      X-Ratelimit-Remaining-Tokens:
-      - '199670'
-      X-Ratelimit-Reset-Requests:
-      - 15.675s
-      X-Ratelimit-Reset-Tokens:
-      - 99ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97ad4c9cb841b103-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCkUzmpAs47KwGSPVULMwmQEN4zMN",
-          "object": "chat.completion",
-          "created": 1757154713,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"4\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 349,
-            "completion_tokens": 17,
-            "total_tokens": 366,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 10:31:53 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"q\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"q\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
-        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"a\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"a\"\n  ]\n}\n```\n\nAll interactions will be structured in the following
-        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
-        Output values\nRespond exclusively with the output schema fields in the json
-        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Answer the question"},{"role":"user","content":"## Input
-        Values\n```json\n{\n  \"q\": \"2+2?\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
-        this structure:\n```json\n{\n  \"a\": \"example string\"\n}\n```\n\nRequired
-        fields: a\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1510'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 10:31:55 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '351'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '355'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9997'
-      X-Ratelimit-Remaining-Tokens:
-      - '199676'
-      X-Ratelimit-Reset-Requests:
-      - 23.114s
-      X-Ratelimit-Reset-Tokens:
-      - 97ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97ad4ca4db67b103-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCkV0RPZH7dZuJdIs8bd5B41fG9TJ",
-          "object": "chat.completion",
-          "created": 1757154714,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"4\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 344,
-            "completion_tokens": 17,
-            "total_tokens": 361,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 10:31:54 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"q\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"q\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
-        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"a\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"a\"\n  ]\n}\n```\n\nAll interactions will be structured in the following
-        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
-        Output values\nRespond exclusively with the output schema fields in the json
-        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Be precise and specific. Answer the question"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"q\": \"2+2?\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
-        this structure:\n```json\n{\n  \"a\": \"example string\"\n}\n```\n\nRequired
-        fields: a\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1535'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 10:31:56 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '372'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '375'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9997'
-      X-Ratelimit-Remaining-Tokens:
-      - '199670'
-      X-Ratelimit-Reset-Requests:
-      - 22.008s
-      X-Ratelimit-Reset-Tokens:
-      - 99ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97ad4cabdb77b103-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCkV2U0urQH99qfJarmyxhAPDa8se",
-          "object": "chat.completion",
-          "created": 1757154716,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"4\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 349,
-            "completion_tokens": 17,
-            "total_tokens": 366,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 10:31:56 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"q\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"q\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
-        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"a\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"a\"\n  ]\n}\n```\n\nAll interactions will be structured in the following
-        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
-        Output values\nRespond exclusively with the output schema fields in the json
-        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Answer the question"},{"role":"user","content":"## Input
-        Values\n```json\n{\n  \"q\": \"2+2?\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
-        this structure:\n```json\n{\n  \"a\": \"example string\"\n}\n```\n\nRequired
-        fields: a\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1510'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 10:31:57 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '421'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '424'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9995'
-      X-Ratelimit-Remaining-Tokens:
-      - '199676'
-      X-Ratelimit-Reset-Requests:
-      - 38.504s
-      X-Ratelimit-Reset-Tokens:
-      - 97ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97ad4cb3ac9fb103-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCkV2dzsdpiN5oHGKiUCijhonttv4",
-          "object": "chat.completion",
-          "created": 1757154716,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"4\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 344,
-            "completion_tokens": 17,
-            "total_tokens": 361,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 10:31:56 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"q\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"q\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
-        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"a\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"a\"\n  ]\n}\n```\n\nAll interactions will be structured in the following
-        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
-        Output values\nRespond exclusively with the output schema fields in the json
-        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Answer the question Provide detailed reasoning."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"q\": \"2+2?\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
-        this structure:\n```json\n{\n  \"a\": \"example string\"\n}\n```\n\nRequired
-        fields: a\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1538'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 10:31:58 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '431'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '434'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9995'
-      X-Ratelimit-Remaining-Tokens:
-      - '199669'
-      X-Ratelimit-Reset-Requests:
-      - 37.33s
-      X-Ratelimit-Reset-Tokens:
-      - 99ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97ad4cb84da1b103-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCkV4LGQ0m5AfacPv21WwGHyFzbe6",
-          "object": "chat.completion",
-          "created": 1757154718,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"2 + 2 equals 4.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 348,
+            "prompt_tokens": 357,
             "completion_tokens": 23,
-            "total_tokens": 371,
+            "total_tokens": 380,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -887,7 +148,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 10:31:58 GMT
+  recorded_at: Sat, 06 Sep 2025 17:56:51 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -895,22 +156,24 @@ http_interactions:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"q\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"q\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
         \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"a\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"a\"\n  ]\n}\n```\n\nAll interactions will be structured in the following
-        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
         Output values\nRespond exclusively with the output schema fields in the json
         block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Answer the question"},{"role":"user","content":"## Input
-        Values\n```json\n{\n  \"q\": \"3+3?\"\n}\n```\n\nRespond with the corresponding
+        your objective is: Answer questions accurately and concisely Use examples
+        in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is the capital of France?\"\n}\n```\n\nRespond with the corresponding
         output schema fields wrapped in a ```json ``` block,\nstarting with the heading
         `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
-        this structure:\n```json\n{\n  \"a\": \"example string\"\n}\n```\n\nRequired
-        fields: a\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        this structure:\n```json\n{\n  \"answer\": \"example string\"\n}\n```\n\nRequired
+        fields: answer\n\nEnsure your response:\n1. Is valid JSON (properly quoted
+        strings, no trailing commas)\n2. Includes all required fields\n3. Uses the
+        correct data types for each field\n4. Is wrapped in ```json``` markdown code
+        blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -941,14 +204,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '1510'
+      - '1630'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 10:31:59 GMT
+      - Sat, 06 Sep 2025 17:56:52 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -960,25 +223,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '337'
+      - '504'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '339'
+      - '511'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9993'
+      - '9990'
       X-Ratelimit-Remaining-Tokens:
-      - '199676'
+      - '199646'
       X-Ratelimit-Reset-Requests:
-      - 53.887s
+      - 1m25.296s
       X-Ratelimit-Reset-Tokens:
-      - 97ms
+      - 106ms
       X-Request-Id:
       - "<REQUEST_ID>"
       Cf-Cache-Status:
@@ -993,23 +256,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97ad4cbf8be9b103-LAX
+      - 97afd871598308d3-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCkV4T6SLSq16JHQKi98I8HqhMVY5",
+          "id": "chatcmpl-CCrRcfuZp0I576O9lokzmubPsl9eL",
           "object": "chat.completion",
-          "created": 1757154718,
+          "created": 1757181412,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"6\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"The capital of France is Paris.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1018,9 +281,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 344,
-            "completion_tokens": 17,
-            "total_tokens": 361,
+            "prompt_tokens": 357,
+            "completion_tokens": 22,
+            "total_tokens": 379,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1035,7 +298,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 10:31:58 GMT
+  recorded_at: Sat, 06 Sep 2025 17:56:52 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1043,22 +306,23 @@ http_interactions:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"q\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"q\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
         \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"a\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"a\"\n  ]\n}\n```\n\nAll interactions will be structured in the following
-        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
         Output values\nRespond exclusively with the output schema fields in the json
         block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Answer the question"},{"role":"user","content":"## Input
-        Values\n```json\n{\n  \"q\": \"2+2?\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
-        this structure:\n```json\n{\n  \"a\": \"example string\"\n}\n```\n\nRequired
-        fields: a\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        your objective is: Answer questions accurately and concisely Use examples
+        in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is 2+2?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"example string\"\n}\n```\n\nRequired fields: answer\n\nEnsure your response:\n1.
+        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
+        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
+        in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -1089,14 +353,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '1510'
+      - '1612'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 10:32:00 GMT
+      - Sat, 06 Sep 2025 17:56:53 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1108,25 +372,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '335'
+      - '452'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '337'
+      - '456'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9992'
+      - '9989'
       X-Ratelimit-Remaining-Tokens:
-      - '199676'
+      - '199651'
       X-Ratelimit-Reset-Requests:
-      - 1m1.302s
+      - 1m33.965s
       X-Ratelimit-Reset-Tokens:
-      - 97ms
+      - 104ms
       X-Request-Id:
       - "<REQUEST_ID>"
       Cf-Cache-Status:
@@ -1141,23 +405,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97ad4cc44defb103-LAX
+      - 97afd876f82e08d3-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCkV5BF5ixLezsp46B21HGzAnwTUi",
+          "id": "chatcmpl-CCrRdhsXgvaCn7qMAc73Kfn95P6TX",
           "object": "chat.completion",
-          "created": 1757154719,
+          "created": 1757181413,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"4\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"2 + 2 equals 4.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1166,9 +430,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 344,
-            "completion_tokens": 17,
-            "total_tokens": 361,
+            "prompt_tokens": 357,
+            "completion_tokens": 23,
+            "total_tokens": 380,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1183,7 +447,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 10:31:59 GMT
+  recorded_at: Sat, 06 Sep 2025 17:56:53 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1191,22 +455,24 @@ http_interactions:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"q\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"q\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
         \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"a\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"a\"\n  ]\n}\n```\n\nAll interactions will be structured in the following
-        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
         Output values\nRespond exclusively with the output schema fields in the json
         block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Answer the question"},{"role":"user","content":"## Input
-        Values\n```json\n{\n  \"q\": \"2+2?\"\n}\n```\n\nRespond with the corresponding
+        your objective is: Answer questions accurately and concisely Use examples
+        in your response."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is the capital of France?\"\n}\n```\n\nRespond with the corresponding
         output schema fields wrapped in a ```json ``` block,\nstarting with the heading
         `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
-        this structure:\n```json\n{\n  \"a\": \"example string\"\n}\n```\n\nRequired
-        fields: a\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        this structure:\n```json\n{\n  \"answer\": \"example string\"\n}\n```\n\nRequired
+        fields: answer\n\nEnsure your response:\n1. Is valid JSON (properly quoted
+        strings, no trailing commas)\n2. Includes all required fields\n3. Uses the
+        correct data types for each field\n4. Is wrapped in ```json``` markdown code
+        blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -1237,14 +503,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '1510'
+      - '1630'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 10:32:01 GMT
+      - Sat, 06 Sep 2025 17:56:54 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1256,25 +522,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '318'
+      - '590'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '321'
+      - '601'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9993'
+      - '9988'
       X-Ratelimit-Remaining-Tokens:
-      - '199676'
+      - '199646'
       X-Ratelimit-Reset-Requests:
-      - 1m0.284s
+      - 1m41.035s
       X-Ratelimit-Reset-Tokens:
-      - 97ms
+      - 106ms
       X-Request-Id:
       - "<REQUEST_ID>"
       Cf-Cache-Status:
@@ -1289,23 +555,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97ad4ccb1c04b103-LAX
+      - 97afd87bae7908d3-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCkV6Fa1ZqLBI7ljsnnudJb9BTOD2",
+          "id": "chatcmpl-CCrRd0X9YqA5k7xVKxZMCvxOgCStO",
           "object": "chat.completion",
-          "created": 1757154720,
+          "created": 1757181413,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"a\": \"4\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"The capital of France is Paris.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1314,9 +580,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 344,
-            "completion_tokens": 17,
-            "total_tokens": 361,
+            "prompt_tokens": 357,
+            "completion_tokens": 22,
+            "total_tokens": 379,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1331,5 +597,902 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 10:32:00 GMT
+  recorded_at: Sat, 06 Sep 2025 17:56:54 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Be precise and specific. Answer questions accurately and
+        concisely"},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is 2+2?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"example string\"\n}\n```\n\nRequired fields: answer\n\nEnsure your response:\n1.
+        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
+        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
+        in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1606'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:56:55 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '492'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '496'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9986'
+      X-Ratelimit-Remaining-Tokens:
+      - '199652'
+      X-Ratelimit-Reset-Requests:
+      - 1m57.387s
+      X-Ratelimit-Reset-Tokens:
+      - 104ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97afd8817de208d3-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCrReiHyLwfWccpBYp8yhCQoEaXn8",
+          "object": "chat.completion",
+          "created": 1757181414,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"4\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 356,
+            "completion_tokens": 17,
+            "total_tokens": 373,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:56:55 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Be precise and specific. Answer questions accurately and
+        concisely"},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is the capital of France?\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
+        this structure:\n```json\n{\n  \"answer\": \"example string\"\n}\n```\n\nRequired
+        fields: answer\n\nEnsure your response:\n1. Is valid JSON (properly quoted
+        strings, no trailing commas)\n2. Includes all required fields\n3. Uses the
+        correct data types for each field\n4. Is wrapped in ```json``` markdown code
+        blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1624'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:56:56 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '423'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '426'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9985'
+      X-Ratelimit-Remaining-Tokens:
+      - '199647'
+      X-Ratelimit-Reset-Requests:
+      - 2m5.029s
+      X-Ratelimit-Reset-Tokens:
+      - 105ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97afd886fbbe08d3-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCrRfBeYhIM7DignArUhYjNHW79Vu",
+          "object": "chat.completion",
+          "created": 1757181415,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"The capital of France is Paris.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 356,
+            "completion_tokens": 22,
+            "total_tokens": 378,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:56:55 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Be precise and specific. Answer questions accurately and
+        concisely"},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is 2+2?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"example string\"\n}\n```\n\nRequired fields: answer\n\nEnsure your response:\n1.
+        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
+        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
+        in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1606'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:56:57 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '406'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '527'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9984'
+      X-Ratelimit-Remaining-Tokens:
+      - '199651'
+      X-Ratelimit-Reset-Requests:
+      - 2m12.845s
+      X-Ratelimit-Reset-Tokens:
+      - 104ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97afd88cd9e508d3-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCrRgNOGORS5qFUX8i7CoYH1vfbpY",
+          "object": "chat.completion",
+          "created": 1757181416,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"4\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 356,
+            "completion_tokens": 17,
+            "total_tokens": 373,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:56:56 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Be precise and specific. Answer questions accurately and
+        concisely"},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is the capital of France?\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
+        this structure:\n```json\n{\n  \"answer\": \"example string\"\n}\n```\n\nRequired
+        fields: answer\n\nEnsure your response:\n1. Is valid JSON (properly quoted
+        strings, no trailing commas)\n2. Includes all required fields\n3. Uses the
+        correct data types for each field\n4. Is wrapped in ```json``` markdown code
+        blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1624'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:56:57 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '510'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '513'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9983'
+      X-Ratelimit-Remaining-Tokens:
+      - '199648'
+      X-Ratelimit-Reset-Requests:
+      - 2m20.655s
+      X-Ratelimit-Reset-Tokens:
+      - 105ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97afd8921f6e08d3-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCrRh10vPKuh1FKZHEXuDatb2j8cD",
+          "object": "chat.completion",
+          "created": 1757181417,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"Paris\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 356,
+            "completion_tokens": 17,
+            "total_tokens": 373,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:56:57 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Answer questions accurately and concisely Provide detailed
+        reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is 2+2?\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
+        \"example string\"\n}\n```\n\nRequired fields: answer\n\nEnsure your response:\n1.
+        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
+        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
+        in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1609'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:56:58 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '791'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '800'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9983'
+      X-Ratelimit-Remaining-Tokens:
+      - '199651'
+      X-Ratelimit-Reset-Requests:
+      - 2m19.875s
+      X-Ratelimit-Reset-Tokens:
+      - 104ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97afd896fcb308d3-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCrRiH7tIqaiOHS6htSw6bgUDW2LH",
+          "object": "chat.completion",
+          "created": 1757181418,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"4\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 355,
+            "completion_tokens": 17,
+            "total_tokens": 372,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:56:58 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"question\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"answer\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+        [\n    \"answer\"\n  ]\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Answer questions accurately and concisely Provide detailed
+        reasoning."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        \"What is the capital of France?\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
+        this structure:\n```json\n{\n  \"answer\": \"example string\"\n}\n```\n\nRequired
+        fields: answer\n\nEnsure your response:\n1. Is valid JSON (properly quoted
+        strings, no trailing commas)\n2. Includes all required fields\n3. Uses the
+        correct data types for each field\n4. Is wrapped in ```json``` markdown code
+        blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1627'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 17:56:59 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '521'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '524'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9982'
+      X-Ratelimit-Remaining-Tokens:
+      - '199647'
+      X-Ratelimit-Reset-Requests:
+      - 2m27.427s
+      X-Ratelimit-Reset-Tokens:
+      - 105ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97afd89dbcd008d3-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCrRjD6yfChq8HxWC5CE7VY59B1Pf",
+          "object": "chat.completion",
+          "created": 1757181419,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"The capital of France is Paris.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 355,
+            "completion_tokens": 22,
+            "total_tokens": 377,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 17:56:59 GMT
 recorded_with: VCR 6.3.1

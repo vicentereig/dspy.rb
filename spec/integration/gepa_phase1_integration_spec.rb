@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe 'GEPA Phase 1 Integration' do
   # Simple signature for integration testing
   class IntegrationTestSignature < DSPy::Signature
+    description "Answer questions accurately and concisely"
+
     input do
       const :question, String
     end
@@ -15,7 +17,17 @@ RSpec.describe 'GEPA Phase 1 Integration' do
   end
 
   let(:metric) { proc { |example, prediction| example.expected_values[:answer] == prediction.answer } }
-  let(:gepa) { DSPy::Teleprompt::GEPA.new(metric: metric) }
+  let(:gepa_config) do
+    config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+    # Use a real LM instance for testing
+    reflection_lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+    config.reflection_lm = reflection_lm
+    # Reduce size for faster testing
+    config.num_generations = 2
+    config.population_size = 2
+    config
+  end
+  let(:gepa) { DSPy::Teleprompt::GEPA.new(metric: metric, config: gepa_config) }
 
   let(:trainset) do
     [
@@ -62,11 +74,11 @@ RSpec.describe 'GEPA Phase 1 Integration' do
       end
     end
 
-    it 'executes complete Phase 1 workflow without errors' do
+    it 'executes complete Phase 1 workflow without errors', vcr: { cassette_name: "gepa_phase1_workflow_execution" } do
       expect { gepa.compile(program, trainset: trainset, valset: valset) }.not_to raise_error
     end
 
-    it 'returns proper OptimizationResult structure' do
+    it 'returns proper OptimizationResult structure', vcr: { cassette_name: "gepa_phase1_optimization_result" } do
       result = gepa.compile(program, trainset: trainset, valset: valset)
       
       expect(result).to be_a(DSPy::Teleprompt::Teleprompter::OptimizationResult)
@@ -131,7 +143,13 @@ RSpec.describe 'GEPA Phase 1 Integration' do
   end
 
   describe 'ReflectionEngine integration' do
-    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new }
+    let(:engine_config) do
+      config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      reflection_lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      config.reflection_lm = reflection_lm
+      config
+    end
+    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new(engine_config) }
     let(:sample_traces) do
       [
         DSPy::Teleprompt::GEPA::ExecutionTrace.new(
@@ -159,7 +177,7 @@ RSpec.describe 'GEPA Phase 1 Integration' do
       ]
     end
 
-    it 'performs complete reflective analysis' do
+    it 'performs complete reflective analysis', vcr: { cassette_name: "gepa_reflection_analysis" } do
       result = engine.reflect_on_traces(sample_traces)
       
       expect(result).to be_a(DSPy::Teleprompt::GEPA::ReflectionResult)
@@ -214,9 +232,15 @@ RSpec.describe 'GEPA Phase 1 Integration' do
 
   describe 'Component interaction integration' do
     let(:collector) { DSPy::Teleprompt::GEPA::TraceCollector.new }
-    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new }
+    let(:engine_config) do
+      config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      reflection_lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      config.reflection_lm = reflection_lm
+      config
+    end
+    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new(engine_config) }
 
-    it 'works with TraceCollector feeding ReflectionEngine' do
+    it 'works with TraceCollector feeding ReflectionEngine', vcr: { cassette_name: "gepa_component_interaction" } do
       # Collect some traces
       collector.collect_trace('llm.response', {
         'trace_id' => 'interaction-test-1',
@@ -259,9 +283,15 @@ RSpec.describe 'GEPA Phase 1 Integration' do
 
   describe 'Error handling and edge cases' do
     let(:collector) { DSPy::Teleprompt::GEPA::TraceCollector.new }
-    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new }
+    let(:engine_config) do
+      config = DSPy::Teleprompt::GEPA::GEPAConfig.new
+      reflection_lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      config.reflection_lm = reflection_lm
+      config
+    end
+    let(:engine) { DSPy::Teleprompt::GEPA::ReflectionEngine.new(engine_config) }
 
-    it 'handles empty trace collection gracefully' do
+    it 'handles empty trace collection gracefully', vcr: { cassette_name: "gepa_empty_traces" } do
       expect(collector.collected_count).to eq(0)
       expect(collector.traces).to be_empty
       
@@ -281,7 +311,7 @@ RSpec.describe 'GEPA Phase 1 Integration' do
       expect(trace.event_name).to eq('test.event')
     end
 
-    it 'maintains thread safety across components' do
+    it 'maintains thread safety across components', vcr: { cassette_name: "gepa_thread_safety" } do
       threads = []
       
       # Multiple threads collecting traces

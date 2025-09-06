@@ -59,6 +59,9 @@ RSpec.describe DSPy::Context do
     end
 
     it 'logs span start and end events' do
+      # Enable observability for logging to occur
+      allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+      
       expect(DSPy).to receive(:log).with('span.start', hash_including(
         trace_id: anything,
         span_id: anything,
@@ -115,6 +118,9 @@ RSpec.describe DSPy::Context do
     end
 
     it 'calculates duration in milliseconds' do
+      # Enable observability for logging to occur
+      allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+      
       duration = nil
       
       allow(DSPy).to receive(:log) do |event, attrs|
@@ -131,6 +137,9 @@ RSpec.describe DSPy::Context do
     end
 
     it 'passes custom attributes to span start' do
+      # Enable observability for logging to occur
+      allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+      
       expect(DSPy).to receive(:log).with('span.start', hash_including(
         operation: 'test',
         custom_attr: 'value',
@@ -143,6 +152,9 @@ RSpec.describe DSPy::Context do
     end
 
     it 'handles exceptions and still logs span end' do
+      # Enable observability for logging to occur
+      allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+      
       expect(DSPy).to receive(:log).with('span.start', anything)
       expect(DSPy).to receive(:log).with('span.end', anything)
       
@@ -251,8 +263,8 @@ RSpec.describe DSPy::Context do
         expect(DSPy::Observability).not_to receive(:start_span)
         expect(DSPy::Observability).not_to receive(:finish_span)
 
-        expect(DSPy).to receive(:log).with('span.start', anything)
-        expect(DSPy).to receive(:log).with('span.end', anything)
+        # When observability is disabled, no logging should occur either
+        expect(DSPy).not_to receive(:log)
 
         described_class.with_span(operation: 'test.operation') { }
       end

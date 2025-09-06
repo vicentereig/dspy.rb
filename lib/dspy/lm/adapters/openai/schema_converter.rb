@@ -38,12 +38,12 @@ module DSPy
             # Get the output JSON schema from the signature class
             output_schema = signature_class.output_json_schema
             
-            # Build the complete schema
+            # Build the complete schema with OpenAI-specific modifications
             dspy_schema = {
               "$schema": "http://json-schema.org/draft-06/schema#",
               type: "object",
               properties: output_schema[:properties] || {},
-              required: output_schema[:required] || []
+              required: openai_required_fields(signature_class, output_schema)
             }
 
             # Generate a schema name if not provided
@@ -52,9 +52,10 @@ module DSPy
             # Remove the $schema field as OpenAI doesn't use it
             openai_schema = dspy_schema.except(:$schema)
 
-            # Add additionalProperties: false for strict mode
+            # Add additionalProperties: false for strict mode and fix nested struct schemas
             if strict
               openai_schema = add_additional_properties_recursively(openai_schema)
+              openai_schema = fix_nested_struct_required_fields(openai_schema)
             end
 
             # Wrap in OpenAI's required format
@@ -119,6 +120,65 @@ module DSPy
           end
 
           private
+
+          # OpenAI structured outputs requires ALL properties to be in the required array
+          # For T.nilable fields without defaults, we warn the user and mark as required
+          sig { params(signature_class: T.class_of(DSPy::Signature), output_schema: T::Hash[Symbol, T.untyped]).returns(T::Array[String]) }
+          def self.openai_required_fields(signature_class, output_schema)
+            all_properties = output_schema[:properties]&.keys || []
+            original_required = output_schema[:required] || []
+            
+            # For OpenAI structured outputs, we need ALL properties to be required
+            # but warn about T.nilable fields without defaults
+            field_descriptors = signature_class.instance_variable_get(:@output_field_descriptors) || {}
+            
+            all_properties.each do |property_name|
+              descriptor = field_descriptors[property_name.to_sym]
+              
+              # If field is not originally required and doesn't have a default
+              if !original_required.include?(property_name.to_s) && descriptor && !descriptor.has_default
+                DSPy.logger.warn(
+                  "OpenAI structured outputs: T.nilable field '#{property_name}' without default will be marked as required. " \
+                  "Consider adding a default value or using a different provider for optional fields."
+                )
+              end
+            end
+            
+            # Return all properties as required (OpenAI requirement)
+            all_properties.map(&:to_s)
+          end
+
+          # Fix nested struct schemas to include all properties in required array (OpenAI requirement)
+          sig { params(schema: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+          def self.fix_nested_struct_required_fields(schema)
+            return schema unless schema.is_a?(Hash)
+            
+            result = schema.dup
+            
+            # If this is an object with properties, make all properties required
+            if result[:type] == "object" && result[:properties].is_a?(Hash)
+              all_property_names = result[:properties].keys.map(&:to_s)
+              result[:required] = all_property_names unless result[:required] == all_property_names
+            end
+            
+            # Process nested objects recursively
+            if result[:properties].is_a?(Hash)
+              result[:properties] = result[:properties].transform_values do |prop|
+                if prop.is_a?(Hash)
+                  processed = fix_nested_struct_required_fields(prop)
+                  # Handle arrays with object items
+                  if processed[:type] == "array" && processed[:items].is_a?(Hash)
+                    processed[:items] = fix_nested_struct_required_fields(processed[:items])
+                  end
+                  processed
+                else
+                  prop
+                end
+              end
+            end
+            
+            result
+          end
 
           sig { params(schema: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
           def self.add_additional_properties_recursively(schema)
