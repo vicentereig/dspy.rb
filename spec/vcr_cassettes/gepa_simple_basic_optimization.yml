@@ -63,7 +63,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:27:33 GMT
+      - Sat, 06 Sep 2025 18:25:54 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -75,13 +75,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1025'
+      - '995'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1030'
+      - '1001'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -108,23 +108,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afad7808bb453c-LAX
+      - 97b002f3e8eaf640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzEbvb8kxEHUo8KQ30NEflxx0JM",
+          "id": "chatcmpl-CCrthIGBRO1YcA3TZ65zh98sArZ3g",
           "object": "chat.completion",
-          "created": 1757179652,
+          "created": 1757183153,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem, we need to add the two numbers together: 5 + 3. When we perform the addition, we get 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem, we need to add the two numbers together. Start with 5 and then add 3: 5 + 3 equals 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -134,8 +134,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 54,
-            "total_tokens": 468,
+            "completion_tokens": 56,
+            "total_tokens": 470,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -150,7 +150,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:27:32 GMT
+  recorded_at: Sat, 06 Sep 2025 18:25:54 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -214,7 +214,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:27:34 GMT
+      - Sat, 06 Sep 2025 18:25:55 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -226,13 +226,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '802'
+      - '1084'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '806'
+      - '1091'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -242,7 +242,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 15.819s
+      - 15.951s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -259,23 +259,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afad819a24453c-LAX
+      - 97b002fc58a2f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzFlmUkQHxllfCQP6AhEgumHm9Z",
+          "id": "chatcmpl-CCrtimUHxs0EDyqDv7I2TXW7Tqc4p",
           "object": "chat.completion",
-          "created": 1757179653,
+          "created": 1757183154,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 12 - 4, we subtract 4 from 12. Starting with 12, when we take away 4, we are left with 8. Thus, 12 - 4 = 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 12 - 4, we subtract 4 from 12. Starting with 12, when we take away 4, we are left with 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -285,8 +285,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 71,
-            "total_tokens": 485,
+            "completion_tokens": 58,
+            "total_tokens": 472,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -301,7 +301,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:27:34 GMT
+  recorded_at: Sat, 06 Sep 2025 18:25:55 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -365,7 +365,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:27:35 GMT
+      - Sat, 06 Sep 2025 18:25:57 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -377,13 +377,129 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1003'
+      - '1006'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1007'
+      - '1015'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '199596'
+      X-Ratelimit-Reset-Requests:
+      - 23.194s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b00305196bf640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3J0a29vU3ZFU1VDQWc5cm5GWml5ZlE3RFp0USIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE4MzE1NiwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSwgbXVsdGlwbHkgNiBieSAyLiBUaGlzIGNhbiBiZSBicm9rZW4gZG93biBhcyBmb2xsb3dzOiA2IMOXIDIgPSAxMi5cIlxufVxuYGBgIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImxvZ3Byb2JzIjogbnVsbCwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogNDE0LAogICAgImNvbXBsZXRpb25fdG9rZW5zIjogNTIsCiAgICAidG90YWxfdG9rZW5zIjogNDY2LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfOGJkYTRkM2EyYyIKfQo=
+  recorded_at: Sat, 06 Sep 2025 18:25:56 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 5 + 3?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1856'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:25:58 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1214'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1219'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -393,7 +509,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 23.064s
+      - 21.888s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -410,139 +526,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afad8a88d4453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3F6SGdWUmpWQ2hkYlVDMlF0cUpUaEFUYk81RiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE3OTY1NSwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSA2IMOXIDIsIHdlIG11bHRpcGx5IDYgYnkgMi4gNiB0aW1lcyAyIGVxdWFscyAxMi5cIlxufVxuYGBgIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImxvZ3Byb2JzIjogbnVsbCwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogNDE0LAogICAgImNvbXBsZXRpb25fdG9rZW5zIjogNTAsCiAgICAidG90YWxfdG9rZW5zIjogNDY0LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfOGJkYTRkM2EyYyIKfQo=
-  recorded_at: Sat, 06 Sep 2025 17:27:35 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 5 + 3?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1856'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:37 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '894'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '898'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9996'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 30.421s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afad933d84453c-LAX
+      - 97b0030d38e0f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzIByEPlNWL3xSh0iUpLa5wIWo3",
+          "id": "chatcmpl-CCrtlTm7Y73v1NVQD5uk4y78rrOfq",
           "object": "chat.completion",
-          "created": 1757179656,
+          "created": 1757183157,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem, we add the numbers 5 and 3 together. 5 + 3 equals 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 5 + 3, we start with the number 5. Adding 3 to it means counting up three more from 5: 6, 7, 8. Thus, 5 + 3 equals 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -552,8 +552,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 48,
-            "total_tokens": 462,
+            "completion_tokens": 73,
+            "total_tokens": 487,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -568,7 +568,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:27:36 GMT
+  recorded_at: Sat, 06 Sep 2025 18:25:58 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -632,7 +632,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:27:38 GMT
+      - Sat, 06 Sep 2025 18:25:59 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -644,13 +644,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1043'
+      - '835'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1046'
+      - '837'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -658,9 +658,9 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9995'
       X-Ratelimit-Remaining-Tokens:
-      - '199597'
+      - '199596'
       X-Ratelimit-Reset-Requests:
-      - 37.826s
+      - 37.658s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -677,23 +677,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afad9ae83d453c-LAX
+      - 97b00316bb59f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzJL1gBLrII0ObnPrLB58hgmKxj",
+          "id": "chatcmpl-CCrtmn2J9SoafuVR8zUexBLod3YTd",
           "object": "chat.completion",
-          "created": 1757179657,
+          "created": 1757183158,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 12 - 4, we start with the number 12 and subtract 4 from it. 12 minus 4 equals 8. Therefore, the answer is 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 12 - 4, we start with 12 and subtract 4 from it. Therefore, 12 - 4 equals 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -703,8 +703,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 64,
-            "total_tokens": 478,
+            "completion_tokens": 56,
+            "total_tokens": 470,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -719,7 +719,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:27:38 GMT
+  recorded_at: Sat, 06 Sep 2025 18:25:59 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -783,7 +783,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:27:40 GMT
+      - Sat, 06 Sep 2025 18:26:01 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -795,13 +795,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1051'
+      - '1532'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1063'
+      - '1536'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -811,7 +811,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 44.743s
+      - 45.097s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -828,14 +828,14 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afada4afa4453c-LAX
+      - 97b0031e28fcf640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3F6TGtCSllUS0ZJTTYybG9vY1Z0SGhMb0dnWiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE3OTY1OSwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSA2IMOXIDIsIHdlIG5lZWQgdG8gYWRkIDYgdG8gaXRzZWxmIDIgdGltZXM6IDYgKyA2ID0gMTIuXCJcbn1cbmBgYCIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJsb2dwcm9icyI6IG51bGwsCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDQxNCwKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDUyLAogICAgInRvdGFsX3Rva2VucyI6IDQ2NiwKICAgICJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJjYWNoZWRfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAKICAgIH0sCiAgICAiY29tcGxldGlvbl90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgInJlYXNvbmluZ190b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogImZwXzhiZGE0ZDNhMmMiCn0K
-  recorded_at: Sat, 06 Sep 2025 17:27:40 GMT
+        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3J0b2NyclRyTXFzSkIxRXR0UGozdnUyOU5ZYSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE4MzE2MCwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSA2IMOXIDIsIHlvdSBjYW4gYWRkIDYgdHdvIHRpbWVzLiA2ICsgNiA9IDEyLiBUaGVyZWZvcmUsIDYgdGltZXMgMiBlcXVhbHMgMTIuXCJcbn1cbmBgYCIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJsb2dwcm9icyI6IG51bGwsCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDQxNCwKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDU5LAogICAgInRvdGFsX3Rva2VucyI6IDQ3MywKICAgICJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJjYWNoZWRfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAKICAgIH0sCiAgICAiY29tcGxldGlvbl90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgInJlYXNvbmluZ190b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogImZwXzhiZGE0ZDNhMmMiCn0K
+  recorded_at: Sat, 06 Sep 2025 18:26:01 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -899,7 +899,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:27:41 GMT
+      - Sat, 06 Sep 2025 18:26:03 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -911,13 +911,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '874'
+      - '1319'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '882'
+      - '1324'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -927,7 +927,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 51.961s
+      - 51.882s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -944,23 +944,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afadae986b453c-LAX
+      - 97b003299eabf640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzMJMivbNdTFfX0FupYR3UKD2Dx",
+          "id": "chatcmpl-CCrtpB4233zooqD5rVZWHlKcV1HKu",
           "object": "chat.completion",
-          "created": 1757179660,
+          "created": 1757183161,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 5 + 3, start with the number 5, then add 3 to it. This gives us 5 + 3 = 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 5 + 3, we start with the number 5 and add 3 to it. Counting up from 5: 6 (5 + 1), 7 (5 + 2), and 8 (5 + 3). Hence, 5 + 3 equals 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -970,8 +970,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 57,
-            "total_tokens": 471,
+            "completion_tokens": 87,
+            "total_tokens": 501,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -986,7 +986,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:27:41 GMT
+  recorded_at: Sat, 06 Sep 2025 18:26:03 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1050,7 +1050,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:27:43 GMT
+      - Sat, 06 Sep 2025 18:26:04 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1062,13 +1062,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '990'
+      - '884'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '993'
+      - '888'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -1078,7 +1078,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 59.237s
+      - 58.873s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -1095,1277 +1095,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afadb63ced453c-LAX
+      - 97b003340c8ff640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzOq7acLTu81MMvnjDM4jLBzejP",
+          "id": "chatcmpl-CCrtr0NUpwEbx6PmMQqvA98S4MxG9",
           "object": "chat.completion",
-          "created": 1757179662,
+          "created": 1757183163,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 12 - 4, subtract 4 from 12. The calculation is 12 - 4 = 8.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 414,
-            "completion_tokens": 50,
-            "total_tokens": 464,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 17:27:42 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 6 × 2?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1857'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:44 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1121'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1125'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9993'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 57.803s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afadbf4d99453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3F6UFkwWnJHdzZmWXhkZ1NTUVN2ZXhWYUJXYSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE3OTY2MywKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSA2IMOXIDIsIHdlIG11bHRpcGx5IHRoZSBudW1iZXJzLiA2IG11bHRpcGxpZWQgYnkgMiBlcXVhbHMgMTIuXCJcbn1cbmBgYCIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJsb2dwcm9icyI6IG51bGwsCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDQxNCwKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDQ4LAogICAgInRvdGFsX3Rva2VucyI6IDQ2MiwKICAgICJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJjYWNoZWRfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAKICAgIH0sCiAgICAiY29tcGxldGlvbl90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgInJlYXNvbmluZ190b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogImZwXzhiZGE0ZDNhMmMiCn0K
-  recorded_at: Sat, 06 Sep 2025 17:27:44 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 5 + 3?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1856'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:46 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1323'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1327'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9991'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 1m13.645s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afadc8cd23453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCqzQn4ezZ09NdF0Wsw9rXrsxiYWJ",
-          "object": "chat.completion",
-          "created": 1757179664,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 5 + 3, you add the two numbers together. Starting with 5, when you add 3, you get a total of 8.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 414,
-            "completion_tokens": 59,
-            "total_tokens": 473,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 17:27:45 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 12 - 4?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1857'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:47 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1437'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1441'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9990'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 1m20.666s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afadd32df7453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCqzSHEIFXpcMnUXNhUmI7BiXIzv4",
-          "object": "chat.completion",
-          "created": 1757179666,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 12 - 4, we start with the number 12. Then we subtract 4 from it. This is done by counting backwards from 12. So, 12 - 4 equals 8.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 414,
-            "completion_tokens": 68,
-            "total_tokens": 482,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 17:27:47 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 6 × 2?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1857'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:49 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '947'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '950'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9989'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 1m27.538s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afadde3b12453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3F6VWhuVjZZYWE3aWZXNVNrbE84SkxHNlFLeSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE3OTY2OCwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSA2IMOXIDIsIHdlIG11bHRpcGx5IDYgYnkgMi4gNiBtdWx0aXBsaWVkIGJ5IDIgZXF1YWxzIDEyLlwiXG59XG5gYGAiLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAibG9ncHJvYnMiOiBudWxsLAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA0MTQsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiA0OSwKICAgICJ0b3RhbF90b2tlbnMiOiA0NjMsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6ICJmcF84YmRhNGQzYTJjIgp9Cg==
-  recorded_at: Sat, 06 Sep 2025 17:27:48 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 5 + 3?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1856'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:50 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1254'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1256'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9989'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 1m34.895s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afade63874453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCqzV7K12indJNM5gT7LdlQwHbnPG",
-          "object": "chat.completion",
-          "created": 1757179669,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 5 + 3, we start with the number 5 and add 3 to it. This can be visualized as counting up three more from 5: 6, 7, and then 8. Therefore, 5 + 3 equals 8.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 414,
-            "completion_tokens": 83,
-            "total_tokens": 497,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 17:27:50 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 12 - 4?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1857'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:52 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1154'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1159'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9988'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 1m41.599s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afadf0181e453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCqzXLChzKCAKHc3jysaFvpk5FXGY",
-          "object": "chat.completion",
-          "created": 1757179671,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 12 - 4, we subtract 4 from 12. Starting with 12, if we take away 4, we are left with 8. Therefore, the answer is 8.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 414,
-            "completion_tokens": 68,
-            "total_tokens": 482,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 17:27:52 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 6 × 2?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1857'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:54 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1087'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1090'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9987'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 1m48.786s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afadfb6c69453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3F6WWU4Q2ZOeFdtUWdNYnZiZXNUY3pNRERxSiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE3OTY3MiwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSA2IMOXIDIsIHdlIG11bHRpcGx5IDYgYnkgMi4gVGhpcyBjYW4gYmUgdW5kZXJzdG9vZCBhcyBhZGRpbmcgNiB0byBpdHNlbGYgMiB0aW1lczogNiArIDYgPSAxMi4gVGhlcmVmb3JlLCB0aGUgYW5zd2VyIGlzIDEyLlwiXG59XG5gYGAiLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAibG9ncHJvYnMiOiBudWxsLAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA0MTQsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiA3MiwKICAgICJ0b3RhbF90b2tlbnMiOiA0ODYsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6ICJmcF84YmRhNGQzYTJjIgp9Cg==
-  recorded_at: Sat, 06 Sep 2025 17:27:53 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 5 + 3?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1856'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:55 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1203'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1209'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9986'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 1m55.92s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afae040a9d453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCqzauKUZQi1i7ITeHx1EsYERccBm",
-          "object": "chat.completion",
-          "created": 1757179674,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 5 + 3, we start with the number 5 and add 3 to it. When we add 3 to 5, we get 8. Therefore, the answer is 8.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 414,
-            "completion_tokens": 69,
-            "total_tokens": 483,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_8bda4d3a2c"
-        }
-  recorded_at: Sat, 06 Sep 2025 17:27:55 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
-        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"problem\": \"What is 12 - 4?\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
-        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1857'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 06 Sep 2025 17:27:57 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1148'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1151'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9985'
-      X-Ratelimit-Remaining-Tokens:
-      - '199597'
-      X-Ratelimit-Reset-Requests:
-      - 2m2.965s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 97afae0ecd33453c-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CCqzcUZg1LjKKxrwpEvclOdH7oq5B",
-          "object": "chat.completion",
-          "created": 1757179676,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 12 - 4, we subtract 4 from 12. Doing the subtraction gives us 12 - 4 = 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 12 - 4, we start with 12 and subtract 4 from it. This gives us 12 - 4 = 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -2391,7 +1137,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:27:56 GMT
+  recorded_at: Sat, 06 Sep 2025 18:26:04 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2455,7 +1201,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:27:58 GMT
+      - Sat, 06 Sep 2025 18:26:05 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2467,23 +1213,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1006'
+      - '890'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1010'
+      - '893'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9984'
+      - '9992'
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 2m10.177s
+      - 1m6.327s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -2500,14 +1246,14 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae17cca4453c-LAX
+      - 97b0033b7b78f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3F6ZGM3VkFqTWFhVEdVaWpkQUR5S0FaOWpsYiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE3OTY3NywKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSA2IMOXIDIsIHdlIG11bHRpcGx5IDYgYnkgMi4gVGhpcyBjYW4gYmUgY2FsY3VsYXRlZCBhcyBmb2xsb3dzOiA2IMOXIDIgPSAxMi5cIlxufVxuYGBgIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImxvZ3Byb2JzIjogbnVsbCwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogNDE0LAogICAgImNvbXBsZXRpb25fdG9rZW5zIjogNTcsCiAgICAidG90YWxfdG9rZW5zIjogNDcxLAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfOGJkYTRkM2EyYyIKfQo=
-  recorded_at: Sat, 06 Sep 2025 17:27:58 GMT
+        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3J0c1JHcFp3NjA0cm5vSW5sNXRVdE52bWpxRiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE4MzE2NCwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSA2IMOXIDIsIHdlIGNhbiBhZGQgNiB0d28gdGltZXM6IDYgKyA2ID0gMTIuIFRodXMsIHRoZSBhbnN3ZXIgaXMgMTIuXCJcbn1cbmBgYCIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJsb2dwcm9icyI6IG51bGwsCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDQxNCwKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDU2LAogICAgInRvdGFsX3Rva2VucyI6IDQ3MCwKICAgICJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJjYWNoZWRfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAKICAgIH0sCiAgICAiY29tcGxldGlvbl90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgInJlYXNvbmluZ190b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogImZwXzhiZGE0ZDNhMmMiCn0K
+  recorded_at: Sat, 06 Sep 2025 18:26:05 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2571,7 +1317,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:27:59 GMT
+      - Sat, 06 Sep 2025 18:26:07 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2583,23 +1329,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '941'
+      - '1750'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '944'
+      - '1764'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9984'
+      - '9991'
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 2m17.443s
+      - 1m13.715s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -2616,23 +1362,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae205a9f453c-LAX
+      - 97b003435b14f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzeRYFdKsfC8dNsYuctKuXnPNz3",
+          "id": "chatcmpl-CCrtuTBsyX2jl1KxYnw4qkNU3jjHZ",
           "object": "chat.completion",
-          "created": 1757179678,
+          "created": 1757183166,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 5 + 3, we start with the number 5 and add 3 to it. This gives us 5 + 3 = 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 5 + 3, we start by adding the two numbers together. First, we take 5 and then we add 3 to it. 5 + 3 equals 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -2642,8 +1388,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 59,
-            "total_tokens": 473,
+            "completion_tokens": 66,
+            "total_tokens": 480,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -2658,7 +1404,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:27:59 GMT
+  recorded_at: Sat, 06 Sep 2025 18:26:07 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2722,7 +1468,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:28:00 GMT
+      - Sat, 06 Sep 2025 18:26:09 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2734,23 +1480,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '688'
+      - '1429'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '692'
+      - '1435'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9983'
+      - '9990'
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 2m24.846s
+      - 1m20.161s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -2767,23 +1513,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae280e2a453c-LAX
+      - 97b003508df8f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzgydVciZVaO6ZNynYVddbFFzn8",
+          "id": "chatcmpl-CCrtwk3P96cG0bjfcnoKyA6lKcm89",
           "object": "chat.completion",
-          "created": 1757179680,
+          "created": 1757183168,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem, subtract 4 from 12. 12 - 4 equals 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 12 - 4, we start with the number 12 and subtract 4 from it. This can be done by counting backwards from 12. If you count down four numbers: 11 (1), 10 (2), 9 (3), and 8 (4), you will arrive at 8. Therefore, the answer is 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -2793,8 +1539,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 44,
-            "total_tokens": 458,
+            "completion_tokens": 99,
+            "total_tokens": 513,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -2809,7 +1555,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:28:00 GMT
+  recorded_at: Sat, 06 Sep 2025 18:26:09 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2873,7 +1619,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:28:02 GMT
+      - Sat, 06 Sep 2025 18:26:11 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -2885,23 +1631,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1142'
+      - '1093'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1147'
+      - '1098'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9983'
+      - '9989'
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 2m23.644s
+      - 1m27.093s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -2918,14 +1664,14 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae2f99b3453c-LAX
+      - 97b0035bbcc6f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3F6aEdnZDZUMTVJejEyVXhEaWNQVVRkNWxwayIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE3OTY4MSwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSA2IMOXIDIsIHdlIGNhbiBhZGQgNiB0byBpdHNlbGYgMiB0aW1lcy4gNiArIDYgPSAxMi4gVGhlcmVmb3JlLCA2IMOXIDIgPSAxMi5cIlxufVxuYGBgIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImxvZ3Byb2JzIjogbnVsbCwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogNDE0LAogICAgImNvbXBsZXRpb25fdG9rZW5zIjogNjIsCiAgICAidG90YWxfdG9rZW5zIjogNDc2LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfOGJkYTRkM2EyYyIKfQo=
-  recorded_at: Sat, 06 Sep 2025 17:28:02 GMT
+        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3J0eUFUQmFmWXQ2M2twdHJMcjV1a2RPTU9jNiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE4MzE3MCwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSA2IMOXIDIsIHdlIG11bHRpcGx5IDYgYnkgMi4gVGhlIGNhbGN1bGF0aW9uIGlzIHN0cmFpZ2h0Zm9yd2FyZDogNiB0aW1lcyAyIGVxdWFscyAxMi5cIlxufVxuYGBgIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImxvZ3Byb2JzIjogbnVsbCwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogNDE0LAogICAgImNvbXBsZXRpb25fdG9rZW5zIjogNTUsCiAgICAidG90YWxfdG9rZW5zIjogNDY5LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfOGJkYTRkM2EyYyIKfQo=
+  recorded_at: Sat, 06 Sep 2025 18:26:10 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -2989,7 +1735,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:28:05 GMT
+      - Sat, 06 Sep 2025 18:26:13 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -3001,13 +1747,1267 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1117'
+      - '1620'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2351'
+      - '1627'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9989'
+      X-Ratelimit-Remaining-Tokens:
+      - '199597'
+      X-Ratelimit-Reset-Requests:
+      - 1m34.344s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b003645f87f640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCrtzCJEnMal8Iv7JyDeikoKDLjdY",
+          "object": "chat.completion",
+          "created": 1757183171,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 5 + 3, we start with the number 5. We then add 3 to it. This can be visualized as counting up from 5: 6 (5 + 1), 7 (5 + 2), and finally 8 (5 + 3). Thus, 5 + 3 equals 8.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 414,
+            "completion_tokens": 96,
+            "total_tokens": 510,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 18:26:12 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 12 - 4?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1857'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:26:14 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1289'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1292'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9988'
+      X-Ratelimit-Remaining-Tokens:
+      - '199597'
+      X-Ratelimit-Reset-Requests:
+      - 1m40.907s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b003716a15f640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCru1IpGGeIe9x3NzTuyBJgtpaLCX",
+          "object": "chat.completion",
+          "created": 1757183173,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 12 - 4, we start with the number 12 and subtract 4 from it. 12 - 4 equals 8, so the answer is 8.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 414,
+            "completion_tokens": 61,
+            "total_tokens": 475,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 18:26:14 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 6 × 2?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1857'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:26:16 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '989'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '996'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9987'
+      X-Ratelimit-Remaining-Tokens:
+      - '199597'
+      X-Ratelimit-Reset-Requests:
+      - 1m47.948s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b0037b6dbaf640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3J1MzRCR1dTc2ZKeDZhZjZhZUV4bUhPbVlFWiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE4MzE3NSwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSA2IMOXIDIsIHdlIGNhbiBpbnRlcnByZXQgaXQgYXMgYWRkaW5nIDYgdG8gaXRzZWxmIDIgdGltZXMuIFRodXMsIDYgKyA2ID0gMTIuXCJcbn1cbmBgYCIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJsb2dwcm9icyI6IG51bGwsCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDQxNCwKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDU2LAogICAgInRvdGFsX3Rva2VucyI6IDQ3MCwKICAgICJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJjYWNoZWRfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAKICAgIH0sCiAgICAiY29tcGxldGlvbl90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgInJlYXNvbmluZ190b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogImZwXzhiZGE0ZDNhMmMiCn0K
+  recorded_at: Sat, 06 Sep 2025 18:26:15 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 5 + 3?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1856'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:26:17 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1092'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1095'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9986'
+      X-Ratelimit-Remaining-Tokens:
+      - '199597'
+      X-Ratelimit-Reset-Requests:
+      - 1m55.287s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b003836f08f640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCru4GiMpL1lkwK8Vl23usOvAOmYU",
+          "object": "chat.completion",
+          "created": 1757183176,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 5 + 3, we simply add the two numbers together. Starting with 5, if we add 3 more, we count up to 6, 7, and finally 8. Thus, the answer is 8.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 414,
+            "completion_tokens": 76,
+            "total_tokens": 490,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 18:26:17 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 12 - 4?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1857'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:26:18 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '998'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1001'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9985'
+      X-Ratelimit-Remaining-Tokens:
+      - '199597'
+      X-Ratelimit-Reset-Requests:
+      - 2m2.554s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b0038c1ba2f640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCru5LZfeulQG7pmMo2yfPlPUKkAd",
+          "object": "chat.completion",
+          "created": 1757183177,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem, we subtract 4 from 12. Starting with 12, if we take away 4, we are left with 8. Therefore, 12 - 4 equals 8.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 414,
+            "completion_tokens": 66,
+            "total_tokens": 480,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 18:26:18 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 6 × 2?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1857'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:26:20 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1176'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1182'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9984'
+      X-Ratelimit-Remaining-Tokens:
+      - '199597'
+      X-Ratelimit-Reset-Requests:
+      - 2m9.892s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b003943a46f640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3J1N1FpbXhlRUsxMG84N1d4MmRWVU9LYjY3MCIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE4MzE3OSwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSA2IMOXIDIsIHlvdSBjYW4gYWRkIDYgdHdvIHRpbWVzOiA2ICsgNiA9IDEyLiBUaGVyZWZvcmUsIDYgw5cgMiBlcXVhbHMgMTIuXCJcbn1cbmBgYCIsCiAgICAgICAgInJlZnVzYWwiOiBudWxsLAogICAgICAgICJhbm5vdGF0aW9ucyI6IFtdCiAgICAgIH0sCiAgICAgICJsb2dwcm9icyI6IG51bGwsCiAgICAgICJmaW5pc2hfcmVhc29uIjogInN0b3AiCiAgICB9CiAgXSwKICAidXNhZ2UiOiB7CiAgICAicHJvbXB0X3Rva2VucyI6IDQxNCwKICAgICJjb21wbGV0aW9uX3Rva2VucyI6IDU5LAogICAgInRvdGFsX3Rva2VucyI6IDQ3MywKICAgICJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJjYWNoZWRfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAKICAgIH0sCiAgICAiY29tcGxldGlvbl90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgInJlYXNvbmluZ190b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMCwKICAgICAgImFjY2VwdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMCwKICAgICAgInJlamVjdGVkX3ByZWRpY3Rpb25fdG9rZW5zIjogMAogICAgfQogIH0sCiAgInNlcnZpY2VfdGllciI6ICJkZWZhdWx0IiwKICAic3lzdGVtX2ZpbmdlcnByaW50IjogImZwXzhiZGE0ZDNhMmMiCn0K
+  recorded_at: Sat, 06 Sep 2025 18:26:19 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 5 + 3?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1856'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:26:21 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1300'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1303'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9984'
+      X-Ratelimit-Remaining-Tokens:
+      - '199597'
+      X-Ratelimit-Reset-Requests:
+      - 2m17.04s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b0039d9d71f640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCru8Zo6ycZAy2wLeRgZoBEfHzGki",
+          "object": "chat.completion",
+          "created": 1757183180,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem, we need to add 5 and 3 together. When we do 5 + 3, we count up from 5 three more steps: 6 is one step, 7 is two steps, and 8 is three steps. Therefore, 5 + 3 equals 8.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 414,
+            "completion_tokens": 88,
+            "total_tokens": 502,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 18:26:21 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 12 - 4?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1857'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:26:23 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1701'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1704'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9983'
+      X-Ratelimit-Remaining-Tokens:
+      - '199597'
+      X-Ratelimit-Reset-Requests:
+      - 2m24.107s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b003a76889f640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CCruAyi9MPN1a3uS1UDMBgjziLk2V",
+          "object": "chat.completion",
+          "created": 1757183182,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 12 - 4, we start with the number 12 and subtract 4 from it. This can be visualized as taking away 4 units from 12 units. After doing the subtraction, we find that 12 - 4 equals 8.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 414,
+            "completion_tokens": 78,
+            "total_tokens": 492,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bda4d3a2c"
+        }
+  recorded_at: Sat, 06 Sep 2025 18:26:23 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 6 × 2?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1857'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:26:25 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1163'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1167'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9982'
+      X-Ratelimit-Remaining-Tokens:
+      - '199597'
+      X-Ratelimit-Reset-Requests:
+      - 2m30.748s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97b003b3e8eef640-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3J1Q2hPTFMxZjlBV2NSWkRYODNwalZKamtHMyIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE4MzE4NCwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSA2IMOXIDIsIHdlIGNhbiB0aGluayBvZiBpdCBhcyBhZGRpbmcgNiB0d28gdGltZXM6IDYgKyA2ID0gMTIuIFRoZXJlZm9yZSwgNiBtdWx0aXBsaWVkIGJ5IDIgZXF1YWxzIDEyLlwiXG59XG5gYGAiLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAibG9ncHJvYnMiOiBudWxsLAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA0MTQsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiA2NCwKICAgICJ0b3RhbF90b2tlbnMiOiA0NzgsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6ICJmcF84YmRhNGQzYTJjIgp9Cg==
+  recorded_at: Sat, 06 Sep 2025 18:26:24 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"problem\": {\n      \"type\": \"string\",\n      \"description\":
+        \"A math problem to solve\"\n    }\n  },\n  \"required\": [\n    \"problem\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"answer\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"The numerical answer\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step-by-step solution\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve basic arithmetic problems step by step"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 5 + 3?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": 42,\n  \"reasoning\":
+        \"Step-by-step solution\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1856'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 06 Sep 2025 18:26:26 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '901'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '907'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -3017,7 +3017,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 2m39.496s
+      - 2m37.941s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -3034,23 +3034,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae388fab453c-LAX
+      - 97b003bceb15f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzkBDRhrJQsrRWxG9n6zjYTkqeU",
+          "id": "chatcmpl-CCruDYJ65ZIkHFr5EpXWLWnwktLtN",
           "object": "chat.completion",
-          "created": 1757179684,
+          "created": 1757183185,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 5 + 3, we start by taking the number 5 and adding 3 to it. The calculation is straightforward: 5 + 3 equals 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem, we add 5 and 3 together. 5 + 3 equals 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -3060,8 +3060,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 62,
-            "total_tokens": 476,
+            "completion_tokens": 46,
+            "total_tokens": 460,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -3076,7 +3076,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:28:04 GMT
+  recorded_at: Sat, 06 Sep 2025 18:26:26 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -3140,7 +3140,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:28:06 GMT
+      - Sat, 06 Sep 2025 18:26:27 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -3152,23 +3152,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1396'
+      - '960'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1402'
+      - '965'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9980'
+      - '9981'
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 2m45.502s
+      - 2m36.742s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -3185,23 +3185,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae48f8f9453c-LAX
+      - 97b003c46a84f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzlQrH6rEjomSEtresoJAmXG4YH",
+          "id": "chatcmpl-CCruEiS9cMwKGtRPkoykitdAKoCW2",
           "object": "chat.completion",
-          "created": 1757179685,
+          "created": 1757183186,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 12 - 4, we start with 12 and subtract 4 from it. 12 minus 4 equals 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve 12 - 4, we start with 12 and subtract 4 from it. Thus, 12 - 4 = 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -3227,7 +3227,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:28:06 GMT
+  recorded_at: Sat, 06 Sep 2025 18:26:27 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -3291,7 +3291,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:28:08 GMT
+      - Sat, 06 Sep 2025 18:26:29 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -3303,13 +3303,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '892'
+      - '930'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1179'
+      - '933'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -3319,7 +3319,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 2m52.453s
+      - 2m52.638s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -3336,14 +3336,14 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae538c86453c-LAX
+      - 97b003cd0b1ff640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3F6bkc1TjFhZmtJbURrT2E2MFFqZUkxRFlhNiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE3OTY4NywKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSwgbXVsdGlwbHkgNiBieSAyOiA2IMOXIDIgPSAxMi5cIlxufVxuYGBgIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImxvZ3Byb2JzIjogbnVsbCwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogNDE0LAogICAgImNvbXBsZXRpb25fdG9rZW5zIjogNDQsCiAgICAidG90YWxfdG9rZW5zIjogNDU4LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfOGJkYTRkM2EyYyIKfQo=
-  recorded_at: Sat, 06 Sep 2025 17:28:07 GMT
+        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3J1R2tMaGk0NnZiMkxjWXJyTVkwOGtvdDRFQSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE4MzE4OCwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSA2IMOXIDIsIHdlIG11bHRpcGx5IDYgYnkgMi4gNiBtdWx0aXBsaWVkIGJ5IDIgZXF1YWxzIDEyLlwiXG59XG5gYGAiLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAibG9ncHJvYnMiOiBudWxsLAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA0MTQsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiA1MSwKICAgICJ0b3RhbF90b2tlbnMiOiA0NjUsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6ICJmcF84YmRhNGQzYTJjIgp9Cg==
+  recorded_at: Sat, 06 Sep 2025 18:26:28 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -3407,7 +3407,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:28:09 GMT
+      - Sat, 06 Sep 2025 18:26:30 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -3419,13 +3419,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1183'
+      - '1186'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1188'
+      - '1195'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -3435,7 +3435,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 2m59.604s
+      - 3m0.036s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -3452,23 +3452,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae5cbdb3453c-LAX
+      - 97b003d4cacff640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzokfnZ4WMHjoyjnwtPe8dCzQrG",
+          "id": "chatcmpl-CCruHQ02r1GjLdR2CjE2XDXQlYcRG",
           "object": "chat.completion",
-          "created": 1757179688,
+          "created": 1757183189,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 13,\n  \"reasoning\": \"To solve 9 + 4, we add 9 and 4 together. Starting with 9, we count up 4 more: 10 (1), 11 (2), 12 (3), 13 (4). Therefore, 9 + 4 equals 13.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 13,\n  \"reasoning\": \"To solve the problem 9 + 4, we add the two numbers together: 9 plus 4 equals 13.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -3478,8 +3478,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 83,
-            "total_tokens": 497,
+            "completion_tokens": 49,
+            "total_tokens": 463,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -3494,7 +3494,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:28:09 GMT
+  recorded_at: Sat, 06 Sep 2025 18:26:30 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -3558,7 +3558,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:28:13 GMT
+      - Sat, 06 Sep 2025 18:26:32 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -3570,13 +3570,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '3545'
+      - '1304'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '3556'
+      - '1308'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -3584,9 +3584,9 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9978'
       X-Ratelimit-Remaining-Tokens:
-      - '199596'
+      - '199597'
       X-Ratelimit-Reset-Requests:
-      - 3m6.571s
+      - 3m7.181s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -3603,23 +3603,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae674897453c-LAX
+      - 97b003de2ea7f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzqLQqmW0lizMSlp4pgM9ZrRyjP",
+          "id": "chatcmpl-CCruIa3aR54HSNjCby9PsQsLbWpZu",
           "object": "chat.completion",
-          "created": 1757179690,
+          "created": 1757183190,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 5 + 3, we start by taking the number 5 and adding 3 to it. This can be visualized as moving 3 steps ahead from 5 on a number line. Counting from 5: 6 (one step), 7 (two steps), and 8 (three steps). Therefore, 5 + 3 equals 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 5 + 3, you start by identifying the numbers involved. Here, we have 5 and 3. When you add them together, you calculate 5 + 3, which equals 8. Therefore, the answer is 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -3629,8 +3629,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 102,
-            "total_tokens": 516,
+            "completion_tokens": 78,
+            "total_tokens": 492,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -3645,7 +3645,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:28:13 GMT
+  recorded_at: Sat, 06 Sep 2025 18:26:31 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -3709,7 +3709,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:28:15 GMT
+      - Sat, 06 Sep 2025 18:26:33 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -3721,23 +3721,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '903'
+      - '1023'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '907'
+      - '1027'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9977'
+      - '9979'
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 3m11.204s
+      - 2m56.941s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -3754,23 +3754,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae80387c453c-LAX
+      - 97b003e82a73f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CCqzuakdMnztEbAffDNGyiliaDxrc",
+          "id": "chatcmpl-CCruKgT2M4JQkGumT4OCaOZ8h9QMz",
           "object": "chat.completion",
-          "created": 1757179694,
+          "created": 1757183192,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the equation 12 - 4, we start with the number 12 and subtract 4 from it. 12 minus 4 equals 8.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": 8,\n  \"reasoning\": \"To solve the problem 12 - 4, we subtract 4 from 12. Starting with 12, when we take away 4, we are left with 8.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -3780,8 +3780,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 414,
-            "completion_tokens": 56,
-            "total_tokens": 470,
+            "completion_tokens": 60,
+            "total_tokens": 474,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -3796,7 +3796,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sat, 06 Sep 2025 17:28:14 GMT
+  recorded_at: Sat, 06 Sep 2025 18:26:33 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -3860,7 +3860,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 06 Sep 2025 17:28:18 GMT
+      - Sat, 06 Sep 2025 18:26:34 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -3872,13 +3872,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '2582'
+      - '933'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2585'
+      - '937'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -3888,7 +3888,7 @@ http_interactions:
       X-Ratelimit-Remaining-Tokens:
       - '199597'
       X-Ratelimit-Reset-Requests:
-      - 3m18.64s
+      - 3m12.91s
       X-Ratelimit-Reset-Tokens:
       - 120ms
       X-Request-Id:
@@ -3905,12 +3905,12 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97afae87bba2453c-LAX
+      - 97b003f06985f640-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3F6djd6Ukt2bVdWQzU5dlFxd2pERVA4c0lBTSIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE3OTY5NSwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSA2IMOXIDIsIHdlIG11bHRpcGx5IDYgYnkgMi4gVGhpcyBjYW4gYmUgY2FsY3VsYXRlZCBhcyBmb2xsb3dzOiA2IHRpbWVzIDIgZXF1YWxzIDEyLlwiXG59XG5gYGAiLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAibG9ncHJvYnMiOiBudWxsLAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA0MTQsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiA1NywKICAgICJ0b3RhbF90b2tlbnMiOiA0NzEsCiAgICAicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjogewogICAgICAiY2FjaGVkX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwCiAgICB9LAogICAgImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOiB7CiAgICAgICJyZWFzb25pbmdfdG9rZW5zIjogMCwKICAgICAgImF1ZGlvX3Rva2VucyI6IDAsCiAgICAgICJhY2NlcHRlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAsCiAgICAgICJyZWplY3RlZF9wcmVkaWN0aW9uX3Rva2VucyI6IDAKICAgIH0KICB9LAogICJzZXJ2aWNlX3RpZXIiOiAiZGVmYXVsdCIsCiAgInN5c3RlbV9maW5nZXJwcmludCI6ICJmcF84YmRhNGQzYTJjIgp9Cg==
-  recorded_at: Sat, 06 Sep 2025 17:28:17 GMT
+        ewogICJpZCI6ICJjaGF0Y21wbC1DQ3J1TDJYUG94ZzZXYkV6MjFMM014aW9oeTVPSiIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc1NzE4MzE5MywKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcImFuc3dlclwiOiAxMixcbiAgXCJyZWFzb25pbmdcIjogXCJUbyBzb2x2ZSB0aGUgcHJvYmxlbSA2IMOXIDIsIHdlIG11bHRpcGx5IDYgYnkgMi4gNiB0aW1lcyAyIGVxdWFscyAxMi5cIlxufVxuYGBgIiwKICAgICAgICAicmVmdXNhbCI6IG51bGwsCiAgICAgICAgImFubm90YXRpb25zIjogW10KICAgICAgfSwKICAgICAgImxvZ3Byb2JzIjogbnVsbCwKICAgICAgImZpbmlzaF9yZWFzb24iOiAic3RvcCIKICAgIH0KICBdLAogICJ1c2FnZSI6IHsKICAgICJwcm9tcHRfdG9rZW5zIjogNDE0LAogICAgImNvbXBsZXRpb25fdG9rZW5zIjogNTAsCiAgICAidG90YWxfdG9rZW5zIjogNDY0LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfOGJkYTRkM2EyYyIKfQo=
+  recorded_at: Sat, 06 Sep 2025 18:26:34 GMT
 recorded_with: VCR 6.3.1
