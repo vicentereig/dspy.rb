@@ -1022,8 +1022,8 @@ module DSPy
         sig { returns(GEPAConfig) }
         attr_reader :config
 
-        sig { returns(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)) }
-        attr_reader :metric
+        sig { returns(FitnessEvaluator) }
+        attr_reader :fitness_evaluator
 
         sig { returns(T::Array[T.untyped]) }
         attr_reader :population
@@ -1031,13 +1031,13 @@ module DSPy
         sig { returns(Integer) }
         attr_reader :generation
 
-        sig { params(config: GEPAConfig, metric: T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)).void }
-        def initialize(config:, metric:)
+        sig { params(config: GEPAConfig, fitness_evaluator: FitnessEvaluator).void }
+        def initialize(config:, fitness_evaluator:)
           @config = config
-          @metric = metric
+          @fitness_evaluator = fitness_evaluator
           @population = T.let([], T::Array[T.untyped])
           @generation = 0
-          @fitness_scores = T.let([], T::Array[Float])
+          @fitness_scores = T.let([], T::Array[FitnessScore])
         end
 
         # Initialize population with diverse instruction variants
@@ -1051,7 +1051,11 @@ module DSPy
           # Generate instruction variants to fill population if program has signature_class
           if program.respond_to?(:signature_class) && program.signature_class.respond_to?(:description)
             original_instruction = program.signature_class.description
-            variants = generate_instruction_variants(original_instruction)
+            if original_instruction && !original_instruction.empty?
+              variants = generate_instruction_variants(original_instruction)
+            else
+              variants = []
+            end
           else
             variants = []
           end
@@ -1084,18 +1088,10 @@ module DSPy
         end
 
         # Evaluate all population members on the training set
-        sig { params(trainset: T::Array[T.untyped]).returns(T::Array[Float]) }
+        sig { params(trainset: T::Array[T.untyped]).returns(T::Array[FitnessScore]) }
         def evaluate_population(trainset)
           @fitness_scores = @population.map do |candidate|
-            scores = trainset.map do |example|
-              prediction = candidate.call(**example.input_values)
-              @metric.call(example, prediction).to_f
-            rescue => e
-              # Handle evaluation errors gracefully
-              0.0
-            end
-
-            scores.sum / scores.size
+            @fitness_evaluator.evaluate_candidate(candidate, trainset)
           end
 
           @fitness_scores
@@ -1107,8 +1103,8 @@ module DSPy
           current_scores = evaluate_population(trainset)
 
           # Simple selection: keep top 50% and mutate them
-          sorted_indices = (0...@population.size).sort_by { |i| -current_scores[i] }
-          survivors = sorted_indices.take(@config.population_size / 2)
+          sorted_indices = (0...@population.size).sort_by { |i| -current_scores[i].overall_score }
+          survivors = sorted_indices.take([@config.population_size / 2, 1].max)
 
           new_population = []
 
@@ -1144,10 +1140,12 @@ module DSPy
 
           # Initial evaluation
           initial_scores = evaluate_population(trainset)
+          best_initial = initial_scores.max_by(&:overall_score)
+          avg_initial = initial_scores.map(&:overall_score).sum / initial_scores.size
           history << {
             generation: 0,
-            best_fitness: initial_scores.max,
-            avg_fitness: initial_scores.sum / initial_scores.size,
+            best_fitness: best_initial.overall_score,
+            avg_fitness: avg_initial,
             diversity: population_diversity
           }
 
@@ -1155,19 +1153,23 @@ module DSPy
           @config.num_generations.times do
             evolve_generation(trainset)
             scores = evaluate_population(trainset)
+            best_score = scores.max_by(&:overall_score)
+            avg_score = scores.map(&:overall_score).sum / scores.size
 
             history << {
               generation: @generation,
-              best_fitness: scores.max,
-              avg_fitness: scores.sum / scores.size,
+              best_fitness: best_score.overall_score,
+              avg_fitness: avg_score,
               diversity: population_diversity
             }
           end
 
+          best_fitness_score = @fitness_scores.max_by(&:overall_score)
           {
             best_candidate: get_best_candidate,
-            best_fitness: @fitness_scores.max,
+            best_fitness: best_fitness_score,
             generation_history: history,
+            generation_count: @generation,
             final_population: @population.dup
           }
         end
@@ -1177,7 +1179,7 @@ module DSPy
         def get_best_candidate
           return @population.first if @fitness_scores.empty?
 
-          best_index = @fitness_scores.each_with_index.max_by { |score, _| score }[1]
+          best_index = @fitness_scores.each_with_index.max_by { |score, _| score.overall_score }[1]
           @population[best_index]
         end
 
@@ -2647,7 +2649,7 @@ module DSPy
       # Create and configure genetic engine
       sig { params(fitness_evaluator: FitnessEvaluator).returns(GeneticEngine) }
       def create_genetic_engine(fitness_evaluator)
-        GeneticEngine.new(config: @config, metric: @metric)
+        GeneticEngine.new(config: @config, fitness_evaluator: fitness_evaluator)
       end
 
       # Create and configure reflection engine
