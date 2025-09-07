@@ -36,7 +36,7 @@ You can tune the behavior with environment variables:
 export DSPY_TELEMETRY_QUEUE_SIZE=2000
 
 # How often to export in seconds (default: 5.0)
-export DSPY_TELEMETRY_EXPORT_INTERVAL=10.0
+export DSPY_TELEMETRY_EXPORT_INTERVAL=1.0
 
 # How many spans to export at once (default: 100)
 export DSPY_TELEMETRY_BATCH_SIZE=50
