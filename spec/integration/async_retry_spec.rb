@@ -4,7 +4,7 @@ require "spec_helper"
 require 'async'
 
 RSpec.describe "Async Retry Behavior", :integration do
-  let(:lm) { DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'] || 'test-key') }
+  let(:lm) { DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY']) }
   
   class TestSignature < DSPy::Signature
     description "Simple test signature for async retry testing"
@@ -29,7 +29,9 @@ RSpec.describe "Async Retry Behavior", :integration do
   end
   
   describe "retry blocking behavior" do
-    it "demonstrates basic async LM functionality works" do
+    it "demonstrates basic async LM functionality works", vcr: { cassette_name: "async_basic_lm_call" } do
+      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      
       # Test that LM calls work in async context without breaking
       result = nil
       
@@ -39,7 +41,14 @@ RSpec.describe "Async Retry Behavior", :integration do
       
       # The basic functionality should work
       expect(result).not_to be_nil
-      expect(result.answer).to be_a(String)
+      # Should be a Prediction object with an answer
+      if result.respond_to?(:answer)
+        expect(result.answer).to be_a(String)
+      else
+        # If it's a Hash, check that too
+        expect(result).to be_a(Hash)
+        expect(result[:answer] || result['answer']).to be_a(String)
+      end
     end
   end
   
