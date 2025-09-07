@@ -147,4 +147,4 @@ You get Matrix-level visibility into your LLM workflows, but without needing to 
 
 ---
 
-*This feature is available in DSPy.rb v0.24.1+. The async telemetry optimizations are part of the ongoing improvements to DSPy.rb's production readiness.*
+*This feature is available in DSPy.rb v0.25.0+. The async telemetry optimizations are part of the ongoing improvements to DSPy.rb's production readiness.*

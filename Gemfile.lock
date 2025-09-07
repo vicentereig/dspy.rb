@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dspy (0.24.2)
+    dspy (0.25.0)
       anthropic (~> 1.5.0)
       async (~> 2.29)
       dry-configurable (~> 1.0)
@@ -22,7 +22,7 @@ GEM
       public_suffix (>= 2.0.2, < 7.0)
     anthropic (1.5.0)
       connection_pool
-    async (2.29.0)
+    async (2.29.1)
       console (~> 1.29)
       fiber-annotation
       io-event (~> 1.11)
@@ -94,11 +94,11 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (>= 0.16, < 2.a)
-    hashdiff (1.2.0)
+    hashdiff (1.2.1)
     informers (1.2.1)
       onnxruntime (>= 0.9)
       tokenizers (>= 0.5.3)
-    io-event (1.13.0)
+    io-event (1.14.0)
     json (2.13.2)
     jwt (3.1.2)
       base64
@@ -112,7 +112,7 @@ GEM
       ffi
     onnxruntime (0.10.0-arm64-darwin)
       ffi
-    openai (0.22.0)
+    openai (0.22.1)
       connection_pool
     opentelemetry-api (1.6.0)
     opentelemetry-common (0.22.0)
@@ -144,7 +144,7 @@ GEM
     rake-compiler-dock (1.9.1)
     rb_sys (0.9.117)
       rake-compiler-dock (= 1.9.1)
-    rexml (3.4.2)
+    rexml (3.4.3)
     rspec (3.13.1)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -165,7 +165,7 @@ GEM
       multi_json (~> 1.10)
     sorbet-result (1.4.0)
       sorbet-runtime (~> 0.5)
-    sorbet-runtime (0.6.12479)
+    sorbet-runtime (0.6.12495)
     sorbet-schema (0.9.2)
       sorbet-result (~> 1.1)
       sorbet-runtime (~> 0.5)
