@@ -3,6 +3,7 @@
 require 'sorbet-runtime'
 require_relative 'module'
 require_relative 'prompt'
+require_relative 'utils/serialization'
 require_relative 'mixins/struct_builder'
 require_relative 'mixins/type_coercion'
 require_relative 'error_formatter'
@@ -165,7 +166,7 @@ module DSPy
         # Add output to span
         if span && prediction_result
           output_hash = prediction_result.respond_to?(:to_h) ? prediction_result.to_h : prediction_result.to_s
-          span.set_attribute('langfuse.observation.output', output_hash.to_json)
+          span.set_attribute('langfuse.observation.output', DSPy::Utils::Serialization.to_json(output_hash))
         end
         
         prediction_result

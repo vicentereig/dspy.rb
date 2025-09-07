@@ -3,6 +3,7 @@
 
 require 'sorbet-runtime'
 require_relative 'predict'
+require_relative 'utils/serialization'
 require_relative 'signature'
 require_relative 'mixins/struct_builder'
 
@@ -107,7 +108,7 @@ module DSPy
             prediction_result.respond_to?(:to_h) ? prediction_result.to_h : prediction_result.to_s
           end
           
-          span.set_attribute('langfuse.observation.output', output_with_reasoning.to_json)
+          span.set_attribute('langfuse.observation.output', DSPy::Utils::Serialization.to_json(output_with_reasoning))
           
           # Add reasoning metrics
           if prediction_result.respond_to?(:reasoning) && prediction_result.reasoning
