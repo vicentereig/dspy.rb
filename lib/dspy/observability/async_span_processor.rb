@@ -14,7 +14,7 @@ module DSPy
     class AsyncSpanProcessor
       # Default configuration values
       DEFAULT_QUEUE_SIZE = 1000
-      DEFAULT_EXPORT_INTERVAL = 5.0  # seconds
+      DEFAULT_EXPORT_INTERVAL = 1.0  # seconds
       DEFAULT_EXPORT_BATCH_SIZE = 100
       DEFAULT_SHUTDOWN_TIMEOUT = 10.0  # seconds
       DEFAULT_MAX_RETRIES = 3
@@ -50,7 +50,7 @@ module DSPy
       def on_finish(span)
         # Only process sampled spans to match BatchSpanProcessor behavior
         return unless span.context.trace_flags.sampled?
-        
+
         # Non-blocking enqueue with overflow protection
         # Note: on_finish is only called for already ended spans
         begin
@@ -66,9 +66,12 @@ module DSPy
               # Queue was empty, continue
             end
           end
-          
+
           @queue.push(span)
           
+          # Log span queuing activity
+          DSPy.log('observability.span_queued', queue_size: @queue.size)
+
           # Trigger immediate export if batch size reached
           trigger_export_if_batch_full
         rescue => e
@@ -83,10 +86,10 @@ module DSPy
         begin
           # Export any remaining spans
           export_remaining_spans
-          
+
           # Shutdown exporter
           @exporter.shutdown(timeout: timeout)
-          
+
           OpenTelemetry::SDK::Trace::Export::SUCCESS
         rescue => e
           DSPy.log('observability.shutdown_error', error: e.message, class: e.class.name)
@@ -109,9 +112,9 @@ module DSPy
         Thread.new do
           loop do
             break if @shutdown_requested
-            
+
             sleep(@export_interval)
-            
+
             # Export queued spans in sync block
             unless @queue.empty?
               Sync do
@@ -139,7 +142,7 @@ module DSPy
 
       def export_remaining_spans
         spans = []
-        
+
         # Drain entire queue
         until @queue.empty?
           begin
@@ -156,7 +159,7 @@ module DSPy
 
       def export_queued_spans
         spans = []
-        
+
         # Collect up to batch size
         @export_batch_size.times do
           begin
@@ -176,21 +179,34 @@ module DSPy
 
       def export_spans_with_retry(spans)
         retries = 0
-        
+
         # Convert spans to SpanData objects (required by OTLP exporter)
         span_data_batch = spans.map(&:to_span_data)
         
+        # Log export attempt
+        DSPy.log('observability.export_attempt',
+                 spans_count: span_data_batch.size,
+                 batch_size: span_data_batch.size)
+
         loop do
           result = @exporter.export(span_data_batch, timeout: @shutdown_timeout)
-          
+
           case result
           when OpenTelemetry::SDK::Trace::Export::SUCCESS
+            DSPy.log('observability.export_success',
+                     spans_count: span_data_batch.size,
+                     export_result: 'SUCCESS')
             return result
           when OpenTelemetry::SDK::Trace::Export::FAILURE
             retries += 1
             if retries <= @max_retries
+              backoff_seconds = 0.1 * (2 ** retries)
+              DSPy.log('observability.export_retry',
+                       attempt: retries,
+                       spans_count: span_data_batch.size,
+                       backoff_seconds: backoff_seconds)
               # Exponential backoff
-              sleep(0.1 * (2 ** retries))
+              sleep(backoff_seconds)
               next
             else
               DSPy.log('observability.export_failed',
@@ -209,22 +225,35 @@ module DSPy
 
       def export_spans_with_retry_async(spans)
         retries = 0
-        
+
         # Convert spans to SpanData objects (required by OTLP exporter)
         span_data_batch = spans.map(&:to_span_data)
         
+        # Log export attempt
+        DSPy.log('observability.export_attempt',
+                 spans_count: span_data_batch.size,
+                 batch_size: span_data_batch.size)
+
         loop do
           # Use current async task for potentially non-blocking export
           result = @exporter.export(span_data_batch, timeout: @shutdown_timeout)
-          
+
           case result
           when OpenTelemetry::SDK::Trace::Export::SUCCESS
+            DSPy.log('observability.export_success',
+                     spans_count: span_data_batch.size,
+                     export_result: 'SUCCESS')
             return result
           when OpenTelemetry::SDK::Trace::Export::FAILURE
             retries += 1
             if retries <= @max_retries
+              backoff_seconds = 0.1 * (2 ** retries)
+              DSPy.log('observability.export_retry',
+                       attempt: retries,
+                       spans_count: span_data_batch.size,
+                       backoff_seconds: backoff_seconds)
               # Async sleep for exponential backoff
-              Async::Task.current.sleep(0.1 * (2 ** retries))
+              Async::Task.current.sleep(backoff_seconds)
               next
             else
               DSPy.log('observability.export_failed',
