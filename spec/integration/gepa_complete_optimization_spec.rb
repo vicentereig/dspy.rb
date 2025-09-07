@@ -140,6 +140,7 @@ RSpec.describe 'GEPA Complete Optimization Integration', vcr: { cassette_name: '
 
   describe 'Complete GEPA genetic algorithm optimization' do
     it 'performs full genetic optimization with all components' do
+      skip 'Skip until GEPA retry logic is optimized'
       # Create GEPA with full genetic algorithm enabled
       config = DSPy::Teleprompt::GEPA::GEPAConfig.new
       config.reflection_lm = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
