@@ -121,5 +121,42 @@
   </div>
 
   {% render "footer" %}
+
+  <!-- Mermaid diagrams support -->
+  <script type="module">
+    import mermaid from 'https://unpkg.com/mermaid@10.6.1/dist/mermaid.esm.min.mjs';
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      mermaid.initialize({ 
+        startOnLoad: false,
+        theme: 'neutral',
+        themeVariables: {
+          primaryColor: '#dc2626',
+          primaryTextColor: '#1f2937',
+          primaryBorderColor: '#dc2626',
+          lineColor: '#6b7280',
+          secondaryColor: '#f3f4f6',
+          tertiaryColor: '#ffffff'
+        }
+      });
+      
+      // Find all mermaid code blocks and convert them
+      document.querySelectorAll('pre code.language-mermaid').forEach(function(block) {
+        const code = block.textContent;
+        const pre = block.parentNode;
+        
+        // Create a new div for the mermaid diagram
+        const mermaidDiv = document.createElement('div');
+        mermaidDiv.className = 'mermaid';
+        mermaidDiv.textContent = code;
+        
+        // Replace the pre block with the mermaid div
+        pre.parentNode.replaceChild(mermaidDiv, pre);
+      });
+      
+      // Render all mermaid diagrams
+      mermaid.run();
+    });
+  </script>
 </body>
 </html>
