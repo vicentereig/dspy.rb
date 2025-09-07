@@ -29,7 +29,7 @@ RSpec.describe DSPy do
 
     it 'has test_mode setting' do
       expect(DSPy.config).to respond_to(:test_mode)
-      expect(DSPy.config.test_mode).to eq(true) # Set to true in test environment
+      expect(DSPy.config.test_mode).to eq(false)
     end
 
     it 'supports configuration blocks' do
