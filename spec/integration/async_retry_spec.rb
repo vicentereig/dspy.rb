@@ -33,11 +33,9 @@ RSpec.describe "Async Retry Behavior", :integration do
       skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
       
       # Test that LM calls work in async context without breaking
-      result = nil
-      
-      Async do
-        result = lm.chat(DSPy::ChainOfThought.new(TestSignature), question: "What is 2+2?")
-      end
+      result = Async do
+        lm.chat(DSPy::ChainOfThought.new(TestSignature), question: "What is 2+2?")
+      end.wait
       
       # The basic functionality should work
       expect(result).not_to be_nil
@@ -59,7 +57,7 @@ RSpec.describe "Async Retry Behavior", :integration do
       Async do
         # Check if we can detect async context
         in_async_context = !!(defined?(Async::Task) && Async::Task.current?)
-      end
+      end.wait
       
       expect(in_async_context).to be true
     end

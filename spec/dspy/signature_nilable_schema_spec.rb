@@ -211,7 +211,7 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
   end
 
   describe 'nested T.nilable scenarios' do
-    class NestedStruct < T::Struct
+    class SchemaNestedStruct < T::Struct
       const :name, String
       const :optional_value, T.nilable(String)
       const :optional_list, T.nilable(T::Array[Integer])
@@ -221,7 +221,7 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
       description "Test signature with nested nilable structures"
 
       output do
-        const :wrapper, T.nilable(NestedStruct)
+        const :wrapper, T.nilable(SchemaNestedStruct)
         const :array_of_nilable, T::Array[T.nilable(String)]
       end
     end
@@ -233,7 +233,7 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
       expect(schema[:properties][:wrapper]).to eq({
         type: ['object', 'null'],
         properties: {
-          _type: { type: 'string', const: 'NestedStruct' },
+          _type: { type: 'string', const: 'SchemaNestedStruct' },
           name: { type: 'string' },
           optional_value: { type: ['string', 'null'] },
           optional_list: {
@@ -242,7 +242,7 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
           }
         },
         required: ['_type', 'name'],
-        description: "#{NestedStruct.name} struct"
+        description: "#{SchemaNestedStruct.name} struct"
       })
     end
 

@@ -6,18 +6,18 @@ require 'json'
 RSpec.describe DSPy::Utils::Serialization do
   describe '.deep_serialize' do
     context 'with T::Struct objects' do
-      class SimpleStruct < T::Struct
+      class SerializationSimpleStruct < T::Struct
         const :name, String
         const :value, Integer
       end
 
-      class NestedStruct < T::Struct
+      class SerializationNestedStruct < T::Struct
         const :title, String
-        const :simple, SimpleStruct
+        const :simple, SerializationSimpleStruct
       end
 
       it 'serializes a simple T::Struct to a hash' do
-        struct = SimpleStruct.new(name: 'test', value: 42)
+        struct = SerializationSimpleStruct.new(name: 'test', value: 42)
         result = described_class.deep_serialize(struct)
         
         expect(result).to eq({ 'name' => 'test', 'value' => 42 })
@@ -25,8 +25,8 @@ RSpec.describe DSPy::Utils::Serialization do
       end
 
       it 'recursively serializes nested T::Struct objects' do
-        simple = SimpleStruct.new(name: 'nested', value: 100)
-        nested = NestedStruct.new(title: 'container', simple: simple)
+        simple = SerializationSimpleStruct.new(name: 'nested', value: 100)
+        nested = SerializationNestedStruct.new(title: 'container', simple: simple)
         result = described_class.deep_serialize(nested)
         
         expect(result).to eq({
@@ -36,7 +36,7 @@ RSpec.describe DSPy::Utils::Serialization do
       end
 
       it 'handles T::Struct objects inside hashes' do
-        struct = SimpleStruct.new(name: 'example', value: 123)
+        struct = SerializationSimpleStruct.new(name: 'example', value: 123)
         hash = { action: struct, message: 'hello' }
         result = described_class.deep_serialize(hash)
         
@@ -47,8 +47,8 @@ RSpec.describe DSPy::Utils::Serialization do
       end
 
       it 'handles T::Struct objects inside arrays' do
-        struct1 = SimpleStruct.new(name: 'first', value: 1)
-        struct2 = SimpleStruct.new(name: 'second', value: 2)
+        struct1 = SerializationSimpleStruct.new(name: 'first', value: 1)
+        struct2 = SerializationSimpleStruct.new(name: 'second', value: 2)
         array = [struct1, struct2, 'plain string']
         result = described_class.deep_serialize(array)
         
@@ -60,7 +60,7 @@ RSpec.describe DSPy::Utils::Serialization do
       end
 
       it 'handles deeply nested combinations' do
-        struct = SimpleStruct.new(name: 'deep', value: 999)
+        struct = SerializationSimpleStruct.new(name: 'deep', value: 999)
         complex = {
           data: [
             { item: struct, count: 5 },
