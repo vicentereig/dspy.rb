@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
+require 'async'
 
 # Load adapter infrastructure
 require_relative 'lm/errors'
@@ -41,20 +42,22 @@ module DSPy
     end
 
     def chat(inference_module, input_values, &block)
-      signature_class = inference_module.signature_class
-      
-      # Build messages from inference module
-      messages = build_messages(inference_module, input_values)
-      
-      # Execute with instrumentation
-      response = instrument_lm_request(messages, signature_class.name) do
-        chat_with_strategy(messages, signature_class, &block)
+      Sync do
+        signature_class = inference_module.signature_class
+        
+        # Build messages from inference module
+        messages = build_messages(inference_module, input_values)
+        
+        # Execute with instrumentation
+        response = instrument_lm_request(messages, signature_class.name) do
+          chat_with_strategy(messages, signature_class, &block)
+        end
+        
+        # Parse response (no longer needs separate instrumentation)
+        parsed_result = parse_response(response, input_values, signature_class)
+        
+        parsed_result
       end
-      
-      # Parse response (no longer needs separate instrumentation)
-      parsed_result = parse_response(response, input_values, signature_class)
-      
-      parsed_result
     end
 
     def raw_chat(messages = nil, &block)
