@@ -6,10 +6,29 @@ module DSPy
   class Context
     class << self
       def current
-        Thread.current[:dspy_context] ||= {
-          trace_id: SecureRandom.uuid,
-          span_stack: []
-        }
+        # Check if we're in an async context (fiber created by async gem)
+        if in_async_context?
+          # Use Fiber storage for async contexts to enable inheritance
+          # Inherit from Thread.current if Fiber storage is not set
+          Fiber[:dspy_context] ||= Thread.current[:dspy_context] || {
+            trace_id: SecureRandom.uuid,
+            span_stack: []
+          }
+          
+          # Return Fiber storage in async contexts
+          Fiber[:dspy_context]
+        else
+          # Use Thread.current for regular synchronous contexts
+          Thread.current[:dspy_context] ||= {
+            trace_id: SecureRandom.uuid,
+            span_stack: []
+          }
+          
+          # Also sync to Fiber storage so async contexts can inherit it
+          Fiber[:dspy_context] = Thread.current[:dspy_context]
+          
+          Thread.current[:dspy_context]
+        end
       end
       
       def with_span(operation:, **attributes)
@@ -84,6 +103,16 @@ module DSPy
       
       def clear!
         Thread.current[:dspy_context] = nil
+        Fiber[:dspy_context] = nil
+      end
+      
+      private
+      
+      # Check if we're running in an async context
+      def in_async_context?
+        defined?(Async::Task) && Async::Task.current?
+      rescue
+        false
       end
     end
   end

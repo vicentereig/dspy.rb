@@ -36,6 +36,7 @@ RSpec.describe DSPy::Context do
       end
       thread.join
       
+      # Different threads have different root fibers, so should have different contexts
       expect(context1[:trace_id]).not_to eq(context2[:trace_id])
     end
   end
