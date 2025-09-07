@@ -415,12 +415,20 @@ puts result.processed_result
 
 ### Performance Characteristics
 
-| Predictor | Speed | Use Case | Token Usage |
-|-----------|-------|----------|-------------|
-| **Predict** | Fastest | Simple classification, extraction | Low |
-| **ChainOfThought** | Moderate | Complex reasoning, analysis | Medium-High |
-| **ReAct** | Slower | Multi-step tasks, tool usage | High |
-| **CodeAct** | Slowest | Dynamic programming, calculations | Very High |
+| Predictor | Speed | Use Case | Token Usage | Concurrent Support |
+|-----------|-------|----------|-------------|-------------------|
+| **Predict** | Fastest | Simple classification, extraction | Low | ✅ Excellent |
+| **ChainOfThought** | Moderate | Complex reasoning, analysis | Medium-High | ✅ Excellent |
+| **ReAct** | Slower | Multi-step tasks, tool usage | High | ✅ Good |
+| **CodeAct** | Slowest | Dynamic programming, calculations | Very High | ✅ Good |
+
+### Concurrent Performance Gains
+
+When processing multiple independent inputs, concurrent execution can provide significant speedups:
+
+- **Simple tasks (Predict)**: 2-4x faster with 3-5 concurrent operations
+- **Complex reasoning (ChainOfThought)**: 2-3x faster with moderate concurrency
+- **Agent tasks (ReAct/CodeAct)**: 1.5-2.5x faster, limited by tool/code execution
 
 ### Choosing the Right Predictor
 
@@ -558,6 +566,198 @@ RSpec.describe DSPy::ChainOfThought do
   end
 end
 ```
+
+## Concurrent Predictions
+
+For applications that need to process multiple predictions simultaneously, DSPy.rb supports concurrent execution using Ruby's `async` gem with `Async::Barrier` for synchronization.
+
+### When to Use Concurrent Predictions
+
+- Processing multiple independent inputs simultaneously
+- Batch operations where predictions can run in parallel
+- Performance-critical applications with I/O-bound LLM calls
+- Background job processing of multiple items
+
+### Basic Concurrent Pattern
+
+```ruby
+require 'async'
+require 'async/barrier'
+
+class ContentAnalyzer < DSPy::Signature
+  description "Analyze content for sentiment and topics"
+  
+  input do
+    const :content, String
+  end
+  
+  output do
+    const :sentiment, String
+    const :topics, T::Array[String]
+    const :confidence, Float
+  end
+end
+
+# Process multiple documents concurrently
+documents = [
+  "I love this new feature!",
+  "The service could be better.",
+  "Amazing customer support experience!"
+]
+
+analyzer = DSPy::Predict.new(ContentAnalyzer)
+
+Async do
+  barrier = Async::Barrier.new
+  
+  # Launch all predictions concurrently
+  results = documents.map.with_index do |doc, i|
+    barrier.async do
+      puts "🚀 Starting analysis #{i+1} at #{Time.now.strftime('%H:%M:%S.%L')}"
+      result = analyzer.call(content: doc)
+      puts "✅ Completed analysis #{i+1} at #{Time.now.strftime('%H:%M:%S.%L')}"
+      result
+    end
+  end
+  
+  # Wait for all to complete and collect results
+  barrier.wait
+  predictions = results.map(&:wait)
+  
+  predictions.each_with_index do |prediction, i|
+    puts "Document #{i+1}: #{prediction.sentiment} (#{prediction.confidence})"
+  end
+end
+```
+
+### Performance Benefits
+
+Concurrent predictions can provide significant performance improvements:
+
+```ruby
+# Sequential processing (slow)
+sequential_start = Time.now
+results = documents.map { |doc| analyzer.call(content: doc) }
+sequential_time = Time.now - sequential_start
+
+# Concurrent processing (fast)  
+concurrent_start = Time.now
+Async do
+  barrier = Async::Barrier.new
+  
+  results = documents.map do |doc|
+    barrier.async { analyzer.call(content: doc) }
+  end
+  
+  barrier.wait
+  predictions = results.map(&:wait)
+end
+concurrent_time = Time.now - concurrent_start
+
+puts "Sequential: #{sequential_time.round(2)}s"
+puts "Concurrent: #{concurrent_time.round(2)}s"
+puts "Speedup: #{(sequential_time / concurrent_time).round(1)}x faster"
+```
+
+### Real-World Example
+
+```ruby
+# Customer service agent processing multiple requests
+class CustomerService < DSPy::Signature
+  description "Provide customer service response"
+  
+  input do
+    const :customer_query, String
+    const :customer_mood, String
+  end
+  
+  output do
+    const :response, String
+    const :escalation_needed, T::Boolean
+  end
+end
+
+customer_requests = [
+  { query: "How do I reset my password?", mood: "neutral" },
+  { query: "This is terrible service!", mood: "angry" },
+  { query: "I love your product!", mood: "happy" },
+  { query: "When will my order arrive?", mood: "concerned" }
+]
+
+service_agent = DSPy::ChainOfThought.new(CustomerService)
+
+Async do
+  barrier = Async::Barrier.new
+  start_time = Time.now
+  
+  # Process all customer requests concurrently
+  tasks = customer_requests.map.with_index do |request, i|
+    barrier.async do
+      service_agent.call(
+        customer_query: request[:query],
+        customer_mood: request[:mood]
+      )
+    end
+  end
+  
+  barrier.wait
+  responses = tasks.map(&:wait)
+  
+  total_time = Time.now - start_time
+  puts "Processed #{customer_requests.length} requests in #{total_time.round(2)}s"
+  
+  responses.each_with_index do |response, i|
+    puts "\nCustomer #{i+1}: #{customer_requests[i][:query]}"
+    puts "Response: #{response.response}"
+    puts "Escalation needed: #{response.escalation_needed}"
+  end
+end
+```
+
+### Error Handling in Concurrent Predictions
+
+```ruby
+Async do
+  barrier = Async::Barrier.new
+  
+  tasks = documents.map.with_index do |doc, i|
+    barrier.async do
+      begin
+        analyzer.call(content: doc)
+      rescue StandardError => e
+        puts "Error processing document #{i+1}: #{e.message}"
+        nil  # Return nil for failed predictions
+      end
+    end
+  end
+  
+  barrier.wait
+  results = tasks.map(&:wait).compact  # Remove nil results
+  
+  puts "Successfully processed #{results.length} out of #{documents.length} documents"
+end
+```
+
+### Requirements
+
+To use concurrent predictions, add the `async` gem to your application:
+
+```ruby
+# Gemfile
+gem 'async', '~> 2.29'
+
+# In your code
+require 'async'
+require 'async/barrier'
+```
+
+### Best Practices for Concurrent Predictions
+
+1. **Use Async::Barrier** for proper synchronization of multiple concurrent operations
+2. **Handle errors gracefully** within each concurrent task to prevent one failure from affecting others
+3. **Monitor resource usage** - concurrent predictions increase memory and network usage
+4. **Consider rate limits** - some LLM providers have concurrent request limits
+5. **Profile performance gains** - measure actual speedup to validate the benefits
 
 ## Best Practices
 

@@ -1,6 +1,6 @@
 ---
 layout: blog
-name: "Program Persistence and Serialization: Save Your Optimized DSPy Programs"
+title: "Program Persistence and Serialization: Save Your Optimized DSPy Programs"
 description: "DSPy.rb v0.20.0 introduces comprehensive program serialization and storage capabilities, allowing you to save, load, and share optimized DSPy programs with full state preservation."
 date: 2025-08-26
 author: "Vicente Reig"

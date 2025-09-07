@@ -1,6 +1,6 @@
 ---
 layout: blog
-name: "Why Union Types Transform AI Agent Development"
+title: "Why Union Types Transform AI Agent Development"
 date: 2025-07-20
 categories: [patterns, agents]
 description: How DSPy.rb's single-field union types with automatic type detection simplify AI agent development

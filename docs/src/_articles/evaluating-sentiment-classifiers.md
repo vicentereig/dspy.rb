@@ -9,8 +9,6 @@ featured: true
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluating-sentiment-classifiers/"
 ---
 
-# Evaluating Sentiment Classifiers: Beyond Simple Accuracy
-
 Building a sentiment classifier is one thing. Knowing if it actually works well is another. In this tutorial, we'll walk through DSPy.rb's evaluation framework using a practical sentiment classification example that goes beyond simple accuracy.
 
 ## What We're Building
