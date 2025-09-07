@@ -46,7 +46,7 @@ DSPy.rb requires Ruby 3.3+ and includes these core dependencies:
 # Core dependencies (automatically installed)
 gem 'dry-configurable', '~> 1.0'
 gem 'dry-logger', '~> 1.0'
-gem 'async', '~> 2.23'
+gem 'async', '~> 2.29'
 
 # Official LM provider clients
 gem 'openai', '~> 0.9.0'

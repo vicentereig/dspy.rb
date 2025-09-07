@@ -1,6 +1,6 @@
 ---
 layout: blog
-name: "Fiber-Local LM Contexts: Clean Multi-Model Management in Ruby"
+title: "Fiber-Local LM Contexts: Clean Multi-Model Management in Ruby"
 description: "DSPy.rb v0.20.0 introduces DSPy.with_lm for elegant temporary language model overrides using Ruby's fiber-local storage, enabling clean concurrent patterns and better model management."
 date: 2025-08-26
 author: "Vicente Reig"

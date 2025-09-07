@@ -7,8 +7,6 @@ author: "Vicente Reig"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-parsing-reliability/"
 ---
 
-# Stop Fighting JSON Parsing Errors in Your LLM Apps
-
 If you've built anything with LLMs, you know the pain. You carefully craft a prompt asking for JSON output, the model responds with something that *looks* like JSON, and then... `JSON::ParserError`. 
 
 Maybe it wrapped the JSON in markdown code blocks. Maybe it added a helpful explanation before the actual data. Maybe it just forgot a comma. Whatever the reason, you're now debugging string manipulation instead of building features.

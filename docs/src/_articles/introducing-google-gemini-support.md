@@ -1,6 +1,6 @@
 ---
 layout: blog
-name: "Google Gemini Integration: Multimodal AI with Type-Safe Ruby"
+title: "Google Gemini Integration: Multimodal AI with Type-Safe Ruby"
 description: "DSPy.rb v0.20.0 introduces full Google Gemini support, bringing Google's state-of-the-art multimodal AI capabilities to Ruby developers with complete type safety and structured outputs."
 date: 2025-08-26
 author: "Vicente Reig"
