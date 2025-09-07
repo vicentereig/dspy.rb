@@ -89,48 +89,52 @@ RSpec.describe DSPy::LM::RetryHandler do
         executed_strategies = []
         attempt_counts = Hash.new(0)
         
-        # Configure test mode to avoid sleeps
-        allow(DSPy.config).to receive(:test_mode).and_return(true)
+        # Enable retries to test retry behavior
+        allow(DSPy.config.structured_outputs).to receive(:retry_enabled).and_return(true)
         
-        returned_result = retry_handler.with_retry(openai_strategy) do |strategy|
-          executed_strategies << strategy.name
-          attempt_counts[strategy.name] += 1
-          
-          if strategy == openai_strategy && attempt_counts[strategy.name] < 2
-            raise JSON::ParserError, "Invalid JSON"
-          else
-            { answer: "Success" }
+        Sync do
+          returned_result = retry_handler.with_retry(openai_strategy) do |strategy|
+            executed_strategies << strategy.name
+            attempt_counts[strategy.name] += 1
+            
+            if strategy == openai_strategy && attempt_counts[strategy.name] < 2
+              raise JSON::ParserError, "Invalid JSON"
+            else
+              { answer: "Success" }
+            end
           end
+          
+          expect(returned_result).to eq({ answer: "Success" })
+          expect(executed_strategies).to eq(["openai_structured_output", "openai_structured_output"])
+          expect(attempt_counts["openai_structured_output"]).to eq(2)
         end
-        
-        expect(returned_result).to eq({ answer: "Success" })
-        expect(executed_strategies).to eq(["openai_structured_output", "openai_structured_output"])
-        expect(attempt_counts["openai_structured_output"]).to eq(2)
       end
       
       it "falls back to next strategy after max retries" do
         executed_strategies = []
         
-        # Configure test mode to avoid sleeps
-        allow(DSPy.config).to receive(:test_mode).and_return(true)
+        # Enable retries to test fallback behavior
+        allow(DSPy.config.structured_outputs).to receive(:retry_enabled).and_return(true)
         
-        returned_result = retry_handler.with_retry(openai_strategy) do |strategy|
-          executed_strategies << strategy.name
-          
-          if strategy == openai_strategy
-            raise JSON::ParserError, "Invalid JSON"
-          else
-            { answer: "Success with fallback" }
+        Sync do
+          returned_result = retry_handler.with_retry(openai_strategy) do |strategy|
+            executed_strategies << strategy.name
+            
+            if strategy == openai_strategy
+              raise JSON::ParserError, "Invalid JSON"
+            else
+              { answer: "Success with fallback" }
+            end
           end
+          
+          expect(returned_result).to eq({ answer: "Success with fallback" })
+          # Should try openai twice (1 initial + 1 retry), then anthropic
+          expect(executed_strategies).to eq([
+            "openai_structured_output",
+            "openai_structured_output", 
+            "anthropic_extraction"
+          ])
         end
-        
-        expect(returned_result).to eq({ answer: "Success with fallback" })
-        # Should try openai twice (1 initial + 1 retry), then anthropic
-        expect(executed_strategies).to eq([
-          "openai_structured_output",
-          "openai_structured_output", 
-          "anthropic_extraction"
-        ])
       end
     end
     
@@ -163,43 +167,47 @@ RSpec.describe DSPy::LM::RetryHandler do
     
     context "when all strategies fail" do
       it "raises the last error" do
-        allow(DSPy.config).to receive(:test_mode).and_return(true)
+        # Enable retries to test fallback behavior
+        allow(DSPy.config.structured_outputs).to receive(:retry_enabled).and_return(true)
         
-        expect do
-          retry_handler.with_retry(openai_strategy) do |strategy|
-            raise JSON::ParserError, "Failed with #{strategy.name}"
-          end
-        end.to raise_error(JSON::ParserError, /Failed with enhanced_prompting/)
+        Sync do
+          expect do
+            retry_handler.with_retry(openai_strategy) do |strategy|
+              raise JSON::ParserError, "Failed with #{strategy.name}"
+            end
+          end.to raise_error(JSON::ParserError, /Failed with enhanced_prompting/)
+        end
       end
     end
     
     context "with different retry counts per strategy" do
       it "uses fewer retries for structured output strategy" do
         attempt_counts = Hash.new(0)
-        allow(DSPy.config).to receive(:test_mode).and_return(true)
+        # Enable retries to test fallback behavior
+        allow(DSPy.config.structured_outputs).to receive(:retry_enabled).and_return(true)
         
-        begin
-          retry_handler.with_retry(openai_strategy) do |strategy|
-            attempt_counts[strategy.name] += 1
-            raise JSON::ParserError, "Always fail"
+        Sync do
+          begin
+            retry_handler.with_retry(openai_strategy) do |strategy|
+              attempt_counts[strategy.name] += 1
+              raise JSON::ParserError, "Always fail"
+            end
+          rescue JSON::ParserError
+            # Expected
           end
-        rescue JSON::ParserError
-          # Expected
+          
+          # OpenAI gets 1 retry (2 total attempts)
+          expect(attempt_counts["openai_structured_output"]).to eq(2)
+          # Anthropic gets 2 retries (3 total attempts)  
+          expect(attempt_counts["anthropic_extraction"]).to eq(3)
+          # Enhanced gets 3 retries (4 total attempts)
+          expect(attempt_counts["enhanced_prompting"]).to eq(4)
         end
-        
-        # OpenAI gets 1 retry (2 total attempts)
-        expect(attempt_counts["openai_structured_output"]).to eq(2)
-        # Anthropic gets 2 retries (3 total attempts)  
-        expect(attempt_counts["anthropic_extraction"]).to eq(3)
-        # Enhanced gets 3 retries (4 total attempts)
-        expect(attempt_counts["enhanced_prompting"]).to eq(4)
       end
     end
     
     context "backoff calculation" do
       it "calculates exponential backoff with jitter" do
-        allow(DSPy.config).to receive(:test_mode).and_return(false)
-        
         # Access private method for testing
         backoff1 = retry_handler.send(:calculate_backoff, 1)
         backoff2 = retry_handler.send(:calculate_backoff, 2)
@@ -212,13 +220,6 @@ RSpec.describe DSPy::LM::RetryHandler do
         # Test cap at 10 seconds
         backoff_large = retry_handler.send(:calculate_backoff, 10)
         expect(backoff_large).to be <= 10.0
-      end
-      
-      it "returns 0 in test mode" do
-        allow(DSPy.config).to receive(:test_mode).and_return(true)
-        
-        expect(retry_handler.send(:calculate_backoff, 1)).to eq(0)
-        expect(retry_handler.send(:calculate_backoff, 5)).to eq(0)
       end
     end
   end
