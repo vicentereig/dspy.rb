@@ -16,6 +16,9 @@ DSPy.configure do |config|
   )
 end
 
+# Configure observability for Langfuse tracing
+DSPy::Observability.configure!
+
 # Define enums for better type safety
 class DrinkSize < T::Enum
   enums do
