@@ -173,7 +173,10 @@ RSpec.describe DSPy::Observability::AsyncSpanProcessor do
       processor.on_finish(span)
       
       expect(exporter).to receive(:export).and_raise(StandardError.new("Test error"))
-      expect(DSPy).to receive(:log).with('observability.export_error', anything)
+      
+      # Expect both export_attempt (before error) and export_error (after error)
+      expect(DSPy).to receive(:log).with('observability.export_attempt', anything).ordered
+      expect(DSPy).to receive(:log).with('observability.export_error', anything).ordered
       
       processor.force_flush
       processor.shutdown
