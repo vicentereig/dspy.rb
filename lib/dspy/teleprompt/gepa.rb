@@ -1303,6 +1303,7 @@ module DSPy
       # FitnessScore represents multi-dimensional evaluation results
       class FitnessScore < T::Struct
         extend T::Sig
+        include Comparable
 
         const :primary_score, Float
         const :secondary_scores, T::Hash[Symbol, Float]
@@ -1337,6 +1338,13 @@ module DSPy
             overall_score: overall_score,
             metadata: (metadata || {}).freeze
           )
+        end
+
+        # Comparison method for Comparable module
+        sig { params(other: FitnessScore).returns(T.nilable(Integer)) }
+        def <=>(other)
+          return nil unless other.is_a?(FitnessScore)
+          overall_score <=> other.overall_score
         end
 
         # Check if this score is dominated by another (for Pareto analysis)
