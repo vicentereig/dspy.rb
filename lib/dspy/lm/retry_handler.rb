@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "sorbet-runtime"
+require "async"
 
 module DSPy
   class LM
@@ -28,6 +29,11 @@ module DSPy
           .returns(T.type_parameter(:T))
       end
       def with_retry(initial_strategy, &block)
+        # Skip retries entirely if disabled
+        unless DSPy.config.structured_outputs.retry_enabled
+          return yield(initial_strategy)
+        end
+        
         strategies = build_fallback_chain(initial_strategy)
         last_error = nil
 
@@ -62,7 +68,7 @@ module DSPy
                 "Retrying #{strategy.name} after error (attempt #{retry_count}/#{max_retries_for_strategy(strategy)}): #{e.message}"
               )
               
-              sleep(backoff_time) if backoff_time > 0
+              Async::Task.current.sleep(backoff_time) if backoff_time > 0
               retry
             else
               DSPy.logger.info("Max retries reached for #{strategy.name}, trying next strategy")
@@ -107,8 +113,6 @@ module DSPy
       # Calculate exponential backoff with jitter
       sig { params(attempt: Integer).returns(Float) }
       def calculate_backoff(attempt)
-        return 0.0 if DSPy.config.test_mode # No sleep in tests
-        
         base_delay = BACKOFF_BASE * (2 ** (attempt - 1))
         jitter = rand * 0.1 * base_delay
         
