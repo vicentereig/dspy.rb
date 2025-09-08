@@ -5,6 +5,7 @@ require 'sorbet-runtime'
 require_relative 'teleprompter'
 require_relative 'utils'
 require_relative '../propose/grounded_proposer'
+require_relative '../optimizers/gaussian_process'
 
 module DSPy
   module Teleprompt
@@ -624,9 +625,71 @@ module DSPy
         ).returns(CandidateConfig)
       end
       def select_candidate_bayesian(candidates, state, trial_idx)
-        # For now, use adaptive selection with Bayesian-inspired exploration
-        # In a full implementation, this would use Gaussian processes or similar
-        select_candidate_adaptive(candidates, state, trial_idx)
+        # Need at least 3 observations to fit GP, otherwise fall back to adaptive
+        return select_candidate_adaptive(candidates, state, trial_idx) if state[:scores].size < 3
+        
+        # Get scored candidates for training the GP
+        scored_candidates = candidates.select { |c| state[:scores].key?(c.config_id) }
+        return select_candidate_adaptive(candidates, state, trial_idx) if scored_candidates.size < 3
+        
+        begin
+          # Encode candidates as numerical features
+          all_candidate_features = encode_candidates_for_gp(candidates)
+          scored_features = encode_candidates_for_gp(scored_candidates)
+          scored_targets = scored_candidates.map { |c| state[:scores][c.config_id].to_f }
+          
+          # Train Gaussian Process
+          gp = DSPy::Optimizers::GaussianProcess.new(
+            length_scale: 1.0,
+            signal_variance: 1.0,
+            noise_variance: 0.01
+          )
+          gp.fit(scored_features, scored_targets)
+          
+          # Predict mean and uncertainty for all candidates
+          means, stds = gp.predict(all_candidate_features, return_std: true)
+          
+          # Upper Confidence Bound (UCB) acquisition function
+          kappa = 2.0 * Math.sqrt(Math.log(trial_idx + 1))  # Exploration parameter
+          acquisition_scores = means.to_a.zip(stds.to_a).map { |m, s| m + kappa * s }
+          
+          # Select candidate with highest acquisition score
+          best_idx = acquisition_scores.each_with_index.max_by { |score, _| score }[1]
+          candidates[best_idx]
+          
+        rescue => e
+          # If GP fails for any reason, fall back to adaptive selection
+          DSPy.logger.warn("Bayesian optimization failed: #{e.message}. Falling back to adaptive selection.")
+          select_candidate_adaptive(candidates, state, trial_idx)
+        end
+      end
+      
+      private
+      
+      # Encode candidates as numerical features for Gaussian Process
+      sig { params(candidates: T::Array[CandidateConfig]).returns(T::Array[T::Array[Float]]) }
+      def encode_candidates_for_gp(candidates)
+        # Simple encoding: use hash of config as features
+        # In practice, this could be more sophisticated (e.g., instruction embeddings)
+        candidates.map do |candidate|
+          # Create deterministic numerical features from the candidate config
+          config_hash = candidate.config_id.hash.abs
+          
+          # Extract multiple features to create a feature vector
+          features = []
+          features << (config_hash % 1000).to_f / 1000.0  # Feature 1: hash mod 1000, normalized
+          features << ((config_hash / 1000) % 1000).to_f / 1000.0  # Feature 2: different part of hash
+          features << ((config_hash / 1_000_000) % 1000).to_f / 1000.0  # Feature 3: high bits
+          
+          # Add instruction length if available
+          if candidate.respond_to?(:instruction) && candidate.instruction
+            features << [candidate.instruction.length.to_f / 100.0, 2.0].min  # Instruction length, capped at 200 chars
+          else
+            features << 0.5  # Default value
+          end
+          
+          features
+        end
       end
 
       # Evaluate a candidate configuration
