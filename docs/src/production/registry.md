@@ -51,8 +51,10 @@ registry = DSPy::Registry::SignatureRegistry.new(config: config)
 
 ```ruby
 # After optimization
-optimizer = DSPy::MIPROv2.new(signature: ClassifyText)
-result = optimizer.optimize(examples: training_examples)
+program = DSPy::Predict.new(ClassifyText)
+metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+result = optimizer.compile(program, trainset: training_examples)
 
 # Extract configuration from optimized program
 configuration = {
@@ -207,8 +209,10 @@ config.auto_register_optimizations = true
 manager = DSPy::Registry::RegistryManager.new(integration_config: config)
 
 # Now optimization results are automatically registered
-optimizer = DSPy::MIPROv2.new(signature: ClassifyText)
-result = optimizer.optimize(examples: examples)
+program = DSPy::Predict.new(ClassifyText)
+metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+result = optimizer.compile(program, trainset: examples)
 
 # This happens automatically if configured:
 version = manager.register_optimization_result(result)

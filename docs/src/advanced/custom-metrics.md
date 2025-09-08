@@ -435,10 +435,11 @@ domain_specific_metric = ->(example, prediction) do
   score
 end
 
-optimizer = DSPy::MIPROv2.new(signature: YourSignature)
+program = DSPy::Predict.new(YourSignature)
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: domain_specific_metric)
 
-result = optimizer.optimize(examples: training_examples) do |predictor, val_examples|
-  evaluator = DSPy::Evaluate.new(metric: domain_specific_metric)
+result = optimizer.compile(program, trainset: training_examples)
+# Note: the domain_specific_metric proc is now used directly as the optimizer metric
   evaluation_result = evaluator.evaluate(examples: val_examples) do |example|
     predictor.call(input: example.input)
   end

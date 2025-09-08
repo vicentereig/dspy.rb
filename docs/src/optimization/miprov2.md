@@ -17,16 +17,16 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # MIPROv2 Optimizer
 
-MIPROv2 (Multi-stage Instruction Proposal and Refinement Optimizer v2) is the primary optimization algorithm in DSPy.rb. It automatically improves your predictor's performance through a three-phase optimization process: bootstrap training, instruction optimization, and few-shot example refinement.
+MIPROv2 (Multi-prompt Instruction Proposal with Retrieval Optimization v2) is the state-of-the-art prompt optimization algorithm in DSPy.rb. It combines bootstrap sampling, instruction generation, and advanced Bayesian optimization to automatically improve your predictor's performance through a sophisticated three-phase optimization process.
 
 ## Overview
 
 MIPROv2 works by:
-- **Bootstrap Phase**: Generating training examples with reasoning traces
-- **Instruction Phase**: Optimizing the system instruction for better performance
-- **Few-shot Phase**: Selecting the best combination of few-shot examples
+- **Bootstrap Phase**: Generating high-quality few-shot examples with reasoning traces using multiple bootstrap sets
+- **Instruction Proposal Phase**: Using a grounded proposer to generate multiple candidate instructions tailored to your task
+- **Bayesian Optimization Phase**: Intelligently exploring candidate configurations (instruction + few-shot combinations) using Gaussian Processes for optimal selection
 
-The optimizer uses a grounded proposer to generate high-quality candidate instructions and sophisticated example selection to create optimal few-shot demonstrations.
+The optimizer provides three optimization strategies: greedy (fastest), adaptive (balanced exploration/exploitation), and Bayesian (most sophisticated with GP-based candidate selection).
 
 ## Basic Usage
 
@@ -47,26 +47,27 @@ class ClassifyText < DSPy::Signature
   end
 end
 
-# Create optimizer
-optimizer = DSPy::MIPROv2.new(signature: ClassifyText)
+# Create program to optimize
+program = DSPy::Predict.new(ClassifyText)
 
-# Run optimization
-result = optimizer.optimize(examples: training_examples) do |predictor, examples|
-  # Your evaluation logic
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  evaluation_result = evaluator.evaluate(examples: examples) do |example|
-    predictor.call(text: example.text)
-  end
-  evaluation_result.score
+# Create optimizer with custom metric
+metric = proc do |example, prediction|
+  # Return true/false for pass/fail evaluation
+  prediction.sentiment.downcase == example.expected_sentiment.downcase
 end
 
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+
+# Run optimization
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
+
 # Use the optimized predictor
-best_predictor = result.optimized_program
+best_program = result.optimized_program
 final_score = result.best_score_value
 
 puts "Optimization complete!"
 puts "Best score: #{final_score}"
-puts "Best instruction: #{best_predictor.prompt.instruction}"
+puts "Best instruction: #{best_program.prompt.instruction}"
 ```
 
 ### AutoMode Configuration
@@ -75,40 +76,40 @@ MIPROv2 provides preset configurations for different optimization scenarios:
 
 ```ruby
 # Light optimization - fastest, good for prototyping
-optimizer = DSPy::MIPROv2.new(
-  signature: ClassifyText,
-  mode: :light
-)
+# 6 trials, 3 instruction candidates, greedy strategy
+optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.light(metric: metric)
 
-# Medium optimization - balanced performance and speed (default)
-optimizer = DSPy::MIPROv2.new(
-  signature: ClassifyText,
-  mode: :medium
-)
+# Medium optimization - balanced performance and speed
+# 12 trials, 5 instruction candidates, adaptive strategy
+optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)
 
 # Heavy optimization - most thorough, best results
-optimizer = DSPy::MIPROv2.new(
-  signature: ClassifyText,
-  mode: :heavy
-)
+# 18 trials, 8 instruction candidates, Bayesian optimization
+optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.heavy(metric: metric)
+
+# Run optimization with any mode
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
 ```
 
 ### Custom Configuration
 
 ```ruby
 # Fine-tune optimization parameters
-config = DSPy::MIPROv2::MIPROv2Config.new
-config.bootstrap_examples = 4
-config.max_bootstrap_examples = 8
-config.num_candidate_instructions = 10
-config.instruction_trials = 15
-config.max_few_shot_examples = 6
-config.few_shot_trials = 20
+config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
+config.num_trials = 15                           # Total optimization trials
+config.num_instruction_candidates = 8            # Instruction variants to generate
+config.bootstrap_sets = 6                        # Bootstrap example sets to create
+config.max_bootstrapped_examples = 4             # Max examples per bootstrap set
+config.max_labeled_examples = 16                 # Max labeled examples to use
+config.optimization_strategy = "bayesian"        # greedy, adaptive, or bayesian
+config.init_temperature = 1.2                    # Initial exploration temperature
+config.final_temperature = 0.05                  # Final exploitation temperature
+config.early_stopping_patience = 4               # Trials without improvement before stopping
+config.use_bayesian_optimization = true          # Enable Gaussian Process optimization
+config.track_diversity = true                    # Track candidate diversity metrics
 
-optimizer = DSPy::MIPROv2.new(
-  signature: ClassifyText,
-  config: config
-)
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric, config: config)
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
 ```
 
 ## Configuration Options
@@ -116,92 +117,136 @@ optimizer = DSPy::MIPROv2.new(
 ### MIPROv2Config Parameters
 
 ```ruby
-config = DSPy::MIPROv2::MIPROv2Config.new
+config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
 
-# Bootstrap phase settings
-config.bootstrap_examples = 4          # Examples to generate initially
-config.max_bootstrap_examples = 8      # Maximum examples to collect
+# Core optimization settings
+config.num_trials = 12                          # Total optimization trials to run
+config.num_instruction_candidates = 5           # Number of instruction variants to generate
+config.bootstrap_sets = 5                       # Number of bootstrap example sets
+config.max_bootstrapped_examples = 4            # Max examples per bootstrap set
+config.max_labeled_examples = 16                # Max labeled examples from trainset
 
-# Instruction optimization
-config.num_candidate_instructions = 10 # Instruction variants to try
-config.instruction_trials = 15         # Evaluation trials per instruction
+# Optimization strategy
+config.optimization_strategy = "adaptive"       # "greedy", "adaptive", or "bayesian"
+config.use_bayesian_optimization = true         # Enable Gaussian Process optimization
 
-# Few-shot optimization  
-config.max_few_shot_examples = 6       # Max examples in final prompt
-config.few_shot_trials = 20           # Trials for few-shot selection
+# Temperature scheduling for exploration/exploitation balance
+config.init_temperature = 1.0                   # Initial exploration temperature
+config.final_temperature = 0.1                  # Final exploitation temperature
 
-# Example selection
-config.example_selection_strategy = :random  # or :diverse
+# Early stopping
+config.early_stopping_patience = 3              # Stop after N trials without improvement
 
-# Display options
-config.verbose = true                  # Show optimization progress
+# Additional tracking
+config.track_diversity = true                    # Track candidate diversity metrics
+
+# Proposer configuration
+config.proposer_config = DSPy::Propose::GroundedProposer::Config.new
 ```
 
 ### AutoMode Configurations
 
 ```ruby
 # Light mode values:
-# - bootstrap_examples: 2
-# - max_bootstrap_examples: 4  
-# - num_candidate_instructions: 5
-# - instruction_trials: 8
-# - max_few_shot_examples: 3
-# - few_shot_trials: 10
+# - num_trials: 6
+# - num_instruction_candidates: 3
+# - max_bootstrapped_examples: 2
+# - max_labeled_examples: 8
+# - bootstrap_sets: 3
+# - optimization_strategy: "greedy"
+# - early_stopping_patience: 2
 
-# Medium mode values (default):
-# - bootstrap_examples: 4
-# - max_bootstrap_examples: 8
-# - num_candidate_instructions: 10  
-# - instruction_trials: 15
-# - max_few_shot_examples: 6
-# - few_shot_trials: 20
+# Medium mode values (balanced default):
+# - num_trials: 12
+# - num_instruction_candidates: 5
+# - max_bootstrapped_examples: 4
+# - max_labeled_examples: 16
+# - bootstrap_sets: 5
+# - optimization_strategy: "adaptive"
+# - early_stopping_patience: 3
 
-# Heavy mode values:
-# - bootstrap_examples: 8
-# - max_bootstrap_examples: 16
-# - num_candidate_instructions: 20
-# - instruction_trials: 25
-# - max_few_shot_examples: 10
-# - few_shot_trials: 30
+# Heavy mode values (best results):
+# - num_trials: 18
+# - num_instruction_candidates: 8
+# - max_bootstrapped_examples: 6
+# - max_labeled_examples: 24
+# - bootstrap_sets: 8
+# - optimization_strategy: "bayesian"  # Uses Gaussian Processes
+# - early_stopping_patience: 5
 ```
 
 ## Optimization Phases
 
-### Phase 1: Bootstrap Training
+### Phase 1: Bootstrap Few-Shot Examples
 
-The optimizer generates high-quality training examples:
+Generate diverse, high-quality few-shot examples using multiple bootstrap strategies:
 
 ```ruby
-# MIPROv2 automatically handles this, but you can observe the process
-optimizer = DSPy::MIPROv2.new(
-  signature: ClassifyText,
-  config: config
-)
+# MIPROv2 automatically creates multiple candidate sets of few-shot examples
+# Each set contains examples with reasoning traces generated using CoT
+# Bootstrap creates several independent sets for diversity
 
-# During optimization, bootstrap examples are generated using
-# Chain of Thought reasoning to create examples with explanations
+# You can observe bootstrap progress through events:
+DSPy.events.subscribe('phase_start') do |event_name, attributes|
+  if attributes[:phase] == 1 && attributes[:name] == 'bootstrap'
+    puts "Starting bootstrap phase..."
+  end
+end
+
+DSPy.events.subscribe('phase_complete') do |event_name, attributes|
+  if attributes[:phase] == 1
+    puts "Bootstrap complete. Success rate: #{attributes[:success_rate]}"
+    puts "Created #{attributes[:candidate_sets]} bootstrap sets"
+  end
+end
 ```
 
-### Phase 2: Instruction Optimization
+### Phase 2: Instruction Proposal
 
-Multiple instruction candidates are generated and tested:
+Generate multiple high-quality instruction candidates using the grounded proposer:
 
 ```ruby
-# The grounded proposer generates instruction variations like:
-# - "Classify the sentiment of the given text as positive, negative, or neutral."
-# - "Analyze the emotional tone of the provided text and categorize it."
-# - "Determine whether the text expresses positive, negative, or neutral sentiment."
+# The grounded proposer analyzes your task and generates contextual instructions:
+# - "Analyze the sentiment of the given text step by step, providing detailed reasoning"
+# - "Classify the emotional tone by examining key indicators in the text"
+# - "Determine sentiment by evaluating positive and negative language patterns"
 
-# Each instruction is evaluated across multiple trials to find the best one
+# Monitor instruction generation:
+DSPy.events.subscribe('phase_complete') do |event_name, attributes|
+  if attributes[:phase] == 2
+    puts "Generated #{attributes[:num_candidates]} instruction candidates"
+    puts "Best instruction preview: #{attributes[:best_instruction_preview]}"
+  end
+end
 ```
 
-### Phase 3: Few-shot Example Selection
+### Phase 3: Bayesian Optimization
 
-The best combination of few-shot examples is selected:
+Intelligently explore candidate configurations using advanced optimization strategies:
 
 ```ruby
-# MIPROv2 tests different combinations of bootstrap examples
-# to find the set that maximizes performance on validation data
+# Creates candidate configurations combining instructions + few-shot examples:
+# - Baseline (no modifications)
+# - Instruction-only candidates
+# - Few-shot-only candidates  
+# - Combined candidates (instruction + few-shot examples)
+
+# Uses optimization strategies:
+# - Greedy: Exploit best known configurations
+# - Adaptive: Balance exploration/exploitation with temperature scheduling
+# - Bayesian: Use Gaussian Processes for intelligent candidate selection
+
+# Monitor optimization progress:
+DSPy.events.subscribe('trial_start') do |event_name, attributes|
+  puts "Trial #{attributes[:trial_number]}: Testing #{attributes[:candidate_id]}"
+  puts "Instruction: #{attributes[:instruction_preview]}"
+end
+
+DSPy.events.subscribe('trial_complete') do |event_name, attributes|
+  if attributes[:is_best]
+    puts "New best score: #{attributes[:score]} (Trial #{attributes[:trial_number]})"
+  end
+end
 ```
 
 ## Working with Results
@@ -209,43 +254,56 @@ The best combination of few-shot examples is selected:
 ### MIPROv2Result Object
 
 ```ruby
-result = optimizer.optimize(examples: examples) do |predictor, val_examples|
-  # evaluation logic
-end
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
 
 # Access optimization results
 puts "Best score: #{result.best_score_value}"
 puts "Score name: #{result.best_score_name}"
-puts "Total trials: #{result.total_trials}"
+puts "Total trials: #{result.history[:total_trials]}"
+puts "Early stopped: #{result.history[:early_stopped]}"
 
-# Get the optimized predictor
-optimized_predictor = result.optimized_program
+# Get the optimized program
+optimized_program = result.optimized_program
 
-# Access optimization history
-result.history[:trials].each do |trial|
-  puts "Trial #{trial[:trial_number]}: #{trial[:score]}"
+# Access MIPROv2-specific results
+puts "Evaluated candidates: #{result.evaluated_candidates.size}"
+puts "Bootstrap success rate: #{result.bootstrap_statistics[:success_rate]}"
+puts "Proposal themes: #{result.proposal_statistics[:common_themes]}"
+
+# Access optimization trace
+if result.optimization_trace[:score_history]
+  puts "Score progression: #{result.optimization_trace[:score_history]}"
 end
 
-# Check timing information
-puts "Bootstrap time: #{result.history[:bootstrap_time]}"
-puts "Instruction time: #{result.history[:instruction_time]}" 
-puts "Few-shot time: #{result.history[:few_shot_time]}"
-puts "Total time: #{result.total_time}"
+# Access detailed evaluation results for best candidate
+if result.best_evaluation_result
+  eval_result = result.best_evaluation_result
+  puts "Total examples evaluated: #{eval_result.total_examples}"
+  puts "Pass rate: #{eval_result.pass_rate}"
+  puts "Individual results: #{eval_result.results.size}"
+end
 ```
 
 ### Best Configuration Access
 
 ```ruby
-best_config = result.best_config
+# Access best candidate configuration
+best_candidates = result.evaluated_candidates.select { |c| c.config.type == DSPy::Teleprompt::CandidateType::Combined }
+best_candidate = best_candidates.first
 
-puts "Best instruction: #{best_config.instruction}"
-puts "Number of few-shot examples: #{best_config.few_shot_examples.size}"
+if best_candidate
+  puts "Best instruction: #{best_candidate.config.instruction}"
+  puts "Number of few-shot examples: #{best_candidate.config.few_shot_examples.size}"
+  puts "Candidate type: #{best_candidate.config.type.serialize}"
+  puts "Configuration ID: #{best_candidate.config_id}"
+  puts "Metadata: #{best_candidate.config.metadata}"
 
-# Inspect few-shot examples
-best_config.few_shot_examples.each_with_index do |example, i|
-  puts "Example #{i+1}:"
-  puts "  Input: #{example.input}"
-  puts "  Output: #{example.output}"
+  # Inspect few-shot examples
+  best_candidate.config.few_shot_examples.each_with_index do |example, i|
+    puts "Example #{i+1}:"
+    puts "  Input: #{example.input_values}"
+    puts "  Output: #{example.expected_values}"
+  end
 end
 ```
 
@@ -289,27 +347,27 @@ puts "Registered as version: #{version.version}"
 ### Custom Evaluation Logic
 
 ```ruby
-result = optimizer.optimize(examples: training_examples) do |predictor, val_examples|
-  total_score = 0.0
-  
-  val_examples.each do |example|
-    prediction = predictor.call(text: example.text)
-    
-    # Custom scoring logic
-    if prediction.sentiment == example.expected_sentiment
-      # Base score for correct classification
-      score = 1.0
-      
-      # Bonus for high confidence on correct predictions
-      if prediction.confidence > 0.8
-        score += 0.2
-      end
-      
-      total_score += score
-    end
+# Define custom metric with detailed evaluation
+custom_metric = proc do |example, prediction|
+  # Return hash with detailed metrics (recommended)
+  {
+    passed: prediction.sentiment.downcase == example.expected_sentiment.downcase,
+    confidence_score: prediction.confidence || 0.0,
+    answer_quality: prediction.sentiment ? 1.0 : 0.0,
+    reasoning_present: !prediction.reasoning.nil?
+  }
+end
+
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric)
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
+
+# Access detailed metrics in results
+if result.best_evaluation_result
+  result.best_evaluation_result.results.each do |eval_result|
+    metrics = eval_result.metrics
+    puts "Confidence: #{metrics[:confidence_score]}"
+    puts "Has reasoning: #{metrics[:reasoning_present]}"
   end
-  
-  total_score / val_examples.size
 end
 ```
 
@@ -317,34 +375,54 @@ end
 
 ```ruby
 # Use separate validation set for unbiased evaluation
-result = optimizer.optimize(
-  examples: training_examples,
-  val_examples: validation_examples
-) do |predictor, val_examples|
-  # Evaluation on held-out validation set
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  evaluator.evaluate(examples: val_examples) do |example|
-    predictor.call(text: example.text)
-  end.score
-end
+# MIPROv2 automatically uses valset if provided, otherwise splits trainset
+result = optimizer.compile(
+  program,
+  trainset: training_examples,
+  valset: validation_examples  # Optional: uses 1/3 of trainset if not provided
+)
+
+# Force using part of training set for validation
+result = optimizer.compile(
+  program,
+  trainset: training_examples
+  # valset: nil - will automatically use trainset.take(trainset.size / 3)
+)
 ```
 
 ### Monitoring Progress
 
 ```ruby
-config = DSPy::MIPROv2::MIPROv2Config.new
-config.verbose = true  # Show detailed progress
+# Subscribe to optimization events for detailed progress tracking
+DSPy.events.subscribe('miprov2_compile') do |event_name, attributes|
+  puts "Starting MIPROv2 optimization with #{attributes[:num_trials]} trials"
+  puts "Strategy: #{attributes[:optimization_strategy]}"
+  puts "Mode: #{attributes[:mode]}"
+end
 
-optimizer = DSPy::MIPROv2.new(
-  signature: ClassifyText,
-  config: config
-)
+DSPy.events.subscribe('phase_start') do |event_name, attributes|
+  phase_names = { 1 => 'Bootstrap', 2 => 'Instruction Proposal', 3 => 'Optimization' }
+  puts "Phase #{attributes[:phase]}: #{phase_names[attributes[:phase]]} starting..."
+end
 
-# Progress information is printed during optimization:
-# - Bootstrap phase progress
-# - Instruction candidate evaluation
-# - Few-shot selection progress
-# - Best scores and configurations
+DSPy.events.subscribe('phase_complete') do |event_name, attributes|
+  case attributes[:phase]
+  when 1
+    puts "Bootstrap complete: #{attributes[:success_rate]} success rate"
+  when 2  
+    puts "Generated #{attributes[:num_candidates]} instruction candidates"
+  when 3
+    puts "Optimization complete: Best score #{attributes[:best_score]}"
+  end
+end
+
+DSPy.events.subscribe('trial_complete') do |event_name, attributes|
+  status = attributes[:is_best] ? " (NEW BEST!)" : ""
+  puts "Trial #{attributes[:trial_number]}: #{attributes[:score]}#{status}"
+end
+
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric)
+result = optimizer.compile(program, trainset: training_examples)
 ```
 
 ## Best Practices
@@ -352,14 +430,17 @@ optimizer = DSPy::MIPROv2.new(
 ### 1. Choose Appropriate Mode
 
 ```ruby
-# For quick experimentation
-optimizer = DSPy::MIPROv2.new(signature: YourSignature, mode: :light)
+# For quick experimentation (6 trials, greedy strategy)
+optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.light(metric: your_metric)
 
-# For production optimization
-optimizer = DSPy::MIPROv2.new(signature: YourSignature, mode: :heavy)
+# For production optimization (18 trials, Bayesian optimization)
+optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.heavy(metric: your_metric)
 
-# For balanced optimization
-optimizer = DSPy::MIPROv2.new(signature: YourSignature, mode: :medium)
+# For balanced optimization (12 trials, adaptive strategy)
+optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: your_metric)
+
+# All modes support the same compile interface
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
 ```
 
 ### 2. Provide Quality Examples
@@ -386,27 +467,34 @@ training_examples = [
 ### 3. Robust Evaluation
 
 ```ruby
-result = optimizer.optimize(examples: examples) do |predictor, val_examples|
-  total_correct = 0
-  total_attempted = 0
-  
-  val_examples.each do |example|
-    begin
-      prediction = predictor.call(text: example.text)
-      total_attempted += 1
-      
-      if prediction.sentiment.downcase == example.expected_sentiment.downcase
-        total_correct += 1
-      end
-    rescue => e
-      # Handle prediction errors gracefully
-      puts "Prediction failed: #{e.message}"
-    end
+# Robust metric that handles errors gracefully
+robust_metric = proc do |example, prediction|
+  begin
+    # Handle missing predictions
+    return { passed: false, error: "no_prediction" } unless prediction
+    
+    # Handle missing sentiment
+    return { passed: false, error: "missing_sentiment" } unless prediction.sentiment
+    
+    # Successful evaluation
+    passed = prediction.sentiment.downcase == example.expected_sentiment.downcase
+    confidence = prediction.respond_to?(:confidence) ? prediction.confidence : 0.0
+    
+    {
+      passed: passed,
+      confidence_score: confidence,
+      sentiment_match: passed,
+      prediction_length: prediction.sentiment.length
+    }
+  rescue => e
+    # Handle any unexpected errors
+    DSPy.logger.warn("Evaluation error: #{e.message}")
+    { passed: false, error: e.message }
   end
-  
-  return 0.0 if total_attempted == 0
-  total_correct.to_f / total_attempted
 end
+
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: robust_metric)
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
 ```
 
 ### 4. Save Your Results
@@ -421,9 +509,99 @@ if result.best_score_value > 0.8  # Your quality threshold
     metadata: {
       dataset: 'customer_reviews_v2',
       optimization_date: Date.current,
-      minimum_score: 0.8
+      minimum_score: 0.8,
+      optimizer: 'MIPROv2',
+      strategy: result.history[:optimization_strategy],
+      total_trials: result.history[:total_trials]
     }
   )
 end
+```
+
+## Advanced Features
+
+### Bayesian Optimization with Gaussian Processes
+
+MIPROv2 includes state-of-the-art Bayesian optimization using Gaussian Processes for intelligent candidate selection:
+
+```ruby
+# Enable Bayesian optimization (default in heavy mode)
+config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
+config.optimization_strategy = "bayesian"
+config.use_bayesian_optimization = true
+
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: your_metric, config: config)
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
+
+# Bayesian optimization provides:
+# - Intelligent exploration vs exploitation balance
+# - Upper Confidence Bound (UCB) acquisition function
+# - Gaussian Process modeling of candidate performance
+# - Adaptive exploration parameter based on trial progress
+```
+
+### Optimization Strategies Comparison
+
+```ruby
+# Greedy Strategy - Fastest
+# - Prioritizes unexplored candidates first
+# - Then selects highest scoring candidates
+# - Best for: Quick experiments, limited compute budget
+config.optimization_strategy = "greedy"
+
+# Adaptive Strategy - Balanced  
+# - Temperature-based exploration/exploitation balance
+# - Probabilistic candidate selection with softmax
+# - Progressive cooling from exploration to exploitation
+# - Best for: General-purpose optimization
+config.optimization_strategy = "adaptive"
+
+# Bayesian Strategy - Most Sophisticated
+# - Gaussian Process modeling of candidate performance
+# - Upper Confidence Bound acquisition function
+# - Intelligent uncertainty-aware selection
+# - Best for: High-stakes optimization, maximum performance
+config.optimization_strategy = "bayesian"
+```
+
+### Candidate Configuration Types
+
+MIPROv2 generates and evaluates four types of candidate configurations:
+
+```ruby
+# Access evaluated candidates to understand what was tested
+result.evaluated_candidates.each do |candidate|
+  case candidate.config.type
+  when DSPy::Teleprompt::CandidateType::Baseline
+    puts "Baseline: No modifications to original program"
+  when DSPy::Teleprompt::CandidateType::InstructionOnly
+    puts "Instruction-only: #{candidate.config.instruction[0,50]}..."
+  when DSPy::Teleprompt::CandidateType::FewShotOnly
+    puts "Few-shot-only: #{candidate.config.few_shot_examples.size} examples"
+  when DSPy::Teleprompt::CandidateType::Combined
+    puts "Combined: Instruction + #{candidate.config.few_shot_examples.size} examples"
+    puts "  Instruction: #{candidate.config.instruction[0,50]}..."
+  end
+  
+  puts "  Config ID: #{candidate.config_id}"
+  puts "  Metadata: #{candidate.config.metadata}"
+end
+```
+
+### Creating Custom CandidateConfig
+
+```ruby
+# You can create custom candidate configurations for testing
+candidate = DSPy::Teleprompt::MIPROv2::CandidateConfig.new
+candidate.configure do |config|
+  config.instruction = "Analyze the text step by step to determine sentiment"
+  config.few_shot_examples = my_few_shot_examples
+  config.type = DSPy::Teleprompt::CandidateType::Combined
+  config.metadata = { source: "custom", priority: "high" }
+end
+candidate.finalize!  # Must finalize to generate config_id
+
+puts "Generated config ID: #{candidate.config_id}"
+puts "Serialized: #{candidate.to_h}"
 ```
 

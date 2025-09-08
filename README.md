@@ -73,7 +73,7 @@ puts result.confidence   # => 0.85
 - **Prompt Objects** - Manipulate prompts as first-class objects instead of strings
 - **Typed Examples** - Type-safe training data with automatic validation
 - **Evaluation Framework** - Advanced metrics beyond simple accuracy with error-resilient pipelines
-- **MIPROv2 Optimization** - Automatic prompt optimization with storage and persistence
+- **MIPROv2 Optimization** - Advanced Bayesian optimization with Gaussian Processes, multiple optimization strategies, and storage persistence
 - **GEPA Optimization** - Genetic-Pareto optimization for multi-objective prompt improvement
 
 **Production Features:**
@@ -128,7 +128,7 @@ For LLMs and AI assistants working with DSPy.rb:
 ### Optimization
 - **[Evaluation Framework](docs/src/optimization/evaluation.md)** - Advanced metrics beyond simple accuracy
 - **[Prompt Optimization](docs/src/optimization/prompt-optimization.md)** - Manipulate prompts as objects
-- **[MIPROv2 Optimizer](docs/src/optimization/miprov2.md)** - Automatic optimization algorithms
+- **[MIPROv2 Optimizer](docs/src/optimization/miprov2.md)** - Advanced Bayesian optimization with Gaussian Processes
 - **[GEPA Optimizer](docs/src/optimization/gepa.md)** - Genetic-Pareto optimization for multi-objective prompt optimization
 
 ### Production Features
@@ -159,7 +159,7 @@ bundle install
 
 #### System Dependencies for Ubuntu/Pop!_OS
 
-If you need to compile the `polars-df` dependency from source (used for data processing in evaluations), install these system packages:
+If you need to compile the `numo-narray` dependency from source (used for numerical computing in Bayesian optimization), install these system packages:
 
 ```bash
 # Update package list
@@ -171,15 +171,14 @@ sudo apt-get install ruby-full ruby-dev
 # Install essential build tools
 sudo apt-get install build-essential
 
-# Install Rust and Cargo (required for polars-df compilation)
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source $HOME/.cargo/env
+# Install BLAS and LAPACK libraries (required for numo-narray)
+sudo apt-get install libopenblas-dev liblapack-dev
 
-# Install CMake (often needed for Rust projects)
-sudo apt-get install cmake
+# Install additional development libraries
+sudo apt-get install libffi-dev libssl-dev
 ```
 
-**Note**: The `polars-df` gem compilation can take 15-20 minutes. Pre-built binaries are available for most platforms, so compilation is only needed if a pre-built binary isn't available for your system.
+**Note**: The `numo-narray` gem typically compiles quickly (1-2 minutes). Pre-built binaries are available for most platforms, so compilation is only needed if a pre-built binary isn't available for your system.
 
 ## Recent Achievements
 
@@ -190,7 +189,7 @@ DSPy.rb has rapidly evolved from experimental to production-ready:
 - ✅ **Type-Safe Strategy Configuration** - Provider-optimized automatic strategy selection  
 - ✅ **Core Module System** - Predict, ChainOfThought, ReAct, CodeAct with type safety
 - ✅ **Production Observability** - OpenTelemetry, New Relic, and Langfuse integration
-- ✅ **Optimization Framework** - MIPROv2 algorithm with storage & persistence
+- ✅ **Advanced Optimization** - MIPROv2 with Bayesian optimization, Gaussian Processes, and multiple strategies
 
 ### Recent Advances  
 - ✅ **Enhanced Langfuse Integration (v0.25.0)** - Comprehensive OpenTelemetry span reporting with proper input/output, hierarchical nesting, accurate timing, and observation types

@@ -180,7 +180,9 @@ end
 simple_optimizer = DSPy::SimpleOptimizer.new(signature: YourSignature)
 
 # Use MIPROv2 when you need better results:
-mipro_optimizer = DSPy::MIPROv2.new(signature: YourSignature, mode: :heavy)
+program = DSPy::Predict.new(YourSignature)
+metric = proc { |example, prediction| true }  # Replace with your metric
+mipro_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.heavy(metric: metric)
 ```
 
 ### Performance Characteristics
@@ -245,10 +247,11 @@ puts "Simple optimizer result: #{simple_result.best_score_value}"
 
 # If results are promising, use MIPROv2 for refinement
 if simple_result.best_score_value > 0.7
-  mipro_optimizer = DSPy::MIPROv2.new(signature: ClassifyText, mode: :medium)
-  mipro_result = mipro_optimizer.optimize(examples: examples) do |predictor, val_examples|
-    # same evaluation logic
-  end
+  program = DSPy::Predict.new(ClassifyText)
+metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
+mipro_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)
+  mipro_result = mipro_optimizer.compile(program, trainset: examples)
+    # MIPROv2 uses the metric proc directly for evaluation
   
   puts "MIPROv2 result: #{mipro_result.best_score_value}"
   

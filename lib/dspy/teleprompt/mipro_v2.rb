@@ -9,6 +9,24 @@ require_relative '../optimizers/gaussian_process'
 
 module DSPy
   module Teleprompt
+    # Enum for candidate configuration types
+    class CandidateType < T::Enum
+      enums do
+        Baseline = new("baseline")
+        InstructionOnly = new("instruction_only")
+        FewShotOnly = new("few_shot_only")
+        Combined = new("combined")
+      end
+    end
+
+    # Enum for optimization strategies
+    class OptimizationStrategy < T::Enum
+      enums do
+        Greedy = new("greedy")
+        Adaptive = new("adaptive") 
+        Bayesian = new("bayesian")
+      end
+    end
     # MIPROv2: Multi-prompt Instruction Proposal with Retrieval Optimization
     # State-of-the-art prompt optimization combining bootstrap sampling, 
     # instruction generation, and Bayesian optimization
@@ -142,40 +160,38 @@ module DSPy
       # Candidate configuration for optimization trials
       class CandidateConfig
         extend T::Sig
+        include Dry::Configurable
+
+        # Configuration settings
+        setting :instruction, default: ""
+        setting :few_shot_examples, default: []
+        setting :type, default: CandidateType::Baseline
+        setting :metadata, default: {}
 
         sig { returns(String) }
-        attr_reader :instruction
-
-        sig { returns(T::Array[T.untyped]) }
-        attr_reader :few_shot_examples
-
-        sig { returns(T::Hash[Symbol, T.untyped]) }
-        attr_reader :metadata
-
-        sig { returns(String) }
-        attr_reader :config_id
-
-        sig do
-          params(
-            instruction: String,
-            few_shot_examples: T::Array[T.untyped],
-            metadata: T::Hash[Symbol, T.untyped]
-          ).void
+        def config_id
+          @config_id ||= generate_config_id
         end
-        def initialize(instruction:, few_shot_examples:, metadata: {})
-          @instruction = instruction
-          @few_shot_examples = few_shot_examples
-          @metadata = metadata.freeze
+
+        sig { void }
+        def finalize!
+          # Freeze settings after configuration to prevent mutation
+          config.instruction = config.instruction.freeze
+          config.few_shot_examples = config.few_shot_examples.freeze  
+          config.metadata = config.metadata.freeze
+          
+          # Generate ID after finalization
           @config_id = generate_config_id
         end
 
         sig { returns(T::Hash[Symbol, T.untyped]) }
         def to_h
           {
-            instruction: @instruction,
-            few_shot_examples: @few_shot_examples.size,
-            metadata: @metadata,
-            config_id: @config_id
+            instruction: config.instruction,
+            few_shot_examples: config.few_shot_examples.size,
+            type: config.type.serialize,
+            metadata: config.metadata,
+            config_id: config_id
           }
         end
 
@@ -183,7 +199,7 @@ module DSPy
 
         sig { returns(String) }
         def generate_config_id
-          content = "#{@instruction}_#{@few_shot_examples.size}_#{@metadata.hash}"
+          content = "#{config.instruction}_#{config.few_shot_examples.size}_#{config.type.serialize}_#{config.metadata.hash}"
           Digest::SHA256.hexdigest(content)[0, 12]
         end
       end
@@ -264,6 +280,7 @@ module DSPy
       end
       def initialize(metric: nil, config: nil)
         @mipro_config = config || MIPROv2Config.new
+        # Call parent teleprompter initializer, which handles dry-configurable internally
         super(metric: metric, config: @mipro_config)
         
         @proposer = DSPy::Propose::GroundedProposer.new(config: @mipro_config.proposer_config)
@@ -417,8 +434,8 @@ module DSPy
           emit_event('trial_start', {
             trial_number: trials_completed,
             candidate_id: candidate.config_id,
-            instruction_preview: candidate.instruction[0, 50],
-            num_few_shot: candidate.few_shot_examples.size
+            instruction_preview: candidate.config.instruction[0, 50],
+            num_few_shot: candidate.config.few_shot_examples.size
           })
 
           begin
@@ -483,28 +500,31 @@ module DSPy
         candidates = []
         
         # Base configuration (no modifications)
-        candidates << CandidateConfig.new(
-          instruction: "",
-          few_shot_examples: [],
-          metadata: { type: "baseline" }
-        )
+        candidates << create_candidate_config do |config|
+          config.instruction = ""
+          config.few_shot_examples = []
+          config.type = CandidateType::Baseline
+          config.metadata = {}
+        end
         
         # Instruction-only candidates
         proposal_result.candidate_instructions.each_with_index do |instruction, idx|
-          candidates << CandidateConfig.new(
-            instruction: instruction,
-            few_shot_examples: [],
-            metadata: { type: "instruction_only", proposal_rank: idx }
-          )
+          candidates << create_candidate_config do |config|
+            config.instruction = instruction
+            config.few_shot_examples = []
+            config.type = CandidateType::InstructionOnly
+            config.metadata = { proposal_rank: idx }
+          end
         end
         
         # Few-shot only candidates
         bootstrap_result.candidate_sets.each_with_index do |candidate_set, idx|
-          candidates << CandidateConfig.new(
-            instruction: "",
-            few_shot_examples: candidate_set,
-            metadata: { type: "few_shot_only", bootstrap_rank: idx }
-          )
+          candidates << create_candidate_config do |config|
+            config.instruction = ""
+            config.few_shot_examples = candidate_set
+            config.type = CandidateType::FewShotOnly
+            config.metadata = { bootstrap_rank: idx }
+          end
         end
         
         # Combined candidates (instruction + few-shot)
@@ -513,15 +533,15 @@ module DSPy
         
         top_instructions.each_with_index do |instruction, i_idx|
           top_bootstrap_sets.each_with_index do |candidate_set, b_idx|
-            candidates << CandidateConfig.new(
-              instruction: instruction,
-              few_shot_examples: candidate_set,
-              metadata: { 
-                type: "combined", 
+            candidates << create_candidate_config do |config|
+              config.instruction = instruction
+              config.few_shot_examples = candidate_set
+              config.type = CandidateType::Combined
+              config.metadata = { 
                 instruction_rank: i_idx, 
                 bootstrap_rank: b_idx 
               }
-            )
+            end
           end
         end
         
@@ -665,6 +685,19 @@ module DSPy
       end
       
       private
+
+      # Helper method to create CandidateConfig with dry-configurable syntax
+      sig do
+        params(
+          block: T.proc.params(config: Dry::Configurable::Config).void
+        ).returns(CandidateConfig)
+      end
+      def create_candidate_config(&block)
+        candidate = CandidateConfig.new
+        candidate.configure(&block)
+        candidate.finalize!
+        candidate
+      end
       
       # Encode candidates as numerical features for Gaussian Process
       sig { params(candidates: T::Array[CandidateConfig]).returns(T::Array[T::Array[Float]]) }
@@ -682,8 +715,9 @@ module DSPy
           features << ((config_hash / 1_000_000) % 1000).to_f / 1000.0  # Feature 3: high bits
           
           # Add instruction length if available
-          if candidate.respond_to?(:instruction) && candidate.instruction
-            features << [candidate.instruction.length.to_f / 100.0, 2.0].min  # Instruction length, capped at 200 chars
+          instruction = candidate.config.instruction
+          if instruction && !instruction.empty?
+            features << [instruction.length.to_f / 100.0, 2.0].min  # Instruction length, capped at 200 chars
           else
             features << 0.5  # Default value
           end
@@ -719,13 +753,13 @@ module DSPy
         modified_program = program
         
         # Apply instruction if provided
-        if !candidate.instruction.empty? && program.respond_to?(:with_instruction)
-          modified_program = modified_program.with_instruction(candidate.instruction)
+        if !candidate.config.instruction.empty? && program.respond_to?(:with_instruction)
+          modified_program = modified_program.with_instruction(candidate.config.instruction)
         end
         
         # Apply few-shot examples if provided
-        if candidate.few_shot_examples.any? && program.respond_to?(:with_examples)
-          few_shot_examples = candidate.few_shot_examples.map do |example|
+        if candidate.config.few_shot_examples.any? && program.respond_to?(:with_examples)
+          few_shot_examples = candidate.config.few_shot_examples.map do |example|
             DSPy::FewShotExample.new(
               input: example.input_values,
               output: example.expected_values,
@@ -778,8 +812,8 @@ module DSPy
       sig { params(candidate: CandidateConfig).returns(Float) }
       def calculate_diversity_score(candidate)
         # Simple diversity metric based on instruction length and few-shot count
-        instruction_diversity = candidate.instruction.length / 200.0
-        few_shot_diversity = candidate.few_shot_examples.size / 10.0
+        instruction_diversity = candidate.config.instruction.length / 200.0
+        few_shot_diversity = candidate.config.few_shot_examples.size / 10.0
         
         [instruction_diversity + few_shot_diversity, 1.0].min
       end
@@ -810,9 +844,9 @@ module DSPy
         metadata = {
           optimizer: "MIPROv2",
           auto_mode: infer_auto_mode,
-          best_instruction: best_candidate&.instruction || "",
-          best_few_shot_count: best_candidate&.few_shot_examples&.size || 0,
-          best_candidate_type: best_candidate&.metadata&.fetch(:type, "unknown"),
+          best_instruction: best_candidate&.config&.instruction || "",
+          best_few_shot_count: best_candidate&.config&.few_shot_examples&.size || 0,
+          best_candidate_type: best_candidate&.config&.type&.serialize || "unknown",
           optimization_timestamp: Time.now.iso8601
         }
         
