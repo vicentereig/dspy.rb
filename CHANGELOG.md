@@ -25,6 +25,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated architectural documentation with industry comparisons
 - Maintains backward compatibility via `DSPY_TELEMETRY_EXPORT_INTERVAL` env var
 
+## [0.25.0] - 2025-01-14
+
+### Added
+- **Async Telemetry System** - Non-blocking observability with background export
+- **Complete GEPA Optimization** - Genetic algorithm implementation for program optimization
+- **GPT-5 Support** - Support for latest OpenAI model
+- **ReflectionEngine** - LLM-based analysis and reflection capabilities
+
+### Fixed
+- OpenTelemetry/Langfuse span reporting and timing consistency
+- ChainOfThought 0.00s duration issue in span observations
+- GEPA implementation with proper test coverage and examples
+- Local embedding batch processing with informers gem
+
+### Changed
+- Eliminated simple_mode from GEPA - always use full optimization
+- Improved test performance and VCR recording speed
+- Enhanced OpenTelemetry span timing and operation naming
+
+## [0.24.2] - 2024-12-20
+
+### Fixed
+- Minor stability improvements and dependency updates
+
+## [0.24.1] - 2024-12-15
+
+### Fixed
+- Bug fixes and performance improvements
+
+## [0.24.0] - 2024-12-10
+
+### Added
+- Enhanced optimization algorithms
+- Improved telemetry and observability features
+
+## [0.23.0] - 2024-11-15
+
+### Added
+- New optimization features
+- Enhanced documentation and examples
+
 ## [0.22.1] - 2025-09-05
 
 ### Fixed
