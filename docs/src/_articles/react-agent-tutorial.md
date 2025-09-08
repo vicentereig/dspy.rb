@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Building Your First ReAct Agent in Ruby"
-description: "Step-by-step guide to creating tool-using AI agents with DSPy.rb. Learn how to build agents that can reason about their actions and solve complex multi-step problems."
+description: "Step-by-step guide to creating tool-using AI agents with [DSPy.rb](https://github.com/vicentereig/dspy.rb). Learn how to build agents that can reason about their actions and solve complex multi-step problems."
 date: 2025-06-28
 author: "Vicente Reig"
 category: "Tutorial"
@@ -23,7 +23,7 @@ Let's build a research assistant that can search the web, calculate statistics, 
 
 ## Step 1: Define Your Tools
 
-In DSPy.rb, tools are just Ruby objects that respond to `call`:
+In [DSPy.rb](https://github.com/vicentereig/dspy.rb), tools are just Ruby objects that respond to `call`:
 
 ```ruby
 # A simple web search tool

@@ -18,7 +18,7 @@ date: 2025-07-11 00:00:00 +0000
 ---
 # Toolsets
 
-DSPy.rb's Toolset pattern lets you group related tools in a single class. Instead of creating separate tool classes for each operation, you can expose multiple methods from one class as individual tools.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb)'s Toolset pattern lets you group related tools in a single class. Instead of creating separate tool classes for each operation, you can expose multiple methods from one class as individual tools.
 
 ## When to Use Toolsets
 

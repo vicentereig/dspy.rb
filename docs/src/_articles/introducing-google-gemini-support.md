@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Google Gemini Integration: Multimodal AI with Type-Safe Ruby"
-description: "DSPy.rb v0.20.0 introduces full Google Gemini support, bringing Google's state-of-the-art multimodal AI capabilities to Ruby developers with complete type safety and structured outputs."
+description: "[DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0 introduces full Google Gemini support, bringing Google's state-of-the-art multimodal AI capabilities to Ruby developers with complete type safety and structured outputs."
 date: 2025-08-26
 author: "Vicente Reig"
 category: "Features"
@@ -10,10 +10,10 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/introducing-
 ---
 
 
-A project outgrows you the moment the first contributor merges to `main`. I'm thrilled to announce that DSPy.rb 
+A project outgrows you the moment the first contributor merges to `main`. I'm thrilled to announce that [DSPy.rb](https://github.com/vicentereig/dspy.rb) 
 v0.20.0 brings complete support for Google Gemini! Thanks to the excellent work by Stefan Froelich ([@TheDumbTechGuy](https://github.com/thedumbtechguy)), 
 you can now harness Google's cutting-edge multimodal AI models while maintaining all the type safety
-and structured outputs that make DSPy.rb unique.
+and structured outputs that make [DSPy.rb](https://github.com/vicentereig/dspy.rb) unique.
 
 ## Why Google Gemini?
 
@@ -24,7 +24,7 @@ Google Gemini represents a significant leap in AI capabilities:
 - **Large context windows** - Handle extensive documents and conversations
 - **Fast inference** - Quick response times for production workloads
 
-With Gemini in DSPy.rb, you get access to these capabilities with Ruby's idiomatic patterns and complete type safety.
+With Gemini in [DSPy.rb](https://github.com/vicentereig/dspy.rb), you get access to these capabilities with Ruby's idiomatic patterns and complete type safety.
 
 ## Getting Started with Gemini
 
@@ -39,7 +39,7 @@ First, get your API key from [Google AI Studio](https://aistudio.google.com/):
 export GEMINI_API_KEY=your-api-key-here
 ```
 
-Now you can use Gemini in DSPy.rb:
+Now you can use Gemini in [DSPy.rb](https://github.com/vicentereig/dspy.rb):
 
 ```ruby
 require 'dspy'
@@ -52,7 +52,7 @@ end
 
 ## Available Models
 
-DSPy.rb supports all stable Gemini models from the official Google AI API:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports all stable Gemini models from the official Google AI API:
 
 ### Latest Models (2025)
 - **gemini-2.5-pro** - Latest flagship model with enhanced reasoning
@@ -123,7 +123,7 @@ analyzer = DSPy::Predict.new(ContentAnalysis)
 result = analyzer.forward(
   content: "Ruby has always been my favorite programming language. Its elegant " \
            "syntax and developer happiness philosophy make complex tasks feel " \
-           "intuitive. The community support is incredible, and gems like DSPy.rb " \
+           "intuitive. The community support is incredible, and gems like [DSPy.rb](https://github.com/vicentereig/dspy.rb) " \
            "show how Ruby continues to innovate in the AI space."
 )
 
@@ -348,7 +348,7 @@ image = DSPy::Image.new(url: 'https://example.com/image.jpg')
 
 ### Token Usage Tracking
 
-DSPy.rb automatically tracks token usage for cost monitoring:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) automatically tracks token usage for cost monitoring:
 
 ```ruby
 # Access detailed usage information
@@ -387,7 +387,7 @@ end
 
 ## Error Handling
 
-DSPy.rb provides comprehensive error handling for Gemini:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) provides comprehensive error handling for Gemini:
 
 ```ruby
 begin
@@ -428,7 +428,7 @@ end
 
 ## What's Next?
 
-Google Gemini support in DSPy.rb v0.20.0 opens new possibilities:
+Google Gemini support in [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0 opens new possibilities:
 
 - **Multimodal applications** with native image understanding
 - **Cost optimization** with competitive pricing
@@ -440,7 +440,7 @@ The integration is production-ready with full error handling, usage tracking, an
 ## Get Started Today
 
 ```bash
-# Update to DSPy.rb v0.20.0
+# Update to [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0
 gem install dspy
 
 # Set your API key

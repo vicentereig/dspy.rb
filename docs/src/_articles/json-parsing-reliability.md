@@ -2,7 +2,7 @@
 layout: blog
 title: "Stop Fighting JSON Parsing Errors in Your LLM Apps"
 date: 2025-07-11
-description: "How DSPy.rb's new reliability features make JSON extraction from LLMs actually reliable"
+description: "How [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s new reliability features make JSON extraction from LLMs actually reliable"
 author: "Vicente Reig"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-parsing-reliability/"
 ---
@@ -11,7 +11,7 @@ If you've built anything with LLMs, you know the pain. You carefully craft a pro
 
 Maybe it wrapped the JSON in markdown code blocks. Maybe it added a helpful explanation before the actual data. Maybe it just forgot a comma. Whatever the reason, you're now debugging string manipulation instead of building features.
 
-DSPy.rb just shipped reliability features that make this problem (mostly) go away.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) just shipped reliability features that make this problem (mostly) go away.
 
 ## The Problem We're Solving
 
@@ -39,11 +39,11 @@ data = JSON.parse(json_match[1]) rescue nil
 
 ## The Solution: Provider-Optimized Strategies
 
-DSPy.rb now automatically selects the best JSON extraction strategy based on your LLM provider and model. No configuration needed - it just works.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) now automatically selects the best JSON extraction strategy based on your LLM provider and model. No configuration needed - it just works.
 
 ### For OpenAI Users
 
-If you're using GPT-4 or GPT-4o, DSPy.rb automatically uses OpenAI's structured outputs:
+If you're using GPT-4 or GPT-4o, [DSPy.rb](https://github.com/vicentereig/dspy.rb) automatically uses OpenAI's structured outputs:
 
 ```ruby
 lm = DSPy::LM.new("openai/gpt-4o-mini", 
@@ -96,7 +96,7 @@ lm = DSPy::LM.new("ollama/llama2", base_url: "http://localhost:11434")
 
 ### Automatic Retries with Fallback
 
-Sometimes things fail. Networks hiccup. Models have bad days. DSPy.rb now retries intelligently:
+Sometimes things fail. Networks hiccup. Models have bad days. [DSPy.rb](https://github.com/vicentereig/dspy.rb) now retries intelligently:
 
 1. **First attempt** with the optimal strategy
 2. **Retry** with exponential backoff if parsing fails  
@@ -157,7 +157,7 @@ The retry mechanism catches most remaining failures, bringing the effective erro
 
 ## Migration is Seamless
 
-If you're already using DSPy.rb, you get these improvements automatically. Your existing code continues to work, just more reliably:
+If you're already using [DSPy.rb](https://github.com/vicentereig/dspy.rb), you get these improvements automatically. Your existing code continues to work, just more reliably:
 
 ```ruby
 # Existing code - no changes needed
@@ -179,7 +179,7 @@ result = analyzer.forward(text: "This library is amazing!")
 
 ## What's Next
 
-This is part of our broader push to make DSPy.rb the most reliable way to build LLM applications in Ruby. We're focusing on:
+This is part of our broader push to make [DSPy.rb](https://github.com/vicentereig/dspy.rb) the most reliable way to build LLM applications in Ruby. We're focusing on:
 
 1. **Streaming support** for real-time applications
 2. **Batch processing** optimizations  
@@ -201,4 +201,4 @@ Check out the [documentation](https://vicentereig.github.io/dspy.rb/) for more e
 
 ---
 
-*Building something cool with DSPy.rb? I'd love to hear about it - [@vicentereig](https://twitter.com/vicentereig)*
+*Building something cool with [DSPy.rb](https://github.com/vicentereig/dspy.rb)? I'd love to hear about it - [@vicentereig](https://twitter.com/vicentereig)*

@@ -8,7 +8,7 @@ last_modified_at: 2025-08-13 00:00:00 +0000
 ---
 # Memory Compaction System
 
-DSPy.rb includes an intelligent memory compaction system that automatically optimizes agent memory usage without requiring background job processing. The system uses inline triggers to maintain optimal memory performance while preserving important memories.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) includes an intelligent memory compaction system that automatically optimizes agent memory usage without requiring background job processing. The system uses inline triggers to maintain optimal memory performance while preserving important memories.
 
 ## Overview
 

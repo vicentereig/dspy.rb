@@ -1,7 +1,7 @@
 ---
 layout: docs
 name: Retrieval Augmented Generation (RAG)
-description: Build RAG applications with DSPy.rb
+description: Build RAG applications with [DSPy.rb](https://github.com/vicentereig/dspy.rb)
 breadcrumb:
 - name: Advanced
   url: "/advanced/"
@@ -17,11 +17,11 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Retrieval Augmented Generation (RAG)
 
-DSPy.rb supports building RAG (Retrieval Augmented Generation) applications by combining retrieval systems with LLM-powered reasoning. While the framework doesn't provide built-in vector stores or embedding models, you can integrate external retrieval services and build sophisticated RAG pipelines.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports building RAG (Retrieval Augmented Generation) applications by combining retrieval systems with LLM-powered reasoning. While the framework doesn't provide built-in vector stores or embedding models, you can integrate external retrieval services and build sophisticated RAG pipelines.
 
 ## Overview
 
-RAG in DSPy.rb involves:
+RAG in [DSPy.rb](https://github.com/vicentereig/dspy.rb) involves:
 - **External Retrieval Integration**: Connect to vector databases and search services
 - **Context-Aware Signatures**: Design signatures that work with retrieved context
 - **Multi-Step Reasoning**: Chain retrieval and generation steps

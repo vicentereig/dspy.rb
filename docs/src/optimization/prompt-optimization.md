@@ -17,11 +17,11 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Prompt Optimization
 
-DSPy.rb treats prompts as first-class objects that can be manipulated, analyzed, and optimized programmatically. Rather than hand-crafting prompt strings, you work with structured prompt objects that contain instructions, few-shot examples, and schema information.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) treats prompts as first-class objects that can be manipulated, analyzed, and optimized programmatically. Rather than hand-crafting prompt strings, you work with structured prompt objects that contain instructions, few-shot examples, and schema information.
 
 ## Overview
 
-DSPy.rb provides:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) provides:
 - **Prompt Objects**: Structured representation of prompts with instruction and examples
 - **Programmatic Manipulation**: Methods to modify prompts systematically
 - **Integration with Optimization**: Automatic prompt improvement through MIPROv2 and SimpleOptimizer

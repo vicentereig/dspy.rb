@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Evaluating Sentiment Classifiers: Beyond Simple Accuracy"
-description: "Learn how to systematically evaluate LLM applications using DSPy.rb's evaluation framework, from basic metrics to advanced quality assessment."
+description: "Learn how to systematically evaluate LLM applications using [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s evaluation framework, from basic metrics to advanced quality assessment."
 date: 2025-06-01
 author: Vicente Reig
 categories: [evaluation, sentiment-analysis, tutorial]
@@ -9,7 +9,7 @@ featured: true
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluating-sentiment-classifiers/"
 ---
 
-Building a sentiment classifier is one thing. Knowing if it actually works well is another. In this tutorial, we'll walk through DSPy.rb's evaluation framework using a practical sentiment classification example that goes beyond simple accuracy.
+Building a sentiment classifier is one thing. Knowing if it actually works well is another. In this tutorial, we'll walk through [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s evaluation framework using a practical sentiment classification example that goes beyond simple accuracy.
 
 ## What We're Building
 
@@ -20,7 +20,7 @@ We'll create a tweet sentiment classifier that:
 
 ## Setting Up the Classifier
 
-First, let's define our signature. This is where DSPy.rb's type safety really shines:
+First, let's define our signature. This is where [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s type safety really shines:
 
 ```ruby
 class TweetSentiment < DSPy::Signature
@@ -204,7 +204,7 @@ end
 
 ## Handling Errors Gracefully
 
-Real-world data is messy. DSPy.rb's evaluation framework handles errors gracefully:
+Real-world data is messy. [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s evaluation framework handles errors gracefully:
 
 ```ruby
 error_evaluator = DSPy::Evaluate.new(
@@ -256,4 +256,4 @@ cd examples/sentiment-evaluation
 ruby sentiment_classifier.rb
 ```
 
-The evaluation framework is one of DSPy.rb's strongest features. It turns the usually-subjective process of "is my LLM app good?" into something measurable and systematic. Whether you're building sentiment classifiers, question-answering systems, or any other LLM application, proper evaluation is what separates experimental code from production-ready systems.
+The evaluation framework is one of [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s strongest features. It turns the usually-subjective process of "is my LLM app good?" into something measurable and systematic. Whether you're building sentiment classifiers, question-answering systems, or any other LLM application, proper evaluation is what separates experimental code from production-ready systems.

@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Observability in Action: Langfuse Tracing"  
-description: "See how DSPy.rb's async telemetry system provides real-time visibility into your LLM workflows without the complexity"
+description: "See how [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s async telemetry system provides real-time visibility into your LLM workflows without the complexity"
 date: 2025-09-07
 author: "Vicente Reig"
 category: "Production"
@@ -11,13 +11,13 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/observabilit
 
 > You don't need Neo's Matrix X-Ray Vision to understand what's going on in your workflows and agents.
 
-When building production LLM applications, visibility into what's happening under the hood isn't optional—it's essential. DSPy.rb's observability system, enhanced with async telemetry processing, provides that visibility without the typical complexity.
+When building production LLM applications, visibility into what's happening under the hood isn't optional—it's essential. [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s observability system, enhanced with async telemetry processing, provides that visibility without the typical complexity.
 
 ## The Reality of LLM Observability
 
 Most LLM frameworks bolt on observability as an afterthought. You end up monkey-patching HTTP clients, wrestling with complex instrumentation, or writing custom logging that breaks when you upgrade dependencies.
 
-DSPy.rb takes a different approach: **observability is built into the architecture from day one**. Every prediction, every reasoning step, every API call is automatically tracked and exported to your monitoring systems.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) takes a different approach: **observability is built into the architecture from day one**. Every prediction, every reasoning step, every API call is automatically tracked and exported to your monitoring systems.
 
 ## Zero-Config Langfuse Integration
 
@@ -59,7 +59,7 @@ This trace detail view shows what happens when processing a single customer requ
 
 ## The Async Advantage
 
-The telemetry system leverages DSPy.rb's async architecture for **non-blocking observability**:
+The telemetry system leverages [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s async architecture for **non-blocking observability**:
 
 ```ruby
 # From lib/dspy/observability/async_span_processor.rb
@@ -141,10 +141,10 @@ This enables:
 
 ## The Bottom Line
 
-DSPy.rb's observability isn't an add-on feature—it's architectural. The async telemetry system provides production-grade visibility without the typical complexity or performance costs.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb)'s observability isn't an add-on feature—it's architectural. The async telemetry system provides production-grade visibility without the typical complexity or performance costs.
 
 You get Matrix-level visibility into your LLM workflows, but without needing to be Neo to understand what's happening.
 
 ---
 
-*This feature is available in DSPy.rb v0.25.0+. The async telemetry optimizations are part of the ongoing improvements to DSPy.rb's production readiness.*
+*This feature is available in [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.25.0+. The async telemetry optimizations are part of the ongoing improvements to [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s production readiness.*

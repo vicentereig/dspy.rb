@@ -1,7 +1,7 @@
 ---
 layout: docs
 name: Quick Start
-description: Build your first DSPy.rb application in 5 minutes
+description: Build your first [DSPy.rb](https://github.com/vicentereig/dspy.rb) application in 5 minutes
 breadcrumb:
 - name: Getting Started
   url: "/getting-started/"
@@ -18,7 +18,7 @@ last_modified_at: 2025-08-08 00:00:00 +0000
 ---
 # Quick Start Guide
 
-Get up and running with DSPy.rb in minutes. This guide shows Ruby-idiomatic patterns for building AI applications.
+Get up and running with [DSPy.rb](https://github.com/vicentereig/dspy.rb) in minutes. This guide shows Ruby-idiomatic patterns for building AI applications.
 
 ## Your First DSPy Program
 
@@ -152,7 +152,7 @@ puts article[:sections].first
 
 ### Working with Collections
 
-DSPy.rb works naturally with Ruby's Enumerable patterns:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) works naturally with Ruby's Enumerable patterns:
 
 ```ruby
 # Process multiple items with Ruby's collection methods

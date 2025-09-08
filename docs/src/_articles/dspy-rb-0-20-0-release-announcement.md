@@ -1,7 +1,7 @@
 ---
 layout: blog
-title: "DSPy.rb v0.20.0: Multi-Provider AI, Better Context Management, and Production Persistence"
-description: "Major release brings Google Gemini support, fiber-local contexts, and program serialization to DSPy.rb"
+title: "[DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0: Multi-Provider AI, Better Context Management, and Production Persistence"
+description: "Major release brings Google Gemini support, fiber-local contexts, and program serialization to [DSPy.rb](https://github.com/vicentereig/dspy.rb)"
 date: 2025-08-26
 author: Vicente Reig
 tags: ["release", "features", "ruby", "ai"]
@@ -10,7 +10,7 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/dspy-rb-0-20
 
 Three months ago, if you wanted to switch between OpenAI and Anthropic models mid-optimization, manage contexts across concurrent workflows, or persist your trained programs—you'd write a lot of glue code. Not anymore.
 
-DSPy.rb v0.20.0 ships with Google Gemini support, fiber-local context management, and production-ready program serialization. Here's what you can build now.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0 ships with Google Gemini support, fiber-local context management, and production-ready program serialization. Here's what you can build now.
 
 ## Google Gemini: Another Provider, Same API
 
@@ -112,4 +112,4 @@ Found a bug or want a feature? [Open an issue](https://github.com/vicentereig/ds
 
 ---
 
-*DSPy.rb v0.20.0 includes 25 commits from Vicente Reig and Stefan Froelich, with 71 files changed. Full changelog on [GitHub](https://github.com/vicentereig/dspy.rb/releases/tag/v0.20.0).*
+*[DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0 includes 25 commits from Vicente Reig and Stefan Froelich, with 71 files changed. Full changelog on [GitHub](https://github.com/vicentereig/dspy.rb/releases/tag/v0.20.0).*

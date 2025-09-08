@@ -1,18 +1,18 @@
 ---
 layout: docs
 title: Rails Integration Guide
-description: Seamlessly integrate DSPy.rb with Ruby on Rails applications, including
+description: Seamlessly integrate [DSPy.rb](https://github.com/vicentereig/dspy.rb) with Ruby on Rails applications, including
   enum handling and best practices
 date: 2025-07-11 00:00:00 +0000
 last_modified_at: 2025-08-13 00:00:00 +0000
 ---
 # Rails Integration Guide
 
-DSPy.rb is designed to work seamlessly with Ruby on Rails applications. This guide covers common integration patterns and solutions to potential issues.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) is designed to work seamlessly with Ruby on Rails applications. This guide covers common integration patterns and solutions to potential issues.
 
 ## Enum Handling
 
-One common source of confusion is how DSPy.rb handles enums in Rails applications. The good news: **DSPy automatically deserializes string values to T::Enum instances**.
+One common source of confusion is how [DSPy.rb](https://github.com/vicentereig/dspy.rb) handles enums in Rails applications. The good news: **DSPy automatically deserializes string values to T::Enum instances**.
 
 ### The Problem
 
@@ -30,7 +30,7 @@ result = OpenStruct.new(
 
 ### The Solution
 
-DSPy.rb automatically handles enum conversion:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) automatically handles enum conversion:
 
 ```ruby
 class SearchStrategy < DSPy::Signature
@@ -111,7 +111,7 @@ end
 
 ## Service Object Pattern
 
-DSPy.rb works great with Rails service objects:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) works great with Rails service objects:
 
 ```ruby
 # app/services/content_analyzer.rb
@@ -374,7 +374,7 @@ end
 
 ## Conclusion
 
-DSPy.rb's automatic enum handling makes Rails integration straightforward. The key points:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb)'s automatic enum handling makes Rails integration straightforward. The key points:
 
 1. **Enums are automatically deserialized** - no manual parsing needed
 2. **Use `.serialize` to get string values** for database storage
@@ -382,4 +382,4 @@ DSPy.rb's automatic enum handling makes Rails integration straightforward. The k
 4. **Cache AI responses** to improve performance
 5. **Use service objects** for clean architecture
 
-If you're still seeing issues with enum handling, ensure you're using the latest version of DSPy.rb (0.8.1+) which includes improved type coercion.
+If you're still seeing issues with enum handling, ensure you're using the latest version of [DSPy.rb](https://github.com/vicentereig/dspy.rb) (0.8.1+) which includes improved type coercion.

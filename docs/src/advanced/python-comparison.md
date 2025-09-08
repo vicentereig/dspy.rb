@@ -1,7 +1,7 @@
 ---
 layout: docs
 name: Python DSPy Comparison
-description: Comprehensive comparison between DSPy Python and DSPy.rb
+description: Comprehensive comparison between DSPy Python and [DSPy.rb](https://github.com/vicentereig/dspy.rb)
 breadcrumb:
 - name: Advanced
   url: "/advanced/"
@@ -9,11 +9,11 @@ breadcrumb:
   url: "/advanced/python-comparison/"
 date: 2025-07-11 00:00:00 +0000
 ---
-# DSPy Python vs DSPy.rb Feature Comparison
+# DSPy Python vs [DSPy.rb](https://github.com/vicentereig/dspy.rb) Feature Comparison
 
-This document provides a comprehensive comparison between the original DSPy Python library and the DSPy.rb implementation, highlighting what's available, what's missing, and what should be prioritized.
+This document provides a comprehensive comparison between the original DSPy Python library and the [DSPy.rb](https://github.com/vicentereig/dspy.rb) implementation, highlighting what's available, what's missing, and what should be prioritized.
 
-**Important Note**: DSPy.rb is not aiming for 1:1 parity with the Python library. Instead, we're building a Ruby-idiomatic LLM framework inspired by DSPy's core concepts while embracing Ruby's strengths and conventions. Some features may be implemented differently, some may be skipped in favor of Ruby-specific alternatives, and some new features may be added that don't exist in the Python version.
+**Important Note**: [DSPy.rb](https://github.com/vicentereig/dspy.rb) is not aiming for 1:1 parity with the Python library. Instead, we're building a Ruby-idiomatic LLM framework inspired by DSPy's core concepts while embracing Ruby's strengths and conventions. Some features may be implemented differently, some may be skipped in favor of Ruby-specific alternatives, and some new features may be added that don't exist in the Python version.
 
 ## Core Modules/Predictors
 

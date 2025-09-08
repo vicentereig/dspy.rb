@@ -1,7 +1,7 @@
 ---
 layout: docs
 name: Modules
-description: Build reusable LLM components with DSPy.rb modules
+description: Build reusable LLM components with [DSPy.rb](https://github.com/vicentereig/dspy.rb) modules
 breadcrumb:
 - name: Core Concepts
   url: "/core-concepts/"
@@ -19,7 +19,7 @@ last_modified_at: 2025-08-25 00:00:00 +0000
 ---
 # Modules
 
-DSPy.rb modules provide a foundation for building reusable LLM components. The `DSPy::Module` class serves as a base class for creating custom predictors that can be configured and tested.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) modules provide a foundation for building reusable LLM components. The `DSPy::Module` class serves as a base class for creating custom predictors that can be configured and tested.
 
 ## Overview
 
@@ -105,7 +105,7 @@ puts result.reasoning
 
 ## Fiber-Local LM Context
 
-DSPy.rb supports temporary language model overrides using fiber-local storage through `DSPy.with_lm`. This is particularly useful for optimization workflows, testing different models, or using specialized models for specific tasks.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports temporary language model overrides using fiber-local storage through `DSPy.with_lm`. This is particularly useful for optimization workflows, testing different models, or using specialized models for specific tasks.
 
 ### Basic Usage
 
@@ -560,7 +560,7 @@ You can create custom modules to implement your own agent systems or inference f
 - Building specialized agent architectures
 - Implementing custom inference patterns
 - Creating domain-specific processing pipelines
-- Extending DSPy.rb with new capabilities
+- Extending [DSPy.rb](https://github.com/vicentereig/dspy.rb) with new capabilities
 
 ```ruby
 class CustomAgentSignature < DSPy::Signature

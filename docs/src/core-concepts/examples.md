@@ -18,7 +18,7 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Examples
 
-Examples are type-safe training and evaluation data objects. DSPy.rb provides two types of examples: basic examples for evaluation and few-shot examples for prompt enhancement.
+Examples are type-safe training and evaluation data objects. [DSPy.rb](https://github.com/vicentereig/dspy.rb) provides two types of examples: basic examples for evaluation and few-shot examples for prompt enhancement.
 
 ## Creating Basic Examples
 

@@ -66,18 +66,18 @@ module CoffeeShopActions
     const :size, DrinkSize
     const :customizations, T::Array[String]
   end
-  
+
   class RefundOrder < T::Struct
     const :order_id, String
     const :reason, String
     const :refund_amount, Float
   end
-  
+
   class CallManager < T::Struct
     const :issue, String
     const :urgency, Urgency
   end
-  
+
   class Joke < T::Struct
     const :setup, String
     const :punchline, String
@@ -87,13 +87,13 @@ end
 # The single signature that handles everything with union types
 class CoffeeShopSignature < DSPy::Signature
   description "Analyze customer request and take appropriate action"
-  
+
   input do
     const :customer_request, String
     const :customer_mood, CustomerMood
     const :time_of_day, TimeOfDay
   end
-  
+
   output do
     const :action, T.any(      # Single union field - no discriminator needed!
       CoffeeShopActions::MakeDrink,
@@ -108,24 +108,26 @@ end
 # The actual agent - much simpler with single-field unions!
 class CoffeeShopAgent < DSPy::Module
   def initialize
-    super()
-    # Use ChainOfThought for better reasoning
     @decision_maker = DSPy::ChainOfThought.new(CoffeeShopSignature)
   end
-  
+
   def handle_customer(request:, mood: CustomerMood::Neutral, time: TimeOfDay::Afternoon, customer_id: nil)
+    call(request:, mood:, time:, customer_id:)
+  end
+
+  def call(request:, mood: CustomerMood::Neutral, time: TimeOfDay::Afternoon, customer_id: nil)
     start_time = Time.now
     puts "🚀 [Customer #{customer_id}] Starting request at #{start_time.strftime('%H:%M:%S.%L')}"
-    
+
     # One call handles everything!
     result = @decision_maker.call(
       customer_request: request,
       customer_mood: mood,
       time_of_day: time
     )
-    
+
     puts "🧠 [Customer #{customer_id}] Reasoning: #{result.reasoning}"
-    
+
     # Pattern match on the automatically-typed action
     puts "\n☕ [Customer #{customer_id}] Taking action..."
     case result.action
@@ -142,9 +144,9 @@ class CoffeeShopAgent < DSPy::Module
       puts "[Customer #{customer_id}] 😄 #{result.action.setup}"
       puts "[Customer #{customer_id}] 😂 #{result.action.punchline}"
     end
-    
+
     puts "\n💬 [Customer #{customer_id}] Response: #{result.friendly_response}"
-    
+
     end_time = Time.now
     duration = ((end_time - start_time) * 1000).round(1)
     puts "⏱️  [Customer #{customer_id}] Completed in #{duration}ms"
@@ -159,27 +161,27 @@ if __FILE__ == $0
     puts "Error: Please set ANTHROPIC_API_KEY or OPENAI_API_KEY environment variable"
     exit 1
   end
-  
+
   # Configure for OpenAI if no Anthropic key
   if !ENV['ANTHROPIC_API_KEY'] && ENV['OPENAI_API_KEY']
     DSPy.configure do |config|
       config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
     end
   end
-  
+
   # Concurrent processing with Async reactor
   puts "Welcome to the AI Coffee Shop! 🤖☕ (Concurrent Version)"
   puts "Processing all customers concurrently...\n\n"
-  
+
   total_start = Time.now
-  
+
   Async do
     agent = CoffeeShopAgent.new
     barrier = Async::Barrier.new
-    
+
     # Launch all customer requests concurrently
     puts "🚀 Launching all customer requests concurrently at #{total_start.strftime('%H:%M:%S.%L')}\n\n"
-    
+
     # Happy customer
     barrier.async do
       agent.handle_customer(
@@ -189,7 +191,7 @@ if __FILE__ == $0
         customer_id: 1
       )
     end
-    
+
     # Upset customer
     barrier.async do
       agent.handle_customer(
@@ -199,7 +201,7 @@ if __FILE__ == $0
         customer_id: 2
       )
     end
-    
+
     # Confused customer
     barrier.async do
       agent.handle_customer(
@@ -209,7 +211,7 @@ if __FILE__ == $0
         customer_id: 3
       )
     end
-    
+
     # Friendly customer
     barrier.async do
       agent.handle_customer(
@@ -219,18 +221,18 @@ if __FILE__ == $0
         customer_id: 4
       )
     end
-    
+
     # Wait for all customers to be served
     puts "⏳ Waiting for all customer requests to complete...\n"
     barrier.wait
-    
+
     total_end = Time.now
     total_duration = ((total_end - total_start) * 1000).round(1)
-    
+
     puts "\n🎉 All customers served!"
     puts "⚡ Total execution time: #{total_duration}ms"
     puts "💡 Compare this to sequential execution time!"
-    
+
     # Flush observability data before process exits
     DSPy::Observability.flush!
   end

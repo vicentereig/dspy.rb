@@ -1,13 +1,13 @@
 ---
 layout: docs
 title: Production Guide
-description: Deploy and operate DSPy.rb applications in production
+description: Deploy and operate [DSPy.rb](https://github.com/vicentereig/dspy.rb) applications in production
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-07-20 00:00:00 +0000
 ---
 # Production Guide
 
-Taking your DSPy.rb applications from development to production requires careful consideration of storage, monitoring, and operational concerns. This guide covers everything you need to run DSPy.rb at scale.
+Taking your [DSPy.rb](https://github.com/vicentereig/dspy.rb) applications from development to production requires careful consideration of storage, monitoring, and operational concerns. This guide covers everything you need to run [DSPy.rb](https://github.com/vicentereig/dspy.rb) at scale.
 
 ## Production Topics
 

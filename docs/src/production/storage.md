@@ -18,7 +18,7 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Storage System
 
-DSPy.rb provides a storage system for persisting optimization results and program states. This enables saving and reloading optimized predictors, tracking optimization history, and managing multiple versions of your programs.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) provides a storage system for persisting optimization results and program states. This enables saving and reloading optimized predictors, tracking optimization history, and managing multiple versions of your programs.
 
 ## Overview
 

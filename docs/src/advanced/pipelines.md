@@ -17,11 +17,11 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Multi-stage Pipelines
 
-DSPy.rb supports building complex, multi-stage pipelines by composing multiple DSPy modules together. You can create sequential workflows, conditional processing, and reusable pipeline components for sophisticated LLM applications.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports building complex, multi-stage pipelines by composing multiple DSPy modules together. You can create sequential workflows, conditional processing, and reusable pipeline components for sophisticated LLM applications.
 
 ## Overview
 
-DSPy.rb enables pipeline creation through:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) enables pipeline creation through:
 - **Module Composition**: Combine multiple DSPy::Module instances
 - **Sequential Processing**: Chain operations in order
 - **Data Flow**: Pass results between pipeline stages

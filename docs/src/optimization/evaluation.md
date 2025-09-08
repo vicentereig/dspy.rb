@@ -17,7 +17,7 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Evaluation Framework
 
-DSPy.rb provides a comprehensive evaluation framework for systematically testing and measuring the performance of your LLM applications. It supports both simple and complex evaluation scenarios with built-in and custom metrics.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) provides a comprehensive evaluation framework for systematically testing and measuring the performance of your LLM applications. It supports both simple and complex evaluation scenarios with built-in and custom metrics.
 
 ## Overview
 

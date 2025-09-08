@@ -8,7 +8,7 @@ last_modified_at: 2025-08-13 00:00:00 +0000
 ---
 # CodeAct: Dynamic Code Generation
 
-CodeAct is a unique DSPy.rb module that enables AI agents to write and execute Ruby code dynamically. Unlike ReAct agents that use predefined tools, CodeAct agents can create their own solutions by generating code on the fly.
+CodeAct is a unique [DSPy.rb](https://github.com/vicentereig/dspy.rb) module that enables AI agents to write and execute Ruby code dynamically. Unlike ReAct agents that use predefined tools, CodeAct agents can create their own solutions by generating code on the fly.
 
 ## When to Use CodeAct vs ReAct
 

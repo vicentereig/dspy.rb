@@ -1,20 +1,20 @@
 ---
 layout: docs
 name: Getting Started
-description: Get up and running with DSPy.rb in minutes
+description: Get up and running with [DSPy.rb](https://github.com/vicentereig/dspy.rb) in minutes
 breadcrumb:
 - name: Getting Started
   url: "/getting-started/"
 date: 2025-06-28 00:00:00 +0000
 last_modified_at: 2025-07-11 00:00:00 +0000
 ---
-# Getting Started with DSPy.rb
+# Getting Started with [DSPy.rb](https://github.com/vicentereig/dspy.rb)
 
-Welcome to DSPy.rb! This guide will help you get up and running with building reliable LLM applications in Ruby.
+Welcome to [DSPy.rb](https://github.com/vicentereig/dspy.rb)! This guide will help you get up and running with building reliable LLM applications in Ruby.
 
-## What is DSPy.rb?
+## What is [DSPy.rb](https://github.com/vicentereig/dspy.rb)?
 
-DSPy.rb is a Ruby framework for building predictable LLM applications using composable, type-safe modules. Instead of wrestling with prompt engineering, you define clear interfaces and let the framework handle the complexity.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) is a Ruby framework for building predictable LLM applications using composable, type-safe modules. Instead of wrestling with prompt engineering, you define clear interfaces and let the framework handle the complexity.
 
 ## Key Features
 
@@ -25,7 +25,7 @@ DSPy.rb is a Ruby framework for building predictable LLM applications using comp
 
 ## Quick Example
 
-Here's a simple example of defining an LLM interface with DSPy.rb:
+Here's a simple example of defining an LLM interface with [DSPy.rb](https://github.com/vicentereig/dspy.rb):
 
 ```ruby
 class EmailCategory < T::Enum
@@ -65,7 +65,7 @@ puts result.confidence  # => 0.95
   <a href="{{ '/getting-started/installation/' | relative_url }}" class="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md">
     <div>
       <h3 class="text-base font-semibold leading-6 text-gray-900">Installation</h3>
-      <p class="mt-2 text-sm text-gray-500">Install DSPy.rb and set up your development environment.</p>
+      <p class="mt-2 text-sm text-gray-500">Install [DSPy.rb](https://github.com/vicentereig/dspy.rb) and set up your development environment.</p>
     </div>
     <span class="absolute top-6 right-6 text-gray-400">
       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -77,7 +77,7 @@ puts result.confidence  # => 0.95
   <a href="{{ '/getting-started/quick-start/' | relative_url }}" class="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md">
     <div>
       <h3 class="text-base font-semibold leading-6 text-gray-900">Quick Start</h3>
-      <p class="mt-2 text-sm text-gray-500">Build your first LLM application with DSPy.rb.</p>
+      <p class="mt-2 text-sm text-gray-500">Build your first LLM application with [DSPy.rb](https://github.com/vicentereig/dspy.rb).</p>
     </div>
     <span class="absolute top-6 right-6 text-gray-400">
       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

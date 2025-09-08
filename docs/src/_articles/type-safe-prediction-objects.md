@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Ship AI Features with Confidence: Type-Safe Prediction Objects"
-description: "Discover how DSPy.rb's type-safe prediction objects catch integration errors before they reach production, giving you the confidence to ship AI features faster."
+description: "Discover how [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s type-safe prediction objects catch integration errors before they reach production, giving you the confidence to ship AI features faster."
 date: 2025-07-15
 author: "Vicente Reig"
 category: "Features"
@@ -11,7 +11,7 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/type-safe-pr
 
 Building AI applications shouldn't feel like walking a tightrope. Every time you deploy a new prompt or integrate an LLM response, you're wondering: "Will this break in production?" 
 
-DSPy.rb eliminates that anxiety with type-safe prediction objects that catch errors during development, not when your users are watching.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) eliminates that anxiety with type-safe prediction objects that catch errors during development, not when your users are watching.
 
 ## The Problem: Runtime Surprises
 
@@ -29,7 +29,7 @@ Sound familiar? This is the reality of working with untyped LLM outputs.
 
 ## The Solution: Know Your Data Structure
 
-DSPy.rb prediction objects are fully typed structs that respond to both your input and output schema. When you define a signature, you get compile-time safety:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) prediction objects are fully typed structs that respond to both your input and output schema. When you define a signature, you get compile-time safety:
 
 ```ruby
 class ContentClassifier < DSPy::Signature
@@ -177,7 +177,7 @@ Sorbet immediately shows you every place that needs updating. No more hunting th
 
 ## Beyond Strings: Modeling Real-World Relationships
 
-While strings work for simple examples, real applications have complex domain models. DSPy.rb signatures support rich types that model your actual business logic:
+While strings work for simple examples, real applications have complex domain models. [DSPy.rb](https://github.com/vicentereig/dspy.rb) signatures support rich types that model your actual business logic:
 
 ```ruby
 # Define your domain with T::Struct and T::Enum
@@ -239,7 +239,7 @@ This approach brings several benefits:
 
 ## Getting Started
 
-Type-safe prediction objects work out of the box with DSPy.rb. Start simple and evolve toward richer domain models:
+Type-safe prediction objects work out of the box with [DSPy.rb](https://github.com/vicentereig/dspy.rb). Start simple and evolve toward richer domain models:
 
 ```ruby
 # 1. Start with basic types
@@ -267,7 +267,7 @@ puts result.analysis.urgency.serialize  # Fully typed and safe
 
 ## The Bottom Line
 
-Building AI features doesn't have to be a guessing game. With DSPy.rb's type-safe prediction objects, you get:
+Building AI features doesn't have to be a guessing game. With [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s type-safe prediction objects, you get:
 
 - **Immediate feedback** on integration errors
 - **IDE support** that actually understands your data
@@ -276,4 +276,4 @@ Building AI features doesn't have to be a guessing game. With DSPy.rb's type-saf
 
 Stop debugging runtime errors. Start building AI applications with the confidence that comes from knowing your data structures are correct.
 
-Ready to experience type-safe AI development? [Check out the DSPy.rb documentation](/) and never worry about unexpected LLM outputs again.
+Ready to experience type-safe AI development? [Check out the [DSPy.rb](https://github.com/vicentereig/dspy.rb) documentation](/) and never worry about unexpected LLM outputs again.

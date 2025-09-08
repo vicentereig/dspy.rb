@@ -1,7 +1,7 @@
 ---
 layout: blog
-title: "Building Ruby-Idiomatic AI Applications with DSPy.rb"
-description: "How DSPy.rb embraces Ruby conventions to make AI development feel natural. Learn about the design decisions that make DSPy.rb uniquely Ruby."
+title: "Building Ruby-Idiomatic AI Applications with [DSPy.rb](https://github.com/vicentereig/dspy.rb)"
+description: "How [DSPy.rb](https://github.com/vicentereig/dspy.rb) embraces Ruby conventions to make AI development feel natural. Learn about the design decisions that make [DSPy.rb](https://github.com/vicentereig/dspy.rb) uniquely Ruby."
 date: 2025-06-05
 author: "Vicente Reig"
 category: "Design"
@@ -9,7 +9,7 @@ reading_time: "8 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/ruby-idiomatic-apis/"
 ---
 
-When we started building DSPy.rb, we had a choice: create a direct port of the Python library or reimagine it through a Ruby lens. We chose the latter, and today I want to share how that decision shaped the library.
+When we started building [DSPy.rb](https://github.com/vicentereig/dspy.rb), we had a choice: create a direct port of the Python library or reimagine it through a Ruby lens. We chose the latter, and today I want to share how that decision shaped the library.
 
 ## The Ruby Way vs The Python Way
 
@@ -23,7 +23,7 @@ class Sentiment(dspy.Signature):
     sentiment = dspy.OutputField()
 ```
 
-In DSPy.rb, we embrace Ruby's block-based DSL:
+In [DSPy.rb](https://github.com/vicentereig/dspy.rb), we embrace Ruby's block-based DSL:
 
 ```ruby
 class Sentiment < DSPy::Signature
@@ -43,7 +43,7 @@ Notice how the Ruby version uses blocks for grouping related fields? This isn't 
 
 ## Embracing Duck Typing
 
-Ruby developers love duck typing, and DSPy.rb tools embrace this philosophy:
+Ruby developers love duck typing, and [DSPy.rb](https://github.com/vicentereig/dspy.rb) tools embrace this philosophy:
 
 ```ruby
 # Any object that responds to #call can be a tool
@@ -72,11 +72,11 @@ agent = DSPy::ReAct.new(MySignature, tools: {
 })
 ```
 
-This flexibility means you can integrate DSPy.rb with existing Ruby code without wrapping everything in special adapter classes.
+This flexibility means you can integrate [DSPy.rb](https://github.com/vicentereig/dspy.rb) with existing Ruby code without wrapping everything in special adapter classes.
 
 ## Enumerable All The Way Down
 
-Ruby's Enumerable module is one of its superpowers. DSPy.rb leverages this for batch processing:
+Ruby's Enumerable module is one of its superpowers. [DSPy.rb](https://github.com/vicentereig/dspy.rb) leverages this for batch processing:
 
 ```ruby
 class BatchClassifier < DSPy::Module
@@ -101,7 +101,7 @@ sentiment_counts = classifier.process(reviews)
 
 ## Configuration Blocks, Not YAML
 
-While many libraries rely on YAML files, DSPy.rb uses Ruby blocks for configuration:
+While many libraries rely on YAML files, [DSPy.rb](https://github.com/vicentereig/dspy.rb) uses Ruby blocks for configuration:
 
 ```ruby
 DSPy.configure do |config|
@@ -167,7 +167,7 @@ You get type checking where it matters without verbose annotations everywhere.
 
 ## Rails Integration First-Class
 
-DSPy.rb is designed to work seamlessly with Rails:
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) is designed to work seamlessly with Rails:
 
 ```ruby
 # app/services/content_moderator.rb
@@ -197,7 +197,7 @@ end
 
 ## Introspection and Debugging
 
-Ruby developers expect great introspection tools. DSPy.rb delivers:
+Ruby developers expect great introspection tools. [DSPy.rb](https://github.com/vicentereig/dspy.rb) delivers:
 
 ```ruby
 # Inspect signature fields
@@ -221,7 +221,7 @@ end
 
 ## What's Next?
 
-We're continuing to make DSPy.rb more Ruby-like:
+We're continuing to make [DSPy.rb](https://github.com/vicentereig/dspy.rb) more Ruby-like:
 
 1. **Block-based signature definitions** (experimental):
    ```ruby
@@ -255,7 +255,7 @@ We're continuing to make DSPy.rb more Ruby-like:
 
 ## Try It Yourself
 
-The best way to appreciate DSPy.rb's Ruby-first design is to use it:
+The best way to appreciate [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s Ruby-first design is to use it:
 
 ```bash
 gem install dspy
@@ -266,8 +266,8 @@ Or in your Gemfile:
 gem 'dspy', '~> 0.7'
 ```
 
-We'd love to hear your thoughts on making DSPy.rb even more Ruby-idiomatic. What patterns from your favorite Ruby libraries should we adopt? Let us know in the [GitHub discussions](https://github.com/vicentereig/dspy.rb/discussions).
+We'd love to hear your thoughts on making [DSPy.rb](https://github.com/vicentereig/dspy.rb) even more Ruby-idiomatic. What patterns from your favorite Ruby libraries should we adopt? Let us know in the [GitHub discussions](https://github.com/vicentereig/dspy.rb/discussions).
 
 ---
 
-*DSPy.rb is built by Rubyists, for Rubyists. We believe AI development should feel as natural as writing any other Ruby code.*
+*[DSPy.rb](https://github.com/vicentereig/dspy.rb) is built by Rubyists, for Rubyists. We believe AI development should feel as natural as writing any other Ruby code.*

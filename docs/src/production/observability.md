@@ -18,7 +18,7 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Observability
 
-DSPy.rb provides an event-driven observability system based on OpenTelemetry. The system eliminates complex monkey-patching while providing powerful, extensible observability features.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) provides an event-driven observability system based on OpenTelemetry. The system eliminates complex monkey-patching while providing powerful, extensible observability features.
 
 ## Overview
 
@@ -462,7 +462,7 @@ threads.each(&:join)
 
 ## Langfuse Integration (Zero Configuration)
 
-DSPy.rb includes **zero-config Langfuse integration** via OpenTelemetry. Simply set your Langfuse environment variables and DSPy will automatically export spans to Langfuse alongside the normal logging.
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) includes **zero-config Langfuse integration** via OpenTelemetry. Simply set your Langfuse environment variables and DSPy will automatically export spans to Langfuse alongside the normal logging.
 
 **🆕 Enhanced in v0.25.0**: Comprehensive span reporting improvements including proper input/output capture, hierarchical nesting, accurate timing, token usage tracking, and correct Langfuse observation types (`generation`, `chain`, `span`).
 
@@ -574,7 +574,7 @@ If these gems are not available, DSPy gracefully falls back to logging-only mode
 
 ## Summary
 
-The DSPy.rb event system provides:
+The [DSPy.rb](https://github.com/vicentereig/dspy.rb) event system provides:
 
 1. **Event API**: Simple `DSPy.event()` for structured emission
 2. **Pluggable Listeners**: Subscribe to events with pattern matching
