@@ -1,18 +1,18 @@
 ---
 layout: blog
-title: "True Concurrency: How [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s Async Retry System Makes Your Applications Faster"
+title: "True Concurrency: How DSPy.rb's Async Retry System Makes Your Applications Faster"
 date: 2025-09-05
-description: "[DSPy.rb](https://github.com/vicentereig/dspy.rb) now provides true async concurrency for LLM retries and operations, eliminating blocking delays while maintaining reliability"
+description: "DSPy.rb now provides true async concurrency for LLM retries and operations, eliminating blocking delays while maintaining reliability"
 author: "Vicente Reig"
 tags: ["performance", "async", "concurrency", "reliability"]
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/async-telemetry-optimization/"
 ---
 
-Your [DSPy.rb](https://github.com/vicentereig/dspy.rb) applications can now handle failures gracefully without blocking. The latest update introduces proper async retry handling that delivers true concurrency—making your applications both faster and more reliable.
+Your DSPy.rb applications can now handle failures gracefully without blocking. The latest update introduces proper async retry handling that delivers true concurrency—making your applications both faster and more reliable.
 
 ## What This Means for You
 
-Before this update, when [DSPy.rb](https://github.com/vicentereig/dspy.rb) needed to retry a failed LLM call, your entire application thread would pause during backoff delays. A 2-second retry delay meant 2 seconds of your Rails request sitting idle, waiting.
+Before this update, when DSPy.rb needed to retry a failed LLM call, your entire application thread would pause during backoff delays. A 2-second retry delay meant 2 seconds of your Rails request sitting idle, waiting.
 
 Now? Your application keeps running while retries happen asynchronously in the background.
 
@@ -78,7 +78,7 @@ Process 10 documents in parallel, and if one needs retries, the other 9 keep run
 
 ## Zero Configuration Required
 
-The async retry system activates automatically when you use [DSPy.rb](https://github.com/vicentereig/dspy.rb). No setup, no configuration changes needed:
+The async retry system activates automatically when you use DSPy.rb. No setup, no configuration changes needed:
 
 ```ruby
 # Your existing code benefits immediately
@@ -96,7 +96,7 @@ classifier = DSPy::Predict.new(EmailClassifier)
 result = classifier.call(email_content: "Meeting invitation...")
 ```
 
-If the first attempt fails, [DSPy.rb](https://github.com/vicentereig/dspy.rb) retries in the background using `Async::Task.current.sleep()` instead of blocking your application thread.
+If the first attempt fails, DSPy.rb retries in the background using `Async::Task.current.sleep()` instead of blocking your application thread.
 
 ## Perfect for Background Jobs
 
@@ -159,7 +159,7 @@ result = analyzer.call(description: "iPhone 15 Pro")
 
 ## Technical Integration: How It Works
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) now wraps all LLM operations in `Sync` blocks to ensure proper async context:
+DSPy.rb now wraps all LLM operations in `Sync` blocks to ensure proper async context:
 
 ```ruby
 # This provides the async context needed for non-blocking retries
@@ -213,7 +213,7 @@ In applications with moderate network variability:
 
 ## Try It Today
 
-If you're using [DSPy.rb](https://github.com/vicentereig/dspy.rb), you already have this. Just upgrade:
+If you're using DSPy.rb, you already have this. Just upgrade:
 
 ```bash
 gem update dspy
@@ -221,4 +221,4 @@ gem update dspy
 
 Your applications automatically gain async retry capabilities—faster, more reliable, with zero code changes required.
 
-The async retry system represents [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s commitment to building production-ready LLM applications. It's the difference between applications that stumble on network hiccups and applications that handle them gracefully while maintaining peak performance.
+The async retry system represents DSPy.rb's commitment to building production-ready LLM applications. It's the difference between applications that stumble on network hiccups and applications that handle them gracefully while maintaining peak performance.

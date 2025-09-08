@@ -19,7 +19,7 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Registry & Versions
 
-The [DSPy.rb](https://github.com/vicentereig/dspy.rb) registry system provides version management for signature configurations and deployment tracking. It enables versioning of optimization results, simple deployment management, and rollback capabilities.
+The DSPy.rb registry system provides version management for signature configurations and deployment tracking. It enables versioning of optimization results, simple deployment management, and rollback capabilities.
 
 ## Overview
 

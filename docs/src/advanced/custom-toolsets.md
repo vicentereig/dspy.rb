@@ -1046,4 +1046,4 @@ class CachedToolset < DSPy::Tools::Toolset
 end
 ```
 
-Custom toolsets allow you to extend agents with domain-specific capabilities by grouping related operations together. By following these patterns and best practices, you can build robust, secure, and performant toolsets that integrate with [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s agent system.
+Custom toolsets allow you to extend agents with domain-specific capabilities by grouping related operations together. By following these patterns and best practices, you can build robust, secure, and performant toolsets that integrate with DSPy.rb's agent system.

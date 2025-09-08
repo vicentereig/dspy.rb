@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Program Persistence and Serialization: Save Your Optimized DSPy Programs"
-description: "[DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0 introduces comprehensive program serialization and storage capabilities, allowing you to save, load, and share optimized DSPy programs with full state preservation."
+description: "DSPy.rb v0.20.0 introduces comprehensive program serialization and storage capabilities, allowing you to save, load, and share optimized DSPy programs with full state preservation."
 date: 2025-08-26
 author: "Vicente Reig"
 category: "Features"
@@ -9,7 +9,7 @@ reading_time: "4 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/program-persistence-and-serialization/"
 ---
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0 introduces a powerful new capability: complete program persistence and serialization. Thanks to Stefan Froelich's excellent work, you can now save optimized DSPy programs to disk, reload them later, and share them across environments with full state preservation.
+DSPy.rb v0.20.0 introduces a powerful new capability: complete program persistence and serialization. Thanks to Stefan Froelich's excellent work, you can now save optimized DSPy programs to disk, reload them later, and share them across environments with full state preservation.
 
 ## The Problem: Optimization Investment
 
@@ -23,7 +23,7 @@ Previously, these optimization results existed only in memory. If your process c
 
 ## Introducing Program Storage
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) now provides a comprehensive storage system that preserves:
+DSPy.rb now provides a comprehensive storage system that preserves:
 - **Optimized program state** - Instructions, examples, and configuration
 - **Performance metrics** - Scores, optimization history, and metadata  
 - **Version information** - DSPy version, Ruby version, and timestamps
@@ -98,7 +98,7 @@ puts restored_program.few_shot_examples.size
 
 ## Advanced Storage with ProgramStorage
 
-For production use, [DSPy.rb](https://github.com/vicentereig/dspy.rb) provides a comprehensive storage system:
+For production use, DSPy.rb provides a comprehensive storage system:
 
 ```ruby
 require 'dspy/storage/program_storage'
@@ -459,7 +459,7 @@ saved_program = storage.save_program(program, optimization_result)
 
 ## Conclusion
 
-Program persistence in [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0 transforms how you work with optimized programs. Key benefits:
+Program persistence in DSPy.rb v0.20.0 transforms how you work with optimized programs. Key benefits:
 
 - **Investment Protection**: Never lose optimization work again
 - **Collaboration**: Share optimized programs across teams

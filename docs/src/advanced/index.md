@@ -1,13 +1,13 @@
 ---
 layout: docs
 title: Advanced Topics
-description: Explore advanced patterns and techniques in [DSPy.rb](https://github.com/vicentereig/dspy.rb)
+description: Explore advanced patterns and techniques in DSPy.rb
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-07-11 00:00:00 +0000
 ---
 # Advanced Topics
 
-Ready to take your [DSPy.rb](https://github.com/vicentereig/dspy.rb) applications to the next level? This section covers advanced patterns and techniques for building sophisticated LLM systems.
+Ready to take your DSPy.rb applications to the next level? This section covers advanced patterns and techniques for building sophisticated LLM systems.
 
 ## Advanced Guides
 
@@ -30,7 +30,7 @@ Implement retrieval-augmented generation patterns to ground your LLM responses i
 Work with structured data, nested objects, and complex type hierarchies in your signatures.
 
 ### [Rails Integration](./rails-integration/)
-Integrate [DSPy.rb](https://github.com/vicentereig/dspy.rb) seamlessly with Ruby on Rails applications, including enum handling and service patterns.
+Integrate DSPy.rb seamlessly with Ruby on Rails applications, including enum handling and service patterns.
 
 ### [Custom Metrics](./custom-metrics/)
 Build domain-specific metrics to evaluate and optimize your modules for your unique use cases.

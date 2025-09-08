@@ -541,7 +541,6 @@ The Ruby ecosystem now has a serious framework for LLM development. Give DSPy.rb
 
 **Get started today:**
 - Documentation: [vicentereig.github.io/dspy.rb](https://vicentereig.github.io/dspy.rb)
-- GitHub: [github.com/vicentereig/dspy.rb](https://github.com/vicentereig/dspy.rb)
 - Gem: `gem install dspy`
 
 *DSPy.rb is an idiomatic Ruby port of Stanford's DSPy framework, adapted for Ruby developers and enhanced with production-ready features. It's MIT licensed and actively maintained.*

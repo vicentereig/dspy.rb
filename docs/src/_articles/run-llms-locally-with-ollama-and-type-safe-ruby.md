@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Run LLMs Locally with Ollama and Type-Safe Ruby"
-description: "[DSPy.rb](https://github.com/vicentereig/dspy.rb) now supports Ollama, bringing type-safe structured outputs to local LLM development. Learn how to build cost-effective AI applications with zero API charges during development."
+description: "DSPy.rb now supports Ollama, bringing type-safe structured outputs to local LLM development. Learn how to build cost-effective AI applications with zero API charges during development."
 date: 2025-07-28
 author: "Vicente Reig"
 category: "Features"
@@ -9,7 +9,7 @@ reading_time: "2 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/run-llms-locally-with-ollama-and-type-safe-ruby/"
 ---
 
-I'm excited to announce that [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.15.0 brings full support for Ollama! You can now run powerful language models locally while maintaining all the type safety and structured outputs that make [DSPy.rb](https://github.com/vicentereig/dspy.rb) unique. This means zero API costs during development, complete data privacy, and the same great developer experience you expect from DSPy.
+I'm excited to announce that DSPy.rb v0.15.0 brings full support for Ollama! You can now run powerful language models locally while maintaining all the type safety and structured outputs that make DSPy.rb unique. This means zero API costs during development, complete data privacy, and the same great developer experience you expect from DSPy.
 
 ## Why Local LLMs Matter
 
@@ -19,7 +19,7 @@ Cloud-based LLMs are fantastic, but they come with trade-offs:
 - **Network latency** slows down rapid prototyping
 - **Rate limits** can interrupt your development flow
 
-With Ollama support in [DSPy.rb](https://github.com/vicentereig/dspy.rb), you get the best of both worlds: develop locally with zero costs, then deploy to production with your preferred cloud provider.
+With Ollama support in DSPy.rb, you get the best of both worlds: develop locally with zero costs, then deploy to production with your preferred cloud provider.
 
 ## Getting Started with Ollama
 
@@ -36,7 +36,7 @@ ollama serve
 ollama pull llama3.2
 ```
 
-Now you can use it in [DSPy.rb](https://github.com/vicentereig/dspy.rb) just like any other provider:
+Now you can use it in DSPy.rb just like any other provider:
 
 ```ruby
 require 'dspy'
@@ -49,7 +49,7 @@ end
 
 ## Type-Safe Structured Outputs Work Seamlessly
 
-Here's what makes [DSPy.rb](https://github.com/vicentereig/dspy.rb) + Ollama special: you get the same type-safe, structured outputs as with cloud providers. Let's build a product categorization system:
+Here's what makes DSPy.rb + Ollama special: you get the same type-safe, structured outputs as with cloud providers. Let's build a product categorization system:
 
 ```ruby
 # Define a type-safe signature
@@ -146,7 +146,7 @@ puts "Solution: #{result.solution}"
 
 ## Remote Ollama Instances
 
-Need to share an Ollama instance across your team? [DSPy.rb](https://github.com/vicentereig/dspy.rb) supports remote Ollama servers with optional authentication:
+Need to share an Ollama instance across your team? DSPy.rb supports remote Ollama servers with optional authentication:
 
 ```ruby
 # Connect to a remote Ollama instance
@@ -164,7 +164,7 @@ Let's look at the real savings during development. A typical development cycle i
 
 ## Performance Considerations
 
-Local models have trade-offs, but [DSPy.rb](https://github.com/vicentereig/dspy.rb) helps you optimize:
+Local models have trade-offs, but DSPy.rb helps you optimize:
 
 ```ruby
 # Development: Use fast local models
@@ -188,10 +188,10 @@ end
 
 ## What About Structured Output Support?
 
-Ollama provides OpenAI-compatible endpoints, which means [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s structured output strategies work out of the box. If a model doesn't fully support structured outputs, [DSPy.rb](https://github.com/vicentereig/dspy.rb) automatically falls back to enhanced prompting strategies:
+Ollama provides OpenAI-compatible endpoints, which means DSPy.rb's structured output strategies work out of the box. If a model doesn't fully support structured outputs, DSPy.rb automatically falls back to enhanced prompting strategies:
 
 ```ruby
-# [DSPy.rb](https://github.com/vicentereig/dspy.rb) automatically selects the best strategy
+# DSPy.rb automatically selects the best strategy
 # 1. Try OpenAI-style structured outputs
 # 2. Fall back to enhanced prompting if needed
 # 3. Always return type-safe results
@@ -227,7 +227,7 @@ end
 
 ## Conclusion
 
-Ollama support in [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.15.0 brings the power of local LLMs to Ruby developers without sacrificing type safety or developer experience. Whether you're building prototypes, processing sensitive data, or just want to save on API costs, you can now enjoy the full [DSPy.rb](https://github.com/vicentereig/dspy.rb) experience with models running on your own hardware.
+Ollama support in DSPy.rb v0.15.0 brings the power of local LLMs to Ruby developers without sacrificing type safety or developer experience. Whether you're building prototypes, processing sensitive data, or just want to save on API costs, you can now enjoy the full DSPy.rb experience with models running on your own hardware.
 
 Get started today:
 
@@ -238,12 +238,12 @@ brew install ollama  # or see ollama.com for other platforms
 # Pull a model
 ollama pull llama3.2
 
-# Update [DSPy.rb](https://github.com/vicentereig/dspy.rb)
+# Update DSPy.rb
 bundle update dspy
 
 # Start building!
 ```
 
-The future of LLM development is hybrid: develop locally, deploy globally. With [DSPy.rb](https://github.com/vicentereig/dspy.rb) and Ollama, that future is here today.
+The future of LLM development is hybrid: develop locally, deploy globally. With DSPy.rb and Ollama, that future is here today.
 
 Happy coding! 🚀

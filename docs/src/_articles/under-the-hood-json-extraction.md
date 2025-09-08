@@ -1,20 +1,20 @@
 ---
 layout: blog
-title: "Under the Hood: How [DSPy.rb](https://github.com/vicentereig/dspy.rb) Extracts JSON from Every LLM"
+title: "Under the Hood: How DSPy.rb Extracts JSON from Every LLM"
 date: 2025-07-25
-description: "A technical deep-dive into [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s multi-strategy JSON extraction system, showing exactly how it handles OpenAI, Anthropic, and other providers"
+description: "A technical deep-dive into DSPy.rb's multi-strategy JSON extraction system, showing exactly how it handles OpenAI, Anthropic, and other providers"
 author: "Vicente Reig"
 draft: true
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/under-the-hood-json-extraction/"
 ---
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) uses 4 different strategies to extract JSON from LLMs. Here's how each one works.
+DSPy.rb uses 4 different strategies to extract JSON from LLMs. Here's how each one works.
 
-When you call `predict.forward()`, [DSPy.rb](https://github.com/vicentereig/dspy.rb) picks the best strategy for your LLM provider. Each strategy is designed to get reliable JSON output from different models.
+When you call `predict.forward()`, DSPy.rb picks the best strategy for your LLM provider. Each strategy is designed to get reliable JSON output from different models.
 
 ## How Strategy Selection Works
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) ranks strategies by priority and picks the best one available:
+DSPy.rb ranks strategies by priority and picks the best one available:
 
 ```ruby
 # From lib/dspy/lm/strategy_selector.rb
@@ -46,10 +46,10 @@ end
 
 ## OpenAI: Native Structured Outputs (Priority 100)
 
-For OpenAI models that support structured outputs (GPT-4o, GPT-4o-mini), [DSPy.rb](https://github.com/vicentereig/dspy.rb) uses OpenAI's built-in JSON feature:
+For OpenAI models that support structured outputs (GPT-4o, GPT-4o-mini), DSPy.rb uses OpenAI's built-in JSON feature:
 
 ```ruby
-# What [DSPy.rb](https://github.com/vicentereig/dspy.rb) sends to OpenAI
+# What DSPy.rb sends to OpenAI
 request_params[:response_format] = {
   type: "json_schema",
   json_schema: {
@@ -84,7 +84,7 @@ when T::Types::TypedArray
 
 ### Tool Use Strategy (Priority 95)
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) uses Anthropic's tool calling feature to get structured JSON:
+DSPy.rb uses Anthropic's tool calling feature to get structured JSON:
 
 ```ruby
 # From anthropic_tool_use_strategy.rb
@@ -122,7 +122,7 @@ end
 
 ### 4-Pattern Extraction Strategy (Priority 90)
 
-When tool use isn't available, [DSPy.rb](https://github.com/vicentereig/dspy.rb) uses 4 patterns to extract JSON from Claude's responses:
+When tool use isn't available, DSPy.rb uses 4 patterns to extract JSON from Claude's responses:
 
 ```ruby
 # From anthropic_adapter.rb
@@ -164,7 +164,7 @@ json_instruction = "\n\nIMPORTANT: Respond with ONLY valid JSON. " \
 
 ## Enhanced Prompting: Works with Any Model (Priority 50)
 
-For models without native JSON support, [DSPy.rb](https://github.com/vicentereig/dspy.rb) adds clear instructions to the prompt:
+For models without native JSON support, DSPy.rb adds clear instructions to the prompt:
 
 ```ruby
 def enhance_prompt_with_json_instructions(prompt, schema)
@@ -263,7 +263,7 @@ end
 
 ### Retry Logic
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) tries multiple times if JSON extraction fails:
+DSPy.rb tries multiple times if JSON extraction fails:
 
 ```ruby
 # From retry_handler.rb
@@ -292,7 +292,7 @@ end
 
 ### Performance Optimizations
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) caches schemas and capability checks to speed things up:
+DSPy.rb caches schemas and capability checks to speed things up:
 
 ```ruby
 # Schema caching (1 hour TTL)
@@ -344,15 +344,15 @@ puts "Using strategy: #{strategy.name} (priority: #{strategy.priority})"
 
 ## Key Takeaways
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb)'s multi-strategy approach makes JSON extraction work reliably across all major LLMs. Understanding these details helps you:
+DSPy.rb's multi-strategy approach makes JSON extraction work reliably across all major LLMs. Understanding these details helps you:
 
 - Pick the right model for JSON tasks
 - Debug extraction problems faster
 - Configure strategies for your needs
 - Contribute improvements to the project
 
-The best part? You don't need to worry about any of this complexity. Just define your signature and call `forward()` - [DSPy.rb](https://github.com/vicentereig/dspy.rb) does the rest.
+The best part? You don't need to worry about any of this complexity. Just define your signature and call `forward()` - DSPy.rb does the rest.
 
 ---
 
-*Want to dive deeper? Check out the [source code](https://github.com/vicentereig/dspy.rb) or join the discussion on [GitHub](https://github.com/vicentereig/dspy.rb/discussions).*
+*Want to dive deeper? Check out the source code or join the discussion on GitHub.*

@@ -1,7 +1,7 @@
 ---
 layout: blog
-title: "[DSPy.rb](https://github.com/vicentereig/dspy.rb) Concurrent Architecture: Deep Dive into 3.3x Performance Gains"
-description: "In a world where your agent is sitting ducks waiting for an LLM to respond, [DSPy.rb](https://github.com/vicentereig/dspy.rb) is architected for high throughput. The main thread processes all the LLM requests, while a background thread processes in isolation and asynchronously requests to report open telemetry to i.e. Langfuse or New Relic. That's why the o11y facility only leaves 50ms footprint. It's a fair trade off to avoid telemetry getting in the way of your precious LLM responses."
+title: "DSPy.rb Concurrent Architecture: Deep Dive into 3.3x Performance Gains"
+description: "In a world where your agent is sitting ducks waiting for an LLM to respond, DSPy.rb is architected for high throughput. DSPy process LLM requests concurrently, while a background thread processes in isolation and asynchronously requests to report open telemetry. It's a fair trade off to avoid telemetry getting in the way of your precious LLM responses."
 date: 2025-09-08
 author: "Vicente Reig"
 category: "Architecture"
@@ -10,9 +10,12 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/dspy-rb-conc
 tags: ["architecture", "concurrency", "performance", "ruby", "async", "telemetry"]
 ---
 
-In a world where your agent is sitting ducks waiting for an LLM to respond, [DSPy.rb](https://github.com/vicentereig/dspy.rb) is architected for high throughput. The main thread processes all the LLM requests, while a background thread processes in isolation and asynchronously requests to report open telemetry to i.e. Langfuse or New Relic. That's why the o11y facility only leaves 50ms footprint. It's a fair trade off to avoid telemetry getting in the way of your precious LLM responses.
+In a world where your agent is sitting ducks waiting for an LLM to respond, DSPy.rb is architected for high throughput.
+The main thread processes all the LLM requests concurrently, while a background thread processes in isolation and asynchronously requests
+to report open telemetry to i.e. Langfuse or New Relic. That's why the o11y facility only leaves 50ms footprint. 
+It's a fair trade off to avoid telemetry getting in the way of your precious LLM responses.
 
-The [DSPy.rb](https://github.com/vicentereig/dspy.rb) architecture demonstrates that Ruby, combined with thoughtful async design patterns, can deliver enterprise-grade LLM application performance with remarkable efficiency. Key achievements:
+The DSPy.rb architecture demonstrates that Ruby, combined with thoughtful async design patterns, can deliver enterprise-grade LLM application performance with remarkable efficiency. Key achievements:
 
 - **3.3x performance improvement** in concurrent LLM processing
 - **<50ms telemetry overhead** through isolated background processing  
@@ -40,11 +43,11 @@ Ruby's async capabilities are built on solid foundations:
 - **Fiber-based concurrency**: Lightweight, cooperative multitasking without thread overhead
 - **Zero monkey patching**: Works seamlessly with existing Ruby gems through the Fiber Scheduler
 
-This approach allows [DSPy.rb](https://github.com/vicentereig/dspy.rb) to achieve true concurrency without the complexity that plagues other language ecosystems. Your LLM processing code looks identical whether it's running sequentially or concurrently—Ruby handles the complexity transparently.
+This approach allows DSPy.rb to achieve true concurrency without the complexity that plagues other language ecosystems. Your LLM processing code looks identical whether it's running sequentially or concurrently—Ruby handles the complexity transparently.
 
 ## Architecture Overview
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb)'s concurrent architecture is built around three core systems working in harmony:
+DSPy.rb's concurrent architecture is built around three core systems working in harmony:
 
 1. **Fiber-Based Concurrent Execution**: Ruby's `Async` gem provides lightweight concurrency
 2. **Event-Driven Observability**: Thread-safe pub-sub system with automatic OpenTelemetry integration
@@ -56,7 +59,7 @@ This approach allows [DSPy.rb](https://github.com/vicentereig/dspy.rb) to achiev
 
 **The Challenge**: Traditional Ruby applications struggle with concurrent I/O operations, often blocking threads during network calls.
 
-**The Solution**: [DSPy.rb](https://github.com/vicentereig/dspy.rb) leverages Ruby's `Async` gem to provide fiber-based concurrency perfectly suited for LLM API calls.
+**The Solution**: DSPy.rb leverages Ruby's `Async` gem to provide fiber-based concurrency perfectly suited for LLM API calls.
 
 ```ruby
 # Real concurrent processing from coffee_shop_agent_concurrent.rb
@@ -141,11 +144,11 @@ flowchart TB
 
 ### 3. Isolated Telemetry Processing: Battle-Tested Architecture
 
-**Following Industry Standards**: [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s `AsyncSpanProcessor` implements the same battle-tested pattern that monitoring agents like New Relic have used successfully for over a decade. This approach provides truly non-blocking telemetry export using isolated background threads and queues.
+**Following Industry Standards**: DSPy.rb's `AsyncSpanProcessor` implements the same battle-tested pattern that monitoring agents like New Relic have used successfully for over a decade. This approach provides truly non-blocking telemetry export using isolated background threads and queues.
 
 > **New Relic's Proven Approach**: "The New Relic Ruby agent spawns a background thread within each of your application's processes. These background threads collect data from your processes. The data is calculated into averages and sent to New Relic's servers every 60 seconds." - New Relic Documentation
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) adapts this proven architecture for LLM observability:
+DSPy.rb adapts this proven architecture for LLM observability:
 
 ```ruby
 # From lib/dspy/observability/async_span_processor.rb
@@ -178,7 +181,7 @@ end
 
 **Architecture Comparison**:
 
-| Component | New Relic Agent | [DSPy.rb](https://github.com/vicentereig/dspy.rb) AsyncSpanProcessor |
+| Component | New Relic Agent | DSPy.rb AsyncSpanProcessor |
 |-----------|----------------|----------------------------|
 | Background Thread | ✓ Harvest thread | ✓ Export task thread |
 | Collection Interval | 60 seconds | ✓ 60 seconds (configurable) |
@@ -197,7 +200,7 @@ end
 
 ## Production Trade-offs: Memory Protection vs. Data Completeness
 
-Like New Relic and other production monitoring agents, [DSPy.rb](https://github.com/vicentereig/dspy.rb) makes sensible trade-offs to protect application performance:
+Like New Relic and other production monitoring agents, DSPy.rb makes sensible trade-offs to protect application performance:
 
 **Memory Protection Strategy**:
 - **Queue size limits** (1000 spans default) prevent unbounded memory growth
@@ -210,9 +213,9 @@ Like New Relic and other production monitoring agents, [DSPy.rb](https://github.
 - **Configurable intervals** via `DSPY_TELEMETRY_EXPORT_INTERVAL` environment variable
 
 **Acceptable Sample Loss**:
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) protects memory and balances reaching out to the network too often, **at the expense of losing some samples in extreme load scenarios**. This mirrors New Relic's approach - under high volume, maintaining application performance takes priority over capturing every single telemetry event.
+DSPy.rb protects memory and balances reaching out to the network too often, **at the expense of losing some samples in extreme load scenarios**. This mirrors New Relic's approach - under high volume, maintaining application performance takes priority over capturing every single telemetry event.
 
-> **Production Reality**: This trade-off is fundamental to production observability. New Relic's agents use reservoir sampling and limits per harvest cycle (2000-10000 events per 60 seconds), while [DSPy.rb](https://github.com/vicentereig/dspy.rb) uses queue limits with FIFO dropping. Both approaches prioritize application stability over telemetry completeness.
+> **Production Reality**: This trade-off is fundamental to production observability. New Relic's agents use reservoir sampling and limits per harvest cycle (2000-10000 events per 60 seconds), while DSPy.rb uses queue limits with FIFO dropping. Both approaches prioritize application stability over telemetry completeness.
 
 ## Concurrent Execution Flow Diagram
 
@@ -220,7 +223,7 @@ The complete concurrent processing architecture:
 
 ```mermaid
 flowchart LR
-    R["[DSPy.rb](https://github.com/vicentereig/dspy.rb) Reactor Task"] --> MA["Main Async Block"]
+    R["DSPy.rb Reactor Task"] --> MA["Main Async Block"]
     MA --> AB["Async::Barrier"]
     AB == spawns concurrently ==> C1["Customer 1: Happy/Morning"] & C2["Customer 2: Upset/RushHour"] & C3["Customer 3: Neutral/Afternoon"] & C4["Customer 4: Happy/Evening"]
     
@@ -293,7 +296,7 @@ end
 
 ### Ruby Async Ecosystem Excellence
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) demonstrates Ruby's async capabilities:
+DSPy.rb demonstrates Ruby's async capabilities:
 - **Fiber-based concurrency**: Zero thread overhead for I/O-bound operations
 - **Structured concurrency**: Clean lifecycle with `Async::Barrier.wait`
 - **Non-blocking primitives**: `Async::Task.current.sleep()` for true async delays
@@ -348,13 +351,13 @@ end
 
 ## Technical Innovation Highlights
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) doesn't reinvent telemetry architecture—it implements proven patterns from production monitoring systems like New Relic, optimized for LLM workflows.
+DSPy.rb doesn't reinvent telemetry architecture—it implements proven patterns from production monitoring systems like New Relic, optimized for LLM workflows.
 
 ### 1. Event System Architecture: Proven Pub-Sub Pattern
 
 **Industry Challenge**: Most LLM frameworks require complex monkey-patching for observability, creating fragile integrations.
 
-**[DSPy.rb](https://github.com/vicentereig/dspy.rb)'s Battle-Tested Solution**: Built-in event system following the publisher-subscriber pattern used by enterprise monitoring solutions:
+**DSPy.rb's Battle-Tested Solution**: Built-in event system following the publisher-subscriber pattern used by enterprise monitoring solutions:
 
 - **Automatic instrumentation**: Zero code changes required for LLM call tracking
 - **OpenTelemetry integration**: Standard semantic conventions for observability
@@ -363,7 +366,7 @@ end
 
 ### 2. Zero-Configuration Observability
 
-**Zero-Config Activation**: Just like New Relic's simple setup, [DSPy.rb](https://github.com/vicentereig/dspy.rb) activates full telemetry with environment variables:
+**Zero-Config Activation**: Just like New Relic's simple setup, DSPy.rb activates full telemetry with environment variables:
 
 - `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` - that's it!
 - **Automatic detection**: Observability enables itself when keys are present
@@ -402,7 +405,7 @@ end
 ## Social Media Ready Highlights
 
 ### For LinkedIn
-"[DSPy.rb](https://github.com/vicentereig/dspy.rb) achieves 3.3x performance improvements through Ruby's async architecture! 🚀
+"DSPy.rb achieves 3.3x performance improvements through Ruby's async architecture! 🚀
 
 ✅ Fiber-based concurrent LLM processing  
 ✅ <50ms telemetry overhead  
@@ -412,7 +415,7 @@ end
 Real performance gains with Ruby's excellent async ecosystem. #RubyOnRails #LLM #Performance #Architecture #AI"
 
 ### For X.com  
-"🚀 [DSPy.rb](https://github.com/vicentereig/dspy.rb): 3.3x faster LLM processing  
+"🚀 DSPy.rb: 3.3x faster LLM processing  
 ⚡ Fiber-based concurrency  
 📊 <50ms telemetry overhead  
 🏗️ Ruby async ecosystem excellence  
@@ -422,15 +425,15 @@ Real performance gains, zero complexity. Ruby can absolutely deliver enterprise-
 
 ## Conclusion
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb)'s concurrent architecture proves that Ruby, when implementing battle-tested patterns from monitoring agents like New Relic, can deliver enterprise-grade LLM application performance. The system achieves:
+DSPy.rb's concurrent architecture proves that Ruby, when implementing battle-tested patterns from monitoring agents like New Relic, can deliver enterprise-grade LLM application performance. The system achieves:
 
 - **Measurable performance gains** (3.3x improvement in real workloads)
 - **Production-grade observability** with <50ms overhead (matching industry standards)
 - **Battle-tested reliability** using proven background processing patterns
 - **Scalable foundation** built on decade-proven monitoring architectures
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) demonstrates that you don't need to reinvent telemetry architecture—by implementing the same patterns that have successfully monitored millions of Ruby applications, it delivers both efficient concurrent processing and enterprise-grade observability for LLM applications.
+DSPy.rb demonstrates that you don't need to reinvent telemetry architecture—by implementing the same patterns that have successfully monitored millions of Ruby applications, it delivers both efficient concurrent processing and enterprise-grade observability for LLM applications.
 
 ---
 
-*This architectural analysis is based on [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.25.0+. The concurrent processing and async telemetry features represent the maturation of Ruby's async ecosystem for AI applications.*
+*This architectural analysis is based on DSPy.rb v0.25.0+. The concurrent processing and async telemetry features represent the maturation of Ruby's async ecosystem for AI applications.*

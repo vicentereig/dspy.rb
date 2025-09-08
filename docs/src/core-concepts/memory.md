@@ -18,7 +18,7 @@ date: 2025-07-11 00:00:00 +0000
 ---
 # Memory
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) provides a memory system that allows agents to store and retrieve information across interactions. The memory system includes data structures for storing memories, storage backends, and tools for agent integration.
+DSPy.rb provides a memory system that allows agents to store and retrieve information across interactions. The memory system includes data structures for storing memories, storage backends, and tools for agent integration.
 
 ## Basic Usage
 

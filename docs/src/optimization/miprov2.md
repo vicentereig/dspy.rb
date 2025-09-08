@@ -17,7 +17,7 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # MIPROv2 Optimizer
 
-MIPROv2 (Multi-stage Instruction Proposal and Refinement Optimizer v2) is the primary optimization algorithm in [DSPy.rb](https://github.com/vicentereig/dspy.rb). It automatically improves your predictor's performance through a three-phase optimization process: bootstrap training, instruction optimization, and few-shot example refinement.
+MIPROv2 (Multi-stage Instruction Proposal and Refinement Optimizer v2) is the primary optimization algorithm in DSPy.rb. It automatically improves your predictor's performance through a three-phase optimization process: bootstrap training, instruction optimization, and few-shot example refinement.
 
 ## Overview
 

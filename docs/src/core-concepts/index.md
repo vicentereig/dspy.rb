@@ -1,17 +1,17 @@
 ---
 layout: docs
 title: Core Concepts
-description: Master the fundamental building blocks of [DSPy.rb](https://github.com/vicentereig/dspy.rb)
+description: Master the fundamental building blocks of DSPy.rb
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-13 00:00:00 +0000
 ---
 # Core Concepts
 
-Understanding [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s core concepts is essential for building reliable LLM applications. This section covers the fundamental building blocks and how they work together.
+Understanding DSPy.rb's core concepts is essential for building reliable LLM applications. This section covers the fundamental building blocks and how they work together.
 
 ## The Building Blocks
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) is built on these main concepts:
+DSPy.rb is built on these main concepts:
 
 ### [Signatures](./signatures/)
 Define what your LLM operations should do - the inputs and outputs. Think of them as type-safe contracts for AI operations.

@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Fiber-Local LM Contexts: Clean Multi-Model Management in Ruby"
-description: "[DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0 introduces DSPy.with_lm for elegant temporary language model overrides using Ruby's fiber-local storage, enabling clean concurrent patterns and better model management."
+description: "DSPy.rb v0.20.0 introduces DSPy.with_lm for elegant temporary language model overrides using Ruby's fiber-local storage, enabling clean concurrent patterns and better model management."
 date: 2025-08-26
 author: "Vicente Reig"
 category: "Features"
@@ -9,7 +9,7 @@ reading_time: "3 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/fiber-local-lm-contexts/"
 ---
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.20.0 introduces a powerful new feature for managing language models in complex applications: `DSPy.with_lm`. Thanks to Stefan Froelich's excellent contribution, you can now temporarily override language models using Ruby's fiber-local storage, enabling cleaner concurrent patterns and more flexible model management.
+DSPy.rb v0.20.0 introduces a powerful new feature for managing language models in complex applications: `DSPy.with_lm`. Thanks to Stefan Froelich's excellent contribution, you can now temporarily override language models using Ruby's fiber-local storage, enabling cleaner concurrent patterns and more flexible model management.
 
 ## The Problem: Complex Model Management
 
@@ -438,7 +438,7 @@ end
 
 ## Conclusion
 
-`DSPy.with_lm` brings elegant model management to [DSPy.rb](https://github.com/vicentereig/dspy.rb) applications. By leveraging Ruby's fiber-local storage, you get clean, thread-safe temporary model overrides without complex configuration juggling.
+`DSPy.with_lm` brings elegant model management to DSPy.rb applications. By leveraging Ruby's fiber-local storage, you get clean, thread-safe temporary model overrides without complex configuration juggling.
 
 Key benefits:
 - **Clean Code**: No need to pass models through call stacks

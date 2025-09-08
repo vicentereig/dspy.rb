@@ -1,7 +1,7 @@
 ---
 layout: docs
 name: Complex Types
-description: Working with enums, structs, and collections in [DSPy.rb](https://github.com/vicentereig/dspy.rb)
+description: Working with enums, structs, and collections in DSPy.rb
 breadcrumb:
 - name: Advanced
   url: "/advanced/"
@@ -18,11 +18,11 @@ last_modified_at: 2025-07-21 00:00:00 +0000
 ---
 # Complex Types
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) provides support for structured data types beyond simple strings through integration with Sorbet's type system. You can use enums, structs, arrays, and hashes to create well-defined interfaces for your LLM applications.
+DSPy.rb provides support for structured data types beyond simple strings through integration with Sorbet's type system. You can use enums, structs, arrays, and hashes to create well-defined interfaces for your LLM applications.
 
 ## Overview
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports:
+DSPy.rb supports:
 - **Enums**: Constrained value sets with T::Enum
 - **Structs**: Complex objects with T::Struct
 - **Union Types**: Multiple possible types with T.any()
@@ -211,7 +211,7 @@ puts result.keywords  # => ["machine learning", "artificial intelligence", ...]
 
 ### Arrays of Structs
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports arrays of custom T::Struct types with automatic type coercion. When the LLM returns JSON arrays containing hash objects, [DSPy.rb](https://github.com/vicentereig/dspy.rb) automatically converts them to the appropriate T::Struct instances.
+DSPy.rb supports arrays of custom T::Struct types with automatic type coercion. When the LLM returns JSON arrays containing hash objects, DSPy.rb automatically converts them to the appropriate T::Struct instances.
 
 ```ruby
 class Product < T::Struct
@@ -368,7 +368,7 @@ end
 
 ## Union Types
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports union types using Sorbet's `T.any()` syntax, allowing fields that can accept multiple types. This is particularly useful when working with LLMs that may return different types of structured data based on the context.
+DSPy.rb supports union types using Sorbet's `T.any()` syntax, allowing fields that can accept multiple types. This is particularly useful when working with LLMs that may return different types of structured data based on the context.
 
 ### Basic Union Types
 
@@ -405,7 +405,7 @@ puts result2.result_type  # => "categorical"
 
 ### Union Types with Structs (Single-Field Unions)
 
-A powerful pattern is using union types with different struct types. As of v0.11.0, [DSPy.rb](https://github.com/vicentereig/dspy.rb) automatically adds a `_type` field to each struct, eliminating the need for manual discriminator fields. This makes union types much simpler to use.
+A powerful pattern is using union types with different struct types. As of v0.11.0, DSPy.rb automatically adds a `_type` field to each struct, eliminating the need for manual discriminator fields. This makes union types much simpler to use.
 
 ```ruby
 # NEW in v0.11.0: Single-field union types - no discriminator needed!
@@ -479,7 +479,7 @@ end
 
 ### How Automatic Type Conversion Works
 
-When [DSPy.rb](https://github.com/vicentereig/dspy.rb) receives a response from the LLM for a union type field:
+When DSPy.rb receives a response from the LLM for a union type field:
 
 1. **Automatic _type Field**: DSPy adds a `_type` field to each struct's JSON schema with the struct's class name
 2. **Type Detection**: When deserializing, DSPy looks for the `_type` field in the response
@@ -600,7 +600,7 @@ end
 
 ## Automatic Type Conversion with DSPy::Prediction
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.9.0+ includes automatic type conversion that transforms LLM JSON responses into properly typed Ruby objects. This happens transparently when using DSPy modules.
+DSPy.rb v0.9.0+ includes automatic type conversion that transforms LLM JSON responses into properly typed Ruby objects. This happens transparently when using DSPy modules.
 
 ### How It Works
 
@@ -759,7 +759,7 @@ end
 
 ## JSON Schema Integration
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) automatically generates JSON schemas for your complex types:
+DSPy.rb automatically generates JSON schemas for your complex types:
 
 ```ruby
 # The signature automatically creates schemas for the LLM
@@ -876,7 +876,7 @@ end
 
 ### Nesting Depth Limitations
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) has practical limits on nested struct complexity:
+DSPy.rb has practical limits on nested struct complexity:
 
 **✅ Recommended Nesting (1-2 levels):**
 ```ruby
@@ -921,7 +921,7 @@ end
 ### Performance Considerations
 
 **Schema Caching:**
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) automatically caches JSON schemas for repeated use:
+DSPy.rb automatically caches JSON schemas for repeated use:
 ```ruby
 # First call generates schema
 result1 = predictor.call(input: "text")

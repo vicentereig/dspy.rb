@@ -17,11 +17,11 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Custom Metrics
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb)'s evaluation framework allows you to define custom metrics for domain-specific evaluation scenarios. While the framework provides basic built-in metrics, you can create sophisticated evaluation logic tailored to your specific use cases and business requirements.
+DSPy.rb's evaluation framework allows you to define custom metrics for domain-specific evaluation scenarios. While the framework provides basic built-in metrics, you can create sophisticated evaluation logic tailored to your specific use cases and business requirements.
 
 ## Overview
 
-Custom metrics in [DSPy.rb](https://github.com/vicentereig/dspy.rb):
+Custom metrics in DSPy.rb:
 - **Proc-based Implementation**: Define metrics as Ruby procedures
 - **Domain-specific Logic**: Create evaluation criteria specific to your use case
 - **Flexible Scoring**: Support for boolean, numeric, and composite scoring

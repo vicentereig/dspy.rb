@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Concurrent LLM Processing: Real Performance Gains with Ruby's Async Ecosystem"
-description: "See how [DSPy.rb](https://github.com/vicentereig/dspy.rb) achieves 3x performance improvements using Ruby's excellent async capabilities. Real measurements from a practical coffee shop agent example."
+description: "See how DSPy.rb achieves 3x performance improvements using Ruby's excellent async capabilities. Real measurements from a practical coffee shop agent example."
 date: 2024-09-07
 author: "Vicente Reig"
 category: "Performance"
@@ -11,7 +11,7 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/concurrent-l
 
 Serving multiple customers efficiently isn't just a coffee shop problem—it's the core challenge of any LLM application at scale. When your AI agent needs to handle multiple requests, the difference between sequential and concurrent processing can make or break the user experience.
 
-Today, we'll look at real performance gains using [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s concurrent processing capabilities, built on Ruby's excellent [async ecosystem](https://github.com/socketry/async).
+Today, we'll look at real performance gains using DSPy.rb's concurrent processing capabilities, built on Ruby's excellent [async ecosystem](https://github.com/socketry/async).
 
 ## The Problem: Sequential Bottlenecks
 
@@ -30,7 +30,7 @@ The fourth customer waits 19 seconds before their request even starts processing
 
 ## The Solution: Concurrent Processing
 
-Ruby's [async gem](https://github.com/socketry/async) provides fiber-based concurrency that's perfect for I/O-bound operations like LLM API calls. Here's how [DSPy.rb](https://github.com/vicentereig/dspy.rb) leverages it:
+Ruby's [async gem](https://github.com/socketry/async) provides fiber-based concurrency that's perfect for I/O-bound operations like LLM API calls. Here's how DSPy.rb leverages it:
 
 ```ruby
 Async do
@@ -59,13 +59,13 @@ Running both versions with identical customer requests, here are the measured re
 
 The improvement comes from processing all requests in parallel rather than waiting for each to complete sequentially.
 
-You can see both implementations in the [DSPy.rb](https://github.com/vicentereig/dspy.rb) repository:
-- [Sequential version](https://github.com/vicentereig/dspy.rb/blob/main/examples/coffee-shop-agent/coffee_shop_agent.rb)
-- [Concurrent version](https://github.com/vicentereig/dspy.rb/blob/main/examples/coffee-shop-agent/coffee_shop_agent_concurrent.rb)
+You can see both implementations in the DSPy.rb repository:
+- Sequential version
+- Concurrent version
 
 ## How It Works: The Architecture
 
-Here's how the concurrent processing flows through [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s async architecture:
+Here's how the concurrent processing flows through DSPy.rb's async architecture:
 
 ![Concurrent processing architecture diagram showing async task flow](/dspy.rb/assets/images/concurrent-architecture-diagram.svg)
 
@@ -85,7 +85,7 @@ Ruby's async processing capabilities have matured significantly. The [async gem]
 - **Non-blocking I/O**: Perfect for API calls and database operations  
 - **Zero thread overhead**: Fibers are much more efficient than threads for I/O-bound work
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) builds on this solid foundation, providing async-aware features throughout the framework:
+DSPy.rb builds on this solid foundation, providing async-aware features throughout the framework:
 
 - [Concurrent predictions](https://vicentereig.github.io/dspy.rb/core-concepts/predictors/#concurrent-predictions) using `Async::Barrier`
 - Fiber-local context management for clean request isolation
@@ -94,7 +94,7 @@ Ruby's async processing capabilities have matured significantly. The [async gem]
 
 ## Implementing Concurrent Processing
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) makes concurrent processing straightforward. Here's the minimal code needed:
+DSPy.rb makes concurrent processing straightforward. Here's the minimal code needed:
 
 ```ruby
 require 'async'
@@ -118,7 +118,7 @@ Async do
 end
 ```
 
-Each prediction runs in its own fiber with isolated context. [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s fiber-local storage ensures that temporary configuration changes (like switching models) don't interfere with concurrent requests.
+Each prediction runs in its own fiber with isolated context. DSPy.rb's fiber-local storage ensures that temporary configuration changes (like switching models) don't interfere with concurrent requests.
 
 ## When Concurrent Processing Helps
 
@@ -174,14 +174,14 @@ The key is identifying I/O-bound, independent operations that can benefit from c
 
 1. **Ruby's async ecosystem is production-ready** - The async gem provides excellent concurrent processing capabilities
 2. **Measure before optimizing** - Use real benchmarks to validate performance improvements
-3. **Concurrent != complex** - [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s `Async::Barrier` makes concurrent processing straightforward
+3. **Concurrent != complex** - DSPy.rb's `Async::Barrier` makes concurrent processing straightforward
 4. **Context isolation matters** - Fiber-local storage prevents concurrent requests from interfering with each other
 5. **Start small** - Begin with simple concurrent patterns and build complexity gradually
 
-Ruby's async capabilities, combined with [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s async-aware architecture, provide a solid foundation for building scalable LLM applications. The 3x performance improvement we demonstrated is achievable with minimal code changes.
+Ruby's async capabilities, combined with DSPy.rb's async-aware architecture, provide a solid foundation for building scalable LLM applications. The 3x performance improvement we demonstrated is achievable with minimal code changes.
 
 The coffee shop agent example shows that concurrent processing benefits are real, measurable, and accessible—no theoretical performance claims, just practical improvements you can implement today.
 
 ---
 
-*Try the concurrent coffee shop example yourself: clone the [[DSPy.rb](https://github.com/vicentereig/dspy.rb) repository](https://github.com/vicentereig/dspy.rb) and run both versions to see the performance difference firsthand.*
+*Try the concurrent coffee shop example yourself: clone the DSPy.rb repository and run both versions to see the performance difference firsthand.*

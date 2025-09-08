@@ -1,7 +1,7 @@
 ---
 layout: docs
 name: Core Concepts
-description: Understand the fundamental building blocks of [DSPy.rb](https://github.com/vicentereig/dspy.rb)
+description: Understand the fundamental building blocks of DSPy.rb
 breadcrumb:
 - name: Getting Started
   url: "/getting-started/"
@@ -18,7 +18,7 @@ last_modified_at: 2025-08-08 00:00:00 +0000
 ---
 # Core Concepts
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) is built around composable, type-safe modules that make LLM programming predictable and reliable. This guide covers the fundamental concepts you need to understand to build effective DSPy applications.
+DSPy.rb is built around composable, type-safe modules that make LLM programming predictable and reliable. This guide covers the fundamental concepts you need to understand to build effective DSPy applications.
 
 ## Signatures: Defining LLM Interfaces
 
@@ -193,7 +193,7 @@ end
 
 ### Language Model Options
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports multiple LLM providers:
+DSPy.rb supports multiple LLM providers:
 
 ```ruby
 # OpenAI
@@ -372,4 +372,4 @@ class RobustProcessor < DSPy::Module
 end
 ```
 
-Understanding these core concepts will enable you to build reliable LLM applications with [DSPy.rb](https://github.com/vicentereig/dspy.rb). The type system keeps you safe, the modular design keeps your code clean, and the optimization tools help you achieve production-ready performance.
+Understanding these core concepts will enable you to build reliable LLM applications with DSPy.rb. The type system keeps you safe, the modular design keeps your code clean, and the optimization tools help you achieve production-ready performance.

@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "CodeAct: When Your AI Writes Ruby Code"
-description: "Deep dive into [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s unique CodeAct module for dynamic code generation. Discover how to build AI agents that write their own Ruby code to solve problems."
+description: "Deep dive into DSPy.rb's unique CodeAct module for dynamic code generation. Discover how to build AI agents that write their own Ruby code to solve problems."
 date: 2025-06-15
 author: "Vicente Reig"
 category: "Features"
@@ -9,7 +9,7 @@ reading_time: "10 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/codeact-dynamic-code-generation/"
 ---
 
-Imagine an AI that doesn't just call predefined tools but writes its own Ruby code to solve problems. That's CodeAct - a unique feature in [DSPy.rb](https://github.com/vicentereig/dspy.rb) that sets it apart from the Python version.
+Imagine an AI that doesn't just call predefined tools but writes its own Ruby code to solve problems. That's CodeAct - a unique feature in DSPy.rb that sets it apart from the Python version.
 
 ## The Problem with Fixed Tools
 
@@ -355,4 +355,4 @@ Remember: with great power comes great responsibility. Always validate CodeAct's
 
 ---
 
-*Have you used CodeAct for something interesting? We'd love to hear about it! Share your experiences in our [GitHub discussions](https://github.com/vicentereig/dspy.rb/discussions).*
+*Have you used CodeAct for something interesting? We'd love to hear about it! Share your experiences in our GitHub discussions.*

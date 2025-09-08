@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Multimodal Support
-description: Process images and text with [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s multimodal capabilities. Support
+description: Process images and text with DSPy.rb's multimodal capabilities. Support
   for OpenAI and Anthropic vision models with type-safe image analysis and structured
   outputs.
 nav_order: 7
@@ -11,7 +11,7 @@ last_modified_at: 2025-08-26 00:00:00 +0000
 ---
 # Multimodal Support
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports multimodal inputs, allowing you to work with both text and images in your AI applications. This feature enables powerful use cases like image analysis, visual question answering, and object detection.
+DSPy.rb supports multimodal inputs, allowing you to work with both text and images in your AI applications. This feature enables powerful use cases like image analysis, visual question answering, and object detection.
 
 ## Vision-Capable Models
 
@@ -34,7 +34,7 @@ last_modified_at: 2025-08-26 00:00:00 +0000
 
 ### Creating Images
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) provides the `DSPy::Image` class for handling images in various formats:
+DSPy.rb provides the `DSPy::Image` class for handling images in various formats:
 
 ```ruby
 # From URL (OpenAI only)
@@ -117,7 +117,7 @@ end
 
 ## Structured Multimodal Signatures
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) supports powerful structured signatures that can analyze images and extract detailed information with type safety.
+DSPy.rb supports powerful structured signatures that can analyze images and extract detailed information with type safety.
 
 ### Image Analysis with Structured Output
 
@@ -324,7 +324,7 @@ puts response
 
 ## Error Handling
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) validates image compatibility with your chosen provider and provides clear error messages:
+DSPy.rb validates image compatibility with your chosen provider and provides clear error messages:
 
 ```ruby
 begin
@@ -422,12 +422,12 @@ puts "Tokens used: #{response.usage.total_tokens}"
 Complete working examples are available in the repository:
 
 ### Bounding Box Detection
-- **File**: [`examples/multimodal/bounding_box_detection.rb`](https://github.com/vicentereig/dspy.rb/blob/main/examples/multimodal/bounding_box_detection.rb)
+- **File**: `examples/multimodal/bounding_box_detection.rb`
 - **Features**: Type-safe bounding boxes with `T::Struct`, object detection, normalized coordinates
 - **Use Cases**: Aerial image analysis, object counting, computer vision tasks
 
 ### Image Analysis  
-- **File**: [`examples/multimodal/image_analysis.rb`](https://github.com/vicentereig/dspy.rb/blob/main/examples/multimodal/image_analysis.rb)
+- **File**: `examples/multimodal/image_analysis.rb`
 - **Features**: Comprehensive image analysis, color extraction, mood detection, artistic analysis
 - **Use Cases**: Art analysis, photography assessment, content moderation, image cataloging
 

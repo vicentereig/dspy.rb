@@ -1,13 +1,13 @@
 ---
 layout: docs
 title: Troubleshooting
-description: Common issues and solutions for [DSPy.rb](https://github.com/vicentereig/dspy.rb)
+description: Common issues and solutions for DSPy.rb
 date: 2025-07-20 00:00:00 +0000
 last_modified_at: 2025-08-08 00:00:00 +0000
 ---
 # Troubleshooting Guide
 
-This guide covers common issues you might encounter when using [DSPy.rb](https://github.com/vicentereig/dspy.rb) and their solutions.
+This guide covers common issues you might encounter when using DSPy.rb and their solutions.
 
 ## Language Model Configuration
 
@@ -226,7 +226,7 @@ end
 
 If you encounter issues not covered here:
 
-1. Check the [GitHub issues](https://github.com/vicentereig/dspy.rb/issues)
+1. Check the GitHub issues
 2. Search the documentation
 3. Create a new issue with:
    - Ruby version

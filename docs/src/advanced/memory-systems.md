@@ -19,7 +19,7 @@ last_modified_at: 2025-08-08 00:00:00 +0000
 ---
 # Memory Systems
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) includes a memory compaction system that helps manage memory usage by automatically removing old, duplicated, or rarely accessed memories. The system runs inline during normal operations to prevent memory stores from growing indefinitely.
+DSPy.rb includes a memory compaction system that helps manage memory usage by automatically removing old, duplicated, or rarely accessed memories. The system runs inline during normal operations to prevent memory stores from growing indefinitely.
 
 ## Overview
 

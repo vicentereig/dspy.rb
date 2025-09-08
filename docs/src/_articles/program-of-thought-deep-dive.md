@@ -79,7 +79,7 @@ The researchers tested on everything from grade school math (GSM8K) to complex f
 
 ## PoT vs CodeAct: Different Philosophies
 
-Now, if you've been following [DSPy.rb](https://github.com/vicentereig/dspy.rb) development, you might be thinking: "Wait, isn't this just like CodeAct?" Not quite.
+Now, if you've been following DSPy.rb development, you might be thinking: "Wait, isn't this just like CodeAct?" Not quite.
 
 **CodeAct** follows a **Think-Code-Observe** loop:
 ```ruby
@@ -124,7 +124,7 @@ pot = dspy.ProgramOfThought("question -> answer")
 result = pot(question="What is the compound interest on $1000 at 5% for 10 years?")
 ```
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb)? We don't have PoT yet. But we do have CodeAct, which covers some similar ground with its iterative approach.
+DSPy.rb? We don't have PoT yet. But we do have CodeAct, which covers some similar ground with its iterative approach.
 
 ## The Skeptical Take
 
@@ -144,7 +144,7 @@ Compare this to ChainOfThought, which just generates text. Much safer, even if l
 
 ## Implementation Challenges
 
-If you wanted to add PoT to [DSPy.rb](https://github.com/vicentereig/dspy.rb), you'd need to solve:
+If you wanted to add PoT to DSPy.rb, you'd need to solve:
 
 1. **Sandboxing**: Docker containers? VM isolation? Ruby's `$SAFE` levels?
 2. **Dependencies**: Managing gems and libraries in the execution environment
@@ -203,7 +203,7 @@ end
 
 This gives you the best of all worlds: computational accuracy when you need it, iterative problem-solving for complex tasks, and safe text-based reasoning as the default.
 
-## Should [DSPy.rb](https://github.com/vicentereig/dspy.rb) Add PoT?
+## Should DSPy.rb Add PoT?
 
 Honestly? Maybe. The academic results are compelling, and there's definitely a gap in numerical reasoning that CodeAct doesn't fully address.
 
@@ -227,7 +227,7 @@ Program of Thought represents a clever solution to a real problem: LLMs are bad 
 
 But it's not a silver bullet. The security implications, implementation complexity, and narrow applicability mean it's a specialized tool, not a replacement for existing approaches.
 
-For [DSPy.rb](https://github.com/vicentereig/dspy.rb) users today: ChainOfThought for general reasoning, CodeAct for code-based problem solving, and maybe PoT in the future for when you really need to get the math right.
+For DSPy.rb users today: ChainOfThought for general reasoning, CodeAct for code-based problem solving, and maybe PoT in the future for when you really need to get the math right.
 
 The key insight isn't just about PoT itself - it's about **choosing the right reasoning approach for the right problem**. Sometimes you need the interpretability of natural language reasoning. Sometimes you need the flexibility of iterative code generation. And sometimes, you just need to get the damn calculation right.
 

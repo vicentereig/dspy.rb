@@ -3,7 +3,7 @@ layout: blog
 title: "Why Union Types Transform AI Agent Development"
 date: 2025-07-20
 categories: [patterns, agents]
-description: How [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s single-field union types with automatic type detection simplify AI agent development
+description: How DSPy.rb's single-field union types with automatic type detection simplify AI agent development
 toc: true
 permalink: /blog/union-types-agentic-workflows/
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/union-types-agentic-workflows/"
@@ -12,7 +12,7 @@ image:
   alt: AI agent workflow with union types
 ---
 
-Ever built an AI agent that needs to decide between different actions? You know the drill - create a struct with a dozen nilable fields, then play whack-a-mole with nil checks. There's a better way, and [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.11.0 makes it automatic with single-field union types.
+Ever built an AI agent that needs to decide between different actions? You know the drill - create a struct with a dozen nilable fields, then play whack-a-mole with nil checks. There's a better way, and DSPy.rb v0.11.0 makes it automatic with single-field union types.
 
 ## The Problem: Decision Paralysis in Code Form
 
@@ -93,11 +93,11 @@ module CoffeeShopActions
 end
 ```
 
-See the difference? Each struct has *only* the fields it needs. No more nil checks. No more "wait, which fields go with which action?" And with [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s automatic type detection, you don't even need to define a type field - DSPy handles that for you!
+See the difference? Each struct has *only* the fields it needs. No more nil checks. No more "wait, which fields go with which action?" And with DSPy.rb's automatic type detection, you don't even need to define a type field - DSPy handles that for you!
 
 ## The Magic: Automatic Type Detection
 
-Here's where [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s new single-field union types shine. You just use a single `T.any()` field, and DSPy handles everything:
+Here's where DSPy.rb's new single-field union types shine. You just use a single `T.any()` field, and DSPy handles everything:
 
 ```ruby
 # Define enums for type safety
@@ -223,7 +223,7 @@ class CoffeeShopAgent < DSPy::Module
 end
 ```
 
-[View the complete source code on GitHub →](https://github.com/vicentereig/dspy.rb/tree/main/examples/coffee-shop-agent)
+View the complete source code on GitHub →
 
 ## Running the Agent
 
@@ -406,9 +406,9 @@ end
 
 ## Robustness Against LLM Quirks
 
-One more thing that makes union types in [DSPy.rb](https://github.com/vicentereig/dspy.rb) particularly robust: **automatic field filtering**. 
+One more thing that makes union types in DSPy.rb particularly robust: **automatic field filtering**. 
 
-Sometimes LLMs get creative and return extra fields that aren't part of your struct definition. Maybe the model confuses similar concepts or hallucinates additional properties. With [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.15.4+, these extra fields are automatically filtered out during type conversion:
+Sometimes LLMs get creative and return extra fields that aren't part of your struct definition. Maybe the model confuses similar concepts or hallucinates additional properties. With DSPy.rb v0.15.4+, these extra fields are automatically filtered out during type conversion:
 
 ```ruby
 # Even if the LLM returns this:
@@ -442,10 +442,10 @@ The coffee shop agent shows how clean this pattern can be:
 - **Zero boilerplate**: No discriminator enums or manual type parsing
 - **It just works**: DSPy handles all the `_type` field magic automatically
 
-And with [DSPy.rb](https://github.com/vicentereig/dspy.rb) v0.11.0's automatic type detection, the friction is completely gone. You define your structs, use a single `T.any()` field, and DSPy handles all the type magic behind the scenes.
+And with DSPy.rb v0.11.0's automatic type detection, the friction is completely gone. You define your structs, use a single `T.any()` field, and DSPy handles all the type magic behind the scenes.
 
 So next time you're building an agent that needs to make decisions, reach for single-field union types. Your future self (and your nil-checking fingers) will thank you.
 
 ---
 
-*Want to try it yourself? Check out the [complete coffee shop agent example](https://github.com/vicentereig/dspy.rb/tree/main/examples/coffee-shop-agent) and the [union types documentation](https://vicentereig.github.io/dspy.rb/advanced/complex-types#union-types).*
+*Want to try it yourself? Check out the complete coffee shop agent example and the [union types documentation](https://vicentereig.github.io/dspy.rb/advanced/complex-types#union-types).*

@@ -19,7 +19,7 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Predictors
 
-Predictors are the execution engines that take your signatures and generate structured results using language models. [DSPy.rb](https://github.com/vicentereig/dspy.rb) provides three predictor types for different use cases.
+Predictors are the execution engines that take your signatures and generate structured results using language models. DSPy.rb provides three predictor types for different use cases.
 
 ## DSPy::Predict
 
@@ -569,7 +569,7 @@ end
 
 ## Concurrent Predictions
 
-For applications that need to process multiple predictions simultaneously, [DSPy.rb](https://github.com/vicentereig/dspy.rb) supports concurrent execution using Ruby's `async` gem with `Async::Barrier` for synchronization.
+For applications that need to process multiple predictions simultaneously, DSPy.rb supports concurrent execution using Ruby's `async` gem with `Async::Barrier` for synchronization.
 
 ### When to Use Concurrent Predictions
 

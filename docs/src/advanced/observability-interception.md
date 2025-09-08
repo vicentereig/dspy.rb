@@ -17,7 +17,7 @@ date: 2025-09-03 00:00:00 +0000
 ---
 # Event System vs Monkey-Patching
 
-The [DSPy.rb](https://github.com/vicentereig/dspy.rb) event system eliminates the need for complex monkey-patching and override techniques that were previously required for custom observability.
+The DSPy.rb event system eliminates the need for complex monkey-patching and override techniques that were previously required for custom observability.
 
 ## The Problem with Monkey-Patching
 

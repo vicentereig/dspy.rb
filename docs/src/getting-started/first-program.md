@@ -21,7 +21,7 @@ By the end of this tutorial, you'll have built an AI system that:
 
 ## Setting Up
 
-First, let's set up [DSPy.rb](https://github.com/vicentereig/dspy.rb) in your project:
+First, let's set up DSPy.rb in your project:
 
 ```ruby
 # Gemfile
@@ -216,7 +216,7 @@ This isn't just type checking—it's **runtime validation** that ensures your LL
 
 ## Building ReAct Agents with Ruby Types
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb)'s ReAct agents also use idiomatic Ruby type definitions for tools:
+DSPy.rb's ReAct agents also use idiomatic Ruby type definitions for tools:
 
 ```ruby
 # Define tools with clear Ruby interfaces

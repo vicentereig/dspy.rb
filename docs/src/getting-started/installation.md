@@ -1,7 +1,7 @@
 ---
 layout: docs
 name: Installation
-description: Install [DSPy.rb](https://github.com/vicentereig/dspy.rb) and set up your development environment
+description: Install DSPy.rb and set up your development environment
 breadcrumb:
 - name: Getting Started
   url: "/getting-started/"
@@ -20,7 +20,7 @@ last_modified_at: 2025-08-26 00:00:00 +0000
 
 ## Installation
 
-Add [DSPy.rb](https://github.com/vicentereig/dspy.rb) to your Gemfile:
+Add DSPy.rb to your Gemfile:
 
 ```ruby
 gem 'dspy', '~> 0.20.0'
@@ -40,7 +40,7 @@ gem 'dspy', github: 'vicentereig/dspy.rb'
 
 ## Required Dependencies
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) requires Ruby 3.3+ and includes these core dependencies:
+DSPy.rb requires Ruby 3.3+ and includes these core dependencies:
 
 ```ruby
 # Core dependencies (automatically installed)
@@ -60,7 +60,7 @@ gem 'sorbet-schema', '~> 0.3'
 
 ## Observability
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) uses structured logging for observability. The logs can be parsed and sent to any monitoring platform you prefer.
+DSPy.rb uses structured logging for observability. The logs can be parsed and sent to any monitoring platform you prefer.
 
 ## Configuration
 
@@ -225,5 +225,5 @@ puts "✅ DSPy is working! Response: #{result.response}"
 ### Getting Help
 
 - Check the [documentation](../README.md)
-- Report issues on [GitHub](https://github.com/vicentereig/dspy.rb/issues)
+- Report issues on GitHub
 - Email the maintainer directly for urgent issues
