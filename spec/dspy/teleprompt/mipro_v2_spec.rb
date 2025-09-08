@@ -88,6 +88,19 @@ end
 
 RSpec.describe DSPy::Teleprompt::MIPROv2 do
   let(:test_program) { MockMIPROProgram.new(MIPROv2QA) }
+
+  # Helper method to create CandidateConfig with dry-configurable syntax
+  def create_test_candidate_config(instruction: "", few_shot_examples: [], type: DSPy::Teleprompt::CandidateType::Baseline, metadata: {})
+    config = DSPy::Teleprompt::MIPROv2::CandidateConfig.new
+    config.configure do |c|
+      c.instruction = instruction
+      c.few_shot_examples = few_shot_examples
+      c.type = type
+      c.metadata = metadata
+    end
+    config.finalize!
+    config
+  end
   
   let(:training_examples) do
     [
@@ -261,27 +274,35 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
 
   describe DSPy::Teleprompt::MIPROv2::CandidateConfig do
     let(:candidate) do
-      DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
-        instruction: "Analyze step by step",
-        few_shot_examples: training_examples.take(2),
-        metadata: { type: "combined", rank: 1 }
-      )
+      config = DSPy::Teleprompt::MIPROv2::CandidateConfig.new
+      config.configure do |c|
+        c.instruction = "Analyze step by step"
+        c.few_shot_examples = training_examples.take(2)
+        c.type = DSPy::Teleprompt::CandidateType::Combined
+        c.metadata = { rank: 1 }
+      end
+      config.finalize!
+      config
     end
 
     it 'stores candidate configuration correctly' do
-      expect(candidate.instruction).to eq("Analyze step by step")
-      expect(candidate.few_shot_examples.size).to eq(2)
-      expect(candidate.metadata[:type]).to eq("combined")
+      expect(candidate.config.instruction).to eq("Analyze step by step")
+      expect(candidate.config.few_shot_examples.size).to eq(2)
+      expect(candidate.config.type).to eq(DSPy::Teleprompt::CandidateType::Combined)
+      expect(candidate.config.metadata[:rank]).to eq(1)
       expect(candidate.config_id).to be_a(String)
       expect(candidate.config_id.length).to eq(12)
     end
 
     it 'generates consistent config IDs' do
-      candidate2 = DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
-        instruction: "Analyze step by step",
-        few_shot_examples: training_examples.take(2),
-        metadata: { type: "combined", rank: 1 }
-      )
+      candidate2 = DSPy::Teleprompt::MIPROv2::CandidateConfig.new
+      candidate2.configure do |c|
+        c.instruction = "Analyze step by step"
+        c.few_shot_examples = training_examples.take(2)
+        c.type = DSPy::Teleprompt::CandidateType::Combined
+        c.metadata = { rank: 1 }
+      end
+      candidate2.finalize!
 
       expect(candidate.config_id).to eq(candidate2.config_id)
     end
@@ -294,17 +315,18 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
     end
 
     it 'freezes metadata' do
-      expect(candidate.metadata).to be_frozen
+      expect(candidate.config.metadata).to be_frozen
     end
   end
 
   describe DSPy::Teleprompt::MIPROv2::MIPROv2Result do
     let(:mock_candidates) do
       [
-        DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+        create_test_candidate_config(
           instruction: "Test instruction",
           few_shot_examples: [],
-          metadata: { type: "instruction_only" }
+          type: DSPy::Teleprompt::CandidateType::InstructionOnly,
+          metadata: {}
         )
       ]
     end
@@ -715,15 +737,17 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
   describe 'optimization strategies' do
     let(:mock_candidates) do
       [
-        DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+        create_test_candidate_config(
           instruction: "Instruction 1",
           few_shot_examples: [],
-          metadata: { type: "instruction_only", rank: 0 }
+          type: DSPy::Teleprompt::CandidateType::InstructionOnly,
+          metadata: { rank: 0 }
         ),
-        DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+        create_test_candidate_config(
           instruction: "Instruction 2",
           few_shot_examples: training_examples.take(1),
-          metadata: { type: "combined", rank: 1 }
+          type: DSPy::Teleprompt::CandidateType::Combined,
+          metadata: { rank: 1 }
         )
       ]
     end
@@ -809,7 +833,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
         # Create realistic candidate configs using actual CandidateConfig class
         candidates = []
         4.times do |i|
-          candidate = DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+          candidate = create_test_candidate_config(
             instruction: "Instruction #{i}" * (i + 1),
             few_shot_examples: training_examples.take(2),
             metadata: { rank: i }
@@ -854,7 +878,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
         # Create test candidates using real CandidateConfig objects
         candidates = []
         2.times do |i|
-          candidate = DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+          candidate = create_test_candidate_config(
             instruction: "Test instruction #{i}",
             few_shot_examples: training_examples.take(1),
             metadata: { test_rank: i }
@@ -921,15 +945,17 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
     
     let(:mock_candidates) do
       [
-        DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+        create_test_candidate_config(
           instruction: "Analyze step by step with detailed reasoning",
           few_shot_examples: training_examples.take(2),
-          metadata: { type: "combined", instruction_rank: 2 }
+          type: DSPy::Teleprompt::CandidateType::Combined,
+          metadata: { instruction_rank: 2 }
         ),
-        DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+        create_test_candidate_config(
           instruction: "Provide concise answer based on context",
           few_shot_examples: [],
-          metadata: { type: "instruction_only", instruction_rank: 1 }
+          type: DSPy::Teleprompt::CandidateType::InstructionOnly,
+          metadata: { instruction_rank: 1 }
         )
       ]
     end
@@ -978,7 +1004,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
       expect(first_candidate).to be_a(Hash)
       expect(first_candidate[:instruction]).to eq("Analyze step by step with detailed reasoning")
       expect(first_candidate[:few_shot_examples]).to eq(2) # Count, not actual examples
-      expect(first_candidate[:metadata]).to eq({ type: "combined", instruction_rank: 2 })
+      expect(first_candidate[:metadata]).to eq({ instruction_rank: 2 })
       expect(first_candidate[:config_id]).to be_a(String)
       expect(first_candidate[:config_id].length).to eq(12)
       
@@ -987,7 +1013,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
       expect(second_candidate).to be_a(Hash)
       expect(second_candidate[:instruction]).to eq("Provide concise answer based on context")
       expect(second_candidate[:few_shot_examples]).to eq(0) # No examples
-      expect(second_candidate[:metadata]).to eq({ type: "instruction_only", instruction_rank: 1 })
+      expect(second_candidate[:metadata]).to eq({ instruction_rank: 1 })
       expect(second_candidate[:config_id]).to be_a(String)
       
       # Verify other state is preserved
@@ -1086,7 +1112,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
     it 'calculates diversity score' do
       mipro = DSPy::Teleprompt::MIPROv2.new
       
-      candidate = DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+      candidate = create_test_candidate_config(
         instruction: "A" * 100, # Length 100
         few_shot_examples: training_examples.take(3),
         metadata: {}

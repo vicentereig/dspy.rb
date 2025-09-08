@@ -228,13 +228,12 @@ puts "#{error_count} examples failed with errors"
 The real power comes when you combine evaluation with optimization. You can use your custom metrics to guide prompt improvement:
 
 ```ruby
-optimizer = DSPy::MIPROv2.new(signature: TweetSentiment)
+program = DSPy::Predict.new(TweetSentiment)
+metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
 
-result = optimizer.optimize(examples: train_examples) do |candidate_predictor, val_examples|
-  evaluator = DSPy::Evaluate.new(candidate_predictor, metric: sentiment_quality_metric)
-  evaluation_result = evaluator.evaluate(val_examples, display_progress: false)
-  evaluation_result.score  # This guides the optimization
-end
+result = optimizer.compile(program, trainset: train_examples)
+# The metric proc is now used directly by MIPROv2 for optimization
 
 puts "Best optimized quality score: #{result.best_score_value}"
 ```

@@ -30,7 +30,7 @@ Learn the fundamentals of how DSPy.rb optimizes prompts automatically using exam
 Start with BootstrapFewShot - the easiest optimizer that generates effective few-shot examples.
 
 ### [MIPROv2](./miprov2/)
-Advanced optimization with MIPROv2 for production-grade performance and reliability.
+State-of-the-art optimization with MIPROv2 featuring Bayesian optimization with Gaussian Processes, multiple optimization strategies, and production-grade performance.
 
 ### [GEPA (Genetic-Pareto)](./gepa/)
 GEPA (Genetic-Pareto) optimization with advanced genetic algorithms for multi-objective prompt optimization.

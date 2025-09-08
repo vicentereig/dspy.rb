@@ -245,17 +245,18 @@ def evaluate_candidate(predictor, dev_examples)
 end
 
 # Use in optimizer
-optimizer = DSPy::MIPROv2.new(
-  signature: QASignature,
-  mode: :medium
-)
-
-result = optimizer.optimize(
-  examples: train_examples,
-  val_examples: dev_examples
-) do |predictor, examples|
-  evaluate_candidate(predictor, examples)
+program = DSPy::Predict.new(QASignature)
+metric = proc do |example, prediction|
+  evaluate_candidate_prediction(example, prediction)
 end
+
+optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)
+
+result = optimizer.compile(
+  program,
+  trainset: train_examples,
+  valset: dev_examples
+)
 ```
 
 ## Best Practices

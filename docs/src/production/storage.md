@@ -35,8 +35,10 @@ The storage system supports:
 
 ```ruby
 # Run optimization
-optimizer = DSPy::MIPROv2.new(signature: ClassifyText)
-result = optimizer.optimize(examples: examples)
+program = DSPy::Predict.new(ClassifyText)
+metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+result = optimizer.compile(program, trainset: examples)
 
 # Store the result using ProgramStorage directly
 storage = DSPy::Storage::ProgramStorage.new(storage_path: "./dspy_storage")

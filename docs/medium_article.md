@@ -208,16 +208,12 @@ training_examples = [
 ]
 
 # Set up optimization
-optimizer = DSPy::MIPROv2.new(signature: ClassifySentiment)
+program = DSPy::Predict.new(ClassifySentiment)
+metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
 
 # Let it optimize automatically
-result = optimizer.optimize(examples: training_examples) do |predictor, examples|
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  evaluation_result = evaluator.evaluate(examples: examples) do |example|
-    predictor.call(text: example.text)
-  end
-  evaluation_result.score
-end
+result = optimizer.compile(program, trainset: training_examples)
 
 # Get your optimized predictor
 best_predictor = result.optimized_program
@@ -438,9 +434,11 @@ training_examples = [
 ]
 
 # Optimize the classifier
-optimizer = DSPy::MIPROv2.new(signature: ClassifyEmail, mode: :balanced)
-result = optimizer.optimize(examples: training_examples) do |predictor, examples|
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
+program = DSPy::Predict.new(ClassifyEmail)
+metric = proc { |example, prediction| prediction.category == example.expected_category }
+optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)  # balanced -> medium
+result = optimizer.compile(program, trainset: training_examples)
+# Note: metric is now used directly by MIPROv2
   evaluator.evaluate(examples: examples) { |ex| predictor.call(email: ex.email) }.score
 end
 

@@ -24,7 +24,7 @@ DSPy.rb treats prompts as first-class objects that can be manipulated, analyzed,
 DSPy.rb provides:
 - **Prompt Objects**: Structured representation of prompts with instruction and examples
 - **Programmatic Manipulation**: Methods to modify prompts systematically
-- **Integration with Optimization**: Automatic prompt improvement through MIPROv2 and SimpleOptimizer
+- **Integration with Optimization**: Automatic prompt improvement through MIPROv2 (with Bayesian optimization) and SimpleOptimizer
 - **Schema Awareness**: Prompts understand input/output types from signatures
 
 ## Prompt Objects
@@ -147,10 +147,18 @@ custom_predictor.prompt = optimized_prompt
 ### Using MIPROv2 for Prompt Optimization
 
 ```ruby
-# MIPROv2 automatically optimizes prompts
-optimizer = DSPy::MIPROv2.new(signature: ClassifyText)
+# Create program to optimize
+program = DSPy::Predict.new(ClassifyText)
 
-result = optimizer.optimize(examples: training_examples) do |predictor, val_examples|
+# Define evaluation metric
+metric = proc do |example, prediction|
+  prediction.sentiment.downcase == example.expected_sentiment.downcase
+end
+
+# MIPROv2 automatically optimizes prompts using Bayesian optimization
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
   evaluator = DSPy::Evaluate.new(metric: :exact_match)
   evaluator.evaluate(examples: val_examples) do |example|
     predictor.call(text: example.text)
@@ -507,10 +515,13 @@ end
 ### 3. Use Optimization Algorithms
 
 ```ruby
-# Let MIPROv2 handle prompt optimization
-optimizer = DSPy::MIPROv2.new(signature: ClassifyText, mode: :medium)
+# Let MIPROv2 handle prompt optimization using medium mode
+program = DSPy::Predict.new(ClassifyText)
+metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
 
-result = optimizer.optimize(examples: training_examples) do |predictor, val_examples|
+optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)
+
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
   evaluator = DSPy::Evaluate.new(metric: :exact_match)
   evaluator.evaluate(examples: val_examples) do |example|
     predictor.call(text: example.text)
