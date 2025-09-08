@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated architectural documentation with industry comparisons
 - Maintains backward compatibility via `DSPY_TELEMETRY_EXPORT_INTERVAL` env var
 
-## [0.25.0] - 2025-01-14
+## [0.25.0] - 2025-09-07
 
 ### Added
 - **Async Telemetry System** - Non-blocking observability with background export
@@ -44,27 +44,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved test performance and VCR recording speed
 - Enhanced OpenTelemetry span timing and operation naming
 
-## [0.24.2] - 2024-12-20
+## [0.24.2] - 2025-09-05
 
 ### Fixed
-- Minor stability improvements and dependency updates
+- Langfuse timing fixes and stability improvements
 
-## [0.24.1] - 2024-12-15
+## [0.24.1] - 2025-09-05
 
 ### Fixed
-- Bug fixes and performance improvements
+- Enhanced Langfuse integration and bug fixes
 
-## [0.24.0] - 2024-12-10
-
-### Added
-- Enhanced optimization algorithms
-- Improved telemetry and observability features
-
-## [0.23.0] - 2024-11-15
+## [0.24.0] - 2025-09-05
 
 ### Added
-- New optimization features
-- Enhanced documentation and examples
+- GEPA optimization fixes and improvements
+
+## [0.23.0] - 2025-09-05
+
+### Added
+- GEPA Optimizer implementation
 
 ## [0.22.1] - 2025-09-05
 
