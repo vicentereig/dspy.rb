@@ -783,14 +783,94 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
     end
 
     describe 'bayesian selection' do
-      it 'uses adaptive selection as fallback' do
+      it 'falls back to adaptive selection with insufficient data' do
         config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
         config.optimization_strategy = "bayesian"
         mipro = DSPy::Teleprompt::MIPROv2.new(config: config)
 
-        selected = mipro.send(:select_candidate_bayesian, mock_candidates, optimization_state, 5)
-        
+        # State with only 1 scored candidate (< 3 required)
+        sparse_state = {
+          scores: { "config1" => 0.8 },
+          exploration_counts: Hash.new(0),
+          temperature: 0.5,
+          best_score_history: [0.8],
+          no_improvement_count: 0
+        }
+
+        selected = mipro.send(:select_candidate_bayesian, mock_candidates, sparse_state, 1)
         expect(mock_candidates).to include(selected)
+      end
+
+      it 'uses Gaussian Process for selection with sufficient data' do
+        config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
+        config.optimization_strategy = "bayesian"
+        mipro = DSPy::Teleprompt::MIPROv2.new(config: config)
+
+        # Create realistic candidate configs using actual CandidateConfig class
+        candidates = []
+        4.times do |i|
+          candidate = DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+            instruction: "Instruction #{i}" * (i + 1),
+            few_shot_examples: training_examples.take(2),
+            metadata: { rank: i }
+          )
+          candidates << candidate
+        end
+
+        # State with sufficient scored candidates for GP
+        rich_state = {
+          scores: { 
+            candidates[0].config_id => 0.6, 
+            candidates[1].config_id => 0.8, 
+            candidates[2].config_id => 0.7,
+            candidates[3].config_id => 0.9
+          },
+          exploration_counts: Hash.new(0),
+          temperature: 0.3,
+          best_score_history: [0.6, 0.8, 0.7, 0.9],
+          no_improvement_count: 0
+        }
+
+        selected = mipro.send(:select_candidate_bayesian, candidates, rich_state, 10)
+        expect(candidates).to include(selected)
+      end
+
+      it 'handles GP failures gracefully' do
+        config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
+        config.optimization_strategy = "bayesian"
+        mipro = DSPy::Teleprompt::MIPROv2.new(config: config)
+
+        # Mock the GP to raise an error
+        allow(DSPy::Optimizers::GaussianProcess).to receive(:new).and_raise(StandardError.new("GP failed"))
+
+        selected = mipro.send(:select_candidate_bayesian, mock_candidates, optimization_state, 5)
+        expect(mock_candidates).to include(selected)
+      end
+
+      it 'encodes candidates consistently for GP features' do
+        config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
+        mipro = DSPy::Teleprompt::MIPROv2.new(config: config)
+
+        # Create test candidates using real CandidateConfig objects
+        candidates = []
+        2.times do |i|
+          candidate = DSPy::Teleprompt::MIPROv2::CandidateConfig.new(
+            instruction: "Test instruction #{i}",
+            few_shot_examples: training_examples.take(1),
+            metadata: { test_rank: i }
+          )
+          candidates << candidate
+        end
+
+        features = mipro.send(:encode_candidates_for_gp, candidates)
+
+        expect(features.length).to eq(2)
+        expect(features[0].length).to be > 3  # Should have multiple features
+        expect(features[0]).to all(be_a(Float))  # All features should be floats
+        
+        # Encoding should be deterministic
+        features2 = mipro.send(:encode_candidates_for_gp, candidates)
+        expect(features).to eq(features2)
       end
     end
   end
