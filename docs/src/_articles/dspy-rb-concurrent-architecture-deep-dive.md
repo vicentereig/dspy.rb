@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "DSPy.rb Concurrent Architecture: Deep Dive into 3.3x Performance Gains"
-description: "In a world where your agent is sitting ducks waiting for an LLM to respond, DSPy.rb is architected for high throughput. DSPy process LLM requests concurrently, while a background thread processes in isolation and asynchronously requests to report open telemetry. It's a fair trade off to avoid telemetry getting in the way of your precious LLM responses."
+description: "An architecture designed for high throughput on a fiber-based concurrent execution model, event-driven telemetry system, and production-ready architecture delivering real performance improvements with minimal overhead."
 date: 2025-09-08
 author: "Vicente Reig"
 category: "Architecture"
