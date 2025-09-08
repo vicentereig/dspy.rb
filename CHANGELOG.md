@@ -5,6 +5,26 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.1] - 2025-01-15
+
+### Changed
+- **Telemetry Export Interval** - Aligned with New Relic's 60-second harvest cycle
+  - Changed default export interval from 1 second to 60 seconds
+  - Reduces network overhead by 60x while maintaining observability
+  - Matches industry-standard monitoring agent patterns
+
+### Added
+- **Production Trade-offs Documentation** - Comprehensive architecture documentation
+  - Documents memory protection through queue limits (1000 spans)
+  - Explains FIFO span dropping under extreme load
+  - Acknowledges acceptable sample loss prioritizing application stability
+  - Aligns with New Relic and other production monitoring approaches
+
+### Technical Details
+- `DEFAULT_EXPORT_INTERVAL` changed from 1.0 to 60.0 seconds in AsyncSpanProcessor
+- Updated architectural documentation with industry comparisons
+- Maintains backward compatibility via `DSPY_TELEMETRY_EXPORT_INTERVAL` env var
+
 ## [0.22.1] - 2025-09-05
 
 ### Fixed

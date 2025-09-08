@@ -10,6 +10,10 @@ require 'async/barrier'
 require 'dotenv'
 Dotenv.load(File.join(File.dirname(__FILE__), '..', '..', '.env'))
 
+# Initialize New Relic monitoring
+require 'newrelic_rpm'
+NewRelic::Agent.manual_start
+
 # Configure DSPy
 DSPy.configure do |config|
   config.lm = DSPy::LM.new(

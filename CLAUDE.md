@@ -174,15 +174,6 @@ gem push dspy-VERSION.gem
 - **T-3 (SHOULD)** Prefer integration tests over heavy mocking.  
 - **T-4 (SHOULD)** Unit-test complex algorithms thoroughly.
 - **T-5 (SHOULD)** Test the entire structure in one assertion if possible
-- **T-6 (MUST)** For VCR integration tests: Skip tests when API keys are missing rather than using fallback keys
-  ```ruby
-  # ✅ Good: Skip when API key missing, create LM after skip check
-  it "calls the API", vcr: { cassette_name: "test" } do
-    skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
-    lm = DSPy::LM.new("openai/gpt-4", api_key: ENV['OPENAI_API_KEY'])
-    # test implementation
-  end
-  ```
 
 #### Code Organization
 - **O-1 (SHOULD)** Group related functionality in logical subdirectories (`tools/`, `memory/`, `agents/`).
