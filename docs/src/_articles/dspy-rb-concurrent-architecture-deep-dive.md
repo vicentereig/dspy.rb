@@ -161,18 +161,38 @@ end
 | Component | New Relic Agent | DSPy.rb AsyncSpanProcessor |
 |-----------|----------------|----------------------------|
 | Background Thread | ✓ Harvest thread | ✓ Export task thread |
-| Collection Interval | 60 seconds | Configurable (default 1s) |
+| Collection Interval | 60 seconds | ✓ 60 seconds (configurable) |
 | Queue-based Collection | ✓ Event queues | ✓ Thread::Queue with overflow |
 | Batch Export | ✓ Harvest cycles | ✓ Batched span export |
 | Retry Logic | ✓ Network resilience | ✓ Exponential backoff |
 | Zero Main Thread Impact | ✓ Background only | ✓ True async processing |
+| Memory Protection | ✓ Sampling limits | ✓ Queue limits with FIFO drop |
 
 **Performance Characteristics**:
 - **<50ms overhead** - matching industry standards for production monitoring
-- **Background batch export** with configurable intervals 
+- **Background batch export** with configurable intervals (60-second default)
 - **Queue-based collection** prevents memory issues under load (New Relic's proven pattern)
 - **True non-blocking operation** - main thread never waits for export
 - **Resilient retry logic** with exponential backoff using async sleep
+
+## Production Trade-offs: Memory Protection vs. Data Completeness
+
+Like New Relic and other production monitoring agents, DSPy.rb makes sensible trade-offs to protect application performance:
+
+**Memory Protection Strategy**:
+- **Queue size limits** (1000 spans default) prevent unbounded memory growth
+- **FIFO span dropping** when queue overflows - oldest spans are dropped first
+- **Overflow reporting** logs `observability.span_dropped` events for visibility
+
+**Network Efficiency**:
+- **60-second export intervals** reduce network overhead (matching New Relic's harvest cycle)
+- **Batch processing** (100 spans per batch) minimizes HTTP requests
+- **Configurable intervals** via `DSPY_TELEMETRY_EXPORT_INTERVAL` environment variable
+
+**Acceptable Sample Loss**:
+DSPy.rb protects memory and balances reaching out to the network too often, **at the expense of losing some samples in extreme load scenarios**. This mirrors New Relic's approach - under high volume, maintaining application performance takes priority over capturing every single telemetry event.
+
+> **Production Reality**: This trade-off is fundamental to production observability. New Relic's agents use reservoir sampling and limits per harvest cycle (2000-10000 events per 60 seconds), while DSPy.rb uses queue limits with FIFO dropping. Both approaches prioritize application stability over telemetry completeness.
 
 ## Concurrent Execution Flow Diagram
 
@@ -335,7 +355,7 @@ DSPy.rb doesn't reinvent telemetry architecture—it implements proven patterns 
 **Proven Pattern**: True async processing with overflow protection, following the same reliability principles as New Relic's harvest thread architecture:
 
 - **Configurable queue size**: `DSPY_TELEMETRY_QUEUE_SIZE` (default 1000)
-- **Export intervals**: `DSPY_TELEMETRY_EXPORT_INTERVAL` (default 1 second)  
+- **Export intervals**: `DSPY_TELEMETRY_EXPORT_INTERVAL` (default 60 seconds)  
 - **Batch processing**: `DSPY_TELEMETRY_BATCH_SIZE` (default 100 spans)
 - **Production tuning**: All parameters adjustable via environment variables
 

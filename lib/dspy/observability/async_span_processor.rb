@@ -14,7 +14,7 @@ module DSPy
     class AsyncSpanProcessor
       # Default configuration values
       DEFAULT_QUEUE_SIZE = 1000
-      DEFAULT_EXPORT_INTERVAL = 1.0  # seconds
+      DEFAULT_EXPORT_INTERVAL = 60.0  # seconds
       DEFAULT_EXPORT_BATCH_SIZE = 100
       DEFAULT_SHUTDOWN_TIMEOUT = 10.0  # seconds
       DEFAULT_MAX_RETRIES = 3
