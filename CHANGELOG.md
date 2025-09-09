@@ -5,6 +5,34 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.0] - 2025-01-09
+
+### Added
+- **Real Bayesian Optimization in MIPROv2** - State-of-the-art prompt optimization with Gaussian Processes
+  - Pure Ruby implementation with zero external dependencies (no LAPACK/OpenBLAS required)
+  - Upper Confidence Bound (UCB) acquisition function for intelligent exploration/exploitation
+  - Graceful fallbacks to adaptive selection when GP fails or insufficient data
+  - Comprehensive test coverage for Bayesian optimization behavior
+
+### Changed
+- **MIPROv2 API Refactoring** - Cleaner, more Ruby-idiomatic configuration
+  - Replaced constructor parameters with dry-configurable pattern
+  - Added T::Enum types for CandidateType and OptimizationStrategy
+  - Enable idiomatic Ruby configuration: `candidate.configure { |c| c.instruction = '...' }`
+  - Updated all documentation with new API patterns
+
+### Improved
+- **Dependency Optimization** - Lighter, faster installation
+  - Replaced unused polars-df dependency with lightweight numo-narray
+  - Resolved dependency conflicts and simplified setup
+  - Zero-dependency installation removes complex system requirements
+
+### Technical Details
+- Implemented pure Ruby Gaussian Process in `DSPy::Optimizers::GaussianProcess`
+- Added sophisticated kernel functions and matrix operations without external libraries
+- Enhanced MIPROv2 with three optimization strategies: greedy, adaptive, and Bayesian
+- Full backward compatibility maintained with existing MIPROv2 usage
+
 ## [0.25.1] - 2025-01-15
 
 ### Changed
