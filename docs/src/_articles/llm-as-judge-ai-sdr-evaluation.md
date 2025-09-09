@@ -387,150 +387,260 @@ multi_judge_consensus = ->(example, prediction) do
   passing_scores > consensus_threshold ? scores.sum / scores.length : 0.0
 end
 ```
-
-## Judge Configuration Best Practices
-
-### Why Define Judges Outside Metrics
-
-Defining the judge outside the metric lambda provides several benefits:
-
-```ruby
-# ✅ Good: Judge defined once, reused across evaluations
-judge_lm = DSPy::LM.new('openai/gpt-4o-mini', 
-                        api_key: ENV['OPENAI_API_KEY'])
-                        # DSPy.rb handles temperature/tokens automatically
-
-judge = DSPy::ChainOfThought.new(AISDRJudge)
-judge.configure do |c|
-  c.lm = judge_lm
-end
-
-# ❌ Bad: Judge created on every evaluation
-metric = ->(example, prediction) do
-  judge = DSPy::ChainOfThought.new(AISDRJudge)  # Recreated each time!
-  # ...
-end
-```
-
-### Judge Configuration Options
-
-Different models work better for different aspects:
-
-```ruby
-# Fast screening judge for high-volume evaluation
-screening_lm = DSPy::LM.new('openai/gpt-4o-mini', 
-                            api_key: ENV['OPENAI_API_KEY'])
-
-screening_judge = DSPy::ChainOfThought.new(QuickSDRJudge)
-screening_judge.configure { |c| c.lm = screening_lm }
-
-# Detailed analysis judge for final review  
-detailed_lm = DSPy::LM.new('openai/gpt-4o', 
-                           api_key: ENV['OPENAI_API_KEY'])
-
-detailed_judge = DSPy::ChainOfThought.new(AISDRJudge)
-detailed_judge.configure { |c| c.lm = detailed_lm }
-
-# Specialized compliance judge - use most capable model for critical decisions
-compliance_lm = DSPy::LM.new('anthropic/claude-opus-4-1', 
-                             api_key: ENV['ANTHROPIC_API_KEY'])
-
-compliance_judge = DSPy::ChainOfThought.new(ComplianceJudge)
-compliance_judge.configure { |c| c.lm = compliance_lm }
-```
-
-## Performance and Cost Considerations
-
-LLM judges have tradeoffs to consider:
-
-### Optimizing for Speed
-```ruby
-# Use faster models for initial screening
-class FastSDRJudge < DSPy::Signature
-  description "Quick quality check for AI SDR campaigns"
-  # Simplified outputs for speed
-  output do
-    const :quality_score, Float
-    const :recommendation, String  # Just SEND/REJECT
-  end
-end
-
-# Use GPT-4o-mini or Claude Haiku for high-volume evaluation
-fast_judge = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
-DSPy.configure { |c| c.lm = fast_judge }
-```
-
-### Batch Processing
-```ruby
-# Process campaigns in batches to reduce API calls
-def batch_evaluate_campaigns(campaigns, batch_size: 10)
-  campaigns.each_slice(batch_size) do |batch|
-    # Process batch concurrently
-    results = batch.map do |campaign|  
-      Thread.new { evaluator.call(campaign) }
-    end.map(&:value)
-    
-    # Process results...
-  end
-end
-```
-
 ## Integration with Production Systems
 
-Here's how to integrate LLM judges into your SDR workflow:
+Here's how to integrate LLM judges into your SDR workflow using Sidekiq for background processing:
 
 ```ruby
-class ProductionSDRPipeline
-  def initialize
-    @sdr_generator = DSPy::Predict.new(AISDRSignature)  
-    
-    # Configure dedicated judge for production use
-    judge_lm = DSPy::LM.new('openai/gpt-4o-mini', 
-                            api_key: ENV['OPENAI_API_KEY'])
-    
-    @quality_judge = DSPy::ChainOfThought.new(AISDRJudge)
-    @quality_judge.configure { |c| c.lm = judge_lm }
-    
-    @evaluator = DSPy::Evaluate.new(@sdr_generator, metric: ai_sdr_llm_judge_metric)
-  end
+require 'sidekiq'
+
+# Active Record model for campaign requests
+class CampaignRequest < ApplicationRecord
+  validates :target_role, :target_company, :target_industry, :value_proposition, presence: true
   
-  def process_prospect_list(prospects)
-    prospects.each do |prospect_criteria|
-      # Generate campaign
-      campaign = @sdr_generator.call(campaign_request: prospect_criteria)
+  enum status: { pending: 0, processing: 1, completed: 2, failed: 3 }
+  
+  # Convert AR model to DSPy struct for type safety
+  def to_dspy_struct
+    CampaignRequestStruct.new(
+      target_role: target_role,
+      target_company: target_company,
+      target_industry: target_industry,
+      value_proposition: value_proposition,
+      seniority_level: seniority_level,
+      department: department,
+      industry_focus: industry_focus,
+      case_studies: case_studies&.split(',') # Assuming comma-separated storage
+    )
+  end
+end
+
+# Rename the T::Struct to avoid naming collision
+class CampaignRequestStruct < T::Struct
+  const :target_role, String
+  const :target_company, String
+  const :target_industry, String
+  const :value_proposition, String
+  const :seniority_level, T.nilable(String)
+  const :department, T.nilable(String)
+  const :industry_focus, T.nilable(String)
+  const :case_studies, T.nilable(T::Array[String])
+end
+
+class SDRCampaignProcessor
+  include Sidekiq::Worker
+  sidekiq_options queue: 'sdr_evaluation', retry: 3
+  
+  def perform(campaign_request_id)
+    # Load from database
+    ar_request = CampaignRequest.find(campaign_request_id)
+    ar_request.update!(status: :processing)
+    
+    # Convert to type-safe struct for DSPy
+    campaign_request = ar_request.to_dspy_struct
+    
+    # Generate campaign and judge quality in async context
+    # DSPy's LM#chat uses Sync blocks internally for non-blocking I/O
+    result = Async do |task|
+      # Generate campaign (non-blocking)
+      sdr_generator = DSPy::Predict.new(AISDRSignature)
+      campaign = sdr_generator.call(campaign_request: campaign_request)
       
-      # Judge quality using the pre-configured judge
-      judgment = @quality_judge.call(
-        target_criteria: build_target_criteria(prospect_criteria),
+      # Judge quality (non-blocking)
+      judgment = judge.call(
+        target_criteria: build_target_criteria(campaign_request),
         prospect_profile: campaign.sdr_output.prospect,
         email_campaign: campaign.sdr_output.email,
-        sender_context: build_sender_context(prospect_criteria, campaign)
+        sender_context: build_sender_context(campaign_request, campaign)
       )
       
-      # Route based on judgment
-      case judgment.send_recommendation
-      when SendRecommendation::Send
-        send_campaign(campaign)
-        log_success(campaign, judgment)
-      when SendRecommendation::Revise
-        queue_for_revision(campaign, judgment)
-      when SendRecommendation::Reject
-        log_rejection(campaign, judgment)
-      end
+      { campaign: campaign, judgment: judgment }
+    end.wait  # Wait for completion before worker finishes
+    
+    campaign = result[:campaign]
+    judgment = result[:judgment]
+    
+    # Route based on judgment
+    case judgment.send_recommendation
+    when SendRecommendation::Send
+      ar_request.update!(status: :completed)
+      EmailSender.perform_async(campaign.sdr_output.to_h)
+      log_approved_campaign(campaign, judgment)
+    when SendRecommendation::Revise
+      HumanReviewWorker.perform_async(campaign.sdr_output.to_h, judgment.to_h)
+    when SendRecommendation::Reject
+      ar_request.update!(status: :failed)
+      log_rejected_campaign(campaign, judgment)
     end
+    
+  rescue => e
+    ar_request.update!(status: :failed, error_message: e.message)
+    raise  # Let Sidekiq handle retry logic
   end
   
   private
   
-  def send_campaign(campaign)
-    # Integrate with email platform (SendGrid, Mailgun, etc.)
+  def judge
+    @judge ||= begin
+      judge_lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      judge = DSPy::ChainOfThought.new(AISDRJudge)
+      judge.configure { |c| c.lm = judge_lm }
+      judge
+    end
   end
   
-  def queue_for_revision(campaign, judgment)
-    # Send to human for review with AI feedback
+  def build_target_criteria(campaign_request)
+    TargetCriteria.new(
+      role: campaign_request.target_role,
+      company: campaign_request.target_company,
+      industry: campaign_request.target_industry,
+      seniority_level: campaign_request.seniority_level,
+      department: campaign_request.department
+    )
+  end
+  
+  def build_sender_context(campaign_request, campaign)
+    SenderContext.new(
+      company: campaign.sdr_output.sender_company,
+      value_proposition: campaign_request.value_proposition,
+      industry_focus: campaign_request.industry_focus,
+      case_studies: campaign_request.case_studies
+    )
+  end
+end
+
+# Separate workers for different actions
+class EmailSender
+  include Sidekiq::Worker
+  sidekiq_options queue: 'email_sending'
+  
+  def perform(email_data)
+    # Send via SendGrid, Mailgun, etc.
+    email_service = EmailService.new
+    email_service.send_campaign(email_data)
+  end
+end
+
+class HumanReviewWorker
+  include Sidekiq::Worker  
+  sidekiq_options queue: 'human_review'
+  
+  def perform(campaign_data, judgment_data)
+    # Queue for human review with AI feedback
+    ReviewDashboard.add_campaign_for_review(campaign_data, judgment_data)
+  end
+end
+
+# Usage: Process campaign requests asynchronously
+def process_campaign_batch(campaign_request_ids)
+  campaign_request_ids.each do |request_id|
+    SDRCampaignProcessor.perform_async(request_id)
+  end
+end
+
+# Example: Create and process campaign requests
+campaign_requests = [
+  CampaignRequest.create!(
+    target_role: "VP Engineering", 
+    target_company: "TechCorp",
+    target_industry: "Software",
+    value_proposition: "Reduce deployment time by 40%",
+    status: :pending
+  ),
+  CampaignRequest.create!(
+    target_role: "Head of Sales",
+    target_company: "StartupCo", 
+    target_industry: "FinTech",
+    value_proposition: "Increase lead conversion by 25%",
+    status: :pending
+  )
+]
+
+# Queue for background processing
+process_campaign_batch(campaign_requests.map(&:id))
+```
+
+## Understanding DSPy's Async Behavior
+
+DSPy.rb uses Ruby's `async` gem for non-blocking I/O operations. Here's what happens under the hood:
+
+### LM#chat Uses Sync Blocks
+
+When you call any DSPy predictor, it internally uses `Sync` for non-blocking HTTP requests:
+
+```ruby
+# From lib/dspy/lm.rb
+def chat(inference_module, input_values, &block)
+  Sync do  # Non-blocking fiber context
+    # ... HTTP requests to OpenAI/Anthropic don't block the thread
   end
 end
 ```
+
+### Why This Matters for Sidekiq Workers
+
+Sidekiq workers run in threads. Without proper async handling, LLM calls block the entire thread:
+
+```ruby
+# ❌ Blocking approach - ties up worker thread during API calls
+class BlockingSDRProcessor
+  include Sidekiq::Worker
+  
+  def perform(campaign_id)
+    # These calls block the worker thread for 2-5 seconds each
+    campaign = sdr_generator.call(request)  # Blocks ~3s
+    judgment = judge.call(campaign)         # Blocks ~2s  
+    # Total: 5s of blocked thread time
+  end
+end
+
+# ✅ Non-blocking approach - efficient thread utilization  
+class AsyncSDRProcessor
+  include Sidekiq::Worker
+  
+  def perform(campaign_id)
+    Async do |task|
+      # Multiple LLM calls can run concurrently
+      # Worker thread yields during I/O, can process other jobs
+      campaign_task = task.async { sdr_generator.call(request) }
+      judgment_task = task.async { judge.call(campaign_task.wait) }
+      
+      process_result(campaign_task.wait, judgment_task.wait)
+    end.wait
+  end
+end
+```
+
+### Concurrent Judge Evaluation
+
+You can even run multiple judges in parallel:
+
+```ruby
+def perform(campaign_id)
+  # ... setup code
+  
+  Async do |task|
+    # Generate campaign first
+    campaign = sdr_generator.call(campaign_request: campaign_request)
+    
+    # Run multiple judges concurrently
+    relevance_task = task.async { relevance_judge.call(campaign_inputs) }
+    compliance_task = task.async { compliance_judge.call(campaign_inputs) }
+    personalization_task = task.async { personalization_judge.call(campaign_inputs) }
+    
+    # Wait for all judgments
+    relevance = relevance_task.wait
+    compliance = compliance_task.wait  
+    personalization = personalization_task.wait
+    
+    # Combine results
+    final_decision = combine_judgments(relevance, compliance, personalization)
+    process_final_decision(ar_request, campaign, final_decision)
+  end.wait
+end
+```
+
+This approach significantly improves throughput - instead of 6+ seconds of blocked time, you get concurrent evaluation with much better worker utilization.
 
 ## Best Practices
 
