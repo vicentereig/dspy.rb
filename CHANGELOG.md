@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced MIPROv2 with three optimization strategies: greedy, adaptive, and Bayesian
 - Full backward compatibility maintained with existing MIPROv2 usage
 
-## [0.25.1] - 2025-01-15
+## [0.25.1] - 2025-09-08
 
 ### Changed
 - **Telemetry Export Interval** - Aligned with New Relic's 60-second harvest cycle
