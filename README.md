@@ -157,29 +157,6 @@ Then run:
 bundle install
 ```
 
-#### System Dependencies for Ubuntu/Pop!_OS
-
-If you need to compile the `numo-narray` dependency from source (used for numerical computing in Bayesian optimization), install these system packages:
-
-```bash
-# Update package list
-sudo apt-get update
-
-# Install Ruby development files (if not already installed)
-sudo apt-get install ruby-full ruby-dev
-
-# Install essential build tools
-sudo apt-get install build-essential
-
-# Install BLAS and LAPACK libraries (required for numo-narray)
-sudo apt-get install libopenblas-dev liblapack-dev
-
-# Install additional development libraries
-sudo apt-get install libffi-dev libssl-dev
-```
-
-**Note**: The `numo-narray` gem typically compiles quickly (1-2 minutes). Pre-built binaries are available for most platforms, so compilation is only needed if a pre-built binary isn't available for your system.
-
 ## Recent Achievements
 
 DSPy.rb has rapidly evolved from experimental to production-ready:

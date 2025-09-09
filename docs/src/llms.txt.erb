@@ -86,9 +86,10 @@ DSPy.rb uses sophisticated type discrimination for complex data structures:
 ### 5. Optimization
 Improve accuracy with real data:
 
-- **SimpleOptimizer** - Basic prompt tuning
-- **MIPROv2** - Advanced optimization with bootstrap sampling
-- **Evaluation** - Measure and track performance
+- **SimpleOptimizer** - Basic prompt tuning with few-shot examples
+- **MIPROv2** - Advanced multi-prompt optimization with bootstrap sampling and Bayesian optimization
+- **GEPA** - Genetic-Pareto optimization using natural language reflection and Pareto frontier selection
+- **Evaluation** - Comprehensive framework with built-in and custom metrics, error handling, and batch processing
 
 ## Quick Start
 
@@ -126,27 +127,79 @@ puts result.score      # => 0.92
 
 ## Evaluation & Metrics
 
-Test and measure your LLM applications:
+Comprehensive testing and measurement framework:
 
 ```ruby
-# Basic evaluation
-metric = DSPy::Metrics.exact_match(field: :answer)
+# Basic evaluation with built-in metrics
+metric = DSPy::Metrics.exact_match(field: :answer, case_sensitive: false)
 evaluator = DSPy::Evaluate.new(predictor, metric: metric)
 
+# Type-safe examples using DSPy::Example
 test_examples = [
-  { input: { question: "What is 2+2?" }, expected: { answer: "4" } },
-  { input: { question: "What is 3+3?" }, expected: { answer: "6" } }
+  DSPy::Example.new(
+    signature_class: YourSignature,
+    input: { question: "What is 2+2?" }, 
+    expected: { answer: "4" }
+  )
 ]
 
-result = evaluator.evaluate(test_examples)
-puts "Accuracy: #{result.score}"  # => 0.95
+result = evaluator.evaluate(test_examples, display_progress: true)
+puts "Pass rate: #{result.pass_rate}"        # => 0.95
+puts "Total: #{result.total_examples}"       # => 100
+puts "Passed: #{result.passed_examples}"     # => 95
 
-# Custom metrics
-custom_metric = ->(example, prediction) do
-  prediction.answer.downcase == example.expected_answer.downcase
+# Advanced metrics with detailed results
+numeric_metric = DSPy::Metrics.numeric_difference(field: :score, tolerance: 0.1)
+
+# Custom multi-factor metrics
+quality_metric = ->(example, prediction) do
+  return 0.0 unless prediction
+  score = 0.0
+  score += 0.5 if prediction.answer == example.expected[:answer]  # Accuracy
+  score += 0.3 if prediction.explanation&.length&.> 50           # Completeness  
+  score += 0.2 if prediction.confidence&.> 0.8                   # Confidence
+  score
 end
 
+# Error-resilient batch evaluation
+evaluator = DSPy::Evaluate.new(
+  predictor,
+  metric: quality_metric,
+  max_errors: 3,              # Stop after 3 errors
+  provide_traceback: true     # Include stack traces
+)
+
+batch_result = evaluator.evaluate(large_test_set)
+error_count = batch_result.results.count { |r| r.metrics[:error] }
+
 # Built-in metrics: exact_match, contains, numeric_difference, composite_and
+```
+
+## MIPROv2 Optimization
+
+Advanced multi-prompt optimization with bootstrap sampling and Bayesian optimization:
+
+```ruby
+# Auto-configuration modes for different needs
+light_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.light(metric: your_metric)      # 6 trials, greedy
+medium_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: your_metric)    # 12 trials, adaptive  
+heavy_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.heavy(metric: your_metric)      # 18 trials, Bayesian
+
+# Custom configuration with Bayesian optimization
+custom_config = DSPy::Teleprompt::MIPROv2Config.new.tap do |config|
+  config.optimization_strategy = DSPy::Teleprompt::OptimizationStrategy::Bayesian
+  config.num_trials = 15
+  config.num_instruction_candidates = 6
+end
+
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric, config: custom_config)
+
+# Run optimization
+program = DSPy::ChainOfThought.new(YourSignature)  
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
+
+puts "Best score: #{result.best_score_value}"
+optimized_program = result.optimized_program
 ```
 
 ## Main Features
