@@ -560,57 +560,6 @@ campaign_requests = [
 process_campaign_batch(campaign_requests.map(&:id))
 ```
 
-## Understanding DSPy's Async Behavior
-
-DSPy.rb uses Ruby's `async` gem for non-blocking I/O operations. Here's what happens under the hood:
-
-### LM#chat Uses Sync Blocks
-
-When you call any DSPy predictor, it internally uses `Sync` for non-blocking HTTP requests:
-
-```ruby
-# From lib/dspy/lm.rb
-def chat(inference_module, input_values, &block)
-  Sync do  # Non-blocking fiber context
-    # ... HTTP requests to OpenAI/Anthropic don't block the thread
-  end
-end
-```
-
-### Why This Matters for Sidekiq Workers
-
-Sidekiq workers run in threads. Without proper async handling, LLM calls block the entire thread:
-
-```ruby
-# ❌ Blocking approach - ties up worker thread during API calls
-class BlockingSDRProcessor
-  include Sidekiq::Worker
-  
-  def perform(campaign_id)
-    # These calls block the worker thread for 2-5 seconds each
-    campaign = sdr_generator.call(request)  # Blocks ~3s
-    judgment = judge.call(campaign)         # Blocks ~2s  
-    # Total: 5s of blocked thread time
-  end
-end
-
-# ✅ Non-blocking approach - efficient thread utilization  
-class AsyncSDRProcessor
-  include Sidekiq::Worker
-  
-  def perform(campaign_id)
-    Async do |task|
-      # Multiple LLM calls can run concurrently
-      # Worker thread yields during I/O, can process other jobs
-      campaign_task = task.async { sdr_generator.call(request) }
-      judgment_task = task.async { judge.call(campaign_task.wait) }
-      
-      process_result(campaign_task.wait, judgment_task.wait)
-    end.wait
-  end
-end
-```
-
 ### Concurrent Judge Evaluation
 
 You can even run multiple judges in parallel:
@@ -703,7 +652,32 @@ LLM-as-a-Judge offers an alternative to rigid rule-based evaluation:
 
 This approach requires calibration and ongoing monitoring. When implemented carefully, it can help improve campaign quality and reduce manual review overhead.
 
-Ready to implement LLM judges in your AI SDR pipeline? Start with the examples above and adapt them to your specific quality standards and business requirements.
+## Beyond Manual Judge Configuration: Optimization
+
+While this article shows how to manually craft judge signatures and configure evaluation criteria, you don't have to write these prompts by hand. DSPy.rb's optimization framework can automatically improve both your SDR generator AND your judge prompts.
+
+Instead of manually tuning the `AISDRJudge` signature description and examples, you can:
+
+```ruby
+# Let DSPy optimize your judge prompts automatically
+judge_optimizer = DSPy::Teleprompt::MIPROv2.new(
+  metric: human_validation_metric  # Use human ratings as ground truth
+)
+
+optimized_judge = judge_optimizer.compile(
+  DSPy::ChainOfThought.new(AISDRJudge),
+  trainset: human_rated_campaigns
+)
+
+# The optimized judge often performs better than hand-crafted prompts
+puts "Optimized judge accuracy: #{optimized_judge.evaluation_score}"
+```
+
+This is especially powerful for complex evaluation tasks where the optimal prompt isn't obvious. The optimization process discovers better ways to instruct the judge, often finding prompt improvements humans miss.
+
+For high-stakes evaluation like compliance or legal review, consider optimizing your judges against human expert ratings to ensure they align with professional standards.
+
+Ready to implement LLM judges in your AI SDR pipeline? Start with the examples above, then explore [prompt optimization](/dspy.rb/optimization/prompt-optimization/) to let the machine improve your evaluation prompts automatically.
 
 ---
 
