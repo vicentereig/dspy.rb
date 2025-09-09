@@ -110,7 +110,7 @@ evaluator = DSPy::Evaluate.new(classifier, metric: metric)
 
 result = evaluator.evaluate(test_examples, display_progress: true)
 
-puts "Accuracy: #{(result.score * 100).round(1)}%"
+puts "Accuracy: #{(result.pass_rate * 100).round(1)}%"
 puts "Passed: #{result.passed_examples}/#{result.total_examples}"
 ```
 
@@ -176,7 +176,7 @@ This metric gives you a comprehensive quality score that considers multiple fact
 quality_evaluator = DSPy::Evaluate.new(classifier, metric: sentiment_quality_metric)
 quality_result = quality_evaluator.evaluate(test_examples, display_progress: true)
 
-puts "Quality Score: #{(quality_result.score * 100).round(1)}%"
+puts "Quality Score: #{(quality_result.pass_rate * 100).round(1)}%"
 ```
 
 ## Detailed Result Analysis

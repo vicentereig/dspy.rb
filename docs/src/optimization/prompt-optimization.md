@@ -211,10 +211,9 @@ results = instructions.map do |instruction|
   test_predictor.prompt = test_prompt
   
   # Evaluate performance
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  score = evaluator.evaluate(examples: test_examples) do |example|
-    test_predictor.call(text: example.text)
-  end.score
+  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  result = evaluator.evaluate(test_examples)
+  score = result.pass_rate
   
   { instruction: instruction, score: score }
 end
@@ -238,10 +237,9 @@ base_prompt = prompt.with_instruction("Classify sentiment as positive, negative,
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = test_prompt
   
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  score = evaluator.evaluate(examples: validation_examples) do |example|
-    test_predictor.call(text: example.text)
-  end.score
+  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  result = evaluator.evaluate(validation_examples)
+  score = result.pass_rate
   
   puts "#{num_examples} examples: #{score}"
 end
@@ -272,10 +270,9 @@ variations.each do |instruction|
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = test_prompt
   
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  score = evaluator.evaluate(examples: test_examples) do |example|
-    test_predictor.call(text: example.text)
-  end.score
+  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  result = evaluator.evaluate(test_examples)
+  score = result.pass_rate
   
   if score > best_score
     best_score = score
@@ -313,10 +310,9 @@ strategies.each do |strategy, examples|
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = test_prompt
   
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  score = evaluator.evaluate(examples: validation_examples) do |example|
-    test_predictor.call(text: example.text)
-  end.score
+  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  result = evaluator.evaluate(validation_examples)
+  score = result.pass_rate
   
   puts "#{strategy} selection: #{score}"
 end
@@ -348,10 +344,9 @@ final_prompt = enhanced_prompt.with_instruction(
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = p
   
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  score = evaluator.evaluate(examples: test_examples) do |example|
-    test_predictor.call(text: example.text)
-  end.score
+  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  result = evaluator.evaluate(test_examples)
+  score = result.pass_rate
   
   puts "Step #{i + 1}: #{score}"
 end
@@ -465,10 +460,9 @@ results = prompt_variants.map do |variant|
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = test_prompt
   
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  score = evaluator.evaluate(examples: test_examples) do |example|
-    test_predictor.call(text: example.text)
-  end.score
+  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  result = evaluator.evaluate(test_examples)
+  score = result.pass_rate
   
   variant.merge(score: score)
 end
@@ -497,10 +491,9 @@ improvements.each_with_index do |improvement, i|
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = candidate_prompt
   
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  score = evaluator.evaluate(examples: test_examples) do |example|
-    test_predictor.call(text: example.text)
-  end.score
+  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  result = evaluator.evaluate(test_examples)
+  score = result.pass_rate
   
   if score > current_score
     current_prompt = candidate_prompt

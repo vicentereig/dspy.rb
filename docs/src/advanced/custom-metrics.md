@@ -39,13 +39,12 @@ accuracy_metric = ->(example, prediction) do
 end
 
 # Use with evaluator
-evaluator = DSPy::Evaluate.new(metric: accuracy_metric)
+program = DSPy::Predict.new(YourSignature)
+evaluator = DSPy::Evaluate.new(program, metric: accuracy_metric)
 
-result = evaluator.evaluate(examples: test_examples) do |example|
-  predictor.call(input: example.input)
-end
+result = evaluator.evaluate(test_examples)
 
-puts "Custom accuracy: #{result.score}"
+puts "Custom accuracy: #{(result.pass_rate * 100).round(1)}%"
 ```
 
 ### Weighted Accuracy Metric
@@ -67,7 +66,8 @@ weighted_accuracy = ->(example, prediction) do
 end
 
 # Use in evaluation
-evaluator = DSPy::Evaluate.new(metric: weighted_accuracy)
+program = DSPy::Predict.new(YourSignature)
+evaluator = DSPy::Evaluate.new(program, metric: weighted_accuracy)
 ```
 
 ### Confidence-Aware Metric
@@ -137,7 +137,8 @@ customer_service_metric = ->(example, prediction) do
 end
 
 # Use in evaluation
-evaluator = DSPy::Evaluate.new(metric: customer_service_metric)
+program = DSPy::Predict.new(YourSignature)
+evaluator = DSPy::Evaluate.new(program, metric: customer_service_metric)
 ```
 
 ### Medical Information Accuracy Metric
@@ -356,13 +357,12 @@ metrics = {
 }
 
 # Evaluate with each metric
+program = DSPy::Predict.new(YourSignature)
 results = {}
 metrics.each do |metric_name, metric_proc|
-  evaluator = DSPy::Evaluate.new(metric: metric_proc)
-  result = evaluator.evaluate(examples: test_examples) do |example|
-    predictor.call(input: example.input)
-  end
-  results[metric_name] = result.score
+  evaluator = DSPy::Evaluate.new(program, metric: metric_proc)
+  result = evaluator.evaluate(test_examples)
+  results[metric_name] = result.pass_rate
 end
 
 puts "Evaluation Results:"
@@ -388,10 +388,9 @@ def detailed_evaluation(predictor, test_examples)
     result[:correct] ? 1.0 : 0.0
   end
   
-  evaluator = DSPy::Evaluate.new(metric: detailed_metric)
-  evaluation_result = evaluator.evaluate(examples: test_examples) do |example|
-    predictor.call(input: example.input)
-  end
+  program = DSPy::Predict.new(YourSignature)
+  evaluator = DSPy::Evaluate.new(program, metric: detailed_metric)
+  evaluation_result = evaluator.evaluate(test_examples)
   
   # Extract detailed results
   detailed_results = test_examples.map do |example|
@@ -403,7 +402,7 @@ def detailed_evaluation(predictor, test_examples)
   incorrect_results = detailed_results.reject { |r| r[:correct] }
   
   analysis = {
-    overall_accuracy: evaluation_result.score,
+    overall_accuracy: evaluation_result.pass_rate,
     avg_response_time: detailed_results.map { |r| r[:response_time] }.sum / detailed_results.size,
     avg_confidence_correct: correct_results.map { |r| r[:confidence] }.sum / correct_results.size,
     avg_confidence_incorrect: incorrect_results.empty? ? 0 : incorrect_results.map { |r| r[:confidence] }.sum / incorrect_results.size,
@@ -440,11 +439,6 @@ optimizer = DSPy::Teleprompt::MIPROv2.new(metric: domain_specific_metric)
 
 result = optimizer.compile(program, trainset: training_examples)
 # Note: the domain_specific_metric proc is now used directly as the optimizer metric
-  evaluation_result = evaluator.evaluate(examples: val_examples) do |example|
-    predictor.call(input: example.input)
-  end
-  evaluation_result.score
-end
 
 puts "Optimized for domain-specific quality: #{result.best_score_value}"
 ```
