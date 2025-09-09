@@ -8,8 +8,6 @@ tags: ["evaluation", "llm-judge", "sales", "sdr", "custom-metrics"]
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/llm-as-judge-ai-sdr-evaluation/"
 ---
 
-# LLM-as-a-Judge: Evaluating AI SDR Quality Beyond Simple Rules
-
 You've built an AI system that finds prospects and writes sales emails. Now you need to evaluate the quality before sending. Simple keyword matching and rule-based metrics miss important nuances like tone, authenticity, and contextual relevance.
 
 **LLM-as-a-Judge** uses one language model to evaluate another's output before sending. Instead of hardcoded rules, you get contextual evaluation that considers nuance. DSPy.rb makes this approach straightforward to implement.
