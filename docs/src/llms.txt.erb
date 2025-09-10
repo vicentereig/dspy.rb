@@ -185,14 +185,13 @@ light_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.light(metric: your_metric)
 medium_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: your_metric)    # 12 trials, adaptive  
 heavy_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.heavy(metric: your_metric)      # 18 trials, Bayesian
 
-# Custom configuration with Bayesian optimization
-custom_config = DSPy::Teleprompt::MIPROv2Config.new.tap do |config|
-  config.optimization_strategy = DSPy::Teleprompt::OptimizationStrategy::Bayesian
+# Custom configuration with Bayesian optimization using dry-configurable
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric)
+optimizer.configure do |config|
+  config.optimization_strategy = :bayesian  # or :greedy, :adaptive
   config.num_trials = 15
   config.num_instruction_candidates = 6
 end
-
-optimizer = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric, config: custom_config)
 
 # Run optimization
 program = DSPy::ChainOfThought.new(YourSignature)  

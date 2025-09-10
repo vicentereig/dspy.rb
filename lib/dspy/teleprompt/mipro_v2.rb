@@ -32,6 +32,7 @@ module DSPy
     # instruction generation, and Bayesian optimization
     class MIPROv2 < Teleprompter
       extend T::Sig
+      include Dry::Configurable
 
       # Auto-configuration modes for different optimization needs
       module AutoMode
@@ -44,15 +45,17 @@ module DSPy
           ).returns(MIPROv2)
         end
         def self.light(metric: nil, **kwargs)
-          config = MIPROv2Config.new
-          config.num_trials = 6
-          config.num_instruction_candidates = 3
-          config.max_bootstrapped_examples = 2
-          config.max_labeled_examples = 8
-          config.bootstrap_sets = 3
-          config.optimization_strategy = "greedy"
-          config.early_stopping_patience = 2
-          MIPROv2.new(metric: metric, config: config, **kwargs)
+          optimizer = MIPROv2.new(metric: metric, **kwargs)
+          optimizer.configure do |config|
+            config.num_trials = 6
+            config.num_instruction_candidates = 3
+            config.max_bootstrapped_examples = 2
+            config.max_labeled_examples = 8
+            config.bootstrap_sets = 3
+            config.optimization_strategy = :greedy
+            config.early_stopping_patience = 2
+          end
+          optimizer
         end
 
         sig do
@@ -62,15 +65,17 @@ module DSPy
           ).returns(MIPROv2)
         end
         def self.medium(metric: nil, **kwargs)
-          config = MIPROv2Config.new
-          config.num_trials = 12
-          config.num_instruction_candidates = 5
-          config.max_bootstrapped_examples = 4
-          config.max_labeled_examples = 16
-          config.bootstrap_sets = 5
-          config.optimization_strategy = "adaptive"
-          config.early_stopping_patience = 3
-          MIPROv2.new(metric: metric, config: config, **kwargs)
+          optimizer = MIPROv2.new(metric: metric, **kwargs)
+          optimizer.configure do |config|
+            config.num_trials = 12
+            config.num_instruction_candidates = 5
+            config.max_bootstrapped_examples = 4
+            config.max_labeled_examples = 16
+            config.bootstrap_sets = 5
+            config.optimization_strategy = :adaptive
+            config.early_stopping_patience = 3
+          end
+          optimizer
         end
 
         sig do
@@ -80,127 +85,94 @@ module DSPy
           ).returns(MIPROv2)
         end
         def self.heavy(metric: nil, **kwargs)
-          config = MIPROv2Config.new
-          config.num_trials = 18
-          config.num_instruction_candidates = 8
-          config.max_bootstrapped_examples = 6
-          config.max_labeled_examples = 24
-          config.bootstrap_sets = 8
-          config.optimization_strategy = "bayesian"
-          config.early_stopping_patience = 5
-          MIPROv2.new(metric: metric, config: config, **kwargs)
+          optimizer = MIPROv2.new(metric: metric, **kwargs)
+          optimizer.configure do |config|
+            config.num_trials = 18
+            config.num_instruction_candidates = 8
+            config.max_bootstrapped_examples = 6
+            config.max_labeled_examples = 24
+            config.bootstrap_sets = 8
+            config.optimization_strategy = :bayesian
+            config.early_stopping_patience = 5
+          end
+          optimizer
         end
       end
 
-      # Configuration for MIPROv2 optimization
-      class MIPROv2Config < Config
-        extend T::Sig
-
-        sig { returns(Integer) }
-        attr_accessor :num_trials
-
-        sig { returns(Integer) }
-        attr_accessor :num_instruction_candidates
-
-        sig { returns(Integer) }
-        attr_accessor :bootstrap_sets
-
-        sig { returns(String) }
-        attr_accessor :optimization_strategy
-
-        sig { returns(Float) }
-        attr_accessor :init_temperature
-
-        sig { returns(Float) }
-        attr_accessor :final_temperature
-
-        sig { returns(Integer) }
-        attr_accessor :early_stopping_patience
-
-        sig { returns(T::Boolean) }
-        attr_accessor :use_bayesian_optimization
-
-        sig { returns(T::Boolean) }
-        attr_accessor :track_diversity
-
-        sig { returns(DSPy::Propose::GroundedProposer::Config) }
-        attr_accessor :proposer_config
-
-        sig { void }
-        def initialize
-          super
-          @num_trials = 12
-          @num_instruction_candidates = 5
-          @bootstrap_sets = 5
-          @optimization_strategy = "adaptive" # greedy, adaptive, bayesian
-          @init_temperature = 1.0
-          @final_temperature = 0.1
-          @early_stopping_patience = 3
-          @use_bayesian_optimization = true
-          @track_diversity = true
-          @proposer_config = DSPy::Propose::GroundedProposer::Config.new
+      # Dry-configurable settings for MIPROv2
+      setting :num_trials, default: 12
+      setting :num_instruction_candidates, default: 5
+      setting :bootstrap_sets, default: 5
+      setting :max_bootstrapped_examples, default: 4
+      setting :max_labeled_examples, default: 16
+      setting :optimization_strategy, default: OptimizationStrategy::Adaptive, constructor: ->(value) {
+        # Coerce symbols to enum values
+        case value
+        when :greedy then OptimizationStrategy::Greedy
+        when :adaptive then OptimizationStrategy::Adaptive
+        when :bayesian then OptimizationStrategy::Bayesian
+        when OptimizationStrategy then value
+        when nil then OptimizationStrategy::Adaptive
+        else
+          raise ArgumentError, "Invalid optimization strategy: #{value}. Must be one of :greedy, :adaptive, :bayesian"
         end
+      }
+      setting :init_temperature, default: 1.0
+      setting :final_temperature, default: 0.1
+      setting :early_stopping_patience, default: 3
+      setting :use_bayesian_optimization, default: true
+      setting :track_diversity, default: true
+      setting :max_errors, default: 3
+      setting :num_threads, default: 1
 
-        sig { returns(T::Hash[Symbol, T.untyped]) }
-        def to_h
-          super.merge({
-            num_trials: @num_trials,
-            num_instruction_candidates: @num_instruction_candidates,
-            bootstrap_sets: @bootstrap_sets,
-            optimization_strategy: @optimization_strategy,
-            init_temperature: @init_temperature,
-            final_temperature: @final_temperature,
-            early_stopping_patience: @early_stopping_patience,
-            use_bayesian_optimization: @use_bayesian_optimization,
-            track_diversity: @track_diversity
-          })
+      # Class-level configuration method - sets defaults for new instances
+      def self.configure(&block)
+        if block_given?
+          # Store configuration in a class variable for new instances
+          @default_config_block = block
         end
       end
 
-      # Candidate configuration for optimization trials
-      class CandidateConfig
+      # Get the default configuration block
+      def self.default_config_block
+        @default_config_block
+      end
+
+
+      # Simple data structure for evaluated candidate configurations (immutable)
+      EvaluatedCandidate = Data.define(
+        :instruction,
+        :few_shot_examples,
+        :type,
+        :metadata,
+        :config_id
+      ) do
         extend T::Sig
-        include Dry::Configurable
-
-        # Configuration settings
-        setting :instruction, default: ""
-        setting :few_shot_examples, default: []
-        setting :type, default: CandidateType::Baseline
-        setting :metadata, default: {}
-
-        sig { returns(String) }
-        def config_id
-          @config_id ||= generate_config_id
-        end
-
-        sig { void }
-        def finalize!
-          # Freeze settings after configuration to prevent mutation
-          config.instruction = config.instruction.freeze
-          config.few_shot_examples = config.few_shot_examples.freeze  
-          config.metadata = config.metadata.freeze
+        
+        # Generate a config ID based on content
+        sig { params(instruction: String, few_shot_examples: T::Array[T.untyped], type: CandidateType, metadata: T::Hash[Symbol, T.untyped]).returns(EvaluatedCandidate) }
+        def self.create(instruction:, few_shot_examples: [], type: CandidateType::Baseline, metadata: {})
+          content = "#{instruction}_#{few_shot_examples.size}_#{type.serialize}_#{metadata.hash}"
+          config_id = Digest::SHA256.hexdigest(content)[0, 12]
           
-          # Generate ID after finalization
-          @config_id = generate_config_id
+          new(
+            instruction: instruction.freeze,
+            few_shot_examples: few_shot_examples.freeze,
+            type: type,
+            metadata: metadata.freeze,
+            config_id: config_id
+          )
         end
 
         sig { returns(T::Hash[Symbol, T.untyped]) }
         def to_h
           {
-            instruction: config.instruction,
-            few_shot_examples: config.few_shot_examples.size,
-            type: config.type.serialize,
-            metadata: config.metadata,
+            instruction: instruction,
+            few_shot_examples: few_shot_examples.size,
+            type: type.serialize,
+            metadata: metadata,
             config_id: config_id
           }
-        end
-
-        private
-
-        sig { returns(String) }
-        def generate_config_id
-          content = "#{config.instruction}_#{config.few_shot_examples.size}_#{config.type.serialize}_#{config.metadata.hash}"
-          Digest::SHA256.hexdigest(content)[0, 12]
         end
       end
 
@@ -208,7 +180,7 @@ module DSPy
       class MIPROv2Result < OptimizationResult
         extend T::Sig
 
-        sig { returns(T::Array[CandidateConfig]) }
+        sig { returns(T::Array[EvaluatedCandidate]) }
         attr_reader :evaluated_candidates
 
         sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -228,7 +200,7 @@ module DSPy
             optimized_program: T.untyped,
             scores: T::Hash[Symbol, T.untyped],
             history: T::Hash[Symbol, T.untyped],
-            evaluated_candidates: T::Array[CandidateConfig],
+            evaluated_candidates: T::Array[EvaluatedCandidate],
             optimization_trace: T::Hash[Symbol, T.untyped],
             bootstrap_statistics: T::Hash[Symbol, T.untyped],
             proposal_statistics: T::Hash[Symbol, T.untyped],
@@ -272,18 +244,25 @@ module DSPy
       sig { returns(T.nilable(DSPy::Propose::GroundedProposer)) }
       attr_reader :proposer
 
-      sig do
-        params(
-          metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped)),
-          config: T.nilable(MIPROv2Config)
-        ).void
-      end
-      def initialize(metric: nil, config: nil)
-        @mipro_config = config || MIPROv2Config.new
-        # Call parent teleprompter initializer, which handles dry-configurable internally
-        super(metric: metric, config: @mipro_config)
+      # Override dry-configurable's initialize to add our parameter validation
+      def initialize(metric: nil, **kwargs)
+        # Reject old config parameter pattern
+        if kwargs.key?(:config)
+          raise ArgumentError, "config parameter is no longer supported. Use .configure blocks instead."
+        end
         
-        @proposer = DSPy::Propose::GroundedProposer.new(config: @mipro_config.proposer_config)
+        # Let dry-configurable handle its initialization
+        super(**kwargs)
+        
+        # Apply class-level configuration if it exists
+        if self.class.default_config_block
+          configure(&self.class.default_config_block)
+        end
+        
+        @metric = metric
+        
+        # Initialize proposer with a basic config for now (will be updated later)  
+        @proposer = DSPy::Propose::GroundedProposer.new(config: DSPy::Propose::GroundedProposer::Config.new)
         @optimization_trace = []
         @evaluated_candidates = []
       end
@@ -302,8 +281,8 @@ module DSPy
         instrument_step('miprov2_compile', {
           trainset_size: trainset.size,
           valset_size: valset&.size || 0,
-          num_trials: @mipro_config.num_trials,
-          optimization_strategy: @mipro_config.optimization_strategy,
+          num_trials: config.num_trials,
+          optimization_strategy: config.optimization_strategy,
           mode: infer_auto_mode
         }) do
           # Convert examples to typed format
@@ -363,11 +342,11 @@ module DSPy
       sig { params(program: T.untyped, trainset: T::Array[DSPy::Example]).returns(Utils::BootstrapResult) }
       def phase_1_bootstrap(program, trainset)
         bootstrap_config = Utils::BootstrapConfig.new
-        bootstrap_config.max_bootstrapped_examples = @mipro_config.max_bootstrapped_examples
-        bootstrap_config.max_labeled_examples = @mipro_config.max_labeled_examples
-        bootstrap_config.num_candidate_sets = @mipro_config.bootstrap_sets
-        bootstrap_config.max_errors = @mipro_config.max_errors
-        bootstrap_config.num_threads = @mipro_config.num_threads
+        bootstrap_config.max_bootstrapped_examples = config.max_bootstrapped_examples
+        bootstrap_config.max_labeled_examples = config.max_labeled_examples
+        bootstrap_config.num_candidate_sets = config.bootstrap_sets
+        bootstrap_config.max_errors = config.max_errors
+        bootstrap_config.num_threads = config.num_threads
 
         Utils.create_n_fewshot_demo_sets(program, trainset, config: bootstrap_config, metric: @metric)
       end
@@ -392,7 +371,7 @@ module DSPy
         raise ArgumentError, "Cannot extract signature class from program" unless signature_class
 
         # Configure proposer for this optimization run
-        @mipro_config.proposer_config.num_instruction_candidates = @mipro_config.num_instruction_candidates
+        @proposer.config.num_instruction_candidates = config.num_instruction_candidates
 
         @proposer.propose_instructions(
           signature_class,
@@ -425,7 +404,7 @@ module DSPy
         best_program = nil
         best_evaluation_result = nil
         
-        @mipro_config.num_trials.times do |trial_idx|
+        config.num_trials.times do |trial_idx|
           trials_completed = trial_idx + 1
           
           # Select next candidate based on optimization strategy
@@ -434,8 +413,8 @@ module DSPy
           emit_event('trial_start', {
             trial_number: trials_completed,
             candidate_id: candidate.config_id,
-            instruction_preview: candidate.config.instruction[0, 50],
-            num_few_shot: candidate.config.few_shot_examples.size
+            instruction_preview: candidate.instruction[0, 50],
+            num_few_shot: candidate.few_shot_examples.size
           })
 
           begin
@@ -494,37 +473,40 @@ module DSPy
         params(
           proposal_result: DSPy::Propose::GroundedProposer::ProposalResult,
           bootstrap_result: Utils::BootstrapResult
-        ).returns(T::Array[CandidateConfig])
+        ).returns(T::Array[EvaluatedCandidate])
       end
       def generate_candidate_configurations(proposal_result, bootstrap_result)
         candidates = []
         
         # Base configuration (no modifications)
-        candidates << create_candidate_config do |config|
-          config.instruction = ""
-          config.few_shot_examples = []
-          config.type = CandidateType::Baseline
-          config.metadata = {}
-        end
+        candidates << EvaluatedCandidate.new(
+          instruction: "",
+          few_shot_examples: [],
+          type: CandidateType::Baseline,
+          metadata: {},
+          config_id: SecureRandom.hex(6)
+        )
         
         # Instruction-only candidates
         proposal_result.candidate_instructions.each_with_index do |instruction, idx|
-          candidates << create_candidate_config do |config|
-            config.instruction = instruction
-            config.few_shot_examples = []
-            config.type = CandidateType::InstructionOnly
-            config.metadata = { proposal_rank: idx }
-          end
+          candidates << EvaluatedCandidate.new(
+            instruction: instruction,
+            few_shot_examples: [],
+            type: CandidateType::InstructionOnly,
+            metadata: { proposal_rank: idx },
+            config_id: SecureRandom.hex(6)
+          )
         end
         
         # Few-shot only candidates
         bootstrap_result.candidate_sets.each_with_index do |candidate_set, idx|
-          candidates << create_candidate_config do |config|
-            config.instruction = ""
-            config.few_shot_examples = candidate_set
-            config.type = CandidateType::FewShotOnly
-            config.metadata = { bootstrap_rank: idx }
-          end
+          candidates << EvaluatedCandidate.new(
+            instruction: "",
+            few_shot_examples: candidate_set,
+            type: CandidateType::FewShotOnly,
+            metadata: { bootstrap_rank: idx },
+            config_id: SecureRandom.hex(6)
+          )
         end
         
         # Combined candidates (instruction + few-shot)
@@ -533,15 +515,16 @@ module DSPy
         
         top_instructions.each_with_index do |instruction, i_idx|
           top_bootstrap_sets.each_with_index do |candidate_set, b_idx|
-            candidates << create_candidate_config do |config|
-              config.instruction = instruction
-              config.few_shot_examples = candidate_set
-              config.type = CandidateType::Combined
-              config.metadata = { 
+            candidates << EvaluatedCandidate.new(
+              instruction: instruction,
+              few_shot_examples: candidate_set,
+              type: CandidateType::Combined,
+              metadata: { 
                 instruction_rank: i_idx, 
                 bootstrap_rank: b_idx 
-              }
-            end
+              },
+              config_id: SecureRandom.hex(6)
+            )
           end
         end
         
@@ -549,13 +532,13 @@ module DSPy
       end
 
       # Initialize optimization state for candidate selection
-      sig { params(candidates: T::Array[CandidateConfig]).returns(T::Hash[Symbol, T.untyped]) }
+      sig { params(candidates: T::Array[EvaluatedCandidate]).returns(T::Hash[Symbol, T.untyped]) }
       def initialize_optimization_state(candidates)
         {
           candidates: candidates,
           scores: {},
           exploration_counts: Hash.new(0),
-          temperature: @mipro_config.init_temperature,
+          temperature: config.init_temperature,
           best_score_history: [],
           diversity_scores: {},
           no_improvement_count: 0
@@ -565,18 +548,18 @@ module DSPy
       # Select next candidate based on optimization strategy
       sig do
         params(
-          candidates: T::Array[CandidateConfig],
+          candidates: T::Array[EvaluatedCandidate],
           state: T::Hash[Symbol, T.untyped],
           trial_idx: Integer
-        ).returns(CandidateConfig)
+        ).returns(EvaluatedCandidate)
       end
       def select_next_candidate(candidates, state, trial_idx)
-        case @mipro_config.optimization_strategy
-        when "greedy"
+        case config.optimization_strategy
+        when OptimizationStrategy::Greedy
           select_candidate_greedy(candidates, state)
-        when "adaptive"
+        when OptimizationStrategy::Adaptive
           select_candidate_adaptive(candidates, state, trial_idx)
-        when "bayesian"
+        when OptimizationStrategy::Bayesian
           select_candidate_bayesian(candidates, state, trial_idx)
         else
           candidates.sample # Random fallback
@@ -584,7 +567,7 @@ module DSPy
       end
 
       # Greedy candidate selection (exploit best known configurations)
-      sig { params(candidates: T::Array[CandidateConfig], state: T::Hash[Symbol, T.untyped]).returns(CandidateConfig) }
+      sig { params(candidates: T::Array[EvaluatedCandidate], state: T::Hash[Symbol, T.untyped]).returns(EvaluatedCandidate) }
       def select_candidate_greedy(candidates, state)
         # Prioritize unexplored candidates, then highest scoring
         unexplored = candidates.reject { |c| state[:scores].key?(c.config_id) }
@@ -598,15 +581,15 @@ module DSPy
       # Adaptive candidate selection (balance exploration and exploitation)
       sig do
         params(
-          candidates: T::Array[CandidateConfig],
+          candidates: T::Array[EvaluatedCandidate],
           state: T::Hash[Symbol, T.untyped],
           trial_idx: Integer
-        ).returns(CandidateConfig)
+        ).returns(EvaluatedCandidate)
       end
       def select_candidate_adaptive(candidates, state, trial_idx)
         # Update temperature based on progress
-        progress = trial_idx.to_f / @mipro_config.num_trials
-        state[:temperature] = @mipro_config.init_temperature * (1 - progress) + @mipro_config.final_temperature * progress
+        progress = trial_idx.to_f / config.num_trials
+        state[:temperature] = config.init_temperature * (1 - progress) + config.final_temperature * progress
         
         # Calculate selection scores combining exploitation and exploration
         candidate_scores = candidates.map do |candidate|
@@ -639,10 +622,10 @@ module DSPy
       # Bayesian candidate selection (use probabilistic model)
       sig do
         params(
-          candidates: T::Array[CandidateConfig],
+          candidates: T::Array[EvaluatedCandidate],
           state: T::Hash[Symbol, T.untyped],
           trial_idx: Integer
-        ).returns(CandidateConfig)
+        ).returns(EvaluatedCandidate)
       end
       def select_candidate_bayesian(candidates, state, trial_idx)
         # Need at least 3 observations to fit GP, otherwise fall back to adaptive
@@ -686,21 +669,9 @@ module DSPy
       
       private
 
-      # Helper method to create CandidateConfig with dry-configurable syntax
-      sig do
-        params(
-          block: T.proc.params(config: Dry::Configurable::Config).void
-        ).returns(CandidateConfig)
-      end
-      def create_candidate_config(&block)
-        candidate = CandidateConfig.new
-        candidate.configure(&block)
-        candidate.finalize!
-        candidate
-      end
       
       # Encode candidates as numerical features for Gaussian Process
-      sig { params(candidates: T::Array[CandidateConfig]).returns(T::Array[T::Array[Float]]) }
+      sig { params(candidates: T::Array[EvaluatedCandidate]).returns(T::Array[T::Array[Float]]) }
       def encode_candidates_for_gp(candidates)
         # Simple encoding: use hash of config as features
         # In practice, this could be more sophisticated (e.g., instruction embeddings)
@@ -715,7 +686,7 @@ module DSPy
           features << ((config_hash / 1_000_000) % 1000).to_f / 1000.0  # Feature 3: high bits
           
           # Add instruction length if available
-          instruction = candidate.config.instruction
+          instruction = candidate.instruction
           if instruction && !instruction.empty?
             features << [instruction.length.to_f / 100.0, 2.0].min  # Instruction length, capped at 200 chars
           else
@@ -730,7 +701,7 @@ module DSPy
       sig do
         params(
           program: T.untyped,
-          candidate: CandidateConfig,
+          candidate: EvaluatedCandidate,
           evaluation_set: T::Array[DSPy::Example]
         ).returns([Float, T.untyped, DSPy::Evaluate::BatchEvaluationResult])
       end
@@ -748,18 +719,18 @@ module DSPy
       end
 
       # Apply candidate configuration to program
-      sig { params(program: T.untyped, candidate: CandidateConfig).returns(T.untyped) }
+      sig { params(program: T.untyped, candidate: EvaluatedCandidate).returns(T.untyped) }
       def apply_candidate_configuration(program, candidate)
         modified_program = program
         
         # Apply instruction if provided
-        if !candidate.config.instruction.empty? && program.respond_to?(:with_instruction)
-          modified_program = modified_program.with_instruction(candidate.config.instruction)
+        if !candidate.instruction.empty? && program.respond_to?(:with_instruction)
+          modified_program = modified_program.with_instruction(candidate.instruction)
         end
         
         # Apply few-shot examples if provided
-        if candidate.config.few_shot_examples.any? && program.respond_to?(:with_examples)
-          few_shot_examples = candidate.config.few_shot_examples.map do |example|
+        if candidate.few_shot_examples.any? && program.respond_to?(:with_examples)
+          few_shot_examples = candidate.few_shot_examples.map do |example|
             DSPy::FewShotExample.new(
               input: example.input_values,
               output: example.expected_values,
@@ -776,7 +747,7 @@ module DSPy
       sig do
         params(
           state: T::Hash[Symbol, T.untyped],
-          candidate: CandidateConfig,
+          candidate: EvaluatedCandidate,
           score: Float
         ).void
       end
@@ -786,7 +757,7 @@ module DSPy
         state[:best_score_history] << score
         
         # Track diversity if enabled
-        if @mipro_config.track_diversity
+        if config.track_diversity
           state[:diversity_scores][candidate.config_id] = calculate_diversity_score(candidate)
         end
         
@@ -802,18 +773,18 @@ module DSPy
       sig { params(state: T::Hash[Symbol, T.untyped], trial_idx: Integer).returns(T::Boolean) }
       def should_early_stop?(state, trial_idx)
         # Don't stop too early
-        return false if trial_idx < @mipro_config.early_stopping_patience
+        return false if trial_idx < config.early_stopping_patience
         
         # Stop if no improvement for patience trials
-        state[:no_improvement_count] >= @mipro_config.early_stopping_patience
+        state[:no_improvement_count] >= config.early_stopping_patience
       end
 
       # Calculate diversity score for candidate
-      sig { params(candidate: CandidateConfig).returns(Float) }
+      sig { params(candidate: EvaluatedCandidate).returns(Float) }
       def calculate_diversity_score(candidate)
         # Simple diversity metric based on instruction length and few-shot count
-        instruction_diversity = candidate.config.instruction.length / 200.0
-        few_shot_diversity = candidate.config.few_shot_examples.size / 10.0
+        instruction_diversity = candidate.instruction.length / 200.0
+        few_shot_diversity = candidate.few_shot_examples.size / 10.0
         
         [instruction_diversity + few_shot_diversity, 1.0].min
       end
@@ -836,17 +807,17 @@ module DSPy
         
         history = {
           total_trials: optimization_result[:trials_completed],
-          optimization_strategy: @mipro_config.optimization_strategy,
-          early_stopped: optimization_result[:trials_completed] < @mipro_config.num_trials,
+          optimization_strategy: config.optimization_strategy,
+          early_stopped: optimization_result[:trials_completed] < config.num_trials,
           score_history: optimization_result[:optimization_state][:best_score_history]
         }
         
         metadata = {
           optimizer: "MIPROv2",
           auto_mode: infer_auto_mode,
-          best_instruction: best_candidate&.config&.instruction || "",
-          best_few_shot_count: best_candidate&.config&.few_shot_examples&.size || 0,
-          best_candidate_type: best_candidate&.config&.type&.serialize || "unknown",
+          best_instruction: best_candidate&.instruction || "",
+          best_few_shot_count: best_candidate&.few_shot_examples&.size || 0,
+          best_candidate_type: best_candidate&.type&.serialize || "unknown",
           optimization_timestamp: Time.now.iso8601
         }
         
@@ -917,7 +888,7 @@ module DSPy
       # Infer auto mode based on configuration
       sig { returns(String) }
       def infer_auto_mode
-        case @mipro_config.num_trials
+        case config.num_trials
         when 0..6 then "light"
         when 7..12 then "medium"
         else "heavy"

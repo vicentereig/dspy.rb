@@ -94,54 +94,71 @@ result = optimizer.compile(program, trainset: training_examples, valset: validat
 ### Custom Configuration
 
 ```ruby
-# Fine-tune optimization parameters
-config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
-config.num_trials = 15                           # Total optimization trials
-config.num_instruction_candidates = 8            # Instruction variants to generate
-config.bootstrap_sets = 6                        # Bootstrap example sets to create
-config.max_bootstrapped_examples = 4             # Max examples per bootstrap set
-config.max_labeled_examples = 16                 # Max labeled examples to use
-config.optimization_strategy = "bayesian"        # greedy, adaptive, or bayesian
-config.init_temperature = 1.2                    # Initial exploration temperature
-config.final_temperature = 0.05                  # Final exploitation temperature
-config.early_stopping_patience = 4               # Trials without improvement before stopping
-config.use_bayesian_optimization = true          # Enable Gaussian Process optimization
-config.track_diversity = true                    # Track candidate diversity metrics
+# Class-level configuration (affects all instances)
+DSPy::Teleprompt::MIPROv2.configure do |config|
+  config.optimization_strategy = :bayesian      # :greedy, :adaptive, or :bayesian
+  config.num_trials = 15                        # Total optimization trials
+  config.num_instruction_candidates = 8         # Instruction variants to generate
+  config.bootstrap_sets = 6                     # Bootstrap example sets to create
+  config.max_bootstrapped_examples = 4          # Max examples per bootstrap set
+  config.max_labeled_examples = 16              # Max labeled examples to use
+  config.init_temperature = 1.2                 # Initial exploration temperature
+  config.final_temperature = 0.05               # Final exploitation temperature
+  config.early_stopping_patience = 4            # Trials without improvement before stopping
+  config.use_bayesian_optimization = true       # Enable Gaussian Process optimization
+  config.track_diversity = true                 # Track candidate diversity metrics
+end
 
-optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric, config: config)
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
+
+# Or instance-level configuration (overrides class defaults)
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+optimizer.configure do |config|
+  config.optimization_strategy = :adaptive
+  config.num_trials = 20
+  config.bootstrap_sets = 8
+end
 result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
 ```
 
 ## Configuration Options
 
-### MIPROv2Config Parameters
+### Configuration Parameters
+
+MIPROv2 uses `dry-configurable` for settings management. You can configure at both class and instance levels:
 
 ```ruby
-config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
+# Class-level configuration (affects all new instances)
+DSPy::Teleprompt::MIPROv2.configure do |config|
+  # Core optimization settings
+  config.num_trials = 12                          # Total optimization trials to run
+  config.num_instruction_candidates = 5           # Number of instruction variants to generate
+  config.bootstrap_sets = 5                       # Number of bootstrap example sets
+  config.max_bootstrapped_examples = 4            # Max examples per bootstrap set
+  config.max_labeled_examples = 16                # Max labeled examples from trainset
 
-# Core optimization settings
-config.num_trials = 12                          # Total optimization trials to run
-config.num_instruction_candidates = 5           # Number of instruction variants to generate
-config.bootstrap_sets = 5                       # Number of bootstrap example sets
-config.max_bootstrapped_examples = 4            # Max examples per bootstrap set
-config.max_labeled_examples = 16                # Max labeled examples from trainset
+  # Optimization strategy (:greedy, :adaptive, or :bayesian)
+  config.optimization_strategy = :adaptive
+  config.use_bayesian_optimization = true         # Enable Gaussian Process optimization
 
-# Optimization strategy
-config.optimization_strategy = "adaptive"       # "greedy", "adaptive", or "bayesian"
-config.use_bayesian_optimization = true         # Enable Gaussian Process optimization
+  # Temperature scheduling for exploration/exploitation balance
+  config.init_temperature = 1.0                   # Initial exploration temperature
+  config.final_temperature = 0.1                  # Final exploitation temperature
 
-# Temperature scheduling for exploration/exploitation balance
-config.init_temperature = 1.0                   # Initial exploration temperature
-config.final_temperature = 0.1                  # Final exploitation temperature
+  # Early stopping
+  config.early_stopping_patience = 3              # Stop after N trials without improvement
 
-# Early stopping
-config.early_stopping_patience = 3              # Stop after N trials without improvement
+  # Additional tracking
+  config.track_diversity = true                    # Track candidate diversity metrics
+end
 
-# Additional tracking
-config.track_diversity = true                    # Track candidate diversity metrics
-
-# Proposer configuration
-config.proposer_config = DSPy::Propose::GroundedProposer::Config.new
+# Instance-level configuration (overrides class defaults)
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: your_metric)
+optimizer.configure do |config|
+  config.num_trials = 20
+  config.optimization_strategy = :bayesian
+end
 ```
 
 ### AutoMode Configurations
@@ -153,7 +170,7 @@ config.proposer_config = DSPy::Propose::GroundedProposer::Config.new
 # - max_bootstrapped_examples: 2
 # - max_labeled_examples: 8
 # - bootstrap_sets: 3
-# - optimization_strategy: "greedy"
+# - optimization_strategy: :greedy
 # - early_stopping_patience: 2
 
 # Medium mode values (balanced default):
@@ -162,7 +179,7 @@ config.proposer_config = DSPy::Propose::GroundedProposer::Config.new
 # - max_bootstrapped_examples: 4
 # - max_labeled_examples: 16
 # - bootstrap_sets: 5
-# - optimization_strategy: "adaptive"
+# - optimization_strategy: :adaptive
 # - early_stopping_patience: 3
 
 # Heavy mode values (best results):
@@ -171,7 +188,7 @@ config.proposer_config = DSPy::Propose::GroundedProposer::Config.new
 # - max_bootstrapped_examples: 6
 # - max_labeled_examples: 24
 # - bootstrap_sets: 8
-# - optimization_strategy: "bayesian"  # Uses Gaussian Processes
+# - optimization_strategy: :bayesian  # Uses Gaussian Processes
 # - early_stopping_patience: 5
 ```
 
@@ -288,18 +305,18 @@ end
 
 ```ruby
 # Access best candidate configuration
-best_candidates = result.evaluated_candidates.select { |c| c.config.type == DSPy::Teleprompt::CandidateType::Combined }
+best_candidates = result.evaluated_candidates.select { |c| c.type == DSPy::Teleprompt::CandidateType::Combined }
 best_candidate = best_candidates.first
 
 if best_candidate
-  puts "Best instruction: #{best_candidate.config.instruction}"
-  puts "Number of few-shot examples: #{best_candidate.config.few_shot_examples.size}"
-  puts "Candidate type: #{best_candidate.config.type.serialize}"
+  puts "Best instruction: #{best_candidate.instruction}"
+  puts "Number of few-shot examples: #{best_candidate.few_shot_examples.size}"
+  puts "Candidate type: #{best_candidate.type.serialize}"
   puts "Configuration ID: #{best_candidate.config_id}"
-  puts "Metadata: #{best_candidate.config.metadata}"
+  puts "Metadata: #{best_candidate.metadata}"
 
   # Inspect few-shot examples
-  best_candidate.config.few_shot_examples.each_with_index do |example, i|
+  best_candidate.few_shot_examples.each_with_index do |example, i|
     puts "Example #{i+1}:"
     puts "  Input: #{example.input_values}"
     puts "  Output: #{example.expected_values}"
@@ -526,11 +543,12 @@ MIPROv2 includes state-of-the-art Bayesian optimization using Gaussian Processes
 
 ```ruby
 # Enable Bayesian optimization (default in heavy mode)
-config = DSPy::Teleprompt::MIPROv2::MIPROv2Config.new
-config.optimization_strategy = "bayesian"
-config.use_bayesian_optimization = true
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: your_metric)
+optimizer.configure do |config|
+  config.optimization_strategy = :bayesian
+  config.use_bayesian_optimization = true
+end
 
-optimizer = DSPy::Teleprompt::MIPROv2.new(metric: your_metric, config: config)
 result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
 
 # Bayesian optimization provides:
@@ -547,21 +565,21 @@ result = optimizer.compile(program, trainset: training_examples, valset: validat
 # - Prioritizes unexplored candidates first
 # - Then selects highest scoring candidates
 # - Best for: Quick experiments, limited compute budget
-config.optimization_strategy = "greedy"
+config.optimization_strategy = :greedy
 
 # Adaptive Strategy - Balanced  
 # - Temperature-based exploration/exploitation balance
 # - Probabilistic candidate selection with softmax
 # - Progressive cooling from exploration to exploitation
 # - Best for: General-purpose optimization
-config.optimization_strategy = "adaptive"
+config.optimization_strategy = :adaptive
 
 # Bayesian Strategy - Most Sophisticated
 # - Gaussian Process modeling of candidate performance
 # - Upper Confidence Bound acquisition function
 # - Intelligent uncertainty-aware selection
 # - Best for: High-stakes optimization, maximum performance
-config.optimization_strategy = "bayesian"
+config.optimization_strategy = :bayesian
 ```
 
 ### Candidate Configuration Types
@@ -571,37 +589,42 @@ MIPROv2 generates and evaluates four types of candidate configurations:
 ```ruby
 # Access evaluated candidates to understand what was tested
 result.evaluated_candidates.each do |candidate|
-  case candidate.config.type
+  case candidate.type
   when DSPy::Teleprompt::CandidateType::Baseline
     puts "Baseline: No modifications to original program"
   when DSPy::Teleprompt::CandidateType::InstructionOnly
-    puts "Instruction-only: #{candidate.config.instruction[0,50]}..."
+    puts "Instruction-only: #{candidate.instruction[0,50]}..."
   when DSPy::Teleprompt::CandidateType::FewShotOnly
-    puts "Few-shot-only: #{candidate.config.few_shot_examples.size} examples"
+    puts "Few-shot-only: #{candidate.few_shot_examples.size} examples"
   when DSPy::Teleprompt::CandidateType::Combined
-    puts "Combined: Instruction + #{candidate.config.few_shot_examples.size} examples"
-    puts "  Instruction: #{candidate.config.instruction[0,50]}..."
+    puts "Combined: Instruction + #{candidate.few_shot_examples.size} examples"
+    puts "  Instruction: #{candidate.instruction[0,50]}..."
   end
   
   puts "  Config ID: #{candidate.config_id}"
-  puts "  Metadata: #{candidate.config.metadata}"
+  puts "  Metadata: #{candidate.metadata}"
 end
 ```
 
-### Creating Custom CandidateConfig
+### Working with EvaluatedCandidate Data
+
+The `EvaluatedCandidate` is an immutable `Data` class that represents a tested configuration:
 
 ```ruby
-# You can create custom candidate configurations for testing
-candidate = DSPy::Teleprompt::MIPROv2::CandidateConfig.new
-candidate.configure do |config|
-  config.instruction = "Analyze the text step by step to determine sentiment"
-  config.few_shot_examples = my_few_shot_examples
-  config.type = DSPy::Teleprompt::CandidateType::Combined
-  config.metadata = { source: "custom", priority: "high" }
-end
-candidate.finalize!  # Must finalize to generate config_id
+# EvaluatedCandidate contains:
+# - instruction: String - the instruction used
+# - few_shot_examples: Array - the few-shot examples used
+# - type: CandidateType - the type of candidate (baseline, instruction_only, etc.)
+# - metadata: Hash - additional metadata about the candidate
+# - config_id: String - unique identifier for this configuration
 
-puts "Generated config ID: #{candidate.config_id}"
-puts "Serialized: #{candidate.to_h}"
+result.evaluated_candidates.each do |candidate|
+  puts "Config ID: #{candidate.config_id}"
+  puts "Type: #{candidate.type.serialize}"
+  puts "Instruction: #{candidate.instruction}"
+  puts "Examples count: #{candidate.few_shot_examples.size}"
+  puts "Metadata: #{candidate.metadata}"
+  puts "---"
+end
 ```
 

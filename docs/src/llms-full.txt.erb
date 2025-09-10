@@ -1102,21 +1102,17 @@ light_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.light(metric: your_metric)
 medium_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: your_metric)
 heavy_optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.heavy(metric: your_metric)
 
-# Custom configuration
-custom_config = DSPy::Teleprompt::MIPROv2Config.new.tap do |config|
+# Custom configuration using dry-configurable pattern
+custom_optimizer = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric)
+custom_optimizer.configure do |config|
   config.num_trials = 15
   config.num_instruction_candidates = 6
   config.max_bootstrapped_examples = 5
   config.max_labeled_examples = 20
   config.bootstrap_sets = 6
-  config.optimization_strategy = DSPy::Teleprompt::OptimizationStrategy::Bayesian  # or Greedy, Adaptive
+  config.optimization_strategy = :bayesian  # or :greedy, :adaptive
   config.early_stopping_patience = 4
 end
-
-custom_optimizer = DSPy::Teleprompt::MIPROv2.new(
-  metric: custom_metric,
-  config: custom_config
-)
 
 # Run optimization
 program = DSPy::Predict.new(YourSignature)
