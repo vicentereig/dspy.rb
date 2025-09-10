@@ -603,9 +603,9 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
         expect(result.best_evaluation_result).not_to be_nil
         
         eval_result = result.best_evaluation_result
-        expect(eval_result.total_examples).to eq(training_examples.length)
+        expect(eval_result.total_examples).to eq(validation_examples.length)
         expect(eval_result.results).to be_an(Array)
-        expect(eval_result.results.length).to eq(training_examples.length)
+        expect(eval_result.results.length).to eq(validation_examples.length)
 
         # Verify hash metrics are preserved
         individual_result = eval_result.results.first
