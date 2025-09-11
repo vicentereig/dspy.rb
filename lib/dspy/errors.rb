@@ -7,6 +7,8 @@ module DSPy
   
   class DeserializationError < Error; end
   
+  class UnsupportedSchemaError < Error; end
+  
   class ConfigurationError < Error
     def self.missing_lm(module_name)
       new(<<~MESSAGE)
