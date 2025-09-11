@@ -17,8 +17,8 @@ http_interactions:
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Simple <GEMINI_API_KEY>t signature for async retry <GEMINI_API_KEY>ting
-        Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
+        objective is: Simple test signature for async retry testing Think step by
+        step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
         \"What is 2+2?\"\n}\n```\n\nRespond with the corresponding output schema fields
         wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
         You must respond with valid JSON that matches this structure:\n```json\n{\n  \"answer\":
@@ -43,7 +43,7 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
@@ -64,7 +64,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sun, 07 Sep 2025 10:26:18 GMT
+      - Thu, 11 Sep 2025 16:53:37 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -76,13 +76,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1484'
+      - '1329'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1489'
+      - '1481'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -97,6 +97,8 @@ http_interactions:
       - 117ms
       X-Request-Id:
       - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
@@ -109,23 +111,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97b581c31fb16d35-LAX
+      - 97d8aea00d86c461-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CD6t6bC6yyoL7RggpvjCQW2pMz337",
+          "id": "chatcmpl-CEeq7N2X60N1rjFzyMIIwlrDKBSfo",
           "object": "chat.completion",
-          "created": 1757240776,
+          "created": 1757609615,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": \"4\",\n  \"reasoning\": \"To solve 2 + 2, we start with the number 2. When we add another 2 to it, we incrementally count up from 2. First, adding 1 gives us 3, and then adding 1 more gives us 4. Therefore, the sum of 2 + 2 is 4.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"4\",\n  \"reasoning\": \"To find the sum of 2 and 2, we start with the number 2 and add another 2. This can be visualized as moving two steps forward from 2, which brings us to 4.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -135,8 +137,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 401,
-            "completion_tokens": 92,
-            "total_tokens": 493,
+            "completion_tokens": 68,
+            "total_tokens": 469,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -151,5 +153,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_8bda4d3a2c"
         }
-  recorded_at: Sun, 07 Sep 2025 10:26:17 GMT
+  recorded_at: Thu, 11 Sep 2025 16:53:37 GMT
 recorded_with: VCR 6.3.1
