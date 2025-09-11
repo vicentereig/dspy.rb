@@ -158,4 +158,239 @@ RSpec.describe DSPy::LM::Adapters::OpenAI::SchemaConverter do
       expect(issues).to include("Conditional schemas (if/then/else) are not supported")
     end
   end
+  
+  describe '.convert_oneof_to_anyof_if_safe' do
+    describe 'with discriminated unions' do
+      let(:discriminated_union_schema) do
+        {
+          oneOf: [
+            {
+              type: "object",
+              properties: {
+                _type: { type: "string", const: "SpawnTask" },
+                description: { type: "string" },
+                priority: { type: "string" }
+              },
+              required: ["_type", "description", "priority"],
+              additionalProperties: false
+            },
+            {
+              type: "object",
+              properties: {
+                _type: { type: "string", const: "CompleteTask" },
+                task_id: { type: "string" },
+                result: { type: "string" }
+              },
+              required: ["_type", "task_id", "result"],
+              additionalProperties: false
+            }
+          ]
+        }
+      end
+      
+      it 'converts oneOf to anyOf when all schemas have discriminators' do
+        result = described_class.convert_oneof_to_anyof_if_safe(discriminated_union_schema)
+        
+        expect(result).not_to have_key(:oneOf)
+        expect(result).to have_key(:anyOf)
+        expect(result[:anyOf]).to be_an(Array)
+        expect(result[:anyOf].length).to eq(2)
+        
+        # Verify the schemas are preserved
+        spawn_schema = result[:anyOf].find { |s| s[:properties][:_type][:const] == "SpawnTask" }
+        complete_schema = result[:anyOf].find { |s| s[:properties][:_type][:const] == "CompleteTask" }
+        
+        expect(spawn_schema).not_to be_nil
+        expect(complete_schema).not_to be_nil
+        
+        expect(spawn_schema[:properties][:description]).to eq({ type: "string" })
+        expect(complete_schema[:properties][:task_id]).to eq({ type: "string" })
+      end
+      
+      it 'recursively converts nested oneOf schemas' do
+        nested_schema = {
+          type: "object",
+          properties: {
+            action: discriminated_union_schema,
+            metadata: { type: "string" }
+          }
+        }
+        
+        result = described_class.convert_oneof_to_anyof_if_safe(nested_schema)
+        
+        expect(result[:properties][:action]).to have_key(:anyOf)
+        expect(result[:properties][:action]).not_to have_key(:oneOf)
+      end
+      
+      it 'converts oneOf in array items' do
+        array_schema = {
+          type: "array",
+          items: discriminated_union_schema
+        }
+        
+        result = described_class.convert_oneof_to_anyof_if_safe(array_schema)
+        
+        expect(result[:items]).to have_key(:anyOf)
+        expect(result[:items]).not_to have_key(:oneOf)
+      end
+    end
+    
+    describe 'with non-discriminated unions' do
+      let(:non_discriminated_union_schema) do
+        {
+          oneOf: [
+            {
+              type: "object",
+              properties: {
+                name: { type: "string" },
+                value: { type: "string" }
+              },
+              required: ["name", "value"]
+            },
+            {
+              type: "object",
+              properties: {
+                id: { type: "string" },
+                data: { type: "string" }
+              },
+              required: ["id", "data"]
+            }
+          ]
+        }
+      end
+      
+      it 'raises error for oneOf without discriminators' do
+        expect {
+          described_class.convert_oneof_to_anyof_if_safe(non_discriminated_union_schema)
+        }.to raise_error(DSPy::UnsupportedSchemaError) do |error|
+          expect(error.message).to include("oneOf schemas without discriminator fields")
+          expect(error.message).to include("enhanced_prompting strategy")
+        end
+      end
+    end
+    
+    describe 'with mixed discriminated/non-discriminated schemas' do
+      let(:mixed_schema) do
+        {
+          oneOf: [
+            {
+              type: "object",
+              properties: {
+                _type: { type: "string", const: "TypeA" },
+                data: { type: "string" }
+              },
+              required: ["_type", "data"]
+            },
+            {
+              type: "object",
+              properties: {
+                name: { type: "string" },  # No _type field
+                value: { type: "string" }
+              },
+              required: ["name", "value"]
+            }
+          ]
+        }
+      end
+      
+      it 'raises error when not all schemas have discriminators' do
+        expect {
+          described_class.convert_oneof_to_anyof_if_safe(mixed_schema)
+        }.to raise_error(DSPy::UnsupportedSchemaError)
+      end
+    end
+    
+    describe 'with non-oneOf schemas' do
+      let(:regular_schema) do
+        {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            age: { type: "integer" }
+          },
+          required: ["name", "age"]
+        }
+      end
+      
+      it 'returns schema unchanged when no oneOf present' do
+        result = described_class.convert_oneof_to_anyof_if_safe(regular_schema)
+        
+        expect(result).to eq(regular_schema)
+      end
+    end
+  end
+  
+  describe '.all_have_discriminators?' do
+    it 'returns true when all schemas have const properties' do
+      schemas = [
+        {
+          type: "object",
+          properties: {
+            _type: { type: "string", const: "TypeA" },
+            data: { type: "string" }
+          }
+        },
+        {
+          type: "object",
+          properties: {
+            _type: { type: "string", const: "TypeB" },
+            value: { type: "integer" }
+          }
+        }
+      ]
+      
+      expect(described_class.all_have_discriminators?(schemas)).to eq(true)
+    end
+    
+    it 'returns false when some schemas lack const properties' do
+      schemas = [
+        {
+          type: "object",
+          properties: {
+            _type: { type: "string", const: "TypeA" },
+            data: { type: "string" }
+          }
+        },
+        {
+          type: "object",
+          properties: {
+            name: { type: "string" },  # No const field
+            value: { type: "integer" }
+          }
+        }
+      ]
+      
+      expect(described_class.all_have_discriminators?(schemas)).to eq(false)
+    end
+    
+    it 'returns false for schemas without properties' do
+      schemas = [
+        { type: "string" },
+        { type: "integer" }
+      ]
+      
+      expect(described_class.all_have_discriminators?(schemas)).to eq(false)
+    end
+    
+    it 'handles different discriminator field names' do
+      schemas = [
+        {
+          type: "object",
+          properties: {
+            type: { type: "string", const: "user" },
+            name: { type: "string" }
+          }
+        },
+        {
+          type: "object",
+          properties: {
+            kind: { type: "string", const: "admin" },
+            permissions: { type: "array" }
+          }
+        }
+      ]
+      
+      expect(described_class.all_have_discriminators?(schemas)).to eq(true)
+    end
+  end
 end
