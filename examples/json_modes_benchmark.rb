@@ -12,7 +12,7 @@ Dotenv.load(File.expand_path('../.env', __dir__))
 require_relative '../lib/dspy'
 
 # Load the TodoListManagementSignature and related structs
-require_relative '../lib/dspy/benchmark_types'
+require_relative './benchmark_types'
 
 class JSONModesBenchmark
   # Model constants for 2025 testing
@@ -305,7 +305,7 @@ class JSONModesBenchmark
       'claude-opus-4.1' => 'claude-3-opus-20240229',  # Placeholder - use best available
       'claude-sonnet-4' => 'claude-3-5-sonnet-20240620',  # Placeholder - use best available  
       'claude-3-5-sonnet' => 'claude-3-5-sonnet-20240620',
-      'claude-3-5-haiku' => 'claude-3-haiku-20240307'  # Use haiku as placeholder
+      'claude-3-5-haiku' => 'claude-3-haiku-20240307'  # Fix: There's no claude-3-5-haiku
     }
     mapping[model_name] || model_name
   end

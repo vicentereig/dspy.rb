@@ -48,13 +48,11 @@ class TodoItem < T::Struct
   const :priority, String, default: 'medium'
 end
 
-# Simplified TodoSummary to avoid enum hash key issues for now
+# TodoSummary with proper enum hash keys - now supported by DSPy's type coercion
 class TodoSummary < T::Struct
   const :total_todos, Integer, default: 0
-  const :pending_count, Integer, default: 0
-  const :in_progress_count, Integer, default: 0
-  const :completed_count, Integer, default: 0
-  const :failed_count, Integer, default: 0
+  const :by_status, T::Hash[TodoStatus, Integer], default: {}
+  const :by_assignee, T::Hash[String, Integer], default: {}
   const :upcoming_due, Integer, default: 0
 end
 
