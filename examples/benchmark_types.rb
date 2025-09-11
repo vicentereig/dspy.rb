@@ -24,52 +24,42 @@ end
 class UserProfile < T::Struct
   const :user_id, String
   const :role, UserRole
-  const :team_id, String
   const :timezone, String, default: 'UTC'
-  const :notification_preferences, T::Hash[String, T::Boolean], default: {}
 end
 
 class ProjectContext < T::Struct
   const :project_id, String
   const :active_lists, T::Array[String]
-  const :current_sprint_id, T.nilable(String)
-  const :team_members, T::Array[String]
   const :available_tags, T::Array[String], default: []
 end
 
 class TodoItem < T::Struct
   const :id, String
   const :title, String
-  const :description, T.nilable(String)
+  const :description, String
   const :status, TodoStatus
-  const :assignee, T.nilable(String)
-  const :due_date, T.nilable(String)
   const :tags, T::Array[String], default: []
   const :priority, String, default: 'medium'
 end
 
-# TodoSummary with proper enum hash keys - now supported by DSPy's type coercion
+# TodoSummary simplified for OpenAI compatibility
 class TodoSummary < T::Struct
   const :total_todos, Integer, default: 0
-  const :by_status, T::Hash[TodoStatus, Integer], default: {}
-  const :by_assignee, T::Hash[String, Integer], default: {}
   const :upcoming_due, Integer, default: 0
 end
 
 # Action struct definitions for union types
 class CreateTodoAction < T::Struct
   const :title, String
-  const :description, T.nilable(String)
-  const :assignee, T.nilable(String)
-  const :due_date, T.nilable(String)
+
   const :priority, String, default: 'medium'
   const :tags, T::Array[String], default: []
 end
 
 class UpdateTodoAction < T::Struct
   const :todo_id, String
-  const :updates, T::Hash[String, T.untyped]
-  const :reason, T.nilable(String)
+  const :updates, String
+  const :reason, String
 end
 
 class DeleteTodoAction < T::Struct
@@ -86,16 +76,16 @@ end
 # Main signature for todo list management
 class TodoListManagementSignature < DSPy::Signature
   description "AI-powered todo list management system with complex nested types"
-  
+
   input do
-    const :query, String, 
+    const :query, String,
       description: "Natural language command or request about todos"
     const :context, ProjectContext,
       description: "Current project state including active lists, sprint information"
     const :user_profile, UserProfile,
       description: "User information including role, permissions, timezone"
   end
-  
+
   output do
     const :action, T.any(
       CreateTodoAction,
@@ -103,16 +93,16 @@ class TodoListManagementSignature < DSPy::Signature
       DeleteTodoAction,
       AssignTodoAction
     ), description: "Primary action to execute - automatically discriminated by _type field"
-    
+
     const :affected_todos, T::Array[TodoItem],
       description: "List of todo items that will be created, modified, or impacted"
-    
+
     const :summary, TodoSummary,
       description: "Updated state summary showing total counts, status breakdown"
-    
+
     const :related_actions, T::Array[T.any(
       CreateTodoAction,
-      UpdateTodoAction, 
+      UpdateTodoAction,
       DeleteTodoAction,
       AssignTodoAction
     )], description: "Additional actions to execute in batch"

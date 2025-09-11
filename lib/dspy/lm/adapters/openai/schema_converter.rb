@@ -38,15 +38,8 @@ module DSPy
             # Get the output JSON schema from the signature class
             output_schema = signature_class.output_json_schema
             
-            # Check for oneOf schemas (union types) which OpenAI doesn't support
-            if contains_oneof?(output_schema)
-              raise DSPy::UnsupportedSchemaError.new(
-                "OpenAI structured outputs do not support union types (oneOf schemas). " \
-                "The signature '#{signature_class.name}' contains union types which are incompatible " \
-                "with OpenAI's structured output mode. Please use enhanced_prompting strategy instead " \
-                "or refactor to avoid union types."
-              )
-            end
+            # Convert oneOf to anyOf where safe, or raise error for unsupported cases
+            output_schema = convert_oneof_to_anyof_if_safe(output_schema)
             
             # Build the complete schema with OpenAI-specific modifications
             dspy_schema = {
@@ -84,21 +77,63 @@ module DSPy
             result
           end
 
-          # Check if a JSON schema contains oneOf patterns (union types)
-          sig { params(schema: T.untyped).returns(T::Boolean) }
-          def self.contains_oneof?(schema)
-            return false unless schema.is_a?(Hash)
+          # Convert oneOf to anyOf if safe (discriminated unions), otherwise raise error
+          sig { params(schema: T.untyped).returns(T.untyped) }
+          def self.convert_oneof_to_anyof_if_safe(schema)
+            return schema unless schema.is_a?(Hash)
             
-            # Direct oneOf check
-            return true if schema[:oneOf]
+            result = schema.dup
             
-            # Recursive check in properties
-            if schema[:properties]
-              schema[:properties].any? { |_, prop_schema| contains_oneof?(prop_schema) }
-            elsif schema[:items]
-              contains_oneof?(schema[:items])
-            else
-              false
+            # Check if this schema has oneOf that we can safely convert
+            if result[:oneOf]
+              if all_have_discriminators?(result[:oneOf])
+                # Safe to convert - discriminators ensure mutual exclusivity
+                result[:anyOf] = result.delete(:oneOf).map { |s| convert_oneof_to_anyof_if_safe(s) }
+              else
+                # Unsafe conversion - raise error
+                raise DSPy::UnsupportedSchemaError.new(
+                  "OpenAI structured outputs do not support oneOf schemas without discriminator fields. " \
+                  "The schema contains union types that cannot be safely converted to anyOf. " \
+                  "Please use enhanced_prompting strategy instead or add discriminator fields to union types."
+                )
+              end
+            end
+            
+            # Recursively process nested schemas
+            if result[:properties].is_a?(Hash)
+              result[:properties] = result[:properties].transform_values { |v| convert_oneof_to_anyof_if_safe(v) }
+            end
+            
+            if result[:items].is_a?(Hash)
+              result[:items] = convert_oneof_to_anyof_if_safe(result[:items])
+            end
+            
+            # Process arrays of schema items
+            if result[:items].is_a?(Array)
+              result[:items] = result[:items].map { |item| 
+                item.is_a?(Hash) ? convert_oneof_to_anyof_if_safe(item) : item 
+              }
+            end
+            
+            # Process anyOf arrays (in case there are nested oneOf within anyOf)
+            if result[:anyOf].is_a?(Array)
+              result[:anyOf] = result[:anyOf].map { |item| 
+                item.is_a?(Hash) ? convert_oneof_to_anyof_if_safe(item) : item 
+              }
+            end
+            
+            result
+          end
+          
+          # Check if all schemas in a oneOf array have discriminator fields (const properties)
+          sig { params(schemas: T::Array[T.untyped]).returns(T::Boolean) }
+          def self.all_have_discriminators?(schemas)
+            schemas.all? do |schema|
+              next false unless schema.is_a?(Hash)
+              next false unless schema[:properties].is_a?(Hash)
+              
+              # Check if any property has a const value (our discriminator pattern)
+              schema[:properties].any? { |_, prop| prop.is_a?(Hash) && prop[:const] }
             end
           end
 
@@ -254,8 +289,8 @@ module DSPy
               end
             end
             
-            # Process oneOf/anyOf/allOf
-            [:oneOf, :anyOf, :allOf].each do |key|
+            # Process anyOf/allOf (oneOf should be converted to anyOf by this point)
+            [:anyOf, :allOf].each do |key|
               if result[key].is_a?(Array)
                 result[key] = result[key].map do |sub_schema|
                   sub_schema.is_a?(Hash) ? add_additional_properties_recursively(sub_schema) : sub_schema
@@ -300,8 +335,8 @@ module DSPy
               max_depth = [max_depth, items_depth].max
             end
 
-            # Check oneOf/anyOf/allOf
-            [:oneOf, :anyOf, :allOf].each do |key|
+            # Check anyOf/allOf (oneOf should be converted to anyOf by this point)
+            [:anyOf, :allOf].each do |key|
               if schema[key].is_a?(Array)
                 schema[key].each do |sub_schema|
                   if sub_schema.is_a?(Hash)
@@ -319,8 +354,8 @@ module DSPy
           def self.contains_pattern_properties?(schema)
             return true if schema[:patternProperties]
 
-            # Recursively check nested schemas
-            [:properties, :items, :oneOf, :anyOf, :allOf].each do |key|
+            # Recursively check nested schemas (oneOf should be converted to anyOf by this point)
+            [:properties, :items, :anyOf, :allOf].each do |key|
               value = schema[key]
               case value
               when Hash
@@ -337,8 +372,8 @@ module DSPy
           def self.contains_conditional_schemas?(schema)
             return true if schema[:if] || schema[:then] || schema[:else]
 
-            # Recursively check nested schemas
-            [:properties, :items, :oneOf, :anyOf, :allOf].each do |key|
+            # Recursively check nested schemas (oneOf should be converted to anyOf by this point) 
+            [:properties, :items, :anyOf, :allOf].each do |key|
               value = schema[key]
               case value
               when Hash

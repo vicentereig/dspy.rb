@@ -36,8 +36,6 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
     ProjectContext.new(
       project_id: "proj-123",
       active_lists: ["main-backlog", "sprint-current"],
-      current_sprint_id: "sprint-001",
-      team_members: ["alice", "bob", "charlie"],
       available_tags: ["backend", "testing", "priority"]
     )
   end
@@ -45,9 +43,7 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
     UserProfile.new(
       user_id: "user-456",
       role: UserRole::Admin,
-      team_id: "team-789",
-      timezone: "UTC",
-      notification_preferences: { "email" => true, "slack" => false }
+      timezone: "UTC"
     )
   end
 
@@ -93,25 +89,25 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
         DSPy.configure { |c| c.structured_outputs.strategy = DSPy::Strategy::Strict }
       end
 
-      it 'raises UnsupportedSchemaError for union types (oneOf not supported)' do
+      it 'successfully processes union types via anyOf conversion', vcr: { cassette_name: 'json_benchmark_openai_structured_output' } do
         skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
         
         lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: true)
         DSPy.configure { |c| c.lm = lm }
         
         predictor = DSPy::Predict.new(TodoListManagementSignature)
+        result = predictor.call(
+          query: test_query,
+          context: test_context,
+          user_profile: test_user_profile
+        )
         
-        expect {
-          predictor.call(
-            query: test_query,
-            context: test_context,
-            user_profile: test_user_profile
-          )
-        }.to raise_error(DSPy::UnsupportedSchemaError) do |error|
-          expect(error.message).to include("OpenAI structured outputs do not support union types")
-          expect(error.message).to include("TodoListManagementSignature")
-          expect(error.message).to include("Please use enhanced_prompting strategy")
-        end
+        # Verify complex type structure (same as enhanced_prompting test)
+        expect(result.action).to be_a(T::Struct) # Should be one of the action structs
+        expect(result.affected_todos).to be_a(Array)
+        expect(result.affected_todos.first).to be_a(TodoItem) if result.affected_todos.any?
+        expect(result.summary).to be_a(TodoSummary)
+        expect(result.related_actions).to be_a(Array)
       end
     end
 
