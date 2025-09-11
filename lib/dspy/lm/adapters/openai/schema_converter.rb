@@ -38,6 +38,16 @@ module DSPy
             # Get the output JSON schema from the signature class
             output_schema = signature_class.output_json_schema
             
+            # Check for oneOf schemas (union types) which OpenAI doesn't support
+            if contains_oneof?(output_schema)
+              raise DSPy::UnsupportedSchemaError.new(
+                "OpenAI structured outputs do not support union types (oneOf schemas). " \
+                "The signature '#{signature_class.name}' contains union types which are incompatible " \
+                "with OpenAI's structured output mode. Please use enhanced_prompting strategy instead " \
+                "or refactor to avoid union types."
+              )
+            end
+            
             # Build the complete schema with OpenAI-specific modifications
             dspy_schema = {
               "$schema": "http://json-schema.org/draft-06/schema#",
@@ -72,6 +82,24 @@ module DSPy
             cache_manager.cache_schema(signature_class, "openai", result, cache_params)
             
             result
+          end
+
+          # Check if a JSON schema contains oneOf patterns (union types)
+          sig { params(schema: T.untyped).returns(T::Boolean) }
+          def self.contains_oneof?(schema)
+            return false unless schema.is_a?(Hash)
+            
+            # Direct oneOf check
+            return true if schema[:oneOf]
+            
+            # Recursive check in properties
+            if schema[:properties]
+              schema[:properties].any? { |_, prop_schema| contains_oneof?(prop_schema) }
+            elsif schema[:items]
+              contains_oneof?(schema[:items])
+            else
+              false
+            end
           end
 
           sig { params(model: String).returns(T::Boolean) }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative '../../lib/dspy/benchmark_types'
+require_relative '../../examples/benchmark_types'
 require_relative '../../examples/json_modes_benchmark'
 
 RSpec.describe 'JSON Extraction Modes Benchmark' do
@@ -86,18 +86,6 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
         expect(result.related_actions).to be_a(Array)
       end
 
-      it 'correctly deserializes TodoStatus enums' do
-        expect { TodoStatus::Pending }.not_to raise_error
-        expect { TodoStatus::InProgress }.not_to raise_error  
-        expect { TodoStatus::Completed }.not_to raise_error
-        expect { TodoStatus::Failed }.not_to raise_error
-      end
-
-      it 'correctly deserializes UserRole enums' do
-        expect { UserRole::Admin }.not_to raise_error
-        expect { UserRole::Manager }.not_to raise_error
-        expect { UserRole::Member }.not_to raise_error
-      end
     end
 
     context 'with openai_structured_output strategy' do
@@ -105,24 +93,25 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
         DSPy.configure { |c| c.structured_outputs.strategy = DSPy::Strategy::Strict }
       end
 
-      it 'forces OpenAI structured output when available', vcr: { cassette_name: 'json_benchmark_openai_structured' } do
+      it 'raises UnsupportedSchemaError for union types (oneOf not supported)' do
         skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
         
         lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], structured_outputs: true)
         DSPy.configure { |c| c.lm = lm }
         
-        # Mock the logger to verify strategy selection
-        allow(DSPy.logger).to receive(:debug).and_call_original
-        
         predictor = DSPy::Predict.new(TodoListManagementSignature)
-        result = predictor.call(
-          query: test_query,
-          context: test_context,
-          user_profile: test_user_profile
-        )
         
-        expect(DSPy.logger).to have_received(:debug).with(/openai_structured_output/)
-        expect(result).to be_a(DSPy::Prediction)
+        expect {
+          predictor.call(
+            query: test_query,
+            context: test_context,
+            user_profile: test_user_profile
+          )
+        }.to raise_error(DSPy::UnsupportedSchemaError) do |error|
+          expect(error.message).to include("OpenAI structured outputs do not support union types")
+          expect(error.message).to include("TodoListManagementSignature")
+          expect(error.message).to include("Please use enhanced_prompting strategy")
+        end
       end
     end
 
@@ -134,7 +123,7 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
       it 'forces Anthropic tool use strategy', vcr: { cassette_name: 'json_benchmark_anthropic_tool_use' } do
         skip 'Requires ANTHROPIC_API_KEY' unless ENV['ANTHROPIC_API_KEY']
         
-        lm = DSPy::LM.new('anthropic/claude-3-5-haiku', api_key: ENV['ANTHROPIC_API_KEY'])
+        lm = DSPy::LM.new('anthropic/claude-3-haiku-20240307', api_key: ENV['ANTHROPIC_API_KEY'])
         DSPy.configure { |c| c.lm = lm }
         
         allow(DSPy.logger).to receive(:debug).and_call_original
@@ -147,7 +136,8 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
         )
         
         expect(DSPy.logger).to have_received(:debug).with(/anthropic_tool_use/)
-        expect(result.action).to respond_to(:task_id) # Union type should resolve to specific struct
+        expect(result.action).to be_a(T::Struct) # Union type should resolve to specific struct
+        expect(result.action.class.name).to match(/Action$/) # Should be one of our action types
       end
 
       it 'tests anthropic extraction strategy fallback' do

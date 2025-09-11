@@ -34,6 +34,8 @@ module DSPy
           coerce_union_value(value, prop_type)
         when ->(type) { array_type?(type) }
           coerce_array_value(value, prop_type)
+        when ->(type) { hash_type?(type) }
+          coerce_hash_value(value, prop_type)
         when ->(type) { enum_type?(type) }
           extract_enum_class(prop_type).deserialize(value)
         when Float, ->(type) { simple_type_match?(type, Float) }
@@ -88,6 +90,12 @@ module DSPy
         true
       end
 
+      # Checks if a type is a hash type
+      sig { params(type: T.untyped).returns(T::Boolean) }
+      def hash_type?(type)
+        type.is_a?(T::Types::TypedHash)
+      end
+
       # Checks if a type is a struct type
       sig { params(type: T.untyped).returns(T::Boolean) }
       def struct_type?(type)
@@ -122,6 +130,28 @@ module DSPy
 
         element_type = prop_type.type
         value.map { |element| coerce_value_to_type(element, element_type) }
+      end
+
+      # Coerces a hash value, converting keys and values as needed
+      sig { params(value: T.untyped, prop_type: T.untyped).returns(T.untyped) }
+      def coerce_hash_value(value, prop_type)
+        return value unless value.is_a?(Hash)
+        return value unless prop_type.is_a?(T::Types::TypedHash)
+        
+        key_type = prop_type.keys
+        value_type = prop_type.values
+        
+        # Convert string keys to enum instances if key_type is an enum
+        result = if enum_type?(key_type)
+          enum_class = extract_enum_class(key_type)
+          value.transform_keys { |k| enum_class.deserialize(k.to_s) }
+        else
+          # For non-enum keys, coerce them to the expected type
+          value.transform_keys { |k| coerce_value_to_type(k, key_type) }
+        end
+        
+        # Coerce values to their expected types
+        result.transform_values { |v| coerce_value_to_type(v, value_type) }
       end
 
       # Coerces a struct value from a hash
