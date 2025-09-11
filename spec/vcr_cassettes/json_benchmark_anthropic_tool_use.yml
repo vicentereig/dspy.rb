@@ -8,49 +8,36 @@ http_interactions:
       string: '{"model":"claude-3-haiku-20240307","messages":[{"role":"user","content":"##
         Input Values\n```json\n{\n  \"query\": \"Create a todo for implementing JSON
         benchmark <GEMINI_API_KEY>ts with high priority\",\n  \"context\": {\n    \"project_id\":
-        \"proj-123\",\n    \"active_lists\": [\n      \"main-backlog\",\n      \"sprint-current\"\n    ],\n    \"current_sprint_id\":
-        \"sprint-001\",\n    \"team_members\": [\n      \"alice\",\n      \"bob\",\n      \"charlie\"\n    ],\n    \"available_tags\":
+        \"proj-123\",\n    \"active_lists\": [\n      \"main-backlog\",\n      \"sprint-current\"\n    ],\n    \"available_tags\":
         [\n      \"backend\",\n      \"<GEMINI_API_KEY>ting\",\n      \"priority\"\n    ]\n  },\n  \"user_profile\":
-        {\n    \"user_id\": \"user-456\",\n    \"role\": \"admin\",\n    \"team_id\":
-        \"team-789\",\n    \"timezone\": \"UTC\",\n    \"notification_preferences\":
-        {\n      \"email\": true,\n      \"slack\": false\n    }\n  }\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nPlease use the json_output tool to
-        provide your response."}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
-        the result in the required JSON format","input_schema":{"type":"object","properties":{"action":{"type":"object"},"affected_todos":{"type":"array","items":{"type":"string"}},"summary":{"type":"object","properties":{"total_todos":{"type":"integer"},"by_status":{"type":"object","additionalProperties":{"type":"integer"}},"by_assignee":{"type":"object","additionalProperties":{"type":"integer"}},"upcoming_due":{"type":"integer"}}},"related_actions":{"type":"array","items":{"type":"object"}}},"required":["action","affected_todos","summary","related_actions"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        {\n    \"user_id\": \"user-456\",\n    \"role\": \"admin\",\n    \"timezone\":
+        \"UTC\"\n  }\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nPlease
+        use the json_output tool to provide your response."}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"action":{"type":"object"},"affected_todos":{"type":"array","items":{"type":"string"}},"summary":{"type":"object","properties":{"total_todos":{"type":"integer"},"upcoming_due":{"type":"integer"}}},"related_actions":{"type":"array","items":{"type":"object"}}},"required":["action","affected_todos","summary","related_actions"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
         \"Natural language command or request about todos\"\n    },\n    \"context\":
         {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
         {\n          \"type\": \"string\",\n          \"const\": \"ProjectContext\"\n        },\n        \"project_id\":
         {\n          \"type\": \"string\"\n        },\n        \"active_lists\": {\n          \"type\":
-        \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"current_sprint_id\":
-        {\n          \"type\": [\n            \"string\",\n            \"null\"\n          ]\n        },\n        \"team_members\":
+        \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"available_tags\":
         {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"available_tags\": {\n          \"type\":
-        \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        }\n      },\n      \"required\":
-        [\n        \"_type\",\n        \"project_id\",\n        \"active_lists\",\n        \"team_members\",\n        \"available_tags\"\n      ],\n      \"description\":
+        \"string\"\n          }\n        }\n      },\n      \"required\": [\n        \"_type\",\n        \"project_id\",\n        \"active_lists\",\n        \"available_tags\"\n      ],\n      \"description\":
         \"Current project state including active lists, sprint information\"\n    },\n    \"user_profile\":
         {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
         {\n          \"type\": \"string\",\n          \"const\": \"UserProfile\"\n        },\n        \"user_id\":
         {\n          \"type\": \"string\"\n        },\n        \"role\": {\n          \"type\":
-        \"string\",\n          \"enum\": [\n            \"admin\",\n            \"manager\",\n            \"member\"\n          ]\n        },\n        \"team_id\":
-        {\n          \"type\": \"string\"\n        },\n        \"timezone\": {\n          \"type\":
-        \"string\"\n        },\n        \"notification_preferences\": {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"boolean\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are booleans\"\n        }\n      },\n      \"required\":
-        [\n        \"_type\",\n        \"user_id\",\n        \"role\",\n        \"team_id\",\n        \"timezone\",\n        \"notification_preferences\"\n      ],\n      \"description\":
+        \"string\",\n          \"enum\": [\n            \"admin\",\n            \"manager\",\n            \"member\"\n          ]\n        },\n        \"timezone\":
+        {\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"user_id\",\n        \"role\",\n        \"timezone\"\n      ],\n      \"description\":
         \"User information including role, permissions, timezone\"\n    }\n  },\n  \"required\":
         [\n    \"query\",\n    \"context\",\n    \"user_profile\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"action\": {\n      \"oneOf\": [\n        {\n          \"type\":
         \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
         \"string\",\n              \"const\": \"CreateTodoAction\"\n            },\n            \"title\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ]\n            },\n            \"assignee\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ]\n            },\n            \"due_date\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ]\n            },\n            \"priority\":
+        {\n              \"type\": \"string\"\n            },\n            \"priority\":
         {\n              \"type\": \"string\"\n            },\n            \"tags\":
         {\n              \"type\": \"array\",\n              \"items\": {\n                \"type\":
         \"string\"\n              }\n            }\n          },\n          \"required\":
@@ -59,12 +46,8 @@ http_interactions:
         {\n            \"_type\": {\n              \"type\": \"string\",\n              \"const\":
         \"UpdateTodoAction\"\n            },\n            \"todo_id\": {\n              \"type\":
         \"string\"\n            },\n            \"upda<GEMINI_API_KEY>\": {\n              \"type\":
-        \"object\",\n              \"propertyNames\": {\n                \"type\":
-        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
-        \"string\"\n              },\n              \"description\": \"A mapping where
-        keys are strings and values are strings\"\n            },\n            \"reason\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ]\n            }\n          },\n          \"required\":
-        [\n            \"_type\",\n            \"todo_id\",\n            \"upda<GEMINI_API_KEY>\"\n          ],\n          \"description\":
+        \"string\"\n            },\n            \"reason\": {\n              \"type\":
+        \"string\"\n            }\n          },\n          \"required\": [\n            \"_type\",\n            \"todo_id\",\n            \"upda<GEMINI_API_KEY>\",\n            \"reason\"\n          ],\n          \"description\":
         \"UpdateTodoAction struct\"\n        },\n        {\n          \"type\": \"object\",\n          \"properties\":
         {\n            \"_type\": {\n              \"type\": \"string\",\n              \"const\":
         \"DeleteTodoAction\"\n            },\n            \"todo_id\": {\n              \"type\":
@@ -82,36 +65,23 @@ http_interactions:
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"TodoItem\"\n          },\n          \"id\": {\n            \"type\": \"string\"\n          },\n          \"title\":
         {\n            \"type\": \"string\"\n          },\n          \"description\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"status\":
-        {\n            \"type\": \"string\",\n            \"enum\": [\n              \"pending\",\n              \"in_progress\",\n              \"completed\",\n              \"failed\"\n            ]\n          },\n          \"assignee\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"due_date\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tags\":
+        {\n            \"type\": \"string\"\n          },\n          \"status\": {\n            \"type\":
+        \"string\",\n            \"enum\": [\n              \"pending\",\n              \"in_progress\",\n              \"completed\",\n              \"failed\"\n            ]\n          },\n          \"tags\":
         {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\":
         \"string\"\n            }\n          },\n          \"priority\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"id\",\n          \"title\",\n          \"status\",\n          \"tags\",\n          \"priority\"\n        ],\n        \"description\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"id\",\n          \"title\",\n          \"description\",\n          \"status\",\n          \"tags\",\n          \"priority\"\n        ],\n        \"description\":
         \"TodoItem struct\"\n      },\n      \"description\": \"List of todo items
         that will be created, modified, or impacted\"\n    },\n    \"summary\": {\n      \"type\":
         \"object\",\n      \"properties\": {\n        \"_type\": {\n          \"type\":
         \"string\",\n          \"const\": \"TodoSummary\"\n        },\n        \"total_todos\":
-        {\n          \"type\": \"integer\"\n        },\n        \"by_status\": {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\",\n            \"enum\":
-        [\n              \"pending\",\n              \"in_progress\",\n              \"completed\",\n              \"failed\"\n            ]\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"integer\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are integers\"\n        },\n        \"by_assignee\":
-        {\n          \"type\": \"object\",\n          \"propertyNames\": {\n            \"type\":
-        \"string\"\n          },\n          \"additionalProperties\": {\n            \"type\":
-        \"integer\"\n          },\n          \"description\": \"A mapping where keys
-        are strings and values are integers\"\n        },\n        \"upcoming_due\":
+        {\n          \"type\": \"integer\"\n        },\n        \"upcoming_due\":
         {\n          \"type\": \"integer\"\n        }\n      },\n      \"required\":
-        [\n        \"_type\",\n        \"total_todos\",\n        \"by_status\",\n        \"by_assignee\",\n        \"upcoming_due\"\n      ],\n      \"description\":
+        [\n        \"_type\",\n        \"total_todos\",\n        \"upcoming_due\"\n      ],\n      \"description\":
         \"Updated state summary showing total counts, status breakdown\"\n    },\n    \"related_actions\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"oneOf\": [\n          {\n            \"type\":
         \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
         \"string\",\n                \"const\": \"CreateTodoAction\"\n              },\n              \"title\":
-        {\n                \"type\": \"string\"\n              },\n              \"description\":
-        {\n                \"type\": [\n                  \"string\",\n                  \"null\"\n                ]\n              },\n              \"assignee\":
-        {\n                \"type\": [\n                  \"string\",\n                  \"null\"\n                ]\n              },\n              \"due_date\":
-        {\n                \"type\": [\n                  \"string\",\n                  \"null\"\n                ]\n              },\n              \"priority\":
+        {\n                \"type\": \"string\"\n              },\n              \"priority\":
         {\n                \"type\": \"string\"\n              },\n              \"tags\":
         {\n                \"type\": \"array\",\n                \"items\": {\n                  \"type\":
         \"string\"\n                }\n              }\n            },\n            \"required\":
@@ -120,12 +90,9 @@ http_interactions:
         \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
         \"string\",\n                \"const\": \"UpdateTodoAction\"\n              },\n              \"todo_id\":
         {\n                \"type\": \"string\"\n              },\n              \"upda<GEMINI_API_KEY>\":
-        {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              \"reason\":
-        {\n                \"type\": [\n                  \"string\",\n                  \"null\"\n                ]\n              }\n            },\n            \"required\":
-        [\n              \"_type\",\n              \"todo_id\",\n              \"upda<GEMINI_API_KEY>\"\n            ],\n            \"description\":
+        {\n                \"type\": \"string\"\n              },\n              \"reason\":
+        {\n                \"type\": \"string\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"todo_id\",\n              \"upda<GEMINI_API_KEY>\",\n              \"reason\"\n            ],\n            \"description\":
         \"UpdateTodoAction struct\"\n          },\n          {\n            \"type\":
         \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
         \"string\",\n                \"const\": \"DeleteTodoAction\"\n              },\n              \"todo_id\":
@@ -179,14 +146,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '15390'
+      - '11491'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 11 Sep 2025 09:38:12 GMT
+      - Thu, 11 Sep 2025 14:20:54 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -196,35 +163,35 @@ http_interactions:
       Anthropic-Ratelimit-Input-Tokens-Limit:
       - '100000'
       Anthropic-Ratelimit-Input-Tokens-Remaining:
-      - '97000'
+      - '98000'
       Anthropic-Ratelimit-Input-Tokens-Reset:
-      - '2025-09-11T09:38:12Z'
+      - '2025-09-11T14:20:54Z'
       Anthropic-Ratelimit-Output-Tokens-Limit:
       - '20000'
       Anthropic-Ratelimit-Output-Tokens-Remaining:
       - '20000'
       Anthropic-Ratelimit-Output-Tokens-Reset:
-      - '2025-09-11T09:38:13Z'
+      - '2025-09-11T14:20:55Z'
       Anthropic-Ratelimit-Requests-Limit:
       - '1000'
       Anthropic-Ratelimit-Requests-Remaining:
       - '999'
       Anthropic-Ratelimit-Requests-Reset:
-      - '2025-09-11T09:38:10Z'
+      - '2025-09-11T14:20:52Z'
       Anthropic-Ratelimit-Tokens-Limit:
       - '120000'
       Anthropic-Ratelimit-Tokens-Remaining:
-      - '117000'
+      - '118000'
       Anthropic-Ratelimit-Tokens-Reset:
-      - '2025-09-11T09:38:12Z'
+      - '2025-09-11T14:20:54Z'
       Request-Id:
-      - req_011CT2PYjeTggMtsf7H319po
+      - req_011CT2m799Ai5tXv5XwPTqQq
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
       - '008b8384-4ae5-436d-a319-c5a07111a158'
       X-Envoy-Upstream-Service-Time:
-      - '2850'
+      - '1967'
       Via:
       - 1.1 google
       Cf-Cache-Status:
@@ -234,11 +201,11 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97d630cbb8960140-MAD
+      - 97d7ceeda84a0383-MAD
     body:
       encoding: ASCII-8BIT
-      string: '{"id":"msg_013DMfrqvSiGkM5ZTedWKeeJ","type":"message","role":"assistant","model":"claude-3-haiku-20240307","content":[{"type":"tool_use","id":"toolu_0176DSaHqzKqEnbhcyMHXMNw","name":"json_output","input":{"action":{"_type":"CreateTodoAction","title":"Implement
-        JSON benchmark <GEMINI_API_KEY>ts","description":null,"assignee":null,"due_date":null,"priority":"high","tags":["backend","<GEMINI_API_KEY>ting","priority"]},"affected_todos":[{"_type":"TodoItem","id":"<UNKNOWN>","title":"Implement
-        JSON benchmark <GEMINI_API_KEY>ts","description":null,"status":"pending","assignee":null,"due_date":null,"tags":["backend","<GEMINI_API_KEY>ting","priority"],"priority":"high"}],"summary":{"_type":"TodoSummary","total_todos":1,"by_status":{"pending":1,"in_progress":0,"completed":0,"failed":0},"by_assignee":{"alice":0,"bob":0,"charlie":0},"upcoming_due":0},"related_actions":[]}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":3929,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":391,"service_tier":"standard"}}'
-  recorded_at: Thu, 11 Sep 2025 09:38:12 GMT
+      string: '{"id":"msg_01Dt4jvNt2PAtztFdPpa1far","type":"message","role":"assistant","model":"claude-3-haiku-20240307","content":[{"type":"tool_use","id":"toolu_01DqhMH2Ko1uVkYmkPit4LCq","name":"json_output","input":{"action":{"_type":"CreateTodoAction","title":"Implement
+        JSON benchmark <GEMINI_API_KEY>ts","priority":"high","tags":["backend","<GEMINI_API_KEY>ting","priority"]},"affected_todos":[{"_type":"TodoItem","id":"<UNKNOWN>","title":"Implement
+        JSON benchmark <GEMINI_API_KEY>ts","description":"<UNKNOWN>","status":"pending","tags":["backend","<GEMINI_API_KEY>ting","priority"],"priority":"high"}],"summary":{"_type":"TodoSummary","total_todos":1,"upcoming_due":1},"related_actions":[]}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":3054,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":252,"service_tier":"standard"}}'
+  recorded_at: Thu, 11 Sep 2025 14:20:54 GMT
 recorded_with: VCR 6.3.1
