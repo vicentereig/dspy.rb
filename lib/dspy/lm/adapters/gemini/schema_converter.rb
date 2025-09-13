@@ -12,10 +12,12 @@ module DSPy
           extend T::Sig
 
           # Models that support structured outputs
+          # Based on Google documentation: Gemini 1.5 Pro, Gemini 2.5, and experimental models
           STRUCTURED_OUTPUT_MODELS = T.let([
-            "gemini-1.5-pro",
-            "gemini-1.5-flash",
-            "gemini-2.0-flash-exp"
+            "gemini-1.5-pro",      # Confirmed to support structured outputs
+            "gemini-2.5-flash",    # Explicitly mentioned in docs as supporting structured outputs
+            "gemini-2.0-flash-exp" # Experimental model
+            # Note: gemini-1.5-flash does NOT support structured outputs
           ].freeze, T::Array[String])
 
           sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T::Hash[Symbol, T.untyped]) }
