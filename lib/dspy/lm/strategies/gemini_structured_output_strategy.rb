@@ -31,13 +31,13 @@ module DSPy
 
         sig { override.params(messages: T::Array[T::Hash[Symbol, String]], request_params: T::Hash[Symbol, T.untyped]).void }
         def prepare_request(messages, request_params)
-          # Convert signature to Gemini schema format
+          # Convert signature to Gemini JSON Schema format (supports oneOf/anyOf for unions)
           schema = DSPy::LM::Adapters::Gemini::SchemaConverter.to_gemini_format(signature_class)
           
-          # Add generation_config for structured output
+          # Add generation_config for structured output using JSON Schema format
           request_params[:generation_config] = {
             response_mime_type: "application/json",
-            response_schema: schema
+            response_json_schema: schema  # Use JSON Schema format for proper union support
           }
         end
 

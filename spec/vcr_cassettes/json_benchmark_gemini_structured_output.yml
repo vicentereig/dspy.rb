@@ -111,7 +111,9 @@ http_interactions:
         [\n      \"backend\",\n      \"testing\",\n      \"priority\"\n    ]\n  },\n  \"user_profile\":
         {\n    \"user_id\": \"user-456\",\n    \"role\": \"admin\",\n    \"timezone\":
         \"UTC\"\n  }\n}\n```\n\nRespond with the corresponding output schema fields
-        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_schema":{"type":"object","properties":{"action":{"type":"string"},"affected_todos":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"id":{"type":"string"},"title":{"type":"string"},"description":{"type":"string"},"status":{"type":"string","enum":["pending","in_progress","completed","failed"]},"tags":{"type":"array","items":{"type":"string"}},"priority":{"type":"string"}},"required":["_type","id","title","description","status","tags","priority"]}},"summary":{"type":"object","properties":{"_type":{"type":"string"},"total_todos":{"type":"integer"},"upcoming_due":{"type":"integer"}},"required":["_type","total_todos","upcoming_due"]},"related_actions":{"type":"array","items":{"type":"string"}}},"required":["action","affected_todos","summary","related_actions"]}}}'
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"action":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string"},"title":{"type":"string"},"priority":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","title","priority","tags"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"updates":{"type":"string"},"reason":{"type":"string"}},"required":["_type","todo_id","updates","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"reason":{"type":"string"}},"required":["_type","todo_id","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"assignee":{"type":"string"},"notify":{"type":"boolean"}},"required":["_type","todo_id","assignee","notify"]}],"description":"Primary
+        action to execute - automatically discriminated by _type field"},"affected_todos":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"id":{"type":"string"},"title":{"type":"string"},"description":{"type":"string"},"status":{"type":"string","enum":["pending","in_progress","completed","failed"]},"tags":{"type":"array","items":{"type":"string"}},"priority":{"type":"string"}},"required":["_type","id","title","description","status","tags","priority"]}},"summary":{"type":"object","properties":{"_type":{"type":"string"},"total_todos":{"type":"integer"},"upcoming_due":{"type":"integer"}},"required":["_type","total_todos","upcoming_due"]},"related_actions":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string"},"title":{"type":"string"},"priority":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","title","priority","tags"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"updates":{"type":"string"},"reason":{"type":"string"}},"required":["_type","todo_id","updates","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"reason":{"type":"string"}},"required":["_type","todo_id","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"assignee":{"type":"string"},"notify":{"type":"boolean"}},"required":["_type","todo_id","assignee","notify"]}],"description":"Union
+        of multiple types"}}},"required":["action","affected_todos","summary","related_actions"]}}}'
     headers:
       User-Agent:
       - Faraday v2.13.4
@@ -133,11 +135,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Sat, 13 Sep 2025 22:09:54 GMT
+      - Sat, 13 Sep 2025 23:00:12 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '546'
+      - '519'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -145,7 +147,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=2887
+      - gfet4t7; dur=2374
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -157,34 +159,34 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "{\"action\": \"{\\\"_type\\\": \\\"CreateTodoAction\\\", \\\"title\\\": \\\"Implement JSON benchmark tests\\\", \\\"priority\\\": \\\"high\\\", \\\"tags\\\": [\\\"testing\\\", \\\"backend\\\"]}\", \"affected_todos\": [{\"_type\": \"TodoItem\", \"id\": \"todo-789\", \"title\": \"Implement JSON benchmark tests\", \"description\": \"\", \"status\": \"pending\", \"tags\": [\"testing\", \"backend\"], \"priority\": \"high\"}], \"summary\": {\"_type\": \"TodoSummary\", \"total_todos\": 1, \"upcoming_due\": 0}, \"related_actions\": []}"
+                    "text": "{\"action\": {\"_type\": \"CreateTodoAction\", \"title\": \"Implement JSON benchmark tests\", \"priority\": \"high\", \"tags\": [\"testing\", \"backend\"]}, \"affected_todos\": [{\"_type\": \"TodoItem\", \"id\": \"todo-789\", \"title\": \"Implement JSON benchmark tests\", \"description\": \"\", \"status\": \"pending\", \"tags\": [\"testing\", \"backend\"], \"priority\": \"high\"}], \"summary\": {\"_type\": \"TodoSummary\", \"total_todos\": 1, \"upcoming_due\": 0}, \"related_actions\": []}"
                   }
                 ],
                 "role": "model"
               },
               "finishReason": "STOP",
-              "avgLogprobs": -0.010122533097411648
+              "avgLogprobs": -0.0003379761026455806
             }
           ],
           "usageMetadata": {
-            "promptTokenCount": 2571,
-            "candidatesTokenCount": 132,
-            "totalTokenCount": 2703,
+            "promptTokenCount": 2499,
+            "candidatesTokenCount": 130,
+            "totalTokenCount": 2629,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 2571
+                "tokenCount": 2499
               }
             ],
             "candidatesTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 132
+                "tokenCount": 130
               }
             ]
           },
           "modelVersion": "gemini-1.5-pro-002",
-          "responseId": "r-vFaNueGdGa1MkPh_qIoA0"
+          "responseId": "evfFaKPhBbOS_uMPiK6r4As"
         }
-  recorded_at: Sat, 13 Sep 2025 22:09:54 GMT
+  recorded_at: Sat, 13 Sep 2025 23:00:12 GMT
 recorded_with: VCR 6.3.1
