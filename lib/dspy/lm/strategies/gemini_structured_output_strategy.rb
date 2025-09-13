@@ -52,12 +52,25 @@ module DSPy
         def handle_error(error)
           # Handle Gemini-specific structured output errors
           error_msg = error.message.to_s.downcase
-          if error_msg.include?("schema") || error_msg.include?("generation_config") || error_msg.include?("response_schema")
-            # Log the error and return true to indicate we handled it
-            # This allows fallback to another strategy
-            DSPy.logger.warn("Gemini structured output failed: #{error.message}")
-            true
+          
+          # Check for permanent errors that shouldn't be retried
+          permanent_error_patterns = [
+            "schema",
+            "generation_config", 
+            "response_schema",
+            "unknown name \"response_mime_type\"",
+            "unknown name \"response_schema\"",
+            "invalid json payload",
+            "no matching sse interaction found",  # VCR test configuration issue
+            "cannot find field"
+          ]
+          
+          if permanent_error_patterns.any? { |pattern| error_msg.include?(pattern) }
+            # These are permanent errors - no point retrying
+            DSPy.logger.debug("Gemini structured output failed (permanent error, skipping retries): #{error.message}")
+            true # Skip retries and try next strategy
           else
+            # Unknown error - let retry logic handle it
             false
           end
         end
