@@ -5,6 +5,60 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.0] - 2025-09-13
+
+### Added
+- **Native Gemini Structured Outputs** - Comprehensive support for Google Gemini AI structured generation
+  - Uses Gemini's controlled generation with `response_mime_type: "application/json"` and `response_schema`
+  - High-priority strategy (priority 100) for optimal selection with Gemini models
+  - Full support for `gemini-1.5-pro` and `gemini-1.5-flash` models
+  - Automatic schema conversion from DSPy signatures to OpenAPI 3.0 format
+  - Seamless fallback to EnhancedPromptingStrategy for unsupported models
+  - Zero breaking changes with optional `structured_outputs: true` parameter
+
+### Improved
+- **Type Safety Enhancements** - Better code maintainability and reliability
+  - Refactored StrategySelector to use T::Enum for type-safe strategy names
+  - Enhanced unit test isolation for schema converter
+  - Added comprehensive integration test suite with VCR cassettes
+
+### Fixed
+- **Test Infrastructure** - Improved reliability and isolation
+  - Fixed unit test isolation issues in schema converter
+  - Updated VCR cassettes with proper SSEVCR format
+  - Enhanced evaluation test expectations for validation set length
+
+### Documentation
+- Added comprehensive documentation for Gemini structured outputs usage
+- Updated troubleshooting guide with Gemini-specific information
+- Enhanced JSON extraction documentation with Gemini examples
+
+### Technical Details
+- Implemented `DSPy::LM::Adapters::Gemini::SchemaConverter` for OpenAPI 3.0 schema generation
+- Added `DSPy::LM::Strategies::GeminiStructuredOutputStrategy` with provider-optimized selection
+- Full test coverage: 24 new unit tests and integration test suite
+- Performance optimized with schema caching and priority ordering
+
+## [0.26.1] - 2025-09-10
+
+### Changed
+- **MIPROv2 Configuration Modernization** - Ruby-idiomatic configuration pattern
+  - Replaced `MIPROv2Config` class with dry-configurable blocks
+  - Class-level and instance-level configuration support
+  - Type-safe optimization strategies using T::Enum symbols
+  - Simplified data structures with `EvaluatedCandidate` Data class
+
+### Breaking Changes
+- **REMOVED**: `MIPROv2Config` class - Use `DSPy::Teleprompt::MIPROv2.configure` blocks
+- **CHANGED**: optimization_strategy values - Use symbols (`:greedy`) instead of strings
+- **RENAMED**: `CandidateConfig` → `EvaluatedCandidate` - Now a simple Data class
+
+### Improved
+- Enhanced test coverage for configuration patterns
+- Fixed test state isolation issues
+- Better error messages and validation
+- Updated documentation with new configuration patterns
+
 ## [0.26.0] - 2025-01-09
 
 ### Added
