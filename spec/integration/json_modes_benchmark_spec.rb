@@ -520,26 +520,113 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
   end
 
   describe 'Model compatibility matrix' do
+    let(:predictor) { DSPy::Predict.new(TodoListManagementSignature) }
+    let(:test_query) { "Create a model compatibility test todo with medium priority" }
+
     context 'OpenAI models' do
+      before do
+        skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      end
+
       OPENAI_MODELS.each do |model|
-        it "tests #{model} with all compatible strategies" do
-          skip "Will implement comprehensive model testing for #{model}"
+        it "tests #{model} with all compatible strategies", vcr: { cassette_name: "model_matrix_openai_#{model.gsub('-', '_')}" } do
+          compatible_strategies = JSONModesBenchmark.get_strategy_compatibility_matrix(TodoListManagementSignature)['openai']
+          
+          compatible_strategies.each do |strategy|
+            # Configure LM for this model and strategy
+            lm_options = {}
+            lm_options[:structured_outputs] = true if strategy == 'openai_structured_output'
+            
+            lm = DSPy::LM.new("openai/#{model}", api_key: ENV['OPENAI_API_KEY'], **lm_options)
+            DSPy.configure { |c| c.lm = lm }
+            
+            # Force strategy
+            JSONModesBenchmark.force_strategy(strategy)
+            
+            # Test prediction
+            result = predictor.call(
+              query: "#{test_query} (#{model}/#{strategy})",
+              context: test_context,
+              user_profile: test_user_profile
+            )
+            
+            # Verify successful prediction
+            expect(result).not_to be_nil
+            expect(result.action).to be_a(T::Struct)
+            expect(result.affected_todos).to be_a(Array)
+            expect(result.summary).to be_a(T::Struct)
+          end
         end
       end
     end
 
     context 'Anthropic models' do
+      before do
+        skip 'Requires ANTHROPIC_API_KEY' unless ENV['ANTHROPIC_API_KEY']
+      end
+
       ANTHROPIC_MODELS.each do |model|
-        it "tests #{model} with all compatible strategies" do
-          skip "Will implement comprehensive model testing for #{model}"
+        it "tests #{model} with all compatible strategies", vcr: { cassette_name: "model_matrix_anthropic_#{model.gsub('-', '_').gsub('.', '_')}" } do
+          compatible_strategies = JSONModesBenchmark.get_strategy_compatibility_matrix(TodoListManagementSignature)['anthropic']
+          
+          compatible_strategies.each do |strategy|
+            lm = DSPy::LM.new("anthropic/#{model}", api_key: ENV['ANTHROPIC_API_KEY'])
+            DSPy.configure { |c| c.lm = lm }
+            
+            # Force strategy
+            JSONModesBenchmark.force_strategy(strategy)
+            
+            # Test prediction
+            result = predictor.call(
+              query: "#{test_query} (#{model}/#{strategy})",
+              context: test_context,
+              user_profile: test_user_profile
+            )
+            
+            # Verify successful prediction
+            expect(result).not_to be_nil
+            expect(result.action).to be_a(T::Struct)
+            expect(result.affected_todos).to be_a(Array)
+            expect(result.summary).to be_a(T::Struct)
+          end
         end
       end
     end
 
     context 'Google models' do
+      before do
+        skip 'Requires GEMINI_API_KEY or GOOGLE_API_KEY' unless ENV['GEMINI_API_KEY'] || ENV['GOOGLE_API_KEY']
+      end
+
       GOOGLE_MODELS.each do |model|
-        it "tests #{model} with all compatible strategies" do
-          skip "Will implement comprehensive model testing for #{model}"
+        it "tests #{model} with all compatible strategies", vcr: { cassette_name: "model_matrix_google_#{model.gsub('-', '_').gsub('.', '_')}" } do
+          compatible_strategies = JSONModesBenchmark.get_strategy_compatibility_matrix(TodoListManagementSignature)['gemini']
+          api_key = ENV['GEMINI_API_KEY'] || ENV['GOOGLE_API_KEY']
+          
+          compatible_strategies.each do |strategy|
+            # Configure LM for this model and strategy
+            lm_options = {}
+            lm_options[:structured_outputs] = true if strategy == 'gemini_structured_output'
+            
+            lm = DSPy::LM.new("gemini/#{model}", api_key: api_key, **lm_options)
+            DSPy.configure { |c| c.lm = lm }
+            
+            # Force strategy
+            JSONModesBenchmark.force_strategy(strategy)
+            
+            # Test prediction
+            result = predictor.call(
+              query: "#{test_query} (#{model}/#{strategy})",
+              context: test_context,
+              user_profile: test_user_profile
+            )
+            
+            # Verify successful prediction
+            expect(result).not_to be_nil
+            expect(result.action).to be_a(T::Struct)
+            expect(result.affected_todos).to be_a(Array)
+            expect(result.summary).to be_a(T::Struct)
+          end
         end
       end
     end
