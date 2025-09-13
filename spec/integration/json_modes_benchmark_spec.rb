@@ -252,16 +252,191 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
   end
 
   describe 'Benchmark data collection' do
-    it 'collects timing metrics for each strategy' do
-      skip 'Will implement with benchmark script'
+    let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY']) }
+    let(:predictor) { DSPy::Predict.new(TodoListManagementSignature) }
+    
+    before do
+      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      DSPy.configure { |c| c.lm = lm }
     end
 
-    it 'collects token usage and cost metrics' do
-      skip 'Will implement with observability integration'
+    it 'collects timing metrics for each strategy', vcr: { cassette_name: 'benchmark_timing_metrics' } do
+      strategies_to_test = ['enhanced_prompting', 'openai_structured_output']
+      
+      timing_results = []
+      
+      strategies_to_test.each do |strategy|
+        start_time = Time.now
+        
+        JSONModesBenchmark.force_strategy(strategy)
+        
+        result = predictor.call(
+          query: "Create a benchmark timing test todo",
+          context: test_context,
+          user_profile: test_user_profile
+        )
+        
+        end_time = Time.now
+        duration_ms = ((end_time - start_time) * 1000).round(2)
+        
+        timing_results << {
+          strategy: strategy,
+          duration_ms: duration_ms,
+          success: !result.nil? && result.action.is_a?(T::Struct)
+        }
+      end
+      
+      # Verify we collected timing data for each strategy
+      expect(timing_results.length).to eq(2)
+      timing_results.each do |result|
+        expect(result[:duration_ms]).to be > 0
+        expect(result[:success]).to be true
+        expect(strategies_to_test).to include(result[:strategy])
+      end
+      
+      # Log results for analysis
+      timing_results.each do |result|
+        puts "#{result[:strategy]}: #{result[:duration_ms]}ms (success: #{result[:success]})"
+      end
+    end
+
+    it 'collects token usage and cost metrics', vcr: { cassette_name: 'benchmark_token_usage' } do
+      # Use single benchmark method to get detailed token usage
+      result = JSONModesBenchmark.run_single_benchmark(
+        'enhanced_prompting',
+        'openai/gpt-4o-mini',
+        predictor,
+        "Create a token usage test todo",
+        test_context,
+        test_user_profile
+      )
+      
+      # Verify benchmark result structure
+      expect(result).to be_a(JSONModesBenchmark::BenchmarkResult)
+      expect(result.strategy).to eq('enhanced_prompting')
+      expect(result.model).to eq('openai/gpt-4o-mini')
+      expect(result.success).to be true
+      expect(result.duration_ms).to be > 0
+      
+      # Token usage may be nil in VCR mode, but structure should be correct
+      expect(result.input_tokens).to be_a(Integer).or be_nil
+      expect(result.output_tokens).to be_a(Integer).or be_nil
+      expect(result.total_tokens).to be_a(Integer).or be_nil
+      
+      # Test derived metrics
+      expect(result.tokens_per_second).to be >= 0.0
+      expect(result.to_h).to be_a(Hash)
+      expect(result.to_h[:strategy]).to eq('enhanced_prompting')
     end
 
     it 'measures type validation success rates' do
-      skip 'Will implement with complex type validation checks'
+      # Test multiple predictions to measure validation success
+      test_queries = [
+        "Create a valid todo item",
+        "Update an existing todo",
+        "Delete a completed todo",
+        "Assign a todo to someone"
+      ]
+      
+      results = JSONModesBenchmark::BenchmarkResults.new
+      
+      test_queries.each_with_index do |query, index|
+        vcr_cassette_name = "benchmark_validation_#{index}"
+        
+        VCR.use_cassette(vcr_cassette_name) do
+          benchmark_result = JSONModesBenchmark.run_single_benchmark(
+            'enhanced_prompting',
+            'openai/gpt-4o-mini',
+            predictor,
+            query,
+            test_context,
+            test_user_profile
+          )
+          
+          results.add_result(benchmark_result)
+        end
+      end
+      
+      results.mark_completed!
+      
+      # Analyze validation success rates
+      expect(results.results.length).to eq(4)
+      expect(results.success_rate).to be >= 0.0
+      expect(results.success_rate).to be <= 100.0
+      
+      # Summary statistics
+      summary = results.summary
+      expect(summary[:total_tests]).to eq(4)
+      expect(summary[:success_rate]).to be_a(Float)
+      expect(summary[:total_duration_ms]).to be > 0
+      expect(summary[:avg_duration_ms]).to be > 0
+      
+      # Log detailed results
+      puts "\nValidation Success Rate Analysis:"
+      puts "Total Tests: #{summary[:total_tests]}"
+      puts "Success Rate: #{summary[:success_rate].round(1)}%"
+      puts "Average Duration: #{summary[:avg_duration_ms].round(1)}ms"
+      
+      # Group by success/failure
+      successful_results = results.results.select(&:success)
+      failed_results = results.results.reject(&:success)
+      
+      puts "Successful: #{successful_results.length}"
+      puts "Failed: #{failed_results.length}"
+      
+      if failed_results.any?
+        puts "Failure reasons:"
+        failed_results.each do |result|
+          puts "  - #{result.error_message}"
+        end
+      end
+    end
+
+    it 'generates comprehensive benchmark report' do
+      # Create a small benchmark results set for testing
+      results = JSONModesBenchmark::BenchmarkResults.new
+      
+      # Add some mock results
+      result1 = JSONModesBenchmark::BenchmarkResult.new(
+        strategy: 'enhanced_prompting',
+        model: 'openai/gpt-4o-mini',
+        duration_ms: 1500.0,
+        success: true,
+        input_tokens: 100,
+        output_tokens: 50,
+        total_tokens: 150
+      )
+      
+      result2 = JSONModesBenchmark::BenchmarkResult.new(
+        strategy: 'openai_structured_output', 
+        model: 'openai/gpt-4o-mini',
+        duration_ms: 1200.0,
+        success: true,
+        input_tokens: 120,
+        output_tokens: 60,
+        total_tokens: 180
+      )
+      
+      results.add_result(result1)
+      results.add_result(result2)
+      results.mark_completed!
+      
+      # Generate report
+      report = JSONModesBenchmark.format_benchmark_report(results)
+      
+      # Verify report structure
+      expect(report).to include('# JSON Extraction Modes Benchmark Report')
+      expect(report).to include('## Summary')
+      expect(report).to include('**Total Tests**: 2')
+      expect(report).to include('Success Rate: 100.0%')
+      expect(report).to include('## Results by Strategy')
+      expect(report).to include('Enhanced Prompting')
+      expect(report).to include('Openai Structured Output')
+      expect(report).to include('## Results by Model')
+      expect(report).to include('openai/gpt-4o-mini')
+      
+      puts "\nGenerated Benchmark Report:"
+      puts report
     end
   end
 
