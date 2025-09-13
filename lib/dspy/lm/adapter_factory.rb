@@ -24,8 +24,8 @@ module DSPy
           
           # Pass provider-specific options
           adapter_options = { model: model, api_key: api_key }
-          # Both OpenAI and Ollama accept additional options
-          adapter_options.merge!(options) if %w[openai ollama].include?(provider)
+          # OpenAI, Ollama, and Gemini accept additional options
+          adapter_options.merge!(options) if %w[openai ollama gemini].include?(provider)
           
           adapter_class.new(**adapter_options)
         end
