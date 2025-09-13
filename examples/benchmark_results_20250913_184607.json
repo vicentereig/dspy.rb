@@ -1,0 +1,388 @@
+{
+  "combinations": {
+    "gpt-5__enhanced_prompting": {
+      "model": "gpt-5",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gpt-5-mini__enhanced_prompting": {
+      "model": "gpt-5-mini",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gpt-5-nano__enhanced_prompting": {
+      "model": "gpt-5-nano",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gpt-4o__enhanced_prompting": {
+      "model": "gpt-4o",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gpt-4o-mini__enhanced_prompting": {
+      "model": "gpt-4o-mini",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "o1__enhanced_prompting": {
+      "model": "o1",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": null,
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "o1-mini__enhanced_prompting": {
+      "model": "o1-mini",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-opus-4.1__enhanced_prompting": {
+      "model": "claude-opus-4.1",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-sonnet-4__enhanced_prompting": {
+      "model": "claude-sonnet-4",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-3-5-sonnet__enhanced_prompting": {
+      "model": "claude-3-5-sonnet",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-3-5-haiku__enhanced_prompting": {
+      "model": "claude-3-5-haiku",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gemini-1.5-pro__enhanced_prompting": {
+      "model": "gemini-1.5-pro",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gemini-1.5-flash__enhanced_prompting": {
+      "model": "gemini-1.5-flash",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gemini-2.0-flash-exp__enhanced_prompting": {
+      "model": "gemini-2.0-flash-exp",
+      "strategy": "enhanced_prompting",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gpt-5__openai_structured_output": {
+      "model": "gpt-5",
+      "strategy": "openai_structured_output",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gpt-5-mini__openai_structured_output": {
+      "model": "gpt-5-mini",
+      "strategy": "openai_structured_output",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gpt-5-nano__openai_structured_output": {
+      "model": "gpt-5-nano",
+      "strategy": "openai_structured_output",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gpt-4o__openai_structured_output": {
+      "model": "gpt-4o",
+      "strategy": "openai_structured_output",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gpt-4o-mini__openai_structured_output": {
+      "model": "gpt-4o-mini",
+      "strategy": "openai_structured_output",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-opus-4.1__anthropic_tool_use": {
+      "model": "claude-opus-4.1",
+      "strategy": "anthropic_tool_use",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-sonnet-4__anthropic_tool_use": {
+      "model": "claude-sonnet-4",
+      "strategy": "anthropic_tool_use",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-3-5-sonnet__anthropic_tool_use": {
+      "model": "claude-3-5-sonnet",
+      "strategy": "anthropic_tool_use",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-3-5-haiku__anthropic_tool_use": {
+      "model": "claude-3-5-haiku",
+      "strategy": "anthropic_tool_use",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-opus-4.1__anthropic_extraction": {
+      "model": "claude-opus-4.1",
+      "strategy": "anthropic_extraction",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-sonnet-4__anthropic_extraction": {
+      "model": "claude-sonnet-4",
+      "strategy": "anthropic_extraction",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-3-5-sonnet__anthropic_extraction": {
+      "model": "claude-3-5-sonnet",
+      "strategy": "anthropic_extraction",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "claude-3-5-haiku__anthropic_extraction": {
+      "model": "claude-3-5-haiku",
+      "strategy": "anthropic_extraction",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gemini-1.5-pro__gemini_structured_output": {
+      "model": "gemini-1.5-pro",
+      "strategy": "gemini_structured_output",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gemini-1.5-flash__gemini_structured_output": {
+      "model": "gemini-1.5-flash",
+      "strategy": "gemini_structured_output",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    },
+    "gemini-2.0-flash-exp__gemini_structured_output": {
+      "model": "gemini-2.0-flash-exp",
+      "strategy": "gemini_structured_output",
+      "success": false,
+      "error": "ProjectContext: Unrecognized properties: current_sprint_id, team_members",
+      "response_time": 0.0,
+      "tokens_used": 0,
+      "cost": 0.0,
+      "strategy_actually_used": null
+    }
+  },
+  "summary": {
+    "total_tests": 29,
+    "successful_tests": 0,
+    "failed_tests": 29,
+    "total_cost": 0.0,
+    "average_response_time": 0.0
+  },
+  "strategy_performance": {
+    "enhanced_prompting": {
+      "successful_tests": 0,
+      "failed_tests": 13,
+      "total_response_time": 0.0,
+      "total_cost": 0.0,
+      "compatible_models": [],
+      "incompatible_models": [
+        "gpt-5",
+        "gpt-5-mini",
+        "gpt-5-nano",
+        "gpt-4o",
+        "gpt-4o-mini",
+        "o1-mini",
+        "claude-opus-4.1",
+        "claude-sonnet-4",
+        "claude-3-5-sonnet",
+        "claude-3-5-haiku",
+        "gemini-1.5-pro",
+        "gemini-1.5-flash",
+        "gemini-2.0-flash-exp"
+      ]
+    },
+    "openai_structured_output": {
+      "successful_tests": 0,
+      "failed_tests": 5,
+      "total_response_time": 0.0,
+      "total_cost": 0.0,
+      "compatible_models": [],
+      "incompatible_models": [
+        "gpt-5",
+        "gpt-5-mini",
+        "gpt-5-nano",
+        "gpt-4o",
+        "gpt-4o-mini"
+      ]
+    },
+    "anthropic_tool_use": {
+      "successful_tests": 0,
+      "failed_tests": 4,
+      "total_response_time": 0.0,
+      "total_cost": 0.0,
+      "compatible_models": [],
+      "incompatible_models": [
+        "claude-opus-4.1",
+        "claude-sonnet-4",
+        "claude-3-5-sonnet",
+        "claude-3-5-haiku"
+      ]
+    },
+    "anthropic_extraction": {
+      "successful_tests": 0,
+      "failed_tests": 4,
+      "total_response_time": 0.0,
+      "total_cost": 0.0,
+      "compatible_models": [],
+      "incompatible_models": [
+        "claude-opus-4.1",
+        "claude-sonnet-4",
+        "claude-3-5-sonnet",
+        "claude-3-5-haiku"
+      ]
+    },
+    "gemini_structured_output": {
+      "successful_tests": 0,
+      "failed_tests": 3,
+      "total_response_time": 0.0,
+      "total_cost": 0.0,
+      "compatible_models": [],
+      "incompatible_models": [
+        "gemini-1.5-pro",
+        "gemini-1.5-flash",
+        "gemini-2.0-flash-exp"
+      ]
+    }
+  },
+  "model_performance": {}
+}
