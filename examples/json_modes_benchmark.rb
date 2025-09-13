@@ -28,8 +28,8 @@ class JSONModesBenchmark
   ].freeze
 
   GOOGLE_MODELS = %w[
-    gemini-1.5-pro gemini-2.5-flash 
-    gemini-2.0-flash-exp
+    gemini-1.5-pro gemini-1.5-flash
+    gemini-1.5-pro-preview-0514
   ].freeze
 
   ALL_MODELS = (OPENAI_MODELS + ANTHROPIC_MODELS + GOOGLE_MODELS).freeze
@@ -206,8 +206,12 @@ class JSONModesBenchmark
   end
 
   def supports_gemini_structured_outputs?(model)
-    # Based on Gemini structured outputs capability matrix from DSPy schema converter
-    structured_output_models = %w[gemini-1.5-pro gemini-2.5-flash gemini-2.0-flash-exp]
+    # Based on official gemini-ai gem documentation - models with ✅ full schema support
+    structured_output_models = %w[
+      gemini-1.5-pro 
+      gemini-1.5-pro-preview-0514 
+      gemini-1.5-pro-preview-0409
+    ]
     structured_output_models.include?(model)
   end
 
