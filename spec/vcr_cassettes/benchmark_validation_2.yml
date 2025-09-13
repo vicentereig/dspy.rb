@@ -1,0 +1,252 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Natural language command or request about todos\"\n    },\n    \"context\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"ProjectContext\"\n        },\n        \"project_id\":
+        {\n          \"type\": \"string\"\n        },\n        \"active_lists\": {\n          \"type\":
+        \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"available_tags\":
+        {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        }\n      },\n      \"required\": [\n        \"_type\",\n        \"project_id\",\n        \"active_lists\",\n        \"available_tags\"\n      ],\n      \"description\":
+        \"Current project state including active lists, sprint information\"\n    },\n    \"user_profile\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"UserProfile\"\n        },\n        \"user_id\":
+        {\n          \"type\": \"string\"\n        },\n        \"role\": {\n          \"type\":
+        \"string\",\n          \"enum\": [\n            \"admin\",\n            \"manager\",\n            \"member\"\n          ]\n        },\n        \"timezone\":
+        {\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"user_id\",\n        \"role\",\n        \"timezone\"\n      ],\n      \"description\":
+        \"User information including role, permissions, timezone\"\n    }\n  },\n  \"required\":
+        [\n    \"query\",\n    \"context\",\n    \"user_profile\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"action\": {\n      \"oneOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"CreateTodoAction\"\n            },\n            \"title\":
+        {\n              \"type\": \"string\"\n            },\n            \"priority\":
+        {\n              \"type\": \"string\"\n            },\n            \"tags\":
+        {\n              \"type\": \"array\",\n              \"items\": {\n                \"type\":
+        \"string\"\n              }\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"title\",\n            \"priority\",\n            \"tags\"\n          ],\n          \"description\":
+        \"CreateTodoAction struct\"\n        },\n        {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"_type\": {\n              \"type\": \"string\",\n              \"const\":
+        \"UpdateTodoAction\"\n            },\n            \"todo_id\": {\n              \"type\":
+        \"string\"\n            },\n            \"updates\": {\n              \"type\":
+        \"string\"\n            },\n            \"reason\": {\n              \"type\":
+        \"string\"\n            }\n          },\n          \"required\": [\n            \"_type\",\n            \"todo_id\",\n            \"updates\",\n            \"reason\"\n          ],\n          \"description\":
+        \"UpdateTodoAction struct\"\n        },\n        {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"_type\": {\n              \"type\": \"string\",\n              \"const\":
+        \"DeleteTodoAction\"\n            },\n            \"todo_id\": {\n              \"type\":
+        \"string\"\n            },\n            \"reason\": {\n              \"type\":
+        \"string\"\n            }\n          },\n          \"required\": [\n            \"_type\",\n            \"todo_id\",\n            \"reason\"\n          ],\n          \"description\":
+        \"DeleteTodoAction struct\"\n        },\n        {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"_type\": {\n              \"type\": \"string\",\n              \"const\":
+        \"AssignTodoAction\"\n            },\n            \"todo_id\": {\n              \"type\":
+        \"string\"\n            },\n            \"assignee\": {\n              \"type\":
+        \"string\"\n            },\n            \"notify\": {\n              \"type\":
+        \"boolean\"\n            }\n          },\n          \"required\": [\n            \"_type\",\n            \"todo_id\",\n            \"assignee\",\n            \"notify\"\n          ],\n          \"description\":
+        \"AssignTodoAction struct\"\n        }\n      ],\n      \"description\": \"Primary
+        action to execute - automatically discriminated by _type field\"\n    },\n    \"affected_todos\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"TodoItem\"\n          },\n          \"id\": {\n            \"type\": \"string\"\n          },\n          \"title\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        {\n            \"type\": \"string\"\n          },\n          \"status\": {\n            \"type\":
+        \"string\",\n            \"enum\": [\n              \"pending\",\n              \"in_progress\",\n              \"completed\",\n              \"failed\"\n            ]\n          },\n          \"tags\":
+        {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\":
+        \"string\"\n            }\n          },\n          \"priority\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"id\",\n          \"title\",\n          \"description\",\n          \"status\",\n          \"tags\",\n          \"priority\"\n        ],\n        \"description\":
+        \"TodoItem struct\"\n      },\n      \"description\": \"List of todo items
+        that will be created, modified, or impacted\"\n    },\n    \"summary\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"_type\": {\n          \"type\":
+        \"string\",\n          \"const\": \"TodoSummary\"\n        },\n        \"total_todos\":
+        {\n          \"type\": \"integer\"\n        },\n        \"upcoming_due\":
+        {\n          \"type\": \"integer\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"total_todos\",\n        \"upcoming_due\"\n      ],\n      \"description\":
+        \"Updated state summary showing total counts, status breakdown\"\n    },\n    \"related_actions\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"oneOf\": [\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"CreateTodoAction\"\n              },\n              \"title\":
+        {\n                \"type\": \"string\"\n              },\n              \"priority\":
+        {\n                \"type\": \"string\"\n              },\n              \"tags\":
+        {\n                \"type\": \"array\",\n                \"items\": {\n                  \"type\":
+        \"string\"\n                }\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"title\",\n              \"priority\",\n              \"tags\"\n            ],\n            \"description\":
+        \"CreateTodoAction struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"UpdateTodoAction\"\n              },\n              \"todo_id\":
+        {\n                \"type\": \"string\"\n              },\n              \"updates\":
+        {\n                \"type\": \"string\"\n              },\n              \"reason\":
+        {\n                \"type\": \"string\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"todo_id\",\n              \"updates\",\n              \"reason\"\n            ],\n            \"description\":
+        \"UpdateTodoAction struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"DeleteTodoAction\"\n              },\n              \"todo_id\":
+        {\n                \"type\": \"string\"\n              },\n              \"reason\":
+        {\n                \"type\": \"string\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"todo_id\",\n              \"reason\"\n            ],\n            \"description\":
+        \"DeleteTodoAction struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"AssignTodoAction\"\n              },\n              \"todo_id\":
+        {\n                \"type\": \"string\"\n              },\n              \"assignee\":
+        {\n                \"type\": \"string\"\n              },\n              \"notify\":
+        {\n                \"type\": \"boolean\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"todo_id\",\n              \"assignee\",\n              \"notify\"\n            ],\n            \"description\":
+        \"AssignTodoAction struct\"\n          }\n        ],\n        \"description\":
+        \"Union of multiple types\"\n      },\n      \"description\": \"Additional
+        actions to execute in batch\"\n    }\n  },\n  \"required\": [\n    \"action\",\n    \"affected_todos\",\n    \"summary\",\n    \"related_actions\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: AI-powered todo list management system with complex nested types"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"query\": \"Delete a completed todo\",\n  \"context\":
+        {\n    \"project_id\": \"proj-123\",\n    \"active_lists\": [\n      \"main-backlog\",\n      \"sprint-current\"\n    ],\n    \"available_tags\":
+        [\n      \"backend\",\n      \"testing\",\n      \"priority\"\n    ]\n  },\n  \"user_profile\":
+        {\n    \"user_id\": \"user-456\",\n    \"role\": \"admin\",\n    \"timezone\":
+        \"UTC\"\n  }\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"action\":
+        \"example value\",\n  \"affected_todos\": [\n    {\n      \"_type\": \"example
+        string\",\n      \"id\": \"example string\",\n      \"title\": \"example string\",\n      \"description\":
+        \"example string\",\n      \"status\": \"example string\",\n      \"tags\":
+        [\n        \"example string\"\n      ],\n      \"priority\": \"example string\"\n    }\n  ],\n  \"summary\":
+        {\n    \"_type\": \"example string\",\n    \"total_todos\": 42,\n    \"upcoming_due\":
+        42\n  },\n  \"related_actions\": [\n    \"example value\"\n  ]\n}\n```\n\nRequired
+        fields: action, affected_todos, summary, related_actions\n\nEnsure your response:\n1.
+        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
+        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
+        in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '11775'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 13 Sep 2025 23:18:58 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2085'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2225'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '197395'
+      X-Ratelimit-Reset-Requests:
+      - 20.888s
+      X-Ratelimit-Reset-Tokens:
+      - 781ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 97eb5dd6bd1783d0-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CFTo8nKPqg3QLDNQnrVXQLeyQXiNW",
+          "object": "chat.completion",
+          "created": 1757805536,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"DeleteTodoAction\",\n    \"todo_id\": \"todo-789\",\n    \"reason\": \"Completed todo deleted by admin\"\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-789\",\n      \"title\": \"Sample completed task\",\n      \"description\": \"This is a completed task.\",\n      \"status\": \"completed\",\n      \"tags\": [\n        \"priority\"\n      ],\n      \"priority\": \"high\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 41,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": []\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 2271,
+            "completion_tokens": 161,
+            "total_tokens": 2432,
+            "prompt_tokens_details": {
+              "cached_tokens": 1792,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Sat, 13 Sep 2025 23:18:58 GMT
+recorded_with: VCR 6.3.1
