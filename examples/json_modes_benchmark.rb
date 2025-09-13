@@ -28,8 +28,8 @@ class JSONModesBenchmark
   ].freeze
 
   GOOGLE_MODELS = %w[
-    gemini-2.0-flash gemini-2.0-flash-lite 
-    gemini-2.5-flash
+    gemini-1.5-pro gemini-1.5-flash 
+    gemini-2.0-flash-exp
   ].freeze
 
   ALL_MODELS = (OPENAI_MODELS + ANTHROPIC_MODELS + GOOGLE_MODELS).freeze
@@ -39,6 +39,7 @@ class JSONModesBenchmark
     openai_structured_output
     anthropic_tool_use
     anthropic_extraction
+    gemini_structured_output
   ].freeze
 
   # Model pricing per 1M tokens (input/output) - September 2025
@@ -58,10 +59,10 @@ class JSONModesBenchmark
     'claude-3-5-sonnet' => { input: 3.00, output: 15.00 },
     'claude-3-5-haiku' => { input: 0.80, output: 4.00 },
     
-    # Google Models (estimated)
-    'gemini-2.0-flash' => { input: 0.35, output: 1.05 },
-    'gemini-2.0-flash-lite' => { input: 0.10, output: 0.30 },
-    'gemini-2.5-flash' => { input: 0.50, output: 1.50 }
+    # Google Models (per official pricing)
+    'gemini-1.5-pro' => { input: 1.25, output: 5.00 },
+    'gemini-1.5-flash' => { input: 0.075, output: 0.30 },
+    'gemini-2.0-flash-exp' => { input: 0.00, output: 0.00 }  # Experimental - free for now
   }.freeze
 
   def initialize
@@ -106,6 +107,10 @@ class JSONModesBenchmark
     when 'anthropic_extraction'
       DSPy.configure { |c| c.structured_outputs.strategy = DSPy::Strategy::Strict }
       puts "✓ Forced strategy: Anthropic Extraction (strict)"
+      
+    when 'gemini_structured_output'
+      DSPy.configure { |c| c.structured_outputs.strategy = DSPy::Strategy::Strict }
+      puts "✓ Forced strategy: Gemini Structured Output (strict)"
       
     else
       raise ArgumentError, "Unknown strategy: #{strategy_name}"
@@ -187,6 +192,8 @@ class JSONModesBenchmark
       OPENAI_MODELS.select { |m| supports_structured_outputs?(m) }
     when 'anthropic_tool_use', 'anthropic_extraction'
       ANTHROPIC_MODELS
+    when 'gemini_structured_output'
+      GOOGLE_MODELS.select { |m| supports_gemini_structured_outputs?(m) }
     else
       []
     end
@@ -195,6 +202,12 @@ class JSONModesBenchmark
   def supports_structured_outputs?(model)
     # Based on OpenAI structured outputs capability matrix
     structured_output_models = %w[gpt-4o gpt-4o-mini gpt-5 gpt-5-mini gpt-5-nano]
+    structured_output_models.include?(model)
+  end
+
+  def supports_gemini_structured_outputs?(model)
+    # Based on Gemini structured outputs capability matrix from DSPy schema converter
+    structured_output_models = %w[gemini-1.5-pro gemini-1.5-flash gemini-2.0-flash-exp]
     structured_output_models.include?(model)
   end
 
@@ -278,8 +291,9 @@ class JSONModesBenchmark
       DSPy::LM.new("anthropic/#{anthropic_model}", api_key: ENV['ANTHROPIC_API_KEY'])
       
     when 'google'
-      return nil unless ENV['GOOGLE_API_KEY']
-      DSPy::LM.new("google/#{model_name}", api_key: ENV['GOOGLE_API_KEY'])
+      return nil unless ENV['GOOGLE_API_KEY'] || ENV['GEMINI_API_KEY']
+      api_key = ENV['GOOGLE_API_KEY'] || ENV['GEMINI_API_KEY']
+      DSPy::LM.new("gemini/#{model_name}", api_key: api_key, structured_outputs: true)
       
     else
       nil
@@ -314,8 +328,6 @@ class JSONModesBenchmark
     ProjectContext.new(
       project_id: "benchmark-project",
       active_lists: ["benchmark-todos"],
-      current_sprint_id: "sprint-test",
-      team_members: ["alice", "bob"],
       available_tags: ["test", "benchmark"]
     )
   end
@@ -324,9 +336,7 @@ class JSONModesBenchmark
     UserProfile.new(
       user_id: "benchmark-user",
       role: UserRole::Admin,
-      team_id: "benchmark-team",
-      timezone: "UTC",
-      notification_preferences: { "email" => true }
+      timezone: "UTC"
     )
   end
 
@@ -572,7 +582,12 @@ end
 if __FILE__ == $0
   # Check for required API keys
   required_keys = %w[OPENAI_API_KEY ANTHROPIC_API_KEY]
+  optional_keys = %w[GOOGLE_API_KEY GEMINI_API_KEY]  # Either one works for Gemini
   missing_keys = required_keys.reject { |key| ENV[key] }
+  
+  # Check if at least one Gemini key is present
+  gemini_key_present = optional_keys.any? { |key| ENV[key] }
+  missing_keys << 'GOOGLE_API_KEY or GEMINI_API_KEY' unless gemini_key_present
   
   if missing_keys.any?
     puts "⚠️  Warning: Missing API keys: #{missing_keys.join(', ')}"

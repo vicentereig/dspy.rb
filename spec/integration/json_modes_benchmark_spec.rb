@@ -18,8 +18,8 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
   ].freeze
 
   GOOGLE_MODELS = %w[
-    gemini-2.0-flash gemini-2.0-flash-lite 
-    gemini-2.5-flash
+    gemini-1.5-pro gemini-1.5-flash 
+    gemini-2.0-flash-exp
   ].freeze
 
   ALL_MODELS = (OPENAI_MODELS + ANTHROPIC_MODELS + GOOGLE_MODELS).freeze
@@ -29,6 +29,7 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
     openai_structured_output
     anthropic_tool_use
     anthropic_extraction
+    gemini_structured_output
   ].freeze
 
   let(:test_query) { "Create a todo for implementing JSON benchmark tests with high priority" }
@@ -141,6 +142,36 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
         
         # This would test the fallback to anthropic_extraction if tool_use isn't available
         # Implementation details will depend on how we force specific strategies
+      end
+    end
+
+    context 'with gemini_structured_output strategy' do
+      before do
+        DSPy.configure { |c| c.structured_outputs.strategy = DSPy::Strategy::Strict }
+      end
+
+      it 'successfully processes union types via Gemini native structured outputs', vcr: { cassette_name: 'json_benchmark_gemini_structured_output' } do
+        skip 'Requires GEMINI_API_KEY or GOOGLE_API_KEY' unless ENV['GEMINI_API_KEY'] || ENV['GOOGLE_API_KEY']
+        
+        api_key = ENV['GEMINI_API_KEY'] || ENV['GOOGLE_API_KEY']
+        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: api_key, structured_outputs: true)
+        DSPy.configure { |c| c.lm = lm }
+        
+        allow(DSPy.logger).to receive(:debug).and_call_original
+        
+        predictor = DSPy::Predict.new(TodoListManagementSignature)
+        result = predictor.call(
+          query: test_query,
+          context: test_context,
+          user_profile: test_user_profile
+        )
+        
+        expect(DSPy.logger).to have_received(:debug).with(/gemini_structured_output/).at_least(:once)
+        expect(result.action).to be_a(T::Struct) # Union type should resolve to specific struct
+        expect(result.action.class.name).to match(/Action$/) # Should be one of our action types
+        expect(result.affected_todos).to be_a(Array)
+        expect(result.summary).to be_a(TodoSummary)
+        expect(result.related_actions).to be_a(Array)
       end
     end
   end
