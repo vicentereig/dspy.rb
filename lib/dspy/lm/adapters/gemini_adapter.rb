@@ -7,9 +7,11 @@ require_relative '../vision_models'
 module DSPy
   class LM
     class GeminiAdapter < Adapter
-      def initialize(model:, api_key:)
-        super
+      def initialize(model:, api_key:, structured_outputs: false)
+        super(model: model, api_key: api_key)
         validate_api_key!(api_key, 'gemini')
+        
+        @structured_outputs_enabled = structured_outputs
         
         @client = Gemini.new(
           credentials: {
