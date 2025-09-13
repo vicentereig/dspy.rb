@@ -114,6 +114,7 @@ response = client.chat.completions.create(model: "gpt-4", messages: [...])
 # Via environment variable
 export OPENAI_API_KEY=your-key-here
 export ANTHROPIC_API_KEY=your-key-here
+export GEMINI_API_KEY=your-key-here
 
 # Via parameter
 lm = DSPy::LM.new("openai/gpt-4", api_key: "your-key-here")
@@ -125,7 +126,7 @@ lm = DSPy::LM.new("openai/gpt-4", api_key: "your-key-here")
 
 **Problem**: LLM returns invalid JSON that can't be parsed.
 
-**Solution**: DSPy automatically retries with fallback strategies:
+**Solution**: DSPy automatically retries with fallback strategies. For best reliability, use providers with native structured outputs:
 
 ```ruby
 # Configure retry behavior
@@ -133,6 +134,17 @@ DSPy.configure do |config|
   config.structured_outputs.retry_enabled = true
   config.structured_outputs.max_retries = 3
   config.structured_outputs.fallback_enabled = true
+  
+  # Use providers with native structured outputs for better reliability
+  # OpenAI structured outputs
+  config.lm = DSPy::LM.new("openai/gpt-4o-mini", 
+                           api_key: ENV["OPENAI_API_KEY"],
+                           structured_outputs: true)
+  
+  # Gemini structured outputs 
+  # config.lm = DSPy::LM.new("gemini/gemini-1.5-flash", 
+  #                          api_key: ENV["GEMINI_API_KEY"],
+  #                          structured_outputs: true)
 end
 ```
 

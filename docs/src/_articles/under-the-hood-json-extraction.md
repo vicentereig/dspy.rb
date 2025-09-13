@@ -8,7 +8,7 @@ draft: true
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/under-the-hood-json-extraction/"
 ---
 
-DSPy.rb uses 4 different strategies to extract JSON from LLMs. Here's how each one works.
+DSPy.rb uses 5 different strategies to extract JSON from LLMs. Here's how each one works.
 
 When you call `predict.forward()`, DSPy.rb picks the best strategy for your LLM provider. Each strategy is designed to get reliable JSON output from different models.
 
@@ -20,6 +20,7 @@ DSPy.rb ranks strategies by priority and picks the best one available:
 # From lib/dspy/lm/strategy_selector.rb
 STRATEGIES = [
   Strategies::OpenAIStructuredOutputStrategy,     # Priority: 100
+  Strategies::GeminiStructuredOutputStrategy,     # Priority: 100
   Strategies::AnthropicToolUseStrategy,          # Priority: 95
   Strategies::AnthropicExtractionStrategy,       # Priority: 90
   Strategies::EnhancedPromptingStrategy          # Priority: 50
@@ -78,6 +79,56 @@ when T::Types::TypedArray
     type: "array",
     items: type_to_json_schema(type_info.type)
   }
+```
+
+## Gemini: Native Structured Outputs (Priority 100)
+
+For Gemini models that support structured outputs (gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp), DSPy.rb uses Google's built-in JSON schema feature:
+
+```ruby
+# What DSPy.rb sends to Gemini
+request_params[:generation_config] = {
+  response_mime_type: "application/json",
+  response_schema: {
+    type: "object",
+    properties: {
+      name: { type: "string" },
+      price: { type: "number" },
+      in_stock: { type: "boolean" }
+    },
+    required: ["name", "price", "in_stock"]
+  }
+}
+```
+
+Like OpenAI, this guarantees valid JSON output. The schema converter transforms DSPy signatures to OpenAPI 3.0 Schema format:
+
+```ruby
+# From gemini_structured_output_strategy.rb
+def prepare_request(messages, request_params)
+  # Convert signature to Gemini schema format
+  schema = DSPy::LM::Adapters::Gemini::SchemaConverter.to_gemini_format(signature_class)
+  
+  # Add generation_config for structured output
+  request_params[:generation_config] = {
+    response_mime_type: "application/json",
+    response_schema: schema
+  }
+end
+```
+
+The strategy includes automatic fallback handling:
+
+```ruby
+def handle_error(error)
+  error_msg = error.message.to_s.downcase
+  if error_msg.include?("schema") || error_msg.include?("generation_config") || error_msg.include?("response_schema")
+    DSPy.logger.warn("Gemini structured output failed: #{error.message}")
+    true  # Allow fallback to another strategy
+  else
+    false
+  end
+end
 ```
 
 ## Anthropic: Two Ways to Get JSON
@@ -235,6 +286,25 @@ end
 }
 ```
 
+### Gemini Request:
+```json
+{
+  "model": "gemini-1.5-flash",
+  "contents": [{"role": "user", "parts": [{"text": "Extract: iPhone 15 Pro - $999"}]}],
+  "generation_config": {
+    "response_mime_type": "application/json",
+    "response_schema": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "price": { "type": "number" }
+      },
+      "required": ["name", "price"]
+    }
+  }
+}
+```
+
 ### Anthropic with Tool Use:
 ```json
 {
@@ -326,12 +396,17 @@ DSPy.configure do |config|
   config.logger = Dry.Logger(:dspy, level: :debug)
 end
 
+# OpenAI with structured outputs
 lm = DSPy::LM.new("openai/gpt-4o-mini", 
                   api_key: ENV["OPENAI_API_KEY"],
                   structured_outputs: true)
+# Watch the logs to see: "Selected JSON extraction strategy: openai_structured_output"
 
-# Watch the logs to see:
-# "Selected JSON extraction strategy: openai_structured_output"
+# Gemini with structured outputs
+lm = DSPy::LM.new("gemini/gemini-1.5-flash", 
+                  api_key: ENV["GEMINI_API_KEY"],
+                  structured_outputs: true)
+# Watch the logs to see: "Selected JSON extraction strategy: gemini_structured_output"
 ```
 
 Or inspect the strategy directly:

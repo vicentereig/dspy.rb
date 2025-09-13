@@ -41,13 +41,19 @@ data = JSON.parse(json_match[1]) rescue nil
 
 DSPy.rb now automatically selects the best JSON extraction strategy based on your LLM provider and model. No configuration needed - it just works.
 
-### For OpenAI Users
+### For OpenAI and Gemini Users
 
-If you're using GPT-4 or GPT-4o, DSPy.rb automatically uses OpenAI's structured outputs:
+If you're using OpenAI's GPT-4/GPT-4o or Google's Gemini models, DSPy.rb automatically uses native structured outputs:
 
 ```ruby
+# OpenAI structured outputs
 lm = DSPy::LM.new("openai/gpt-4o-mini", 
                   api_key: ENV["OPENAI_API_KEY"],
+                  structured_outputs: true)
+
+# Gemini structured outputs (gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp)
+lm = DSPy::LM.new("gemini/gemini-1.5-flash", 
+                  api_key: ENV["GEMINI_API_KEY"],
                   structured_outputs: true)
 
 class ProductExtractor < DSPy::Signature
@@ -68,7 +74,7 @@ result = predict.forward(description: "iPhone 15 Pro - $999, available now")
 # => { name: "iPhone 15 Pro", price: 999.0, in_stock: true }
 ```
 
-No more parsing errors. OpenAI literally won't return invalid JSON when using structured outputs.
+No more parsing errors. Both OpenAI and Gemini guarantee valid JSON when using their native structured output features.
 
 ### For Anthropic Users
 

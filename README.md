@@ -59,6 +59,25 @@ puts result.sentiment    # => #<Sentiment::Positive>
 puts result.confidence   # => 0.85
 ```
 
+### Alternative Providers
+
+DSPy.rb supports multiple providers with native structured outputs:
+
+```ruby
+# Google Gemini with native structured outputs
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('gemini/gemini-1.5-flash',
+                      api_key: ENV['GEMINI_API_KEY'], 
+                      structured_outputs: true)  # Supports gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp
+end
+
+# Anthropic Claude with tool-based extraction
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('anthropic/claude-3-sonnet-20241022',
+                      api_key: ENV['ANTHROPIC_API_KEY'])  # Automatic strategy selection
+end
+```
+
 ## What You Get
 
 **Core Building Blocks:**
@@ -77,7 +96,7 @@ puts result.confidence   # => 0.85
 - **GEPA Optimization** - Genetic-Pareto optimization for multi-objective prompt improvement
 
 **Production Features:**
-- **Reliable JSON Extraction** - Native OpenAI structured outputs, Anthropic extraction patterns, and automatic strategy selection with fallback
+- **Reliable JSON Extraction** - Native structured outputs for OpenAI and Gemini, Anthropic tool-based extraction, and automatic strategy selection with fallback
 - **Type-Safe Configuration** - Strategy enums with automatic provider optimization (Strict/Compatible modes)
 - **Smart Retry Logic** - Progressive fallback with exponential backoff for handling transient failures
 - **Zero-Config Langfuse Integration** - Set env vars and get automatic OpenTelemetry traces in Langfuse
@@ -89,6 +108,7 @@ puts result.confidence   # => 0.85
 - LLM provider support using official Ruby clients:
   - [OpenAI Ruby](https://github.com/openai/openai-ruby) with vision model support
   - [Anthropic Ruby SDK](https://github.com/anthropics/anthropic-sdk-ruby) with multimodal capabilities
+  - [Google Gemini API](https://ai.google.dev/) with native structured outputs
   - [Ollama](https://ollama.com/) via OpenAI compatibility layer for local models
 - **Multimodal Support** - Complete image analysis with DSPy::Image, type-safe bounding boxes, vision-capable models
 - Runtime type checking with [Sorbet](https://sorbet.org/) including T::Enum and union types

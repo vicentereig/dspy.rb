@@ -52,6 +52,8 @@ end
 # Configure DSPy with your LLM
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+  # or use Google Gemini
+  # c.lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'])
   # or use Ollama for local models
   # c.lm = DSPy::LM.new('ollama/llama3.2')
 end
