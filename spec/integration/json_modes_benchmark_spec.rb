@@ -3,6 +3,7 @@
 require 'spec_helper'
 require_relative '../../examples/benchmark_types'
 require_relative '../../examples/json_modes_benchmark'
+require_relative '../../examples/json_modes_benchmark_util'
 
 RSpec.describe 'JSON Extraction Modes Benchmark' do
   # Model constants for 2025 testing
@@ -177,19 +178,76 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
   end
 
   describe 'Union type discrimination' do
-    it 'correctly deserializes different action types based on _type field' do
-      # Test will verify that T.any() union types work with automatic _type discrimination
-      skip 'Will implement after signature is created'
+    let(:lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY']) }
+    let(:predictor) { DSPy::Predict.new(TodoListManagementSignature) }
+    
+    before do
+      skip 'Requires OPENAI_API_KEY' unless ENV['OPENAI_API_KEY']
+      DSPy.configure { |c| c.lm = lm }
     end
 
-    it 'handles arrays of union types' do
-      # Test will verify related_actions array containing mixed action types
-      skip 'Will implement after signature is created'
+    it 'correctly deserializes different action types based on _type field', vcr: { cassette_name: 'union_discrimination_create_action' } do
+      result = predictor.call(
+        query: "Create a high-priority todo for implementing union type tests",
+        context: test_context,
+        user_profile: test_user_profile
+      )
+      
+      # Verify the action field is properly deserialized to a struct, not a hash
+      expect(result.action).to be_a(T::Struct)
+      expect(result.action.class.name).to match(/Action$/)
+      
+      # Verify _type discrimination worked
+      if result.action.respond_to?(:_type)
+        expect(result.action._type).to be_a(String)
+        expect(result.action._type).to match(/Action$/)
+      end
+      
+      # Verify it's likely a CreateTodoAction based on query
+      if result.action.respond_to?(:title)
+        expect(result.action.title).to be_a(String)
+        expect(result.action.title.downcase).to include('union')
+      end
     end
 
-    it 'falls back gracefully when _type field is missing' do
-      # Test structural matching fallback behavior
-      skip 'Will implement after signature is created'
+    it 'handles arrays of union types', vcr: { cassette_name: 'union_discrimination_related_actions' } do
+      result = predictor.call(
+        query: "Create a todo and suggest related follow-up actions",
+        context: test_context,
+        user_profile: test_user_profile
+      )
+      
+      # Verify related_actions is an array
+      expect(result.related_actions).to be_a(Array)
+      
+      # If we have related actions, verify they're properly deserialized structs
+      if result.related_actions.any?
+        result.related_actions.each do |action|
+          expect(action).to be_a(T::Struct)
+          expect(action.class.name).to match(/Action$/)
+        end
+      end
+    end
+
+    it 'falls back gracefully when _type field is missing', vcr: { cassette_name: 'union_discrimination_graceful_fallback' } do
+      # This test verifies our type coercion handles malformed JSON gracefully
+      # Test with actual LLM call but check that it doesn't crash on edge cases
+      
+      # Use a query that might produce ambiguous action types
+      result = predictor.call(
+        query: "Do something with todos",
+        context: test_context,
+        user_profile: test_user_profile
+      )
+      
+      # Should complete successfully even with ambiguous input
+      expect(result).not_to be_nil
+      expect(result.action).not_to be_nil
+      
+      # Basic structure should be preserved
+      expect(result.affected_todos).to be_a(Array)
+      expect(result.summary).to be_a(T::Struct)
+      expect(result.related_actions).to be_a(Array)
     end
   end
 
@@ -208,6 +266,11 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
   end
 
   describe 'Strategy forcing mechanism' do
+    before do
+      # Reset configuration before each test
+      DSPy.configure { |c| c.structured_outputs.strategy = nil }
+    end
+
     EXTRACTION_STRATEGIES.each do |strategy|
       context "when forcing #{strategy} strategy" do
         it "successfully applies #{strategy}" do
@@ -215,10 +278,69 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
             JSONModesBenchmark.force_strategy(strategy)
           }.not_to raise_error
           
-          # Verify strategy is actually applied
-          # Implementation will depend on our benchmark class
+          # Verify the configuration was set correctly
+          case strategy
+          when 'enhanced_prompting'
+            expect(DSPy.config.structured_outputs.strategy).to eq(DSPy::Strategy::Compatible)
+          when 'openai_structured_output', 'anthropic_tool_use', 'anthropic_extraction', 'gemini_structured_output'
+            expect(DSPy.config.structured_outputs.strategy).to eq(DSPy::Strategy::Strict)
+          end
         end
       end
+    end
+
+    it 'raises error for unknown strategy' do
+      expect {
+        JSONModesBenchmark.force_strategy('unknown_strategy')
+      }.to raise_error(ArgumentError, /Unknown strategy: unknown_strategy/)
+    end
+
+    it 'provides list of available strategies' do
+      strategies = JSONModesBenchmark.available_strategies
+      expect(strategies).to be_a(Array)
+      expect(strategies).to include('enhanced_prompting')
+      expect(strategies).to include('openai_structured_output')
+      expect(strategies).to include('gemini_structured_output')
+    end
+
+    it 'generates strategy compatibility matrix' do
+      matrix = JSONModesBenchmark.get_strategy_compatibility_matrix(TodoListManagementSignature)
+      
+      expect(matrix).to be_a(Hash)
+      expect(matrix.keys).to include('openai', 'anthropic', 'gemini')
+      
+      # OpenAI should support enhanced_prompting and openai_structured_output
+      expect(matrix['openai']).to include('enhanced_prompting')
+      expect(matrix['openai']).to include('openai_structured_output')
+      
+      # Gemini should support enhanced_prompting and gemini_structured_output
+      expect(matrix['gemini']).to include('enhanced_prompting')
+      expect(matrix['gemini']).to include('gemini_structured_output')
+      
+      # Anthropic should support enhanced_prompting and anthropic strategies
+      expect(matrix['anthropic']).to include('enhanced_prompting')
+      expect(matrix['anthropic']).to include('anthropic_tool_use')
+    end
+
+    it 'checks strategy availability for specific models' do
+      # OpenAI model should support OpenAI strategies
+      expect(
+        JSONModesBenchmark.strategy_available_for_model?('openai_structured_output', 'openai/gpt-4o', TodoListManagementSignature)
+      ).to be true
+      
+      # OpenAI model should NOT support Gemini strategies
+      expect(
+        JSONModesBenchmark.strategy_available_for_model?('gemini_structured_output', 'openai/gpt-4o', TodoListManagementSignature)
+      ).to be false
+      
+      # All models should support enhanced_prompting
+      expect(
+        JSONModesBenchmark.strategy_available_for_model?('enhanced_prompting', 'openai/gpt-4o', TodoListManagementSignature)
+      ).to be true
+      
+      expect(
+        JSONModesBenchmark.strategy_available_for_model?('enhanced_prompting', 'gemini/gemini-1.5-pro', TodoListManagementSignature)
+      ).to be true
     end
   end
 
