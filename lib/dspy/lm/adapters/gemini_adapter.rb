@@ -25,7 +25,8 @@ module DSPy
         @client = Gemini.new(
           credentials: {
             service: 'generative-language-api',
-            api_key: api_key
+            api_key: api_key,
+            version: 'v1beta'  # Use beta API version for structured outputs support
           },
           options: { 
             model: model,

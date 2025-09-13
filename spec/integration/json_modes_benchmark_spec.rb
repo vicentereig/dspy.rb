@@ -154,7 +154,7 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
         skip 'Requires GEMINI_API_KEY or GOOGLE_API_KEY' unless ENV['GEMINI_API_KEY'] || ENV['GOOGLE_API_KEY']
         
         api_key = ENV['GEMINI_API_KEY'] || ENV['GOOGLE_API_KEY']
-        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: api_key, structured_outputs: true)
+        lm = DSPy::LM.new('gemini/gemini-1.5-pro', api_key: api_key, structured_outputs: true)
         DSPy.configure { |c| c.lm = lm }
         
         allow(DSPy.logger).to receive(:debug).and_call_original
