@@ -1,0 +1,31 @@
+Model,Strategy,Success,ResponseTime,Tokens,Cost,Error
+gpt-5,enhanced_prompting,true,44.668343,1500,0.0058125,
+gpt-5-mini,enhanced_prompting,true,14.390093,1500,0.0007199999999999999,
+gpt-5-nano,enhanced_prompting,true,8.869895,1500,0.000165,
+gpt-4o,enhanced_prompting,true,6.056178,1200,0.0057,
+gpt-4o-mini,enhanced_prompting,true,4.96262,1200,0.00034199999999999996,
+o1,enhanced_prompting,false,0.0,0,0.0,
+o1-mini,enhanced_prompting,false,0.0,0,0.0,"OpenAI adapter error: {:url=>""https://api.openai.com/v1/chat/completions"", :status=>400, :body=>{:error=>{:message=>""Unsupported value: 'messages[0].role' does not support 'system' with this model."", :type=>""invalid_request_error"", :param=>""messages[0].role"", :code=>""unsupported_value""}}}"
+claude-opus-4.1,enhanced_prompting,true,9.76286,1500,0.0495,
+claude-sonnet-4,enhanced_prompting,true,4.713167,1200,0.00792,
+claude-3-5-sonnet,enhanced_prompting,true,5.506022,1000,0.0066,
+claude-3-5-haiku,enhanced_prompting,true,2.188018,800,0.001408,
+gemini-1.5-pro,enhanced_prompting,false,0.0,0,0.0,Gemini authentication failed: the server responded with status 400 for POST https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:streamGenerateContent?alt=sse&key=AIzaSyDCpAkAbf703er8IZ-eCojoyr6xovw-hKA. Check your API key.
+gemini-1.5-flash,enhanced_prompting,false,0.0,0,0.0,Gemini authentication failed: the server responded with status 400 for POST https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=AIzaSyDCpAkAbf703er8IZ-eCojoyr6xovw-hKA. Check your API key.
+gemini-2.0-flash-exp,enhanced_prompting,false,0.0,0,0.0,Gemini authentication failed: the server responded with status 400 for POST https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-exp:streamGenerateContent?alt=sse&key=AIzaSyDCpAkAbf703er8IZ-eCojoyr6xovw-hKA. Check your API key.
+gpt-5,openai_structured_output,true,46.331222,1500,0.0058125,
+gpt-5-mini,openai_structured_output,true,16.045259,1500,0.0007199999999999999,
+gpt-5-nano,openai_structured_output,true,10.009933,1500,0.000165,
+gpt-4o,openai_structured_output,true,7.569799,1200,0.0057,
+gpt-4o-mini,openai_structured_output,true,4.705137,1200,0.00034199999999999996,
+claude-opus-4.1,anthropic_tool_use,true,11.576977,1500,0.0495,
+claude-sonnet-4,anthropic_tool_use,true,4.56854,1200,0.00792,
+claude-3-5-sonnet,anthropic_tool_use,true,4.548321,1000,0.0066,
+claude-3-5-haiku,anthropic_tool_use,true,2.742082,800,0.001408,
+claude-opus-4.1,anthropic_extraction,true,9.690122,1500,0.0495,
+claude-sonnet-4,anthropic_extraction,true,4.451985,1200,0.00792,
+claude-3-5-sonnet,anthropic_extraction,true,4.301605,1000,0.0066,
+claude-3-5-haiku,anthropic_extraction,true,2.646625,800,0.001408,
+gemini-1.5-pro,gemini_structured_output,false,0.0,0,0.0,Gemini authentication failed: the server responded with status 400 for POST https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:streamGenerateContent?alt=sse&key=AIzaSyDCpAkAbf703er8IZ-eCojoyr6xovw-hKA. Check your API key.
+gemini-1.5-flash,gemini_structured_output,false,0.0,0,0.0,Gemini authentication failed: the server responded with status 400 for POST https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=AIzaSyDCpAkAbf703er8IZ-eCojoyr6xovw-hKA. Check your API key.
+gemini-2.0-flash-exp,gemini_structured_output,false,0.0,0,0.0,Gemini authentication failed: the server responded with status 400 for POST https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-exp:streamGenerateContent?alt=sse&key=AIzaSyDCpAkAbf703er8IZ-eCojoyr6xovw-hKA. Check your API key.
