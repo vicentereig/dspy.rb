@@ -160,11 +160,14 @@ RSpec.describe DSPy::LM::StrategySelector do
     let(:selector) { described_class.new(adapter, signature_class) }
     
     it 'returns true for available strategies' do
-      expect(selector.strategy_available?('enhanced_prompting')).to be true
+      expect(selector.strategy_available?(DSPy::LM::StrategySelector::StrategyName::EnhancedPrompting)).to be true
     end
     
     it 'returns false for unavailable strategies' do
-      expect(selector.strategy_available?('nonexistent_strategy')).to be false
+      # Create a mock enum value for a nonexistent strategy
+      # Since we can't add new enum values dynamically, we'll test with a strategy that exists but is unavailable
+      allow_any_instance_of(DSPy::LM::Strategies::OpenAIStructuredOutputStrategy).to receive(:available?).and_return(false)
+      expect(selector.strategy_available?(DSPy::LM::StrategySelector::StrategyName::OpenAIStructuredOutput)).to be false
     end
   end
 end

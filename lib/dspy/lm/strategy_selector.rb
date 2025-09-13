@@ -14,6 +14,17 @@ module DSPy
     class StrategySelector
       extend T::Sig
 
+      # Strategy names enum for type safety
+      class StrategyName < T::Enum
+        enums do
+          OpenAIStructuredOutput = new('openai_structured_output')
+          AnthropicToolUse = new('anthropic_tool_use')  
+          AnthropicExtraction = new('anthropic_extraction')
+          GeminiStructuredOutput = new('gemini_structured_output')
+          EnhancedPrompting = new('enhanced_prompting')
+        end
+      end
+
       # Available strategies in order of registration
       STRATEGIES = [
         Strategies::OpenAIStructuredOutputStrategy,
@@ -40,7 +51,7 @@ module DSPy
           
           # If strict strategy not available, fall back to compatible for Strict preference
           if is_strict_preference?(DSPy.config.structured_outputs.strategy)
-            compatible_strategy = find_strategy_by_name("enhanced_prompting")
+            compatible_strategy = find_strategy_by_name(StrategyName::EnhancedPrompting)
             return compatible_strategy if compatible_strategy&.available?
           end
           
@@ -67,7 +78,7 @@ module DSPy
       end
 
       # Check if a specific strategy is available
-      sig { params(strategy_name: String).returns(T::Boolean) }
+      sig { params(strategy_name: StrategyName).returns(T::Boolean) }
       def strategy_available?(strategy_name)
         strategy = find_strategy_by_name(strategy_name)
         strategy&.available? || false
@@ -84,7 +95,7 @@ module DSPy
           select_provider_optimized_strategy
         when DSPy::Strategy::Compatible
           # Use enhanced prompting
-          find_strategy_by_name("enhanced_prompting")
+          find_strategy_by_name(StrategyName::EnhancedPrompting)
         else
           nil
         end
@@ -100,19 +111,19 @@ module DSPy
       sig { returns(T.nilable(Strategies::BaseStrategy)) }
       def select_provider_optimized_strategy
         # Try OpenAI structured output first
-        openai_strategy = find_strategy_by_name("openai_structured_output")
+        openai_strategy = find_strategy_by_name(StrategyName::OpenAIStructuredOutput)
         return openai_strategy if openai_strategy&.available?
         
         # Try Gemini structured output
-        gemini_strategy = find_strategy_by_name("gemini_structured_output")
+        gemini_strategy = find_strategy_by_name(StrategyName::GeminiStructuredOutput)
         return gemini_strategy if gemini_strategy&.available?
         
         # Try Anthropic tool use first
-        anthropic_tool_strategy = find_strategy_by_name("anthropic_tool_use")
+        anthropic_tool_strategy = find_strategy_by_name(StrategyName::AnthropicToolUse)
         return anthropic_tool_strategy if anthropic_tool_strategy&.available?
         
         # Fall back to Anthropic extraction
-        anthropic_strategy = find_strategy_by_name("anthropic_extraction")
+        anthropic_strategy = find_strategy_by_name(StrategyName::AnthropicExtraction)
         return anthropic_strategy if anthropic_strategy&.available?
         
         # No provider-specific strategy available
@@ -124,9 +135,9 @@ module DSPy
         STRATEGIES.map { |klass| klass.new(@adapter, @signature_class) }
       end
 
-      sig { params(name: String).returns(T.nilable(Strategies::BaseStrategy)) }
+      sig { params(name: StrategyName).returns(T.nilable(Strategies::BaseStrategy)) }
       def find_strategy_by_name(name)
-        @strategies.find { |s| s.name == name }
+        @strategies.find { |s| s.name == name.serialize }
       end
     end
   end
