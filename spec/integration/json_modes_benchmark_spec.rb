@@ -14,13 +14,13 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
   ].freeze
 
   ANTHROPIC_MODELS = %w[
-    claude-opus-4.1 claude-sonnet-4 
-    claude-3-5-sonnet claude-3-5-haiku
+    claude-opus-4-1-20250805 claude-sonnet-4-20250514 
+    claude-3-5-sonnet-20241022 claude-3-5-haiku-20241022
   ].freeze
 
   GOOGLE_MODELS = %w[
-    gemini-1.5-pro gemini-1.5-flash 
-    gemini-2.0-flash-exp
+    gemini-2.5-flash gemini-2.0-flash-001 
+    gemini-1.5-pro
   ].freeze
 
   ALL_MODELS = (OPENAI_MODELS + ANTHROPIC_MODELS + GOOGLE_MODELS).freeze
