@@ -51,65 +51,71 @@ end
 
 RSpec.describe "Gemini Structured Outputs Integration" do
   describe "with structured outputs enabled" do
-    it "generates valid JSON with simple enum output", vcr: { cassette_name: "gemini_structured_simple" } do
+    it "generates valid JSON with simple enum output" do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-      DSPy.configure { |config| config.lm = lm }
-      
-      predictor = DSPy::Predict.new(GeminiSentimentAnalysis)
-      result = predictor.call(text: "I absolutely love this product! It exceeded all my expectations.")
-      
-      expect(result.sentiment).to be_a(GeminiSentimentType)
-      expect(result.sentiment).to eq(GeminiSentimentType::Positive)
-      expect(result.confidence).to be_a(Float)
-      expect(result.confidence).to be_between(0, 1)
-      expect(result.reasoning).to be_a(String)
-      expect(result.reasoning).not_to be_empty
-    end
-    
-    it "generates valid JSON with complex nested structures", vcr: { cassette_name: "gemini_structured_complex" } do
-      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-      DSPy.configure { |config| config.lm = lm }
-      
-      predictor = DSPy::Predict.new(GeminiComplexOutput)
-      result = predictor.call(query: "List three popular programming languages with their usage")
-      
-      expect(result.items).to be_a(Array)
-      expect(result.items).not_to be_empty
-      
-      result.items.each do |item|
-        expect(item).to respond_to(:name)
-        expect(item.name).to be_a(String)
-        expect(item).to respond_to(:value)
-        expect(item.value).to be_a(Integer)
-        expect(item).to respond_to(:tags)
-        expect(item.tags).to be_a(Array)
-        item.tags.each { |tag| expect(tag).to be_a(String) }
+      SSEVCR.use_cassette('gemini_structured_simple') do
+        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+        DSPy.configure { |config| config.lm = lm }
+        
+        predictor = DSPy::Predict.new(GeminiSentimentAnalysis)
+        result = predictor.call(text: "I absolutely love this product! It exceeded all my expectations.")
+        
+        expect(result.sentiment).to be_a(GeminiSentimentType)
+        expect(result.sentiment).to eq(GeminiSentimentType::Positive)
+        expect(result.confidence).to be_a(Float)
+        expect(result.confidence).to be_between(0, 1)
+        expect(result.reasoning).to be_a(String)
+        expect(result.reasoning).not_to be_empty
       end
-      
-      expect(result.metadata).to respond_to(:total_count)
-      expect(result.metadata.total_count).to be_a(Integer)
-      expect(result.metadata).to respond_to(:processed_at)
-      expect(result.metadata.processed_at).to be_a(String)
     end
     
-    it "falls back gracefully when structured outputs not supported", vcr: { cassette_name: "gemini_fallback_test" } do
+    it "generates valid JSON with complex nested structures" do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      # Test with a model that doesn't support structured outputs
-      lm = DSPy::LM.new('gemini/gemini-pro', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-      DSPy.configure { |config| config.lm = lm }
+      SSEVCR.use_cassette('gemini_structured_complex') do
+        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+        DSPy.configure { |config| config.lm = lm }
+        
+        predictor = DSPy::Predict.new(GeminiComplexOutput)
+        result = predictor.call(query: "List three popular programming languages with their usage")
+        
+        expect(result.items).to be_a(Array)
+        expect(result.items).not_to be_empty
+        
+        result.items.each do |item|
+          expect(item).to respond_to(:name)
+          expect(item.name).to be_a(String)
+          expect(item).to respond_to(:value)
+          expect(item.value).to be_a(Integer)
+          expect(item).to respond_to(:tags)
+          expect(item.tags).to be_a(Array)
+          item.tags.each { |tag| expect(tag).to be_a(String) }
+        end
+        
+        expect(result.metadata).to respond_to(:total_count)
+        expect(result.metadata.total_count).to be_a(Integer)
+        expect(result.metadata).to respond_to(:processed_at)
+        expect(result.metadata.processed_at).to be_a(String)
+      end
+    end
+    
+    it "falls back gracefully when structured outputs not supported" do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      predictor = DSPy::Predict.new(GeminiSentimentAnalysis)
-      result = predictor.call(text: "This is a neutral statement.")
-      
-      # Should still work, but using enhanced prompting strategy
-      expect(result.sentiment).to be_a(GeminiSentimentType)
-      expect(result.confidence).to be_a(Float) if result.confidence
-      expect(result.reasoning).to be_a(String)
+      SSEVCR.use_cassette('gemini_fallback_test') do
+        # Test with a model that doesn't support structured outputs
+        lm = DSPy::LM.new('gemini/gemini-pro', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+        DSPy.configure { |config| config.lm = lm }
+        
+        predictor = DSPy::Predict.new(GeminiSentimentAnalysis)
+        result = predictor.call(text: "This is a neutral statement.")
+        
+        # Should still work, but using enhanced prompting strategy
+        expect(result.sentiment).to be_a(GeminiSentimentType)
+        expect(result.confidence).to be_a(Float) if result.confidence
+        expect(result.reasoning).to be_a(String)
+      end
     end
   end
 
