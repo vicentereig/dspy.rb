@@ -11,13 +11,21 @@ module DSPy
         class SchemaConverter
           extend T::Sig
 
-          # Models that support structured outputs
-          # Based on Google documentation: Gemini 1.5 Pro, Gemini 2.5, and experimental models
+          # Models that support structured outputs (JSON + Schema)
+          # Based on official gemini-ai gem documentation table
           STRUCTURED_OUTPUT_MODELS = T.let([
-            "gemini-1.5-pro",      # Confirmed to support structured outputs
-            "gemini-2.5-flash",    # Explicitly mentioned in docs as supporting structured outputs
-            "gemini-2.0-flash-exp" # Experimental model
-            # Note: gemini-1.5-flash does NOT support structured outputs
+            "gemini-1.5-pro",              # ✅ Full schema support
+            "gemini-1.5-pro-preview-0514", # ✅ Full schema support  
+            "gemini-1.5-pro-preview-0409"  # ✅ Full schema support
+          ].freeze, T::Array[String])
+
+          # Models that support JSON mode but NOT schema
+          JSON_ONLY_MODELS = T.let([
+            "gemini-pro",                   # 🟡 JSON only, no schema
+            "gemini-1.5-flash",             # 🟡 JSON only, no schema
+            "gemini-1.5-flash-preview-0514", # 🟡 JSON only, no schema
+            "gemini-1.0-pro-002",           # 🟡 JSON only, no schema
+            "gemini-1.0-pro"                # 🟡 JSON only, no schema
           ].freeze, T::Array[String])
 
           sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T::Hash[Symbol, T.untyped]) }
