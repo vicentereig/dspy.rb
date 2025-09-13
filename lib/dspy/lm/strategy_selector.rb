@@ -5,6 +5,7 @@ require_relative "strategies/base_strategy"
 require_relative "strategies/openai_structured_output_strategy"
 require_relative "strategies/anthropic_tool_use_strategy"
 require_relative "strategies/anthropic_extraction_strategy"
+require_relative "strategies/gemini_structured_output_strategy"
 require_relative "strategies/enhanced_prompting_strategy"
 
 module DSPy
@@ -18,6 +19,7 @@ module DSPy
         Strategies::OpenAIStructuredOutputStrategy,
         Strategies::AnthropicToolUseStrategy,
         Strategies::AnthropicExtractionStrategy,
+        Strategies::GeminiStructuredOutputStrategy,
         Strategies::EnhancedPromptingStrategy
       ].freeze
 
@@ -100,6 +102,10 @@ module DSPy
         # Try OpenAI structured output first
         openai_strategy = find_strategy_by_name("openai_structured_output")
         return openai_strategy if openai_strategy&.available?
+        
+        # Try Gemini structured output
+        gemini_strategy = find_strategy_by_name("gemini_structured_output")
+        return gemini_strategy if gemini_strategy&.available?
         
         # Try Anthropic tool use first
         anthropic_tool_strategy = find_strategy_by_name("anthropic_tool_use")
