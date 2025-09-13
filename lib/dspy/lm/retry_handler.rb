@@ -55,7 +55,7 @@ module DSPy
             
             # Let strategy handle the error first
             if strategy.handle_error(e)
-              DSPy.logger.info("Strategy #{strategy.name} handled error, will try next strategy")
+              DSPy.logger.debug("Strategy #{strategy.name} handled error, trying next strategy")
               next # Try next strategy
             end
             
@@ -64,9 +64,18 @@ module DSPy
               retry_count += 1
               backoff_time = calculate_backoff(retry_count)
               
-              DSPy.logger.warn(
-                "Retrying #{strategy.name} after error (attempt #{retry_count}/#{max_retries_for_strategy(strategy)}): #{e.message}"
-              )
+              # Use debug for structured output strategies since they often have expected failures
+              log_level = ["openai_structured_output", "gemini_structured_output"].include?(strategy.name) ? :debug : :warn
+              
+              if log_level == :debug
+                DSPy.logger.debug(
+                  "Retrying #{strategy.name} after error (attempt #{retry_count}/#{max_retries_for_strategy(strategy)}): #{e.message}"
+                )
+              else
+                DSPy.logger.warn(
+                  "Retrying #{strategy.name} after error (attempt #{retry_count}/#{max_retries_for_strategy(strategy)}): #{e.message}"
+                )
+              end
               
               Async::Task.current.sleep(backoff_time) if backoff_time > 0
               retry
@@ -101,8 +110,8 @@ module DSPy
       sig { params(strategy: Strategies::BaseStrategy).returns(Integer) }
       def max_retries_for_strategy(strategy)
         case strategy.name
-        when "openai_structured_output"
-          1 # Structured outputs rarely benefit from retries
+        when "openai_structured_output", "gemini_structured_output"
+          1 # Structured outputs rarely benefit from retries, most errors are permanent
         when "anthropic_extraction"
           2 # Anthropic can be a bit more variable
         else
