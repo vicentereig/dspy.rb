@@ -91,6 +91,8 @@ module DSPy
 
           sig { params(dspy_schema: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
           def self.convert_dspy_schema_to_gemini(dspy_schema)
+            # For Gemini's responseJsonSchema, we need pure JSON Schema format
+            # Remove OpenAPI-specific fields like "$schema"
             result = {
               type: "object",
               properties: {},
@@ -111,6 +113,21 @@ module DSPy
 
           sig { params(property_schema: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
           def self.convert_property_to_gemini(property_schema)
+            # Handle oneOf/anyOf schemas (union types) - Gemini supports these in responseJsonSchema
+            if property_schema[:oneOf]
+              return {
+                oneOf: property_schema[:oneOf].map { |schema| convert_property_to_gemini(schema) },
+                description: property_schema[:description]
+              }.compact
+            end
+            
+            if property_schema[:anyOf]
+              return {
+                anyOf: property_schema[:anyOf].map { |schema| convert_property_to_gemini(schema) },
+                description: property_schema[:description]
+              }.compact
+            end
+            
             case property_schema[:type]
             when "string"
               result = { type: "string" }
