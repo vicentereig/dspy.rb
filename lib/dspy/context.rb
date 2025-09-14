@@ -13,24 +13,33 @@ module DSPy
         # Create a unique key for this thread to ensure isolation
         thread_key = :"dspy_context_#{Thread.current.object_id}"
         
-        # Check if this thread has its own context
-        if Thread.current[thread_key]
-          # Thread has context, ensure fiber has it too for OpenTelemetry
-          Fiber[:dspy_context] ||= Thread.current[thread_key]
-        else
-          # No context for this thread - create new one
-          context = {
-            trace_id: SecureRandom.uuid,
-            span_stack: []
-          }
-          # Set in both Thread and Fiber storage
-          Thread.current[thread_key] = context
-          Thread.current[:dspy_context] = context  # Keep for backward compatibility
-          Fiber[:dspy_context] = context
+        # Check if current fiber already has context
+        if Fiber[:dspy_context]
+          # Fiber has context, ensure thread has it too
+          Thread.current[thread_key] ||= Fiber[:dspy_context]
+          Thread.current[:dspy_context] ||= Fiber[:dspy_context]  # Keep for backward compatibility
+          return Fiber[:dspy_context]
         end
         
-        # Return the context (from Fiber storage for OpenTelemetry compatibility)
-        Fiber[:dspy_context]
+        # Check if this thread has context we can inherit
+        if Thread.current[thread_key]
+          # Thread has context, propagate it to current fiber
+          Fiber[:dspy_context] = Thread.current[thread_key]
+          return Fiber[:dspy_context]
+        end
+        
+        # No existing context - create new one
+        context = {
+          trace_id: SecureRandom.uuid,
+          span_stack: []
+        }
+        
+        # Set in both Thread and Fiber storage
+        Thread.current[thread_key] = context
+        Thread.current[:dspy_context] = context  # Keep for backward compatibility
+        Fiber[:dspy_context] = context
+        
+        context
       end
       
       def with_span(operation:, **attributes)
