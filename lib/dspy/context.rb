@@ -31,7 +31,8 @@ module DSPy
         # No existing context or context belongs to different thread - create new one
         context = {
           trace_id: SecureRandom.uuid,
-          span_stack: []
+          span_stack: [],
+          otel_span_stack: []
         }
         
         # Set in both Thread and Fiber storage
@@ -76,23 +77,66 @@ module DSPy
             # Record start time for explicit duration tracking
             otel_start_time = Time.now
             
-            # Always use in_span which properly manages context internally
-            DSPy::Observability.tracer.in_span(
-              operation,
-              attributes: span_attributes,
-              kind: :internal
-            ) do |span|
-              result = yield(span)
-              
-              # Add explicit timing information to help Langfuse
-              if span
-                duration_ms = ((Time.now - otel_start_time) * 1000).round(3)
-                span.set_attribute('duration.ms', duration_ms)
-                span.set_attribute('langfuse.observation.startTime', otel_start_time.iso8601(3))
-                span.set_attribute('langfuse.observation.endTime', Time.now.iso8601(3))
+            # Get parent OpenTelemetry span for proper context propagation
+            parent_otel_span = current[:otel_span_stack].last
+            
+            # Create span with proper parent context
+            if parent_otel_span
+              # Use the parent span's context to ensure proper nesting
+              OpenTelemetry::Trace.with_span(parent_otel_span) do
+                DSPy::Observability.tracer.in_span(
+                  operation,
+                  attributes: span_attributes,
+                  kind: :internal
+                ) do |span|
+                  # Add to our OpenTelemetry span stack
+                  current[:otel_span_stack].push(span)
+                  
+                  begin
+                    result = yield(span)
+                    
+                    # Add explicit timing information to help Langfuse
+                    if span
+                      duration_ms = ((Time.now - otel_start_time) * 1000).round(3)
+                      span.set_attribute('duration.ms', duration_ms)
+                      span.set_attribute('langfuse.observation.startTime', otel_start_time.iso8601(3))
+                      span.set_attribute('langfuse.observation.endTime', Time.now.iso8601(3))
+                    end
+                    
+                    result
+                  ensure
+                    # Remove from our OpenTelemetry span stack
+                    current[:otel_span_stack].pop
+                  end
+                end
               end
-              
-              result
+            else
+              # Root span - no parent context needed
+              DSPy::Observability.tracer.in_span(
+                operation,
+                attributes: span_attributes,
+                kind: :internal
+              ) do |span|
+                # Add to our OpenTelemetry span stack
+                current[:otel_span_stack].push(span)
+                
+                begin
+                  result = yield(span)
+                  
+                  # Add explicit timing information to help Langfuse
+                  if span
+                    duration_ms = ((Time.now - otel_start_time) * 1000).round(3)
+                    span.set_attribute('duration.ms', duration_ms)
+                    span.set_attribute('langfuse.observation.startTime', otel_start_time.iso8601(3))
+                    span.set_attribute('langfuse.observation.endTime', Time.now.iso8601(3))
+                  end
+                  
+                  result
+                ensure
+                  # Remove from our OpenTelemetry span stack
+                  current[:otel_span_stack].pop
+                end
+              end
             end
           else
             yield(nil)
