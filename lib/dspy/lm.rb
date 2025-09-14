@@ -46,7 +46,11 @@ module DSPy
       parent_context = DSPy::Context.current.dup
       
       Sync do
-        # Restore the context in the new fiber created by Sync
+        # Properly restore the context in the new fiber created by Sync
+        # We need to set both thread and fiber storage for the new context system
+        thread_key = :"dspy_context_#{Thread.current.object_id}"
+        Thread.current[thread_key] = parent_context
+        Thread.current[:dspy_context] = parent_context  # Keep for backward compatibility
         Fiber[:dspy_context] = parent_context
         
         signature_class = inference_module.signature_class

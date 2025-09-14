@@ -6,29 +6,29 @@ module DSPy
   class Context
     class << self
       def current
-        # Use a combination of Thread and Fiber storage for proper context management
-        # Thread storage ensures thread isolation
-        # Fiber storage ensures OpenTelemetry context propagation
+        # Use Thread storage as primary source to ensure thread isolation
+        # Fiber storage is used for OpenTelemetry context propagation within the same thread
         
         # Create a unique key for this thread to ensure isolation
         thread_key = :"dspy_context_#{Thread.current.object_id}"
         
-        # Check if current fiber already has context
-        if Fiber[:dspy_context]
-          # Fiber has context, ensure thread has it too
-          Thread.current[thread_key] ||= Fiber[:dspy_context]
-          Thread.current[:dspy_context] ||= Fiber[:dspy_context]  # Keep for backward compatibility
-          return Fiber[:dspy_context]
-        end
-        
-        # Check if this thread has context we can inherit
+        # Always check thread-local storage first for proper isolation
         if Thread.current[thread_key]
-          # Thread has context, propagate it to current fiber
+          # Thread has context, ensure fiber inherits it for OpenTelemetry propagation
           Fiber[:dspy_context] = Thread.current[thread_key]
+          Thread.current[:dspy_context] = Thread.current[thread_key]  # Keep for backward compatibility
+          return Thread.current[thread_key]
+        end
+        
+        # Check if current fiber has context that was set by this same thread
+        # This handles cases where context was set via OpenTelemetry propagation within the thread
+        if Fiber[:dspy_context] && Thread.current[:dspy_context] == Fiber[:dspy_context]
+          # This fiber context was set by this thread, safe to use
+          Thread.current[thread_key] = Fiber[:dspy_context]
           return Fiber[:dspy_context]
         end
         
-        # No existing context - create new one
+        # No existing context or context belongs to different thread - create new one
         context = {
           trace_id: SecureRandom.uuid,
           span_stack: []
