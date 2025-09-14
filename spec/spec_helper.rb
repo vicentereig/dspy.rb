@@ -12,6 +12,17 @@ NewRelic::Agent.manual_start
 # Disable observability during tests to avoid telemetry overhead
 DSPy::Observability.reset!
 
+# Also ensure OpenTelemetry SDK doesn't interfere with WebMock
+begin
+  require 'opentelemetry/sdk'
+  # Create a no-op tracer provider to avoid any network calls
+  noop_provider = OpenTelemetry::SDK::Trace::TracerProvider.new
+  # Don't add any processors to avoid OTLP exports
+  OpenTelemetry.tracer_provider = noop_provider
+rescue LoadError
+  # OpenTelemetry not available, skip
+end
+
 # Load support files and tools
 Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |f| require f }
 
@@ -40,7 +51,12 @@ ensure
     WebMock.allow_net_connect!
   else
     # Block all network connections except telemetry endpoints
-    WebMock.disable_net_connect!(allow: ['collector.newrelic.com', 'cloud.langfuse.com'])
+    # Use regex patterns to match full URLs including paths
+    WebMock.disable_net_connect!(allow: [
+      'collector.newrelic.com',
+      /cloud\.langfuse\.com/,
+      /.*\.langfuse\.com/  # Allow any langfuse subdomain
+    ])
   end
 end
 
@@ -48,7 +64,7 @@ VCR.configure do |config|
   config.cassette_library_dir = "spec/vcr_cassettes"
   config.hook_into :webmock
   config.configure_rspec_metadata!
-  
+
   # Ignore telemetry services
   config.ignore_hosts 'collector.newrelic.com', 'cloud.langfuse.com'
 
