@@ -42,7 +42,13 @@ module DSPy
     end
 
     def chat(inference_module, input_values, &block)
+      # Capture the current DSPy context before entering Sync block
+      parent_context = DSPy::Context.current.dup
+      
       Sync do
+        # Restore the context in the new fiber created by Sync
+        Fiber[:dspy_context] = parent_context
+        
         signature_class = inference_module.signature_class
         
         # Build messages from inference module

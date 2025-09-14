@@ -234,7 +234,10 @@ class JSONModesBenchmark
     begin
       # Configure the LM for this model
       lm = create_lm_for_model(model)
-      return unless lm # Skip if we can't create LM (missing API keys, etc.)
+      unless lm
+        puts "    ⏭️  SKIPPED: Unable to create LM (missing API key or unsupported model)"
+        return
+      end
       
       DSPy.configure { |c| c.lm = lm }
       
@@ -306,7 +309,7 @@ class JSONModesBenchmark
 
   def extract_provider_and_model(model)
     case model
-    when /^gpt-|^o1-/
+    when /^gpt-|^o1/
       ['openai', model]
     when /^claude-/
       ['anthropic', model]
