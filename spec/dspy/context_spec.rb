@@ -60,8 +60,9 @@ RSpec.describe DSPy::Context do
     end
 
     it 'logs span start and end events' do
-      # Enable observability for logging to occur
+      # Enable observability for logging to occur but disable async processing to avoid interference
       allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+      allow(DSPy::Observability).to receive(:tracer).and_return(nil)
       
       expect(DSPy).to receive(:log).with('span.start', hash_including(
         trace_id: anything,
@@ -138,8 +139,9 @@ RSpec.describe DSPy::Context do
     end
 
     it 'passes custom attributes to span start' do
-      # Enable observability for logging to occur
+      # Enable observability for logging to occur but disable async processing to avoid interference
       allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+      allow(DSPy::Observability).to receive(:tracer).and_return(nil)
       
       expect(DSPy).to receive(:log).with('span.start', hash_including(
         operation: 'test',
@@ -153,8 +155,9 @@ RSpec.describe DSPy::Context do
     end
 
     it 'handles exceptions and still logs span end' do
-      # Enable observability for logging to occur
+      # Enable observability for logging to occur but disable async processing to avoid interference
       allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+      allow(DSPy::Observability).to receive(:tracer).and_return(nil)
       
       expect(DSPy).to receive(:log).with('span.start', anything)
       expect(DSPy).to receive(:log).with('span.end', anything)

@@ -35,11 +35,12 @@ begin
 rescue => e
   puts "⚠ Could not pre-download embedding model: #{e.message}"
 ensure
-  # Restore original WebMock settings
+  # Restore original WebMock settings but allow telemetry endpoints
   if original_allow_setting
     WebMock.allow_net_connect!
   else
-    WebMock.disable_net_connect!
+    # Block all network connections except telemetry endpoints
+    WebMock.disable_net_connect!(allow: ['collector.newrelic.com', 'cloud.langfuse.com'])
   end
 end
 
@@ -49,7 +50,7 @@ VCR.configure do |config|
   config.configure_rspec_metadata!
   
   # Ignore telemetry services
-  config.ignore_hosts 'collector.newrelic.com'
+  config.ignore_hosts 'collector.newrelic.com', 'cloud.langfuse.com'
 
   # Filter out sensitive information
   config.filter_sensitive_data('<OPENAI_API_KEY>') { ENV['OPENAI_API_KEY'] }
