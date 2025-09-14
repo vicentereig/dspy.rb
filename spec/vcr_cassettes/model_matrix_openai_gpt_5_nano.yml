@@ -5,7 +5,7 @@ http_interactions:
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
-      string: '{"model":"gpt-5-mini","messages":[{"role":"system","content":"Your
+      string: '{"model":"gpt-5-nano","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
         \"Natural language command or request about todos\"\n    },\n    \"context\":
@@ -106,7 +106,7 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: AI-powered todo list management system with complex nested types"},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"query\": \"Create a model compatibility test
-        todo with medium priority (gpt-5-mini/enhanced_prompting)\",\n  \"context\":
+        todo with medium priority (gpt-5-nano/enhanced_prompting)\",\n  \"context\":
         {\n    \"project_id\": \"proj-123\",\n    \"active_lists\": [\n      \"main-backlog\",\n      \"sprint-current\"\n    ],\n    \"available_tags\":
         [\n      \"backend\",\n      \"testing\",\n      \"priority\"\n    ]\n  },\n  \"user_profile\":
         {\n    \"user_id\": \"user-456\",\n    \"role\": \"admin\",\n    \"timezone\":
@@ -160,7 +160,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sun, 14 Sep 2025 00:03:56 GMT
+      - Sat, 13 Sep 2025 23:52:56 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -172,25 +172,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '20357'
+      - '8812'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '20494'
+      - '8998'
       X-Ratelimit-Limit-Requests:
       - '500'
       X-Ratelimit-Limit-Tokens:
-      - '500000'
+      - '200000'
       X-Ratelimit-Remaining-Requests:
       - '499'
       X-Ratelimit-Remaining-Tokens:
-      - '497378'
+      - '197378'
       X-Ratelimit-Reset-Requests:
       - 120ms
       X-Ratelimit-Reset-Tokens:
-      - 314ms
+      - 786ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -207,23 +207,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97eb9f43ec5343c3-EWR
+      - 97eb8f71c9e27c69-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CFUVLKMlljszFxZsmyhYSKLN9Ilf6",
+          "id": "chatcmpl-CFUKt041sjeT0qhcmHR2R2mbuPrYM",
           "object": "chat.completion",
-          "created": 1757808215,
-          "model": "gpt-5-mini-2025-08-07",
+          "created": 1757807567,
+          "model": "gpt-5-nano-2025-08-07",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Model compatibility test: gpt-5-mini/enhanced_prompting\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\",\n      \"priority\",\n      \"gpt-5-mini/enhanced_prompting\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-789\",\n      \"title\": \"Model compatibility test: gpt-5-mini/enhanced_prompting\",\n      \"description\": \"Run compatibility tests for gpt-5-mini/enhanced_prompting: validate prompt handling, output format stability, performance on edge-case prompts, and document any regressions or unexpected behaviors. Include test cases, steps to reproduce, and example prompts/responses.\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\",\n        \"priority\",\n        \"gpt-5-mini/enhanced_prompting\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 1,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": [\n    {\n      \"_type\": \"AssignTodoAction\",\n      \"todo_id\": \"todo-789\",\n      \"assignee\": \"user-456\",\n      \"notify\": true\n    }\n  ]\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Model compatibility test\",\n    \"priority\": \"medium\",\n    \"tags\": [\"backend\",\"testing\",\"priority\"]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-001\",\n      \"title\": \"Model compatibility test\",\n      \"description\": \"Test to assess model compatibility with GPT-5 Nano enhanced prompting\",\n      \"status\": \"pending\",\n      \"tags\": [\"backend\",\"testing\",\"priority\"],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 1,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": [\n    {\n      \"_type\": \"CreateTodoAction\",\n      \"title\": \"Model compatibility test\",\n      \"priority\": \"medium\",\n      \"tags\": [\"backend\",\"testing\",\"priority\"]\n    }\n  ]\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -231,15 +231,15 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2286,
-            "completion_tokens": 1151,
-            "total_tokens": 3437,
+            "prompt_tokens": 2287,
+            "completion_tokens": 1633,
+            "total_tokens": 3920,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
-              "reasoning_tokens": 832,
+              "reasoning_tokens": 1408,
               "audio_tokens": 0,
               "accepted_prediction_tokens": 0,
               "rejected_prediction_tokens": 0
@@ -248,13 +248,13 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": null
         }
-  recorded_at: Sun, 14 Sep 2025 00:03:56 GMT
+  recorded_at: Sat, 13 Sep 2025 23:52:56 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
-      string: '{"model":"gpt-5-mini","messages":[{"role":"system","content":"Your
+      string: '{"model":"gpt-5-nano","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
         \"Natural language command or request about todos\"\n    },\n    \"context\":
@@ -355,7 +355,7 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: AI-powered todo list management system with complex nested types"},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"query\": \"Create a model compatibility test
-        todo with medium priority (gpt-5-mini/openai_structured_output)\",\n  \"context\":
+        todo with medium priority (gpt-5-nano/openai_structured_output)\",\n  \"context\":
         {\n    \"project_id\": \"proj-123\",\n    \"active_lists\": [\n      \"main-backlog\",\n      \"sprint-current\"\n    ],\n    \"available_tags\":
         [\n      \"backend\",\n      \"testing\",\n      \"priority\"\n    ]\n  },\n  \"user_profile\":
         {\n    \"user_id\": \"user-456\",\n    \"role\": \"admin\",\n    \"timezone\":
@@ -409,7 +409,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sun, 14 Sep 2025 00:04:10 GMT
+      - Sat, 13 Sep 2025 23:53:09 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -421,25 +421,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '13698'
+      - '12335'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '13854'
+      - '12485'
       X-Ratelimit-Limit-Requests:
       - '500'
       X-Ratelimit-Limit-Tokens:
-      - '500000'
+      - '200000'
       X-Ratelimit-Remaining-Requests:
       - '499'
       X-Ratelimit-Remaining-Tokens:
-      - '497375'
+      - '197376'
       X-Ratelimit-Reset-Requests:
       - 120ms
       X-Ratelimit-Reset-Tokens:
-      - 314ms
+      - 787ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -456,23 +456,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 97eb9fc70c563dd6-EWR
+      - 97eb8fad59d18be8-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CFUVgtjLP4kBfw5NFHSqPGnrFJBZu",
+          "id": "chatcmpl-CFUL3YHfJs6juCKWFeGy8HUoTB10B",
           "object": "chat.completion",
-          "created": 1757808236,
-          "model": "gpt-5-mini-2025-08-07",
+          "created": 1757807577,
+          "model": "gpt-5-nano-2025-08-07",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Model compatibility test: gpt-5-mini / openai_structured_output\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\",\n      \"priority\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-789\",\n      \"title\": \"Model compatibility test: gpt-5-mini / openai_structured_output\",\n      \"description\": \"Run compatibility tests to verify gpt-5-mini works with the openai_structured_output format. Include representative prompts, validate structured output against the expected schema, test edge cases and failure modes, and document any mismatches or errors.\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\",\n        \"priority\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 1,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": [\n    {\n      \"_type\": \"CreateTodoAction\",\n      \"title\": \"Create test checklist for model compatibility\",\n      \"priority\": \"low\",\n      \"tags\": [\n        \"testing\"\n      ]\n    }\n  ]\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Model compatibility test for GPT-5 Nano with OpenAI structured output\",\n    \"priority\": \"medium\",\n    \"tags\": [\"backend\", \"testing\", \"priority\", \"gpt-5-nano\", \"openai_structured_output\"]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-compat-001\",\n      \"title\": \"Model compatibility test for GPT-5 Nano with OpenAI structured output\",\n      \"description\": \"Test compatibility of GPT-5 Nano with OpenAI structured output format.\",\n      \"status\": \"pending\",\n      \"tags\": [\"backend\", \"testing\", \"priority\", \"gpt-5-nano\", \"openai_structured_output\"],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 1,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": [\n    {\n      \"_type\": \"CreateTodoAction\",\n      \"title\": \"Set up additional test fixtures for compatibility checks\",\n      \"priority\": \"low\",\n      \"tags\": [\"testing\", \"backend\"]\n    }\n  ]\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -480,15 +480,15 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2286,
-            "completion_tokens": 1062,
-            "total_tokens": 3348,
+            "prompt_tokens": 2287,
+            "completion_tokens": 2335,
+            "total_tokens": 4622,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
-              "reasoning_tokens": 768,
+              "reasoning_tokens": 2048,
               "audio_tokens": 0,
               "accepted_prediction_tokens": 0,
               "rejected_prediction_tokens": 0
@@ -497,5 +497,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": null
         }
-  recorded_at: Sun, 14 Sep 2025 00:04:10 GMT
+  recorded_at: Sat, 13 Sep 2025 23:53:09 GMT
 recorded_with: VCR 6.3.1

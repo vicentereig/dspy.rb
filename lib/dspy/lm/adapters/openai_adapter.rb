@@ -24,19 +24,26 @@ module DSPy
           normalized_messages = format_multimodal_messages(normalized_messages)
         end
 
-        # Set temperature based on model capabilities
-        temperature = case model
-        when /^gpt-5/, /^gpt-4o/
-          1.0 # GPT-5 and GPT-4o models only support default temperature of 1.0
-        else
-          0.0 # Near-deterministic for other models (0.0 no longer universally supported)
+        # Handle O1 model restrictions - convert system messages to user messages
+        if o1_model?(model)
+          normalized_messages = handle_o1_messages(normalized_messages)
         end
 
         request_params = {
           model: model,
-          messages: normalized_messages,
-          temperature: temperature
+          messages: normalized_messages
         }
+
+        # Add temperature based on model capabilities  
+        unless o1_model?(model)
+          temperature = case model
+          when /^gpt-5/, /^gpt-4o/
+            1.0 # GPT-5 and GPT-4o models only support default temperature of 1.0
+          else
+            0.0 # Near-deterministic for other models (0.0 no longer universally supported)
+          end
+          request_params[:temperature] = temperature
+        end
 
         # Add response format if provided by strategy
         if response_format
@@ -142,6 +149,26 @@ module DSPy
             {
               role: msg[:role],
               content: formatted_content
+            }
+          else
+            msg
+          end
+        end
+      end
+
+      # Check if model is an O1 reasoning model (includes O1, O3, O4 series)
+      def o1_model?(model_name)
+        model_name.match?(/^o[134](-.*)?$/)
+      end
+
+      # Handle O1 model message restrictions
+      def handle_o1_messages(messages)
+        messages.map do |msg|
+          # Convert system messages to user messages for O1 models
+          if msg[:role] == 'system'
+            {
+              role: 'user',
+              content: "Instructions: #{msg[:content]}"
             }
           else
             msg

@@ -11,7 +11,8 @@ RSpec.describe DSPy::LM::GeminiAdapter do
     allow(Gemini).to receive(:new).with(
       credentials: {
         service: 'generative-language-api',
-        api_key: anything
+        api_key: anything,
+        version: 'v1beta'
       },
       options: hash_including(server_sent_events: true)
     ).and_return(mock_client)
@@ -22,7 +23,8 @@ RSpec.describe DSPy::LM::GeminiAdapter do
       expect(Gemini).to receive(:new).with(
         credentials: {
           service: 'generative-language-api',
-          api_key: 'test-key'
+          api_key: 'test-key',
+          version: 'v1beta'
         },
         options: { 
           model: 'gemini-2.5-flash',
