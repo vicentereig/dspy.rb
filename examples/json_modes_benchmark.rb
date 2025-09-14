@@ -14,6 +14,9 @@ require_relative '../lib/dspy'
 # Load the TodoListManagementSignature and related structs
 require_relative './benchmark_types'
 
+# Configure observability
+DSPy::Observability.configure!
+
 class JSONModesBenchmark
   # Model constants for 2025 testing
   OPENAI_MODELS = %w[
@@ -29,7 +32,6 @@ class JSONModesBenchmark
 
   GOOGLE_MODELS = %w[
     gemini-1.5-pro gemini-1.5-flash
-    gemini-1.5-pro-preview-0514
   ].freeze
 
   ALL_MODELS = (OPENAI_MODELS + ANTHROPIC_MODELS + GOOGLE_MODELS).freeze
@@ -208,9 +210,7 @@ class JSONModesBenchmark
   def supports_gemini_structured_outputs?(model)
     # Based on official gemini-ai gem documentation - models with ✅ full schema support
     structured_output_models = %w[
-      gemini-1.5-pro 
-      gemini-1.5-pro-preview-0514 
-      gemini-1.5-pro-preview-0409
+      gemini-1.5-pro
     ]
     structured_output_models.include?(model)
   end
@@ -601,6 +601,9 @@ if __FILE__ == $0
   
   benchmark = JSONModesBenchmark.new
   benchmark.run_full_benchmark
+  
+  # Flush observability data before process exits
+  DSPy::Observability.flush!
   
   puts "\n🎉 Benchmark complete! Check the generated files for detailed results."
 end
