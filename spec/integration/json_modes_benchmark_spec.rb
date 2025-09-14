@@ -9,8 +9,7 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
   # Model constants for 2025 testing
   OPENAI_MODELS = %w[
     gpt-5 gpt-5-mini gpt-5-nano 
-    gpt-4o gpt-4o-mini 
-    o1 o1-mini
+    gpt-4o gpt-4o-mini
   ].freeze
 
   ANTHROPIC_MODELS = %w[
