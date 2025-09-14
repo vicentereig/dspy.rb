@@ -159,18 +159,16 @@ class JSONModesBenchmark
   def setup_observability
     # Subscribe to DSPy events for performance metrics
     @timing_data = {}
-    @token_data = {}
     
-    DSPy.events.subscribe('lm.raw_chat.start') do |event_name, attributes|
-      @timing_data[attributes[:request_id]] = { start_time: Time.now }
-    end
-    
-    DSPy.events.subscribe('lm.raw_chat.complete') do |event_name, attributes|
-      if start_data = @timing_data[attributes[:request_id]]
-        duration = Time.now - start_data[:start_time]
-        start_data[:duration] = duration
-        start_data[:model] = attributes[:model]
-        start_data[:tokens] = attributes[:usage]&.dig(:total_tokens) || 0
+    DSPy.events.subscribe('lm.tokens') do |event_name, attributes|
+      request_id = attributes['request_id']
+      if request_id
+        @timing_data[request_id] = {
+          start_time: Time.now - attributes['duration'],
+          duration: attributes['duration'],
+          model: attributes['gen_ai.request.model'],
+          tokens: attributes[:total_tokens] || 0
+        }
       end
     end
   end
