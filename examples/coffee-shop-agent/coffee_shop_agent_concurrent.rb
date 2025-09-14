@@ -108,19 +108,16 @@ end
 # The actual agent - much simpler with single-field unions!
 class CoffeeShopAgent < DSPy::Module
   def initialize
+    super()
     @decision_maker = DSPy::ChainOfThought.new(CoffeeShopSignature)
   end
 
   def handle_customer(request:, mood: CustomerMood::Neutral, time: TimeOfDay::Afternoon, customer_id: nil)
-    call(request:, mood:, time:, customer_id:)
-  end
-
-  def call(request:, mood: CustomerMood::Neutral, time: TimeOfDay::Afternoon, customer_id: nil)
     start_time = Time.now
     puts "🚀 [Customer #{customer_id}] Starting request at #{start_time.strftime('%H:%M:%S.%L')}"
 
-    # One call handles everything!
-    result = @decision_maker.call(
+    # Use Module's forward method for automatic span creation
+    result = forward(
       customer_request: request,
       customer_mood: mood,
       time_of_day: time
@@ -151,6 +148,15 @@ class CoffeeShopAgent < DSPy::Module
     duration = ((end_time - start_time) * 1000).round(1)
     puts "⏱️  [Customer #{customer_id}] Completed in #{duration}ms"
     puts "\n" + "="*60 + "\n"
+  end
+  
+  def forward_untyped(**input_values)
+    # Module#forward handles span creation, we just do the agent logic
+    @decision_maker.call(
+      customer_request: input_values[:customer_request],
+      customer_mood: input_values[:customer_mood],
+      time_of_day: input_values[:time_of_day]
+    )
   end
 end
 
