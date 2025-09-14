@@ -6,29 +6,31 @@ module DSPy
   class Context
     class << self
       def current
-        # Check if we're in an async context (fiber created by async gem)
-        if in_async_context?
-          # Use Fiber storage for async contexts to enable inheritance
-          # Inherit from Thread.current if Fiber storage is not set
-          Fiber[:dspy_context] ||= Thread.current[:dspy_context] || {
-            trace_id: SecureRandom.uuid,
-            span_stack: []
-          }
-          
-          # Return Fiber storage in async contexts
-          Fiber[:dspy_context]
+        # Use a combination of Thread and Fiber storage for proper context management
+        # Thread storage ensures thread isolation
+        # Fiber storage ensures OpenTelemetry context propagation
+        
+        # Create a unique key for this thread to ensure isolation
+        thread_key = :"dspy_context_#{Thread.current.object_id}"
+        
+        # Check if this thread has its own context
+        if Thread.current[thread_key]
+          # Thread has context, ensure fiber has it too for OpenTelemetry
+          Fiber[:dspy_context] ||= Thread.current[thread_key]
         else
-          # Use Thread.current for regular synchronous contexts
-          Thread.current[:dspy_context] ||= {
+          # No context for this thread - create new one
+          context = {
             trace_id: SecureRandom.uuid,
             span_stack: []
           }
-          
-          # Also sync to Fiber storage so async contexts can inherit it
-          Fiber[:dspy_context] = Thread.current[:dspy_context]
-          
-          Thread.current[:dspy_context]
+          # Set in both Thread and Fiber storage
+          Thread.current[thread_key] = context
+          Thread.current[:dspy_context] = context  # Keep for backward compatibility
+          Fiber[:dspy_context] = context
         end
+        
+        # Return the context (from Fiber storage for OpenTelemetry compatibility)
+        Fiber[:dspy_context]
       end
       
       def with_span(operation:, **attributes)
@@ -65,6 +67,7 @@ module DSPy
             # Record start time for explicit duration tracking
             otel_start_time = Time.now
             
+            # Always use in_span which properly manages context internally
             DSPy::Observability.tracer.in_span(
               operation,
               attributes: span_attributes,
@@ -102,6 +105,9 @@ module DSPy
       end
       
       def clear!
+        # Clear both the thread-specific key and the legacy key
+        thread_key = :"dspy_context_#{Thread.current.object_id}"
+        Thread.current[thread_key] = nil
         Thread.current[:dspy_context] = nil
         Fiber[:dspy_context] = nil
       end
