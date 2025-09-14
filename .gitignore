@@ -1,5 +1,6 @@
 examples/*.json
 examples/*.csv
+benchmark_*
 config/newrelic.yml
 .claude*
 docs/output/*

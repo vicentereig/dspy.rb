@@ -2,6 +2,7 @@
 
 require 'sorbet-runtime'
 require 'async'
+require 'securerandom'
 
 # Load adapter infrastructure
 require_relative 'lm/errors'
@@ -277,11 +278,26 @@ module DSPy
       token_usage = extract_token_usage(response)
       
       if token_usage.any?
-        DSPy.log('lm.tokens', **token_usage.merge({
+        event_attributes = token_usage.merge({
           'gen_ai.system' => provider,
           'gen_ai.request.model' => model,
           'dspy.signature' => signature_class_name
-        }))
+        })
+        
+        # Add timing and request correlation if available
+        request_id = Thread.current[:dspy_request_id]
+        start_time = Thread.current[:dspy_request_start_time]
+        
+        if request_id
+          event_attributes['request_id'] = request_id
+        end
+        
+        if start_time
+          duration = Time.now - start_time
+          event_attributes['duration'] = duration
+        end
+        
+        DSPy.event('lm.tokens', event_attributes)
       end
       
       token_usage
@@ -351,15 +367,32 @@ module DSPy
     end
 
     def execute_raw_chat(messages, &streaming_block)
-      response = instrument_lm_request(messages, 'RawPrompt') do
-        # Convert messages to hash format for adapter
-        hash_messages = messages_to_hash_array(messages)
-        # Direct adapter call, no strategies or JSON parsing
-        adapter.chat(messages: hash_messages, signature: nil, &streaming_block)
-      end
+      # Generate unique request ID for tracking
+      request_id = SecureRandom.hex(8)
+      start_time = Time.now
       
-      # Return raw response content, not parsed JSON
-      response.content
+      # Store request context for correlation
+      Thread.current[:dspy_request_id] = request_id
+      Thread.current[:dspy_request_start_time] = start_time
+      
+      begin
+        response = instrument_lm_request(messages, 'RawPrompt') do
+          # Convert messages to hash format for adapter
+          hash_messages = messages_to_hash_array(messages)
+          # Direct adapter call, no strategies or JSON parsing
+          adapter.chat(messages: hash_messages, signature: nil, &streaming_block)
+        end
+        
+        # Emit the standard lm.tokens event (consistent with other LM calls)
+        emit_token_usage(response, 'RawPrompt')
+        
+        # Return raw response content, not parsed JSON
+        response.content
+      ensure
+        # Clean up thread-local storage
+        Thread.current[:dspy_request_id] = nil
+        Thread.current[:dspy_request_start_time] = nil
+      end
     end
     
     # Convert messages to normalized Message objects

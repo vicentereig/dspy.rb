@@ -250,6 +250,108 @@ RSpec.describe DSPy::LM do
         }.to raise_error(ArgumentError, /Invalid role/)
       end
     end
+
+    context 'event emission' do
+      after do
+        # Clean up listeners after each test
+        DSPy.events.clear_listeners
+      end
+      
+      it 'emits lm.tokens event with timing and correlation data' do
+        messages = [{ role: 'user', content: 'Test message' }]
+        
+        # Track emitted events
+        events_emitted = []
+        DSPy.events.subscribe('lm.tokens') do |event_name, attributes|
+          events_emitted << { event: event_name, attributes: attributes }
+        end
+        
+        allow(mock_adapter).to receive(:chat).and_call_original
+        
+        result = lm.raw_chat(messages)
+        
+        # Verify we got the lm.tokens event
+        expect(events_emitted.size).to eq(1)
+        
+        token_event = events_emitted.first
+        expect(token_event[:event]).to eq('lm.tokens')
+        
+        # Check token event attributes (standard lm.tokens structure)
+        attributes = token_event[:attributes]
+        expect(attributes[:input_tokens]).to eq(10)
+        expect(attributes[:output_tokens]).to eq(20)
+        expect(attributes[:total_tokens]).to eq(30)
+        expect(attributes['gen_ai.system']).to eq('openai')
+        expect(attributes['gen_ai.request.model']).to eq('gpt-4')
+        expect(attributes['dspy.signature']).to eq('RawPrompt')
+        
+        # Check new timing and correlation attributes
+        expect(attributes['request_id']).to be_a(String)
+        expect(attributes['request_id'].length).to eq(16) # SecureRandom.hex(8)
+        expect(attributes['duration']).to be_a(Float)
+        expect(attributes['duration']).to be > 0
+        
+        expect(result).to eq('This is a raw response without JSON')
+      end
+      
+      it 'handles responses without usage data gracefully' do
+        messages = [{ role: 'user', content: 'Test message' }]
+        
+        # Create a response without usage data
+        response_without_usage = DSPy::LM::Response.new(
+          content: 'Response without usage',
+          usage: nil,
+          metadata: DSPy::LM::OpenAIResponseMetadata.new(
+            provider: 'openai',
+            model: 'gpt-4'
+          )
+        )
+        mock_adapter.chat_response = response_without_usage
+        
+        # Track emitted events
+        events_emitted = []
+        DSPy.events.subscribe('lm.tokens') do |event_name, attributes|
+          events_emitted << { event: event_name, attributes: attributes }
+        end
+        
+        result = lm.raw_chat(messages)
+        
+        # No lm.tokens event should be emitted when there's no usage data
+        expect(events_emitted).to be_empty
+        expect(result).to eq('Response without usage')
+      end
+      
+      it 'works with the example from JSON benchmark document' do
+        messages = [{ role: 'user', content: 'Test message' }]
+        
+        # Simulate the pattern from the JSON benchmark document
+        timing_data = {}
+        
+        DSPy.events.subscribe('lm.tokens') do |event_name, attributes|
+          request_id = attributes['request_id']
+          if request_id
+            timing_data[request_id] = {
+              start_time: Time.now - attributes['duration'], # Reconstruct start time
+              duration: attributes['duration'],
+              model: attributes['gen_ai.request.model'],
+              tokens: attributes[:total_tokens] || 0
+            }
+          end
+        end
+        
+        result = lm.raw_chat(messages)
+        
+        # Verify the timing data structure matches what users expect
+        expect(timing_data.size).to eq(1)
+        request_data = timing_data.values.first
+        expect(request_data[:duration]).to be_a(Float)
+        expect(request_data[:model]).to eq('gpt-4')  # Fixed: should be gpt-4, not test-model
+        expect(request_data[:tokens]).to eq(30)
+        expect(request_data[:start_time]).to be_a(Time)
+        
+        expect(result).to eq('This is a raw response without JSON')
+      end
+    end
   end
 
   describe 'private methods' do

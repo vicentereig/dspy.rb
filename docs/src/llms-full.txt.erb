@@ -39,14 +39,34 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 
 ### Key Features
 
-- **Provider Support**: OpenAI, Anthropic, Ollama (via OpenAI compatibility)
+- **Provider Support**: OpenAI, Anthropic, Google Gemini, Ollama (via OpenAI compatibility)
 - **Type Safety**: Sorbet integration throughout
 - **Automatic JSON Extraction**: Provider-optimized strategies
 - **Composable Modules**: Chain, compose, and reuse
-- **Multimodal Support**: Text and image inputs with vision models
+- **Multimodal Support**: Text and image inputs with vision models (structured signatures and raw chat)
 - **Agent Systems**: ReAct, CodeAct, and custom agents
 - **Memory & State**: Persistent memory for stateful applications
-- **Observability**: APM integration, token tracking, performance monitoring
+- **Observability**: Automatic APM integration, token tracking, performance monitoring
+
+### Provider Compatibility
+
+| Feature | OpenAI | Anthropic | Gemini | Ollama |
+|---------|--------|-----------|--------|--------|
+| Text Generation | ✅ | ✅ | ✅ | ✅ |
+| Structured Output | ✅ | ✅ | ✅ | ✅ |
+| Vision (Raw Chat) | ✅ | ✅ | ✅ | ❌ |
+| Vision (Signatures) | ✅ | ✅ | ✅ | ❌ |
+| Image URLs | ✅ | ❌ | ❌ | ❌ |
+| Image Base64 | ✅ | ✅ | ✅ | ❌ |
+| Tool Calling | ✅ | ✅ | ✅ | Varies |
+
+### Current Limitations
+
+- **Streaming**: Not yet implemented for any provider
+- **Function Calling**: Tool support varies by model capability  
+- **Image URLs**: Only OpenAI supports direct URL references
+- **Local Models**: Limited multimodal support through Ollama
+- **Batch Processing**: Single request processing only
 
 ## Installation & Setup
 
@@ -84,6 +104,11 @@ DSPy.configure do |c|
   c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
 end
 
+# Or configure with Google Gemini
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('gemini/gemini-1.5-pro', api_key: ENV['GEMINI_API_KEY'])
+end
+
 # Or use Ollama for local models
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('ollama/llama3.2')  # No API key needed for local
@@ -96,6 +121,7 @@ end
 # LLM API Keys
 export OPENAI_API_KEY=sk-your-key-here
 export ANTHROPIC_API_KEY=sk-ant-your-key-here
+export GEMINI_API_KEY=your-gemini-key
 
 # Optional: Observability
 export OTEL_SERVICE_NAME=my-dspy-app
@@ -377,7 +403,7 @@ end
 ```ruby
 module = DSPy::ChainOfThought.new(SignatureClass)
 module.configure do |config|
-  config.lm = DSPy::LM.new('anthropic/claude-3-opus', 
+  config.lm = DSPy::LM.new('anthropic/claude-3-sonnet', 
     api_key: ENV['ANTHROPIC_API_KEY']
   )
 end
@@ -434,8 +460,8 @@ result = solver.call(problem: "What is the sum of squares from 1 to 10?")
 Tool-using agent with reasoning:
 
 ```ruby
-# Define tools
-calculator = DSPy::Tools::CalculatorTool.new
+# Define tools (you would implement CalculatorTool)
+calculator = YourCalculatorTool.new
 memory_tools = DSPy::Tools::MemoryToolset.to_tools
 
 # Create agent
@@ -720,10 +746,9 @@ response = lm.raw_chat do |messages|
 end
 ```
 
-# Use latest models
 **Anthropic (base64 only):**
 ```ruby  
-lm = DSPy::LM.new('anthropic/claude-4', api_key: ENV['ANTHROPIC_API_KEY'])
+lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
 
 # Must use base64 or raw data
 File.open('image.jpg', 'rb') do |file|
@@ -868,8 +893,8 @@ class ResearchAssistant < DSPy::Module
   def initialize
     super
     
-    # Create tools
-    calculator = DSPy::Tools::CalculatorTool.new
+    # Create tools (implement as needed for your use case)
+    calculator = YourCalculatorTool.new
     memory_tools = DSPy::Tools::MemoryToolset.to_tools
     
     @agent = DSPy::ReAct.new(
@@ -1288,12 +1313,25 @@ puts "Optimization completed #{result.history.length} trials"
 
 ### Observability
 
+**Configuration Requirements:**
+
+Langfuse integration requires these environment variables:
+```bash
+export LANGFUSE_PUBLIC_KEY=pk_your_public_key
+export LANGFUSE_SECRET_KEY=sk_your_secret_key
+# Optional: defaults to https://cloud.langfuse.com
+export LANGFUSE_HOST=https://your-langfuse-instance.com  
+```
+
+**Basic Setup:**
+
 ```ruby
-# Enable observability
+# Enable structured logging
 DSPy.configure do |c|
   c.logger = Dry.Logger(:dspy, formatter: :json)
 end
 
+# Observability automatically activates when Langfuse env vars are present
 # Span tracking emitted for:
 # - llm.generate
 # - dspy.predict
@@ -1345,6 +1383,72 @@ File.foreach("log/dspy.log") do |line|
     puts "Model: #{event["gen_ai.request.model"]}"
   end
 end
+```
+
+### Event System
+
+DSPy.rb includes a comprehensive event system for monitoring and extending functionality:
+
+**Dual Event APIs:**
+
+```ruby
+# Simple logging (legacy)
+DSPy.log('custom.event', data: 'value', context: 'info')
+
+# Structured event system (recommended)
+DSPy.event('custom.event', { data: 'value', context: 'info' })
+```
+
+**Event Subscription:**
+
+```ruby
+# Subscribe to specific events
+subscription_id = DSPy.events.subscribe('llm.*') do |event_name, attributes|
+  puts "LLM Event: #{event_name}"
+  puts "Attributes: #{attributes.inspect}"
+end
+
+# Subscribe to all events
+all_events_id = DSPy.events.subscribe('*') do |event_name, attributes|
+  # Custom processing for all events
+  MyCustomLogger.log(event_name, attributes)
+end
+
+# Unsubscribe when done
+DSPy.events.unsubscribe(subscription_id)
+```
+
+**Built-in Events:**
+
+- `llm.generate` - LLM API calls with token usage and timing
+- `dspy.predict` - Prediction operations with inputs/outputs
+- `module.forward` - Module execution with span tracking  
+- `tool.execute` - Tool invocations in agents
+- `span.start` / `span.end` - OpenTelemetry span lifecycle
+
+**Custom Event Subscribers:**
+
+```ruby
+class MetricsCollector
+  def initialize
+    @subscription = DSPy.events.subscribe('llm.*') do |event, attrs|
+      collect_llm_metrics(event, attrs)
+    end
+  end
+  
+  private
+  
+  def collect_llm_metrics(event, attributes)
+    # Custom metrics collection logic
+    if event == 'llm.generate'
+      tokens = attributes['gen_ai.usage.completion_tokens'] || 0
+      @total_tokens += tokens
+    end
+  end
+end
+
+# Start collecting
+metrics = MetricsCollector.new
 ```
 
 ### Registry & Storage
@@ -1679,7 +1783,8 @@ end
 ### Content Moderation System
 
 ```ruby
-# Complex content analysis
+# Example: Complex content analysis system
+# Note: This demonstrates the architecture - implement signature classes as needed
 class ContentModerator < DSPy::Module
   class ViolationType < T::Enum
     enums do
@@ -1701,10 +1806,11 @@ class ContentModerator < DSPy::Module
   def initialize
     super
     
-    @classifier = DSPy::ChainOfThought.new(ContentClassification)
+    # Note: These are example signature classes - implement as needed
+    @classifier = DSPy::ChainOfThought.new(YourContentClassificationSignature)
     @fact_checker = DSPy::ReAct.new(
-      FactChecking,
-      tools: [WebSearchTool.new]
+      YourFactCheckingSignature,
+      tools: [your_web_search_tool]
     )
   end
   
