@@ -105,7 +105,8 @@ RSpec.describe "Gemini Structured Outputs Integration" do
     it "selects Gemini structured output strategy for supported models" do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      # Use gemini-1.5-pro which actually supports structured outputs
+      lm = DSPy::LM.new('gemini/gemini-1.5-pro', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       selector = DSPy::LM::StrategySelector.new(lm.adapter, GeminiSentimentAnalysis)
       
       selected = selector.select
@@ -114,8 +115,8 @@ RSpec.describe "Gemini Structured Outputs Integration" do
     end
     
     it "falls back to enhanced prompting for unsupported models" do
-      # Test with structured_outputs=false to simulate unsupported model
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: false)
+      # Test with gemini-1.5-flash which is JSON-only, not full schema support
+      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       selector = DSPy::LM::StrategySelector.new(lm.adapter, GeminiSentimentAnalysis)
       
       selected = selector.select
