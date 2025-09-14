@@ -113,7 +113,7 @@ RSpec.describe DSPy::LM::Strategies::GeminiStructuredOutputStrategy do
       
       expect(request_params[:generation_config]).to eq({
         response_mime_type: 'application/json',
-        response_schema: converted_schema
+        response_json_schema: converted_schema
       })
     end
     
@@ -173,7 +173,7 @@ RSpec.describe DSPy::LM::Strategies::GeminiStructuredOutputStrategy do
       let(:error) { StandardError.new('Invalid schema format') }
       
       it 'handles the error and returns true' do
-        expect(DSPy.logger).to receive(:warn).with(/Gemini structured output failed/)
+        expect(DSPy.logger).to receive(:debug).with(/Gemini structured output failed/)
         expect(strategy.handle_error(error)).to eq(true)
       end
     end
@@ -182,7 +182,7 @@ RSpec.describe DSPy::LM::Strategies::GeminiStructuredOutputStrategy do
       let(:error) { StandardError.new('generation_config parameter invalid') }
       
       it 'handles the error and returns true' do
-        expect(DSPy.logger).to receive(:warn).with(/Gemini structured output failed/)
+        expect(DSPy.logger).to receive(:debug).with(/Gemini structured output failed/)
         expect(strategy.handle_error(error)).to eq(true)
       end
     end
