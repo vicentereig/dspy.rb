@@ -50,13 +50,8 @@ ensure
   if original_allow_setting
     WebMock.allow_net_connect!
   else
-    # Block all network connections except telemetry endpoints
-    # Use regex patterns to match full URLs including paths
-    WebMock.disable_net_connect!(allow: [
-      'collector.newrelic.com',
-      /cloud\.langfuse\.com/,
-      /.*\.langfuse\.com/  # Allow any langfuse subdomain
-    ])
+    # Block all network connections - no telemetry allowed in tests
+    WebMock.disable_net_connect!
   end
 end
 
@@ -65,8 +60,7 @@ VCR.configure do |config|
   config.hook_into :webmock
   config.configure_rspec_metadata!
 
-  # Ignore telemetry services
-  config.ignore_hosts 'collector.newrelic.com', 'cloud.langfuse.com'
+  # No telemetry services ignored - block everything
 
   # Filter out sensitive information
   config.filter_sensitive_data('<OPENAI_API_KEY>') { ENV['OPENAI_API_KEY'] }

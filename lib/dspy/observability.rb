@@ -15,6 +15,13 @@ module DSPy
         public_key = ENV['LANGFUSE_PUBLIC_KEY']
         secret_key = ENV['LANGFUSE_SECRET_KEY']
         
+        # Skip OTLP configuration in test environment UNLESS Langfuse credentials are explicitly provided
+        # This allows observability tests to run while protecting general tests from network calls
+        if (ENV['RACK_ENV'] == 'test' || ENV['RAILS_ENV'] == 'test' || defined?(RSpec)) && !(public_key && secret_key)
+          DSPy.log('observability.disabled', reason: 'Test environment detected - OTLP disabled')
+          return
+        end
+        
         unless public_key && secret_key
           return
         end
