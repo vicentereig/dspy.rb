@@ -2,6 +2,7 @@
 
 require 'sorbet-runtime'
 require 'dry-configurable'
+require_relative 'context'
 
 module DSPy
   class Module
@@ -21,8 +22,24 @@ module DSPy
         .returns(T.type_parameter(:O))
     end
     def forward(**input_values)
-      # Cast the result of forward_untyped to the expected output type
-      T.cast(forward_untyped(**input_values), T.type_parameter(:O))
+      # Create span for this module's execution
+      DSPy::Context.with_span(
+        operation: "#{self.class.name}.forward",
+        'langfuse.observation.type' => 'span',
+        'langfuse.observation.input' => input_values.to_json,
+        'dspy.module' => self.class.name
+      ) do |span|
+        result = forward_untyped(**input_values)
+        
+        # Add output to span
+        if span && result
+          output_json = result.respond_to?(:to_h) ? result.to_h.to_json : result.to_json rescue result.to_s
+          span.set_attribute('langfuse.observation.output', output_json)
+        end
+        
+        # Cast the result of forward_untyped to the expected output type
+        T.cast(result, T.type_parameter(:O))
+      end
     end
 
     # The implementation method that subclasses must override

@@ -112,8 +112,8 @@ class CoffeeShopAgent < DSPy::Module
   end
   
   def handle_customer(request:, mood: CustomerMood::Neutral, time: TimeOfDay::Afternoon)
-    # One call handles everything!
-    result = @decision_maker.call(
+    # Use Module's forward method for automatic span creation
+    result = forward(
       customer_request: request,
       customer_mood: mood,
       time_of_day: time
@@ -140,6 +140,15 @@ class CoffeeShopAgent < DSPy::Module
     
     puts "\n💬 Response to customer: #{result.friendly_response}"
     puts "\n" + "="*60 + "\n"
+  end
+  
+  def forward_untyped(**input_values)
+    # Module#forward handles span creation, we just do the agent logic
+    @decision_maker.call(
+      customer_request: input_values[:customer_request],
+      customer_mood: input_values[:customer_mood],
+      time_of_day: input_values[:time_of_day]
+    )
   end
 end
 

@@ -83,46 +83,38 @@ module DSPy
     sig { returns(T.class_of(DSPy::Signature)) }
     attr_reader :original_signature
 
-    # Override forward_untyped to add ChainOfThought-specific analysis and tracing
+    # Override forward_untyped to add ChainOfThought-specific analysis
+    # Let Module#forward handle the ChainOfThought span creation automatically
     sig { override.params(input_values: T.untyped).returns(T.untyped) }
     def forward_untyped(**input_values)
-      # Wrap in chain-specific span tracking (overrides parent's span attributes)
-      DSPy::Context.with_span(
-        operation: "#{self.class.name}.forward",
-        'langfuse.observation.type' => 'span',  # Use 'span' for proper timing
-        'langfuse.observation.input' => input_values.to_json,
-        'dspy.module' => 'ChainOfThought',
-        'dspy.module_type' => 'chain_of_thought',  # Semantic identifier
-        'dspy.signature' => @original_signature.name
-      ) do |span|
-        # Call parent prediction logic (which will create its own nested span)
-        prediction_result = super(**input_values)
-        
-        # Enhance span with reasoning data
-        if span && prediction_result
-          # Include reasoning in output for chain observation
-          output_with_reasoning = if prediction_result.respond_to?(:reasoning) && prediction_result.reasoning
-            output_hash = prediction_result.respond_to?(:to_h) ? prediction_result.to_h : {}
-            output_hash.merge(reasoning: prediction_result.reasoning)
-          else
-            prediction_result.respond_to?(:to_h) ? prediction_result.to_h : prediction_result.to_s
-          end
-          
-          span.set_attribute('langfuse.observation.output', DSPy::Utils::Serialization.to_json(output_with_reasoning))
-          
-          # Add reasoning metrics
-          if prediction_result.respond_to?(:reasoning) && prediction_result.reasoning
-            span.set_attribute('cot.reasoning_length', prediction_result.reasoning.length)
-            span.set_attribute('cot.has_reasoning', true)
-            span.set_attribute('cot.reasoning_steps', count_reasoning_steps(prediction_result.reasoning))
-          end
+      # Create a Predict instance and call its forward method (which will create Predict span via Module#forward)
+      # We can't call super.forward because that would go to Module#forward_untyped, not Module#forward
+      
+      # Create a temporary Predict instance with our enhanced signature to get the prediction
+      predict_instance = DSPy::Predict.new(@signature_class)
+      predict_instance.config.lm = self.lm  # Use the same LM configuration
+      
+      # Call predict's forward method, which will create the Predict span
+      prediction_result = predict_instance.forward(**input_values)
+      
+      # Add ChainOfThought-specific analysis and events
+      if DSPy::Observability.enabled? && prediction_result
+        # Add reasoning metrics via events
+        if prediction_result.respond_to?(:reasoning) && prediction_result.reasoning
+          DSPy.event('chain_of_thought.reasoning_metrics', {
+            'cot.reasoning_length' => prediction_result.reasoning.length,
+            'cot.has_reasoning' => true,
+            'cot.reasoning_steps' => count_reasoning_steps(prediction_result.reasoning),
+            'dspy.module_type' => 'chain_of_thought',
+            'dspy.signature' => @original_signature.name
+          })
         end
-        
-        # Analyze reasoning (emits events for backwards compatibility)
-        analyze_reasoning(prediction_result)
-        
-        prediction_result
       end
+      
+      # Analyze reasoning (emits events for backwards compatibility)
+      analyze_reasoning(prediction_result)
+      
+      prediction_result
     end
 
     private

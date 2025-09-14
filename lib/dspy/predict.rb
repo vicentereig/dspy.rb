@@ -131,46 +131,32 @@ module DSPy
       with_prompt(@prompt.add_examples(examples))
     end
 
-    sig { override.params(kwargs: T.untyped).returns(T.type_parameter(:O)) }
-    def forward(**kwargs)
-      @last_input_values = kwargs.clone
-      T.cast(forward_untyped(**kwargs), T.type_parameter(:O))
-    end
+    # Remove forward override to let Module#forward handle span creation
 
     sig { params(input_values: T.untyped).returns(T.untyped) }
     def forward_untyped(**input_values)
-      # Wrap prediction in span tracking
-      DSPy::Context.with_span(
-        operation: "#{self.class.name}.forward",
-        'langfuse.observation.type' => 'span',
-        'langfuse.observation.input' => input_values.to_json,
-        'dspy.module' => self.class.name,
-        'dspy.signature' => @signature_class.name
-      ) do |span|
-        # Validate input
-        validate_input_struct(input_values)
-        
-        # Check if LM is configured
-        current_lm = lm
-        if current_lm.nil?
-          raise DSPy::ConfigurationError.missing_lm(self.class.name)
-        end
-        
-        # Call LM and process response
-        output_attributes = current_lm.chat(self, input_values)
-        processed_output = process_lm_output(output_attributes)
-        
-        # Create combined result struct
-        prediction_result = create_prediction_result(input_values, processed_output)
-        
-        # Add output to span
-        if span && prediction_result
-          output_hash = prediction_result.respond_to?(:to_h) ? prediction_result.to_h : prediction_result.to_s
-          span.set_attribute('langfuse.observation.output', DSPy::Utils::Serialization.to_json(output_hash))
-        end
-        
-        prediction_result
+      # Module#forward handles span creation, we just do the prediction logic
+      
+      # Store input values for optimization
+      @last_input_values = input_values.clone
+      
+      # Validate input
+      validate_input_struct(input_values)
+      
+      # Check if LM is configured
+      current_lm = lm
+      if current_lm.nil?
+        raise DSPy::ConfigurationError.missing_lm(self.class.name)
       end
+      
+      # Call LM and process response
+      output_attributes = current_lm.chat(self, input_values)
+      processed_output = process_lm_output(output_attributes)
+      
+      # Create combined result struct
+      prediction_result = create_prediction_result(input_values, processed_output)
+      
+      prediction_result
     end
 
     private

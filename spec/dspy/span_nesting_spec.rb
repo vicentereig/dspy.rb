@@ -104,4 +104,84 @@ RSpec.describe "Span Nesting in DSPy::Predict" do
     expect(predict_span[:context_stack_length]).to be > outer_span[:context_stack_length]
     expect(llm_span[:context_stack_length]).to be > predict_span[:context_stack_length]
   end
+  
+  context "ChainOfThought span nesting" do
+    let(:chain_signature_class) do
+      Class.new(DSPy::Signature) do
+        description "Test signature for ChainOfThought span nesting"
+        
+        input do
+          const :query, String
+        end
+        
+        output do
+          const :answer, String
+        end
+      end
+    end
+    
+    it "should create only ONE span for ChainOfThought, not duplicate spans" do
+      # Mock LM to return reasoning + answer
+      allow(mock_lm).to receive(:chat) do |inference_module, input_values|
+        DSPy::Context.with_span(operation: 'llm.generate', 'langfuse.observation.type' => 'generation') do
+          { reasoning: "Step by step thinking", answer: "42" }
+        end
+      end
+      
+      chain_of_thought = DSPy::ChainOfThought.new(chain_signature_class)
+      chain_of_thought.call(query: "What is the answer?")
+      
+      # Count span calls by operation
+      chain_spans = captured_context_calls.select { |s| s[:operation] == "DSPy::ChainOfThought.forward" }
+      predict_spans = captured_context_calls.select { |s| s[:operation] == "DSPy::Predict.forward" }
+      llm_spans = captured_context_calls.select { |s| s[:operation] == "llm.generate" }
+      
+      # Should have 1 ChainOfThought span, 1 Predict span (via super), and 1 llm.generate span
+      expect(chain_spans.length).to eq(1), "Should have exactly 1 ChainOfThought.forward span"
+      expect(predict_spans.length).to eq(1), "Should have exactly 1 DSPy::Predict.forward span (via super)"
+      expect(llm_spans.length).to eq(1), "Should have exactly 1 llm.generate span"
+      
+      # llm.generate should be nested under ChainOfThought
+      chain_span = chain_spans.first
+      llm_span = llm_spans.first
+      
+      expect(llm_span[:context_trace_id]).to eq(chain_span[:context_trace_id])
+      expect(llm_span[:context_stack_length]).to be > chain_span[:context_stack_length]
+    end
+    
+    it "ensures ChainOfThought spans are properly traced in Langfuse hierarchy" do
+      allow(mock_lm).to receive(:chat) do |inference_module, input_values|
+        DSPy::Context.with_span(operation: 'llm.generate', 'langfuse.observation.type' => 'generation') do
+          { reasoning: "Logical steps", answer: "result" }
+        end
+      end
+      
+      # Test with an outer application span (like CoffeeShopAgent would create)
+      DSPy::Context.with_span(operation: 'CoffeeShopAgent.handle_customer') do
+        chain_of_thought = DSPy::ChainOfThought.new(chain_signature_class)
+        chain_of_thought.call(query: "Test query")
+      end
+      
+      # Should have proper hierarchy: CoffeeShopAgent -> ChainOfThought -> llm.generate
+      app_spans = captured_context_calls.select { |s| s[:operation] == "CoffeeShopAgent.handle_customer" }
+      chain_spans = captured_context_calls.select { |s| s[:operation] == "DSPy::ChainOfThought.forward" }
+      llm_spans = captured_context_calls.select { |s| s[:operation] == "llm.generate" }
+      
+      expect(app_spans.length).to eq(1)
+      expect(chain_spans.length).to eq(1)
+      expect(llm_spans.length).to eq(1)
+      
+      app_span = app_spans.first
+      chain_span = chain_spans.first
+      llm_span = llm_spans.first
+      
+      # All should share same trace
+      expect(chain_span[:context_trace_id]).to eq(app_span[:context_trace_id])
+      expect(llm_span[:context_trace_id]).to eq(app_span[:context_trace_id])
+      
+      # Stack depth should increase properly
+      expect(chain_span[:context_stack_length]).to be > app_span[:context_stack_length]
+      expect(llm_span[:context_stack_length]).to be > chain_span[:context_stack_length]
+    end
+  end
 end
