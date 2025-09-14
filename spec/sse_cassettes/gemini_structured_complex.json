@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "post",
-        "uri": "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=<GEMINI_API_KEY>",
+        "uri": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=<GEMINI_API_KEY>",
         "body": {
           "contents": [
             {
