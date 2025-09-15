@@ -421,7 +421,7 @@ module DSPy
 
     sig { params(iteration: Integer, thought: String, action: String, action_input: T.untyped, observation: String, tools_used: T::Array[String]).void }
     def emit_iteration_complete_event(iteration, thought, action, action_input, observation, tools_used)
-      DSPy.log('react.iteration_complete', **{
+      DSPy.event('react.iteration_complete', {
         'react.iteration' => iteration,
         'react.thought' => thought,
         'react.action' => action,
@@ -434,7 +434,7 @@ module DSPy
     sig { params(iterations_count: Integer, final_answer: T.nilable(String), tools_used: T::Array[String], history: T::Array[HistoryEntry]).void }
     def handle_max_iterations_if_needed(iterations_count, final_answer, tools_used, history)
       if iterations_count >= @max_iterations && final_answer.nil?
-        DSPy.log('react.max_iterations', **{
+        DSPy.event('react.max_iterations', {
           'react.iteration_count' => iterations_count,
           'react.max_iterations' => @max_iterations,
           'react.tools_used' => tools_used.uniq,

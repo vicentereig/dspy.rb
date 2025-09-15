@@ -355,7 +355,7 @@ module DSPy
 
     sig { params(iteration: Integer, thought: String, ruby_code: String, execution_result: T.nilable(String), error_message: T.nilable(String)).void }
     def emit_iteration_complete_event(iteration, thought, ruby_code, execution_result, error_message)
-      DSPy.log('codeact.iteration_complete', **{
+      DSPy.event('codeact.iteration_complete', {
         'codeact.iteration' => iteration,
         'codeact.thought' => thought,
         'codeact.ruby_code' => ruby_code,
@@ -368,7 +368,7 @@ module DSPy
     sig { params(iterations_count: Integer, final_answer: T.nilable(String), history: T::Array[CodeActHistoryEntry]).void }
     def handle_max_iterations_if_needed(iterations_count, final_answer, history)
       if iterations_count >= @max_iterations && final_answer.nil?
-        DSPy.log('codeact.max_iterations', **{
+        DSPy.event('codeact.max_iterations', {
           'codeact.iteration_count' => iterations_count,
           'codeact.max_iterations' => @max_iterations,
           'codeact.final_history_length' => history.length

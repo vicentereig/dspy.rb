@@ -44,18 +44,13 @@ RSpec.describe 'ReAct Observability Integration' do
         { thought: 'I can answer directly', action: 'finish', action_input: '8' }
       )
       
-      # Capture span.start events
+      # Capture span.start events (following pattern from context_spec.rb)
       allow(DSPy).to receive(:log) do |event_name, **attributes|
         logged_events << { event: event_name, attributes: attributes } if event_name == 'span.start'
-      end.and_call_original
+      end
 
       # Execute ReAct agent
       react_agent.forward(question: "What is 5 + 3?")
-      
-      puts "Logged events count: #{logged_events.length}"
-      logged_events.each_with_index do |event, i|
-        puts "#{i}: #{event[:attributes]['langfuse.observation.type']} - #{event[:attributes][:operation]}"
-      end
       
       # Find agent spans
       agent_spans = logged_events.select do |event|
@@ -100,10 +95,10 @@ RSpec.describe 'ReAct Observability Integration' do
         end
       end
       
-      # Capture span.start events
+      # Capture span.start events (following pattern from context_spec.rb)
       allow(DSPy).to receive(:log) do |event_name, **attributes|
         logged_events << { event: event_name, attributes: attributes } if event_name == 'span.start'
-      end.and_call_original
+      end
 
       # Execute ReAct agent
       react_agent.forward(question: "What is 5 + 3?")

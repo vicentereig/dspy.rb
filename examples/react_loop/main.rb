@@ -35,10 +35,10 @@ class CalculatorTool < DSPy::Tools::Base
     return "Error: Unknown operation '#{operation}'" if op_enum.nil?
 
     case op_enum
-    when CalculatorOperation::Add, CalculatorOperation::Addition then num1 + num2
-    when CalculatorOperation::Subtract, CalculatorOperation::Subtraction then num1 - num2
-    when CalculatorOperation::Multiply, CalculatorOperation::Multiplication then num1 * num2
-    when CalculatorOperation::Divide, CalculatorOperation::Division
+    when CalculatorOperation::Add then num1 + num2
+    when CalculatorOperation::Subtract then num1 - num2
+    when CalculatorOperation::Multiply then num1 * num2
+    when CalculatorOperation::Divide
       return "Error: Cannot divide by zero" if num2 == 0
       num1 / num2
     else
