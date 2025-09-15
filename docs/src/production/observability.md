@@ -108,6 +108,117 @@ tracker = TokenTracker.new
 # Now automatically tracks token usage from any LLM events
 ```
 
+## Observation Types
+
+DSPy.rb uses Langfuse's semantic observation types to classify spans correctly in observability systems. These types provide meaningful categorization for different kinds of operations:
+
+### Observation Type Classification
+
+```ruby
+# DSPy automatically selects appropriate observation types based on the module:
+
+module_class = DSPy::ChainOfThought
+observation_type = DSPy::ObservationType.for_module_class(module_class)
+# => DSPy::ObservationType::Chain
+
+# Available observation types:
+DSPy::ObservationType::Generation  # Direct LLM calls
+DSPy::ObservationType::Agent      # ReAct, CodeAct agents
+DSPy::ObservationType::Tool       # Tool invocations  
+DSPy::ObservationType::Chain      # ChainOfThought reasoning
+DSPy::ObservationType::Retriever  # Memory/document search
+DSPy::ObservationType::Embedding  # Embedding generation
+DSPy::ObservationType::Evaluator  # Evaluation modules
+DSPy::ObservationType::Span       # Generic operations
+DSPy::ObservationType::Event      # Event emissions
+```
+
+### When to Emit Each Type
+
+**Generation** (`generation`):
+- Direct LLM API calls (OpenAI, Anthropic, etc.)
+- Raw prompt-response interactions
+- Core inference operations
+
+```ruby
+# Automatically used for:
+DSPy::LM.new('openai/gpt-4').generate("What is 2+2?")
+# Creates span with langfuse.observation.type = 'generation'
+```
+
+**Agent** (`agent`):
+- Multi-step reasoning agents (ReAct, CodeAct)
+- Iterative decision-making processes
+- Tool-using autonomous agents
+
+```ruby
+# Automatically used for:
+DSPy::ReAct.new(signature, tools: [calculator]).forward(question: "Calculate 15 * 23")
+# Creates spans with langfuse.observation.type = 'agent'
+```
+
+**Tool** (`tool`):
+- External tool invocations
+- Function calls within agents
+- API integrations
+
+```ruby
+# Automatically used for:
+# Tool calls within ReAct agents get langfuse.observation.type = 'tool'
+```
+
+**Chain** (`chain`):
+- Sequential reasoning operations
+- ChainOfThought modules
+- Multi-step logical processes
+
+```ruby
+# Automatically used for:
+DSPy::ChainOfThought.new(signature).forward(question: "Explain gravity")
+# Creates spans with langfuse.observation.type = 'chain'
+```
+
+**Retriever** (`retriever`):
+- Memory/document search operations
+- RAG retrieval steps
+- Similarity matching
+
+```ruby
+# Automatically used for:
+memory_manager.search_memories("find documents about Ruby")
+# Creates spans with langfuse.observation.type = 'retriever'
+```
+
+**Embedding** (`embedding`):
+- Text embedding generation
+- Vector space operations
+- Semantic encoding
+
+```ruby
+# Automatically used for:
+embedding_engine.embed("Convert this text to vectors")
+# Creates spans with langfuse.observation.type = 'embedding'
+```
+
+### Custom Observation Types
+
+For custom modules, specify observation types manually:
+
+```ruby
+class CustomModule < DSPy::Module
+  def forward_untyped(**input_values)
+    DSPy::Context.with_span(
+      operation: 'custom.process',
+      **DSPy::ObservationType::Evaluator.langfuse_attributes,  # Use evaluator type
+      'custom.attribute' => 'value'
+    ) do |span|
+      # Your custom logic
+      result
+    end
+  end
+end
+```
+
 ## Built-in Events
 
 DSPy modules automatically emit events following OpenTelemetry semantic conventions:

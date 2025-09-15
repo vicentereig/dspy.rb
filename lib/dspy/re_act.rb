@@ -241,9 +241,10 @@ module DSPy
     # Executes a single iteration of the ReAct loop
     sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer, tools_used: T::Array[String], last_observation: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
     def execute_single_iteration(input_struct, history, available_tools_desc, iteration, tools_used, last_observation)
-      # Track each iteration with span
+      # Track each iteration with agent span
       DSPy::Context.with_span(
         operation: 'react.iteration',
+        **DSPy::ObservationType::Agent.langfuse_attributes,
         'dspy.module' => 'ReAct',
         'react.iteration' => iteration,
         'react.max_iterations' => @max_iterations,
@@ -355,6 +356,7 @@ module DSPy
       if action && @tools[action.downcase]
         DSPy::Context.with_span(
           operation: 'react.tool_call',
+          **DSPy::ObservationType::Tool.langfuse_attributes,
           'dspy.module' => 'ReAct',
           'react.iteration' => iteration,
           'tool.name' => action.downcase,

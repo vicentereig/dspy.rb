@@ -36,17 +36,33 @@ module DSPy
 
       sig { override.params(text: String).returns(T::Array[Float]) }
       def embed(text)
-        ensure_ready!
-        
-        # Preprocess text
-        cleaned_text = preprocess_text(text)
-        
-        # Generate embedding
-        result = @model.call(cleaned_text)
-        
-        # Extract embedding array and normalize
-        embedding = result.first.to_a
-        normalize_vector(embedding)
+        DSPy::Context.with_span(
+          operation: 'embedding.generate',
+          **DSPy::ObservationType::Embedding.langfuse_attributes,
+          'embedding.model' => @model_name,
+          'embedding.input' => text[0..200], # Truncate for logging
+          'embedding.input_length' => text.length
+        ) do |span|
+          ensure_ready!
+          
+          # Preprocess text
+          cleaned_text = preprocess_text(text)
+          
+          # Generate embedding
+          result = @model.call(cleaned_text)
+          
+          # Extract embedding array and normalize
+          embedding = result.first.to_a
+          normalized = normalize_vector(embedding)
+          
+          # Add embedding metadata to span
+          if span
+            span.set_attribute('embedding.dimension', normalized.length)
+            span.set_attribute('embedding.magnitude', Math.sqrt(normalized.sum { |x| x * x }))
+          end
+          
+          normalized
+        end
       end
 
       sig { override.params(texts: T::Array[String]).returns(T::Array[T::Array[Float]]) }

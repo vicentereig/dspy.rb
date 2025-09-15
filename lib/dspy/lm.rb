@@ -236,7 +236,7 @@ module DSPy
       # Wrap LLM call in span tracking
       response = DSPy::Context.with_span(
         operation: 'llm.generate',
-        'langfuse.observation.type' => 'generation',
+        **DSPy::ObservationType::Generation.langfuse_attributes,
         'langfuse.observation.input' => input_json,
         'gen_ai.system' => provider,
         'gen_ai.request.model' => model,

@@ -23,9 +23,10 @@ module DSPy
     end
     def forward(**input_values)
       # Create span for this module's execution
+      observation_type = DSPy::ObservationType.for_module_class(self.class)
       DSPy::Context.with_span(
         operation: "#{self.class.name}.forward",
-        'langfuse.observation.type' => 'span',
+        **observation_type.langfuse_attributes,
         'langfuse.observation.input' => input_values.to_json,
         'dspy.module' => self.class.name
       ) do |span|

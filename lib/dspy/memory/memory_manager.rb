@@ -95,15 +95,32 @@ module DSPy
       # Semantic search using embeddings
       sig { params(query: String, user_id: T.nilable(String), limit: T.nilable(Integer), threshold: T.nilable(Float)).returns(T::Array[MemoryRecord]) }
       def search_memories(query, user_id: nil, limit: 10, threshold: 0.5)
-        # Generate embedding for the query
-        query_embedding = @embedding_engine.embed(query)
-        
-        # Perform vector search if supported
-        if @store.supports_vector_search?
-          @store.vector_search(query_embedding, user_id: user_id, limit: limit, threshold: threshold)
-        else
-          # Fallback to text search
-          @store.search(query, user_id: user_id, limit: limit)
+        DSPy::Context.with_span(
+          operation: 'memory.search',
+          **DSPy::ObservationType::Retriever.langfuse_attributes,
+          'retriever.query' => query,
+          'retriever.user_id' => user_id,
+          'retriever.limit' => limit,
+          'retriever.threshold' => threshold
+        ) do |span|
+          # Generate embedding for the query
+          query_embedding = @embedding_engine.embed(query)
+          
+          # Perform vector search if supported
+          results = if @store.supports_vector_search?
+            @store.vector_search(query_embedding, user_id: user_id, limit: limit, threshold: threshold)
+          else
+            # Fallback to text search
+            @store.search(query, user_id: user_id, limit: limit)
+          end
+          
+          # Add retrieval results to span
+          if span
+            span.set_attribute('retriever.results_count', results.length)
+            span.set_attribute('retriever.results', results.map { |r| { id: r.id, content: r.content[0..100] } }.to_json)
+          end
+          
+          results
         end
       end
 
