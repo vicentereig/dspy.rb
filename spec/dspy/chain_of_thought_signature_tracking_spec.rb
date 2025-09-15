@@ -41,9 +41,9 @@ RSpec.describe 'ChainOfThought signature name tracking' do
     # Create a simple test to verify the logging uses the correct signature name
     cot = DSPy::ChainOfThought.new(test_signature)
     
-    # Mock DSPy.log to capture the event
+    # Mock DSPy.event to capture the event
     logged_event = nil
-    allow(DSPy).to receive(:log) do |event_name, **attrs|
+    allow(DSPy).to receive(:event) do |event_name, attrs|
       if event_name == 'chain_of_thought.reasoning_complete'
         logged_event = attrs
       end
