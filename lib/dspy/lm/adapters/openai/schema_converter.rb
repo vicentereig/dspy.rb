@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "sorbet-runtime"
-require_relative "../../cache_manager"
 
 module DSPy
   class LM
@@ -22,19 +21,6 @@ module DSPy
 
           sig { params(signature_class: T.class_of(DSPy::Signature), name: T.nilable(String), strict: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
           def self.to_openai_format(signature_class, name: nil, strict: true)
-            # Build cache params from the method parameters
-            cache_params = { strict: strict }
-            cache_params[:name] = name if name
-            
-            # Check cache first
-            cache_manager = DSPy::LM.cache_manager
-            cached_schema = cache_manager.get_schema(signature_class, "openai", cache_params)
-            
-            if cached_schema
-              DSPy.logger.debug("Using cached schema for #{signature_class.name}")
-              return cached_schema
-            end
-            
             # Get the output JSON schema from the signature class
             output_schema = signature_class.output_json_schema
             
@@ -62,7 +48,7 @@ module DSPy
             end
 
             # Wrap in OpenAI's required format
-            result = {
+            {
               type: "json_schema",
               json_schema: {
                 name: schema_name,
@@ -70,11 +56,6 @@ module DSPy
                 schema: openai_schema
               }
             }
-            
-            # Cache the result with same params
-            cache_manager.cache_schema(signature_class, "openai", result, cache_params)
-            
-            result
           end
 
           # Convert oneOf to anyOf if safe (discriminated unions), otherwise raise error
@@ -139,25 +120,11 @@ module DSPy
 
           sig { params(model: String).returns(T::Boolean) }
           def self.supports_structured_outputs?(model)
-            # Check cache first
-            cache_manager = DSPy::LM.cache_manager
-            cached_result = cache_manager.get_capability(model, "structured_outputs")
-            
-            if !cached_result.nil?
-              DSPy.logger.debug("Using cached capability check for #{model}")
-              return cached_result
-            end
-            
             # Extract base model name without provider prefix
             base_model = model.sub(/^openai\//, "")
             
             # Check if it's a supported model or a newer version
-            result = STRUCTURED_OUTPUT_MODELS.any? { |supported| base_model.start_with?(supported) }
-            
-            # Cache the result
-            cache_manager.cache_capability(model, "structured_outputs", result)
-            
-            result
+            STRUCTURED_OUTPUT_MODELS.any? { |supported| base_model.start_with?(supported) }
           end
 
           sig { params(schema: T::Hash[Symbol, T.untyped]).returns(T::Array[String]) }

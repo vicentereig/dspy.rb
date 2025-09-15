@@ -360,32 +360,14 @@ def execute_with_retry
 end
 ```
 
-### Performance Optimizations
+### Performance Characteristics
 
-DSPy.rb caches schemas and capability checks to speed things up:
+Schema conversion and capability checks are highly optimized operations:
 
-```ruby
-# Schema caching (1 hour TTL)
-cache_manager = DSPy::LM.cache_manager
-cached_schema = cache_manager.get_schema(signature_class, "openai", cache_params)
+- **Schema conversion**: Direct hash transformation (microseconds)
+- **Capability checks**: Simple string matching against model arrays (nanoseconds)
 
-if cached_schema
-  DSPy.logger.debug("Using cached schema for #{signature_class.name}")
-  return cached_schema
-end
-
-# Capability caching (24 hour TTL) 
-cached_result = cache_manager.get_capability(model, "structured_outputs")
-
-if !cached_result.nil?
-  DSPy.logger.debug("Using cached capability check for #{model}")
-  return cached_result
-end
-
-# Check and cache the result
-result = STRUCTURED_OUTPUT_MODELS.any? { |supported| base_model.start_with?(supported) }
-cache_manager.cache_capability(model, "structured_outputs", result)
-```
+These operations are intentionally lightweight to avoid overhead from caching mechanisms.
 
 ## Try It Yourself
 

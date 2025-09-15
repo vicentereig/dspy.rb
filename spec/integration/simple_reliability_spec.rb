@@ -3,57 +3,6 @@
 require "spec_helper"
 
 RSpec.describe "Simple Reliability Features" do
-  describe "Cache Manager" do
-    it "caches OpenAI schema conversions" do
-      cache_manager = DSPy::LM.cache_manager
-      cache_manager.clear!
-      
-      # Define a test signature
-      test_signature = Class.new(DSPy::Signature) do
-        def self.name
-          "CacheTestSignature"
-        end
-        
-        description "Test signature for caching"
-        
-        output do
-          const :result, String
-        end
-      end
-      
-      # First call should generate schema
-      schema1 = DSPy::LM::Adapters::OpenAI::SchemaConverter.to_openai_format(test_signature)
-      expect(cache_manager.stats[:schema_entries]).to eq(1)
-      
-      # Second call should use cache
-      schema2 = DSPy::LM::Adapters::OpenAI::SchemaConverter.to_openai_format(test_signature)
-      expect(schema1).to eq(schema2)
-      
-      # Verify cache was used by checking that only 1 entry exists
-      expect(cache_manager.stats[:schema_entries]).to eq(1)
-    end
-    
-    it "caches capability detection" do
-      cache_manager = DSPy::LM.cache_manager
-      cache_manager.clear!
-      
-      # First call
-      result1 = DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?("openai/gpt-4o")
-      expect(result1).to be true
-      expect(cache_manager.stats[:capability_entries]).to eq(1)
-      
-      # Second call should use cache
-      result2 = DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?("openai/gpt-4o")
-      expect(result2).to be true
-      expect(cache_manager.stats[:capability_entries]).to eq(1)
-      
-      # Different model should create new cache entry
-      result3 = DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?("openai/gpt-3.5-turbo")
-      expect(result3).to be false
-      expect(cache_manager.stats[:capability_entries]).to eq(2)
-    end
-  end
-  
   describe "Strategy Selection" do
     it "selects OpenAI structured output strategy when available" do
       # Create an adapter that supports structured outputs

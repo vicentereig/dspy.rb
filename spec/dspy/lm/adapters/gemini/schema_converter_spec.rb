@@ -31,8 +31,7 @@ RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
       expect(result[:required]).to contain_exactly("answer", "confidence")
     end
     
-    xit 'handles complex types correctly' do
-      # TODO: Fix test isolation issues - this test is affected by caching from previous tests
+    it 'handles complex types correctly' do
       complex_signature = Class.new(DSPy::Signature) do
         output do
           const :items, T::Array[String], description: "List of items"
@@ -53,8 +52,7 @@ RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
       expect(result[:required]).to contain_exactly("items", "count", "enabled")
     end
     
-    xit 'handles T::Struct types' do
-      # TODO: Fix test isolation issues - this test is affected by caching from previous tests
+    it 'handles T::Struct types' do
       # Create a named struct class
       stub_const('ItemStruct', Class.new(T::Struct) do
         const :name, String
@@ -84,8 +82,7 @@ RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
       expect(item_props[:required]).to contain_exactly("name", "value", "_type")
     end
     
-    xit 'handles T::Enum types' do
-      # TODO: Fix test isolation issues - this test is affected by caching from previous tests
+    it 'handles T::Enum types' do
       # Use the existing enum pattern from integration tests
       stub_const('StatusEnum', Class.new(T::Enum) do
         extend T::Sig
@@ -114,10 +111,6 @@ RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
       expect(status_props[:enum]).to contain_exactly("active", "inactive")
     end
     
-    xit 'caches converted schemas' do
-      # Temporarily disabled due to mock interference with other tests
-      # TODO: Fix caching tests to not interfere with other test execution
-    end
   end
   
   describe '.supports_structured_outputs?' do
@@ -138,10 +131,6 @@ RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
       expect(described_class.supports_structured_outputs?("gemini-1.0-pro")).to eq(false)
     end
     
-    xit 'caches model support checks' do
-      # Temporarily disabled due to mock interference with other tests
-      # TODO: Fix caching tests to not interfere with other test execution
-    end
   end
   
   describe '.validate_compatibility' do
