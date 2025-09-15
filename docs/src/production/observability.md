@@ -26,7 +26,7 @@ The observability system offers:
 - **Event System**: Simple `DSPy.event()` API for structured event emission
 - **Pluggable Listeners**: Subscribe to events with pattern matching
 - **OpenTelemetry Integration**: Automatic span creation with semantic conventions  
-- **Langfuse Export**: Zero-config export to Langfuse via OpenTelemetry
+- **Langfuse Export**: Zero-config export to Langfuse via OpenTelemetry (requires environment variables)
 - **Type Safety**: Sorbet T::Struct event validation
 - **Thread Safe**: Concurrent access with mutex protection
 - **Zero Breaking Changes**: All existing `DSPy.log()` calls work unchanged
@@ -142,7 +142,10 @@ DSPy::ObservationType::Event      # Event emissions
 
 ```ruby
 # Automatically used for:
-DSPy::LM.new('openai/gpt-4').generate("What is 2+2?")
+lm = DSPy::LM.new('openai/gpt-4', api_key: ENV['OPENAI_API_KEY'])
+lm.raw_chat([
+  { role: 'user', content: 'What is 2+2?' }
+])
 # Creates span with langfuse.observation.type = 'generation'
 ```
 
@@ -185,6 +188,7 @@ DSPy::ChainOfThought.new(signature).forward(question: "Explain gravity")
 
 ```ruby
 # Automatically used for:
+memory_manager = DSPy::Memory::MemoryManager.new
 memory_manager.search_memories("find documents about Ruby")
 # Creates spans with langfuse.observation.type = 'retriever'
 ```
@@ -196,6 +200,7 @@ memory_manager.search_memories("find documents about Ruby")
 
 ```ruby
 # Automatically used for:
+embedding_engine = DSPy::Memory::LocalEmbeddingEngine.new
 embedding_engine.embed("Convert this text to vectors")
 # Creates spans with langfuse.observation.type = 'embedding'
 ```
@@ -226,21 +231,23 @@ DSPy modules automatically emit events following OpenTelemetry semantic conventi
 ### LLM Events
 
 ```ruby
-# Emitted automatically by DSPy::LM (lib/dspy/lm.rb:254)
+# Emitted automatically by DSPy::LM (lib/dspy/lm.rb:300)
 DSPy.event('lm.tokens', {
   'gen_ai.system' => 'openai',
   'gen_ai.request.model' => 'gpt-4', 
-  'gen_ai.usage.prompt_tokens' => 150,
-  'gen_ai.usage.completion_tokens' => 50,
-  'gen_ai.usage.total_tokens' => 200,
-  'dspy.signature' => 'QuestionAnswering'
+  input_tokens: 150,
+  output_tokens: 50,
+  total_tokens: 200,
+  'dspy.signature' => 'QuestionAnswering',
+  request_id: 'abc123def',  # If available
+  duration: 1.25            # Seconds, if available
 })
 ```
 
 ### Module Events  
 
 ```ruby
-# ChainOfThought reasoning (lib/dspy/chain_of_thought.rb:176)
+# ChainOfThought reasoning (lib/dspy/chain_of_thought.rb:199)
 DSPy.event('chain_of_thought.reasoning_complete', {
   'dspy.signature' => 'QuestionAnswering',
   'cot.reasoning_steps' => 3,
@@ -248,7 +255,7 @@ DSPy.event('chain_of_thought.reasoning_complete', {
   'cot.has_reasoning' => true
 })
 
-# ReAct iterations (lib/dspy/re_act.rb:422)  
+# ReAct iterations (lib/dspy/re_act.rb:424)  
 DSPy.event('react.iteration_complete', {
   iteration: 2,
   thought: 'I need to search for information',
@@ -575,6 +582,8 @@ threads.each(&:join)
 
 DSPy.rb includes **zero-config Langfuse integration** via OpenTelemetry. Simply set your Langfuse environment variables and DSPy will automatically export spans to Langfuse alongside the normal logging.
 
+**Note**: Integration requires the `opentelemetry-sdk` and `opentelemetry-exporter-otlp` gems to be available and proper network connectivity to your Langfuse instance.
+
 **🆕 Enhanced in v0.25.0**: Comprehensive span reporting improvements including proper input/output capture, hierarchical nesting, accurate timing, token usage tracking, and correct Langfuse observation types (`generation`, `chain`, `span`).
 
 ### Setup
@@ -596,6 +605,8 @@ When Langfuse environment variables are detected, DSPy automatically:
 2. **Creates dual output**: Both structured logs AND OpenTelemetry spans
 3. **Exports to Langfuse** using proper authentication and endpoints
 4. **Falls back gracefully** if OpenTelemetry gems are missing or configuration fails
+
+**Important**: Automatic configuration only occurs when required gems are available and environment variables are properly set. Always verify your setup in development before relying on it in production.
 
 ### Example Output
 
@@ -620,11 +631,69 @@ With Langfuse configured, your DSPy applications will send traces like this:
 Trace: abc-123-def
 ├─ ChainOfThought.forward [2000ms]
 │  ├─ Module: ChainOfThought
+│  ├─ Observation Type: chain
 │  └─ llm.generate [1000ms]
 │     ├─ Model: gpt-4-0613
+│     ├─ Observation Type: generation
 │     ├─ Temperature: 0.7
 │     ├─ Tokens: 100 in / 50 out / 150 total
 │     └─ Cost: $0.0021 (calculated by Langfuse)
+```
+
+**Trace Examples by Observation Type**
+
+Based on actual DSPy.rb implementation, here's what traces look like for different observation types:
+
+**Generation Type (Direct LLM calls):**
+```
+Trace: gen-trace-123
+├─ llm.generate [800ms]
+│  ├─ Observation Type: generation
+│  ├─ Provider: openai
+│  ├─ Model: gpt-4
+│  ├─ Response Model: gpt-4-0613
+│  ├─ Input: [{"role":"user","content":"What is 2+2?"}]
+│  ├─ Output: "4"
+│  └─ Tokens: 10 in / 2 out / 12 total
+```
+
+**Chain Type (ChainOfThought reasoning):**
+```
+Trace: cot-trace-456
+├─ ChainOfThought.forward [2100ms]
+│  ├─ Observation Type: chain
+│  ├─ Signature: QuestionAnswering
+│  ├─ Input: {"question":"Explain gravity"}
+│  ├─ Output: {"answer":"Gravity is...","reasoning":"..."}
+│  └─ llm.generate [1800ms]
+│     ├─ Observation Type: generation
+│     ├─ Provider: openai
+│     ├─ Model: gpt-4
+│     └─ Tokens: 45 in / 120 out / 165 total
+```
+
+**Agent Type (ReAct multi-step reasoning):**
+```
+Trace: react-trace-789
+├─ ReAct.forward [5200ms]
+│  ├─ Observation Type: agent
+│  ├─ Signature: AgentSignature
+│  ├─ Tools: [calculator, search]
+│  ├─ Iterations: 3
+│  ├─ Final Answer: "The answer is 42"
+│  ├─ llm.generate (Iteration 1) [1200ms]
+│  │  ├─ Observation Type: generation
+│  │  └─ Tokens: 80 in / 30 out / 110 total
+│  ├─ Tool: calculator [50ms]
+│  │  ├─ Observation Type: tool
+│  │  ├─ Input: "15 * 23"
+│  │  └─ Output: "345"
+│  ├─ llm.generate (Iteration 2) [1100ms]
+│  │  ├─ Observation Type: generation
+│  │  └─ Tokens: 95 in / 25 out / 120 total
+│  └─ llm.generate (Iteration 3) [900ms]
+│     ├─ Observation Type: generation
+│     └─ Tokens: 70 in / 20 out / 90 total
 ```
 
 ### GenAI Semantic Conventions
