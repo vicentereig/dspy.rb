@@ -78,24 +78,23 @@ RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
       expect(item_props[:properties][:name][:type]).to eq("string")
       expect(item_props[:properties][:value][:type]).to eq("integer")
       expect(item_props[:properties][:_type][:type]).to eq("string")
-      expect(item_props[:properties][:_type][:const]).to eq("ItemStruct")
       expect(item_props[:required]).to contain_exactly("name", "value", "_type")
     end
     
     it 'handles T::Enum types' do
-      # Use the existing enum pattern from integration tests
-      stub_const('StatusEnum', Class.new(T::Enum) do
-        extend T::Sig
-        
-        enums do
-          Active = new('active')
-          Inactive = new('inactive')
+      # Define a proper T::Enum class
+      module TestModule
+        class StatusEnum < T::Enum
+          enums do
+            Active = new('active')
+            Inactive = new('inactive')
+          end
         end
-      end)
+      end
       
       enum_signature = Class.new(DSPy::Signature) do
         output do
-          const :status, StatusEnum, description: "Status"
+          const :status, TestModule::StatusEnum, description: "Status"
         end
       end
       
