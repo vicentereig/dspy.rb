@@ -57,20 +57,72 @@ Build complex workflows from simple building blocks:
 - **ReAct** - Tool-using agents
 - **CodeAct** - Dynamic code generation agents
 
-### 3. Tools
-Create typed tools for agents using Sorbet signatures:
+### 3. Tools & Toolsets
+Create type-safe tools for agents with comprehensive Sorbet support:
 
 ```ruby
+# Enum-based tool with automatic type conversion
 class CalculatorTool < DSPy::Tools::Base
   tool_name 'calculator'
-  tool_description 'Performs arithmetic'
+  tool_description 'Performs arithmetic operations with type-safe enum inputs'
   
-  sig { params(operation: String, num1: Float, num2: Float).returns(Float) }
+  class Operation < T::Enum
+    enums do
+      Add = new('add')
+      Subtract = new('subtract')
+      Multiply = new('multiply')
+      Divide = new('divide')
+    end
+  end
+  
+  sig { params(operation: Operation, num1: Float, num2: Float).returns(T.any(Float, String)) }
   def call(operation:, num1:, num2:)
     case operation
-    when 'add' then num1 + num2
-    when 'multiply' then num1 * num2
+    when Operation::Add then num1 + num2
+    when Operation::Subtract then num1 - num2
+    when Operation::Multiply then num1 * num2
+    when Operation::Divide
+      return "Error: Division by zero" if num2 == 0
+      num1 / num2
     end
+  end
+end
+
+# Multi-tool toolset with complex types
+class DataToolset < DSPy::Tools::Toolset
+  toolset_name "data_processing"
+  
+  class Format < T::Enum
+    enums do
+      JSON = new('json')
+      CSV = new('csv')
+      XML = new('xml')
+    end
+  end
+  
+  class ProcessingConfig < T::Struct
+    const :max_rows, Integer, default: 1000
+    const :include_headers, T::Boolean, default: true
+    const :encoding, String, default: 'utf-8'
+  end
+  
+  tool :convert, description: "Convert data between formats"
+  tool :validate, description: "Validate data structure"
+  
+  sig { params(data: String, from: Format, to: Format, config: T.nilable(ProcessingConfig)).returns(String) }
+  def convert(data:, from:, to:, config: nil)
+    config ||= ProcessingConfig.new
+    "Converted from #{from.serialize} to #{to.serialize} with config: #{config.inspect}"
+  end
+  
+  sig { params(data: String, format: Format).returns(T::Hash[String, T.any(String, Integer, T::Boolean)]) }
+  def validate(data:, format:)
+    {
+      valid: true,
+      format: format.serialize,
+      row_count: 42,
+      message: "Data validation passed"
+    }
   end
 end
 ```
@@ -250,9 +302,11 @@ When helping users with DSPy.rb:
 
 1. **Focus on signatures** - They define the contract with LLMs
 2. **Use proper types** - T::Enum for categories, T::Struct for complex data
-3. **Compose modules** - Chain predictors for complex workflows
-4. **Test thoroughly** - Use RSpec and VCR for reliable tests
-5. **Monitor production** - Use automatic Langfuse integration (requires env vars)
+3. **Leverage automatic type conversion** - Tools and toolsets automatically convert JSON strings to proper Ruby types (enums, structs, arrays, hashes)
+4. **Compose modules** - Chain predictors for complex workflows  
+5. **Create type-safe tools** - Use Sorbet signatures for comprehensive tool parameter validation and conversion
+6. **Test thoroughly** - Use RSpec and VCR for reliable tests
+7. **Monitor production** - Use automatic Langfuse integration (requires env vars)
 
 ## Version
 

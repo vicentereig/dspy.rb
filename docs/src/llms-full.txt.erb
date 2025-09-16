@@ -1023,55 +1023,344 @@ end
 
 ## Toolsets
 
-### Creating Tools with Sorbet Types
+### Creating Tools with Advanced Sorbet Types
 
-Tools use Sorbet signatures to define typed interfaces:
+Tools now support comprehensive Sorbet type system including enums, structs, arrays, and hashes with automatic JSON conversion:
 
 ```ruby
+# Enum-based tool with comprehensive type support
 class CalculatorTool < DSPy::Tools::Base
   tool_name 'calculator'
-  tool_description 'Performs basic arithmetic operations'
-
-  sig { params(operation: String, num1: Float, num2: Float).returns(T.any(Float, String)) }
-  def call(operation:, num1:, num2:)
-    case operation.downcase
-    when 'add'      then num1 + num2
-    when 'subtract' then num1 - num2
-    when 'multiply' then num1 * num2
-    when 'divide'
-      return "Error: Cannot divide by zero" if num2 == 0
-      num1 / num2
-    else
-      "Error: Unknown operation '#{operation}'. Use add, subtract, multiply, or divide"
+  tool_description 'Performs arithmetic operations with type-safe enum inputs and comprehensive error handling'
+  
+  class Operation < T::Enum
+    enums do
+      Add = new('add')
+      Subtract = new('subtract')
+      Multiply = new('multiply')
+      Divide = new('divide')
+      Power = new('power')
+      Root = new('root')
     end
+  end
+  
+  class CalculationResult < T::Struct
+    const :result, T.any(Float, String)
+    const :operation_performed, String
+    const :success, T::Boolean
+    const :error_message, T.nilable(String)
+  end
+
+  sig { params(operation: Operation, num1: Float, num2: Float).returns(CalculationResult) }
+  def call(operation:, num1:, num2:)
+    case operation
+    when Operation::Add
+      CalculationResult.new(
+        result: num1 + num2,
+        operation_performed: "#{num1} + #{num2}",
+        success: true,
+        error_message: nil
+      )
+    when Operation::Subtract
+      CalculationResult.new(
+        result: num1 - num2,
+        operation_performed: "#{num1} - #{num2}",
+        success: true
+      )
+    when Operation::Multiply
+      CalculationResult.new(
+        result: num1 * num2,
+        operation_performed: "#{num1} * #{num2}",
+        success: true
+      )
+    when Operation::Divide
+      if num2 == 0
+        CalculationResult.new(
+          result: "Error: Division by zero",
+          operation_performed: "#{num1} / #{num2}",
+          success: false,
+          error_message: "Cannot divide by zero"
+        )
+      else
+        CalculationResult.new(
+          result: num1 / num2,
+          operation_performed: "#{num1} / #{num2}",
+          success: true
+        )
+      end
+    when Operation::Power
+      CalculationResult.new(
+        result: num1 ** num2,
+        operation_performed: "#{num1} ^ #{num2}",
+        success: true
+      )
+    when Operation::Root
+      if num1 < 0 && num2.even?
+        CalculationResult.new(
+          result: "Error: Even root of negative number",
+          operation_performed: "#{num1} root #{num2}",
+          success: false,
+          error_message: "Cannot take even root of negative number"
+        )
+      else
+        CalculationResult.new(
+          result: num1 ** (1.0 / num2),
+          operation_performed: "#{num1} root #{num2}",
+          success: true
+        )
+      end
+    end
+  end
+end
+
+# Complex tool with nested structs and arrays
+class DataAnalysisTool < DSPy::Tools::Base
+  tool_name 'data_analyzer'
+  tool_description 'Analyzes datasets with comprehensive type-safe configuration'
+  
+  class DataType < T::Enum
+    enums do
+      Numeric = new('numeric')
+      Categorical = new('categorical')
+      Text = new('text')
+      DateTime = new('datetime')
+    end
+  end
+  
+  class ColumnInfo < T::Struct
+    const :name, String
+    const :type, DataType
+    const :nullable, T::Boolean, default: false
+    const :unique_values, T.nilable(Integer)
+  end
+  
+  class AnalysisConfig < T::Struct
+    const :include_correlations, T::Boolean, default: true
+    const :max_unique_values, Integer, default: 100
+    const :sample_size, T.nilable(Integer), default: nil
+    const :output_format, T::Array[String], default: ['summary', 'stats']
+  end
+  
+  class AnalysisResult < T::Struct
+    const :total_rows, Integer
+    const :total_columns, Integer
+    const :columns, T::Array[ColumnInfo]
+    const :missing_data_percentage, Float
+    const :recommendations, T::Array[String]
+  end
+
+  sig { params(
+    data: String,
+    columns: T::Array[ColumnInfo],
+    config: T.nilable(AnalysisConfig)
+  ).returns(AnalysisResult) }
+  def call(data:, columns:, config: nil)
+    config ||= AnalysisConfig.new
+    
+    # Simulate analysis
+    total_rows = data.split("\n").length
+    missing_percentage = 0.05
+    
+    recommendations = []
+    recommendations << "Consider handling missing data" if missing_percentage > 0.1
+    recommendations << "Some columns have high cardinality" if columns.any? { |c| (c.unique_values || 0) > config.max_unique_values }
+    
+    AnalysisResult.new(
+      total_rows: total_rows,
+      total_columns: columns.length,
+      columns: columns,
+      missing_data_percentage: missing_percentage,
+      recommendations: recommendations
+    )
   end
 end
 ```
 
 ### Creating Toolsets
 
-Toolsets group related tools together:
+Toolsets group related tools together with comprehensive type support:
 
 ```ruby
 class WeatherToolset < DSPy::Tools::Toolset
   toolset_name "weather"
   
-  tool :get_current, tool_name: "weather_current", description: "Get current weather"
-  tool :get_forecast, description: "Get weather forecast"
-  
-  def get_current(location:)
-    # Actual implementation would call weather API
-    "#{location}: 22°C, sunny"
+  class WeatherCondition < T::Enum
+    enums do
+      Sunny = new('sunny')
+      Cloudy = new('cloudy')
+      Rainy = new('rainy')
+      Snowy = new('snowy')
+      Stormy = new('stormy')
+    end
   end
   
+  class Temperature < T::Struct
+    const :celsius, Float
+    const :fahrenheit, Float
+    const :feels_like, Float
+  end
+  
+  class WeatherReport < T::Struct
+    const :location, String
+    const :condition, WeatherCondition
+    const :temperature, Temperature
+    const :humidity, Integer
+    const :wind_speed, Float
+    const :timestamp, String
+  end
+  
+  class ForecastDay < T::Struct
+    const :date, String
+    const :condition, WeatherCondition
+    const :high_temp, Float
+    const :low_temp, Float
+    const :precipitation_chance, Integer
+  end
+  
+  tool :get_current, tool_name: "weather_current", description: "Get current weather conditions"
+  tool :get_forecast, description: "Get detailed weather forecast"
+  tool :get_alerts, description: "Get weather alerts for location"
+  
+  sig { params(location: String).returns(WeatherReport) }
+  def get_current(location:)
+    # Actual implementation would call weather API
+    WeatherReport.new(
+      location: location,
+      condition: WeatherCondition::Sunny,
+      temperature: Temperature.new(
+        celsius: 22.0,
+        fahrenheit: 71.6,
+        feels_like: 24.0
+      ),
+      humidity: 60,
+      wind_speed: 10.5,
+      timestamp: Time.now.iso8601
+    )
+  end
+  
+  sig { params(location: String, days: Integer).returns(T::Array[ForecastDay]) }
   def get_forecast(location:, days: 7)
-    "#{days}-day forecast for #{location}"
+    # Actual implementation would call weather API
+    (1..days).map do |day|
+      ForecastDay.new(
+        date: (Date.today + day).to_s,
+        condition: [WeatherCondition::Sunny, WeatherCondition::Cloudy, WeatherCondition::Rainy].sample,
+        high_temp: 20.0 + rand(10),
+        low_temp: 10.0 + rand(8),
+        precipitation_chance: rand(100)
+      )
+    end
+  end
+  
+  sig { params(location: String, severity: T.nilable(String)).returns(T::Array[String]) }
+  def get_alerts(location:, severity: nil)
+    # Actual implementation would call weather API
+    alerts = ["High wind warning in effect"]
+    severity ? alerts.select { |a| a.downcase.include?(severity.downcase) } : alerts
+  end
+end
+
+# Advanced database toolset with complex operations
+class DatabaseToolset < DSPy::Tools::Toolset
+  toolset_name "database"
+  
+  class QueryType < T::Enum
+    enums do
+      Select = new('select')
+      Insert = new('insert')
+      Update = new('update')
+      Delete = new('delete')
+      Join = new('join')
+      Aggregate = new('aggregate')
+    end
+  end
+  
+  class Column < T::Struct
+    const :name, String
+    const :type, String
+    const :nullable, T::Boolean, default: true
+    const :default_value, T.nilable(String)
+  end
+  
+  class QueryConfig < T::Struct
+    const :limit, T.nilable(Integer)
+    const :offset, T.nilable(Integer), default: 0
+    const :order_by, T.nilable(String)
+    const :include_count, T::Boolean, default: false
+  end
+  
+  class QueryResult < T::Struct
+    const :success, T::Boolean
+    const :data, T::Array[T::Hash[String, T.untyped]]
+    const :row_count, Integer
+    const :execution_time_ms, Float
+    const :query_type, QueryType
+  end
+  
+  tool :execute_query, description: "Execute database query with type safety"
+  tool :describe_table, description: "Get table schema information"
+  tool :optimize_query, description: "Analyze and optimize query performance"
+  
+  sig { params(
+    sql: String,
+    query_type: QueryType,
+    config: T.nilable(QueryConfig)
+  ).returns(QueryResult) }
+  def execute_query(sql:, query_type:, config: nil)
+    config ||= QueryConfig.new
+    
+    # Simulate query execution
+    mock_data = [
+      { "id" => 1, "name" => "Alice", "email" => "alice@example.com" },
+      { "id" => 2, "name" => "Bob", "email" => "bob@example.com" }
+    ]
+    
+    QueryResult.new(
+      success: true,
+      data: mock_data,
+      row_count: mock_data.length,
+      execution_time_ms: 45.2,
+      query_type: query_type
+    )
+  end
+  
+  sig { params(table_name: String).returns(T::Array[Column]) }
+  def describe_table(table_name:)
+    # Simulate table description
+    [
+      Column.new(name: "id", type: "INTEGER", nullable: false),
+      Column.new(name: "name", type: "VARCHAR(255)", nullable: false),
+      Column.new(name: "email", type: "VARCHAR(320)", nullable: true, default_value: "NULL")
+    ]
+  end
+  
+  sig { params(sql: String).returns(T::Hash[String, T.any(String, Integer, Float, T::Array[String])]) }
+  def optimize_query(sql:)
+    # Simulate query optimization analysis
+    {
+      original_query: sql,
+      estimated_cost: 125,
+      execution_plan: ["Index Scan", "Hash Join", "Sort"],
+      optimization_suggestions: [
+        "Consider adding index on user_id column",
+        "Use LIMIT to reduce result set size",
+        "Consider query rewriting for better performance"
+      ],
+      performance_rating: 7.5
+    }
   end
 end
 
 # Convert to tool instances for agents
-tools = WeatherToolset.to_tools
-agent = DSPy::ReAct.new(WeatherSignature, tools: tools)
+weather_tools = WeatherToolset.to_tools
+database_tools = DatabaseToolset.to_tools
+
+# Use with ReAct agent
+agent = DSPy::ReAct.new(
+  WeatherSignature, 
+  tools: weather_tools + database_tools,
+  max_iterations: 15
+)
 ```
 
 ### Built-in Toolsets
@@ -1088,6 +1377,61 @@ text_tools = DSPy::Tools::TextProcessingToolset.to_tools
 # Includes: summarize, extract_keywords, count_tokens,
 #          translate, format_markdown, extract_entities,
 #          sentiment_analysis, clean_text, compare_texts
+```
+
+### Automatic Type Conversion
+
+DSPy.rb provides seamless automatic conversion from JSON parameters to Ruby types in tools:
+
+```ruby
+# When agents call tools, JSON strings are automatically converted
+# Agent provides: { "operation": "add", "num1": 10, "num2": 20 }
+# DSPy converts:
+# - "add" string → CalculatorTool::Operation::Add enum
+# - 10, 20 numbers → Float values
+# - Result: tool.call(operation: Add, num1: 10.0, num2: 20.0)
+
+class ComplexTool < DSPy::Tools::Base
+  class Priority < T::Enum
+    enums do
+      Low = new('low')
+      High = new('high')
+    end
+  end
+  
+  class TaskData < T::Struct
+    const :title, String
+    const :priority, Priority
+    const :tags, T::Array[String]
+  end
+  
+  # Agent JSON: {
+  #   "task": {
+  #     "title": "Fix bug",
+  #     "priority": "high", 
+  #     "tags": ["urgent", "backend"]
+  #   }
+  # }
+  #
+  # Automatically converts to:
+  # - "high" → Priority::High enum
+  # - Array strings → T::Array[String]
+  # - Nested hash → TaskData struct
+  
+  sig { params(task: TaskData).returns(String) }
+  def call(task:)
+    "Created task: #{task.title} (#{task.priority.serialize}) with tags: #{task.tags.join(', ')}"
+  end
+end
+
+# Conversion works for all Sorbet types:
+# - T::Enum → Automatic string-to-enum conversion
+# - T::Struct → Recursive hash-to-struct conversion  
+# - T::Array[Type] → Array element conversion
+# - T::Hash[String, Type] → Hash value conversion
+# - T.nilable(Type) → Handles null/nil values
+# - T.any(Type1, Type2) → Union type resolution
+# - Nested combinations → Deep conversion at any level
 ```
 
 ## Optimization

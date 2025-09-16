@@ -63,45 +63,52 @@ RSpec.describe 'DSPy::Tools::Baseq DSL' do
       schema = SorbetGetTodaysDate.call_schema
       expect(schema).to be_a(Hash)
       expect(schema).to have_key(:type)
-      expect(schema).to have_key(:properties)
-      expect(schema[:type]).to eq(:object)
+      expect(schema).to have_key(:function)
+      expect(schema[:type]).to eq('function')
+      expect(schema[:function]).to have_key(:parameters)
+      expect(schema[:function][:parameters]).to have_key(:type)
+      expect(schema[:function][:parameters]).to have_key(:properties)
+      expect(schema[:function][:parameters][:type]).to eq('object')
     end
 
     it 'generates schema for tools with no parameters' do
       schema = SorbetGetTodaysDate.call_schema
-      expect(schema[:properties]).to be_empty
-      expect(schema[:required]).to be_empty
+      expect(schema[:function][:parameters][:properties]).to be_empty
+      expect(schema[:function][:parameters][:required]).to be_empty
     end
 
     it 'generates schema for tools with required parameters' do
       schema = SorbetAddNumbers.call_schema
-      expect(schema[:properties]).to have_key(:x)
-      expect(schema[:properties]).to have_key(:y)
-      expect(schema[:properties][:x][:type]).to eq(:number)
-      expect(schema[:properties][:y][:type]).to eq(:number)
-      expect(schema[:required]).to include('x', 'y')
+      properties = schema[:function][:parameters][:properties]
+      expect(properties).to have_key(:x)
+      expect(properties).to have_key(:y)
+      expect(properties[:x][:type]).to eq('number')
+      expect(properties[:y][:type]).to eq('number')
+      expect(schema[:function][:parameters][:required]).to include('x', 'y')
     end
 
     it 'generates schema for tools with mixed parameter types' do
       schema = SorbetCalculatorTool.call_schema
-      expect(schema[:properties]).to have_key(:operation)
-      expect(schema[:properties]).to have_key(:num1)
-      expect(schema[:properties]).to have_key(:num2)
-      expect(schema[:properties][:operation][:type]).to eq(:string)
-      expect(schema[:properties][:num1][:type]).to eq(:number)
-      expect(schema[:properties][:num2][:type]).to eq(:number)
-      expect(schema[:required]).to include('operation', 'num1', 'num2')
+      properties = schema[:function][:parameters][:properties]
+      expect(properties).to have_key(:operation)
+      expect(properties).to have_key(:num1)
+      expect(properties).to have_key(:num2)
+      expect(properties[:operation][:type]).to eq('string')
+      expect(properties[:num1][:type]).to eq('number')
+      expect(properties[:num2][:type]).to eq('number')
+      expect(schema[:function][:parameters][:required]).to include('operation', 'num1', 'num2')
     end
 
     it 'generates schema for tools with optional parameters' do
       schema = SorbetGetRandomNumber.call_schema
-      expect(schema[:properties]).to have_key(:min)
-      expect(schema[:properties]).to have_key(:max)
-      expect(schema[:properties][:min][:type]).to eq(:integer)
-      expect(schema[:properties][:max][:type]).to eq(:integer)
-      expect(schema[:properties][:min][:description]).to include('optional')
-      expect(schema[:properties][:max][:description]).to include('optional')
-      expect(schema[:required]).to be_empty # Both parameters are optional
+      properties = schema[:function][:parameters][:properties]
+      expect(properties).to have_key(:min)
+      expect(properties).to have_key(:max)
+      expect(properties[:min][:type]).to eq('integer')
+      expect(properties[:max][:type]).to eq('integer')
+      expect(properties[:min][:description]).to include('optional')
+      expect(properties[:max][:description]).to include('optional')
+      expect(schema[:function][:parameters][:required]).to be_empty # Both parameters are optional
     end
   end
 

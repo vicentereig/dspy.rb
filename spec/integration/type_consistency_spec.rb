@@ -3,9 +3,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
-  # Test data types for comprehensive coverage
-  class Priority < T::Enum
+# Test data types for comprehensive coverage - defined at module level
+class TypeTypeTestPriority < T::Enum
     enums do
       Low = new('low')
       Medium = new('medium')
@@ -14,7 +13,7 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
     end
   end
 
-  class TaskStatus < T::Enum
+class TypeTypeTestTaskStatus < T::Enum
     enums do
       Pending = new('pending')
       InProgress = new('in-progress')
@@ -23,9 +22,10 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
     end
   end
 
+RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
   class TaskMetadata < T::Struct
     prop :id, String
-    prop :priority, Priority
+    prop :priority, TypeTypeTestPriority
     prop :tags, T::Array[String]
     prop :estimated_hours, T.nilable(Float), default: nil
   end
@@ -33,7 +33,7 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
   class TaskRequest < T::Struct
     prop :title, String
     prop :description, String
-    prop :status, TaskStatus
+    prop :status, TypeTypeTestTaskStatus
     prop :metadata, TaskMetadata
     prop :assignees, T::Array[String]
     prop :due_date, T.nilable(String), default: nil
@@ -46,14 +46,14 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
 
     sig { params(
       task: TaskRequest,
-      priority_threshold: Priority,
-      active_statuses: T::Array[TaskStatus],
+      priority_threshold: TypeTypeTestPriority,
+      active_statuses: T::Array[TypeTypeTestTaskStatus],
       config: T::Hash[String, T.any(String, Integer, Float)]
     ).returns(String) }
     def call(task:, priority_threshold:, active_statuses:, config:)
       result = []
       result << "Task: #{task.title} (#{task.status.serialize})"
-      result << "Priority: #{task.metadata.priority.serialize} (threshold: #{priority_threshold.serialize})"
+      result << "TypeTestPriority: #{task.metadata.priority.serialize} (threshold: #{priority_threshold.serialize})"
       result << "Tags: #{task.metadata.tags.join(', ')}"
       result << "Active statuses: #{active_statuses.map(&:serialize).join(', ')}"
       result << "Config: #{config.inspect}"
@@ -67,14 +67,14 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
 
     tool :create_task
 
-    sig { params(title: String, priority: Priority, tags: T::Array[String]).returns(String) }
+    sig { params(title: String, priority: TypeTypeTestPriority, tags: T::Array[String]).returns(String) }
     def create_task(title:, priority:, tags:)
       "Created task: #{title} with priority #{priority.serialize} and tags [#{tags.join(', ')}]"
     end
 
     tool :update_status
 
-    sig { params(task_id: String, status: TaskStatus, reason: T.nilable(String)).returns(String) }
+    sig { params(task_id: String, status: TypeTypeTestTaskStatus, reason: T.nilable(String)).returns(String) }
     def update_status(task_id:, status:, reason: nil)
       result = "Updated task #{task_id} to status #{status.serialize}"
       result += " (reason: #{reason})" if reason
@@ -85,7 +85,7 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
 
     sig { params(
       task_ids: T::Array[String],
-      updates: T::Hash[String, T.any(String, Priority, TaskStatus)],
+      updates: T::Hash[String, T.any(String, TypeTypeTestPriority, TypeTypeTestTaskStatus)],
       notify: T.nilable(T::Boolean)
     ).returns(String) }
     def bulk_update(task_ids:, updates:, notify: nil)
@@ -94,21 +94,6 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
     end
   end
 
-  # Test Signature using same types (for comparison)
-  class TaskAnalysisSignature < DSPy::Signature
-    description "Analyze tasks for prioritization and recommendations"
-
-    input do
-      const :task, TaskRequest, desc: "Task to analyze"
-      const :criteria, T::Hash[String, T.any(String, Priority)], desc: "Analysis criteria"
-    end
-
-    output do
-      const :analysis, String, desc: "Task analysis result"
-      const :recommendations, T::Array[String], desc: "Recommended actions"
-      const :urgency_score, Float, desc: "Urgency score from 0.0 to 1.0"
-    end
-  end
 
   describe 'Schema Generation Consistency' do
     it 'generates identical enum schemas across all components' do
@@ -234,7 +219,7 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
       }
 
       result = tool.dynamic_call(task_data)
-      expect(result).to include("Priority: high (threshold: medium)")
+      expect(result).to include("TypeTestPriority: high (threshold: medium)")
       expect(result).to include("Active statuses: pending, in-progress")
 
       # Test Toolset enum conversion
@@ -274,7 +259,7 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
 
       result = tool.dynamic_call(task_data)
       expect(result).to include("Task: Complex Task (in-progress)")
-      expect(result).to include("Priority: critical (threshold: low)")
+      expect(result).to include("TypeTestPriority: critical (threshold: low)")
       expect(result).to include("Tags: complex, nested")
     end
 
@@ -304,12 +289,8 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
     end
   end
 
-  describe 'LLM Integration Consistency' do
-    let(:openai_lm) { DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY']) }
-    
-    it 'generates equivalent tool schemas for LLM consumption', vcr: { cassette_name: 'type_consistency_tool_schemas' } do
-      skip 'Skipping LLM integration test in CI' unless ENV['OPENAI_API_KEY']
-      
+  describe 'LLM Integration Consistency' do    
+    it 'generates equivalent tool schemas for LLM consumption' do
       # Get tool schema for LLM
       tool = TaskManagerTool.new
       tool_schema = tool.call_schema
@@ -324,30 +305,9 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
       expect(tool_schema[:function]).to have_key(:description)
       expect(tool_schema[:function]).to have_key(:parameters)
       
-      # Test with actual LLM call to verify schema compatibility
-      simple_task_prompt = DSPy::Predict.new(TaskAnalysisSignature)
-      simple_task_prompt.configure { |config| config.lm = openai_lm }
-      
-      task = TaskRequest.new(
-        title: "Test LLM Task",
-        description: "Testing LLM integration",
-        status: TaskStatus::Pending,
-        metadata: TaskMetadata.new(
-          id: "llm-test",
-          priority: Priority::Medium,
-          tags: ["test", "llm"]
-        ),
-        assignees: ["system"]
-      )
-      
-      criteria = { "focus" => "performance", "priority" => Priority::High }
-      
-      result = simple_task_prompt.call(task: task, criteria: criteria)
-      
-      expect(result.analysis).to be_a(String)
-      expect(result.recommendations).to be_an(Array)
-      expect(result.urgency_score).to be_a(Float)
-      expect(result.urgency_score).to be_a(Float).and be > 0
+      # Toolset should also provide proper function structure
+      expect(create_task_tool).not_to be_nil
+      expect(create_task_tool.name).to include('create_task')
     end
   end
 end

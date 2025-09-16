@@ -159,7 +159,7 @@ RSpec.describe 'Memory Toolset Integration with ReAct Agent', type: :integration
       properties = schema['parameters']['properties']
       expect(properties['key']['type']).to eq('string')
       expect(properties['value']['type']).to eq('string')
-      expect(properties['tags']['type']).to eq('array') if properties['tags']
+      expect(properties['tags']['type']).to eq(['array', 'null']) if properties['tags']
     end
   end
 
