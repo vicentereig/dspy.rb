@@ -17,7 +17,7 @@ class TestSignature < DSPy::Signature
 end
 
 RSpec.describe 'ReAct Field Descriptions', type: :unit do
-  let(:tools) { DSPy::Tools::GitHubCLIToolset.to_tools.first(2) }
+  let(:tools) { DSPy::Tools::GitHubCLIToolset.to_tools.first(3) }
   let(:agent) { DSPy::ReAct.new(TestSignature, tools: tools) }
   
   describe 'thought signature field descriptions' do
@@ -114,6 +114,29 @@ RSpec.describe 'ReAct Field Descriptions', type: :unit do
       expect(available_tools_property[:items][:properties]).to have_key(:description)
       expect(available_tools_property[:items][:properties]).to have_key(:schema)
       expect(available_tools_property[:items][:description]).to include('AvailableTool')
+    end
+  end
+
+  describe 'Dynamic ActionEnum for tools' do
+    it 'creates ActionEnum class with tool names and finish' do
+      # This test will fail until we implement dynamic ActionEnum generation
+      action_enum_class = agent.instance_variable_get(:@action_enum_class)
+      
+      expect(action_enum_class).to be < T::Enum
+      expect(action_enum_class.values.map(&:serialize)).to include('finish')
+      expect(action_enum_class.values.map(&:serialize)).to include('github_create_issue')
+      expect(action_enum_class.values.map(&:serialize)).to include('github_list_issues')
+    end
+
+    it 'uses ActionEnum instead of String type for action field' do
+      output_schema = agent.instance_variable_get(:@thought_generator).signature_class.output_json_schema
+      action_property = output_schema.dig(:properties, :action)
+      
+      # Should have enum constraint with actual tool names
+      expect(action_property).to have_key(:enum)
+      expect(action_property[:enum]).to include('finish')
+      expect(action_property[:enum]).to include('github_create_issue')
+      expect(action_property[:enum]).to include('github_list_issues')
     end
   end
 end

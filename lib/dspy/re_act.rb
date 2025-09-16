@@ -94,6 +94,9 @@ module DSPy
       tools.each { |tool| @tools[tool.name.downcase] = tool }
       @max_iterations = max_iterations
 
+      # Create dynamic ActionEnum class with tool names + finish
+      @action_enum_class = create_action_enum_class
+
       # Create dynamic signature classes that include the original input fields
       thought_signature = create_thought_signature(signature_class)
       observation_signature = create_observation_signature(signature_class)
@@ -150,9 +153,34 @@ module DSPy
 
     private
 
+    # Creates a dynamic ActionEnum class with tool names and "finish"
+    sig { returns(T.class_of(T::Enum)) }
+    def create_action_enum_class
+      tool_names = @tools.keys
+      all_actions = tool_names + [FINISH_ACTION]
+      
+      # Create a dynamic enum class using proper T::Enum pattern
+      enum_class = Class.new(T::Enum)
+      
+      # Build the enums block code dynamically
+      enum_definitions = all_actions.map do |action_name|
+        const_name = action_name.upcase.gsub(/[^A-Z0-9_]/, '_')
+        "#{const_name} = new(#{action_name.inspect})"
+      end.join("\n        ")
+      
+      enum_class.class_eval <<~RUBY
+        enums do
+          #{enum_definitions}
+        end
+      RUBY
+      
+      enum_class
+    end
+
     # Creates a dynamic Thought signature that includes the original input fields
     sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(DSPy::Signature)) }
     def create_thought_signature(signature_class)
+      action_enum_class = @action_enum_class
       # Create new class that inherits from DSPy::Signature
       Class.new(DSPy::Signature) do
         # Set description
@@ -172,7 +200,7 @@ module DSPy
         output do
           const :thought, String,
             description: "Reasoning about what to do next, considering the history and observations."
-          const :action, String,
+          const :action, action_enum_class,
             description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
           const :action_input, T.any(String, T::Hash[T.untyped, T.untyped]),
             description: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final result based on processing the input data."
