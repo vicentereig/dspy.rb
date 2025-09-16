@@ -314,12 +314,15 @@ module DSPy
           thought_obj.action, thought_obj.action_input, iteration
         )
 
+        # Convert action enum to string for processing and storage
+        action_str = thought_obj.action.respond_to?(:serialize) ? thought_obj.action.serialize : thought_obj.action.to_s
+        
         # Track tools used
-        tools_used << thought_obj.action.downcase if valid_tool?(thought_obj.action)
+        tools_used << action_str.downcase if valid_tool?(thought_obj.action)
 
         # Add to history
         history << create_history_entry(
-          iteration, thought_obj.thought, thought_obj.action,
+          iteration, thought_obj.thought, action_str,
           thought_obj.action_input, observation
         )
 
@@ -333,7 +336,7 @@ module DSPy
         end
 
         emit_iteration_complete_event(
-          iteration, thought_obj.thought, thought_obj.action,
+          iteration, thought_obj.thought, action_str,
           thought_obj.action_input, observation, tools_used
         )
 
@@ -383,31 +386,39 @@ module DSPy
       final_answer.nil? && (@max_iterations.nil? || iterations_count < @max_iterations)
     end
 
-    sig { params(action: T.nilable(String)).returns(T::Boolean) }
+    sig { params(action: T.nilable(T.any(String, T::Enum))).returns(T::Boolean) }
     def finish_action?(action)
-      action&.downcase == FINISH_ACTION
+      return false unless action
+      action_str = action.respond_to?(:serialize) ? action.serialize : action.to_s
+      action_str.downcase == FINISH_ACTION
     end
 
-    sig { params(action: T.nilable(String)).returns(T::Boolean) }
+    sig { params(action: T.nilable(T.any(String, T::Enum))).returns(T::Boolean) }
     def valid_tool?(action)
-      !!(action && @tools[action.downcase])
+      return false unless action
+      action_str = action.respond_to?(:serialize) ? action.serialize : action.to_s
+      !!@tools[action_str.downcase]
     end
 
-    sig { params(action: T.nilable(String), action_input: T.untyped, iteration: Integer).returns(String) }
+    sig { params(action: T.nilable(T.any(String, T::Enum)), action_input: T.untyped, iteration: Integer).returns(String) }
     def execute_tool_with_instrumentation(action, action_input, iteration)
-      if action && @tools[action.downcase]
+      return "Unknown action: #{action}. Available actions: #{@tools.keys.join(', ')}, finish" unless action
+      
+      action_str = action.respond_to?(:serialize) ? action.serialize : action.to_s
+      
+      if @tools[action_str.downcase]
         DSPy::Context.with_span(
           operation: 'react.tool_call',
           **DSPy::ObservationType::Tool.langfuse_attributes,
           'dspy.module' => 'ReAct',
           'react.iteration' => iteration,
-          'tool.name' => action.downcase,
+          'tool.name' => action_str.downcase,
           'tool.input' => action_input
         ) do
-          execute_action(action, action_input)
+          execute_action(action_str, action_input)
         end
       else
-        "Unknown action: #{action}. Available actions: #{@tools.keys.join(', ')}, finish"
+        "Unknown action: #{action_str}. Available actions: #{@tools.keys.join(', ')}, finish"
       end
     end
 
@@ -449,7 +460,8 @@ module DSPy
         available_tools: available_tools_desc
       )
 
-      if final_thought.action&.downcase != FINISH_ACTION
+      action_str = final_thought.action.respond_to?(:serialize) ? final_thought.action.serialize : final_thought.action.to_s
+      if action_str.downcase != FINISH_ACTION
         forced_answer = if observation_result.interpretation && !observation_result.interpretation.empty?
                           observation_result.interpretation
                         else
@@ -558,7 +570,7 @@ module DSPy
       example
     end
 
-    sig { params(action_input: T.untyped, last_observation: T.nilable(String), step: Integer, thought: String, action: String, history: T::Array[HistoryEntry]).returns(String) }
+    sig { params(action_input: T.untyped, last_observation: T.nilable(String), step: Integer, thought: String, action: T.any(String, T::Enum), history: T::Array[HistoryEntry]).returns(String) }
     def handle_finish_action(action_input, last_observation, step, thought, action, history)
       final_answer = action_input.to_s
 
@@ -567,11 +579,14 @@ module DSPy
         final_answer = last_observation
       end
 
+      # Convert action enum to string for storage in history
+      action_str = action.respond_to?(:serialize) ? action.serialize : action.to_s
+
       # Always add the finish action to history
       history << HistoryEntry.new(
         step: step,
         thought: thought,
-        action: action,
+        action: action_str,
         action_input: final_answer,
         observation: nil  # No observation for finish action
       )
