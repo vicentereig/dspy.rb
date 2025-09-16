@@ -5,6 +5,39 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.2] - 2025-09-16
+
+### Added
+- **Comprehensive Sorbet Type Support for Tools and Toolsets** - Complete type parity with Signatures (resolves #113)
+  - Automatic JSON-to-Ruby type conversion for all Sorbet types in tool parameters
+  - Full T::Enum support with string-to-enum conversion (e.g., `"add"` → `Operation::Add`)
+  - T::Struct support with recursive hash-to-struct conversion for complex nested data
+  - T::Array and T::Hash support with proper element and value type coercion
+  - T.nilable and T.any (union) type handling with automatic type resolution
+  - Consistent JSON schema generation across Tools, Toolsets, and Signatures
+  - Enhanced LLM template documentation with comprehensive typed tooling examples
+
+### Fixed
+- **Test Infrastructure Improvements** - Enhanced reliability and consistency
+  - Updated test schema structure to use function wrapper format for LLM tool compatibility
+  - Resolved enum scoping issues in type consistency tests
+  - Fixed memory toolset tests to properly handle nilable array types
+  - Corrected documentation inaccuracies in observability guide
+  - Resolved test isolation issues in Gemini schema converter
+
+### Improved
+- **Developer Experience Enhancements**
+  - Enhanced type coercion system with comprehensive error handling
+  - Unified type system module for consistent behavior across all components
+  - Improved LLM guidance documentation emphasizing type-safe tool creation
+  - Better automatic type conversion examples and real-world usage patterns
+
+### Technical Details
+- Implemented `DSPy::TypeSystem::SorbetJsonSchema` module for unified type conversion
+- Enhanced `DSPy::Mixins::TypeCoercion` with comprehensive Sorbet type support
+- Updated Tools::Base and Tools::Toolset to use unified type system architecture
+- Full backward compatibility maintained with existing tool implementations
+
 ## [0.27.0] - 2025-09-13
 
 ### Added
