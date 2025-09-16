@@ -8,58 +8,82 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
         \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
         {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
         {\n                  \"type\": \"string\"\n                },\n                \"description\":
         \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      }\n    },\n    \"available_tools\": {\n      \"type\":
-        \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      }\n    }\n  },\n  \"required\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
         [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\"\n    },\n    \"action_input\": {\n      \"oneOf\":
-        [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"get_todays_date\",\n        \"add_numbers\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
         \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
         {\n            \"type\": \"string\"\n          },\n          \"description\":
         \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to process the given
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"tasks\\\":[{\\\"id\\\":\\\"1\\\",\\\"name\\\":\\\"Buy groceries\\\"},{\\\"id\\\":\\\"2\\\",\\\"name\\\":\\\"Call
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"tasks\\\":[{\\\"_type\\\":\\\"Task\\\",\\\"id\\\":\\\"1\\\",\\\"name\\\":\\\"Buy
+        groceries\\\"},{\\\"_type\\\":\\\"Task\\\",\\\"id\\\":\\\"2\\\",\\\"name\\\":\\\"Call
         dentist\\\"}],\\\"query\\\":\\\"What tasks do I have?\\\"}\",\n  \"history\":
         [],\n  \"available_tools\": [\n    {\n      \"name\": \"get_todays_date\",\n      \"description\":
-        \"Returns the current date in a human-readable format\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"add_numbers\",\n      \"description\":
-        \"Adds two numbers together\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"x\": {\n            \"type\":
-        \"number\",\n            \"description\": \"Parameter x\"\n          },\n          \"y\":
-        {\n            \"type\": \"number\",\n            \"description\": \"Parameter
-        y\"\n          }\n        },\n        \"required\": [\n          \"x\",\n          \"y\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        \"Returns the current date in a human-readable format\",\n      \"schema\":
+        {\n        \"name\": \"get_todays_date\",\n        \"description\": \"Returns
+        the current date in a human-readable format\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {},\n          \"required\": []\n        }\n      }\n    },\n    {\n      \"name\":
+        \"add_numbers\",\n      \"description\": \"Adds two numbers together\",\n      \"schema\":
+        {\n        \"name\": \"add_numbers\",\n        \"description\": \"Adds two
+        numbers together\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"x\": {\n              \"type\": \"number\",\n              \"description\":
+        \"Parameter x\"\n            },\n            \"y\": {\n              \"type\":
+        \"number\",\n              \"description\": \"Parameter y\"\n            }\n          },\n          \"required\":
+        [\n            \"x\",\n            \"y\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"example string\",\n  \"action\":
-        \"example string\",\n  \"action_input\": \"example value\"\n}\n```\n\nRequired
-        fields: thought, action, action_input\n\nEnsure your response:\n1. Is valid
-        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
-        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
-        markdown code blocks\n"}],"temperature":0.0}'
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -76,7 +100,7 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.13.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
@@ -90,14 +114,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '5073'
+      - '7487'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Wed, 16 Jul 2025 08:27:08 GMT
+      - Tue, 16 Sep 2025 16:26:05 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -109,13 +133,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1460'
+      - '1684'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1464'
+      - '1832'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -123,42 +147,44 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '198887'
+      - '198335'
       X-Ratelimit-Reset-Requests:
       - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 333ms
+      - 499ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 96001e5af8bb026a-MAD
+      - 9801b92d3f3fcf8d-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Btrlj5xyMufR4JfoRedyL8cHIknZG",
+          "id": "chatcmpl-CGSnE3nwUGJNKHm4VtjKh4HIDnm2F",
           "object": "chat.completion",
-          "created": 1752654427,
+          "created": 1758039964,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to retrieve the list of tasks to respond to the user's query about their tasks.\",\n  \"action\": \"get_todays_date\",\n  \"action_input\": {}\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there are no previous history entries and the input context indicates a query about tasks, I need to provide a summary of the tasks available, specifically 'Buy groceries' and 'Call dentist'. I don't need to use a tool at this moment, so I will finish with the tasks summary.\",\n  \"action\": \"finish\",\n  \"action_input\": \"You have the following tasks: 1. Buy groceries 2. Call dentist\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -167,9 +193,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1027,
-            "completion_tokens": 50,
-            "total_tokens": 1077,
+            "prompt_tokens": 1474,
+            "completion_tokens": 103,
+            "total_tokens": 1577,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -182,367 +208,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": null
+          "system_fingerprint": "fp_51db84afab"
         }
-  recorded_at: Wed, 16 Jul 2025 08:27:08 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      }\n    },\n    \"observation\": {\n      \"type\":
-        \"string\"\n    }\n  },\n  \"required\": [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\"\n    },\n    \"next_step\": {\n      \"type\": \"string\",\n      \"enum\":
-        [\n        \"continue\",\n        \"finish\"\n      ]\n    }\n  },\n  \"required\":
-        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
-        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
-        adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"tasks\\\":[{\\\"id\\\":\\\"1\\\",\\\"name\\\":\\\"Buy groceries\\\"},{\\\"id\\\":\\\"2\\\",\\\"name\\\":\\\"Call
-        dentist\\\"}],\\\"query\\\":\\\"What tasks do I have?\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to retrieve the
-        list of tasks to respond to the user''s query about their tasks.\",\n      \"action\":
-        \"get_todays_date\",\n      \"action_input\": {},\n      \"observation\":
-        \"July 16, 2025\"\n    }\n  ],\n  \"observation\": \"July 16, 2025\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"example
-        string\",\n  \"next_step\": \"example string\"\n}\n```\n\nRequired fields:
-        interpretation, next_step\n\nEnsure your response:\n1. Is valid JSON (properly
-        quoted strings, no trailing commas)\n2. Includes all required fields\n3. Uses
-        the correct data types for each field\n4. Is wrapped in ```json``` markdown
-        code blocks\n"}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.13.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '3820'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Wed, 16 Jul 2025 08:27:10 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1075'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1077'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9998'
-      X-Ratelimit-Remaining-Tokens:
-      - '199163'
-      X-Ratelimit-Reset-Requests:
-      - 15.243s
-      X-Ratelimit-Reset-Tokens:
-      - 250ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 96001e6569d4026a-MAD
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-BtrllalWIMor1Gi8K2pOaSz8eMCEw",
-          "object": "chat.completion",
-          "created": 1752654429,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The user has tasks to complete today, including buying groceries and calling the dentist. I need to provide this information in response to their query.\",\n  \"next_step\": \"finish\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 794,
-            "completion_tokens": 52,
-            "total_tokens": 846,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": null
-        }
-  recorded_at: Wed, 16 Jul 2025 08:27:10 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      }\n    },\n    \"available_tools\": {\n      \"type\":
-        \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      }\n    }\n  },\n  \"required\":
-        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\"\n    },\n    \"action_input\": {\n      \"oneOf\":
-        [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to process the given
-        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"tasks\\\":[{\\\"id\\\":\\\"1\\\",\\\"name\\\":\\\"Buy groceries\\\"},{\\\"id\\\":\\\"2\\\",\\\"name\\\":\\\"Call
-        dentist\\\"}],\\\"query\\\":\\\"What tasks do I have?\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to retrieve the
-        list of tasks to respond to the user''s query about their tasks.\",\n      \"action\":
-        \"get_todays_date\",\n      \"action_input\": {},\n      \"observation\":
-        \"July 16, 2025\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
-        \"get_todays_date\",\n      \"description\": \"Returns the current date in
-        a human-readable format\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {},\n        \"required\": []\n      }\n    },\n    {\n      \"name\": \"add_numbers\",\n      \"description\":
-        \"Adds two numbers together\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"x\": {\n            \"type\":
-        \"number\",\n            \"description\": \"Parameter x\"\n          },\n          \"y\":
-        {\n            \"type\": \"number\",\n            \"description\": \"Parameter
-        y\"\n          }\n        },\n        \"required\": [\n          \"x\",\n          \"y\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"example string\",\n  \"action\":
-        \"example string\",\n  \"action_input\": \"example value\"\n}\n```\n\nRequired
-        fields: thought, action, action_input\n\nEnsure your response:\n1. Is valid
-        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
-        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
-        markdown code blocks\n"}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.13.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '5334'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Wed, 16 Jul 2025 08:27:12 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1571'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1574'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9997'
-      X-Ratelimit-Remaining-Tokens:
-      - '198827'
-      X-Ratelimit-Reset-Requests:
-      - 22.31s
-      X-Ratelimit-Reset-Tokens:
-      - 351ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 96001e6f8f2e026a-MAD
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-BtrlnGYv5scyNfnGV2rhtEDaoXwTm",
-          "object": "chat.completion",
-          "created": 1752654431,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I should extract the tasks from the input context to provide a response to the user's query.\",\n  \"action\": \"extract_tasks\",\n  \"action_input\": {\n    \"tasks\": [\n      {\n        \"id\": \"1\",\n        \"name\": \"Buy groceries\"\n      },\n      {\n        \"id\": \"2\",\n        \"name\": \"Call dentist\"\n      }\n    ]\n  }\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 1094,
-            "completion_tokens": 94,
-            "total_tokens": 1188,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": null
-        }
-  recorded_at: Wed, 16 Jul 2025 08:27:12 GMT
+  recorded_at: Tue, 16 Sep 2025 16:26:05 GMT
 recorded_with: VCR 6.3.1
