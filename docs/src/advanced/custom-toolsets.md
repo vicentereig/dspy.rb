@@ -58,9 +58,73 @@ end
 ### Tool Method Requirements
 
 1. **Keyword Arguments**: All parameters must be keyword arguments
-2. **Sorbet Signatures**: Required for automatic schema generation
+2. **Sorbet Signatures**: Required for automatic schema generation and type conversion
 3. **Return Values**: Must return serializable values (String, Integer, Hash, Array)
 4. **Error Handling**: Should handle errors gracefully
+
+### Advanced Type Support
+
+DSPy.rb toolsets support comprehensive Sorbet types with automatic conversion:
+
+```ruby
+class Priority < T::Enum
+  enums do
+    Low = new('low')
+    Medium = new('medium') 
+    High = new('high')
+    Critical = new('critical')
+  end
+end
+
+class TaskData < T::Struct
+  prop :id, String
+  prop :priority, Priority
+  prop :tags, T::Array[String]
+  prop :metadata, T.nilable(T::Hash[String, String]), default: nil
+end
+
+class AdvancedToolset < DSPy::Tools::Toolset
+  toolset_name "advanced"
+  
+  tool :process_task, description: "Process a task with complex types"
+  
+  # LLMs can provide JSON that gets automatically converted
+  sig { params(
+    task: TaskData,
+    priorities: T::Array[Priority],
+    config: T::Hash[String, T.any(String, Integer)]
+  ).returns(String) }
+  def process_task(task:, priorities:, config:)
+    # task.priority is already a Priority enum instance
+    # priorities is an array of Priority enum instances
+    # All conversion happens automatically
+    
+    "Processing task #{task.id} with priority #{task.priority.serialize}"
+  end
+end
+```
+
+The LLM provides JSON like:
+```json
+{
+  "action": "process_task",
+  "action_input": {
+    "task": {
+      "id": "task-123",
+      "priority": "high",
+      "tags": ["urgent", "customer"]
+    },
+    "priorities": ["medium", "high", "critical"],
+    "config": {
+      "timeout": 30,
+      "retry_count": 3,
+      "mode": "fast"
+    }
+  }
+}
+```
+
+And it's automatically converted to the proper Ruby types with full type safety.
 
 ## Production Toolset Examples
 

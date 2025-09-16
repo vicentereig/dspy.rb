@@ -2,6 +2,8 @@
 
 require 'sorbet-runtime'
 require 'json'
+require_relative '../type_system/sorbet_json_schema'
+require_relative '../mixins/type_coercion'
 
 module DSPy
   module Tools
@@ -69,10 +71,8 @@ module DSPy
           sig_info.kwarg_types.each do |param_name, param_type|
             next if param_name == :block
 
-            properties[param_name] = {
-              type: sorbet_type_to_json_schema(param_type)[:type],
-              description: "Parameter #{param_name}"
-            }
+            schema = DSPy::TypeSystem::SorbetJsonSchema.type_to_json_schema(param_type)
+            properties[param_name] = schema.merge({ description: "Parameter #{param_name}" })
 
             # Check if parameter is required
             if sig_info.req_kwarg_names.include?(param_name)
@@ -89,61 +89,12 @@ module DSPy
           }
         end
 
-        private
-
-        # Convert Sorbet types to JSON Schema types (extracted from Base)
-        sig { params(sorbet_type: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
-        def sorbet_type_to_json_schema(sorbet_type)
-          # Check for boolean types first (SimplePairUnion of TrueClass | FalseClass)
-          if sorbet_type.respond_to?(:types) && sorbet_type.types.length == 2
-            raw_types = sorbet_type.types.map do |t|
-              t.is_a?(T::Types::Simple) ? t.raw_type : t
-            end
-            
-            if raw_types.include?(TrueClass) && raw_types.include?(FalseClass)
-              return { type: :boolean }
-            end
-          end
-          
-          if sorbet_type.is_a?(T::Types::Simple)
-            raw_type = sorbet_type.raw_type
-
-            case raw_type
-            when String
-              { type: :string }
-            when Integer
-              { type: :integer }
-            when Float, Numeric
-              { type: :number }
-            when TrueClass, FalseClass, T::Boolean
-              { type: :boolean }
-            else
-              { type: :string, description: "#{raw_type} (converted to string)" }
-            end
-          elsif sorbet_type.is_a?(T::Types::Union)
-            # Handle nilable types
-            non_nil_types = sorbet_type.types.reject { |t| t == T::Utils.coerce(NilClass) }
-            if non_nil_types.length == 1
-              result = sorbet_type_to_json_schema(non_nil_types.first)
-              result[:description] = "#{result[:description] || ''} (optional)".strip
-              result
-            else
-              { type: :string, description: "Union type (converted to string)" }
-            end
-          elsif sorbet_type.is_a?(T::Types::TypedArray)
-            {
-              type: :array,
-              items: sorbet_type_to_json_schema(sorbet_type.type)
-            }
-          else
-            { type: :string, description: "#{sorbet_type} (converted to string)" }
-          end
-        end
       end
 
       # Inner class that wraps a method as a tool, compatible with DSPy::Tools::Base interface
       class ToolProxy < Base
         extend T::Sig
+        include DSPy::Mixins::TypeCoercion
 
         sig { params(instance: Toolset, method_name: Symbol, tool_name: String, description: String).void }
         def initialize(instance, method_name, tool_name, description)
@@ -203,12 +154,34 @@ module DSPy
 
             # Convert string keys to symbols and validate types
             kwargs = {}
-            schema[:properties].each do |param_name, param_schema|
-              key = param_name.to_s
-              if args.key?(key)
-                kwargs[param_name] = convert_argument_type(args[key], param_schema)
-              elsif schema[:required].include?(key)
-                return "Error: Missing required parameter: #{key}"
+            
+            # Get method signature for type information
+            method_obj = @instance.class.instance_method(@method_name)
+            sig_info = T::Utils.signature_for_method(method_obj)
+            
+            if sig_info
+              # Handle kwargs using type signature information
+              sig_info.kwarg_types.each do |param_name, param_type|
+                next if param_name == :block
+                
+                key = param_name.to_s
+                if args.key?(key)
+                  kwargs[param_name] = coerce_value_to_type(args[key], param_type)
+                elsif schema[:required].include?(key)
+                  return "Error: Missing required parameter: #{key}"
+                end
+              end
+              
+              # Handle positional args if any
+              sig_info.arg_types.each do |param_name, param_type|
+                next if param_name == :block
+                
+                key = param_name.to_s
+                if args.key?(key)
+                  kwargs[param_name] = coerce_value_to_type(args[key], param_type)
+                elsif schema[:required].include?(key)
+                  return "Error: Missing required parameter: #{key}"
+                end
               end
             end
 

@@ -112,25 +112,216 @@ tool :search,
 
 ## Type Safety
 
-Methods use Sorbet signatures for automatic schema generation:
+DSPy.rb supports a comprehensive range of Sorbet types for tools and toolsets with automatic JSON schema generation and type coercion:
+
+### Basic Types
 
 ```ruby
-sig { params(key: String, value: String, tags: T.nilable(T::Array[String])).returns(String) }
-def store(key:, value:, tags: nil)
-  # Implementation
+sig { params(
+  text: String,
+  count: Integer,
+  score: Float,
+  enabled: T::Boolean,
+  threshold: Numeric
+).returns(String) }
+def analyze(text:, count:, score:, enabled:, threshold:)
+  # All basic types are fully supported
 end
 ```
 
-This generates:
+### Enums
+
+Define and use enums directly in tool signatures:
+
+```ruby
+class Priority < T::Enum
+  enums do
+    Low = new('low')
+    Medium = new('medium')
+    High = new('high')
+    Critical = new('critical')
+  end
+end
+
+class Status < T::Enum
+  enums do
+    Pending = new('pending')
+    InProgress = new('in-progress')
+    Completed = new('completed')
+  end
+end
+
+sig { params(priority: Priority, status: Status).returns(String) }
+def update_task(priority:, status:)
+  "Updated to #{priority.serialize} priority with #{status.serialize} status"
+end
+```
+
+LLM calls get converted automatically:
 ```json
 {
-  "parameters": {
-    "properties": {
-      "key": { "type": "string" },
-      "value": { "type": "string" },
-      "tags": { "type": "array", "items": { "type": "string" } }
-    },
-    "required": ["key", "value"]
+  "action": "update_task",
+  "action_input": {
+    "priority": "critical",
+    "status": "in-progress"
+  }
+}
+```
+
+### Structs
+
+Use T::Struct for complex data structures:
+
+```ruby
+class TaskMetadata < T::Struct
+  prop :id, String
+  prop :priority, Priority
+  prop :tags, T::Array[String]
+  prop :estimated_hours, T.nilable(Float), default: nil
+end
+
+class TaskRequest < T::Struct
+  prop :title, String
+  prop :description, String
+  prop :status, Status
+  prop :metadata, TaskMetadata
+  prop :assignees, T::Array[String]
+end
+
+sig { params(task: TaskRequest).returns(String) }
+def create_task(task:)
+  "Created: #{task.title} (#{task.status.serialize})"
+end
+```
+
+### Collections
+
+Arrays and hashes with typed elements:
+
+```ruby
+sig { params(
+  tags: T::Array[String],
+  priorities: T::Array[Priority],
+  config: T::Hash[String, T.any(String, Integer, Float)],
+  mappings: T::Hash[String, Priority]
+).returns(String) }
+def configure(tags:, priorities:, config:, mappings:)
+  # Typed collections with automatic validation
+end
+```
+
+### Nilable Types
+
+Optional parameters with `T.nilable()`:
+
+```ruby
+sig { params(
+  required_field: String,
+  optional_field: T.nilable(String),
+  optional_enum: T.nilable(Priority),
+  optional_array: T.nilable(T::Array[String])
+).returns(String) }
+def process(required_field:, optional_field: nil, optional_enum: nil, optional_array: nil)
+  # Only required_field is mandatory in the JSON schema
+end
+```
+
+### Union Types
+
+Multiple type options with `T.any()`:
+
+```ruby
+sig { params(
+  value: T.any(String, Integer, Float),
+  action: T.any(Priority, Status)
+).returns(String) }
+def handle_flexible(value:, action:)
+  # Accepts multiple types with automatic coercion
+end
+```
+
+## Supported Sorbet Types Reference
+
+| Sorbet Type | JSON Schema | Auto Conversion | Notes |
+|-------------|-------------|-----------------|-------|
+| `String` | `{"type": "string"}` | ✅ | Basic string values |
+| `Integer` | `{"type": "integer"}` | ✅ | Whole numbers |
+| `Float` | `{"type": "number"}` | ✅ | Decimal numbers |
+| `Numeric` | `{"type": "number"}` | ✅ | Integer or Float |
+| `T::Boolean` | `{"type": "boolean"}` | ✅ | true/false values |
+| `T::Enum` | `{"type": "string", "enum": [...]}` | ✅ | Automatic deserialization |
+| `T::Struct` | `{"type": "object", "properties": {...}}` | ✅ | Nested object conversion |
+| `T::Array[Type]` | `{"type": "array", "items": {...}}` | ✅ | Typed array elements |
+| `T::Hash[K,V]` | `{"type": "object", "additionalProperties": {...}}` | ✅ | Key-value constraints |
+| `T.nilable(Type)` | `{"type": [original, "null"]}` | ✅ | Optional parameters |
+| `T.any(T1, T2)` | `{"oneOf": [{...}, {...}]}` | ✅ | Union type handling |
+| `T.class_of(Class)` | `{"type": "string"}` | ✅ | Class name strings |
+
+## Schema Generation Examples
+
+Basic enum tool generates:
+```json
+{
+  "type": "function", 
+  "function": {
+    "name": "update_task",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "priority": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "Parameter priority"
+        },
+        "status": {
+          "type": "string", 
+          "enum": ["pending", "in-progress", "completed"],
+          "description": "Parameter status"
+        }
+      },
+      "required": ["priority", "status"]
+    }
+  }
+}
+```
+
+Complex struct tool generates:
+```json
+{
+  "type": "function",
+  "function": {
+    "name": "create_task", 
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "task": {
+          "type": "object",
+          "properties": {
+            "_type": {"type": "string", "const": "TaskRequest"},
+            "title": {"type": "string"},
+            "description": {"type": "string"},
+            "status": {
+              "type": "string",
+              "enum": ["pending", "in-progress", "completed"]
+            },
+            "metadata": {
+              "type": "object",
+              "properties": {
+                "_type": {"type": "string", "const": "TaskMetadata"},
+                "id": {"type": "string"},
+                "priority": {
+                  "type": "string", 
+                  "enum": ["low", "medium", "high", "critical"]
+                },
+                "tags": {"type": "array", "items": {"type": "string"}},
+                "estimated_hours": {"type": ["number", "null"]}
+              }
+            }
+          }
+        }
+      },
+      "required": ["task"]
+    }
   }
 }
 ```
