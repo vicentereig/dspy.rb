@@ -1,0 +1,184 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
+        \"TaskRequest\"\n        },\n        \"title\": {\n          \"type\": \"string\"\n        },\n        \"description\":
+        {\n          \"type\": \"string\"\n        },\n        \"status\": {\n          \"type\":
+        \"string\",\n          \"enum\": [\n            \"pending\",\n            \"in-progress\",\n            \"completed\",\n            \"cancelled\"\n          ]\n        },\n        \"metadata\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"_type\":
+        {\n              \"type\": \"string\",\n              \"const\": \"TaskMetadata\"\n            },\n            \"id\":
+        {\n              \"type\": \"string\"\n            },\n            \"priority\":
+        {\n              \"type\": \"string\",\n              \"enum\": [\n                \"low\",\n                \"medium\",\n                \"high\",\n                \"critical\"\n              ]\n            },\n            \"tags\":
+        {\n              \"type\": \"array\",\n              \"items\": {\n                \"type\":
+        \"string\"\n              }\n            },\n            \"estimated_hours\":
+        {\n              \"type\": [\n                \"number\",\n                \"null\"\n              ]\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"id\",\n            \"priority\",\n            \"tags\"\n          ],\n          \"description\":
+        \"TaskMetadata struct\"\n        },\n        \"assignees\": {\n          \"type\":
+        \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"due_date\":
+        {\n          \"type\": [\n            \"string\",\n            \"null\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"title\",\n        \"description\",\n        \"status\",\n        \"metadata\",\n        \"assignees\"\n      ],\n      \"description\":
+        \"TaskRequest struct\"\n    },\n    \"criteria\": {\n      \"type\": \"object\",\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"oneOf\": [\n          {\n            \"type\": \"string\"\n          },\n          {\n            \"type\":
+        \"string\",\n            \"enum\": [\n              \"low\",\n              \"medium\",\n              \"high\",\n              \"critical\"\n            ]\n          }\n        ],\n        \"description\":
+        \"Union of multiple types\"\n      },\n      \"description\": \"A mapping
+        where keys are strings and values are Union of multiple typess\"\n    }\n  },\n  \"required\":
+        [\n    \"task\",\n    \"criteria\"\n  ]\n}\n```\nYour output schema fields
+        are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"analysis\": {\n      \"type\": \"string\"\n    },\n    \"recommendations\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"urgency_score\":
+        {\n      \"type\": \"number\"\n    }\n  },\n  \"required\": [\n    \"analysis\",\n    \"recommendations\",\n    \"urgency_score\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Analyze tasks for prioritization and recommendations"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task\": {\n    \"title\": \"Test LLM Task\",\n    \"description\":
+        \"Testing LLM integration\",\n    \"status\": \"pending\",\n    \"metadata\":
+        {\n      \"id\": \"llm-test\",\n      \"priority\": \"medium\",\n      \"tags\":
+        [\n        \"test\",\n        \"llm\"\n      ],\n      \"estimated_hours\":
+        null\n    },\n    \"assignees\": [\n      \"system\"\n    ],\n    \"due_date\":
+        null\n  },\n  \"criteria\": {\n    \"focus\": \"performance\",\n    \"priority\":
+        \"high\"\n  }\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"analysis\":
+        \"example string\",\n  \"recommendations\": [\n    \"example string\"\n  ],\n  \"urgency_score\":
+        3.14\n}\n```\n\nRequired fields: analysis, recommendations, urgency_score\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '5049'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 16 Sep 2025 11:56:53 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1852'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2183'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '198894'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 331ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98002ed04f960268-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CGOah67o5FdBZn1xEPlOIP6HF6cVI",
+          "object": "chat.completion",
+          "created": 1758023811,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"analysis\": \"The task 'Test LLM Task' is currently pending with a medium priority. Given the criteria, focusing on performance and emphasizing high priority, this task requires immediate attention to ensure it aligns with the performance standards expected.\",\n  \"recommendations\": [\n    \"Prioritize completion of this task to enhance overall performance.\",\n    \"Review resource allocation to ensure adequate support for task execution.\"\n  ],\n  \"urgency_score\": 7.5\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1037,
+            "completion_tokens": 103,
+            "total_tokens": 1140,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Tue, 16 Sep 2025 11:56:53 GMT
+recorded_with: VCR 6.3.1
