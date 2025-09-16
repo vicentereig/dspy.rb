@@ -66,6 +66,13 @@ module DSPy
     extend T::Sig
     include Mixins::StructBuilder
 
+    # AvailableTool struct for better type safety in ReAct agents
+    class AvailableTool < T::Struct
+      const :name, String
+      const :description, String
+      const :schema, T::Hash[Symbol, T.untyped]
+    end
+
     FINISH_ACTION = "finish"
     sig { returns(T.class_of(DSPy::Signature)) }
     attr_reader :original_signature_class
@@ -154,21 +161,21 @@ module DSPy
         # Define input fields
         input do
           const :input_context, String,
-            desc: "Serialized representation of all input fields"
+            description: "Serialized representation of all input fields"
           const :history, T::Array[HistoryEntry],
-            desc: "Previous thoughts and actions, including observations from tools."
-          const :available_tools, T::Array[T::Hash[String, T.untyped]],
-            desc: "Array of available tools with their JSON schemas."
+            description: "Previous thoughts and actions, including observations from tools."
+          const :available_tools, T::Array[AvailableTool],
+            description: "Array of available tools with their JSON schemas."
         end
 
         # Define output fields (same as ThoughtBase)
         output do
           const :thought, String,
-            desc: "Reasoning about what to do next, considering the history and observations."
+            description: "Reasoning about what to do next, considering the history and observations."
           const :action, String,
-            desc: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
+            description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
           const :action_input, T.any(String, T::Hash[T.untyped, T.untyped]),
-            desc: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final result based on processing the input data."
+            description: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final result based on processing the input data."
         end
       end
     end
@@ -184,19 +191,19 @@ module DSPy
         # Define input fields
         input do
           const :input_context, String,
-            desc: "Serialized representation of all input fields"
+            description: "Serialized representation of all input fields"
           const :history, T::Array[HistoryEntry],
-            desc: "Previous thoughts, actions, and observations."
+            description: "Previous thoughts, actions, and observations."
           const :observation, String,
-            desc: "The result from the last action"
+            description: "The result from the last action"
         end
 
         # Define output fields (same as ReActObservationBase)
         output do
           const :interpretation, String,
-            desc: "Interpretation of the observation"
+            description: "Interpretation of the observation"
           const :next_step, NextStep,
-            desc: "What to do next: '#{NextStep::Continue}' or '#{NextStep::Finish}'"
+            description: "What to do next: '#{NextStep::Continue}' or '#{NextStep::Finish}'"
         end
       end
     end
@@ -205,7 +212,14 @@ module DSPy
     sig { params(input_struct: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
     def execute_react_reasoning_loop(input_struct)
       history = T.let([], T::Array[HistoryEntry])
-      available_tools_desc = @tools.map { |name, tool| JSON.parse(tool.schema) }
+      available_tools_desc = @tools.map { |name, tool| 
+        schema = JSON.parse(tool.schema)
+        AvailableTool.new(
+          name: name,
+          description: tool.description,
+          schema: schema.transform_keys(&:to_sym)
+        )
+      }
       final_answer = T.let(nil, T.nilable(String))
       iterations_count = 0
       last_observation = T.let(nil, T.nilable(String))
@@ -239,7 +253,7 @@ module DSPy
     end
 
     # Executes a single iteration of the ReAct loop
-    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer, tools_used: T::Array[String], last_observation: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
+    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[AvailableTool], iteration: Integer, tools_used: T::Array[String], last_observation: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
     def execute_single_iteration(input_struct, history, available_tools_desc, iteration, tools_used, last_observation)
       # Track each iteration with agent span
       DSPy::Context.with_span(
@@ -380,7 +394,7 @@ module DSPy
       )
     end
 
-    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], observation: String, available_tools_desc: T::Array[T::Hash[String, T.untyped]], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
+    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], observation: String, available_tools_desc: T::Array[AvailableTool], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
     def process_observation_and_decide_next_step(input_struct, history, observation, available_tools_desc, iteration)
       return { should_finish: false } if observation.include?("Unknown action")
 
@@ -399,7 +413,7 @@ module DSPy
       { should_finish: true, final_answer: final_answer }
     end
 
-    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[T::Hash[String, T.untyped]], observation_result: T.untyped, iteration: Integer).returns(String) }
+    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[AvailableTool], observation_result: T.untyped, iteration: Integer).returns(String) }
     def generate_forced_final_answer(input_struct, history, available_tools_desc, observation_result, iteration)
       final_thought = @thought_generator.forward(
         input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
