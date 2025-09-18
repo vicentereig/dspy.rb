@@ -5,6 +5,7 @@ date: 2025-09-14
 description: "Why Enhanced Prompting beats JSON Native APIs in cost and compatibility plus when to break the rule"
 author: "Vicente Reig"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-modes-comparison/"
+image: /images/og/json-modes-comparison.png
 ---
 
 Getting reliable, structured data from Large Language Models is crucial for production applications. [DSPy.rb](https://github.com/vicentereig/dspy.rb) solves this with five different JSON extraction strategies, each optimized for specific AI providers. After benchmarking across 13 AI models, here's your complete guide to choosing the right approach.

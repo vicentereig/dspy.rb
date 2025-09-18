@@ -4,11 +4,12 @@
   "description": "Documentation site for DSPy.rb",
   "scripts": {
     "dev": "concurrently \"bun run watch:*\" \"bundle exec bridgetown start\"",
-    "build": "bun run build:css && bun run build:js && bundle exec bridgetown build",
+    "build": "bun run generate:og-images && bun run build:css && bun run build:js && bundle exec bridgetown build",
     "build:css": "bunx tailwindcss -i frontend/styles/index.css -o output/_bridgetown/static/css/index.css --minify",
     "watch:css": "bunx tailwindcss -i frontend/styles/index.css -o output/_bridgetown/static/css/index.css --watch",
     "build:js": "node esbuild.config.js",
     "watch:js": "node esbuild.config.js --watch",
+    "generate:og-images": "bun scripts/generate-default-og-image.js && bun scripts/generate-og-images.js",
     "clean": "bundle exec bridgetown clean",
     "serve": "bundle exec bridgetown start"
   },
