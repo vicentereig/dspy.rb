@@ -44,10 +44,10 @@ jobs:
         run: |
           bunx playwright install chromium --with-deps
 
-      - name: Build site
+      - name: Build site with assets
         working-directory: ./docs
         run: |
-          BRIDGETOWN_ENV=production bundle exec bridgetown build
+          BRIDGETOWN_ENV=production bun run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
