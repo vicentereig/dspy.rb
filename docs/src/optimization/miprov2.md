@@ -1,7 +1,8 @@
 ---
 layout: docs
+title: "MIPROv2 Ruby: Automated Prompt Engineering That Beats Manual Tuning"
 name: MIPROv2 Optimizer
-description: Advanced prompt optimization with MIPROv2
+description: "Cut prompt optimization time by 80% with MIPROv2. Automatic instruction generation, few-shot learning, and performance benchmarks for Ruby developers."
 breadcrumb:
 - name: Optimization
   url: "/optimization/"

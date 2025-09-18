@@ -1,0 +1,147 @@
+<!-- Structured Data Schema Markup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://vicentereig.github.io/dspy.rb/#software",
+      "name": "DSPy.rb",
+      "description": "Program LLMs, Don't Prompt Them. A Ruby framework for building predictable LLM applications using composable, type-safe modules.",
+      "url": "https://vicentereig.github.io/dspy.rb/",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Cross-platform",
+      "programmingLanguage": "Ruby",
+      "codeRepository": "https://github.com/vicentereig/dspy.rb",
+      "license": "https://github.com/vicentereig/dspy.rb/blob/main/LICENSE",
+      "author": {
+        "@type": "Person",
+        "name": "Vicente Reig",
+        "url": "https://github.com/vicentereig"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "softwareVersion": "latest"
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://vicentereig.github.io/dspy.rb/#organization",
+      "name": "DSPy.rb",
+      "url": "https://vicentereig.github.io/dspy.rb/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://vicentereig.github.io/dspy.rb/images/logo.png"
+      },
+      "sameAs": [
+        "https://github.com/vicentereig/dspy.rb"
+      ]
+    }
+    {% if page.layout == 'blog' %},
+    {
+      "@type": "TechArticle",
+      "@id": "{{ site.url }}{{ page.url }}#article",
+      "headline": "{{ page.title }}",
+      "description": "{{ page.description }}",
+      "url": "{{ site.url }}{{ page.url }}",
+      "datePublished": "{{ page.date | date_to_xmlschema }}",
+      "dateModified": "{% if page.last_modified_at %}{{ page.last_modified_at | date_to_xmlschema }}{% else %}{{ page.date | date_to_xmlschema }}{% endif %}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ page.author | default: 'Vicente Reig' }}",
+        "url": "https://github.com/vicentereig"
+      },
+      "publisher": {
+        "@id": "https://vicentereig.github.io/dspy.rb/#organization"
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ site.url }}{{ page.url }}"
+      },
+      "image": {
+        "@type": "ImageObject",
+        "url": "{{ site.url }}{% if page.image %}{{ page.image }}{% else %}/images/og/default.png{% endif %}"
+      },
+      "articleSection": "{{ page.category | default: 'Tutorial' }}",
+      "keywords": ["Ruby", "LLM", "AI", "DSPy", "Machine Learning", "Programming"]
+    }
+    {% endif %}
+    {% if page.layout == 'docs' and page.url contains 'getting-started' %},
+    {
+      "@type": "HowTo",
+      "@id": "{{ site.url }}{{ page.url }}#howto",
+      "name": "{{ page.title | default: page.name }}",
+      "description": "{{ page.description }}",
+      "url": "{{ site.url }}{{ page.url }}",
+      "image": {
+        "@type": "ImageObject", 
+        "url": "{{ site.url }}/images/og/getting-started.png"
+      },
+      "estimatedCost": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": "0"
+      },
+      "supply": [
+        {
+          "@type": "HowToSupply",
+          "name": "Ruby 3.1+"
+        },
+        {
+          "@type": "HowToSupply", 
+          "name": "OpenAI or Anthropic API Key"
+        }
+      ],
+      "tool": [
+        {
+          "@type": "HowToTool",
+          "name": "DSPy.rb Gem"
+        }
+      ]
+    }
+    {% endif %}
+    {% if page.url contains 'troubleshooting' %},
+    {
+      "@type": "FAQPage",
+      "@id": "{{ site.url }}{{ page.url }}#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How to fix 'NoMethodError: undefined method model' error?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "This error occurs when a DSPy module doesn't have a language model configured. Configure a language model either globally with DSPy.configure or at the module level."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How to fix DSPy::ConfigurationError?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Starting from version 0.9.0, DSPy provides clearer error messages when LM is not configured. Configure a language model globally or at the module level to resolve this error."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How to handle API rate limiting issues?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "DSPy.rb includes built-in retry logic with exponential backoff for handling API rate limits. You can configure retry behavior using the retry options in your LM configuration."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How to debug prediction failures?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Enable verbose logging and use DSPy's tracing capabilities to debug prediction failures. Check your signature definitions and input validation."
+          }
+        }
+      ]
+    }
+    {% endif %}
+  ]
+}
+</script>

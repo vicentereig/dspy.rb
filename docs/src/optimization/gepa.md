@@ -1,7 +1,8 @@
 ---
 layout: docs
+title: "GEPA Optimizer: Genetic Algorithm Prompt Optimization for Ruby LLMs"
 name: GEPA Optimizer
-description: Advanced prompt optimization with genetic algorithms and LLM reflection
+description: "Achieve 3x better LLM performance with GEPA's multi-objective optimization. Pareto-optimal prompts, automatic tuning, Ruby code examples included."
 breadcrumb:
 - name: Optimization
   url: "/optimization/"
@@ -375,3 +376,27 @@ See the `examples/` directory for complete working examples:
 - `gepa_benchmark.rb` - Comprehensive benchmarking
 
 These examples show real usage patterns and can be run with your API keys.
+
+## Related Topics
+
+### Other Optimization Methods
+- **[MIPROv2](/optimization/miprov2/)** - Alternative optimization algorithm for comparison with GEPA
+- **[Simple Optimizer](/optimization/simple-optimizer/)** - Quick random search optimization for getting started
+- **[Prompt Optimization](/optimization/prompt-optimization/)** - General principles of programmatic prompt improvement
+
+### Evaluation & Metrics
+- **[Evaluation](/optimization/evaluation/)** - Systematically test and measure your optimized programs
+- **[Custom Metrics](/advanced/custom-metrics/)** - Build domain-specific evaluation metrics for GEPA optimization
+- **[Benchmarking](/optimization/benchmarking-raw-prompts/)** - Compare optimized vs unoptimized approaches
+
+### Advanced Applications
+- **[RAG Optimization](/advanced/rag/)** - Use GEPA to optimize retrieval-augmented generation systems  
+- **[Complex Types](/advanced/complex-types/)** - Optimize programs working with structured data
+- **[Multi-stage Pipelines](/advanced/pipelines/)** - Optimize complex processing workflows
+
+### Framework Comparison
+- **[DSPy.rb vs LangChain](/advanced/dspy-vs-langchain/)** - Compare optimization capabilities across Ruby frameworks
+
+### Production
+- **[Storage](/production/storage/)** - Persist and manage your optimized GEPA programs
+- **[Registry](/production/registry/)** - Version management for GEPA-optimized configurations

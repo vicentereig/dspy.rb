@@ -1,7 +1,8 @@
 ---
 layout: docs
+title: "DSPy Ruby Tutorial: Get Started in 5 Minutes (2025 Guide)"
 name: Getting Started
-description: Get up and running with DSPy.rb in minutes
+description: "Quick start guide for DSPy.rb. Install, configure, and build your first LLM application in Ruby. No Python required. Works with OpenAI & Anthropic."
 breadcrumb:
 - name: Getting Started
   url: "/getting-started/"
@@ -61,7 +62,7 @@ puts result.confidence  # => 0.95
 
 ## What's Next?
 
-<div class="grid gap-4 mt-8 sm:grid-cols-2">
+<div class="grid gap-4 mt-8 sm:grid-cols-3 lg:grid-cols-3">
   <a href="{{ '/getting-started/installation/' | relative_url }}" class="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md">
     <div>
       <h3 class="text-base font-semibold leading-6 text-gray-900">Installation</h3>
@@ -78,6 +79,18 @@ puts result.confidence  # => 0.95
     <div>
       <h3 class="text-base font-semibold leading-6 text-gray-900">Quick Start</h3>
       <p class="mt-2 text-sm text-gray-500">Build your first LLM application with DSPy.rb.</p>
+    </div>
+    <span class="absolute top-6 right-6 text-gray-400">
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </span>
+  </a>
+  
+  <a href="{{ '/advanced/dspy-vs-langchain/' | relative_url }}" class="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md">
+    <div>
+      <h3 class="text-base font-semibold leading-6 text-gray-900">Framework Comparison</h3>
+      <p class="mt-2 text-sm text-gray-500">Compare DSPy.rb vs LangChain Ruby with benchmarks and migration guide.</p>
     </div>
     <span class="absolute top-6 right-6 text-gray-400">
       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

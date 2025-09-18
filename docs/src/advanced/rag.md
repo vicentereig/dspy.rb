@@ -1,7 +1,8 @@
 ---
 layout: docs
+title: "Ruby RAG Tutorial: Build Production-Ready Retrieval Systems with DSPy.rb"
 name: Retrieval Augmented Generation (RAG)
-description: Build RAG applications with DSPy.rb
+description: "Step-by-step guide to implementing Retrieval Augmented Generation in Ruby. Vector search, Rails integration, and evaluation metrics. Better than Python's LangChain."
 breadcrumb:
 - name: Advanced
   url: "/advanced/"
@@ -553,4 +554,28 @@ def call_with_monitoring(question:)
   result
 end
 ```
+
+## Related Topics
+
+### Core Concepts
+- **[Signatures](/core-concepts/signatures/)** - Learn how to design effective signatures for RAG systems
+- **[Modules](/core-concepts/modules/)** - Understand module composition for complex RAG pipelines
+- **[Memory](/core-concepts/memory/)** - Add persistent memory to your RAG applications
+
+### Advanced Patterns  
+- **[Multi-stage Pipelines](/advanced/pipelines/)** - Build complex processing pipelines with multiple RAG stages
+- **[Custom Metrics](/advanced/custom-metrics/)** - Create domain-specific evaluation metrics for RAG systems
+- **[Rails Integration](/advanced/rails-integration/)** - Integrate RAG systems with Ruby on Rails applications
+
+### Optimization
+- **[MIPROv2](/optimization/miprov2/)** - Automatically optimize RAG prompts for better performance
+- **[GEPA](/optimization/gepa/)** - Use genetic algorithms to optimize multi-objective RAG systems
+- **[Evaluation](/optimization/evaluation/)** - Systematically test and measure RAG application performance
+
+### Framework Comparison
+- **[DSPy.rb vs LangChain](/advanced/dspy-vs-langchain/)** - Compare RAG capabilities between Ruby frameworks
+
+### Production
+- **[Observability](/production/observability/)** - Monitor and trace RAG applications in production
+- **[Troubleshooting](/production/troubleshooting/)** - Common RAG issues and solutions
 

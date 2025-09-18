@@ -11,6 +11,9 @@ Ready to take your DSPy.rb applications to the next level? This section covers a
 
 ## Advanced Guides
 
+### [DSPy.rb vs LangChain Ruby Comparison](./dspy-vs-langchain/)
+Complete framework comparison with benchmarks, migration guide, and use case recommendations for Ruby developers.
+
 ### [Memory Systems](./memory-systems/)
 Advanced memory management and compaction for stateful agents that need to maintain context over time.
 
