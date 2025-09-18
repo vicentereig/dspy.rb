@@ -7,243 +7,136 @@ author: "Vicente Reig"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-modes-comparison/"
 ---
 
-Getting reliable, structured data from Large Language Models is crucial for production applications. While LLMs excel at generating human-like text, they struggle with consistently producing valid JSON that matches your application's type requirements.
+Getting reliable, structured data from Large Language Models is crucial for production applications. DSPy.rb solves this with five different JSON extraction strategies, each optimized for specific AI providers. After benchmarking across 13 AI models, here's your complete guide to choosing the right approach.
 
-DSPy.rb solves this challenge with five different JSON extraction strategies, each optimized for specific AI providers and use cases. After benchmarking these strategies across 13 AI models using complex nested types, we can now provide clear guidance on when to use each approach.
+This test used baseline DSPy.rb's Enhanced Prompts without any optimization beyond writing modular and typed Signatures. For production workloads, consider [prompt optimization](https://vicentereig.github.io/dspy.rb/optimization/prompt-optimization/) to improve performance further.
 
-## The Structured Output Problem
+## Five Extraction Strategies
 
-Modern applications need structured, validated data from AI models:
-
-```ruby
-# What you want: Type-safe, validated structures
-class TodoItem < DSPy::Struct
-  const :title, String
-  const :priority, T.enum(['high', 'medium', 'low'])
-  const :due_date, T.nilable(String)
-  const :assignee, UserProfile
-end
-
-# What LLMs often give you: Unreliable JSON
-'{"title": "Fix bug", "priority": "urgent", "due_date": null, "assignee": "John"}'
-# ❌ Invalid priority value, wrong assignee type
-```
-
-DSPy.rb automatically handles this complexity, selecting the optimal extraction strategy based on your target model and ensuring type-safe results every time.
-
-## DSPy.rb's Five Extraction Strategies
-
-### Universal Strategy: Enhanced Prompting
-**Works with all AI models** - Your reliable fallback
-
-DSPy.rb generates JSON Schema from your Ruby types and embeds clear formatting instructions in prompts. This strategy works across every provider and model, making it perfect for applications that need broad compatibility.
-
-**Best for:** Multi-provider applications, legacy model support, maximum reliability
-
-### Provider-Optimized Strategies
-
-#### OpenAI Structured Output
-**GPT-4o, GPT-4o-mini, GPT-5 series** - Native API enforcement
-
-Uses OpenAI's structured output API with function calling to enforce your schema at the API level. Provides the strongest guarantees for OpenAI models.
-
-**Best for:** OpenAI-exclusive applications requiring maximum reliability
-
-#### Anthropic Tool Use  
-**All Claude models** - Function calling approach
-
-Leverages Claude's sophisticated tool use capabilities to structure outputs through function parameters. Excellent reasoning about complex type relationships.
-
-**Best for:** Applications requiring complex reasoning and structured outputs
-
-#### Anthropic Extraction
-**All Claude models** - Text completion with guided parsing
-
-Specialized extraction using Claude's text completion with custom parsing logic. Optimized fallback for Anthropic models.
-
-**Best for:** Complex document processing, custom extraction patterns
-
-#### Gemini Structured Output
-**Gemini 1.5 Pro** - Native structured generation
-
-Google's native structured output capability. Emerged as the speed champion in our benchmarks while maintaining excellent accuracy.
-
-**Best for:** High-throughput applications, cost-sensitive deployments
+- **Enhanced Prompting**: Universal compatibility (works with all 13 models tested). This is [DSPy's](https://dspy.ai) style JSON Schema prompting.
+- **OpenAI Structured Output**: Native API enforcement for GPT models. Including nuances on their JSON Schema implementation.
+- **Anthropic Tool Use**: Function calling for all Claude models.
+- **Anthropic Extraction**: Text completion with guided parsing for Claude.
+- **Gemini Structured Output**: Native structured generation for Gemini 1.5 Pro.
 
 ## Performance Benchmark Results
 
-We tested all strategies across 13 AI models using sophisticated nested types including enums, unions, and arrays. Here are the results from our September 2025 benchmark:
+Even though reliability wasn't the goal of this benchmark, all strategies achieved 100% success rate in generating JSON
+and handling potentially invalid responses.
 
-### Speed Rankings
+| Strategy | Response Time | Success Rate | Token Efficiency | Cost (Best Model) |
+|----------|---------------|--------------|------------------|-------------------|
+| **Gemini Structured** | 3.42s | 100% | 800 tokens | $0.0019 |
+| **Anthropic Tool Use** | 6.23s | 100% | 800-1500 tokens | $0.001408 |
+| **Anthropic Extraction** | 6.41s | 100% | 800-1500 tokens | $0.001408 |
+| **Enhanced Prompting** | 7.52s | 92.3% | 800-1500 tokens | $0.000114 |
+| **OpenAI Structured** | 9.39s | 100% | 1200-1500 tokens | $0.000342 |
 
-| Strategy | Avg Response Time | Success Rate | Models Tested |
-|----------|------------------|-------------|---------------|
-| **Gemini Structured** | 3.42s | 100% (1/1) | Gemini 1.5 Pro only |
-| **Anthropic Tool Use** | 6.23s | 100% (4/4) | All Claude models |
-| **Anthropic Extraction** | 6.41s | 100% (4/4) | All Claude models |
-| **Enhanced Prompting** | 7.52s | 92.3% (12/13) | Universal compatibility |
-| **OpenAI Structured** | 9.39s | 100% (5/5) | GPT models with structured output |
+## Token Consumption Analysis
 
-**Key Finding:** While Gemini leads in speed, Enhanced Prompting delivers competitive performance across all providers with 92.3% success rate—making it the most versatile choice for production applications.
+**Most Token Efficient (800 tokens):**
+- Claude 3.5 Haiku, Gemini models, o1-mini
 
-### Reliability Analysis
+**Standard Usage (1200 tokens):**  
+- GPT-4o series, Claude Sonnet 4
 
-**Perfect Success Rates (100%):**
-- All provider-specific strategies achieved 100% success on their compatible models
-- OpenAI Structured Output: 5/5 successful extractions
-- Anthropic Tool Use: 4/4 successful extractions  
-- Anthropic Extraction: 4/4 successful extractions
-- Gemini Structured Output: 1/1 successful extraction
+**Highest Usage (1500 tokens):**
+- GPT-5 series, Claude Opus 4.1
 
-**Enhanced Prompting: 92.3% Success Rate**
-- 12 successful extractions out of 13 attempts
-- Single failure occurred with the `o1` model
-- Works across all provider ecosystems with minor tradeoffs
+**Cost per Token Leaders:**
+1. Gemini 1.5 Flash: $0.0000001425 per token
+2. GPT-5-nano: $0.00000011 per token  
+3. GPT-4o-mini: $0.000000285 per token
 
-### Cost Analysis: Production Economics
+**Token Insight:** Strategy choice doesn't significantly impact token usage—it's primarily model-dependent. Focus on model selection for token efficiency.
 
-Based on our benchmark of 27 total tests across all strategies:
+## Quick Decision Matrix
 
-**Most Cost-Effective:**
-1. Gemini 1.5 Flash + Enhanced Prompting: $0.000114 per extraction
-2. GPT-5-nano + any strategy: $0.000165 per extraction  
-3. GPT-4o-mini + any strategy: $0.000342 per extraction
+| Use Case | Recommended Strategy | Model | Cost | Speed |
+|----------|---------------------|-------|------|-------|
+| **Startup/MVP** | Enhanced Prompting | Gemini Flash | $0.000114 | 7.52s |
+| **High Volume** | Gemini Structured | Gemini Pro | $0.0019 | 3.42s |
+| **Enterprise Multi-Provider** | Enhanced Prompting | Multiple | Varies | 7.52s |
+| **Maximum Reliability** | Provider-Specific | Any Compatible | Varies | 6.23-9.39s |
+| **Cost-Sensitive** | Enhanced Prompting | Gemini Flash | $0.000114 | 7.52s |
 
-**Premium Tiers:**
-1. Claude Opus 4.1: $0.0495 per extraction (144x more expensive than Gemini Flash)
-2. Claude Sonnet 4: $0.00792 per extraction
-3. GPT-5: $0.005813 per extraction
+## Key Findings
 
-**Total benchmark cost: $0.2302** for comprehensive testing across all combinations.
+- **Speed Champion**: Gemini Structured Output (3.42s) but limited to one model
+- **Universal Choice**: Enhanced Prompting works across all providers with 92.3% success  
+- **Cost Winner**: Gemini Flash + Enhanced Prompting at $0.000114 per extraction
+- **Reliability**: All provider-specific strategies achieve 100% success rates
+- **Token Efficiency**: Choose Claude Haiku or Gemini for lowest token consumption
 
-**Economic Insight:** The 144x cost difference between Gemini Flash and Claude Opus means you can perform 144 extractions with Gemini for the cost of one premium Claude extraction.
+## Implementation
 
-### Model Compatibility Matrix
-
-```
-Strategy              OpenAI  Anthropic  Gemini  Total Models
-Enhanced Prompting      ✅        ✅        ✅        13/13
-Anthropic Tool Use      ❌        ✅        ❌         4/13  
-Anthropic Extraction    ❌        ✅        ❌         4/13
-OpenAI Structured       ✅        ❌        ❌         5/13
-Gemini Structured       ❌        ❌        ✅         1/13
-```
-
-**Insight:** Enhanced Prompting's universal compatibility means you can write once and deploy across any AI provider without code changes.
-
-## Real-World Decision Guide
-
-### For Startups & MVPs
-**Recommendation: Enhanced Prompting + Gemini Flash**
-- Universal compatibility as you experiment with providers
-- $0.000114 per extraction keeps costs minimal
-- 7.52s response time adequate for most use cases
-- 92.3% success rate across all models tested
-- Easy to switch providers later without code changes
-
-### For High-Volume Production
-**Recommendation: Gemini Structured Output + Gemini Pro**
-- 3.42s response time handles high throughput (fastest strategy)
-- 100% success rate in testing
-- Native structured output provides reliability
-- Limitation: Single model compatibility (Gemini 1.5 Pro only)
-
-### For Enterprise Applications  
-**Recommendation: Enhanced Prompting across multiple providers**
-- Deploy on Claude for complex reasoning (6.23-6.41s response time)
-- Use OpenAI for general-purpose tasks (9.39s response time)
-- Fallback to Gemini for cost optimization (3.42s response time)
-- Single codebase, multiple backends
-- 92.3% overall success rate provides good reliability
-
-### For Maximum Reliability
-**Recommendation: Provider-specific strategies**
-- OpenAI Structured Output: 100% success rate, 9.39s response time
-- Anthropic Tool Use: 100% success rate, 6.23s response time  
-- Anthropic Extraction: 100% success rate, 6.41s response time
-- Worth the provider lock-in for mission-critical applications
-- Note: Enhanced Prompting's single failure was with the experimental `o1` model
-
-## Complex Type Handling
-
-All strategies successfully handled sophisticated Ruby types:
+DSPy.rb uses [Signatures](https://vicentereig.github.io/dspy.rb/core-concepts/signatures/) to define structured inputs and outputs. Here's an example using [T::Enum types](https://vicentereig.github.io/dspy.rb/advanced/complex-types/):
 
 ```ruby
-# Union types with automatic discrimination
-ActionType = T.type_alias do
-  T.any(CreateTodoAction, UpdateTodoAction, DeleteTodoAction)
+class SearchDepth < T::Enum
+  enums do
+    Shallow = new('shallow')
+    Medium = new('medium')
+    Deep = new('deep')
+  end
 end
 
-# Nested structures with validation
-class ProjectSummary < DSPy::Struct
-  const :total_todos, Integer
-  const :team_members, T::Array[UserProfile]
-  const :next_actions, T::Array[ActionType]
-  const :completion_rate, Float, description: "Between 0.0 and 1.0"
+class DeepResearch < DSPy::Signature
+  input do
+    const :query, String
+    const :effort, SearchDepth, default: SearchDepth::Shallow
+  end
+  output { const :summary, String }
 end
-```
 
-**Key Insight:** DSPy.rb's type system works identically across all strategies. Your Ruby type definitions become the single source of truth, regardless of which provider you choose.
-
-## Implementation Simplicity
-
-DSPy.rb handles strategy selection automatically:
-
-```ruby
-# Single line - works with any provider
-lm = DSPy::LM.new('gemini/gemini-1.5-pro')  # or openai/gpt-4o, anthropic/claude-3-sonnet
-predictor = DSPy::Predictor.new(YourSignature, lm: lm)
-
-# DSPy.rb automatically selects optimal strategy
-result = predictor.call(input: your_data)
-# Returns fully validated Ruby objects
-```
-
-No strategy configuration needed—DSPy.rb chooses the best approach based on your model.
-
-## Observability and Monitoring
-
-Track performance across strategies with built-in observability:
-
-```ruby
-# Monitor performance metrics
-DSPy.events.subscribe('lm.tokens') do |event_name, attributes|
-  puts "Response time: #{attributes['duration']}s"
-  puts "Tokens used: #{attributes[:total_tokens]}"
-  puts "Model: #{attributes['gen_ai.request.model']}"
-  puts "Request ID: #{attributes['request_id']}"
+# Configure DSPy with your preferred model
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('gemini/gemini-1.5-flash')
 end
+
+predictor = DSPy::Predict.new(DeepResearch)
+search_result = predictor.call(query: "How does Stripe's API design influence developer adoption?")
+puts "Summary: #{search_result.summary}"
 ```
 
-This enables A/B testing between strategies and providers with real performance data.
+This example shows DSPy.rb's core components working together:
+- **[Configuration](https://vicentereig.github.io/dspy.rb/getting-started/core-concepts/)**: Set up your language model
+- **[Predictors](https://vicentereig.github.io/dspy.rb/core-concepts/predictors/)**: The `DSPy::Predict` class handles JSON extraction automatically
 
-## Looking Forward: sorbet-baml Integration
+## Recommendations
 
-We're working on integrating [BAML (Boundary ML)](https://github.com/vicentereig/sorbet-baml) signatures with DSPy.rb to provide:
+**Start with Enhanced Prompting + Gemini Flash** for most applications:
+- Universal compatibility across all providers
+- Lowest cost at $0.000114 per extraction
+- Easy provider switching without code changes
+- Consider [benchmarking your own workloads](https://vicentereig.github.io/dspy.rb/optimization/benchmarking-raw-prompts/)
 
-- **Alternative type definition syntax** for teams preferring BAML's approach
-- **Cross-library compatibility** between DSPy.rb and pure BAML projects  
-- **Migration paths** for existing BAML users wanting DSPy.rb's optimization features
-- **Performance comparisons** between type definition approaches
+**Optimize later** with provider-specific strategies for critical use cases requiring 100% reliability, or use [prompt optimization](https://vicentereig.github.io/dspy.rb/optimization/prompt-optimization/) to improve Enhanced Prompting performance. Set up [evaluation metrics](https://vicentereig.github.io/dspy.rb/optimization/evaluation/) to measure improvement.
 
-This integration will give Ruby developers choice in how they define structured outputs while maintaining DSPy.rb's automatic provider optimization.
+**Economic Reality:** Gemini Flash costs 144x less than Claude Opus while delivering production-quality results—you can perform 144 extractions for the cost of one premium extraction.
 
-## Choosing Your Strategy
+For enterprise deployments, implement [production observability](https://vicentereig.github.io/dspy.rb/production/observability/) to monitor extraction quality across providers.
 
-Our comprehensive benchmark reveals clear performance patterns across 27 test combinations:
+## Future: BAML-Inspired Enhanced Prompting
 
-**For most applications:** Start with Enhanced Prompting. Despite one failure (with the experimental `o1` model), its 92.3% success rate and universal compatibility across 13 models make it the safest default choice. You can always optimize later.
+We're developing [sorbet-baml](https://vicentereig.github.io/sorbet-baml/), a next-generation approach to Enhanced Prompting that could reduce token usage by 50-70% while improving accuracy. This initiative ([GitHub #70](https://github.com/vicentereig/dspy.rb/issues/70)) transforms verbose JSON schemas into TypeScript-like syntax with inline comments:
 
-**For speed-critical applications:** Gemini Structured Output delivers the fastest performance at 3.42s, but limits you to a single model. Anthropic strategies offer good speed (6.23-6.41s) with broader model choices.
+**Current JSON Schema:** 150 tokens
+**BAML Format:** 45 tokens (70% reduction)
 
-**For cost-sensitive deployments:** Gemini Flash with Enhanced Prompting provides production-quality results at $0.000114 per extraction—144x cheaper than premium alternatives.
+Expected benefits:
+- **Lower costs**: Dramatically reduced token consumption for complex schemas
+- **Better accuracy**: Up to 20% improvement for nested structures
+- **Universal compatibility**: Works with all providers (OpenAI, Anthropic, Gemini, Ollama)
 
-**For maximum reliability:** Provider-specific strategies achieve 100% success rates on their compatible models. If you can accept provider lock-in, these offer the strongest guarantees.
+This enhancement will integrate seamlessly with DSPy.rb's existing Enhanced Prompting strategy, providing automatic optimization without code changes.
 
-**The Enhanced Prompting advantage:** While provider-specific strategies achieved perfect success rates, Enhanced Prompting's ability to work across all providers with competitive performance makes it uniquely valuable for production systems that need flexibility.
+## Related Articles
 
-The beauty of DSPy.rb's approach is that your type definitions remain constant regardless of strategy. This means you can start with Enhanced Prompting for universal compatibility, then optimize with provider-specific strategies for critical use cases, all without changing your data structures.
+- [Type-Safe Prediction Objects](https://vicentereig.github.io/dspy.rb/blog/articles/type-safe-prediction-objects/) - Deep dive into DSPy.rb's type system
+- [Under the Hood: JSON Extraction](https://vicentereig.github.io/dspy.rb/blog/articles/under-the-hood-json-extraction/) - Technical details of extraction strategies
+- [JSON Parsing Reliability](https://vicentereig.github.io/dspy.rb/blog/articles/json-parsing-reliability/) - Techniques for robust JSON handling
 
 ---
 
-*Performance data from September 14, 2025 benchmarks: 27 total tests across 5 strategies and 13 AI models using DSPy.rb. Total benchmark cost: $0.2302. Individual results may vary based on model versions and API changes.*
+*Benchmark: 27 tests across 5 strategies and 13 AI models. Total cost: $0.2302. September 14, 2025.*
