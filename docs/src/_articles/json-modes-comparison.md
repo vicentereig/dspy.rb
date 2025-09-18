@@ -385,7 +385,9 @@ end
 
 # Configure DSPy with your preferred model
 DSPy.configure do |c|
-  c.lm = DSPy::LM.new('gemini/gemini-1.5-flash')
+  c.lm = DSPy::LM.new('gemini/gemini-1.5-flash',
+                      api_key: ENV['GEMINI_API_KEY'], 
+                      structured_outputs: true)  # Supports gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp
 end
 
 predictor = DSPy::Predict.new(DeepResearch)
