@@ -7,6 +7,7 @@ author: "Vicente Reig"
 category: "Performance"
 reading_time: "7 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/concurrent-llm-processing-performance-gains/"
+image: /images/og/concurrent-llm-processing-performance-gains.png
 ---
 
 Serving multiple customers efficiently isn't just a coffee shop problem—it's the core challenge of any LLM application at scale. When your AI agent needs to handle multiple requests, the difference between sequential and concurrent processing can make or break the user experience.

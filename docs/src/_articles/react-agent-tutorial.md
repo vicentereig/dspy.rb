@@ -7,6 +7,7 @@ author: "Vicente Reig"
 category: "Tutorial"
 reading_time: "12 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/"
+image: /images/og/react-agent-tutorial.png
 ---
 
 ReAct (Reasoning and Acting) agents are the workhorses of AI applications. They can use tools, reason about their actions, and solve complex multi-step problems. Today, I'll show you how to build one from scratch.

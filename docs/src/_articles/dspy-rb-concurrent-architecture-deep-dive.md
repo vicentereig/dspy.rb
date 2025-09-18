@@ -7,6 +7,7 @@ author: "Vicente Reig"
 category: "Architecture"
 reading_time: "12 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/dspy-rb-concurrent-architecture-deep-dive/"
+image: /images/og/dspy-rb-concurrent-architecture-deep-dive.png
 tags: ["architecture", "concurrency", "performance", "ruby", "async", "telemetry"]
 ---
 

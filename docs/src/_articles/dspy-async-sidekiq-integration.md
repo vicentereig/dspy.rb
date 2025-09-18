@@ -6,6 +6,7 @@ description: "How DSPy.rb's async architecture enables efficient background proc
 author: "Vicente Reig"
 tags: ["async", "sidekiq", "performance", "production", "concurrency"]
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/dspy-async-sidekiq-integration/"
+image: /images/og/dspy-async-sidekiq-integration.png
 ---
 
 LLM API calls take 2-5 seconds each. In a Sidekiq worker processing hundreds of jobs, this can quickly exhaust your thread pool and create bottlenecks. DSPy.rb's async architecture solves this by using Ruby's `async` gem for non-blocking I/O operations.

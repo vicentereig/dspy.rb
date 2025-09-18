@@ -7,6 +7,7 @@ author: "Vicente Reig"
 category: "Features"
 reading_time: "2 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/run-llms-locally-with-ollama-and-type-safe-ruby/"
+image: /images/og/run-llms-locally-with-ollama-and-type-safe-ruby.png
 ---
 
 I'm excited to announce that DSPy.rb v0.15.0 brings full support for Ollama! You can now run powerful language models locally while maintaining all the type safety and structured outputs that make DSPy.rb unique. This means zero API costs during development, complete data privacy, and the same great developer experience you expect from DSPy.

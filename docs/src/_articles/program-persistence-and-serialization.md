@@ -7,6 +7,7 @@ author: "Vicente Reig"
 category: "Features"
 reading_time: "4 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/program-persistence-and-serialization/"
+image: /images/og/program-persistence-and-serialization.png
 ---
 
 DSPy.rb v0.20.0 introduces a powerful new capability: complete program persistence and serialization. Thanks to Stefan Froelich's excellent work, you can now save optimized DSPy programs to disk, reload them later, and share them across environments with full state preservation.

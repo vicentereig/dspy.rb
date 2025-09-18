@@ -7,6 +7,7 @@ author: "Vicente Reig"
 category: "Features"
 reading_time: "3 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/fiber-local-lm-contexts/"
+image: /images/og/fiber-local-lm-contexts.png
 ---
 
 DSPy.rb v0.20.0 introduces a powerful new feature for managing language models in complex applications: `DSPy.with_lm`. Thanks to Stefan Froelich's excellent contribution, you can now temporarily override language models using Ruby's fiber-local storage, enabling cleaner concurrent patterns and more flexible model management.

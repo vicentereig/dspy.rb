@@ -7,6 +7,7 @@ author: "Vicente Reig"
 category: "Production"
 reading_time: "8 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/observability-in-action-langfuse/"
+image: /images/og/observability-in-action-langfuse.png
 ---
 
 > You don't need Neo's Matrix X-Ray Vision to understand what's going on in your workflows and agents.

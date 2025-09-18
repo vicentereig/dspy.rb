@@ -6,6 +6,7 @@ description: "A technical deep-dive into DSPy.rb's multi-strategy JSON extractio
 author: "Vicente Reig"
 draft: true
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/under-the-hood-json-extraction/"
+image: /images/og/under-the-hood-json-extraction.png
 ---
 
 DSPy.rb uses 5 different strategies to extract JSON from LLMs. Here's how each one works.

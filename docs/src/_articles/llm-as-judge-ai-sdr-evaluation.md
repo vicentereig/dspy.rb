@@ -6,6 +6,7 @@ description: "How to use LLM judges to evaluate AI SDR campaigns with human-like
 author: "Vicente Reig"
 tags: ["evaluation", "llm-judge", "sales", "sdr", "custom-metrics"]
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/llm-as-judge-ai-sdr-evaluation/"
+image: /images/og/llm-as-judge-ai-sdr-evaluation.png
 ---
 
 You've built an AI system that finds prospects and writes sales emails. Now you need to evaluate the quality before sending. Simple keyword matching and rule-based metrics miss important nuances like tone, authenticity, and contextual relevance.

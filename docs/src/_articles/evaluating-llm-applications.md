@@ -6,6 +6,7 @@ date: 2025-06-01
 author: Vicente Reig
 tags: ["evaluation", "metrics", "testing", "quality"]
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluating-llm-applications/"
+image: /images/og/evaluating-llm-applications.png
 ---
 
 Building reliable LLM applications requires more than just getting them to work—you need to measure how well they work. DSPy.rb's evaluation framework makes it easy to systematically test your applications, from simple accuracy checks to sophisticated quality assessments.

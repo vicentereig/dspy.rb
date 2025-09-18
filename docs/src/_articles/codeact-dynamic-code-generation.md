@@ -7,6 +7,7 @@ author: "Vicente Reig"
 category: "Features"
 reading_time: "10 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/codeact-dynamic-code-generation/"
+image: /images/og/codeact-dynamic-code-generation.png
 ---
 
 Imagine an AI that doesn't just call predefined tools but writes its own Ruby code to solve problems. That's CodeAct - a unique feature in DSPy.rb that sets it apart from the Python version.

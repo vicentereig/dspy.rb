@@ -5,6 +5,7 @@ date: 2025-07-11
 description: "How DSPy.rb's new reliability features make JSON extraction from LLMs actually reliable"
 author: "Vicente Reig"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-parsing-reliability/"
+image: /images/og/json-parsing-reliability.png
 ---
 
 If you've built anything with LLMs, you know the pain. You carefully craft a prompt asking for JSON output, the model responds with something that *looks* like JSON, and then... `JSON::ParserError`. 

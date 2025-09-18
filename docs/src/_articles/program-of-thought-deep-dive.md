@@ -7,6 +7,7 @@ author: "Vicente Reig"
 category: "Research"
 reading_time: "12 min read"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/program-of-thought-deep-dive/"
+image: /images/og/program-of-thought-deep-dive.png
 ---
 
 ## TL;DR
