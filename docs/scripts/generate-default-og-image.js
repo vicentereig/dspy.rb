@@ -76,7 +76,8 @@ function generateHTML() {
 }
 
 async function generateDefaultOgImage() {
-  const outputDir = path.join(__dirname, '../output/images/og');
+  // Generate into src so Bridgetown copies them
+  const outputDir = path.join(__dirname, '../src/images/og');
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }

@@ -274,8 +274,8 @@ async function generateOgImages() {
   
   console.log(`Found ${articles.length} articles to process.`);
   
-  // Ensure output directory exists
-  const outputDir = path.join(__dirname, '../output/images/og');
+  // Ensure output directory exists - generate into src so Bridgetown copies them
+  const outputDir = path.join(__dirname, '../src/images/og');
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
