@@ -8,7 +8,8 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
         {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
@@ -24,20 +25,34 @@ http_interactions:
         of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
         [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      }\n    },\n    \"available_tools\": {\n      \"type\":
-        \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      }\n    }\n  },\n  \"required\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
         [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\"\n    },\n    \"action_input\": {\n      \"oneOf\":
-        [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
         \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
         {\n            \"type\": \"string\"\n          },\n          \"description\":
         \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -47,105 +62,76 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Use the GitHub API
         to get basic information about the microsoft/vscode repository (stars, forks,
         description)\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [],\n  \"available_tools\": [\n    {\n      \"name\": \"github_create_issue\",\n      \"description\":
-        \"Create a new GitHub issue\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter title\"\n          },\n          \"body\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        body\"\n          },\n          \"labels\": {\n            \"type\": \"array\",\n            \"items\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter labels (optional)\"\n          },\n          \"assignees\": {\n            \"type\":
-        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter assignees (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"title\",\n          \"body\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_create_pr\",\n      \"description\": \"Create a new GitHub pull request\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        title\"\n          },\n          \"body\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter body\"\n          },\n          \"base\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter base\"\n          },\n          \"head\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        head\"\n          },\n          \"repo\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"title\",\n          \"body\",\n          \"base\",\n          \"head\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_list_issues\",\n      \"description\": \"List GitHub issues with
-        optional filters\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"state\": {\n            \"type\": \"string\",\n            \"enum\":
-        [\n              \"open\",\n              \"closed\",\n              \"all\"\n            ],\n            \"description\":
-        \"Parameter state (optional)\"\n          },\n          \"labels\": {\n            \"type\":
-        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter labels (optional)\"\n          },\n          \"assignee\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter assignee (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          },\n          \"limit\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter limit (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"state\":
-        {\n            \"type\": \"string\",\n            \"enum\": [\n              \"open\",\n              \"closed\",\n              \"merged\",\n              \"all\"\n            ],\n            \"description\":
-        \"Parameter state (optional)\"\n          },\n          \"author\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter author (optional)\"\n          },\n          \"base\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter base (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          },\n          \"limit\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter limit (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"issue_number\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter issue_number\"\n          },\n          \"repo\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"issue_number\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        [],\n  \"available_tools\": [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
+        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
+        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
+        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
+        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
+        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
+        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
+        \"github_get_issue\",\n        \"description\": \"Get details of a specific
+        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
+        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"pr_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter pr_number\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"pr_number\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_comment_on_issue\",\n      \"description\": \"Add a comment to a
-        GitHub issue\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"issue_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter issue_number\"\n          },\n          \"comment\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter comment\"\n          },\n          \"repo\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"issue_number\",\n          \"comment\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_review_pr\",\n      \"description\": \"Add a review to a GitHub pull
-        request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"pr_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter pr_number\"\n          },\n          \"review_type\": {\n            \"type\":
-        \"string\",\n            \"enum\": [\n              \"approve\",\n              \"comment\",\n              \"request-changes\"\n            ],\n            \"description\":
-        \"Parameter review_type\"\n          },\n          \"comment\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter comment (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"pr_number\",\n          \"review_type\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
+        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"endpoint\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter endpoint\"\n          },\n          \"method\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter method (optional)\"\n          },\n          \"fields\":
-        {\n            \"type\": \"object\",\n            \"propertyNames\": {\n              \"type\":
-        \"string\"\n            },\n            \"additionalProperties\": {\n              \"type\":
-        \"string\"\n            },\n            \"description\": \"Parameter fields
-        (optional)\"\n          },\n          \"repo\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"endpoint\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
+        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
+        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
+        \"object\",\n              \"propertyNames\": {\n                \"type\":
+        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
+        \"string\"\n              },\n              \"description\": \"Parameter fields
+        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"example string\",\n  \"action\":
-        \"example string\",\n  \"action_input\": \"example value\"\n}\n```\n\nRequired
-        fields: thought, action, action_input\n\nEnsure your response:\n1. Is valid
-        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
-        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
-        markdown code blocks\n"}],"temperature":1.0}'
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -176,14 +162,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '13524'
+      - '12237'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Tue, 16 Sep 2025 13:00:41 GMT
+      - Fri, 19 Sep 2025 09:44:36 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -195,25 +181,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1993'
+      - '4026'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2035'
+      - '4136'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9987'
+      - '9995'
       X-Ratelimit-Remaining-Tokens:
-      - '196991'
+      - '197252'
       X-Ratelimit-Reset-Requests:
-      - 1m50.358s
+      - 41.976s
       X-Ratelimit-Reset-Tokens:
-      - 902ms
+      - 824ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -230,23 +216,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98008c471970c6df-MAD
+      - 9818251c8e032a8b-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CGPaRND4fHgKIDvTTBEYuOV3IcMuD",
+          "id": "chatcmpl-CHRxI9dGlPpQZ3JPq2nHBYAO0tONZ",
           "object": "chat.completion",
-          "created": 1758027639,
+          "created": 1758275072,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To retrieve information about the microsoft/vscode repository, I should use the GitHub API to send a request to the appropriate endpoint that provides repository details.\",\n  \"action\": \"github_api_request\",\n  \"action_input\": {\n    \"endpoint\": \"repos/microsoft/vscode\",\n    \"method\": \"GET\",\n    \"fields\": {\n      \"description\": \"\",\n      \"stargazers_count\": \"\",\n      \"forks_count\": \"\"\n    }\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To get basic information about the microsoft/vscode repository, I should make an API request to the GitHub API. Given that my task specifies retrieving data such as stars, forks, and description, I can use the github_api_request tool to access the appropriate endpoint that provides this information.\",\n  \"action\": \"github_api_request\",\n  \"action_input\": {\n    \"endpoint\": \"repos/microsoft/vscode\",\n    \"method\": \"GET\",\n    \"fields\": {\n      \"fields\": \"stargazers_count, forks_count, description\"\n    },\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -255,9 +241,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2553,
-            "completion_tokens": 107,
-            "total_tokens": 2660,
+            "prompt_tokens": 2286,
+            "completion_tokens": 139,
+            "total_tokens": 2425,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -272,7 +258,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Tue, 16 Sep 2025 13:00:41 GMT
+  recorded_at: Fri, 19 Sep 2025 09:44:36 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -281,7 +267,8 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
         {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
@@ -297,12 +284,15 @@ http_interactions:
         of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
         [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      }\n    },\n    \"observation\": {\n      \"type\":
-        \"string\"\n    }\n  },\n  \"required\": [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\"\n    },\n    \"next_step\": {\n      \"type\": \"string\",\n      \"enum\":
-        [\n        \"continue\",\n        \"finish\"\n      ]\n    }\n  },\n  \"required\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
         [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
         will be structured in the following way, with the appropriate values filled
         in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
@@ -312,26 +302,58 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Use the GitHub API
         to get basic information about the microsoft/vscode repository (stars, forks,
         description)\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve information
-        about the microsoft/vscode repository, I should use the GitHub API to send
-        a request to the appropriate endpoint that provides repository details.\",\n      \"action\":
-        \"github_api_request\",\n      \"action_input\": {\n        \"endpoint\":
-        \"repos/microsoft/vscode\",\n        \"method\": \"GET\",\n        \"fields\":
-        {\n          \"description\": \"\",\n          \"stargazers_count\": \"\",\n          \"forks_count\":
-        \"\"\n        }\n      },\n      \"observation\": \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
-        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-16T12:18:52Z\\\",\\\"pushed_at\\\":\\\"2025-09-16T12:48:43Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1064595,\\\"stargazers_count\\\":176748,\\\"watchers_count\\\":176748,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35046,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13390,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
-        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35046,\\\"open_issues\\\":13390,\\\"watchers\\\":176748,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35046,\\\"subscribers_count\\\":3370}\"\n    }\n  ],\n  \"observation\":
-        \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
-        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-16T12:18:52Z\\\",\\\"pushed_at\\\":\\\"2025-09-16T12:48:43Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1064595,\\\"stargazers_count\\\":176748,\\\"watchers_count\\\":176748,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35046,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13390,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
-        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35046,\\\"open_issues\\\":13390,\\\"watchers\\\":176748,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35046,\\\"subscribers_count\\\":3370}\"\n}\n```\n\nRespond
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get basic information
+        about the microsoft/vscode repository, I should make an API request to the
+        GitHub API. Given that my task specifies retrieving data such as stars, forks,
+        and description, I can use the github_api_request tool to access the appropriate
+        endpoint that provides this information.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
+        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
+        forks_count, description\"\n        },\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"API request failed: unknown flag: --repo\\n\\nUsage:  gh api <endpoint>
+        [flags]\\n\\nFlags:\\n      --cache duration        Cache the response, e.g.
+        \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F, --field key=value       Add
+        a typed parameter in key=value format\\n  -H, --header key:value      Add
+        a HTTP request header in key:value format\\n      --hostname string       The
+        GitHub hostname for the request (default \\\"github.com\\\")\\n  -i, --include               Include
+        HTTP response status line and headers in the output\\n      --input file            The
+        file to use as body for the HTTP request (use \\\"-\\\" to read from standard
+        input)\\n  -q, --jq string             Query to select values from the response
+        using jq syntax\\n  -X, --method string         The HTTP method for the request
+        (default \\\"GET\\\")\\n      --paginate              Make additional HTTP
+        requests to fetch all pages of results\\n  -p, --preview names         GitHub
+        API preview names to request (without the \\\"-preview\\\" suffix)\\n  -f,
+        --raw-field key=value   Add a string parameter in key=value format\\n      --silent                Do
+        not print the response body\\n      --slurp                 Use with \\\"--paginate\\\"
+        to return an array of all pages of either JSON arrays or objects\\n  -t, --template
+        string       Format JSON output using a Go template; see \\\"gh help formatting\\\"\\n      --verbose               Include
+        full HTTP request and response in the output\\n  \\n\"\n    }\n  ],\n  \"observation\":
+        \"API request failed: unknown flag: --repo\\n\\nUsage:  gh api <endpoint>
+        [flags]\\n\\nFlags:\\n      --cache duration        Cache the response, e.g.
+        \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F, --field key=value       Add
+        a typed parameter in key=value format\\n  -H, --header key:value      Add
+        a HTTP request header in key:value format\\n      --hostname string       The
+        GitHub hostname for the request (default \\\"github.com\\\")\\n  -i, --include               Include
+        HTTP response status line and headers in the output\\n      --input file            The
+        file to use as body for the HTTP request (use \\\"-\\\" to read from standard
+        input)\\n  -q, --jq string             Query to select values from the response
+        using jq syntax\\n  -X, --method string         The HTTP method for the request
+        (default \\\"GET\\\")\\n      --paginate              Make additional HTTP
+        requests to fetch all pages of results\\n  -p, --preview names         GitHub
+        API preview names to request (without the \\\"-preview\\\" suffix)\\n  -f,
+        --raw-field key=value   Add a string parameter in key=value format\\n      --silent                Do
+        not print the response body\\n      --slurp                 Use with \\\"--paginate\\\"
+        to return an array of all pages of either JSON arrays or objects\\n  -t, --template
+        string       Format JSON output using a Go template; see \\\"gh help formatting\\\"\\n      --verbose               Include
+        full HTTP request and response in the output\\n  \\n\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"example
-        string\",\n  \"next_step\": \"example string\"\n}\n```\n\nRequired fields:
-        interpretation, next_step\n\nEnsure your response:\n1. Is valid JSON (properly
-        quoted strings, no trailing commas)\n2. Includes all required fields\n3. Uses
-        the correct data types for each field\n4. Is wrapped in ```json``` markdown
-        code blocks\n"}],"temperature":1.0}'
+        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
+        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
+        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
+        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
+        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
+        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -362,14 +384,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '20328'
+      - '8086'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Tue, 16 Sep 2025 13:00:43 GMT
+      - Fri, 19 Sep 2025 09:44:38 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -381,25 +403,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1338'
+      - '1737'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1383'
+      - '1750'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9983'
+      - '9994'
       X-Ratelimit-Remaining-Tokens:
-      - '195531'
+      - '198143'
       X-Ratelimit-Reset-Requests:
-      - 2m21.842s
+      - 45.729s
       X-Ratelimit-Reset-Tokens:
-      - 1.34s
+      - 557ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -416,23 +438,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98008c5a4804c6df-MAD
+      - 9818253e2cd82a8b-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CGPaUtDIzJlpePXRSNtNDmtycXvdA",
+          "id": "chatcmpl-CHRxNUBGzTvLDXkRAmRDFfjVdXkXb",
           "object": "chat.completion",
-          "created": 1758027642,
+          "created": 1758275077,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"Retrieved basic information about the microsoft/vscode repository, including description, stars, and forks. Description: 'Visual Studio Code', Stars: 176748, Forks: 35046.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The API request to the GitHub API failed due to an unknown flag being used in the command. The flag '--repo' is not valid according to the provided usage instructions.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -441,9 +463,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 4330,
-            "completion_tokens": 62,
-            "total_tokens": 4392,
+            "prompt_tokens": 1701,
+            "completion_tokens": 59,
+            "total_tokens": 1760,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -458,7 +480,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Tue, 16 Sep 2025 13:00:43 GMT
+  recorded_at: Fri, 19 Sep 2025 09:44:38 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -467,7 +489,8 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
         {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
@@ -483,20 +506,34 @@ http_interactions:
         of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
         [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      }\n    },\n    \"available_tools\": {\n      \"type\":
-        \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      }\n    }\n  },\n  \"required\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
         [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\"\n    },\n    \"action_input\": {\n      \"oneOf\":
-        [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
         \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
         {\n            \"type\": \"string\"\n          },\n          \"description\":
         \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -506,114 +543,102 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Use the GitHub API
         to get basic information about the microsoft/vscode repository (stars, forks,
         description)\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve information
-        about the microsoft/vscode repository, I should use the GitHub API to send
-        a request to the appropriate endpoint that provides repository details.\",\n      \"action\":
-        \"github_api_request\",\n      \"action_input\": {\n        \"endpoint\":
-        \"repos/microsoft/vscode\",\n        \"method\": \"GET\",\n        \"fields\":
-        {\n          \"description\": \"\",\n          \"stargazers_count\": \"\",\n          \"forks_count\":
-        \"\"\n        }\n      },\n      \"observation\": \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
-        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-16T12:18:52Z\\\",\\\"pushed_at\\\":\\\"2025-09-16T12:48:43Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1064595,\\\"stargazers_count\\\":176748,\\\"watchers_count\\\":176748,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35046,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13390,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
-        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35046,\\\"open_issues\\\":13390,\\\"watchers\\\":176748,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35046,\\\"subscribers_count\\\":3370}\"\n    }\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"github_create_issue\",\n      \"description\":
-        \"Create a new GitHub issue\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter title\"\n          },\n          \"body\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        body\"\n          },\n          \"labels\": {\n            \"type\": \"array\",\n            \"items\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter labels (optional)\"\n          },\n          \"assignees\": {\n            \"type\":
-        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter assignees (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"title\",\n          \"body\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_create_pr\",\n      \"description\": \"Create a new GitHub pull request\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        title\"\n          },\n          \"body\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter body\"\n          },\n          \"base\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter base\"\n          },\n          \"head\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        head\"\n          },\n          \"repo\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"title\",\n          \"body\",\n          \"base\",\n          \"head\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_list_issues\",\n      \"description\": \"List GitHub issues with
-        optional filters\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"state\": {\n            \"type\": \"string\",\n            \"enum\":
-        [\n              \"open\",\n              \"closed\",\n              \"all\"\n            ],\n            \"description\":
-        \"Parameter state (optional)\"\n          },\n          \"labels\": {\n            \"type\":
-        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter labels (optional)\"\n          },\n          \"assignee\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter assignee (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          },\n          \"limit\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter limit (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"state\":
-        {\n            \"type\": \"string\",\n            \"enum\": [\n              \"open\",\n              \"closed\",\n              \"merged\",\n              \"all\"\n            ],\n            \"description\":
-        \"Parameter state (optional)\"\n          },\n          \"author\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter author (optional)\"\n          },\n          \"base\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter base (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          },\n          \"limit\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter limit (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"issue_number\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter issue_number\"\n          },\n          \"repo\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"issue_number\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get basic information
+        about the microsoft/vscode repository, I should make an API request to the
+        GitHub API. Given that my task specifies retrieving data such as stars, forks,
+        and description, I can use the github_api_request tool to access the appropriate
+        endpoint that provides this information.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
+        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
+        forks_count, description\"\n        },\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"API request failed: unknown flag: --repo\\n\\nUsage:  gh api <endpoint>
+        [flags]\\n\\nFlags:\\n      --cache duration        Cache the response, e.g.
+        \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F, --field key=value       Add
+        a typed parameter in key=value format\\n  -H, --header key:value      Add
+        a HTTP request header in key:value format\\n      --hostname string       The
+        GitHub hostname for the request (default \\\"github.com\\\")\\n  -i, --include               Include
+        HTTP response status line and headers in the output\\n      --input file            The
+        file to use as body for the HTTP request (use \\\"-\\\" to read from standard
+        input)\\n  -q, --jq string             Query to select values from the response
+        using jq syntax\\n  -X, --method string         The HTTP method for the request
+        (default \\\"GET\\\")\\n      --paginate              Make additional HTTP
+        requests to fetch all pages of results\\n  -p, --preview names         GitHub
+        API preview names to request (without the \\\"-preview\\\" suffix)\\n  -f,
+        --raw-field key=value   Add a string parameter in key=value format\\n      --silent                Do
+        not print the response body\\n      --slurp                 Use with \\\"--paginate\\\"
+        to return an array of all pages of either JSON arrays or objects\\n  -t, --template
+        string       Format JSON output using a Go template; see \\\"gh help formatting\\\"\\n      --verbose               Include
+        full HTTP request and response in the output\\n  \\n\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
+        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
+        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
+        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
+        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
+        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
+        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
+        \"github_get_issue\",\n        \"description\": \"Get details of a specific
+        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
+        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"pr_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter pr_number\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"pr_number\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_comment_on_issue\",\n      \"description\": \"Add a comment to a
-        GitHub issue\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"issue_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter issue_number\"\n          },\n          \"comment\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter comment\"\n          },\n          \"repo\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"issue_number\",\n          \"comment\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_review_pr\",\n      \"description\": \"Add a review to a GitHub pull
-        request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"pr_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter pr_number\"\n          },\n          \"review_type\": {\n            \"type\":
-        \"string\",\n            \"enum\": [\n              \"approve\",\n              \"comment\",\n              \"request-changes\"\n            ],\n            \"description\":
-        \"Parameter review_type\"\n          },\n          \"comment\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter comment (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"pr_number\",\n          \"review_type\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
+        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"endpoint\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter endpoint\"\n          },\n          \"method\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter method (optional)\"\n          },\n          \"fields\":
-        {\n            \"type\": \"object\",\n            \"propertyNames\": {\n              \"type\":
-        \"string\"\n            },\n            \"additionalProperties\": {\n              \"type\":
-        \"string\"\n            },\n            \"description\": \"Parameter fields
-        (optional)\"\n          },\n          \"repo\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"endpoint\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
+        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
+        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
+        \"object\",\n              \"propertyNames\": {\n                \"type\":
+        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
+        \"string\"\n              },\n              \"description\": \"Parameter fields
+        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"example string\",\n  \"action\":
-        \"example string\",\n  \"action_input\": \"example value\"\n}\n```\n\nRequired
-        fields: thought, action, action_input\n\nEnsure your response:\n1. Is valid
-        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
-        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
-        markdown code blocks\n"}],"temperature":1.0}'
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -644,14 +669,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '21989'
+      - '14417'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Tue, 16 Sep 2025 13:00:46 GMT
+      - Fri, 19 Sep 2025 09:44:41 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -663,25 +688,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '2945'
+      - '1712'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2969'
+      - '1729'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9982'
+      - '9993'
       X-Ratelimit-Remaining-Tokens:
-      - '195130'
+      - '196733'
       X-Ratelimit-Reset-Requests:
-      - 2m28.919s
+      - 52.13s
       X-Ratelimit-Reset-Tokens:
-      - 1.461s
+      - 980ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -698,23 +723,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98008c640a6dc6df-MAD
+      - 9818254c8dcb2a8b-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CGPaVup0qJMxbqPNODPrLVTcOeKWo",
+          "id": "chatcmpl-CHRxPQ7GgWxgI87xRynCVCIIdeyiR",
           "object": "chat.completion",
-          "created": 1758027643,
+          "created": 1758275079,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since I have successfully retrieved the information about the microsoft/vscode repository including its stars and forks, I can use this data to create a summary or report. I could consider whether to create an issue or pull request based on this information if there's anything noteworthy to address.\",\n  \"action\": \"github_create_issue\",\n  \"action_input\": {\n    \"title\": \"Summary of Microsoft VSCode Repository\",\n    \"body\": \"The microsoft/vscode repository has **176748 stars** and **35046 forks**. It is a widely used development tool with a robust community.\",\n    \"labels\": [\"summary\", \"report\"],\n    \"assignees\": []\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"The initial API request to get information about the microsoft/vscode repository failed due to an unknown flag. I need to adjust the parameters by removing the 'repo' field from the action_input and ensure the request matches the GitHub API specifications. I will try making the same API request again, omitting invalid parameters.\",\n  \"action\": \"github_api_request\",\n  \"action_input\": {\n    \"endpoint\": \"repos/microsoft/vscode\",\n    \"method\": \"GET\",\n    \"fields\": {\n      \"fields\": \"stargazers_count, forks_count, description\"\n    }\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -723,9 +748,283 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 4384,
-            "completion_tokens": 149,
-            "total_tokens": 4533,
+            "prompt_tokens": 2765,
+            "completion_tokens": 135,
+            "total_tokens": 2900,
+            "prompt_tokens_details": {
+              "cached_tokens": 1024,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_51db84afab"
+        }
+  recorded_at: Fri, 19 Sep 2025 09:44:40 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=Ba_GFBCgfrYFADvrtB84K3pozSYcAAEBAAAnIQEAAOveAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAAkmzWgAA4VWf28aORD9KqP9qycBhfyk3FGpvSRNKiVNrqQ6KRshs/YuDl57Y3tJaMR3vxl7IUB6d1YCa+/4eebNmzF3L0lmytLoZPCSMO+tnNReOJoJ7aVfdDQrRTJITr5fLzp2krSSqXG+WXSynLCOMhlT+KLZUNSS47vLn7PF1cNs7+r8+fPtaa9/8+PzzehUndz8+OvrqHvYvxpddC9Pit7lyelBsly2EmUKPPfuJVFiLhQiXFydfUNYL0vhPCurZNA7PuzvHR92j/vHB4ed/f3jVoLvHCvIGW9ZJsaSD9Ok1zvq7h0d5W3RZ6J9IPZFu99n+23xIcsnLMt5PztIEzBeqLGrmB4jfjYb3t2DFSzzHemFZV4aPew1K35q6mLqEXtkoBAeJszJDKTOjS2DKbCJqT34qYBSZtY4k/v3c5cZLhCjMk56YxctuACHWIpDyWYCmIZP1xdo8FhjkOBNAPgi/Xk9oTcdfJ4LjavMQ7kAz9wMXCUymUvhcB9mTMylLoAzz8DV2RSYA4zHuhagczP8YpoDFy6zsiJPyYcMD66dCKcV0k/ryZhVcvzqh1HkDMsy5DdYsaqyprKSeQFC88pI7aNbuD6XiI8z6TYp6SDHkT78JzbT5O1ZOzZjqavaD1/SZHVImgw/pkmg8P0us2nSghQ1gOnh0e7L6SguIj+KO1p82ZykCXFTsJ/CunFmau0bmlaTDaLSZElIdHTc+vb4ZeO8mThh56yJcjOlOZNK8AHUeqbNk4ZcsWIA7XZATTX+3ZKABwAFpq6S8Mcq8I9wR8buPpqd0fMAHyCMdjtjGeaF11Gq0Iw/wyplzApXGe1EC0Sn6ECapsn+Ubfr6KEVpkfd8nXSm9JnwG+ftRA/kAYzsRjOmapFg/+Jc2DgF5XgUDGLjQCLBbO+YRgFEJHOCWkqGEcjtBhsQEWk89Hoek1WYxjRBm/QYtyrBoQqt6T8OEavdbM2wK0NExH+HRc5q5UP8UYpdrD90ey36K4kd6XOVM1XAa/GRbPaOBy5pUrztQMltQh1FiOgMggnY0tAOW84H+QNOWpiE5ucD2tYc1SWWMITwxfrALZIekcW5HObPmgLapBDbk1J7mjOLIdwThPUIwX18LjNVxw3tbALgnBCicxDoNxFrE0NoVe0lUAW2rPnCPw3Acfq2wUfrbxuXv9nKqho1zmIPFWskJp6zda4DD2Tc0mKZ2qLF0dh5MJTB1QKtVlgICanEPAcFz2uyOPKYssUT0AacWvs16YL2waB4MbrJ0k3QWzzIQWNaciEq/NcPjek53SSZU+/KKMo/Iaw/6+hSIhDeWDH3RknBrShFhy78UbCSD+b21Vtq93dcIuGFFKMZU36q658bTVdUsxatiA2t6gVuBUd//r921W0wFULZvKAUmoI90SDF2WlKJlbIjkLIcbdsU4alTH4gvdgs+d3lGbkGvvjVKiqocaj5bphxRjnwk6M+7e6zWu1LZhQr2u+3hYstd3V5UQXohtj4fHh3a9vsXvAny2afiHs/IbAiwUjwQyjrzpZ3i/v/wFgVZJKdQkAAA==
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - Ba_GFBCgfrYFADvrtB84K3pozSYcAAEBAAAnIQEAAOveAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Fri, 19 Sep 2025 09:44:42 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 981825607e13c982-LAX
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 19 Sep 2025 09:44:42 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Use the GitHub API
+        to get basic information about the microsoft/vscode repository (stars, forks,
+        description)\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get basic information
+        about the microsoft/vscode repository, I should make an API request to the
+        GitHub API. Given that my task specifies retrieving data such as stars, forks,
+        and description, I can use the github_api_request tool to access the appropriate
+        endpoint that provides this information.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
+        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
+        forks_count, description\"\n        },\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"API request failed: unknown flag: --repo\\n\\nUsage:  gh api <endpoint>
+        [flags]\\n\\nFlags:\\n      --cache duration        Cache the response, e.g.
+        \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F, --field key=value       Add
+        a typed parameter in key=value format\\n  -H, --header key:value      Add
+        a HTTP request header in key:value format\\n      --hostname string       The
+        GitHub hostname for the request (default \\\"github.com\\\")\\n  -i, --include               Include
+        HTTP response status line and headers in the output\\n      --input file            The
+        file to use as body for the HTTP request (use \\\"-\\\" to read from standard
+        input)\\n  -q, --jq string             Query to select values from the response
+        using jq syntax\\n  -X, --method string         The HTTP method for the request
+        (default \\\"GET\\\")\\n      --paginate              Make additional HTTP
+        requests to fetch all pages of results\\n  -p, --preview names         GitHub
+        API preview names to request (without the \\\"-preview\\\" suffix)\\n  -f,
+        --raw-field key=value   Add a string parameter in key=value format\\n      --silent                Do
+        not print the response body\\n      --slurp                 Use with \\\"--paginate\\\"
+        to return an array of all pages of either JSON arrays or objects\\n  -t, --template
+        string       Format JSON output using a Go template; see \\\"gh help formatting\\\"\\n      --verbose               Include
+        full HTTP request and response in the output\\n  \\n\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"The initial API request to get information about
+        the microsoft/vscode repository failed due to an unknown flag. I need to adjust
+        the parameters by removing the ''repo'' field from the action_input and ensure
+        the request matches the GitHub API specifications. I will try making the same
+        API request again, omitting invalid parameters.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
+        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
+        forks_count, description\"\n        }\n      },\n      \"observation\": \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
+        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-19T09:44:17Z\\\",\\\"pushed_at\\\":\\\"2025-09-19T03:46:25Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1065246,\\\"stargazers_count\\\":176829,\\\"watchers_count\\\":176829,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35083,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13590,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
+        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35083,\\\"open_issues\\\":13590,\\\"watchers\\\":176829,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35083,\\\"subscribers_count\\\":3370}\"\n    }\n  ],\n  \"observation\":
+        \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
+        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-19T09:44:17Z\\\",\\\"pushed_at\\\":\\\"2025-09-19T03:46:25Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1065246,\\\"stargazers_count\\\":176829,\\\"watchers_count\\\":176829,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35083,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13590,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
+        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35083,\\\"open_issues\\\":13590,\\\"watchers\\\":176829,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35083,\\\"subscribers_count\\\":3370}\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
+        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
+        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
+        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
+        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
+        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '23093'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 19 Sep 2025 09:44:45 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '832'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '846'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9993'
+      X-Ratelimit-Remaining-Tokens:
+      - '194870'
+      X-Ratelimit-Reset-Requests:
+      - 55.253s
+      X-Ratelimit-Reset-Tokens:
+      - 1.539s
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9818256f0cb82a8b-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CHRxU8fhWlllx4cQffKRDivGpgP4y",
+          "object": "chat.completion",
+          "created": 1758275084,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The GitHub API successfully returned the requested information about the microsoft/vscode repository, including 176,829 stars and 35,083 forks. The description of the repository is 'Visual Studio Code'.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 4942,
+            "completion_tokens": 65,
+            "total_tokens": 5007,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -738,7 +1037,414 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_51db84afab"
         }
-  recorded_at: Tue, 16 Sep 2025 13:00:46 GMT
+  recorded_at: Fri, 19 Sep 2025 09:44:45 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=Ba_GFBCgfrYFADvrtB84K3pozSYcAAEBAAAnIQEAAOveAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAA4mzWgAA+1aWXPjNhL+Kyy+5GF1H7akKiWbxI7j1NrOzCiTrC2XCiQhCRYIcAFQGpml/74NkCJBHdmxWfs2L5ohG/2h0eibfkpcn4chZ+4ocZFSgnixwlI/YaaI2jYYCrE7cq8+/b5tCM+tuUsuVfZSktBDDcp9RIGQMSxiEgDt7nW1vX9Zde5//fLTH9ftwYfPP32YXNOrD58//jZp9Qf3k9vW3dWifXd13XN3u5pL+QL2fUpciteYAsLt/S8PAKtIiKVCYeSO2pf9Qeey3xr0+4Nho9e+rLlAk2ihhVEC+XhGgvHUbbcvWp2Li3kdDxCu93AX1wcD1K3joT/3kD8PBn5v6jpcYTqTEWIzwPdX46dnR2DkqwZRWCBFOBt3sjdqyePFUgH2ZIkdwogiiDo//n4L9P/EIJ+juLPACkhzLkLD7CCPx0AAhpD4gks+V8219HmAgSvikiguts4cEYoDJ4ixxkDMidmK8Q1z5hQtGs6twzCQNSl4iWWKFyEBNwBSSsfbAljI14QtDOk7Df2dMyeYBs5c8NC8hTOARDPCIpAIscDBTMYCG9r+BCC1v8TSvLsh6tfYMweUEfbJnPjmTFILtCGUOgpED9Fqv60EeUr6QAtEWM3hIVFKLyJsjSgJLNEbcAWpdlPpQLkLopaxN0MRmWU4B2vSE4yTKVhbEHHCYMH4+6lr9Nk8VPPUrTlTMBG4vSBdd3M9SV8a/Uj9MrEfpi6YgligV5Bv5vOYqZoDF7rKHwIsfUEiLcsUzDYTjnsSizXKTpFMp1OXBPp31GsPBu1hq1XTTwxkmmUE/QO2v3mgv1H/ZviK/vq49tmqdTdZ9O4mq83dj+OxXpMygspyruxse9o8pnRWWnCkhv3SSBAQMl04R1Ri8xZsDQvzzggOfkjYMVYOksl/0e73Ljudc+faPqyG28fOLzH6K1oGN3Ttvfz7y/3kQ/fu5bY4FwJxkJjFgua8S6UiOWo2U5JspCYRg359zhTEmAYErGbczPb/YT3u5XALkQFasuTEk5tEJNsgRYVdLCvKWZcqpCeFtHiPueacUr7RhvT2rZs58wEcuNL74YA5aXJwV1A5LNgViiNSvUtMw5iYf0DpBaD2IoGD90BmrCCotstd0tS+bSHHXu6B7xK5BJDDcnB6Rl7Ru2EBoEAz4eg9KIYxh4FEyN53Lyln0jQe7293lmQ+Jmu4mfdjH0Dk0GobFTHowdJn4YKANFsTvJmV1kaxR4lf3DCk3xkKwiwKmUC1e7sfHgY/O3Lv+T8TGUMe/6TigHDn51JYhah/ECi/Qldn8pAN+lU6P43TNPw52gpvq4Bp9kT/ljzXh0gBhQvUP/zrItcZ9BJOUnosNlMYhVU2MfxFmOa8knYNf5HnpIzxG9zkDKiBkblDsjj07MhbGf/ACZGUZAEVYxXIHCNpltOEJxDTJWIF7D1Ekv3PsgW0qGQKyIq/HoWKrAIYrGgajKQpl8jOk2pWUU4NrSFOIAs8r4qsIQ6QlahmDUZgYayhhAt5WoF5VIHeQzSTEjJFbBFDU1cFOscolSRZYV9J4gzECpgsbZurxssC5rDY8SoKXaCcLKOqQ0elNK8nCqRSUMsQTvhIdWxtz6fx9duK0XgPcRzo03SS0avnk/MbZW1SVVvUEM3kHxFSy5KGoH/H1RSkEZqJh6CqazQayRIjq/wIsajm+ClAkQ+Fv4RitQJgsodIBzumIZkXAgfQplCOgioy5xhla6ledhxbRxRTWgXX8B/DhoRiqTirdnU5yPEGjKtiCFVhjxJO8oMkzMc1RGkNrFIRn4C9Q5ds5yIPV1JYCgAHQiG22zCKUbXkuYdImnb5HuCI8m3VMGahFL4vMFLQ9SGVg3Za7X69Nay3upNOa9TpjrqDx3x9HAXH6ztmfXs4aQ1Hvd6offloWaZcnl/eHfUuRp1+sVwnA/uA8Pz3jaA+dpH+5PKQ+58F7+hveX0KJvrWNrS8+/p0zv2aNnbJQxxBYXPEbHZZm4ZWmn5W4xRbkteUpd266Hd6F4clkRlvpgsuLwadoaFvzET4HHVfYuWSTKCp/2SqgUJaJGdpKDKrlIhx/j4S/AX76gSlFA/LpA1ZkRNQ+0rP6tYNEJF+DN1MNumxqNZQ11C6/dagm4UyIXgxk2QQ8OxMEhwAwRbIo0eveYRZdnJbe93+MB0FU+JjJlPdmbEr9OG5IkPLVkqT3bvbifOvgjO9xCj4Uhq+3k4KH/zfESATRAcBa9Ojga5/MbmhL49/9l8fJ9ev+l06kkF6rqhTo/4SUL4YImcKhxE9njhvsJcVcjPdafL53Iz7iThSo+IR8dO7e9K/ONAfTXI5IQT6Slil5/EUVk+aZNkoUyepp15S33vX855GPEKJKm7jYDyVz2Asm7Fu++Ce9y506DwBnqOYqlnaBRc3j0hxmAiLkFjWa+zkYDBW23MpdPRaR9RDfQqy91h7HaX51e2ywUwYzdJAp/gKFxOzIgrGkKpD7cQgpiLYFtFX4CgfIbV8Mg1ezqzxc4AgFtpxHvSUVy5JdJU6Ur7YyHd29T3+on5eYn91tTcv/QMZo1dv9UzG6EOoG/UGjX6n/XgW5k8k2JkdF9D/g5WIGIoSrGSdR6rOY3W8OtUYPxh4fvuY8u1jyhtxv31M+fYxxU5bOdb/5WMKw2oDqexkDWTPnSx697K1yz/IK851YyRxMH46/eX+2TGHGmtFlf6sQif/iGII3O6Uubvn3fN/AZBI8pqIIgAA
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - Ba_GFBCgfrYFADvrtB84K3pozSYcAAEBAAAnIQEAAOveAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Fri, 19 Sep 2025 09:44:47 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9818257fbaafc982-LAX
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 19 Sep 2025 09:44:47 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Use the GitHub API
+        to get basic information about the microsoft/vscode repository (stars, forks,
+        description)\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get basic information
+        about the microsoft/vscode repository, I should make an API request to the
+        GitHub API. Given that my task specifies retrieving data such as stars, forks,
+        and description, I can use the github_api_request tool to access the appropriate
+        endpoint that provides this information.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
+        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
+        forks_count, description\"\n        },\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"API request failed: unknown flag: --repo\\n\\nUsage:  gh api <endpoint>
+        [flags]\\n\\nFlags:\\n      --cache duration        Cache the response, e.g.
+        \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F, --field key=value       Add
+        a typed parameter in key=value format\\n  -H, --header key:value      Add
+        a HTTP request header in key:value format\\n      --hostname string       The
+        GitHub hostname for the request (default \\\"github.com\\\")\\n  -i, --include               Include
+        HTTP response status line and headers in the output\\n      --input file            The
+        file to use as body for the HTTP request (use \\\"-\\\" to read from standard
+        input)\\n  -q, --jq string             Query to select values from the response
+        using jq syntax\\n  -X, --method string         The HTTP method for the request
+        (default \\\"GET\\\")\\n      --paginate              Make additional HTTP
+        requests to fetch all pages of results\\n  -p, --preview names         GitHub
+        API preview names to request (without the \\\"-preview\\\" suffix)\\n  -f,
+        --raw-field key=value   Add a string parameter in key=value format\\n      --silent                Do
+        not print the response body\\n      --slurp                 Use with \\\"--paginate\\\"
+        to return an array of all pages of either JSON arrays or objects\\n  -t, --template
+        string       Format JSON output using a Go template; see \\\"gh help formatting\\\"\\n      --verbose               Include
+        full HTTP request and response in the output\\n  \\n\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"The initial API request to get information about
+        the microsoft/vscode repository failed due to an unknown flag. I need to adjust
+        the parameters by removing the ''repo'' field from the action_input and ensure
+        the request matches the GitHub API specifications. I will try making the same
+        API request again, omitting invalid parameters.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
+        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
+        forks_count, description\"\n        }\n      },\n      \"observation\": \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
+        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-19T09:44:17Z\\\",\\\"pushed_at\\\":\\\"2025-09-19T03:46:25Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1065246,\\\"stargazers_count\\\":176829,\\\"watchers_count\\\":176829,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35083,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13590,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
+        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35083,\\\"open_issues\\\":13590,\\\"watchers\\\":176829,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35083,\\\"subscribers_count\\\":3370}\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
+        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
+        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
+        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
+        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
+        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
+        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
+        \"github_get_issue\",\n        \"description\": \"Get details of a specific
+        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
+        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
+        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
+        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
+        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
+        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
+        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
+        \"object\",\n              \"propertyNames\": {\n                \"type\":
+        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
+        \"string\"\n              },\n              \"description\": \"Parameter fields
+        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '23004'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 19 Sep 2025 09:44:47 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1332'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1350'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '193483'
+      X-Ratelimit-Reset-Requests:
+      - 1m2.76s
+      X-Ratelimit-Reset-Tokens:
+      - 1.954s
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 981825774ad22a8b-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CHRxWftujMuYOaytf0Y53W7YygbYg",
+          "object": "chat.completion",
+          "created": 1758275086,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Now that I have successfully retrieved the basic information about the microsoft/vscode repository, including the stars and forks count, I should summarize this information for presentation. I will provide details like the number of stars, forks, and the description of the repository in my final answer.\",\n  \"action\": \"finish\",\n  \"action_input\": {\n    \"stars\": 176829,\n    \"forks\": 35083,\n    \"description\": \"Visual Studio Code\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 4622,
+            "completion_tokens": 110,
+            "total_tokens": 4732,
+            "prompt_tokens_details": {
+              "cached_tokens": 1536,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_51db84afab"
+        }
+  recorded_at: Fri, 19 Sep 2025 09:44:47 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=metric_data&protocol_version=17&run_id=BXecu7PlelseADvrtB84K3pozSbQAAEBAAAnIQEAAPP0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIALwmzWgAA7VZ2XLiShL9FYdfx4FqX+ZN3ro944U27r5zo6ODKEQ16F4hESWBg56Yf58sYbxIIINbMoGWlHwyq3Kpk8X349P/2Ggh+4lNchueL11xqti/6Tz7NRh9CcOL0zAM06svF2HY76Nw8uVn/y4y4WP46W7AVjcD9hiGxS/zB47/HPB8RG6nozD8fH95+8UO+OrPyfEJllwRybEmPY0U52IjIQL1lJQYS33y/ft/j1Mzs8f/PB4s5vPMFWYUJ3GxCsL+VeBslLnxcGYLF0fHJ8d5lM39q8f/O/mOiThBPVT9/vhxshPyfjFaBQMYtYO7cGLTIlgfL1IzSuw4GMd5eVFVdaiiEvWbdXmcpUFqH51N4mjo5rNA9wjuod/Fv0iXscvSGWi5t/5BkC+iyOZ5FZi2hhx8srMa/O+jW+cyV4HlLcEG/WQxidOj6zgvOpvxMqiOlmtfd6xlbPPIxfOie03zxBQ/MzfrWo0pomlilzbpKLKCf3XrniclZmmOvt10HwXX2SSOTHLUd5m/z1wHGbnR1Z+u8lLZWeZsh3pCF007cMxsXqwqsC0UwxI2uBt07+q7QUeTEpwbeMXk9siMzbyw1erb4hguHfzDY+b+7k7FeZyXRaTLYbx60lUFuTdxknddptZKiqmzZpybn7arAFvrgacdZsfcpoPBdVsz5rnmE/cbmiQZFs5EcTqpMc6DcUt2eZYliY0K8MDcE9o0hZvgfOHM1oWc9BgW8EEIEUE0Ex+U8J6iUlGqpcYaC9ZkZ5wus7/t0NlZVthhbl1skvhXNUC0H65kXCvQQhVTQuKdMoQw1t4aJAUlEh4rL8ZCI+YfaqIUEnT9quZMMoEUYYIQTeUHbH01t9uiYYc5LYn9H/YOQEzDSTAmG8dQNiIvYXG3KOaLIjhdFbWFVp9gATOFJYNo45JqOBEOBwqaOKZwxQjCVMK8YYUJ2aMD2hqPDTbgtUa0UV0ehD8eEvvvBj7rMcqJIj6QGOLkoxKsexCEkghGCGcMsuIj4dQUS5grquGPg68ZAuUtSX1ocaQR5woSwictpQd4cy9XYg5Knry5ud6cYb6QACPYO2V5CZ79bNzS5tBApyZZFXFUCj21CJ6eXMezuD59UKC8wm1H9N5q8Frt2SIvstmeSmFYZdhWjxDDBym98MvonjoV4L/+ikMmFXj+vmqoLwH1o9BUKd2scjA3aakm2DFtpUu2n9i66B0wpvUK3ocEy+r7K76ivP6+V1xeTG+EFWsbd55pT9h/6CZF4IkJMIF1qvkb6wKbtrNJBKQjTiOoPDCO7Xtc7OCWpWrvoDD5tD2bN/A3pbXrLr5t7MvMPRo3fh5Fy/DXGTS1535jEZahjY62Nv6elZiRTfJ2sa/SvHALHyzl+hncZGkMZd+OL+MReLjvLJDi1rU8xXxH6Le2+Pzw0O8K/nmKHsqmpys1D6v5NLOLvC18XxlmJl2YZJgXxv121/nkw6uS6vy2dQ/OpLmJ/MhfF/gqbImDKOee6AAxJZRgrWSDFOSeXSPBMIWOQso1u8bA5bxYCkGwlEg/cyXMgT8BDaeKa4KbudIrwtBoMJAvBqYpRIjAXOMGIdB/L6RcaGiyhJCbYehyGDBGBqSciI24HCClBGgfXECboBubshe20WwwodK3H5IBCWaEYtoo9jaAAYJ5i5WAueXPk1+ORkEfAf0L0/zFbCSpoIhiDp6ggom3jHpT9JI4rRFO0P3+zzRvAIKr28u7Gsra6wegXNzf391XZ0wdCPJHeH9bxdjfkFcL2bnL5vN66pHDf6DZAj6wttpNCc0P3qzYilzb8vI96KHIu3qsJJsMrQ/w4RiIbkVRmTWSKEgWCGZCkYQ83yWDG0V8/EJN0E/BsmurAYoOUYJDk+V/lTygv3prblObJX3XLilm8qVrh0yjSoh66860VBzyjb7rnuZiIHpcCO6rj4ZihTHZInnKdFpuWPg0F1RyAS9CdsNkwotCYch8sFgyrDgWmEpopUljpXpe/1paYTasoCW46k5ExY87NyREj3AFbXi57yMEFvzjIphQCAAGZVdBWCDJ307oWf9rMFjlhZ0dPcSzbTuznBJW1q+GC6IoE0rDikPKYl5T8RVyb7sC2oN0EEptCj6iHxdh0lNQ2QjkGKUMUpBuNST4WoB/fm2fex+oAlKZcY4RUZDVRLchRIhR+CCt/FYjJRzv8MO71iFY8zVjSoNTNayNpC2pfyAQMAdIRs4UrOJvHXkDZdStnn+fq7tSEMh7WNYbLjAEIce+PDAE92/wfdX7dhN8OgvcIq1WNmjNdSX7hOzBCCQnEsob8IRdaEVWAKE1SQINWGHHw2z0V32DDWoiBlrH6Tsp/gI7M39lbjiJhlG2qK1WviruDRSnTUBkT5POTDS1ULlgiRuX0ZP7jTng8VswMfj5ENibOM9tEx7ykb33iKfWzIdJvKyWAyCmsG7UyixuBvrpbBWIK03rPGQHzrpHywOIkK1MtxHjqpyRyAani7z6u++OBePHj/8DDoJTqQQlAAA=
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXecu7PlelseADvrtB84K3pozSbQAAEBAAAnIQEAAPP0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Fri, 19 Sep 2025 09:47:41 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 981829befd9c7aa4-LAX
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 19 Sep 2025 09:47:41 GMT
 recorded_with: VCR 6.3.1

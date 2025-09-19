@@ -8,7 +8,8 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
         {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
@@ -24,20 +25,34 @@ http_interactions:
         of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
         [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      }\n    },\n    \"available_tools\": {\n      \"type\":
-        \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      }\n    }\n  },\n  \"required\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
         [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\"\n    },\n    \"action_input\": {\n      \"oneOf\":
-        [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
         \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
         {\n            \"type\": \"string\"\n          },\n          \"description\":
         \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -46,105 +61,76 @@ http_interactions:
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get details about
         issue #123 from the microsoft/vscode repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [],\n  \"available_tools\": [\n    {\n      \"name\": \"github_create_issue\",\n      \"description\":
-        \"Create a new GitHub issue\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter title\"\n          },\n          \"body\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        body\"\n          },\n          \"labels\": {\n            \"type\": \"array\",\n            \"items\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter labels (optional)\"\n          },\n          \"assignees\": {\n            \"type\":
-        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter assignees (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"title\",\n          \"body\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_create_pr\",\n      \"description\": \"Create a new GitHub pull request\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        title\"\n          },\n          \"body\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter body\"\n          },\n          \"base\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter base\"\n          },\n          \"head\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        head\"\n          },\n          \"repo\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"title\",\n          \"body\",\n          \"base\",\n          \"head\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_list_issues\",\n      \"description\": \"List GitHub issues with
-        optional filters\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"state\": {\n            \"type\": \"string\",\n            \"enum\":
-        [\n              \"open\",\n              \"closed\",\n              \"all\"\n            ],\n            \"description\":
-        \"Parameter state (optional)\"\n          },\n          \"labels\": {\n            \"type\":
-        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter labels (optional)\"\n          },\n          \"assignee\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter assignee (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          },\n          \"limit\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter limit (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"state\":
-        {\n            \"type\": \"string\",\n            \"enum\": [\n              \"open\",\n              \"closed\",\n              \"merged\",\n              \"all\"\n            ],\n            \"description\":
-        \"Parameter state (optional)\"\n          },\n          \"author\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter author (optional)\"\n          },\n          \"base\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter base (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          },\n          \"limit\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter limit (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"issue_number\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter issue_number\"\n          },\n          \"repo\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"issue_number\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        [],\n  \"available_tools\": [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
+        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
+        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
+        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
+        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
+        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
+        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
+        \"github_get_issue\",\n        \"description\": \"Get details of a specific
+        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
+        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"pr_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter pr_number\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"pr_number\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_comment_on_issue\",\n      \"description\": \"Add a comment to a
-        GitHub issue\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"issue_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter issue_number\"\n          },\n          \"comment\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter comment\"\n          },\n          \"repo\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"issue_number\",\n          \"comment\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_review_pr\",\n      \"description\": \"Add a review to a GitHub pull
-        request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"pr_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter pr_number\"\n          },\n          \"review_type\": {\n            \"type\":
-        \"string\",\n            \"enum\": [\n              \"approve\",\n              \"comment\",\n              \"request-changes\"\n            ],\n            \"description\":
-        \"Parameter review_type\"\n          },\n          \"comment\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter comment (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"pr_number\",\n          \"review_type\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
+        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"endpoint\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter endpoint\"\n          },\n          \"method\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter method (optional)\"\n          },\n          \"fields\":
-        {\n            \"type\": \"object\",\n            \"propertyNames\": {\n              \"type\":
-        \"string\"\n            },\n            \"additionalProperties\": {\n              \"type\":
-        \"string\"\n            },\n            \"description\": \"Parameter fields
-        (optional)\"\n          },\n          \"repo\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"endpoint\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
+        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
+        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
+        \"object\",\n              \"propertyNames\": {\n                \"type\":
+        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
+        \"string\"\n              },\n              \"description\": \"Parameter fields
+        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"example string\",\n  \"action\":
-        \"example string\",\n  \"action_input\": \"example value\"\n}\n```\n\nRequired
-        fields: thought, action, action_input\n\nEnsure your response:\n1. Is valid
-        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
-        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
-        markdown code blocks\n"}],"temperature":1.0}'
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -175,14 +161,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '13480'
+      - '12193'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Tue, 16 Sep 2025 12:59:56 GMT
+      - Fri, 19 Sep 2025 09:43:58 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -194,25 +180,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1469'
+      - '1694'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1741'
+      - '1892'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '197002'
+      - '197263'
       X-Ratelimit-Reset-Requests:
-      - 16.366s
+      - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 899ms
+      - 821ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -229,23 +215,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98008b2e6a2ef779-MAD
+      - 9818242d8c895257-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CGPZi5jyyR7U1iAhqBY9CdMhMoo88",
+          "id": "chatcmpl-CHRwiMXvRnKNdqSLNfoe4pDWrWKSy",
           "object": "chat.completion",
-          "created": 1758027594,
+          "created": 1758275036,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To get the details about issue #123 from the microsoft/vscode repository, I need to use the 'github_get_issue' tool.\",\n  \"action\": \"github_get_issue\",\n  \"action_input\": {\n    \"issue_number\": 123,\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To retrieve the details about issue #123 from the microsoft/vscode repository, I should use the 'github_get_issue' action, as it directly matches the request for issue details.\",\n  \"action\": \"github_get_issue\",\n  \"action_input\": {\n    \"issue_number\": 123,\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -254,11 +240,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2542,
-            "completion_tokens": 77,
-            "total_tokens": 2619,
+            "prompt_tokens": 2275,
+            "completion_tokens": 86,
+            "total_tokens": 2361,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1024,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -271,7 +257,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Tue, 16 Sep 2025 12:59:56 GMT
+  recorded_at: Fri, 19 Sep 2025 09:43:58 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -280,7 +266,8 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
         {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
@@ -296,12 +283,15 @@ http_interactions:
         of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
         [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      }\n    },\n    \"observation\": {\n      \"type\":
-        \"string\"\n    }\n  },\n  \"required\": [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\"\n    },\n    \"next_step\": {\n      \"type\": \"string\",\n      \"enum\":
-        [\n        \"continue\",\n        \"finish\"\n      ]\n    }\n  },\n  \"required\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
         [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
         will be structured in the following way, with the appropriate values filled
         in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
@@ -310,10 +300,11 @@ http_interactions:
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get details about
         issue #123 from the microsoft/vscode repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get the details about
-        issue #123 from the microsoft/vscode repository, I need to use the ''github_get_issue''
-        tool.\",\n      \"action\": \"github_get_issue\",\n      \"action_input\":
-        {\n        \"issue_number\": 123,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve the details
+        about issue #123 from the microsoft/vscode repository, I should use the ''github_get_issue''
+        action, as it directly matches the request for issue details.\",\n      \"action\":
+        \"github_get_issue\",\n      \"action_input\": {\n        \"issue_number\":
+        123,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
         \"Issue #123: Improve the explorer view to match full VS design\\nState: CLOSED\\nLabels:
         feature-request\\nAssignees: bpasero\\nURL: https://github.com/microsoft/vscode/issues/123\\n\\nBody:\\nHello,\\n\\nI
         use VS Code daily at work and at home since the very first preview release
@@ -352,12 +343,12 @@ http_interactions:
         such a feature ?\\n\\nThank you for your time and your awesome work,\\nJabX\\n\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"example
-        string\",\n  \"next_step\": \"example string\"\n}\n```\n\nRequired fields:
-        interpretation, next_step\n\nEnsure your response:\n1. Is valid JSON (properly
-        quoted strings, no trailing commas)\n2. Includes all required fields\n3. Uses
-        the correct data types for each field\n4. Is wrapped in ```json``` markdown
-        code blocks\n"}],"temperature":1.0}'
+        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
+        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
+        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
+        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
+        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
+        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -388,14 +379,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '7363'
+      - '7886'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Tue, 16 Sep 2025 12:59:59 GMT
+      - Fri, 19 Sep 2025 09:44:03 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -407,25 +398,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1486'
+      - '996'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1682'
+      - '1010'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '198297'
+      - '198172'
       X-Ratelimit-Reset-Requests:
-      - 22.44s
+      - 10.962s
       X-Ratelimit-Reset-Tokens:
-      - 510ms
+      - 548ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -442,23 +433,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98008b427c0df779-MAD
+      - 98182468ffd95257-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CGPZlqJvPeQ8y50XBeQLOEYqqcmJr",
+          "id": "chatcmpl-CHRwoGoJJnHrAp30hOHeMvtTYxu2s",
           "object": "chat.completion",
-          "created": 1758027597,
+          "created": 1758275042,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The details for issue #123 in the microsoft/vscode repository indicate it is a feature request that has been closed. The user expressed concerns about the file representation in the explorer view and suggested improvements. The observation highlights potential issues with licensing for assets and mentions the team's priorities.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation provides details about issue #123 from the microsoft/vscode repository. The issue is closed and is a feature request related to the explorer view aesthetics in VS Code. The user is inquiring about the possibility of making the file display more distinct, similar to the full Visual Studio, and asks whether a Pull Request would be accepted for this feature.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -467,9 +458,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1589,
-            "completion_tokens": 78,
-            "total_tokens": 1667,
+            "prompt_tokens": 1705,
+            "completion_tokens": 94,
+            "total_tokens": 1799,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -482,9 +473,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_51db84afab"
         }
-  recorded_at: Tue, 16 Sep 2025 12:59:58 GMT
+  recorded_at: Fri, 19 Sep 2025 09:44:03 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -493,7 +484,8 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
         {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
@@ -509,20 +501,34 @@ http_interactions:
         of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
         [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      }\n    },\n    \"available_tools\": {\n      \"type\":
-        \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      }\n    }\n  },\n  \"required\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
         [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\"\n    },\n    \"action_input\": {\n      \"oneOf\":
-        [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
         \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
         {\n            \"type\": \"string\"\n          },\n          \"description\":
         \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -531,10 +537,11 @@ http_interactions:
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get details about
         issue #123 from the microsoft/vscode repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get the details about
-        issue #123 from the microsoft/vscode repository, I need to use the ''github_get_issue''
-        tool.\",\n      \"action\": \"github_get_issue\",\n      \"action_input\":
-        {\n        \"issue_number\": 123,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve the details
+        about issue #123 from the microsoft/vscode repository, I should use the ''github_get_issue''
+        action, as it directly matches the request for issue details.\",\n      \"action\":
+        \"github_get_issue\",\n      \"action_input\": {\n        \"issue_number\":
+        123,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
         \"Issue #123: Improve the explorer view to match full VS design\\nState: CLOSED\\nLabels:
         feature-request\\nAssignees: bpasero\\nURL: https://github.com/microsoft/vscode/issues/123\\n\\nBody:\\nHello,\\n\\nI
         use VS Code daily at work and at home since the very first preview release
@@ -553,105 +560,76 @@ http_interactions:
         the priorities of the dev team (I understand there are way more important
         stuff to work on in the short term), would you accept a PR that would bring
         such a feature ?\\n\\nThank you for your time and your awesome work,\\nJabX\\n\"\n    }\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"github_create_issue\",\n      \"description\":
-        \"Create a new GitHub issue\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter title\"\n          },\n          \"body\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        body\"\n          },\n          \"labels\": {\n            \"type\": \"array\",\n            \"items\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter labels (optional)\"\n          },\n          \"assignees\": {\n            \"type\":
-        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter assignees (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"title\",\n          \"body\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_create_pr\",\n      \"description\": \"Create a new GitHub pull request\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        title\"\n          },\n          \"body\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter body\"\n          },\n          \"base\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter base\"\n          },\n          \"head\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        head\"\n          },\n          \"repo\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"title\",\n          \"body\",\n          \"base\",\n          \"head\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_list_issues\",\n      \"description\": \"List GitHub issues with
-        optional filters\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"state\": {\n            \"type\": \"string\",\n            \"enum\":
-        [\n              \"open\",\n              \"closed\",\n              \"all\"\n            ],\n            \"description\":
-        \"Parameter state (optional)\"\n          },\n          \"labels\": {\n            \"type\":
-        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"Parameter labels (optional)\"\n          },\n          \"assignee\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter assignee (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          },\n          \"limit\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter limit (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"state\":
-        {\n            \"type\": \"string\",\n            \"enum\": [\n              \"open\",\n              \"closed\",\n              \"merged\",\n              \"all\"\n            ],\n            \"description\":
-        \"Parameter state (optional)\"\n          },\n          \"author\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter author (optional)\"\n          },\n          \"base\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter base (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          },\n          \"limit\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter limit (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"issue_number\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter issue_number\"\n          },\n          \"repo\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"issue_number\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
+        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
+        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
+        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
+        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
+        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
+        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
+        \"github_get_issue\",\n        \"description\": \"Get details of a specific
+        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
+        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"pr_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter pr_number\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"pr_number\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_comment_on_issue\",\n      \"description\": \"Add a comment to a
-        GitHub issue\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"issue_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter issue_number\"\n          },\n          \"comment\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter comment\"\n          },\n          \"repo\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"issue_number\",\n          \"comment\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"github_review_pr\",\n      \"description\": \"Add a review to a GitHub pull
-        request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"pr_number\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter pr_number\"\n          },\n          \"review_type\": {\n            \"type\":
-        \"string\",\n            \"enum\": [\n              \"approve\",\n              \"comment\",\n              \"request-changes\"\n            ],\n            \"description\":
-        \"Parameter review_type\"\n          },\n          \"comment\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter comment (optional)\"\n          },\n          \"repo\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"pr_number\",\n          \"review_type\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
+        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"endpoint\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter endpoint\"\n          },\n          \"method\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter method (optional)\"\n          },\n          \"fields\":
-        {\n            \"type\": \"object\",\n            \"propertyNames\": {\n              \"type\":
-        \"string\"\n            },\n            \"additionalProperties\": {\n              \"type\":
-        \"string\"\n            },\n            \"description\": \"Parameter fields
-        (optional)\"\n          },\n          \"repo\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
-        \"Parameter repo (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"endpoint\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
+        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
+        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
+        \"object\",\n              \"propertyNames\": {\n                \"type\":
+        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
+        \"string\"\n              },\n              \"description\": \"Parameter fields
+        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"example string\",\n  \"action\":
-        \"example string\",\n  \"action_input\": \"example value\"\n}\n```\n\nRequired
-        fields: thought, action, action_input\n\nEnsure your response:\n1. Is valid
-        JSON (properly quoted strings, no trailing commas)\n2. Includes all required
-        fields\n3. Uses the correct data types for each field\n4. Is wrapped in ```json```
-        markdown code blocks\n"}],"temperature":1.0}'
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -682,14 +660,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '15382'
+      - '14155'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Tue, 16 Sep 2025 13:00:02 GMT
+      - Fri, 19 Sep 2025 09:44:06 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -701,25 +679,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '2456'
+      - '1013'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2736'
+      - '1232'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9996'
+      - '9997'
       X-Ratelimit-Remaining-Tokens:
-      - '196541'
+      - '196786'
       X-Ratelimit-Reset-Requests:
-      - 28.673s
+      - 17.413s
       X-Ratelimit-Reset-Tokens:
-      - 1.037s
+      - 964ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -736,23 +714,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98008b4e0bbef779-MAD
+      - 98182471bd055257-LAX
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CGPZnL0jgWgSUhpNUlxALME9ghz4j",
+          "id": "chatcmpl-CHRwrOyOkH5ykIO7VEVne1qcU4yPT",
           "object": "chat.completion",
-          "created": 1758027599,
+          "created": 1758275045,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since I have the details for issue #123, I can create a GitHub comment on the issue to suggest the potential PR based on the feedback.\",\n  \"action\": \"github_comment_on_issue\",\n  \"action_input\": {\n    \"issue_number\": 123,\n    \"comment\": \"Hello, I appreciate your feedback on the explorer view! It seems like a feature that could enhance the user experience. Would you be open to accepting a pull request that implements a similar look with icons and varying font weights? Let me know your thoughts!\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"The details for issue #123 have already been retrieved, including its state, labels, assignees, and a detailed body. Therefore, the next logical step is to conclude this task.\",\n  \"action\": \"finish\",\n  \"action_input\": \"Issue #123: Improve the explorer view to match full VS design\\nState: CLOSED\\nLabels: feature-request\\nAssignees: bpasero\\nURL: https://github.com/microsoft/vscode/issues/123\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -761,9 +739,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2993,
-            "completion_tokens": 126,
-            "total_tokens": 3119,
+            "prompt_tokens": 2735,
+            "completion_tokens": 111,
+            "total_tokens": 2846,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -776,7 +754,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_51db84afab"
         }
-  recorded_at: Tue, 16 Sep 2025 13:00:02 GMT
+  recorded_at: Fri, 19 Sep 2025 09:44:05 GMT
 recorded_with: VCR 6.3.1

@@ -124,7 +124,7 @@ RSpec.describe 'ReAct Field Descriptions', type: :unit do
       
       expect(action_enum_class).to be < T::Enum
       expect(action_enum_class.values.map(&:serialize)).to include('finish')
-      expect(action_enum_class.values.map(&:serialize)).to include('github_create_issue')
+      expect(action_enum_class.values.map(&:serialize)).to include('github_get_issue')
       expect(action_enum_class.values.map(&:serialize)).to include('github_list_issues')
     end
 
@@ -135,7 +135,7 @@ RSpec.describe 'ReAct Field Descriptions', type: :unit do
       # Should have enum constraint with actual tool names
       expect(action_property).to have_key(:enum)
       expect(action_property[:enum]).to include('finish')
-      expect(action_property[:enum]).to include('github_create_issue')
+      expect(action_property[:enum]).to include('github_get_issue')
       expect(action_property[:enum]).to include('github_list_issues')
     end
   end

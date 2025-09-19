@@ -37,7 +37,7 @@ module DSPy
         when ->(type) { hash_type?(type) }
           coerce_hash_value(value, prop_type)
         when ->(type) { enum_type?(type) }
-          extract_enum_class(prop_type).deserialize(value)
+          coerce_enum_value(value, prop_type)
         when ->(type) { type == Float || simple_type_match?(type, Float) }
           value.to_f
         when ->(type) { type == Integer || simple_type_match?(type, Integer) }
@@ -291,6 +291,21 @@ module DSPy
       rescue ArgumentError, TypeError
         DSPy.logger.debug("Failed to coerce to Time: #{value}")
         nil
+      end
+
+      # Coerces a value to an enum, handling both strings and existing enum instances
+      sig { params(value: T.untyped, prop_type: T.untyped).returns(T.untyped) }
+      def coerce_enum_value(value, prop_type)
+        enum_class = extract_enum_class(prop_type)
+        
+        # If value is already an instance of the enum class, return it as-is
+        return value if value.is_a?(enum_class)
+        
+        # Otherwise, try to deserialize from string
+        enum_class.deserialize(value.to_s)
+      rescue ArgumentError, KeyError => e
+        DSPy.logger.debug("Failed to coerce to enum #{enum_class}: #{e.message}")
+        value
       end
     end
   end
