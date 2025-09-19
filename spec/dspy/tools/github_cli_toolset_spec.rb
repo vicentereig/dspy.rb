@@ -16,14 +16,10 @@ RSpec.describe DSPy::Tools::GitHubCLIToolset do
       tool_names = tools.map(&:name)
       
       expected_names = [
-        'github_create_issue',
-        'github_create_pr', 
         'github_list_issues',
         'github_list_prs',
         'github_get_issue',
         'github_get_pr',
-        'github_comment_on_issue',
-        'github_review_pr',
         'github_api_request'
       ]
       
@@ -116,7 +112,7 @@ RSpec.describe DSPy::Tools::GitHubCLIToolset do
     end
 
     it 'generates correct array schemas' do
-      schema = described_class.schema_for_method(:create_issue)
+      schema = described_class.schema_for_method(:list_issues)
       labels_schema = schema[:properties][:labels]
 
       expect(labels_schema[:type]).to eq('array')
@@ -335,47 +331,6 @@ RSpec.describe DSPy::Tools::GitHubCLIToolset do
       })
     end
 
-    describe '#create_issue' do
-      it 'builds correct command with minimal parameters' do
-        expect(toolset).to receive(:execute_command).with(
-          "gh issue create --title \"Test\" --body \"Description\""
-        )
-
-        toolset.create_issue(title: 'Test', body: 'Description')
-      end
-
-      it 'builds correct command with all parameters' do
-        expect(toolset).to receive(:execute_command).with(
-          "gh issue create --title \"Test\" --body \"Description\" --label \"bug\" --label \"enhancement\" --assignee \"user1\" --assignee \"user2\" --repo \"owner/repo\""
-        )
-
-        toolset.create_issue(
-          title: 'Test',
-          body: 'Description',
-          labels: ['bug', 'enhancement'],
-          assignees: ['user1', 'user2'],
-          repo: 'owner/repo'
-        )
-      end
-
-      it 'handles command execution errors' do
-        allow(toolset).to receive(:execute_command).and_return({
-          success: false,
-          output: '',
-          error: 'Command failed'
-        })
-
-        result = toolset.create_issue(title: 'Test', body: 'Description')
-        expect(result).to include('Failed to create issue: Command failed')
-      end
-
-      it 'handles exceptions' do
-        allow(toolset).to receive(:execute_command).and_raise(StandardError.new('Test error'))
-
-        result = toolset.create_issue(title: 'Test', body: 'Description')
-        expect(result).to include('Error creating issue: Test error')
-      end
-    end
 
     describe '#list_issues' do
       it 'builds correct command with default parameters' do
@@ -413,43 +368,6 @@ RSpec.describe DSPy::Tools::GitHubCLIToolset do
       end
     end
 
-    describe '#review_pr' do
-      it 'builds correct approve review command' do
-        expect(toolset).to receive(:execute_command).with(
-          "gh pr review 123 --approve --body \"Great work\""
-        )
-
-        toolset.review_pr(
-          pr_number: 123,
-          review_type: DSPy::Tools::ReviewState::Approve,
-          comment: 'Great work'
-        )
-      end
-
-      it 'builds correct request changes review command' do
-        expect(toolset).to receive(:execute_command).with(
-          "gh pr review 456 --request-changes --body \"Needs fixes\" --repo \"owner/repo\""
-        )
-
-        toolset.review_pr(
-          pr_number: 456,
-          review_type: DSPy::Tools::ReviewState::RequestChanges,
-          comment: 'Needs fixes',
-          repo: 'owner/repo'
-        )
-      end
-
-      it 'handles command without comment' do
-        expect(toolset).to receive(:execute_command).with(
-          "gh pr review 789 --comment"
-        )
-
-        toolset.review_pr(
-          pr_number: 789,
-          review_type: DSPy::Tools::ReviewState::Comment
-        )
-      end
-    end
 
     describe '#api_request' do
       it 'builds correct API request with defaults' do
@@ -460,15 +378,26 @@ RSpec.describe DSPy::Tools::GitHubCLIToolset do
         toolset.api_request(endpoint: 'repos/{owner}/{repo}/issues')
       end
 
-      it 'builds correct API request with custom method and fields' do
+      it 'rejects non-GET methods for read-only access' do
+        result = toolset.api_request(
+          endpoint: 'repos/{owner}/{repo}/issues',
+          method: 'POST',
+          fields: { 'title' => 'New Issue', 'body' => 'Description' },
+          repo: 'owner/repo'
+        )
+        
+        expect(result).to eq("Error: Only GET requests are allowed for read-only access")
+      end
+      
+      it 'allows GET method with fields and repo' do
         expect(toolset).to receive(:execute_command).with(
-          "gh api repos/{owner}/{repo}/issues --method POST -f title=\"New Issue\" -f body=\"Description\" --repo \"owner/repo\""
+          "gh api repos/{owner}/{repo}/issues --method GET -f state=\"open\" -f sort=\"updated\" --repo \"owner/repo\""
         )
 
         toolset.api_request(
           endpoint: 'repos/{owner}/{repo}/issues',
-          method: 'POST',
-          fields: { 'title' => 'New Issue', 'body' => 'Description' },
+          method: 'GET',
+          fields: { 'state' => 'open', 'sort' => 'updated' },
           repo: 'owner/repo'
         )
       end

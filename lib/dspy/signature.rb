@@ -207,6 +207,12 @@ module DSPy
             { type: "number" }
           elsif type == Numeric
             { type: "number" }
+          elsif type == Date
+            { type: "string", format: "date" }
+          elsif type == DateTime
+            { type: "string", format: "date-time" }
+          elsif type == Time
+            { type: "string", format: "date-time" }
           elsif [TrueClass, FalseClass].include?(type)
             { type: "boolean" }
           elsif type < T::Struct
@@ -225,6 +231,12 @@ module DSPy
             { type: "number" }
           when "Numeric"
             { type: "number" }
+          when "Date"
+            { type: "string", format: "date" }
+          when "DateTime"
+            { type: "string", format: "date-time" }
+          when "Time"
+            { type: "string", format: "date-time" }
           when "TrueClass", "FalseClass"
             { type: "boolean" }
           when "T::Boolean"

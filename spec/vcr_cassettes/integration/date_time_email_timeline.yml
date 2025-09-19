@@ -1,0 +1,221 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"start_date\": {\n      \"type\": \"string\",\n      \"format\":
+        \"date\"\n    },\n    \"end_date\": {\n      \"type\": \"string\",\n      \"format\":
+        \"date\"\n    },\n    \"emails\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"EmailType\"\n          },\n          \"id\":
+        {\n            \"type\": \"string\"\n          },\n          \"subject\":
+        {\n            \"type\": \"string\"\n          },\n          \"from\": {\n            \"type\":
+        \"string\"\n          },\n          \"date\": {\n            \"type\": \"string\",\n            \"format\":
+        \"date-time\"\n          },\n          \"content\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"id\",\n          \"subject\",\n          \"from\",\n          \"date\",\n          \"content\"\n        ],\n        \"description\":
+        \"EmailType struct\"\n      }\n    },\n    \"focus_areas\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\":
+        [\n    \"start_date\",\n    \"end_date\",\n    \"emails\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\"\n    },\n    \"key_events\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"EventSummary\"\n          },\n          \"date\": {\n            \"type\":
+        \"string\",\n            \"format\": \"date\"\n          },\n          \"title\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        {\n            \"type\": \"string\"\n          },\n          \"participants\":
+        {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\":
+        \"string\"\n            }\n          },\n          \"email_ids\": {\n            \"type\":
+        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n            }\n          },\n          \"category\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"date\",\n          \"title\",\n          \"description\",\n          \"participants\",\n          \"email_ids\",\n          \"category\"\n        ],\n        \"description\":
+        \"EventSummary struct\"\n      }\n    },\n    \"important_people\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"PersonSummary\"\n          },\n          \"email\": {\n            \"type\":
+        \"string\"\n          },\n          \"name\": {\n            \"type\": \"string\"\n          },\n          \"interaction_count\":
+        {\n            \"type\": \"integer\"\n          },\n          \"topics_discussed\":
+        {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\":
+        \"string\"\n            }\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"email\",\n          \"name\",\n          \"interaction_count\",\n          \"topics_discussed\"\n        ],\n        \"description\":
+        \"PersonSummary struct\"\n      }\n    },\n    \"projects_mentioned\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"action_items\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"ActionItem\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"due_date\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ],\n            \"format\":
+        \"date\"\n          },\n          \"assigned_to\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"status\":
+        {\n            \"type\": \"string\"\n          },\n          \"source_email_id\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"description\",\n          \"status\",\n          \"source_email_id\"\n        ],\n        \"description\":
+        \"ActionItem struct\"\n      }\n    },\n    \"timeline_highlights\": {\n      \"type\":
+        \"object\",\n      \"propertyNames\": {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"array\",\n        \"items\": {\n          \"type\":
+        \"string\"\n        }\n      },\n      \"description\": \"A mapping where
+        keys are strings and values are arrays\"\n    }\n  },\n  \"required\": [\n    \"summary\",\n    \"key_events\",\n    \"important_people\",\n    \"projects_mentioned\",\n    \"action_items\",\n    \"timeline_highlights\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generates a comprehensive summary of events from emails in a
+        time period"},{"role":"user","content":"## Input Values\n```json\n{\n  \"start_date\":
+        \"2024-01-01\",\n  \"end_date\": \"2024-01-31\",\n  \"emails\": [\n    {\n      \"id\":
+        \"email-1\",\n      \"subject\": \"Project Kickoff Meeting\",\n      \"from\":
+        \"alice@example.com\",\n      \"date\": \"2024-01-15T09:00:00+00:00\",\n      \"content\":
+        \"Let''s schedule the project kickoff for next Monday at 2 PM.\"\n    },\n    {\n      \"id\":
+        \"email-2\",\n      \"subject\": \"Budget Approval Required\",\n      \"from\":
+        \"bob@example.com\",\n      \"date\": \"2024-01-17T11:30:00+00:00\",\n      \"content\":
+        \"The budget needs approval by January 20th for Q1 planning.\"\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"summary\": \"example string\",\n  \"key_events\":
+        [\n    {\n      \"_type\": \"example string\",\n      \"date\": \"example
+        string\",\n      \"title\": \"example string\",\n      \"description\": \"example
+        string\",\n      \"participants\": [\n        \"example string\"\n      ],\n      \"email_ids\":
+        [\n        \"example string\"\n      ],\n      \"category\": \"example string\"\n    }\n  ],\n  \"important_people\":
+        [\n    {\n      \"_type\": \"example string\",\n      \"email\": \"example
+        string\",\n      \"name\": \"example string\",\n      \"interaction_count\":
+        42,\n      \"topics_discussed\": [\n        \"example string\"\n      ]\n    }\n  ],\n  \"projects_mentioned\":
+        [\n    \"example string\"\n  ],\n  \"action_items\": [\n    {\n      \"_type\":
+        \"example string\",\n      \"description\": \"example string\",\n      \"due_date\":
+        \"example string\",\n      \"assigned_to\": \"example string\",\n      \"status\":
+        \"example string\",\n      \"source_email_id\": \"example string\"\n    }\n  ],\n  \"timeline_highlights\":
+        {\n    \"nested\": \"object\"\n  }\n}\n```\n\nRequired fields: summary, key_events,
+        important_people, projects_mentioned, action_items, timeline_highlights\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '8145'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 19 Sep 2025 07:26:27 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '8619'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '9195'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '198214'
+      X-Ratelimit-Reset-Requests:
+      - 10.338s
+      X-Ratelimit-Reset-Tokens:
+      - 535ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98175a937d1169b4-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CHPnXV9QygtY7qzhkRheOzeDDPckE",
+          "object": "chat.completion",
+          "created": 1758266779,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"In January 2024, key communications regarding project initiation and budget approvals occurred.\",\n  \"key_events\": [\n    {\n      \"_type\": \"EventSummary\",\n      \"date\": \"2024-01-15\",\n      \"title\": \"Project Kickoff Meeting Scheduled\",\n      \"description\": \"Discussion on scheduling the project kickoff for next Monday at 2 PM.\",\n      \"participants\": [\n        \"alice@example.com\"\n      ],\n      \"email_ids\": [\n        \"email-1\"\n      ],\n      \"category\": \"Meeting\"\n    },\n    {\n      \"_type\": \"EventSummary\",\n      \"date\": \"2024-01-17\",\n      \"title\": \"Budget Approval Discussion\",\n      \"description\": \"Urgent need for budget approval by January 20th for Q1 planning.\",\n      \"participants\": [\n        \"bob@example.com\"\n      ],\n      \"email_ids\": [\n        \"email-2\"\n      ],\n      \"category\": \"Action Required\"\n    }\n  ],\n  \"important_people\": [\n    {\n      \"_type\": \"PersonSummary\",\n      \"email\": \"alice@example.com\",\n      \"name\": \"Alice\",\n      \"interaction_count\": 1,\n      \"topics_discussed\": [\n        \"Project Kickoff\"\n      ]\n    },\n    {\n      \"_type\": \"PersonSummary\",\n      \"email\": \"bob@example.com\",\n      \"name\": \"Bob\",\n      \"interaction_count\": 1,\n      \"topics_discussed\": [\n        \"Budget Approval\"\n      ]\n    }\n  ],\n  \"projects_mentioned\": [\n    \"Project Kickoff\"\n  ],\n  \"action_items\": [\n    {\n      \"_type\": \"ActionItem\",\n      \"description\": \"Approve budget for Q1 planning\",\n      \"due_date\": \"2024-01-20\",\n      \"assigned_to\": \"bob@example.com\",\n      \"status\": \"Pending\",\n      \"source_email_id\": \"email-2\"\n    }\n  ],\n  \"timeline_highlights\": {\n    \"January 2024\": [\n      \"Project kickoff meeting scheduled on January 15.\",\n      \"Budget approval required by January 20.\"\n    ]\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1727,
+            "completion_tokens": 453,
+            "total_tokens": 2180,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Fri, 19 Sep 2025 07:26:27 GMT
+recorded_with: VCR 6.3.1

@@ -1,16 +1,16 @@
 # GitHub Assistant Example
 
-This example demonstrates how to use DSPy.rb's GitHub CLI Toolset to create an intelligent assistant that can perform various GitHub operations through natural language commands.
+This example demonstrates how to use DSPy.rb's GitHub CLI Toolset to create an intelligent read-only assistant that can perform various GitHub analysis and retrieval operations through natural language commands.
 
 ## Features
 
 The GitHub Assistant can:
 
-- **Issue Management**: List, search, and get details of GitHub issues
-- **Pull Request Operations**: List, search, and get details of pull requests  
+- **Issue Analysis**: List, search, and get details of GitHub issues (read-only)
+- **Pull Request Analysis**: List, search, and get details of pull requests (read-only)
 - **Repository Analysis**: Get repository statistics and information
-- **API Interactions**: Make arbitrary GitHub API requests
-- **Multi-Step Tasks**: Perform complex analysis combining multiple operations
+- **API Queries**: Make read-only GitHub API requests (GET requests only)
+- **Multi-Step Analysis**: Perform complex analysis combining multiple read-only operations
 
 ## Prerequisites
 
@@ -83,7 +83,7 @@ Here are some example tasks you can try:
 - "How many stars and forks does the rails/rails repository have?"
 - "What's the current activity level in the nodejs/node repository?"
 
-### Issue Management
+### Issue Analysis
 - "List the 10 most recent open issues from facebook/react"
 - "Find issues labeled 'bug' in the golang/go repository"
 - "Get details about issue #123 from microsoft/vscode"
@@ -108,12 +108,26 @@ The assistant gracefully handles common errors:
 - **Rate limiting**: Includes delays between operations
 - **Network issues**: Provides informative error messages
 
+## Read-Only Design
+
+This assistant is designed to be **read-only** for security and safety. It can only:
+- Retrieve and analyze existing GitHub data
+- List issues, pull requests, and repository information
+- Make GET requests to the GitHub API
+- Perform multi-step analysis without modifying anything
+
+It **cannot**:
+- Create, edit, or delete issues or pull requests
+- Add comments or reviews
+- Modify repository settings
+- Make POST, PUT, DELETE, or PATCH requests
+
 ## Customization
 
 You can customize the assistant by:
 
 1. **Modifying the signature**: Edit the `GitHubAssistant` class to add more fields
-2. **Adding more tools**: Combine with other DSPy toolsets
+2. **Adding more tools**: Combine with other DSPy toolsets (ensure they're also read-only if desired)
 3. **Changing the LM**: Use different language models
 4. **Adjusting parameters**: Modify max_iterations, add system prompts, etc.
 

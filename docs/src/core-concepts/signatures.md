@@ -50,11 +50,62 @@ class BasicClassifier < DSPy::Signature
     const :context, T.nilable(String)      # Optional string
     const :max_length, Integer             # Required integer
     const :include_score, T::Boolean       # Boolean
+    const :created_date, Date              # Date (ISO 8601 format)
+    const :updated_at, DateTime            # DateTime with timezone
+    const :processed_time, Time            # Time (converted to UTC)
     const :tags, T::Array[String]          # Array of strings
     const :metadata, T::Hash[String, String] # Hash with string keys/values
   end
 end
 ```
+
+## Date and Time Types
+
+DSPy.rb provides comprehensive support for date and time types with automatic serialization/deserialization:
+
+```ruby
+class EventScheduler < DSPy::Signature
+  description "Schedule events based on requirements"
+  
+  input do
+    const :start_date, Date                    # Required date
+    const :end_date, T.nilable(Date)           # Optional date
+    const :preferred_time, DateTime            # DateTime with timezone
+    const :deadline, Time                      # Time (stored as UTC)
+  end
+  
+  output do
+    const :scheduled_date, Date                # LLM returns ISO 8601 date string, auto-converted
+    const :event_datetime, DateTime           # LLM returns ISO datetime, preserves timezone
+    const :created_at, Time                   # LLM returns time string, converted to UTC
+  end
+end
+```
+
+### Date/Time Format Handling
+
+- **Date**: Serialized as ISO 8601 format (`YYYY-MM-DD`)
+- **DateTime**: Serialized as ISO 8601 with timezone (`YYYY-MM-DDTHH:MM:SS+00:00`)
+- **Time**: Serialized as ISO 8601, automatically converted to UTC for consistency
+
+```ruby
+predictor = DSPy::Predict.new(EventScheduler)
+
+result = predictor.call(
+  start_date: "2024-01-15",              # String input, converted to Date
+  preferred_time: "2024-01-15T10:30:45Z" # String input, converted to DateTime
+)
+
+puts result.scheduled_date.class  # => Date
+puts result.event_datetime.class  # => DateTime
+```
+
+### Timezone Considerations
+
+Following ActiveRecord conventions:
+- **Time** objects are automatically converted to UTC for consistent storage
+- **DateTime** objects preserve timezone information
+- **Date** objects are timezone-agnostic
 
 ## Output Definition
 

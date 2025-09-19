@@ -61,14 +61,10 @@ module DSPy
       toolset_name "github"
 
       # Expose methods as tools with descriptions
-      tool :create_issue, description: "Create a new GitHub issue"
-      tool :create_pr, description: "Create a new GitHub pull request"
       tool :list_issues, description: "List GitHub issues with optional filters"
       tool :list_prs, description: "List GitHub pull requests with optional filters"
       tool :get_issue, description: "Get details of a specific GitHub issue"
       tool :get_pr, description: "Get details of a specific GitHub pull request"
-      tool :comment_on_issue, description: "Add a comment to a GitHub issue"
-      tool :review_pr, description: "Add a review to a GitHub pull request"
       tool :api_request, description: "Make an arbitrary GitHub API request"
 
       sig { void }
@@ -76,64 +72,7 @@ module DSPy
         # No persistent state needed
       end
 
-      sig { params(
-        title: String,
-        body: String,
-        labels: T::Array[String],
-        assignees: T::Array[String],
-        repo: T.nilable(String)
-      ).returns(String) }
-      def create_issue(title:, body:, labels: [], assignees: [], repo: nil)
-        cmd = build_gh_command(['issue', 'create'])
-        cmd << ['--title', shell_escape(title)]
-        cmd << ['--body', shell_escape(body)]
-        
-        labels.each { |label| cmd << ['--label', shell_escape(label)] }
-        assignees.each { |assignee| cmd << ['--assignee', shell_escape(assignee)] }
-        
-        if repo
-          cmd << ['--repo', shell_escape(repo)]
-        end
 
-        result = execute_command(cmd.flatten.join(' '))
-        
-        if result[:success]
-          "Issue created successfully: #{result[:output].strip}"
-        else
-          "Failed to create issue: #{result[:error]}"
-        end
-      rescue => e
-        "Error creating issue: #{e.message}"
-      end
-
-      sig { params(
-        title: String,
-        body: String,
-        base: String,
-        head: String,
-        repo: T.nilable(String)
-      ).returns(String) }
-      def create_pr(title:, body:, base:, head:, repo: nil)
-        cmd = build_gh_command(['pr', 'create'])
-        cmd << ['--title', shell_escape(title)]
-        cmd << ['--body', shell_escape(body)]
-        cmd << ['--base', shell_escape(base)]
-        cmd << ['--head', shell_escape(head)]
-        
-        if repo
-          cmd << ['--repo', shell_escape(repo)]
-        end
-
-        result = execute_command(cmd.flatten.join(' '))
-        
-        if result[:success]
-          "Pull request created successfully: #{result[:output].strip}"
-        else
-          "Failed to create pull request: #{result[:error]}"
-        end
-      rescue => e
-        "Error creating pull request: #{e.message}"
-      end
 
       sig { params(
         state: IssueState,
@@ -241,58 +180,7 @@ module DSPy
         "Error getting pull request: #{e.message}"
       end
 
-      sig { params(
-        issue_number: Integer,
-        comment: String,
-        repo: T.nilable(String)
-      ).returns(String) }
-      def comment_on_issue(issue_number:, comment:, repo: nil)
-        cmd = build_gh_command(['issue', 'comment', issue_number.to_s])
-        cmd << ['--body', shell_escape(comment)]
-        
-        if repo
-          cmd << ['--repo', shell_escape(repo)]
-        end
 
-        result = execute_command(cmd.flatten.join(' '))
-        
-        if result[:success]
-          "Comment added successfully to issue ##{issue_number}"
-        else
-          "Failed to add comment: #{result[:error]}"
-        end
-      rescue => e
-        "Error adding comment: #{e.message}"
-      end
-
-      sig { params(
-        pr_number: Integer,
-        review_type: ReviewState,
-        comment: T.nilable(String),
-        repo: T.nilable(String)
-      ).returns(String) }
-      def review_pr(pr_number:, review_type:, comment: nil, repo: nil)
-        cmd = build_gh_command(['pr', 'review', pr_number.to_s])
-        cmd << ['--' + review_type.serialize.tr('_', '-')]
-        
-        if comment
-          cmd << ['--body', shell_escape(comment)]
-        end
-        
-        if repo
-          cmd << ['--repo', shell_escape(repo)]
-        end
-
-        result = execute_command(cmd.flatten.join(' '))
-        
-        if result[:success]
-          "Review added successfully to PR ##{pr_number}"
-        else
-          "Failed to add review: #{result[:error]}"
-        end
-      rescue => e
-        "Error adding review: #{e.message}"
-      end
 
       sig { params(
         endpoint: String,
@@ -301,6 +189,11 @@ module DSPy
         repo: T.nilable(String)
       ).returns(String) }
       def api_request(endpoint:, method: 'GET', fields: {}, repo: nil)
+        # Restrict to read-only operations
+        unless method.upcase == 'GET'
+          return "Error: Only GET requests are allowed for read-only access"
+        end
+        
         cmd = build_gh_command(['api', endpoint])
         cmd << ['--method', method.upcase]
         

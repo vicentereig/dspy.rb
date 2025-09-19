@@ -38,10 +38,16 @@ module DSPy
           coerce_hash_value(value, prop_type)
         when ->(type) { enum_type?(type) }
           extract_enum_class(prop_type).deserialize(value)
-        when Float, ->(type) { simple_type_match?(type, Float) }
+        when ->(type) { type == Float || simple_type_match?(type, Float) }
           value.to_f
-        when Integer, ->(type) { simple_type_match?(type, Integer) }
+        when ->(type) { type == Integer || simple_type_match?(type, Integer) }
           value.to_i
+        when ->(type) { type == Date || simple_type_match?(type, Date) }
+          coerce_date_value(value)
+        when ->(type) { type == DateTime || simple_type_match?(type, DateTime) }
+          coerce_datetime_value(value)
+        when ->(type) { type == Time || simple_type_match?(type, Time) }
+          coerce_time_value(value)
         when ->(type) { struct_type?(type) }
           coerce_struct_value(value, prop_type)
         else
@@ -243,6 +249,48 @@ module DSPy
         # If struct creation fails, return the original value
         DSPy.logger.debug("Failed to coerce union type: #{e.message}")
         value
+      end
+
+      # Coerces a date value from string using ISO 8601 format
+      sig { params(value: T.untyped).returns(T.nilable(Date)) }
+      def coerce_date_value(value)
+        return value if value.is_a?(Date)
+        return nil if value.nil? || value.to_s.strip.empty?
+        
+        # Support ISO 8601 format (YYYY-MM-DD) like ActiveRecord
+        Date.parse(value.to_s)
+      rescue ArgumentError, TypeError
+        # Return nil for invalid dates rather than crashing
+        DSPy.logger.debug("Failed to coerce to Date: #{value}")
+        nil
+      end
+
+      # Coerces a datetime value from string using ISO 8601 format with timezone
+      sig { params(value: T.untyped).returns(T.nilable(DateTime)) }
+      def coerce_datetime_value(value)
+        return value if value.is_a?(DateTime)
+        return nil if value.nil? || value.to_s.strip.empty?
+        
+        # Parse ISO 8601 with timezone like ActiveRecord
+        # Formats: 2024-01-15T10:30:45Z, 2024-01-15T10:30:45+00:00, 2024-01-15 10:30:45
+        DateTime.parse(value.to_s)
+      rescue ArgumentError, TypeError
+        DSPy.logger.debug("Failed to coerce to DateTime: #{value}")
+        nil
+      end
+
+      # Coerces a time value from string, converting to UTC like ActiveRecord
+      sig { params(value: T.untyped).returns(T.nilable(Time)) }
+      def coerce_time_value(value)
+        return value if value.is_a?(Time)
+        return nil if value.nil? || value.to_s.strip.empty?
+        
+        # Parse and convert to UTC (like ActiveRecord with time_zone_aware_attributes)
+        # This ensures consistent timezone handling across the system
+        Time.parse(value.to_s).utc
+      rescue ArgumentError, TypeError
+        DSPy.logger.debug("Failed to coerce to Time: #{value}")
+        nil
       end
     end
   end
