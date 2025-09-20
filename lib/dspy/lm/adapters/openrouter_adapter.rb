@@ -26,6 +26,23 @@ module DSPy
         )
       end
 
+      def chat(messages:, signature: nil, response_format: nil, &block)
+        # For OpenRouter, we need to be more lenient with structured outputs
+        # as the model behind it may not fully support OpenAI's response_format spec
+        begin
+          super
+        rescue => e
+          # If structured output fails, retry with enhanced prompting
+          if @structured_outputs_enabled && signature && e.message.include?('response_format')
+            DSPy.logger.debug("OpenRouter structured output failed, falling back to enhanced prompting")
+            @structured_outputs_enabled = false
+            retry
+          else
+            raise
+          end
+        end
+      end
+
       protected
 
       # Add any OpenRouter-specific headers to all requests
