@@ -5,6 +5,43 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.3] - 2025-09-20
+
+### Added
+- **GitHub CLI Toolset** - Comprehensive GitHub operations support for agent interactions
+  - Read-only GitHub operations: list issues, PRs, get repository info, search by labels
+  - Integration with `gh` CLI for authenticated GitHub API access
+  - Example GitHub assistant demonstrating real-world agentic workflows
+  - Full integration test coverage with VCR cassettes for reliable testing
+
+### Fixed
+- **ReAct Agent Reliability Improvements** - Resolves GitHub issue #114
+  - Fixed field descriptions not being included in ReAct signatures (`desc:` → `description:`)
+  - Implemented dynamic ActionEnum to constrain LLM responses to valid tool names only
+  - Enhanced AvailableTool struct for better type safety in tool handling
+  - Updated all ReAct processing methods to handle ActionEnum properly
+  - All previously failing ReAct tests now pass consistently
+
+### Improved
+- **Documentation Site Enhancements**
+  - Added automatic OG image generation for social media previews
+  - Implemented Charts.css data visualizations for JSON modes comparison
+  - Comprehensive SEO improvements across documentation site
+  - Enhanced build process for CSS/JS asset compilation
+  - GitHub integration buttons and improved site navigation
+
+### Security
+- **Enhanced Security Practices**
+  - Made GitHub assistant example read-only for security
+  - Updated ReAct tests to use read-only GitHub CLI toolset
+
+### Technical Details
+- Implemented `DSPy::Tools::Toolsets::GitHubCLI` with comprehensive GitHub operations
+- Created `AvailableTool` struct for type-safe tool metadata handling
+- Enhanced ReAct agent with dynamic tool enumeration and constraint validation
+- Updated VCR cassettes with ActionEnum compatibility for reliable test execution
+- Full backward compatibility maintained with existing tool implementations
+
 ## [0.27.2] - 2025-09-16
 
 ### Added
