@@ -29,10 +29,9 @@ module DSPy
           normalized_messages = handle_o1_messages(normalized_messages)
         end
 
-        request_params = {
-          model: model,
+        request_params = default_request_params.merge(
           messages: normalized_messages
-        }
+        )
 
         # Add temperature based on model capabilities  
         unless o1_model?(model)
@@ -66,6 +65,11 @@ module DSPy
 
           if response.respond_to?(:error) && response.error
             raise AdapterError, "OpenAI API error: #{response.error}"
+          end
+
+          if response[:error] && response[:error][:message]
+            error = response[:error][:message]
+            raise AdapterError, "OpenAI API error: #{error}"
           end
 
           choice = response.choices.first
@@ -121,6 +125,15 @@ module DSPy
             raise AdapterError, "OpenAI adapter error: #{e.message}"
           end
         end
+      end
+
+      protected
+
+      # Allow subclasses to override request params (add headers, etc)
+      def default_request_params
+        {
+          model: model
+        }
       end
 
       private

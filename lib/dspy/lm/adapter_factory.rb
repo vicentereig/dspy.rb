@@ -9,8 +9,11 @@ module DSPy
         'openai' => 'OpenAIAdapter',
         'anthropic' => 'AnthropicAdapter',
         'ollama' => 'OllamaAdapter',
-        'gemini' => 'GeminiAdapter'
+        'gemini' => 'GeminiAdapter',
+        'openrouter' => 'OpenrouterAdapter'
       }.freeze
+
+      PROVIDERS_WITH_EXTRA_OPTIONS = %w[openai ollama gemini openrouter].freeze
 
       class << self
         # Creates an adapter instance based on model_id
@@ -24,8 +27,8 @@ module DSPy
           
           # Pass provider-specific options
           adapter_options = { model: model, api_key: api_key }
-          # OpenAI, Ollama, and Gemini accept additional options
-          adapter_options.merge!(options) if %w[openai ollama gemini].include?(provider)
+          # Some providers accept additional options
+          adapter_options.merge!(options) if PROVIDERS_WITH_EXTRA_OPTIONS.include?(provider)
           
           adapter_class.new(**adapter_options)
         end
