@@ -203,7 +203,10 @@ if __FILE__ == $0
   assistant = GitHubAssistantDemo.new
   
   # Check command line arguments
-  case ARGV[0]
+  mode = ARGV[0]
+  ARGV.clear # Clear ARGV to prevent gets from reading command line arguments as files
+  
+  case mode
   when 'demo', nil
     assistant.run_demo
   when 'interactive', 'i'

@@ -23,7 +23,7 @@ last_modified_at: 2025-08-26 00:00:00 +0000
 Add DSPy.rb to your Gemfile:
 
 ```ruby
-gem 'dspy', '~> 0.20.0'
+gem 'dspy', '~> 0.27.3'
 ```
 
 Or install it directly:
