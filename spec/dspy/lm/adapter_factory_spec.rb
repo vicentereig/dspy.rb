@@ -11,6 +11,18 @@ RSpec.describe DSPy::LM::AdapterFactory do
       expect(adapter.model).to eq('gpt-4')
     end
 
+    it 'creates OpenAI adapter for OpenRouter models' do
+      adapter = described_class.create('openrouter/x-ai/grok-4-fast:free', api_key: 'test-key')
+
+      expect(adapter).to be_a(DSPy::LM::OpenAIAdapter)
+      expect(adapter.model).to eq('x-ai/grok-4-fast:free')
+    end
+
+    it 'strips the openrouter/ prefix for OpenRouter models' do
+      adapter = described_class.create('openrouter/x-ai/grok-4-fast:free', api_key: 'test-key')
+      expect(adapter.model).to eq('x-ai/grok-4-fast:free')
+    end
+
     it 'creates Anthropic adapter for anthropic/ prefixed model' do
       adapter = described_class.create('anthropic/claude-3-sonnet', api_key: 'test-key')
       
@@ -36,6 +48,26 @@ RSpec.describe DSPy::LM::AdapterFactory do
         .and_call_original
       
       described_class.create('openai/gpt-4', api_key: 'test-key')
+    end
+
+    it 'passes Openrouter-specific options to the adapter' do
+      adapter = described_class.create(
+        'openrouter/x-ai/grok-4-fast:free',
+        api_key: 'test-key',
+        http_referrer: 'https://example.com',
+        x_title: 'MyApp'
+      )
+
+      expect(adapter).to be_a(DSPy::LM::OpenrouterAdapter)
+      expect(adapter.model).to eq('x-ai/grok-4-fast:free')
+
+      request_params = adapter.send(:default_request_params)
+      expect(request_params).to have_key(:request_options)
+      expect(request_params[:request_options]).to have_key(:extra_headers)
+      expect(request_params[:request_options][:extra_headers]).to include(
+        'X-Title' => 'MyApp',
+        'HTTP-Referer' => 'https://example.com'
+      )
     end
   end
 end
