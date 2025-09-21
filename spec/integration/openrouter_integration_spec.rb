@@ -125,7 +125,7 @@ RSpec.describe "OpenRouter Integration" do
 
       lm = DSPy::LM.new('openrouter/x-ai/grok-4-fast:free',
                         api_key: ENV['OPENROUTER_API_KEY'],
-                        http_referrer: 'https://dspy-rb-test.com',
+                        http_referrer: 'https://vicentereig.github.io/dspy.rb/',
                         x_title: 'DSPy.rb Integration Test')
       DSPy.configure { |config| config.lm = lm }
 
@@ -142,7 +142,7 @@ RSpec.describe "OpenRouter Integration" do
       expect(request_params[:request_options]).to have_key(:extra_headers)
       expect(request_params[:request_options][:extra_headers]).to include(
         'X-Title' => 'DSPy.rb Integration Test',
-        'HTTP-Referer' => 'https://dspy-rb-test.com'
+        'HTTP-Referer' => 'https://vicentereig.github.io/dspy.rb/'
       )
     end
   end
