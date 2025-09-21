@@ -66,14 +66,27 @@ VCR.configure do |config|
 
   # No telemetry services ignored - block everything
 
-  # Configure request matching to ignore API key query params for Gemini
+  # Configure request matching to ignore API key query params for Gemini only
   # Gemini API puts API key in query param (?key=...) unlike headers for other providers
-  uri_without_gemini_key = VCR.request_matchers.uri_without_param(:key)
-  config.register_request_matcher :uri_without_api_key, &uri_without_gemini_key
+  config.register_request_matcher :gemini_aware_uri do |request1, request2|
+    uri1 = URI(request1.uri)
+    uri2 = URI(request2.uri)
+    
+    # For Gemini API requests, ignore the 'key' parameter
+    if uri1.host&.include?('generativelanguage.googleapis.com') || 
+       uri2.host&.include?('generativelanguage.googleapis.com')
+      # Use VCR's built-in uri_without_param for Gemini
+      uri_without_key = VCR.request_matchers.uri_without_param(:key)
+      uri_without_key.call(request1, request2)
+    else
+      # For all other APIs, use normal URI matching
+      request1.uri == request2.uri
+    end
+  end
   
-  # Set default matching to ignore API key query param
+  # Set default matching to use our Gemini-aware URI matcher
   config.default_cassette_options = {
-    match_requests_on: [:method, uri_without_gemini_key, :body]
+    match_requests_on: [:method, :gemini_aware_uri, :body]
   }
 
   # Filter out sensitive information

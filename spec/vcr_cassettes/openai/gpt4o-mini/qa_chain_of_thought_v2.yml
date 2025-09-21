@@ -21,7 +21,12 @@ http_interactions:
         Input Values\n```json\n{\n  \"question\": \"Two dice are tossed. What is the
         probability that the sum equals two?\"\n}\n```\n\nRespond with the corresponding
         output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`."}],"temperature":0.0}'
+        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
+        this structure:\n```json\n{\n  \"answer\": \"example string\",\n  \"reasoning\":
+        \"Step by step reasoning process\"\n}\n```\n\nRequired fields: answer, reasoning\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -38,7 +43,7 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.9.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
@@ -52,14 +57,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '1418'
+      - '1861'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 07:14:19 GMT
+      - Sun, 21 Sep 2025 16:21:14 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -71,54 +76,58 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '2524'
+      - '3711'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2526'
+      - '4267'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9996'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '199698'
+      - '199594'
       X-Ratelimit-Reset-Requests:
-      - 27.499s
+      - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 90ms
+      - 121ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a51082feca5e6d-EWR
+      - 982ae4e16c570366-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BprODnQQRvpXLXHJ0xontq8cnkIdA",
+          "id": "chatcmpl-CIH6EQNzsY9Dt3RtpO6GQjbIAuN4j",
           "object": "chat.completion",
-          "created": 1751699657,
+          "created": 1758471670,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": \"1/36\",\n  \"reasoning\": \"When two dice are tossed, the possible outcomes are the pairs (1,1), (1,2), (1,3), (1,4), (1,5), (1,6), (2,1), (2,2), (2,3), (2,4), (2,5), (2,6), (3,1), (3,2), (3,3), (3,4), (3,5), (3,6), (4,1), (4,2), (4,3), (4,4), (4,5), (4,6), (5,1), (5,2), (5,3), (5,4), (5,5), (5,6), (6,1), (6,2), (6,3), (6,4), (6,5), (6,6). There are a total of 36 possible outcomes (6 sides on the first die multiplied by 6 sides on the second die). The only way to get a sum of 2 is by rolling (1,1). Therefore, there is 1 favorable outcome out of 36 possible outcomes, giving a probability of 1/36.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"1/36\",\n  \"reasoning\": \"To find the probability that the sum of two dice equals two, we first identify the total number of outcomes when rolling two dice. Each die has 6 faces, so there are 6 x 6 = 36 possible outcomes. The only way to get a sum of two is by rolling a 1 on the first die and a 1 on the second die. Therefore, there is only 1 favorable outcome. The probability is then the number of favorable outcomes divided by the total number of outcomes: 1/36.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -127,9 +136,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 313,
-            "completion_tokens": 285,
-            "total_tokens": 598,
+            "prompt_tokens": 409,
+            "completion_tokens": 132,
+            "total_tokens": 541,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -142,7 +151,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
+          "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Sat, 05 Jul 2025 07:14:19 GMT
+  recorded_at: Sun, 21 Sep 2025 16:21:14 GMT
 recorded_with: VCR 6.3.1

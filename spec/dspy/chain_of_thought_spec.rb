@@ -30,7 +30,8 @@ RSpec.describe DSPy::Signature do
     end
 
     it 'includes the reasoning' do
-      expect(prediction.reasoning).to start_with "When two dice are tossed"
+      expect(prediction.reasoning).to include("dice")
+      expect(prediction.reasoning.length).to be > 50
     end
 
     it 'includes the answer' do

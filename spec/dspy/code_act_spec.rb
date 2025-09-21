@@ -316,7 +316,7 @@ RSpec.describe 'DSPy::CodeAct' do
     end
 
     describe '#execute_think_code_step' do
-      it 'generates code, executes it, and updates history', vcr: { cassette_name: 'openai/gpt4o-mini/codeact_math_problem' } do
+      it 'generates code, executes it, and updates history', vcr: { cassette_name: 'openai/gpt4o-mini/codeact_math_problem', record: :new_episodes } do
         result = agent.send(:execute_think_code_step, task, context, history, iteration)
         
         expect(result).to have_key(:history)
