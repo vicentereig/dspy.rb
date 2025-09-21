@@ -13,7 +13,6 @@ module DSPy
         @api_key = api_key
         @structured_outputs_enabled = structured_outputs
 
-
         @http_referrer = http_referrer
         @x_title = x_title
 
