@@ -38,14 +38,22 @@ class SimpleResponse < DSPy::Signature
   end
 end
 
+def require_api_key!
+  skip 'Requires OPENROUTER_API_KEY' unless ENV['OPENROUTER_API_KEY']
+end
+
 RSpec.describe "OpenRouter Integration" do
+  let(:api_key) { ENV['OPENROUTER_API_KEY'] }
+
   describe "basic functionality" do
     it "works with basic chat completion (auto-fallback from structured outputs)", vcr: { cassette_name: "openrouter_basic_chat" } do
-      skip 'Requires OPENROUTER_API_KEY' unless ENV['OPENROUTER_API_KEY']
+      require_api_key!
 
       # Use deepseek without explicitly setting structured_outputs - should auto-fallback
-      lm = DSPy::LM.new('openrouter/deepseek/deepseek-chat-v3.1:free',
-                        api_key: ENV['OPENROUTER_API_KEY'])
+      lm = DSPy::LM.new(
+        'openrouter/deepseek/deepseek-chat-v3.1:free',
+        api_key: api_key
+      )
       DSPy.configure { |config| config.lm = lm }
 
       predictor = DSPy::Predict.new(SimpleResponse)
@@ -60,12 +68,14 @@ RSpec.describe "OpenRouter Integration" do
 
   describe "structured outputs with fallback" do
     it "attempts structured outputs first, falls back on failure (default behavior)", vcr: { cassette_name: "openrouter_structured_fallback" } do
-      skip 'Requires OPENROUTER_API_KEY' unless ENV['OPENROUTER_API_KEY']
+      require_api_key!
 
       # Use a model that doesn't support structured outputs - should fallback automatically
       # (structured_outputs defaults to true for OpenRouter)
-      lm = DSPy::LM.new('openrouter/deepseek/deepseek-chat-v3.1:free',
-                        api_key: ENV['OPENROUTER_API_KEY'])
+      lm = DSPy::LM.new(
+        'openrouter/deepseek/deepseek-chat-v3.1:free',
+        api_key: api_key
+      )
       DSPy.configure { |config| config.lm = lm }
 
       predictor = DSPy::Predict.new(OpenRouterSentimentAnalysis)
@@ -80,12 +90,14 @@ RSpec.describe "OpenRouter Integration" do
     end
 
     it "works with structured outputs explicitly disabled", vcr: { cassette_name: "openrouter_no_structured" } do
-      skip 'Requires OPENROUTER_API_KEY' unless ENV['OPENROUTER_API_KEY']
+      require_api_key!
 
       # Explicitly disable structured outputs from the start
-      lm = DSPy::LM.new('openrouter/deepseek/deepseek-chat-v3.1:free',
-                        api_key: ENV['OPENROUTER_API_KEY'],
-                        structured_outputs: false)
+      lm = DSPy::LM.new(
+        'openrouter/deepseek/deepseek-chat-v3.1:free',
+        api_key: api_key,
+        structured_outputs: false
+      )
       DSPy.configure { |config| config.lm = lm }
 
       predictor = DSPy::Predict.new(OpenRouterSentimentAnalysis)
@@ -93,18 +105,20 @@ RSpec.describe "OpenRouter Integration" do
 
       # Should work with enhanced prompting
       expect(result.sentiment).to be_a(OpenRouterSentiment)
-      expect([OpenRouterSentiment::Positive, OpenRouterSentiment::Negative, OpenRouterSentiment::Neutral]).to include(result.sentiment)
+      expect(result.sentiment).to eq(OpenRouterSentiment::Neutral)
       expect(result.confidence).to be_a(Float)
       expect(result.reasoning).to be_a(String)
     end
 
     it "works with structured outputs natively supported (no fallback needed)", vcr: { cassette_name: "openrouter_structured_native" } do
-      skip 'Requires OPENROUTER_API_KEY' unless ENV['OPENROUTER_API_KEY']
+      require_api_key!
 
       # Use Grok which supports structured outputs natively
       # (structured_outputs defaults to true for OpenRouter)
-      lm = DSPy::LM.new('openrouter/x-ai/grok-4-fast:free',
-                        api_key: ENV['OPENROUTER_API_KEY'])
+      lm = DSPy::LM.new(
+        'openrouter/x-ai/grok-4-fast:free',
+        api_key: api_key
+      )
       DSPy.configure { |config| config.lm = lm }
 
       predictor = DSPy::Predict.new(OpenRouterSentimentAnalysis)
@@ -121,12 +135,14 @@ RSpec.describe "OpenRouter Integration" do
 
   describe "OpenRouter-specific features" do
     it "includes custom headers when configured", vcr: { cassette_name: "openrouter_custom_headers" } do
-      skip 'Requires OPENROUTER_API_KEY' unless ENV['OPENROUTER_API_KEY']
+      require_api_key!
 
-      lm = DSPy::LM.new('openrouter/x-ai/grok-4-fast:free',
-                        api_key: ENV['OPENROUTER_API_KEY'],
-                        http_referrer: 'https://vicentereig.github.io/dspy.rb/',
-                        x_title: 'DSPy.rb Integration Test')
+      lm = DSPy::LM.new(
+        'openrouter/x-ai/grok-4-fast:free',
+        api_key: api_key,
+        http_referrer: 'https://vicentereig.github.io/dspy.rb/',
+        x_title: 'DSPy.rb Integration Test'
+      )
       DSPy.configure { |config| config.lm = lm }
 
       predictor = DSPy::Predict.new(SimpleResponse)
@@ -144,33 +160,6 @@ RSpec.describe "OpenRouter Integration" do
         'X-Title' => 'DSPy.rb Integration Test',
         'HTTP-Referer' => 'https://vicentereig.github.io/dspy.rb/'
       )
-    end
-  end
-
-  describe "model compatibility" do
-    context "with different OpenRouter models" do
-      let(:test_models) do
-        [
-          'openrouter/deepseek/deepseek-chat-v3.1:free',
-          'openrouter/x-ai/grok-4-fast:free'
-        ]
-      end
-
-      it "works with various free OpenRouter models", vcr: { cassette_name: "openrouter_model_compatibility" } do
-        skip 'Requires OPENROUTER_API_KEY' unless ENV['OPENROUTER_API_KEY']
-
-        # Test with just one model to avoid too many API calls in tests
-        model = test_models.first
-        lm = DSPy::LM.new(model, api_key: ENV['OPENROUTER_API_KEY'])
-        DSPy.configure { |config| config.lm = lm }
-
-        predictor = DSPy::Predict.new(SimpleResponse)
-        result = predictor.call(prompt: "Test model compatibility")
-
-        expect(result.response).to be_a(String)
-        expect(result.response).not_to be_empty
-        expect(result.word_count).to be_a(Integer)
-      end
     end
   end
 end
