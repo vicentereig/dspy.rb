@@ -106,7 +106,7 @@ This test used baseline [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s Enha
 - **OpenAI Structured Output**: Native API enforcement for GPT models. Including nuances on their JSON Schema implementation.
 - **Anthropic Tool Use**: Function calling for all Claude models.
 - **Anthropic Extraction**: Text completion with guided parsing for Claude.
-- **Gemini Structured Output**: Native structured generation for Gemini 1.5 Pro.
+- **Gemini Structured Output**: Native structured generation for Gemini models.
 
 ## Performance Benchmark Results
 
@@ -357,7 +357,7 @@ and handling potentially invalid responses.
 
 ## Key Findings
 
-- **Speed Champion**: Gemini Structured Output (3.42s) but limited to one model
+- **Speed Champion**: Gemini Structured Output (3.42s) for Gemini models
 - **Universal Choice**: Enhanced Prompting works across all providers with 100% success  
 - **Cost Winner**: Gemini Flash + Enhanced Prompting at $0.000114 per extraction
 - **Reliability**: All provider-specific strategies achieve 100% success rates
@@ -388,7 +388,7 @@ end
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('gemini/gemini-1.5-flash',
                       api_key: ENV['GEMINI_API_KEY'], 
-                      structured_outputs: true)  # Supports gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp
+                      structured_outputs: true)  # Supports gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash, gemini-2.5-*
 end
 
 predictor = DSPy::Predict.new(DeepResearch)

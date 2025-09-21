@@ -206,9 +206,10 @@ class JSONModesBenchmark
   end
 
   def supports_gemini_structured_outputs?(model)
-    # Based on official gemini-ai gem documentation - models with ✅ full schema support
+    # Based on official Google documentation and community feedback
     structured_output_models = %w[
       gemini-1.5-pro
+      gemini-1.5-flash
     ]
     structured_output_models.include?(model)
   end

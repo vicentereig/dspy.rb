@@ -11,11 +11,15 @@ module DSPy
           extend T::Sig
 
           # Models that support structured outputs (JSON + Schema)
-          # Based on official Google documentation and gemini-ai gem table
+          # Based on official Google documentation and community feedback
           STRUCTURED_OUTPUT_MODELS = T.let([
             "gemini-1.5-pro",              # ✅ Full schema support (legacy)
             "gemini-1.5-pro-preview-0514", # ✅ Full schema support (legacy)
             "gemini-1.5-pro-preview-0409", # ✅ Full schema support (legacy)
+            "gemini-1.5-flash",            # ✅ Full schema support (legacy)
+            "gemini-1.5-flash-preview-0514", # ✅ Full schema support (legacy)
+            "gemini-2.0-flash",            # ✅ Full schema support (2025)
+            "gemini-2.5-pro",              # ✅ Full schema support (2025 current)
             "gemini-2.5-flash",            # ✅ Full schema support (2025 current)
             "gemini-2.5-flash-lite"        # ✅ Full schema support (2025 current)
           ].freeze, T::Array[String])
@@ -23,8 +27,6 @@ module DSPy
           # Models that support JSON mode but NOT schema
           JSON_ONLY_MODELS = T.let([
             "gemini-pro",                   # 🟡 JSON only, no schema
-            "gemini-1.5-flash",             # 🟡 JSON only, no schema (legacy)
-            "gemini-1.5-flash-preview-0514", # 🟡 JSON only, no schema (legacy)
             "gemini-1.0-pro-002",           # 🟡 JSON only, no schema
             "gemini-1.0-pro",               # 🟡 JSON only, no schema
             "gemini-2.0-flash-001",         # 🟡 JSON only, no schema (2025)
