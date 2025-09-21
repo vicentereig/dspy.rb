@@ -25,7 +25,7 @@ class OpenRouterSentimentAnalysis < DSPy::Signature
   end
 end
 
-class SimpleResponse < DSPy::Signature
+class OpenRouterSimpleResponse < DSPy::Signature
   description "Generate a simple response"
 
   input do
@@ -53,7 +53,7 @@ RSpec.describe "OpenRouter Integration" do
       )
       DSPy.configure { |config| config.lm = lm }
 
-      predictor = DSPy::Predict.new(SimpleResponse)
+      predictor = DSPy::Predict.new(OpenRouterSimpleResponse)
       result = predictor.call(prompt: "Say hello in exactly three words")
 
       expect(result.response).to be_a(String)
@@ -144,7 +144,7 @@ RSpec.describe "OpenRouter Integration" do
       )
       DSPy.configure { |config| config.lm = lm }
 
-      predictor = DSPy::Predict.new(SimpleResponse)
+      predictor = DSPy::Predict.new(OpenRouterSimpleResponse)
       result = predictor.call(prompt: "Respond with 'Header test successful'")
 
       expect(result.response).to be_a(String)
