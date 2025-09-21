@@ -144,11 +144,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Sat, 13 Sep 2025 23:54:56 GMT
+      - Sun, 21 Sep 2025 15:44:46 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '562'
+      - '579'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -156,7 +156,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=1402
+      - gfet4t7; dur=1368
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -168,19 +168,19 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Model compatibility test\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-789\",\n      \"title\": \"Model compatibility test\",\n      \"description\": \"gemini-2.0-flash-001/enhanced_prompting\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 10,\n    \"upcoming_due\": 3\n  },\n  \"related_actions\": []\n}\n```"
+                    "text": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"model compatibility test\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"gemini-2.0-flash-001\",\n      \"enhanced_prompting\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-999\",\n      \"title\": \"model compatibility test\",\n      \"description\": \"\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"gemini-2.0-flash-001\",\n        \"enhanced_prompting\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 15,\n    \"upcoming_due\": 3\n  },\n  \"related_actions\": []\n}\n```"
                   }
                 ],
                 "role": "model"
               },
               "finishReason": "STOP",
-              "avgLogprobs": -0.029157235784438049
+              "avgLogprobs": -0.044469958309523404
             }
           ],
           "usageMetadata": {
             "promptTokenCount": 2754,
-            "candidatesTokenCount": 206,
-            "totalTokenCount": 2960,
+            "candidatesTokenCount": 229,
+            "totalTokenCount": 2983,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
@@ -190,14 +190,14 @@ http_interactions:
             "candidatesTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 206
+                "tokenCount": 229
               }
             ]
           },
           "modelVersion": "gemini-2.0-flash-001",
-          "responseId": "TwTGaPPYJtaz1MkPkuP--Aw"
+          "responseId": "bR3QaPmYHv7cnsEP8fy9iAI"
         }
-  recorded_at: Sat, 13 Sep 2025 23:54:56 GMT
+  recorded_at: Sun, 21 Sep 2025 15:44:46 GMT
 - request:
     method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key=<GEMINI_API_KEY>
@@ -309,18 +309,9 @@ http_interactions:
         [\n      \"backend\",\n      \"testing\",\n      \"priority\"\n    ]\n  },\n  \"user_profile\":
         {\n    \"user_id\": \"user-456\",\n    \"role\": \"admin\",\n    \"timezone\":
         \"UTC\"\n  }\n}\n```\n\nRespond with the corresponding output schema fields
-        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
-        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"action\":
-        \"example value\",\n  \"affected_todos\": [\n    {\n      \"_type\": \"example
-        string\",\n      \"id\": \"example string\",\n      \"title\": \"example string\",\n      \"description\":
-        \"example string\",\n      \"status\": \"example string\",\n      \"tags\":
-        [\n        \"example string\"\n      ],\n      \"priority\": \"example string\"\n    }\n  ],\n  \"summary\":
-        {\n    \"_type\": \"example string\",\n    \"total_todos\": 42,\n    \"upcoming_due\":
-        42\n  },\n  \"related_actions\": [\n    \"example value\"\n  ]\n}\n```\n\nRequired
-        fields: action, affected_todos, summary, related_actions\n\nEnsure your response:\n1.
-        Is valid JSON (properly quoted strings, no trailing commas)\n2. Includes all
-        required fields\n3. Uses the correct data types for each field\n4. Is wrapped
-        in ```json``` markdown code blocks\n"}]}]}'
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"action":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string"},"title":{"type":"string"},"priority":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","title","priority","tags"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"updates":{"type":"string"},"reason":{"type":"string"}},"required":["_type","todo_id","updates","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"reason":{"type":"string"}},"required":["_type","todo_id","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"assignee":{"type":"string"},"notify":{"type":"boolean"}},"required":["_type","todo_id","assignee","notify"]}],"description":"Primary
+        action to execute - automatically discriminated by _type field"},"affected_todos":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"id":{"type":"string"},"title":{"type":"string"},"description":{"type":"string"},"status":{"type":"string","enum":["pending","in_progress","completed","failed"]},"tags":{"type":"array","items":{"type":"string"}},"priority":{"type":"string"}},"required":["_type","id","title","description","status","tags","priority"]}},"summary":{"type":"object","properties":{"_type":{"type":"string"},"total_todos":{"type":"integer"},"upcoming_due":{"type":"integer"}},"required":["_type","total_todos","upcoming_due"]},"related_actions":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string"},"title":{"type":"string"},"priority":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","title","priority","tags"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"updates":{"type":"string"},"reason":{"type":"string"}},"required":["_type","todo_id","updates","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"reason":{"type":"string"}},"required":["_type","todo_id","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"todo_id":{"type":"string"},"assignee":{"type":"string"},"notify":{"type":"boolean"}},"required":["_type","todo_id","assignee","notify"]}],"description":"Union
+        of multiple types"}}},"required":["action","affected_todos","summary","related_actions"]}}}'
     headers:
       User-Agent:
       - Faraday v2.13.4
@@ -342,11 +333,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Sat, 13 Sep 2025 23:54:58 GMT
+      - Sun, 21 Sep 2025 15:44:47 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '601'
+      - '473'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -354,7 +345,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=1668
+      - gfet4t7; dur=937
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -366,34 +357,34 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"model compatibility test todo with medium priority (gemini-2.0-flash-001/gemini_structured_output)\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-987\",\n      \"title\": \"model compatibility test todo with medium priority (gemini-2.0-flash-001/gemini_structured_output)\",\n      \"description\": \"\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 10,\n    \"upcoming_due\": 2\n  },\n  \"related_actions\": []\n}\n```"
+                    "text": "{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"model compatibility test todo\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 0,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": []\n}"
                   }
                 ],
                 "role": "model"
               },
               "finishReason": "STOP",
-              "avgLogprobs": -0.031409824950785578
+              "avgLogprobs": -0.019713611514480027
             }
           ],
           "usageMetadata": {
-            "promptTokenCount": 2755,
-            "candidatesTokenCount": 237,
-            "totalTokenCount": 2992,
+            "promptTokenCount": 2515,
+            "candidatesTokenCount": 108,
+            "totalTokenCount": 2623,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 2755
+                "tokenCount": 2515
               }
             ],
             "candidatesTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 237
+                "tokenCount": 108
               }
             ]
           },
           "modelVersion": "gemini-2.0-flash-001",
-          "responseId": "UQTGaImNDbKB1MkPwPe4qQ0"
+          "responseId": "bh3QaJzKN4rPnsEPrpubyAM"
         }
-  recorded_at: Sat, 13 Sep 2025 23:54:58 GMT
+  recorded_at: Sun, 21 Sep 2025 15:44:47 GMT
 recorded_with: VCR 6.3.1

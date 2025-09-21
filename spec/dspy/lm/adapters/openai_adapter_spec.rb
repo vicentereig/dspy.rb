@@ -50,7 +50,11 @@ RSpec.describe DSPy::LM::OpenAIAdapter do
              ],
              usage: double('Usage', 
                           total_tokens: 25,
-                          to_h: { 'total_tokens' => 25 }))
+                          to_h: { 'total_tokens' => 25 })).tap do |response|
+        # Support hash-like access for error checking
+        allow(response).to receive(:[]).with(:error).and_return(nil)
+        allow(response).to receive(:error).and_return(nil)
+      end
     end
 
     it 'makes successful API call and returns normalized response' do
