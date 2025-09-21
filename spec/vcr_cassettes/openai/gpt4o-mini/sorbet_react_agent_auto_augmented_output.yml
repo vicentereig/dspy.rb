@@ -7,79 +7,97 @@ http_interactions:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
         \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
         {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
         {\n                  \"type\": \"string\"\n                },\n                \"description\":
         \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools. The agent MUST use
-        information from the history to inform its actions and final answer. Each
-        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
-        \"Array of available tools with their JSON schemas. The agent MUST choose
-        an action from the tool names in this list or use \\\"finish\\\". For each
-        tool, use the name exactly as specified and provide action_input as a JSON
-        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
-        MUST be one of the tool names listed in `available_tools` input, or the literal
-        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"get_todays_date\",\n        \"add_numbers\",\n        \"calculator\",\n        \"get_random_number\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
         {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
         \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
         {\n            \"type\": \"string\"\n          },\n          \"description\":
         \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
         \"Input for the chosen action. If action is a tool name, this MUST be a JSON
         object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final answer to the original question. This answer MUST be
-        directly taken from the relevant Observation in the history if available.
-        For example, if an observation showed \\\"Observation: 100.0\\\", and you
-        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
-        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"question\": \"What is 42 plus 58?\",\n  \"history\":
-        [],\n  \"available_tools\": [\n    {\n      \"name\": \"get_todays_date\",\n      \"description\":
-        \"Returns the current date in a human-readable format\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"add_numbers\",\n      \"description\":
-        \"Adds two numbers together\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"x\": {\n            \"type\":
-        \"number\",\n            \"description\": \"Parameter x\"\n          },\n          \"y\":
-        {\n            \"type\": \"number\",\n            \"description\": \"Parameter
-        y\"\n          }\n        },\n        \"required\": [\n          \"x\",\n          \"y\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"calculator\",\n      \"description\": \"Performs basic arithmetic operations\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"operation\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        operation\"\n          },\n          \"num1\": {\n            \"type\": \"number\",\n            \"description\":
-        \"Parameter num1\"\n          },\n          \"num2\": {\n            \"type\":
-        \"number\",\n            \"description\": \"Parameter num2\"\n          }\n        },\n        \"required\":
-        [\n          \"operation\",\n          \"num1\",\n          \"num2\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"question\\\":\\\"What is 42 plus
+        58?\\\"}\",\n  \"history\": [],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"get_todays_date\",\n      \"description\": \"Returns the current date in
+        a human-readable format\",\n      \"schema\": {\n        \"name\": \"get_todays_date\",\n        \"description\":
+        \"Returns the current date in a human-readable format\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {},\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"add_numbers\",\n      \"description\":
+        \"Adds two numbers together\",\n      \"schema\": {\n        \"name\": \"add_numbers\",\n        \"description\":
+        \"Adds two numbers together\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"x\": {\n              \"type\":
+        \"number\",\n              \"description\": \"Parameter x\"\n            },\n            \"y\":
+        {\n              \"type\": \"number\",\n              \"description\": \"Parameter
+        y\"\n            }\n          },\n          \"required\": [\n            \"x\",\n            \"y\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"calculator\",\n      \"description\": \"Performs basic arithmetic operations\",\n      \"schema\":
+        {\n        \"name\": \"calculator\",\n        \"description\": \"Performs
+        basic arithmetic operations\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"operation\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter operation\"\n            },\n            \"num1\":
+        {\n              \"type\": \"number\",\n              \"description\": \"Parameter
+        num1\"\n            },\n            \"num2\": {\n              \"type\": \"number\",\n              \"description\":
+        \"Parameter num2\"\n            }\n          },\n          \"required\": [\n            \"operation\",\n            \"num1\",\n            \"num2\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
         \"get_random_number\",\n      \"description\": \"Generates a random number
-        within a specified range\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"min\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter min (optional)\"\n          },\n          \"max\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter max (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    }\n  ]\n}\n```\n\nRespond with the corresponding output schema
-        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
-        values`."}],"temperature":0.0}'
+        within a specified range\",\n      \"schema\": {\n        \"name\": \"get_random_number\",\n        \"description\":
+        \"Generates a random number within a specified range\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"min\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        min (optional)\"\n            },\n            \"max\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter max (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
+        this structure:\n```json\n{\n  \"thought\": \"Reasoning about what to do next,
+        considering the history and observations.\",\n  \"action\": \"The action to
+        take. MUST be one of the tool names listed in `available_tools` input, or
+        the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -96,7 +114,7 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.9.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
@@ -110,14 +128,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '6966'
+      - '8938'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:26:52 GMT
+      - Sun, 21 Sep 2025 19:40:28 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -129,11 +147,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1287'
+      - '1628'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1290'
+      - '1743'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -141,42 +161,44 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '198440'
+      - '198002'
       X-Ratelimit-Reset-Requests:
       - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 468ms
+      - 599ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a3139708654397-EWR
+      - 982c08c8afb0cbbc-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bplxy4bcYmMstAHM0Fy7NO4ZANpoC",
+          "id": "chatcmpl-CIKD4CwCWireW8MvVLjlSH0PsoIXE",
           "object": "chat.completion",
-          "created": 1751678810,
+          "created": 1758483626,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To answer the question 'What is 42 plus 58?', I can use the available tool 'add_numbers' which is specifically designed to add two numbers together. I will provide the numbers 42 and 58 as inputs to this tool.\",\n  \"action\": \"add_numbers\",\n  \"action_input\": {\n    \"x\": 42,\n    \"y\": 58\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To solve the question 'What is 42 plus 58?', I can use the 'add_numbers' tool since it is specifically designed for adding two numbers together.\",\n  \"action\": \"add_numbers\",\n  \"action_input\": {\n    \"x\": 42,\n    \"y\": 58\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -185,177 +207,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1390,
-            "completion_tokens": 94,
-            "total_tokens": 1484,
-            "prompt_tokens_details": {
-              "cached_tokens": 1280,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 01:26:51 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts, actions, and observations. Each entry is a hash representing a step
-        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
-        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
-        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
-        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
-        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
-        adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"What is 42 plus 58?\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
-        \"To answer the question ''What is 42 plus 58?'', I can use the available
-        tool ''add_numbers'' which is specifically designed to add two numbers together.
-        I will provide the numbers 42 and 58 as inputs to this tool.\",\n      \"action\":
-        \"add_numbers\",\n      \"action_input\": {\n        \"x\": 42,\n        \"y\":
-        58\n      },\n      \"observation\": \"100.0\"\n    }\n  ],\n  \"observation\":
-        \"100.0\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '3779'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 05 Jul 2025 01:26:53 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1113'
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1116'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9998'
-      X-Ratelimit-Remaining-Tokens:
-      - '199165'
-      X-Ratelimit-Reset-Requests:
-      - 15.494s
-      X-Ratelimit-Reset-Tokens:
-      - 250ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a313a0794b4397-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-Bply0nzR2F7pD2nHziqjC2kNWhDpE",
-          "object": "chat.completion",
-          "created": 1751678812,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the sum of 42 and 58 is 100.0, which is the correct answer to the question.\",\n  \"next_step\": \"finish\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 794,
-            "completion_tokens": 51,
-            "total_tokens": 845,
+            "prompt_tokens": 1742,
+            "completion_tokens": 78,
+            "total_tokens": 1820,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -368,9 +222,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
+          "system_fingerprint": "fp_51db84afab"
         }
-  recorded_at: Sat, 05 Jul 2025 01:26:53 GMT
+  recorded_at: Sun, 21 Sep 2025 19:40:28 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -378,84 +232,54 @@ http_interactions:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
         \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
         {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
         {\n                  \"type\": \"string\"\n                },\n                \"description\":
         \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools. The agent MUST use
-        information from the history to inform its actions and final answer. Each
-        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
-        \"Array of available tools with their JSON schemas. The agent MUST choose
-        an action from the tool names in this list or use \\\"finish\\\". For each
-        tool, use the name exactly as specified and provide action_input as a JSON
-        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
-        MUST be one of the tool names listed in `available_tools` input, or the literal
-        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final answer to the original question. This answer MUST be
-        directly taken from the relevant Observation in the history if available.
-        For example, if an observation showed \\\"Observation: 100.0\\\", and you
-        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
-        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"question\": \"What is 42 plus 58?\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To answer the question
-        ''What is 42 plus 58?'', I can use the available tool ''add_numbers'' which
-        is specifically designed to add two numbers together. I will provide the numbers
-        42 and 58 as inputs to this tool.\",\n      \"action\": \"add_numbers\",\n      \"action_input\":
-        {\n        \"x\": 42,\n        \"y\": 58\n      },\n      \"observation\":
-        \"100.0\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\": \"get_todays_date\",\n      \"description\":
-        \"Returns the current date in a human-readable format\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {},\n        \"required\":
-        []\n      }\n    },\n    {\n      \"name\": \"add_numbers\",\n      \"description\":
-        \"Adds two numbers together\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"x\": {\n            \"type\":
-        \"number\",\n            \"description\": \"Parameter x\"\n          },\n          \"y\":
-        {\n            \"type\": \"number\",\n            \"description\": \"Parameter
-        y\"\n          }\n        },\n        \"required\": [\n          \"x\",\n          \"y\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"calculator\",\n      \"description\": \"Performs basic arithmetic operations\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"operation\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        operation\"\n          },\n          \"num1\": {\n            \"type\": \"number\",\n            \"description\":
-        \"Parameter num1\"\n          },\n          \"num2\": {\n            \"type\":
-        \"number\",\n            \"description\": \"Parameter num2\"\n          }\n        },\n        \"required\":
-        [\n          \"operation\",\n          \"num1\",\n          \"num2\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"get_random_number\",\n      \"description\": \"Generates a random number
-        within a specified range\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"min\": {\n            \"type\": \"integer\",\n            \"description\":
-        \"Parameter min (optional)\"\n          },\n          \"max\": {\n            \"type\":
-        \"integer\",\n            \"description\": \"Parameter max (optional)\"\n          }\n        },\n        \"required\":
-        []\n      }\n    }\n  ]\n}\n```\n\nRespond with the corresponding output schema
-        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
-        values`."}],"temperature":0.0}'
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"question\\\":\\\"What is 42 plus
+        58?\\\"}\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"To solve the question ''What is 42 plus 58?'', I can use the ''add_numbers''
+        tool since it is specifically designed for adding two numbers together.\",\n      \"action\":
+        \"add_numbers\",\n      \"action_input\": {\n        \"x\": 42,\n        \"y\":
+        58\n      },\n      \"observation\": \"100\"\n    }\n  ],\n  \"observation\":
+        \"100\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        in a ```json ``` block,\nstarting with the heading `## Output values`.\n\nIMPORTANT:
+        You must respond with valid JSON that matches this structure:\n```json\n{\n  \"interpretation\":
+        \"Interpretation of the observation\",\n  \"next_step\": \"What to do next:
+        ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired
+        fields: interpretation, next_step\n\nEnsure your response:\n1. Is valid JSON
+        (properly quoted strings, no trailing commas)\n2. Includes all required fields\n3.
+        Uses the correct data types for each field\n4. Is wrapped in ```json``` markdown
+        code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -472,7 +296,7 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.9.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
@@ -486,14 +310,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '7385'
+      - '4650'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 01:26:55 GMT
+      - Sun, 21 Sep 2025 19:40:30 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -505,54 +329,58 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1272'
+      - '1182'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1276'
+      - '1348'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '198342'
+      - '198967'
       X-Ratelimit-Reset-Requests:
-      - 22.81s
+      - 14.88s
       X-Ratelimit-Reset-Tokens:
-      - 497ms
+      - 309ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a313aab9f44397-EWR
+      - 982c08d6bf19cbbc-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bply1HHxROmQ88vW4ZSX6iRbsCLwX",
+          "id": "chatcmpl-CIKD77wata6nakuDq8DUBVtD9DnC6",
           "object": "chat.completion",
-          "created": 1751678813,
+          "created": 1758483629,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"The observation from the previous step indicates that the result of adding 42 and 58 is 100.0. Since I have the final answer, I can now finish and provide this answer directly.\",\n  \"action\": \"finish\",\n  \"action_input\": \"100.0\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The result of adding 42 and 58 is correct as it matches the observation of 100.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -561,11 +389,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1497,
-            "completion_tokens": 72,
-            "total_tokens": 1569,
+            "prompt_tokens": 960,
+            "completion_tokens": 44,
+            "total_tokens": 1004,
             "prompt_tokens_details": {
-              "cached_tokens": 1408,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -576,7 +404,237 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
+          "system_fingerprint": "fp_51db84afab"
         }
-  recorded_at: Sat, 05 Jul 2025 01:26:55 GMT
+  recorded_at: Sun, 21 Sep 2025 19:40:30 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"get_todays_date\",\n        \"add_numbers\",\n        \"calculator\",\n        \"get_random_number\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"question\\\":\\\"What is 42 plus
+        58?\\\"}\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"To solve the question ''What is 42 plus 58?'', I can use the ''add_numbers''
+        tool since it is specifically designed for adding two numbers together.\",\n      \"action\":
+        \"add_numbers\",\n      \"action_input\": {\n        \"x\": 42,\n        \"y\":
+        58\n      },\n      \"observation\": \"100\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"get_todays_date\",\n      \"description\": \"Returns
+        the current date in a human-readable format\",\n      \"schema\": {\n        \"name\":
+        \"get_todays_date\",\n        \"description\": \"Returns the current date
+        in a human-readable format\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {},\n          \"required\": []\n        }\n      }\n    },\n    {\n      \"name\":
+        \"add_numbers\",\n      \"description\": \"Adds two numbers together\",\n      \"schema\":
+        {\n        \"name\": \"add_numbers\",\n        \"description\": \"Adds two
+        numbers together\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"x\": {\n              \"type\": \"number\",\n              \"description\":
+        \"Parameter x\"\n            },\n            \"y\": {\n              \"type\":
+        \"number\",\n              \"description\": \"Parameter y\"\n            }\n          },\n          \"required\":
+        [\n            \"x\",\n            \"y\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"calculator\",\n      \"description\": \"Performs basic arithmetic operations\",\n      \"schema\":
+        {\n        \"name\": \"calculator\",\n        \"description\": \"Performs
+        basic arithmetic operations\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"operation\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter operation\"\n            },\n            \"num1\":
+        {\n              \"type\": \"number\",\n              \"description\": \"Parameter
+        num1\"\n            },\n            \"num2\": {\n              \"type\": \"number\",\n              \"description\":
+        \"Parameter num2\"\n            }\n          },\n          \"required\": [\n            \"operation\",\n            \"num1\",\n            \"num2\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"get_random_number\",\n      \"description\": \"Generates a random number
+        within a specified range\",\n      \"schema\": {\n        \"name\": \"get_random_number\",\n        \"description\":
+        \"Generates a random number within a specified range\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"min\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        min (optional)\"\n            },\n            \"max\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter max (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`.\n\nIMPORTANT: You must respond with valid JSON that matches
+        this structure:\n```json\n{\n  \"thought\": \"Reasoning about what to do next,
+        considering the history and observations.\",\n  \"action\": \"The action to
+        take. MUST be one of the tool names listed in `available_tools` input, or
+        the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9290'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 21 Sep 2025 19:40:32 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1276'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1442'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '197922'
+      X-Ratelimit-Reset-Requests:
+      - 21.651s
+      X-Ratelimit-Reset-Tokens:
+      - 623ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 982c08e3cc58cbbc-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CIKD9Nin4nxeAIykIYnjQoyvloO9Z",
+          "object": "chat.completion",
+          "created": 1758483631,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have already added the numbers 42 and 58, resulting in 100. Since the task is complete, I can now provide the final answer.\",\n  \"action\": \"finish\",\n  \"action_input\": \"100\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1831,
+            "completion_tokens": 61,
+            "total_tokens": 1892,
+            "prompt_tokens_details": {
+              "cached_tokens": 1024,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_51db84afab"
+        }
+  recorded_at: Sun, 21 Sep 2025 19:40:32 GMT
 recorded_with: VCR 6.3.1

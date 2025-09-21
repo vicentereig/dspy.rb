@@ -150,7 +150,7 @@ RSpec.describe 'JSON Extraction Modes Benchmark' do
         DSPy.configure { |c| c.structured_outputs.strategy = DSPy::Strategy::Strict }
       end
 
-      it 'successfully processes union types via Gemini native structured outputs', vcr: { cassette_name: 'json_benchmark_gemini_structured_output' } do
+      it 'successfully processes union types via Gemini native structured outputs', vcr: { cassette_name: 'json_benchmark_gemini_structured_output', match_requests_on: [:method, :gemini_aware_uri, :body] } do
         skip 'Requires GEMINI_API_KEY or GOOGLE_API_KEY' unless ENV['GEMINI_API_KEY'] || ENV['GOOGLE_API_KEY']
         
         api_key = ENV['GEMINI_API_KEY'] || ENV['GOOGLE_API_KEY']

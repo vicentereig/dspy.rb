@@ -79,14 +79,14 @@ VCR.configure do |config|
       uri_without_key = VCR.request_matchers.uri_without_param(:key)
       uri_without_key.call(request1, request2)
     else
-      # For all other APIs, use normal URI matching
-      request1.uri == request2.uri
+      # For all other APIs, replicate VCR's built-in :uri matcher behavior
+      request1.parsed_uri == request2.parsed_uri
     end
   end
   
-  # Set default matching to use our Gemini-aware URI matcher
+  # Keep default matching as standard - Gemini tests will explicitly use custom matcher
   config.default_cassette_options = {
-    match_requests_on: [:method, :gemini_aware_uri, :body]
+    match_requests_on: [:method, :uri, :body]
   }
 
   # Filter out sensitive information
