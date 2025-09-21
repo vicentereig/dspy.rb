@@ -74,6 +74,8 @@ DSPy.configure do |c|
   c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
   # or use Ollama for local models
   c.lm = DSPy::LM.new('ollama/llama3.2')
+  # or use OpenRouter for access to multiple providers (auto-fallback enabled)
+  c.lm = DSPy::LM.new('openrouter/deepseek/deepseek-chat-v3.1:free', api_key: ENV['OPENROUTER_API_KEY'])
 end
 ```
 
@@ -87,6 +89,9 @@ export OPENAI_API_KEY=sk-your-key-here
 
 # Anthropic
 export ANTHROPIC_API_KEY=sk-ant-your-key-here
+
+# OpenRouter (access to multiple providers)
+export OPENROUTER_API_KEY=sk-or-your-key-here
 
 # Ollama (no API key needed for local instances)
 
@@ -141,6 +146,51 @@ end
    ```ruby
    DSPy.configure do |c|
      c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+   end
+   ```
+
+### OpenRouter Setup (Multiple Providers)
+
+1. Sign up at [OpenRouter](https://openrouter.ai/)
+2. Create an [API key](https://openrouter.ai/settings/keys)
+3. Set the environment variable:
+   ```bash
+   export OPENROUTER_API_KEY=sk-or-your-key-here
+   ```
+4. Use in DSPy:
+   ```ruby
+   DSPy.configure do |c|
+     # Basic usage - structured outputs enabled by default, auto-fallback if needed
+     c.lm = DSPy::LM.new('openrouter/openai/gpt-5-nano',
+       api_key: ENV['OPENROUTER_API_KEY']
+    )
+   end
+   ```
+5. With custom headers for app attribution:
+   ```ruby
+   DSPy.configure do |c|
+     c.lm = DSPy::LM.new('openrouter/anthropic/claude-3.5-sonnet',
+       api_key: ENV['OPENROUTER_API_KEY'],
+       http_referrer: 'https://your-app.com',
+       x_title: 'Your App Name'
+     )
+   end
+   ```
+6. For models that don't support structured outputs, explicitly disable:
+   ```ruby
+   DSPy.configure do |c|
+     c.lm = DSPy::LM.new('openrouter/deepseek/deepseek-chat-v3.1:free',
+       api_key: ENV['OPENROUTER_API_KEY'],
+       structured_outputs: false  # Skip structured output attempt entirely
+     )
+   end
+   ```
+7. Models with native structured output support work seamlessly:
+   ```ruby
+   DSPy.configure do |c|
+     c.lm = DSPy::LM.new('openrouter/x-ai/grok-4-fast:free',
+       api_key: ENV['OPENROUTER_API_KEY']
+     )  # structured_outputs: true by default
    end
    ```
 

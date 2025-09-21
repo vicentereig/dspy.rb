@@ -1,0 +1,189 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://openrouter.ai/api/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"deepseek/deepseek-chat-v3.1:free","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"prompt\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Input prompt\"\n    }\n  },\n  \"required\": [\n    \"prompt\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"response\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Response content\"\n    },\n    \"word_count\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Number of words in response\"\n    }\n  },\n  \"required\": [\n    \"response\",\n    \"word_count\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a simple response"},{"role":"user","content":"## Input
+        Values\n```json\n{\n  \"prompt\": \"Test model compatibility\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"response\": \"Response
+        content\",\n  \"word_count\": 42\n}\n```\n\nRequired fields: response, word_count\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":0.0,"response_format":{"type":"json_schema","json_schema":{"name":"simpleresponse","strict":true,"schema":{"type":"object","properties":{"response":{"type":"string","description":"Response
+        content"},"word_count":{"type":"integer","description":"Number of words in
+        response"}},"required":["response","word_count"],"additionalProperties":false}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - openrouter.ai
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENROUTER_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2205'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 21 Sep 2025 00:22:40 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      Vary:
+      - Accept-Encoding
+      Permissions-Policy:
+      - payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com"
+        "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")
+      Referrer-Policy:
+      - no-referrer, strict-origin-when-cross-origin
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 982568d6dc93aca5-YYZ
+    body:
+      encoding: ASCII-8BIT
+      string: '{"error":{"message":"ConnectionError: {\"object\":\"error\",\"message\":\"[{''type'':
+        ''literal_error'', ''loc'': (''body'', ''response_format'', ''type''), ''msg'':
+        \\\"Input should be ''text'', ''json'', ''json_object'' or ''structural_tag''\\\",
+        ''input'': ''json_schema'', ''ctx'': {''expected'': \\\"''text'', ''json'',
+        ''json_object'' or ''structural_tag''\\\"}}]\",\"type\":\"BadRequestError\",\"param\":null,\"code\":400}","code":502,"metadata":{"provider_name":"DeepInfra"}},"user_id":"user_32wJrQeUAWgt8ct3En0fK7joYFG"}'
+  recorded_at: Sun, 21 Sep 2025 00:22:40 GMT
+- request:
+    method: post
+    uri: https://openrouter.ai/api/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"deepseek/deepseek-chat-v3.1:free","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"prompt\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Input prompt\"\n    }\n  },\n  \"required\": [\n    \"prompt\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"response\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Response content\"\n    },\n    \"word_count\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Number of words in response\"\n    }\n  },\n  \"required\": [\n    \"response\",\n    \"word_count\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a simple response"},{"role":"user","content":"## Input
+        Values\n```json\n{\n  \"prompt\": \"Test model compatibility\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"response\": \"Response
+        content\",\n  \"word_count\": 42\n}\n```\n\nRequired fields: response, word_count\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":0.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - openrouter.ai
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENROUTER_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1864'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 21 Sep 2025 00:22:41 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Allow-Origin:
+      - "*"
+      Vary:
+      - Accept-Encoding
+      Permissions-Policy:
+      - payment=(self "https://checkout.stripe.com" "https://connect-js.stripe.com"
+        "https://js.stripe.com" "https://*.js.stripe.com" "https://hooks.stripe.com")
+      Referrer-Policy:
+      - no-referrer, strict-origin-when-cross-origin
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 982568daa8ebaca5-YYZ
+    body:
+      encoding: ASCII-8BIT
+      string: "\n         \n\n         \n\n         \n\n         \n{\"id\":\"gen-1758414161-wmspbyjuxEQhFFr3tQHq\",\"provider\":\"DeepInfra\",\"model\":\"deepseek/deepseek-chat-v3.1:free\",\"object\":\"chat.completion\",\"created\":1758414161,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"##
+        Output values\\n```json\\n{\\n  \\\"response\\\": \\\"The model is compatible
+        and ready for use.\\\",\\n  \\\"word_count\\\": 7\\n}\\n```\",\"refusal\":null,\"reasoning\":null}}],\"usage\":{\"prompt_tokens\":400,\"completion_tokens\":33,\"total_tokens\":433,\"prompt_tokens_details\":null}}"
+  recorded_at: Sun, 21 Sep 2025 00:22:43 GMT
+recorded_with: VCR 6.3.1
