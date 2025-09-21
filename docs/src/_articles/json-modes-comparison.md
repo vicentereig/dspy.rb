@@ -8,7 +8,7 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-modes-c
 image: /images/og/json-modes-comparison.png
 ---
 
-Getting reliable, structured data from Large Language Models is crucial for production applications. [DSPy.rb](https://github.com/vicentereig/dspy.rb) solves this with five different JSON extraction strategies, each optimized for specific AI providers. After benchmarking across 13 AI models, here's your complete guide to choosing the right approach.
+Getting reliable, structured data from Large Language Models is crucial for production applications. [DSPy.rb](https://github.com/vicentereig/dspy.rb) solves this with five different JSON extraction strategies, each optimized for specific AI providers. After benchmarking across 11 AI models, here's your complete guide to choosing the right approach.
 
 <style>
 /* Charts.css Custom Styling for JSON Modes Comparison */
@@ -102,7 +102,7 @@ This test used baseline [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s Enha
 
 ## Five Extraction Strategies
 
-- **Enhanced Prompting**: Universal compatibility (works with all 13 models tested). This is [DSPy's](https://dspy.ai) style JSON Schema prompting.
+- **Enhanced Prompting**: Universal compatibility (works with all 11 models tested). This is [DSPy's](https://dspy.ai) style JSON Schema prompting.
 - **OpenAI Structured Output**: Native API enforcement for GPT models. Including nuances on their JSON Schema implementation.
 - **Anthropic Tool Use**: Function calling for all Claude models.
 - **Anthropic Extraction**: Text completion with guided parsing for Claude.
@@ -164,12 +164,12 @@ and handling potentially invalid responses.
   </tbody>
 </table>
 
-*Based on [benchmark data](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb) across 28 test runs. Gemini Structured Output leads with 3.49s average, while OpenAI Structured Output takes the longest at 13.56s.*
+*Based on [benchmark data](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb) across test runs. Gemini Structured Output leads with 3.49s average, while OpenAI Structured Output takes the longest at 13.56s.*
 
 ## Token Consumption Analysis
 
 **Most Token Efficient (800 tokens):**
-- Claude 3.5 Haiku, Gemini models, o1-mini
+- Claude 3.5 Haiku, Gemini models
 
 **Standard Usage (1200 tokens):**  
 - GPT-4o series, Claude Sonnet 4
@@ -436,4 +436,4 @@ This enhancement will integrate seamlessly with [DSPy.rb](https://github.com/vic
 
 ---
 
-*Benchmark: 27 tests across 5 strategies and 13 AI models. Total cost: $0.2302. September 14, 2025.*
+*Benchmark: 25 tests across 5 strategies and 11 AI models. Total cost: $0.2302. September 14, 2025.*

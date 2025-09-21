@@ -21,8 +21,7 @@ class JSONModesBenchmark
   # Model constants for 2025 testing
   OPENAI_MODELS = %w[
     gpt-5 gpt-5-mini gpt-5-nano 
-    gpt-4o gpt-4o-mini 
-    o1 o1-mini
+    gpt-4o gpt-4o-mini
   ].freeze
 
   ANTHROPIC_MODELS = %w[
@@ -52,8 +51,6 @@ class JSONModesBenchmark
     'gpt-5-nano' => { input: 0.05, output: 0.25 },
     'gpt-4o' => { input: 2.50, output: 10.00 },
     'gpt-4o-mini' => { input: 0.15, output: 0.60 },
-    'o1' => { input: 15.00, output: 60.00 },
-    'o1-mini' => { input: 3.00, output: 12.00 },
     
     # Anthropic Models
     'claude-opus-4.1' => { input: 15.00, output: 75.00 },
