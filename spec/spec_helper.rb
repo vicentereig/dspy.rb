@@ -66,6 +66,16 @@ VCR.configure do |config|
 
   # No telemetry services ignored - block everything
 
+  # Configure request matching to ignore API key query params for Gemini
+  # Gemini API puts API key in query param (?key=...) unlike headers for other providers
+  uri_without_gemini_key = VCR.request_matchers.uri_without_param(:key)
+  config.register_request_matcher :uri_without_api_key, &uri_without_gemini_key
+  
+  # Set default matching to ignore API key query param
+  config.default_cassette_options = {
+    match_requests_on: [:method, uri_without_gemini_key, :body]
+  }
+
   # Filter out sensitive information
   config.filter_sensitive_data('<OPENAI_API_KEY>') { ENV['OPENAI_API_KEY'] }
   config.filter_sensitive_data('<ANTHROPIC_API_KEY>') { ENV['ANTHROPIC_API_KEY'] }
