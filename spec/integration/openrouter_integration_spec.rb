@@ -38,12 +38,9 @@ class SimpleResponse < DSPy::Signature
   end
 end
 
-def require_api_key!
-  skip 'Requires OPENROUTER_API_KEY' unless ENV['OPENROUTER_API_KEY']
-end
-
 RSpec.describe "OpenRouter Integration" do
-  let(:api_key) { ENV['OPENROUTER_API_KEY'] }
+  let(:api_key_name) { 'OPENROUTER_API_KEY' }
+  let(:api_key) { ENV[api_key_name] }
 
   describe "basic functionality" do
     it "works with basic chat completion (auto-fallback from structured outputs)", vcr: { cassette_name: "openrouter_basic_chat" } do
@@ -62,7 +59,7 @@ RSpec.describe "OpenRouter Integration" do
       expect(result.response).to be_a(String)
       expect(result.response).not_to be_empty
       expect(result.word_count).to be_a(Integer)
-      expect(result.word_count).to be > 0
+      expect(result.word_count).to eq(3)
     end
   end
 
@@ -83,6 +80,7 @@ RSpec.describe "OpenRouter Integration" do
 
       # Should work regardless of whether structured outputs succeeded or fell back
       expect(result.sentiment).to be_a(OpenRouterSentiment)
+      expect(result.sentiment).to eq(OpenRouterSentiment::Positive)
       expect(result.confidence).to be_a(Float)
       expect(result.confidence).to be_between(0, 1)
       expect(result.reasoning).to be_a(String)
@@ -126,6 +124,7 @@ RSpec.describe "OpenRouter Integration" do
 
       # Should work with native structured outputs
       expect(result.sentiment).to be_a(OpenRouterSentiment)
+      expect(result.sentiment).to eq(OpenRouterSentiment::Positive)
       expect(result.confidence).to be_a(Float)
       expect(result.confidence).to be_between(0, 1)
       expect(result.reasoning).to be_a(String)
@@ -149,6 +148,7 @@ RSpec.describe "OpenRouter Integration" do
       result = predictor.call(prompt: "Respond with 'Header test successful'")
 
       expect(result.response).to be_a(String)
+      expect(result.response).to include("Header test successful")
       expect(result.word_count).to be_a(Integer)
 
       # Verify headers are properly set in the adapter

@@ -55,6 +55,10 @@ ensure
   end
 end
 
+def require_api_key!
+  skip "Requires API key to be set: #{api_key_name}" unless ENV[api_key_name]
+end
+
 VCR.configure do |config|
   config.cassette_library_dir = "spec/vcr_cassettes"
   config.hook_into :webmock
