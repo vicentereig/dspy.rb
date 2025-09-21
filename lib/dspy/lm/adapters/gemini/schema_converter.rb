@@ -11,26 +11,31 @@ module DSPy
           extend T::Sig
 
           # Models that support structured outputs (JSON + Schema)
-          # Based on official Google documentation and community feedback
+          # Based on official Google documentation (Sept 2025)
           STRUCTURED_OUTPUT_MODELS = T.let([
-            "gemini-1.5-pro",              # ✅ Full schema support (legacy)
-            "gemini-1.5-pro-preview-0514", # ✅ Full schema support (legacy)
-            "gemini-1.5-pro-preview-0409", # ✅ Full schema support (legacy)
-            "gemini-1.5-flash",            # ✅ Full schema support (legacy)
-            "gemini-1.5-flash-preview-0514", # ✅ Full schema support (legacy)
-            "gemini-2.0-flash",            # ✅ Full schema support (2025)
-            "gemini-2.5-pro",              # ✅ Full schema support (2025 current)
-            "gemini-2.5-flash",            # ✅ Full schema support (2025 current)
-            "gemini-2.5-flash-lite"        # ✅ Full schema support (2025 current)
+            # Gemini 1.5 series (deprecated Sept 2025, but still support structured outputs)
+            "gemini-1.5-pro",
+            "gemini-1.5-pro-preview-0514",
+            "gemini-1.5-pro-preview-0409", 
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-preview-0514",
+            "gemini-1.5-flash-8b",
+            # Gemini 2.0 series
+            "gemini-2.0-flash",
+            "gemini-2.0-flash-001",
+            # Gemini 2.5 series (current, with full JSON Schema preview support)
+            "gemini-2.5-pro",
+            "gemini-2.5-flash", 
+            "gemini-2.5-flash-lite"
           ].freeze, T::Array[String])
 
-          # Models that support JSON mode but NOT schema
-          JSON_ONLY_MODELS = T.let([
-            "gemini-pro",                   # 🟡 JSON only, no schema
-            "gemini-1.0-pro-002",           # 🟡 JSON only, no schema
-            "gemini-1.0-pro",               # 🟡 JSON only, no schema
-            "gemini-2.0-flash-001",         # 🟡 JSON only, no schema (2025)
-            "gemini-2.0-flash-lite-001"     # 🟡 JSON only, no schema (2025)
+          # Legacy models that do NOT support structured outputs
+          # These models fall back to enhanced prompting for JSON extraction
+          UNSUPPORTED_MODELS = T.let([
+            # Legacy Gemini 1.0 series - no structured output support
+            "gemini-pro",                   # Points to gemini-1.0-pro (legacy)
+            "gemini-1.0-pro-002",
+            "gemini-1.0-pro"
           ].freeze, T::Array[String])
 
           sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T::Hash[Symbol, T.untyped]) }
