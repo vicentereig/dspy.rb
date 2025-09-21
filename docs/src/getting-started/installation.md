@@ -109,7 +109,7 @@ export NEW_RELIC_LICENSE_KEY=your_license_key
 DSPy.configure do |c|
   # LLM Configuration
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-  
+
   # Logging Configuration
   c.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
     logger.add_backend(stream: 'log/dspy.log')
@@ -210,7 +210,7 @@ end
 4. For remote Ollama instances:
    ```ruby
    DSPy.configure do |c|
-     c.lm = DSPy::LM.new('ollama/llama3.2', 
+     c.lm = DSPy::LM.new('ollama/llama3.2',
        base_url: 'https://my-ollama.example.com/v1',
        api_key: 'optional-auth-token'
      )
@@ -232,11 +232,11 @@ end
 # Test basic functionality
 class TestSignature < DSPy::Signature
   description "Test DSPy installation"
-  
+
   input do
     const :message, String
   end
-  
+
   output do
     const :response, String
   end
