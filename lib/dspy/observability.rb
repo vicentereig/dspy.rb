@@ -11,6 +11,12 @@ module DSPy
       def configure!
         @enabled = false
         
+        # Check for explicit disable flag first
+        if ENV['DSPY_DISABLE_OBSERVABILITY'] == 'true'
+          DSPy.log('observability.disabled', reason: 'Explicitly disabled via DSPY_DISABLE_OBSERVABILITY')
+          return
+        end
+        
         # Check for required Langfuse environment variables
         public_key = ENV['LANGFUSE_PUBLIC_KEY']
         secret_key = ENV['LANGFUSE_SECRET_KEY']
@@ -130,6 +136,17 @@ module DSPy
 
       def reset!
         @enabled = false
+        
+        # Shutdown OpenTelemetry if it's configured
+        if defined?(OpenTelemetry) && OpenTelemetry.tracer_provider
+          begin
+            OpenTelemetry.tracer_provider.shutdown(timeout: 1.0)
+          rescue => e
+            # Ignore shutdown errors in tests - log them but don't fail
+            DSPy.log('observability.shutdown_error', error: e.message) if respond_to?(:log)
+          end
+        end
+        
         @tracer = nil
         @endpoint = nil
       end

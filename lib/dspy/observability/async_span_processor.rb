@@ -107,6 +107,7 @@ module DSPy
 
       def start_export_task
         return if @export_interval <= 0 # Disable timer for testing
+        return if ENV['DSPY_DISABLE_OBSERVABILITY'] == 'true' # Skip in tests
 
         # Start timer-based export task in background
         Thread.new do
@@ -129,6 +130,7 @@ module DSPy
 
       def trigger_export_if_batch_full
         return if @queue.size < @export_batch_size
+        return if ENV['DSPY_DISABLE_OBSERVABILITY'] == 'true' # Skip in tests
 
         # Trigger immediate export in background
         Thread.new do

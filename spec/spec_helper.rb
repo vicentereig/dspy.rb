@@ -1,3 +1,6 @@
+# Disable observability completely in tests to prevent OpenTelemetry/WebMock conflicts
+ENV['DSPY_DISABLE_OBSERVABILITY'] = 'true'
+
 require 'byebug'
 require 'dotenv/load'
 require 'vcr'
@@ -11,17 +14,6 @@ NewRelic::Agent.manual_start
 
 # Disable observability during tests to avoid telemetry overhead
 DSPy::Observability.reset!
-
-# Also ensure OpenTelemetry SDK doesn't interfere with WebMock
-begin
-  require 'opentelemetry/sdk'
-  # Create a no-op tracer provider to avoid any network calls
-  noop_provider = OpenTelemetry::SDK::Trace::TracerProvider.new
-  # Don't add any processors to avoid OTLP exports
-  OpenTelemetry.tracer_provider = noop_provider
-rescue LoadError
-  # OpenTelemetry not available, skip
-end
 
 # Load support files and tools
 Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |f| require f }
