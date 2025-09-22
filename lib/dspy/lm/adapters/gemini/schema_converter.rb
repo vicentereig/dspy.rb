@@ -11,24 +11,30 @@ module DSPy
           extend T::Sig
 
           # Models that support structured outputs (JSON + Schema)
-          # Based on official Google documentation and gemini-ai gem table
+          # Based on official Google documentation (Sept 2025)
           STRUCTURED_OUTPUT_MODELS = T.let([
-            "gemini-1.5-pro",              # ✅ Full schema support (legacy)
-            "gemini-1.5-pro-preview-0514", # ✅ Full schema support (legacy)
-            "gemini-1.5-pro-preview-0409", # ✅ Full schema support (legacy)
-            "gemini-2.5-flash",            # ✅ Full schema support (2025 current)
-            "gemini-2.5-flash-lite"        # ✅ Full schema support (2025 current)
+            # Gemini 1.5 series
+            "gemini-1.5-pro",
+            "gemini-1.5-pro-preview-0514",
+            "gemini-1.5-pro-preview-0409", 
+            "gemini-1.5-flash",             # ✅ Now supports structured outputs
+            "gemini-1.5-flash-preview-0514",
+            "gemini-1.5-flash-8b",
+            # Gemini 2.0 series
+            "gemini-2.0-flash",
+            "gemini-2.0-flash-001",
+            # Gemini 2.5 series
+            "gemini-2.5-pro",
+            "gemini-2.5-flash", 
+            "gemini-2.5-flash-lite"
           ].freeze, T::Array[String])
 
-          # Models that support JSON mode but NOT schema
-          JSON_ONLY_MODELS = T.let([
-            "gemini-pro",                   # 🟡 JSON only, no schema
-            "gemini-1.5-flash",             # 🟡 JSON only, no schema (legacy)
-            "gemini-1.5-flash-preview-0514", # 🟡 JSON only, no schema (legacy)
-            "gemini-1.0-pro-002",           # 🟡 JSON only, no schema
-            "gemini-1.0-pro",               # 🟡 JSON only, no schema
-            "gemini-2.0-flash-001",         # 🟡 JSON only, no schema (2025)
-            "gemini-2.0-flash-lite-001"     # 🟡 JSON only, no schema (2025)
+          # Models that do not support structured outputs (legacy only)
+          UNSUPPORTED_MODELS = T.let([
+            # Legacy Gemini 1.0 series only
+            "gemini-pro",                   
+            "gemini-1.0-pro-002",
+            "gemini-1.0-pro"
           ].freeze, T::Array[String])
 
           sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T::Hash[Symbol, T.untyped]) }

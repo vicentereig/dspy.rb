@@ -118,16 +118,32 @@ RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
       expect(described_class.supports_structured_outputs?("gemini-1.5-pro")).to eq(true)
     end
     
-    it 'returns false for JSON-only models (no schema support)' do
-      # Based on official gemini-ai gem documentation: gemini-1.5-flash is JSON-only, not schema
-      expect(described_class.supports_structured_outputs?("gemini/gemini-1.5-flash")).to eq(false)
-      expect(described_class.supports_structured_outputs?("gemini-1.5-flash")).to eq(false)
+    it 'returns true for Gemini Flash models (now supported)' do
+      # Flash models now support structured outputs as of Sept 2025
+      expect(described_class.supports_structured_outputs?("gemini/gemini-1.5-flash")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini-1.5-flash")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini/gemini-1.5-flash-8b")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini-1.5-flash-8b")).to eq(true)
     end
     
-    it 'returns false for unsupported models' do
+    it 'returns true for Gemini 2.0 Flash models' do
+      expect(described_class.supports_structured_outputs?("gemini/gemini-2.0-flash")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini-2.0-flash")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini/gemini-2.0-flash-001")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini-2.0-flash-001")).to eq(true)
+    end
+    
+    it 'returns true for Gemini 2.5 Pro models' do
+      expect(described_class.supports_structured_outputs?("gemini/gemini-2.5-pro")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini-2.5-pro")).to eq(true)
+    end
+    
+    it 'returns false for unsupported legacy models' do
       expect(described_class.supports_structured_outputs?("gemini/gemini-1.0-pro")).to eq(false)
       expect(described_class.supports_structured_outputs?("gemini-pro")).to eq(false)
       expect(described_class.supports_structured_outputs?("gemini-1.0-pro")).to eq(false)
+      expect(described_class.supports_structured_outputs?("gemini/gemini-1.0-pro-002")).to eq(false)
+      expect(described_class.supports_structured_outputs?("gemini-1.0-pro-002")).to eq(false)
     end
     
   end
