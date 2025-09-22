@@ -1,0 +1,101 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
+        are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Text to analyze\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"sentiment\": {\n      \"type\": \"string\",\n      \"enum\":
+        [\n        \"positive\",\n        \"negative\",\n        \"neutral\"\n      ],\n      \"description\":
+        \"Detected sentiment\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"description\":
+        \"Confidence score\"\n    },\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Brief summary\"\n    }\n  },\n  \"required\": [\n    \"sentiment\",\n    \"confidence\",\n    \"summary\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Simple test signature for Flash model validation"}]},{"role":"user","parts":[{"text":"##
+        Input Values\n```json\n{\n  \"text\": \"This is an amazing product that exceeds
+        expectations!\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"sentiment":{"type":"string","enum":["positive","negative","neutral"]},"confidence":{"type":"number"},"summary":{"type":"string"}},"required":["sentiment","confidence","summary"]}}}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Mon, 22 Sep 2025 16:35:09 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '393'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=519
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\"sentiment\": \"positive\", \"confidence\": 0.95, \"summary\": \"The product is amazing and exceeds expectations.\"}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "avgLogprobs": -0.0069626330264977044
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 409,
+            "candidatesTokenCount": 28,
+            "totalTokenCount": 437,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 409
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 28
+              }
+            ]
+          },
+          "modelVersion": "gemini-1.5-flash",
+          "responseId": "vHrRaOWrN-asz7IPscWbyQg"
+        }
+  recorded_at: Mon, 22 Sep 2025 16:35:09 GMT
+recorded_with: VCR 6.3.1
