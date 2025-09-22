@@ -114,9 +114,21 @@ RSpec.describe "Gemini Structured Outputs Integration" do
       expect(selected).to be_available
     end
     
-    it "falls back to enhanced prompting for unsupported models" do
-      # Test with gemini-1.5-flash which is JSON-only, not full schema support
+    it "selects Gemini structured output strategy for Flash models (newly supported)" do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
+      
+      # Test with gemini-1.5-flash which now supports structured outputs
       lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      selector = DSPy::LM::StrategySelector.new(lm.adapter, GeminiSentimentAnalysis)
+      
+      selected = selector.select
+      expect(selected.name).to eq('gemini_structured_output')
+      expect(selected).to be_available
+    end
+    
+    it "falls back to enhanced prompting for unsupported models" do
+      # Test with gemini-1.0-pro which doesn't support structured outputs
+      lm = DSPy::LM.new('gemini/gemini-1.0-pro', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       selector = DSPy::LM::StrategySelector.new(lm.adapter, GeminiSentimentAnalysis)
       
       selected = selector.select
