@@ -6,6 +6,8 @@ RSpec.describe DSPy::Observability do
   describe '.configure!' do
     context 'when Langfuse env vars are present' do
       before do
+        # Temporarily enable observability for these tests
+        ENV.delete('DSPY_DISABLE_OBSERVABILITY')
         ENV['LANGFUSE_PUBLIC_KEY'] = 'pk-lf-test-12345'
         ENV['LANGFUSE_SECRET_KEY'] = 'sk-lf-test-67890'
         ENV['LANGFUSE_HOST'] = 'https://test.langfuse.com'
@@ -15,6 +17,8 @@ RSpec.describe DSPy::Observability do
         ENV.delete('LANGFUSE_PUBLIC_KEY')
         ENV.delete('LANGFUSE_SECRET_KEY') 
         ENV.delete('LANGFUSE_HOST')
+        # Restore disabled state for other tests
+        ENV['DSPY_DISABLE_OBSERVABILITY'] = 'true'
         described_class.reset!
       end
 
@@ -45,6 +49,8 @@ RSpec.describe DSPy::Observability do
 
     context 'when OpenTelemetry gems are missing' do
       before do
+        # Temporarily enable observability for these tests
+        ENV.delete('DSPY_DISABLE_OBSERVABILITY')
         ENV['LANGFUSE_PUBLIC_KEY'] = 'pk-lf-test'
         ENV['LANGFUSE_SECRET_KEY'] = 'sk-lf-test'
         allow(described_class).to receive(:require).and_raise(LoadError)
@@ -53,6 +59,8 @@ RSpec.describe DSPy::Observability do
       after do
         ENV.delete('LANGFUSE_PUBLIC_KEY')
         ENV.delete('LANGFUSE_SECRET_KEY')
+        # Restore disabled state for other tests
+        ENV['DSPY_DISABLE_OBSERVABILITY'] = 'true'
         described_class.reset!
       end
 
@@ -67,6 +75,8 @@ RSpec.describe DSPy::Observability do
   describe '.tracer' do
     context 'when enabled' do
       before do
+        # Temporarily enable observability for these tests
+        ENV.delete('DSPY_DISABLE_OBSERVABILITY')
         ENV['LANGFUSE_PUBLIC_KEY'] = 'pk-lf-test'
         ENV['LANGFUSE_SECRET_KEY'] = 'sk-lf-test'
         described_class.configure!
@@ -75,6 +85,8 @@ RSpec.describe DSPy::Observability do
       after do
         ENV.delete('LANGFUSE_PUBLIC_KEY')
         ENV.delete('LANGFUSE_SECRET_KEY')
+        # Restore disabled state for other tests
+        ENV['DSPY_DISABLE_OBSERVABILITY'] = 'true'
         described_class.reset!
       end
 
@@ -100,6 +112,8 @@ RSpec.describe DSPy::Observability do
       let(:mock_span) { double('span') }
 
       before do
+        # Temporarily enable observability for these tests
+        ENV.delete('DSPY_DISABLE_OBSERVABILITY')
         ENV['LANGFUSE_PUBLIC_KEY'] = 'pk-lf-test'
         ENV['LANGFUSE_SECRET_KEY'] = 'sk-lf-test'
         described_class.configure!
@@ -109,6 +123,8 @@ RSpec.describe DSPy::Observability do
       after do
         ENV.delete('LANGFUSE_PUBLIC_KEY')
         ENV.delete('LANGFUSE_SECRET_KEY')
+        # Restore disabled state for other tests
+        ENV['DSPY_DISABLE_OBSERVABILITY'] = 'true'
         described_class.reset!
       end
 
