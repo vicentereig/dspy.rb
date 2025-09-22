@@ -67,11 +67,6 @@ module DSPy
             raise AdapterError, "OpenAI API error: #{response.error}"
           end
 
-          if response[:error] && response[:error][:message]
-            error = response[:error][:message]
-            raise AdapterError, "OpenAI API error: #{error}"
-          end
-
           choice = response.choices.first
           message = choice.message
           content = message.content
