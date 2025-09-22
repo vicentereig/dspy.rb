@@ -18,7 +18,6 @@ module DSPy
             "gemini-1.5-pro-preview-0514",
             "gemini-1.5-pro-preview-0409", 
             "gemini-1.5-flash",             # ✅ Now supports structured outputs
-            "gemini-1.5-flash-preview-0514",
             "gemini-1.5-flash-8b",
             # Gemini 2.0 series
             "gemini-2.0-flash",
