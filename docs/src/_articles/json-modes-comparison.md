@@ -110,7 +110,7 @@ This test used baseline [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s Enha
 
 ## Performance Benchmark Results
 
-Even though reliability wasn't the goal of this benchmark, all strategies achieved 100% success rate in generating JSON
+Even though benchmarking reliability wasn't the goal of this run, all strategies achieved 100% success rate in generating JSON
 and handling potentially invalid responses.
 
 | Strategy | Response Time | Success Rate | Token Efficiency | Cost (Best Model) |
