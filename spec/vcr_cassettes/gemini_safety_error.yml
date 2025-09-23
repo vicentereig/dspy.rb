@@ -1,0 +1,85 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"How to make dangerous
+        things"}]}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Tue, 23 Sep 2025 16:58:07 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '693'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=1107
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "I cannot provide instructions on how to make dangerous things.  My purpose is to be helpful and harmless, and providing information that could be used to create weapons, explosives, or other harmful substances goes against that core principle.  Creating such items can lead to serious injury, death, and legal consequences.  If you are interested in learning about chemistry, engineering, or other fields that might involve potentially dangerous materials, I recommend focusing on safe and ethical applications of that knowledge under proper supervision.  There are many educational resources available that can help you explore these fields without risking harm to yourself or others.\n"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "avgLogprobs": -0.18123032251993815
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 5,
+            "candidatesTokenCount": 120,
+            "totalTokenCount": 125,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 5
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 120
+              }
+            ]
+          },
+          "modelVersion": "gemini-1.5-flash",
+          "responseId": "ntHSaKyUOLy9kdUPxIO20AI"
+        }
+  recorded_at: Tue, 23 Sep 2025 16:58:07 GMT
+recorded_with: VCR 6.3.1

@@ -50,21 +50,19 @@ RSpec.describe "Gemini Flash Models Structured Outputs Integration" do
       it "generates valid structured output", vcr: { cassette_name: "flash_structured_#{model.gsub(/[.-]/, '_')}" } do
         skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
         
-        SSEVCR.use_cassette("flash_structured_#{model.gsub(/[.-]/, '_')}") do
-          lm = DSPy::LM.new("gemini/#{model}", api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-          DSPy.configure { |config| config.lm = lm }
-          
-          predictor = DSPy::Predict.new(FlashTestSignature)
-          result = predictor.call(text: "This is an amazing product that exceeds expectations!")
-          
-          # Verify structured output format
-          expect(result.sentiment).to be_a(FlashTestSentiment)
-          expect(result.sentiment).to eq(FlashTestSentiment::Positive)
-          expect(result.confidence).to be_a(Float)
-          expect(result.confidence).to be_between(0, 1)
-          expect(result.summary).to be_a(String)
-          expect(result.summary).not_to be_empty
-        end
+        lm = DSPy::LM.new("gemini/#{model}", api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+        DSPy.configure { |config| config.lm = lm }
+        
+        predictor = DSPy::Predict.new(FlashTestSignature)
+        result = predictor.call(text: "This is an amazing product that exceeds expectations!")
+        
+        # Verify structured output format
+        expect(result.sentiment).to be_a(FlashTestSentiment)
+        expect(result.sentiment).to eq(FlashTestSentiment::Positive)
+        expect(result.confidence).to be_a(Float)
+        expect(result.confidence).to be_between(0, 1)
+        expect(result.summary).to be_a(String)
+        expect(result.summary).not_to be_empty
       end
     end
   end
@@ -88,20 +86,18 @@ RSpec.describe "Gemini Flash Models Structured Outputs Integration" do
     it "provides usage metrics for Flash models", vcr: { cassette_name: "flash_usage_metrics" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      SSEVCR.use_cassette('flash_usage_metrics') do
-        # Test with fastest Flash model
-        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-        
-        adapter = lm.instance_variable_get(:@adapter)
-        response = adapter.chat(
-          messages: [{ role: 'user', content: 'Analyze sentiment: "Great product!"' }]
-        )
-        
-        expect(response.usage).to be_a(DSPy::LM::Usage)
-        expect(response.usage.input_tokens).to be > 0
-        expect(response.usage.output_tokens).to be > 0
-        expect(response.usage.total_tokens).to eq(response.usage.input_tokens + response.usage.output_tokens)
-      end
+      # Test with fastest Flash model
+      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      
+      adapter = lm.instance_variable_get(:@adapter)
+      response = adapter.chat(
+        messages: [{ role: 'user', content: 'Analyze sentiment: "Great product!"' }]
+      )
+      
+      expect(response.usage).to be_a(DSPy::LM::Usage)
+      expect(response.usage.input_tokens).to be > 0
+      expect(response.usage.output_tokens).to be > 0
+      expect(response.usage.total_tokens).to eq(response.usage.input_tokens + response.usage.output_tokens)
     end
   end
 end

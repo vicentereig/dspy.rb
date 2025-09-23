@@ -14,11 +14,16 @@ module DSPy
         @structured_outputs_enabled = structured_outputs
         
         # Disable streaming for VCR tests since SSE responses don't record properly
+        # But keep streaming enabled for SSEVCR tests (SSE-specific cassettes)
         @use_streaming = true
         begin
-          @use_streaming = false if defined?(VCR) && VCR.current_cassette
+          vcr_active = defined?(VCR) && VCR.current_cassette
+          ssevcr_active = defined?(SSEVCR) && SSEVCR.turned_on?
+          
+          # Only disable streaming if regular VCR is active but SSEVCR is not
+          @use_streaming = false if vcr_active && !ssevcr_active
         rescue
-          # If VCR is not available or any error occurs, use streaming
+          # If VCR/SSEVCR is not available or any error occurs, use streaming
           @use_streaming = true
         end
 

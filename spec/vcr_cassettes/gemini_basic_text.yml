@@ -1,0 +1,148 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BeV751C9DIIBADvrtB84K3po0tHUAAEBAAAnIQEAABP7AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1758646679433.7612,"message":"Max
+        retries reached for gemini_structured_output, trying next strategy\n"},{"level":"WARN","timestamp":1758646679533.466,"message":"Retrying
+        enhanced_prompting after error (attempt 1/3): Gemini authentication failed:
+        the server responded with status 400 for POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=invalid-key.
+        Check your API key.\n"},{"level":"WARN","timestamp":1758646680114.9111,"message":"Retrying
+        enhanced_prompting after error (attempt 2/3): Gemini authentication failed:
+        the server responded with status 400 for POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=invalid-key.
+        Check your API key.\n"},{"level":"WARN","timestamp":1758646681209.135,"message":"Retrying
+        enhanced_prompting after error (attempt 3/3): Gemini authentication failed:
+        the server responded with status 400 for POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=invalid-key.
+        Check your API key.\n"},{"level":"INFO","timestamp":1758646683357.675,"message":"Max
+        retries reached for enhanced_prompting, trying next strategy\n"},{"level":"ERROR","timestamp":1758646683357.826,"message":"All
+        strategies exhausted after 6 total attempts\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BeV751C9DIIBADvrtB84K3po0tHUAAEBAAAnIQEAABP7AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Tue, 23 Sep 2025 16:58:03 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-mad2200102-MAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 23 Sep 2025 16:58:04 GMT
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"What is the capital of
+        France? Answer with just the city name."}]}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Tue, 23 Sep 2025 16:58:04 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '287'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=516
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "Paris\n"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP"
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 14,
+            "candidatesTokenCount": 2,
+            "totalTokenCount": 16,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 14
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2
+              }
+            ]
+          },
+          "modelVersion": "gemini-1.5-flash",
+          "responseId": "m9HSaMCuLtDrkdUPq_Od8QU"
+        }
+  recorded_at: Tue, 23 Sep 2025 16:58:04 GMT
+recorded_with: VCR 6.3.1

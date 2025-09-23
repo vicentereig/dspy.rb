@@ -27,43 +27,41 @@ RSpec.describe "Gemini Flash Models Benchmark Comparison" do
       
       results = {}
       
-      SSEVCR.use_cassette('flash_strategy_comparison') do
-        # Test enhanced prompting strategy
-        DSPy.configure do |config|
-          config.lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: false)
-          config.structured_outputs.strategy = DSPy::Strategy::Compatible
-        end
-        
-        predictor_enhanced = DSPy::Predict.new(BenchmarkTestSignature)
-        
-        start_time = Time.now
-        result_enhanced = predictor_enhanced.call(text: test_text)
-        enhanced_duration = Time.now - start_time
-        
-        results[:enhanced] = {
-          result: result_enhanced,
-          duration: enhanced_duration,
-          strategy: 'enhanced_prompting'
-        }
-        
-        # Test structured output strategy
-        DSPy.configure do |config|
-          config.lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-          config.structured_outputs.strategy = DSPy::Strategy::Strict
-        end
-        
-        predictor_structured = DSPy::Predict.new(BenchmarkTestSignature)
-        
-        start_time = Time.now
-        result_structured = predictor_structured.call(text: test_text)
-        structured_duration = Time.now - start_time
-        
-        results[:structured] = {
-          result: result_structured,
-          duration: structured_duration,
-          strategy: 'gemini_structured_output'
-        }
+      # Test enhanced prompting strategy
+      DSPy.configure do |config|
+        config.lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: false)
+        config.structured_outputs.strategy = DSPy::Strategy::Compatible
       end
+      
+      predictor_enhanced = DSPy::Predict.new(BenchmarkTestSignature)
+      
+      start_time = Time.now
+      result_enhanced = predictor_enhanced.call(text: test_text)
+      enhanced_duration = Time.now - start_time
+      
+      results[:enhanced] = {
+        result: result_enhanced,
+        duration: enhanced_duration,
+        strategy: 'enhanced_prompting'
+      }
+      
+      # Test structured output strategy
+      DSPy.configure do |config|
+        config.lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+        config.structured_outputs.strategy = DSPy::Strategy::Strict
+      end
+      
+      predictor_structured = DSPy::Predict.new(BenchmarkTestSignature)
+      
+      start_time = Time.now
+      result_structured = predictor_structured.call(text: test_text)
+      structured_duration = Time.now - start_time
+      
+      results[:structured] = {
+        result: result_structured,
+        duration: structured_duration,
+        strategy: 'gemini_structured_output'
+      }
       
       # Verify both strategies work
       expect(results[:enhanced][:result]).to be_a(T::Struct)
@@ -103,29 +101,27 @@ RSpec.describe "Gemini Flash Models Benchmark Comparison" do
       it "maintains consistency for #{model} with structured outputs", vcr: { cassette_name: "consistency_#{model.gsub(/[.-]/, '_')}" } do
         skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
         
-        SSEVCR.use_cassette("consistency_#{model.gsub(/[.-]/, '_')}") do
-          lm = DSPy::LM.new("gemini/#{model}", api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-          DSPy.configure { |config| config.lm = lm }
-          
-          predictor = DSPy::Predict.new(BenchmarkTestSignature)
-          result = predictor.call(text: test_text)
-          
-          # Verify structured output format
-          expect(result.analysis).to be_a(String)
-          expect(result.sentiment).to be_a(String)
-          expect(result.confidence).to be_a(Float)
-          expect(result.keywords).to be_a(Array)
-          
-          # Sentiment should be reasonable for positive text
-          expect(result.sentiment.downcase).to match(/positive|good|excellent|favorable/)
-          
-          # Confidence should be reasonably high for clear sentiment
-          expect(result.confidence).to be > 0.5
-          
-          # Should extract relevant keywords
-          expect(result.keywords).not_to be_empty
-          expect(result.keywords.length).to be_between(1, 10)
-        end
+        lm = DSPy::LM.new("gemini/#{model}", api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+        DSPy.configure { |config| config.lm = lm }
+        
+        predictor = DSPy::Predict.new(BenchmarkTestSignature)
+        result = predictor.call(text: test_text)
+        
+        # Verify structured output format
+        expect(result.analysis).to be_a(String)
+        expect(result.sentiment).to be_a(String)
+        expect(result.confidence).to be_a(Float)
+        expect(result.keywords).to be_a(Array)
+        
+        # Sentiment should be reasonable for positive text
+        expect(result.sentiment.downcase).to match(/positive|good|excellent|favorable/)
+        
+        # Confidence should be reasonably high for clear sentiment
+        expect(result.confidence).to be > 0.5
+        
+        # Should extract relevant keywords
+        expect(result.keywords).not_to be_empty
+        expect(result.keywords.length).to be_between(1, 10)
       end
     end
   end
@@ -134,42 +130,40 @@ RSpec.describe "Gemini Flash Models Benchmark Comparison" do
     it "compares token efficiency between strategies", vcr: { cassette_name: "token_usage_comparison" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      SSEVCR.use_cassette('token_usage_comparison') do
-        # Test with enhanced prompting
-        lm_enhanced = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: false)
-        adapter_enhanced = lm_enhanced.instance_variable_get(:@adapter)
-        
-        response_enhanced = adapter_enhanced.chat(
-          messages: [{ role: 'user', content: "Analyze sentiment: #{test_text}" }]
-        )
-        
-        # Test with structured outputs
-        lm_structured = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-        adapter_structured = lm_structured.instance_variable_get(:@adapter)
-        
-        response_structured = adapter_structured.chat(
-          messages: [{ role: 'user', content: "Analyze sentiment: #{test_text}" }]
-        )
-        
-        # Both should have usage data
-        expect(response_enhanced.usage).to be_a(DSPy::LM::Usage)
-        expect(response_structured.usage).to be_a(DSPy::LM::Usage)
-        
-        # Compare token usage
-        enhanced_tokens = response_enhanced.usage.total_tokens
-        structured_tokens = response_structured.usage.total_tokens
-        
-        puts "\n--- Token Usage Comparison ---"
-        puts "Enhanced Prompting: #{enhanced_tokens} tokens"
-        puts "Structured Output:  #{structured_tokens} tokens"
-        puts "Difference: #{structured_tokens - enhanced_tokens} tokens"
-        
-        # Both should use reasonable amounts of tokens
-        expect(enhanced_tokens).to be > 0
-        expect(structured_tokens).to be > 0
-        expect(enhanced_tokens).to be < 5000  # Reasonable upper bound
-        expect(structured_tokens).to be < 5000  # Reasonable upper bound
-      end
+      # Test with enhanced prompting
+      lm_enhanced = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: false)
+      adapter_enhanced = lm_enhanced.instance_variable_get(:@adapter)
+      
+      response_enhanced = adapter_enhanced.chat(
+        messages: [{ role: 'user', content: "Analyze sentiment: #{test_text}" }]
+      )
+      
+      # Test with structured outputs
+      lm_structured = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      adapter_structured = lm_structured.instance_variable_get(:@adapter)
+      
+      response_structured = adapter_structured.chat(
+        messages: [{ role: 'user', content: "Analyze sentiment: #{test_text}" }]
+      )
+      
+      # Both should have usage data
+      expect(response_enhanced.usage).to be_a(DSPy::LM::Usage)
+      expect(response_structured.usage).to be_a(DSPy::LM::Usage)
+      
+      # Compare token usage
+      enhanced_tokens = response_enhanced.usage.total_tokens
+      structured_tokens = response_structured.usage.total_tokens
+      
+      puts "\n--- Token Usage Comparison ---"
+      puts "Enhanced Prompting: #{enhanced_tokens} tokens"
+      puts "Structured Output:  #{structured_tokens} tokens"
+      puts "Difference: #{structured_tokens - enhanced_tokens} tokens"
+      
+      # Both should use reasonable amounts of tokens
+      expect(enhanced_tokens).to be > 0
+      expect(structured_tokens).to be > 0
+      expect(enhanced_tokens).to be < 5000  # Reasonable upper bound
+      expect(structured_tokens).to be < 5000  # Reasonable upper bound
     end
   end
 end
