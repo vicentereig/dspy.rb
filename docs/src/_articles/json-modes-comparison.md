@@ -8,7 +8,7 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-modes-c
 image: /images/og/json-modes-comparison.png
 ---
 
-Getting reliable, structured data from Large Language Models is crucial for production applications. [DSPy.rb](https://github.com/vicentereig/dspy.rb) solves this with five different JSON extraction strategies, each optimized for specific AI providers. After benchmarking across 13 AI models, here's your complete guide to choosing the right approach.
+Getting reliable, structured data from Large Language Models is crucial for production applications. [DSPy.rb](https://github.com/vicentereig/dspy.rb) solves this with five different JSON extraction strategies, each optimized for specific AI providers. After benchmarking across 14 AI models, here's your complete guide to choosing the right approach.
 
 <style>
 /* Charts.css Custom Styling for JSON Modes Comparison */
@@ -115,11 +115,11 @@ and handling potentially invalid responses.
 
 | Strategy | Response Time | Success Rate | Token Efficiency | Cost (Best Model) |
 |----------|---------------|--------------|------------------|-------------------|
-| **Gemini Structured** | 3.42s | 100% | 800 tokens | $0.0019 |
-| **Anthropic Tool Use** | 6.23s | 100% | 800-1500 tokens | $0.001408 |
-| **Anthropic Extraction** | 6.41s | 100% | 800-1500 tokens | $0.001408 |
-| **Enhanced Prompting** | 7.52s | 100% | 800-1500 tokens | $0.000114 |
-| **OpenAI Structured** | 9.39s | 100% | 1200-1500 tokens | $0.000342 |
+| **Gemini Structured** | 3.996s | 100% | 800 tokens | $0.000114 |
+| **Anthropic Tool Use** | 5.64s | 100% | 800-1500 tokens | $0.001408 |
+| **Anthropic Extraction** | 5.585s | 100% | 800-1500 tokens | $0.001408 |
+| **Enhanced Prompting** | 11.117s | 100% | 800-1500 tokens | $0.000114 |
+| **OpenAI Structured** | 11.2s | 100% | 1200-1500 tokens | $0.000165 |
 
 ### Average Response Times by Strategy
 
@@ -133,43 +133,48 @@ and handling potentially invalid responses.
   <tbody>
     <tr>
       <th scope="row">Gemini Structured</th>
-      <td style="--size: calc(3.49 / 13.56); --color: #22c55e;">
-        <span class="data">3.49s</span>
+      <td style="--size: calc(3.996 / 11.2); --color: #22c55e;">
+        <span class="data">3.996s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">Anthropic Extraction</th>
-      <td style="--size: calc(5.58 / 13.56); --color: #3b82f6;">
-        <span class="data">5.58s</span>
+      <td style="--size: calc(5.585 / 11.2); --color: #3b82f6;">
+        <span class="data">5.585s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">Anthropic Tool Use</th>
-      <td style="--size: calc(6.09 / 13.56); --color: #8b5cf6;">
-        <span class="data">6.09s</span>
+      <td style="--size: calc(5.64 / 11.2); --color: #8b5cf6;">
+        <span class="data">5.64s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">Enhanced Prompting</th>
-      <td style="--size: calc(10.16 / 13.56); --color: #f59e0b;">
-        <span class="data">10.16s</span>
+      <td style="--size: calc(11.117 / 11.2); --color: #f59e0b;">
+        <span class="data">11.117s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">OpenAI Structured</th>
       <td style="--size: 1.0; --color: #ef4444;">
-        <span class="data">13.56s</span>
+        <span class="data">11.2s</span>
       </td>
     </tr>
   </tbody>
 </table>
 
-*Based on [benchmark data](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb) across 28 test runs. Gemini Structured Output leads with 3.49s average, while OpenAI Structured Output takes the longest at 13.56s.*
+*Based on [benchmark data](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb) across 32 test runs. Gemini Structured Output leads with 3.996s average, while OpenAI Structured Output takes the longest at 11.2s.*
 
 ## Token Consumption Analysis
 
+**What is Token Efficiency?** Token efficiency measures the total number of tokens (input + output) each model uses to complete the same structured data extraction task. Models that use fewer tokens are more cost-effective since AI providers charge per token. This metric is model-dependent rather than strategy-dependent.
+
 **Most Token Efficient (800 tokens):**
-- Claude 3.5 Haiku, Gemini models, o1-mini
+- Claude 3.5 Haiku, all Gemini models (1.5-pro, 1.5-flash, 2.0-flash, 2.5-pro, 2.5-flash)
+
+**Medium Usage (1000 tokens):**
+- Claude 3.5 Sonnet
 
 **Standard Usage (1200 tokens):**  
 - GPT-4o series, Claude Sonnet 4
@@ -178,9 +183,9 @@ and handling potentially invalid responses.
 - GPT-5 series, Claude Opus 4.1
 
 **Cost per Token Leaders:**
-1. Gemini 1.5 Flash: $0.0000001425 per token
+1. Gemini 1.5 Flash & 2.5 Flash: $0.0000001425 per token
 2. GPT-5-nano: $0.00000011 per token  
-3. GPT-4o-mini: $0.000000285 per token
+3. Gemini 2.0 Flash: $0.000000285 per token
 
 ### Token Efficiency Distribution Across Models
 
@@ -195,31 +200,31 @@ and handling potentially invalid responses.
     <tr>
       <th scope="row">800 tokens</th>
       <td style="--size: 1.0; --color: #22c55e;">
-        <span class="data">4 models</span>
+        <span class="data">6 models</span>
       </td>
     </tr>
     <tr>
       <th scope="row">1000 tokens</th>
-      <td style="--size: 0.5; --color: #3b82f6;">
-        <span class="data">2 models</span>
+      <td style="--size: calc(1 / 6); --color: #3b82f6;">
+        <span class="data">1 model</span>
       </td>
     </tr>
     <tr>
       <th scope="row">1200 tokens</th>
-      <td style="--size: 0.75; --color: #f59e0b;">
+      <td style="--size: calc(3 / 6); --color: #f59e0b;">
         <span class="data">3 models</span>
       </td>
     </tr>
     <tr>
       <th scope="row">1500 tokens</th>
-      <td style="--size: 1.0; --color: #ef4444;">
+      <td style="--size: calc(4 / 6); --color: #ef4444;">
         <span class="data">4 models</span>
       </td>
     </tr>
   </tbody>
 </table>
 
-*Most models cluster around maximum efficiency (800 tokens) or maximum context (1500 tokens). Claude 3.5 Haiku and Gemini models lead in efficiency.*
+*Most models achieve maximum efficiency at 800 tokens (6 models), with Claude 3.5 Haiku and all Gemini models leading. Token usage varies from 800-1500 tokens across the 14 models tested.*
 
 **Token Insight:** Strategy choice doesn't significantly impact token usage—it's primarily model-dependent. Focus on model selection for token efficiency.
 
@@ -235,38 +240,38 @@ and handling potentially invalid responses.
   <tbody>
     <tr>
       <th scope="row">Enhanced Prompting</th>
-      <td style="--size: calc(0.000114 / 0.0019); --color: #22c55e;">
+      <td style="--size: calc(0.000114 / 0.001408); --color: #22c55e;">
+        <span class="data">$0.000114</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">Gemini Structured</th>
+      <td style="--size: calc(0.000114 / 0.001408); --color: #16a34a;">
         <span class="data">$0.000114</span>
       </td>
     </tr>
     <tr>
       <th scope="row">OpenAI Structured</th>
-      <td style="--size: calc(0.000165 / 0.0019); --color: #3b82f6;">
+      <td style="--size: calc(0.000165 / 0.001408); --color: #3b82f6;">
         <span class="data">$0.000165</span>
       </td>
     </tr>
     <tr>
       <th scope="row">Anthropic Tool Use</th>
-      <td style="--size: calc(0.001408 / 0.0019); --color: #8b5cf6;">
+      <td style="--size: calc(0.001408 / 0.001408); --color: #8b5cf6;">
         <span class="data">$0.001408</span>
       </td>
     </tr>
     <tr>
       <th scope="row">Anthropic Extraction</th>
-      <td style="--size: calc(0.001408 / 0.0019); --color: #f59e0b;">
+      <td style="--size: 1.0; --color: #f59e0b;">
         <span class="data">$0.001408</span>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">Gemini Structured</th>
-      <td style="--size: 1.0; --color: #ef4444;">
-        <span class="data">$0.0019</span>
       </td>
     </tr>
   </tbody>
 </table>
 
-*Enhanced Prompting with Gemini Flash delivers the lowest cost at $0.000114 per extraction—17x cheaper than the next best option. [View benchmark source](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb).*
+*Both Enhanced Prompting and Gemini Structured with Gemini Flash models deliver the lowest cost at $0.000114 per extraction—about 1.4x cheaper than OpenAI Structured Output. [View benchmark source](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb).*
 
 ### Speed Variability by Strategy (Min/Max/Average)
 
@@ -282,86 +287,87 @@ and handling potentially invalid responses.
   <tbody>
     <tr>
       <th scope="row">Gemini Structured</th>
-      <td style="--size: calc(3.49 / 33.31); --color: #22c55e;">
-        <span class="data">3.49s</span>
+      <td style="--size: calc(1.744612 / 39.667489); --color: #22c55e;">
+        <span class="data">1.74s</span>
       </td>
-      <td style="--size: calc(3.49 / 33.31); --color: #16a34a;">
-        <span class="data">3.49s</span>
+      <td style="--size: calc(3.996 / 39.667489); --color: #16a34a;">
+        <span class="data">3.996s</span>
       </td>
-      <td style="--size: calc(3.49 / 33.31); --color: #15803d;">
-        <span class="data">3.49s</span>
+      <td style="--size: calc(10.127904 / 39.667489); --color: #15803d;">
+        <span class="data">10.13s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">Anthropic Extraction</th>
-      <td style="--size: calc(2.68 / 33.31); --color: #3b82f6;">
-        <span class="data">2.68s</span>
+      <td style="--size: calc(2.385985 / 39.667489); --color: #3b82f6;">
+        <span class="data">2.39s</span>
       </td>
-      <td style="--size: calc(5.58 / 33.31); --color: #2563eb;">
-        <span class="data">5.58s</span>
+      <td style="--size: calc(5.585 / 39.667489); --color: #2563eb;">
+        <span class="data">5.585s</span>
       </td>
-      <td style="--size: calc(10.26 / 33.31); --color: #1d4ed8;">
-        <span class="data">10.26s</span>
+      <td style="--size: calc(10.58098 / 39.667489); --color: #1d4ed8;">
+        <span class="data">10.58s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">Anthropic Tool Use</th>
-      <td style="--size: calc(3.69 / 33.31); --color: #8b5cf6;">
-        <span class="data">3.69s</span>
+      <td style="--size: calc(2.309794 / 39.667489); --color: #8b5cf6;">
+        <span class="data">2.31s</span>
       </td>
-      <td style="--size: calc(6.09 / 33.31); --color: #7c3aed;">
-        <span class="data">6.09s</span>
+      <td style="--size: calc(5.64 / 39.667489); --color: #7c3aed;">
+        <span class="data">5.64s</span>
       </td>
-      <td style="--size: calc(10.81 / 33.31); --color: #6d28d9;">
-        <span class="data">10.81s</span>
+      <td style="--size: calc(10.549003 / 39.667489); --color: #6d28d9;">
+        <span class="data">10.55s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">Enhanced Prompting</th>
-      <td style="--size: calc(1.84 / 33.31); --color: #f59e0b;">
-        <span class="data">1.84s</span>
+      <td style="--size: calc(1.649952 / 39.667489); --color: #f59e0b;">
+        <span class="data">1.65s</span>
       </td>
-      <td style="--size: calc(10.16 / 33.31); --color: #d97706;">
-        <span class="data">10.16s</span>
+      <td style="--size: calc(11.117 / 39.667489); --color: #d97706;">
+        <span class="data">11.117s</span>
       </td>
       <td style="--size: 1.0; --color: #b45309;">
-        <span class="data">33.31s</span>
+        <span class="data">39.67s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">OpenAI Structured</th>
-      <td style="--size: calc(2.27 / 33.31); --color: #ef4444;">
-        <span class="data">2.27s</span>
+      <td style="--size: calc(2.84226 / 39.667489); --color: #ef4444;">
+        <span class="data">2.84s</span>
       </td>
-      <td style="--size: calc(13.56 / 33.31); --color: #dc2626;">
-        <span class="data">13.56s</span>
+      <td style="--size: calc(11.2 / 39.667489); --color: #dc2626;">
+        <span class="data">11.2s</span>
       </td>
-      <td style="--size: calc(23.26 / 33.31); --color: #b91c1c;">
-        <span class="data">23.26s</span>
+      <td style="--size: calc(19.907807 / 39.667489); --color: #b91c1c;">
+        <span class="data">19.91s</span>
       </td>
     </tr>
   </tbody>
 </table>
 
-*Enhanced Prompting shows the highest speed variability (1.84s to 33.31s) due to model diversity, while Gemini Structured offers consistent performance. Provider-specific strategies show more predictable ranges.*
+*Enhanced Prompting shows the highest speed variability (1.65s to 39.67s) due to model diversity. Fastest single response: Gemini 2.0-flash with Enhanced Prompting at 1.65s. Gemini Structured offers more consistent performance with lower variability.*
 
 ## Quick Decision Matrix
 
 | Use Case | Recommended Strategy | Model | Cost | Speed |
 |----------|---------------------|-------|------|-------|
-| **Startup/MVP** | Enhanced Prompting | Gemini Flash | $0.000114 | 7.52s |
-| **High Volume** | Gemini Structured | Gemini Pro | $0.0019 | 3.42s |
-| **Enterprise Multi-Provider** | Enhanced Prompting | Multiple | Varies | 7.52s |
-| **Maximum Reliability** | Provider-Specific | Any Compatible | Varies | 6.23-9.39s |
-| **Cost-Sensitive** | Enhanced Prompting | Gemini Flash | $0.000114 | 7.52s |
+| **Startup/MVP** | Enhanced Prompting | Gemini Flash | $0.000114 | 11.117s |
+| **High Volume** | Gemini Structured | Gemini Flash | $0.000114 | 3.996s |
+| **Speed Critical** | Gemini Structured | Gemini 2.0-flash | $0.000228 | 1.74s |
+| **Enterprise Multi-Provider** | Enhanced Prompting | Multiple | Varies | 11.117s |
+| **Maximum Reliability** | Provider-Specific | Any Compatible | Varies | 5.58-11.2s |
+| **Cost-Sensitive** | Enhanced Prompting | Gemini Flash | $0.000114 | 11.117s |
 
 ## Key Findings
 
-- **Speed Champion**: Gemini Structured Output (3.42s) but limited to one model
+- **Speed Champion**: Gemini 2.0-flash at 1.65s (Enhanced) or 1.74s (Structured)
 - **Universal Choice**: Enhanced Prompting works across all providers with 100% success  
-- **Cost Winner**: Gemini Flash + Enhanced Prompting at $0.000114 per extraction
-- **Reliability**: All provider-specific strategies achieve 100% success rates
-- **Token Efficiency**: Choose Claude Haiku or Gemini for lowest token consumption
+- **Cost Winner**: Gemini Flash models + any strategy at $0.000114 per extraction
+- **Reliability**: All strategies achieve 100% success rates across 32 tests
+- **Token Efficiency**: Choose Claude Haiku or any Gemini model for 800-token efficiency
 
 ## Implementation
 
@@ -388,7 +394,7 @@ end
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('gemini/gemini-1.5-flash',
                       api_key: ENV['GEMINI_API_KEY'], 
-                      structured_outputs: true)  # Supports gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp
+                      structured_outputs: true)  # Supports gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash, gemini-2.5-pro, gemini-2.5-flash
 end
 
 predictor = DSPy::Predict.new(DeepResearch)
@@ -436,4 +442,4 @@ This enhancement will integrate seamlessly with [DSPy.rb](https://github.com/vic
 
 ---
 
-*Benchmark: 27 tests across 5 strategies and 13 AI models. Total cost: $0.2302. September 14, 2025.*
+*Benchmark: 32 tests across 5 strategies and 14 AI models. Total cost: $0.2354. September 23, 2025.*

@@ -21,8 +21,7 @@ class JSONModesBenchmark
   # Model constants for 2025 testing
   OPENAI_MODELS = %w[
     gpt-5 gpt-5-mini gpt-5-nano 
-    gpt-4o gpt-4o-mini 
-    o1 o1-mini
+    gpt-4o gpt-4o-mini
   ].freeze
 
   ANTHROPIC_MODELS = %w[
@@ -32,6 +31,8 @@ class JSONModesBenchmark
 
   GOOGLE_MODELS = %w[
     gemini-1.5-pro gemini-1.5-flash
+    gemini-2.0-flash
+    gemini-2.5-pro gemini-2.5-flash
   ].freeze
 
   ALL_MODELS = (OPENAI_MODELS + ANTHROPIC_MODELS + GOOGLE_MODELS).freeze
@@ -52,8 +53,6 @@ class JSONModesBenchmark
     'gpt-5-nano' => { input: 0.05, output: 0.25 },
     'gpt-4o' => { input: 2.50, output: 10.00 },
     'gpt-4o-mini' => { input: 0.15, output: 0.60 },
-    'o1' => { input: 15.00, output: 60.00 },
-    'o1-mini' => { input: 3.00, output: 12.00 },
     
     # Anthropic Models
     'claude-opus-4.1' => { input: 15.00, output: 75.00 },
@@ -64,7 +63,9 @@ class JSONModesBenchmark
     # Google Models (per official pricing)
     'gemini-1.5-pro' => { input: 1.25, output: 5.00 },
     'gemini-1.5-flash' => { input: 0.075, output: 0.30 },
-    'gemini-2.0-flash-exp' => { input: 0.00, output: 0.00 }  # Experimental - free for now
+    'gemini-2.0-flash' => { input: 0.15, output: 0.60 },
+    'gemini-2.5-pro' => { input: 3.50, output: 10.50 },
+    'gemini-2.5-flash' => { input: 0.075, output: 0.30 }
   }.freeze
 
   def initialize
@@ -209,6 +210,10 @@ class JSONModesBenchmark
     # Based on official gemini-ai gem documentation - models with ✅ full schema support
     structured_output_models = %w[
       gemini-1.5-pro
+      gemini-1.5-flash
+      gemini-2.0-flash
+      gemini-2.5-pro
+      gemini-2.5-flash
     ]
     structured_output_models.include?(model)
   end
@@ -307,7 +312,7 @@ class JSONModesBenchmark
 
   def extract_provider_and_model(model)
     case model
-    when /^gpt-|^o1/
+    when /^gpt-/
       ['openai', model]
     when /^claude-/
       ['anthropic', model]
