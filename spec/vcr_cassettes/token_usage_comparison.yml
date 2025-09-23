@@ -1,0 +1,171 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"Analyze sentiment: This
+        is an excellent product that I highly recommend to everyone. The quality is
+        outstanding and the price is very reasonable. I''m extremely satisfied with
+        my purchase."}]}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Mon, 22 Sep 2025 16:48:46 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '475'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=535
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "The sentiment expressed is overwhelmingly **positive**.  The reviewer uses strong positive language (\"excellent,\" \"highly recommend,\" \"outstanding,\" \"extremely satisfied\") to describe the product and their experience.  There is no negative sentiment present.\n"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "avgLogprobs": -0.02555283256199049
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 35,
+            "candidatesTokenCount": 46,
+            "totalTokenCount": 81,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 35
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 46
+              }
+            ]
+          },
+          "modelVersion": "gemini-1.5-flash",
+          "responseId": "7X3RaN3uNLvzqtsPkPnD0Qg"
+        }
+  recorded_at: Mon, 22 Sep 2025 16:48:45 GMT
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"Analyze sentiment: This
+        is an excellent product that I highly recommend to everyone. The quality is
+        outstanding and the price is very reasonable. I''m extremely satisfied with
+        my purchase."}]}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Mon, 22 Sep 2025 16:48:47 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '475'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=582
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "The sentiment expressed is overwhelmingly **positive**.  The reviewer uses strong positive language (\"excellent,\" \"highly recommend,\" \"outstanding,\" \"extremely satisfied\") to describe the product and their experience.  There is no negative sentiment present.\n"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "avgLogprobs": -0.024976486745087997
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 35,
+            "candidatesTokenCount": 46,
+            "totalTokenCount": 81,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 35
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 46
+              }
+            ]
+          },
+          "modelVersion": "gemini-1.5-flash",
+          "responseId": "7n3RaMawIoasmtkPlt2RqAs"
+        }
+  recorded_at: Mon, 22 Sep 2025 16:48:46 GMT
+recorded_with: VCR 6.3.1

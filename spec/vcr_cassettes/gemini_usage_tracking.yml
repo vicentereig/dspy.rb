@@ -1,0 +1,84 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"Count from 1 to 5."}]}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Tue, 23 Sep 2025 16:58:08 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '326'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=358
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "1, 2, 3, 4, 5\n"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "avgLogprobs": -3.53345915625271e-06
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 8,
+            "candidatesTokenCount": 14,
+            "totalTokenCount": 22,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 8
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 14
+              }
+            ]
+          },
+          "modelVersion": "gemini-1.5-flash",
+          "responseId": "oNHSaNOnAq7okdUP8u6dwQI"
+        }
+  recorded_at: Tue, 23 Sep 2025 16:58:08 GMT
+recorded_with: VCR 6.3.1

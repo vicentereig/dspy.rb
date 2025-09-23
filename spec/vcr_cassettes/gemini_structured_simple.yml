@@ -1,0 +1,103 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
+        are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Text to analyze\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"sentiment\": {\n      \"type\": \"string\",\n      \"enum\":
+        [\n        \"positive\",\n        \"negative\",\n        \"neutral\"\n      ],\n      \"description\":
+        \"Detected sentiment\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"description\":
+        \"Confidence score between 0 and 1\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Explanation for the sentiment\"\n    }\n  },\n  \"required\":
+        [\n    \"sentiment\",\n    \"confidence\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Analyze the sentiment of a text"}]},{"role":"user","parts":[{"text":"##
+        Input Values\n```json\n{\n  \"text\": \"I absolutely love this product! It
+        exceeded all my expectations.\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"sentiment":{"type":"string","enum":["positive","negative","neutral"]},"confidence":{"type":"number"},"reasoning":{"type":"string"}},"required":["sentiment","confidence","reasoning"]}}}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Tue, 23 Sep 2025 16:57:49 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '420'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=752
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\"sentiment\": \"positive\", \"confidence\": 0.95, \"reasoning\": \"The phrases \\\"absolutely love\\\" and \\\"exceeded all my expectations\\\" express strong positive sentiment.\"}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "avgLogprobs": -0.0082192607223987579
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 421,
+            "candidatesTokenCount": 40,
+            "totalTokenCount": 461,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 421
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 40
+              }
+            ]
+          },
+          "modelVersion": "gemini-1.5-flash",
+          "responseId": "jdHSaNqhGMiSkdUPzJnPmQI"
+        }
+  recorded_at: Tue, 23 Sep 2025 16:57:49 GMT
+recorded_with: VCR 6.3.1

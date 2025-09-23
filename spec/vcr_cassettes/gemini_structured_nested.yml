@@ -1,0 +1,402 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
+        are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Topic to structure\"\n    }\n  },\n  \"required\": [\n    \"topic\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"structure\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
+        \"GeminiLevel1\"\n        },\n        \"section\": {\n          \"type\":
+        \"string\"\n        },\n        \"groups\": {\n          \"type\": \"array\",\n          \"items\":
+        {\n            \"type\": \"object\",\n            \"properties\": {\n              \"_type\":
+        {\n                \"type\": \"string\",\n                \"const\": \"GeminiLevel2\"\n              },\n              \"category\":
+        {\n                \"type\": \"string\"\n              },\n              \"subcategories\":
+        {\n                \"type\": \"array\",\n                \"items\": {\n                  \"type\":
+        \"object\",\n                  \"properties\": {\n                    \"_type\":
+        {\n                      \"type\": \"string\",\n                      \"const\":
+        \"GeminiLevel3\"\n                    },\n                    \"name\": {\n                      \"type\":
+        \"string\"\n                    },\n                    \"items\": {\n                      \"type\":
+        \"array\",\n                      \"items\": {\n                        \"type\":
+        \"object\",\n                        \"properties\": {\n                          \"_type\":
+        {\n                            \"type\": \"string\",\n                            \"const\":
+        \"GeminiLevel4\"\n                          },\n                          \"value\":
+        {\n                            \"type\": \"string\"\n                          },\n                          \"tags\":
+        {\n                            \"type\": \"array\",\n                            \"items\":
+        {\n                              \"type\": \"string\"\n                            }\n                          }\n                        },\n                        \"required\":
+        [\n                          \"_type\",\n                          \"value\",\n                          \"tags\"\n                        ],\n                        \"description\":
+        \"GeminiLevel4 struct\"\n                      }\n                    },\n                    \"metadata\":
+        {\n                      \"type\": \"object\",\n                      \"propertyNames\":
+        {\n                        \"type\": \"string\"\n                      },\n                      \"additionalProperties\":
+        {\n                        \"type\": \"string\"\n                      },\n                      \"description\":
+        \"A mapping where keys are strings and values are strings\"\n                    }\n                  },\n                  \"required\":
+        [\n                    \"_type\",\n                    \"name\",\n                    \"items\",\n                    \"metadata\"\n                  ],\n                  \"description\":
+        \"GeminiLevel3 struct\"\n                }\n              },\n              \"count\":
+        {\n                \"type\": \"integer\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"category\",\n              \"subcategories\",\n              \"count\"\n            ],\n            \"description\":
+        \"GeminiLevel2 struct\"\n          }\n        },\n        \"total\": {\n          \"type\":
+        \"integer\"\n        },\n        \"summary\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"section\",\n        \"groups\",\n        \"total\",\n        \"summary\"\n      ],\n      \"description\":
+        \"Deeply nested hierarchical structure\"\n    },\n    \"depth_level\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Maximum depth reached\"\n    },\n    \"complexity_score\":
+        {\n      \"type\": \"number\",\n      \"description\": \"Complexity rating\"\n    }\n  },\n  \"required\":
+        [\n    \"structure\",\n    \"depth_level\",\n    \"complexity_score\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Test signature with deeply nested structures"}]},{"role":"user","parts":[{"text":"##
+        Input Values\n```json\n{\n  \"topic\": \"Programming languages categorization\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"structure":{"type":"object","properties":{"_type":{"type":"string"},"section":{"type":"string"},"groups":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"category":{"type":"string"},"subcategories":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"name":{"type":"string"},"items":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"value":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","value","tags"]}},"metadata":{"type":"object"}},"required":["_type","name","items","metadata"]}},"count":{"type":"integer"}},"required":["_type","category","subcategories","count"]}},"total":{"type":"integer"},"summary":{"type":"string"}},"required":["_type","section","groups","total","summary"]},"depth_level":{"type":"integer"},"complexity_score":{"type":"number"}},"required":["structure","depth_level","complexity_score"]}}}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 400
+      message: ''
+    headers:
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Encoding:
+      - gzip
+      Date:
+      - Tue, 23 Sep 2025 16:57:53 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '160'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=68
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "error": {
+            "code": 400,
+            "message": "A schema in GenerationConfig in the request exceeds the maximum allowed nesting depth.",
+            "status": "INVALID_ARGUMENT"
+          }
+        }
+  recorded_at: Tue, 23 Sep 2025 16:57:53 GMT
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
+        are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Topic to structure\"\n    }\n  },\n  \"required\": [\n    \"topic\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"structure\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
+        \"GeminiLevel1\"\n        },\n        \"section\": {\n          \"type\":
+        \"string\"\n        },\n        \"groups\": {\n          \"type\": \"array\",\n          \"items\":
+        {\n            \"type\": \"object\",\n            \"properties\": {\n              \"_type\":
+        {\n                \"type\": \"string\",\n                \"const\": \"GeminiLevel2\"\n              },\n              \"category\":
+        {\n                \"type\": \"string\"\n              },\n              \"subcategories\":
+        {\n                \"type\": \"array\",\n                \"items\": {\n                  \"type\":
+        \"object\",\n                  \"properties\": {\n                    \"_type\":
+        {\n                      \"type\": \"string\",\n                      \"const\":
+        \"GeminiLevel3\"\n                    },\n                    \"name\": {\n                      \"type\":
+        \"string\"\n                    },\n                    \"items\": {\n                      \"type\":
+        \"array\",\n                      \"items\": {\n                        \"type\":
+        \"object\",\n                        \"properties\": {\n                          \"_type\":
+        {\n                            \"type\": \"string\",\n                            \"const\":
+        \"GeminiLevel4\"\n                          },\n                          \"value\":
+        {\n                            \"type\": \"string\"\n                          },\n                          \"tags\":
+        {\n                            \"type\": \"array\",\n                            \"items\":
+        {\n                              \"type\": \"string\"\n                            }\n                          }\n                        },\n                        \"required\":
+        [\n                          \"_type\",\n                          \"value\",\n                          \"tags\"\n                        ],\n                        \"description\":
+        \"GeminiLevel4 struct\"\n                      }\n                    },\n                    \"metadata\":
+        {\n                      \"type\": \"object\",\n                      \"propertyNames\":
+        {\n                        \"type\": \"string\"\n                      },\n                      \"additionalProperties\":
+        {\n                        \"type\": \"string\"\n                      },\n                      \"description\":
+        \"A mapping where keys are strings and values are strings\"\n                    }\n                  },\n                  \"required\":
+        [\n                    \"_type\",\n                    \"name\",\n                    \"items\",\n                    \"metadata\"\n                  ],\n                  \"description\":
+        \"GeminiLevel3 struct\"\n                }\n              },\n              \"count\":
+        {\n                \"type\": \"integer\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"category\",\n              \"subcategories\",\n              \"count\"\n            ],\n            \"description\":
+        \"GeminiLevel2 struct\"\n          }\n        },\n        \"total\": {\n          \"type\":
+        \"integer\"\n        },\n        \"summary\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"section\",\n        \"groups\",\n        \"total\",\n        \"summary\"\n      ],\n      \"description\":
+        \"Deeply nested hierarchical structure\"\n    },\n    \"depth_level\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Maximum depth reached\"\n    },\n    \"complexity_score\":
+        {\n      \"type\": \"number\",\n      \"description\": \"Complexity rating\"\n    }\n  },\n  \"required\":
+        [\n    \"structure\",\n    \"depth_level\",\n    \"complexity_score\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Test signature with deeply nested structures"}]},{"role":"user","parts":[{"text":"##
+        Input Values\n```json\n{\n  \"topic\": \"Programming languages categorization\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"structure":{"type":"object","properties":{"_type":{"type":"string"},"section":{"type":"string"},"groups":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"category":{"type":"string"},"subcategories":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"name":{"type":"string"},"items":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"value":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","value","tags"]}},"metadata":{"type":"object"}},"required":["_type","name","items","metadata"]}},"count":{"type":"integer"}},"required":["_type","category","subcategories","count"]}},"total":{"type":"integer"},"summary":{"type":"string"}},"required":["_type","section","groups","total","summary"]},"depth_level":{"type":"integer"},"complexity_score":{"type":"number"}},"required":["structure","depth_level","complexity_score"]}}}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 400
+      message: ''
+    headers:
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Encoding:
+      - gzip
+      Date:
+      - Tue, 23 Sep 2025 16:57:53 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '160'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=62
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "error": {
+            "code": 400,
+            "message": "A schema in GenerationConfig in the request exceeds the maximum allowed nesting depth.",
+            "status": "INVALID_ARGUMENT"
+          }
+        }
+  recorded_at: Tue, 23 Sep 2025 16:57:53 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BeV751C9DIIBADvrtB84K3po0tHUAAEBAAAnIQEAABP7AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1758646673785.99,"message":"Max
+        retries reached for gemini_structured_output, trying next strategy\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BeV751C9DIIBADvrtB84K3po0tHUAAEBAAAnIQEAABP7AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '0'
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Tue, 23 Sep 2025 16:57:54 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Served-By:
+      - cache-toj-leto2350053-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 23 Sep 2025 16:57:54 GMT
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
+        are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Topic to structure\"\n    }\n  },\n  \"required\": [\n    \"topic\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"structure\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
+        \"GeminiLevel1\"\n        },\n        \"section\": {\n          \"type\":
+        \"string\"\n        },\n        \"groups\": {\n          \"type\": \"array\",\n          \"items\":
+        {\n            \"type\": \"object\",\n            \"properties\": {\n              \"_type\":
+        {\n                \"type\": \"string\",\n                \"const\": \"GeminiLevel2\"\n              },\n              \"category\":
+        {\n                \"type\": \"string\"\n              },\n              \"subcategories\":
+        {\n                \"type\": \"array\",\n                \"items\": {\n                  \"type\":
+        \"object\",\n                  \"properties\": {\n                    \"_type\":
+        {\n                      \"type\": \"string\",\n                      \"const\":
+        \"GeminiLevel3\"\n                    },\n                    \"name\": {\n                      \"type\":
+        \"string\"\n                    },\n                    \"items\": {\n                      \"type\":
+        \"array\",\n                      \"items\": {\n                        \"type\":
+        \"object\",\n                        \"properties\": {\n                          \"_type\":
+        {\n                            \"type\": \"string\",\n                            \"const\":
+        \"GeminiLevel4\"\n                          },\n                          \"value\":
+        {\n                            \"type\": \"string\"\n                          },\n                          \"tags\":
+        {\n                            \"type\": \"array\",\n                            \"items\":
+        {\n                              \"type\": \"string\"\n                            }\n                          }\n                        },\n                        \"required\":
+        [\n                          \"_type\",\n                          \"value\",\n                          \"tags\"\n                        ],\n                        \"description\":
+        \"GeminiLevel4 struct\"\n                      }\n                    },\n                    \"metadata\":
+        {\n                      \"type\": \"object\",\n                      \"propertyNames\":
+        {\n                        \"type\": \"string\"\n                      },\n                      \"additionalProperties\":
+        {\n                        \"type\": \"string\"\n                      },\n                      \"description\":
+        \"A mapping where keys are strings and values are strings\"\n                    }\n                  },\n                  \"required\":
+        [\n                    \"_type\",\n                    \"name\",\n                    \"items\",\n                    \"metadata\"\n                  ],\n                  \"description\":
+        \"GeminiLevel3 struct\"\n                }\n              },\n              \"count\":
+        {\n                \"type\": \"integer\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"category\",\n              \"subcategories\",\n              \"count\"\n            ],\n            \"description\":
+        \"GeminiLevel2 struct\"\n          }\n        },\n        \"total\": {\n          \"type\":
+        \"integer\"\n        },\n        \"summary\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"section\",\n        \"groups\",\n        \"total\",\n        \"summary\"\n      ],\n      \"description\":
+        \"Deeply nested hierarchical structure\"\n    },\n    \"depth_level\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Maximum depth reached\"\n    },\n    \"complexity_score\":
+        {\n      \"type\": \"number\",\n      \"description\": \"Complexity rating\"\n    }\n  },\n  \"required\":
+        [\n    \"structure\",\n    \"depth_level\",\n    \"complexity_score\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Test signature with deeply nested structures"}]},{"role":"user","parts":[{"text":"##
+        Input Values\n```json\n{\n  \"topic\": \"Programming languages categorization\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"structure\": {\n    \"_type\":
+        \"example string\",\n    \"section\": \"example string\",\n    \"groups\":
+        [\n      {\n        \"_type\": \"example string\",\n        \"category\":
+        \"example string\",\n        \"subcategories\": [\n          {\n            \"_type\":
+        \"example string\",\n            \"name\": \"example string\",\n            \"items\":
+        [\n              {\n                \"_type\": \"example string\",\n                \"value\":
+        \"example string\",\n                \"tags\": [\n                  \"example
+        string\"\n                ]\n              }\n            ],\n            \"metadata\":
+        {\n              \"nested\": \"object\"\n            }\n          }\n        ],\n        \"count\":
+        42\n      }\n    ],\n    \"total\": 42,\n    \"summary\": \"example string\"\n  },\n  \"depth_level\":
+        42,\n  \"complexity_score\": 3.14\n}\n```\n\nRequired fields: structure, depth_level,
+        complexity_score\n\nEnsure your response:\n1. Is valid JSON (properly quoted
+        strings, no trailing commas)\n2. Includes all required fields\n3. Uses the
+        correct data types for each field\n4. Is wrapped in ```json``` markdown code
+        blocks\n"}]}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Tue, 23 Sep 2025 16:57:58 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '795'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=4258
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "```json\n{\n  \"structure\": {\n    \"_type\": \"GeminiLevel1\",\n    \"section\": \"Programming Languages\",\n    \"groups\": [\n      {\n        \"_type\": \"GeminiLevel2\",\n        \"category\": \"Paradigm\",\n        \"subcategories\": [\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Imperative\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"C\",\n                \"tags\": [\"Procedural\", \"Compiled\"]\n              },\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Java\",\n                \"tags\": [\"Object-Oriented\", \"Compiled\"]\n              }\n            ],\n            \"metadata\": {\n              \"exampleMetadata\": \"some value\"\n            }\n          },\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Declarative\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"SQL\",\n                \"tags\": [\"Database\", \"Query Language\"]\n              },\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Prolog\",\n                \"tags\": [\"Logic\", \"Interpreted\"]\n              }\n            ],\n            \"metadata\": {}\n          }\n        ],\n        \"count\": 4\n      },\n      {\n        \"_type\": \"GeminiLevel2\",\n        \"category\": \"Typing\",\n        \"subcategories\": [\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Statically Typed\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"C++\",\n                \"tags\": [\"Compiled\", \"Object-Oriented\"]\n              }\n            ],\n            \"metadata\": {}\n          },\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Dynamically Typed\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Python\",\n                \"tags\": [\"Interpreted\", \"Multi-paradigm\"]\n              }\n            ],\n            \"metadata\": {}\n          }\n        ],\n        \"count\": 2\n      }\n    ],\n    \"total\": 6,\n    \"summary\": \"Categorization of programming languages by paradigm and typing.\"\n  },\n  \"depth_level\": 4,\n  \"complexity_score\": 2.5\n}\n```\n"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "avgLogprobs": -0.026676881563413392
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 1306,
+            "candidatesTokenCount": 572,
+            "totalTokenCount": 1878,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1306
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 572
+              }
+            ]
+          },
+          "modelVersion": "gemini-1.5-flash",
+          "responseId": "kdHSaOOdOsLNnsEP-7a5uQY"
+        }
+  recorded_at: Tue, 23 Sep 2025 16:57:58 GMT
+recorded_with: VCR 6.3.1

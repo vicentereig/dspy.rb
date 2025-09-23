@@ -1,0 +1,85 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    body:
+      encoding: UTF-8
+      string: '{"contents":[{"role":"user","parts":[{"text":"You are a helpful geography
+        teacher."}]},{"role":"user","parts":[{"text":"What is the capital of Spain?"}]}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.13.4
+      Content-Type:
+      - application/json
+      Expect:
+      - ''
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Encoding:
+      - gzip
+      Date:
+      - Tue, 23 Sep 2025 16:58:04 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Content-Length:
+      - '336'
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Server-Timing:
+      - gfet4t7; dur=530
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "The capital of Spain is Madrid.\n"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "avgLogprobs": -0.040202632546424866
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 14,
+            "candidatesTokenCount": 8,
+            "totalTokenCount": 22,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 14
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 8
+              }
+            ]
+          },
+          "modelVersion": "gemini-1.5-flash",
+          "responseId": "nNHSaM6HEpSckdUPzcXA-AE"
+        }
+  recorded_at: Tue, 23 Sep 2025 16:58:04 GMT
+recorded_with: VCR 6.3.1

@@ -9,78 +9,74 @@ RSpec.describe 'Gemini Integration' do
   let(:model) { 'gemini-1.5-flash' }
   
   describe 'basic text generation' do
-    it 'generates text response' do
+    it 'generates text response', vcr: { cassette_name: 'gemini_basic_text' } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      SSEVCR.use_cassette('gemini_basic_text') do
-        lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
-        
-        response = lm.raw_chat do |messages|
-          messages.user('What is the capital of France? Answer with just the city name.')
-        end
-        
-        expect(response).to be_a(String)
-        expect(response.downcase).to include('paris')
+      
+      lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
+      
+      response = lm.raw_chat do |messages|
+        messages.user('What is the capital of France? Answer with just the city name.')
       end
+      
+      expect(response).to be_a(String)
+      expect(response.downcase).to include('paris')
     end
     
-    it 'handles conversation with system messages' do
+    it 'handles conversation with system messages', vcr: { cassette_name: 'gemini_conversation' } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      SSEVCR.use_cassette('gemini_conversation') do
-        lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
-        
-        response = lm.raw_chat do |messages|
-          messages.system('You are a helpful geography teacher.')
-          messages.user('What is the capital of Spain?')
-        end
-        
-        expect(response).to be_a(String)
-        expect(response.downcase).to include('madrid')
+      
+      lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
+      
+      response = lm.raw_chat do |messages|
+        messages.system('You are a helpful geography teacher.')
+        messages.user('What is the capital of Spain?')
       end
+      
+      expect(response).to be_a(String)
+      expect(response.downcase).to include('madrid')
     end
   end
   
   describe 'multimodal capabilities' do
-    it 'analyzes an image from base64 data' do
+    it 'analyzes an image from base64 data', vcr: { cassette_name: 'gemini_multimodal_base64' } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      SSEVCR.use_cassette('gemini_multimodal_base64') do
-        lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
-        
-        # Create a simple red square image in base64
-        base64_image = TestImages.create_base64_png(color: :red, width: 16, height: 16)
-        
-        image = DSPy::Image.new(
-          base64: base64_image,
-          content_type: 'image/png'
-        )
-        
-        response = lm.raw_chat do |messages|
-          messages.user_with_image('What color is this image? Answer with just the color name.', image)
-        end
-        
-        expect(response).to be_a(String)
-        expect(response.downcase).to include('red')
+      
+      lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
+      
+      # Create a simple red square image in base64
+      base64_image = TestImages.create_base64_png(color: :red, width: 16, height: 16)
+      
+      image = DSPy::Image.new(
+        base64: base64_image,
+        content_type: 'image/png'
+      )
+      
+      response = lm.raw_chat do |messages|
+        messages.user_with_image('What color is this image? Answer with just the color name.', image)
       end
+      
+      expect(response).to be_a(String)
+      expect(response.downcase).to include('red')
     end
     
-    it 'compares multiple images' do
+    it 'compares multiple images', vcr: { cassette_name: 'gemini_multimodal_multiple' } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      SSEVCR.use_cassette('gemini_multimodal_multiple') do
-        lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
-        
-        # Two different colored squares
-        red_square = TestImages.create_base64_png(color: :red, width: 16, height: 16)
-        blue_square = TestImages.create_base64_png(color: :blue, width: 16, height: 16)
-        
-        image1 = DSPy::Image.new(base64: red_square, content_type: 'image/png')
-        image2 = DSPy::Image.new(base64: blue_square, content_type: 'image/png')
-        
-        response = lm.raw_chat do |messages|
-          messages.user_with_images('What colors are these two images? List them in order.', [image1, image2])
-        end
-        
-        expect(response).to be_a(String)
-        expect(response.downcase).to match(/red.*blue/m) # multiline match
+      
+      lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
+      
+      # Two different colored squares
+      red_square = TestImages.create_base64_png(color: :red, width: 16, height: 16)
+      blue_square = TestImages.create_base64_png(color: :blue, width: 16, height: 16)
+      
+      image1 = DSPy::Image.new(base64: red_square, content_type: 'image/png')
+      image2 = DSPy::Image.new(base64: blue_square, content_type: 'image/png')
+      
+      response = lm.raw_chat do |messages|
+        messages.user_with_images('What colors are these two images? List them in order.', [image1, image2])
       end
+      
+      expect(response).to be_a(String)
+      expect(response.downcase).to match(/red.*blue/m) # multiline match
     end
     
     it 'raises error when trying to use URL images' do
@@ -180,40 +176,38 @@ RSpec.describe 'Gemini Integration' do
       }.to raise_error(DSPy::LM::AdapterError)
     end
     
-    it 'handles safety filter errors gracefully' do
+    it 'handles safety filter errors gracefully', vcr: { cassette_name: 'gemini_safety_error' } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      SSEVCR.use_cassette('gemini_safety_error') do
-        lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
-        
-        # This might trigger safety filters - just test it doesn't crash
-        begin
-          lm.raw_chat do |messages|
-            messages.user('How to make dangerous things')
-          end
-        rescue DSPy::LM::AdapterError => e
-          expect(e.message).to match(/blocked by safety filters|Gemini adapter error/)
+      
+      lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
+      
+      # This might trigger safety filters - just test it doesn't crash
+      begin
+        lm.raw_chat do |messages|
+          messages.user('How to make dangerous things')
         end
+      rescue DSPy::LM::AdapterError => e
+        expect(e.message).to match(/blocked by safety filters|Gemini adapter error/)
       end
     end
   end
 
   describe 'usage tracking' do
-    it 'tracks token usage correctly' do
+    it 'tracks token usage correctly', vcr: { cassette_name: 'gemini_usage_tracking' } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      SSEVCR.use_cassette('gemini_usage_tracking') do
-        lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
-        
-        # Use the adapter directly to test usage tracking
-        adapter = lm.instance_variable_get(:@adapter)
-        response = adapter.chat(
-          messages: [{ role: 'user', content: 'Count from 1 to 5.' }]
-        )
-        
-        expect(response.usage).to be_a(DSPy::LM::Usage)
-        expect(response.usage.input_tokens).to be > 0
-        expect(response.usage.output_tokens).to be > 0
-        expect(response.usage.total_tokens).to eq(response.usage.input_tokens + response.usage.output_tokens)
-      end
+      
+      lm = DSPy::LM.new("gemini/#{model}", api_key: api_key)
+      
+      # Use the adapter directly to test usage tracking
+      adapter = lm.instance_variable_get(:@adapter)
+      response = adapter.chat(
+        messages: [{ role: 'user', content: 'Count from 1 to 5.' }]
+      )
+      
+      expect(response.usage).to be_a(DSPy::LM::Usage)
+      expect(response.usage.input_tokens).to be > 0
+      expect(response.usage.output_tokens).to be > 0
+      expect(response.usage.total_tokens).to eq(response.usage.input_tokens + response.usage.output_tokens)
     end
   end
 end

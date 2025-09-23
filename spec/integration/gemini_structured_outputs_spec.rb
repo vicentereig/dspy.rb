@@ -138,156 +138,146 @@ end
 
 RSpec.describe "Gemini Structured Outputs Integration" do
   describe "with structured outputs enabled" do
-    it "generates valid JSON with simple enum output" do
+    it "generates valid JSON with simple enum output", vcr: { cassette_name: "gemini_structured_simple" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      SSEVCR.use_cassette('gemini_structured_simple') do
-        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-        DSPy.configure { |config| config.lm = lm }
-        
-        predictor = DSPy::Predict.new(GeminiSentimentAnalysis)
-        result = predictor.call(text: "I absolutely love this product! It exceeded all my expectations.")
-        
-        expect(result.sentiment).to be_a(GeminiSentimentType)
-        expect(result.sentiment).to eq(GeminiSentimentType::Positive)
-        expect(result.confidence).to be_a(Float)
+      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
+      
+      predictor = DSPy::Predict.new(GeminiSentimentAnalysis)
+      result = predictor.call(text: "I absolutely love this product! It exceeded all my expectations.")
+      
+      expect(result.sentiment).to be_a(GeminiSentimentType)
+      expect(result.sentiment).to eq(GeminiSentimentType::Positive)
+      expect(result.confidence).to be_a(Float)
+      expect(result.confidence).to be_between(0, 1)
+      expect(result.reasoning).to be_a(String)
+      expect(result.reasoning).not_to be_empty
+    end
+    
+    it "generates valid JSON with complex nested structures", vcr: { cassette_name: "gemini_structured_complex" } do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
+      
+      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
+      
+      predictor = DSPy::Predict.new(GeminiComplexOutput)
+      result = predictor.call(query: "List three popular programming languages with their usage")
+      
+      expect(result.items).to be_a(Array)
+      expect(result.items).not_to be_empty
+      
+      result.items.each do |item|
+        expect(item).to respond_to(:name)
+        expect(item.name).to be_a(String)
+        expect(item).to respond_to(:value)
+        expect(item.value).to be_a(Integer)
+        expect(item).to respond_to(:tags)
+        expect(item.tags).to be_a(Array)
+        item.tags.each { |tag| expect(tag).to be_a(String) }
+      end
+      
+      expect(result.metadata).to respond_to(:total_count)
+      expect(result.metadata.total_count).to be_a(Integer)
+      expect(result.metadata).to respond_to(:processed_at)
+      expect(result.metadata.processed_at).to be_a(String)
+    end
+    
+    it "handles union types with proper discrimination", vcr: { cassette_name: "gemini_structured_union" } do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
+      
+      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
+      
+      predictor = DSPy::Predict.new(GeminiUnionTypeSignature)
+      result = predictor.call(command: "Create a new task called 'Test Union Types' with high priority")
+      
+      # Should return one of the union types
+      expect(result.action).to be_a(T::Struct)
+      expect([GeminiCreateAction, GeminiUpdateAction, GeminiDeleteAction]).to include(result.action.class)
+      
+      # If it's a create action, verify the structure
+      if result.action.is_a?(GeminiCreateAction)
+        expect(result.action.name).to be_a(String)
+        expect(result.action.priority).to be_a(String)
+        expect(result.action.tags).to be_a(Array)
+      end
+      
+      expect([true, false]).to include(result.success)
+      expect(result.message).to be_a(String)
+      expect(result.message).not_to be_empty
+    end
+    
+    it "handles optional/nilable fields correctly", vcr: { cassette_name: "gemini_structured_optional" } do
+      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
+      
+      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
+      
+      predictor = DSPy::Predict.new(GeminiOptionalFieldsSignature)
+      result = predictor.call(query: "Analyze this simple request")
+      
+      # Required field must be present
+      expect(result.result).to be_a(String)
+      expect(result.result).not_to be_empty
+      
+      # Optional fields can be nil or have values
+      expect(result.confidence).to be_nil.or be_a(Float)
+      expect(result.metadata).to be_nil.or be_a(String)
+      expect(result.category).to be_nil.or be_a(String)
+      expect(result.error_code).to be_nil.or be_a(Integer)
+      
+      # If confidence is present, it should be between 0 and 1
+      if result.confidence
         expect(result.confidence).to be_between(0, 1)
-        expect(result.reasoning).to be_a(String)
-        expect(result.reasoning).not_to be_empty
       end
     end
     
-    it "generates valid JSON with complex nested structures" do
+    it "handles deeply nested structures", vcr: { cassette_name: "gemini_structured_nested" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      SSEVCR.use_cassette('gemini_structured_complex') do
-        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-        DSPy.configure { |config| config.lm = lm }
-        
-        predictor = DSPy::Predict.new(GeminiComplexOutput)
-        result = predictor.call(query: "List three popular programming languages with their usage")
-        
-        expect(result.items).to be_a(Array)
-        expect(result.items).not_to be_empty
-        
-        result.items.each do |item|
-          expect(item).to respond_to(:name)
-          expect(item.name).to be_a(String)
-          expect(item).to respond_to(:value)
-          expect(item.value).to be_a(Integer)
-          expect(item).to respond_to(:tags)
-          expect(item.tags).to be_a(Array)
-          item.tags.each { |tag| expect(tag).to be_a(String) }
-        end
-        
-        expect(result.metadata).to respond_to(:total_count)
-        expect(result.metadata.total_count).to be_a(Integer)
-        expect(result.metadata).to respond_to(:processed_at)
-        expect(result.metadata.processed_at).to be_a(String)
-      end
-    end
-    
-    it "handles union types with proper discrimination" do
-      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
+      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
       
-      SSEVCR.use_cassette('gemini_structured_union') do
-        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-        DSPy.configure { |config| config.lm = lm }
-        
-        predictor = DSPy::Predict.new(GeminiUnionTypeSignature)
-        result = predictor.call(command: "Create a new task called 'Test Union Types' with high priority")
-        
-        # Should return one of the union types
-        expect(result.action).to be_a(T::Struct)
-        expect([GeminiCreateAction, GeminiUpdateAction, GeminiDeleteAction]).to include(result.action.class)
-        
-        # If it's a create action, verify the structure
-        if result.action.is_a?(GeminiCreateAction)
-          expect(result.action.name).to be_a(String)
-          expect(result.action.priority).to be_a(String)
-          expect(result.action.tags).to be_a(Array)
-        end
-        
-        expect([true, false]).to include(result.success)
-        expect(result.message).to be_a(String)
-        expect(result.message).not_to be_empty
-      end
-    end
-    
-    it "handles optional/nilable fields correctly" do
-      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
+      predictor = DSPy::Predict.new(GeminiDeepNestingSignature)
+      result = predictor.call(topic: "Programming languages categorization")
       
-      SSEVCR.use_cassette('gemini_structured_optional') do
-        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-        DSPy.configure { |config| config.lm = lm }
-        
-        predictor = DSPy::Predict.new(GeminiOptionalFieldsSignature)
-        result = predictor.call(query: "Analyze this simple request")
-        
-        # Required field must be present
-        expect(result.result).to be_a(String)
-        expect(result.result).not_to be_empty
-        
-        # Optional fields can be nil or have values
-        expect(result.confidence).to be_nil.or be_a(Float)
-        expect(result.metadata).to be_nil.or be_a(String)
-        expect(result.category).to be_nil.or be_a(String)
-        expect(result.error_code).to be_nil.or be_a(Integer)
-        
-        # If confidence is present, it should be between 0 and 1
-        if result.confidence
-          expect(result.confidence).to be_between(0, 1)
-        end
-      end
-    end
-    
-    it "handles deeply nested structures" do
-      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
+      # Verify top level structure
+      expect(result.structure).to be_a(GeminiLevel1)
+      expect(result.structure.section).to be_a(String)
+      expect(result.structure.groups).to be_a(Array)
+      expect(result.structure.total).to be_a(Integer)
+      expect(result.structure.summary).to be_a(String)
       
-      SSEVCR.use_cassette('gemini_structured_nested') do
-        lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-        DSPy.configure { |config| config.lm = lm }
+      # Verify second level (if present)
+      if result.structure.groups.any?
+        group = result.structure.groups.first
+        expect(group).to be_a(GeminiLevel2)
+        expect(group.category).to be_a(String)
+        expect(group.subcategories).to be_a(Array)
+        expect(group.count).to be_a(Integer)
         
-        predictor = DSPy::Predict.new(GeminiDeepNestingSignature)
-        result = predictor.call(topic: "Programming languages categorization")
-        
-        # Verify top level structure
-        expect(result.structure).to be_a(GeminiLevel1)
-        expect(result.structure.section).to be_a(String)
-        expect(result.structure.groups).to be_a(Array)
-        expect(result.structure.total).to be_a(Integer)
-        expect(result.structure.summary).to be_a(String)
-        
-        # Verify second level (if present)
-        if result.structure.groups.any?
-          group = result.structure.groups.first
-          expect(group).to be_a(GeminiLevel2)
-          expect(group.category).to be_a(String)
-          expect(group.subcategories).to be_a(Array)
-          expect(group.count).to be_a(Integer)
+        # Verify third level (if present)
+        if group.subcategories.any?
+          subcat = group.subcategories.first
+          expect(subcat).to be_a(GeminiLevel3)
+          expect(subcat.name).to be_a(String)
+          expect(subcat.items).to be_a(Array)
+          expect(subcat.metadata).to be_a(Hash)
           
-          # Verify third level (if present)
-          if group.subcategories.any?
-            subcat = group.subcategories.first
-            expect(subcat).to be_a(GeminiLevel3)
-            expect(subcat.name).to be_a(String)
-            expect(subcat.items).to be_a(Array)
-            expect(subcat.metadata).to be_a(Hash)
-            
-            # Verify fourth level (if present)
-            if subcat.items.any?
-              item = subcat.items.first
-              expect(item).to be_a(GeminiLevel4)
-              expect(item.value).to be_a(String)
-              expect(item.tags).to be_a(Array)
-              item.tags.each { |tag| expect(tag).to be_a(String) }
-            end
+          # Verify fourth level (if present)
+          if subcat.items.any?
+            item = subcat.items.first
+            expect(item).to be_a(GeminiLevel4)
+            expect(item.value).to be_a(String)
+            expect(item.tags).to be_a(Array)
+            item.tags.each { |tag| expect(tag).to be_a(String) }
           end
         end
-        
-        expect(result.depth_level).to be_a(Integer)
-        expect(result.complexity_score).to be_a(Float)
       end
+      
+      expect(result.depth_level).to be_a(Integer)
+      expect(result.complexity_score).to be_a(Float)
     end
   end
 
@@ -328,7 +318,7 @@ RSpec.describe "Gemini Structured Outputs Integration" do
   end
   
   describe "error handling and fallback behavior" do
-    it "gracefully handles malformed schemas" do
+    it "gracefully handles malformed schemas", vcr: { cassette_name: "gemini_malformed_schema" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
       # Create a signature that might cause issues
@@ -359,6 +349,9 @@ RSpec.describe "Gemini Structured Outputs Integration" do
       rescue DSPy::LM::AdapterError => e
         # Expected behavior - Gemini rejects overly complex schemas
         expect(e.message).to include("Gemini adapter error")
+      rescue DSPy::PredictionInvalidError => e
+        # Also expected - type validation fails for complex nested structures
+        expect(e.message).to include("Type Mismatch")
       end
     end
     
@@ -372,11 +365,13 @@ RSpec.describe "Gemini Structured Outputs Integration" do
       expect(selected).to be_available
     end
     
-    it "handles API errors gracefully" do
+    it "handles API errors gracefully", vcr: { cassette_name: "gemini_api_error" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
       # Test with invalid API key should fail gracefully
       lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: 'invalid-key', structured_outputs: true)
+      DSPy.configure { |config| config.lm = lm }
+      
       predictor = DSPy::Predict.new(GeminiSentimentAnalysis)
       
       expect {
