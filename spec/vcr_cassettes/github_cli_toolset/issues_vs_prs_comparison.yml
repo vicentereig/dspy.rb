@@ -1,0 +1,1453 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Compare the number
+        of open issues vs open pull requests in the microsoft/vscode repository and
+        tell me which is higher\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
+        [],\n  \"available_tools\": [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
+        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
+        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
+        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
+        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
+        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
+        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
+        \"github_get_issue\",\n        \"description\": \"Get details of a specific
+        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
+        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
+        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
+        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
+        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
+        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
+        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
+        \"object\",\n              \"propertyNames\": {\n                \"type\":
+        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
+        \"string\"\n              },\n              \"description\": \"Parameter fields
+        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '12246'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 24 Sep 2025 09:53:15 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1873'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1890'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '197250'
+      X-Ratelimit-Reset-Requests:
+      - 1m3.138s
+      X-Ratelimit-Reset-Tokens:
+      - 825ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 984164bddac18675-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CJGTSWwc1laj97dWCeEd0IBKLIhv3",
+          "object": "chat.completion",
+          "created": 1758707594,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To compare the number of open issues and open pull requests in the microsoft/vscode repository, I should first list the open issues and then list the open pull requests.\",\n  \"action\": \"github_list_issues\",\n  \"action_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 2285,
+            "completion_tokens": 83,
+            "total_tokens": 2368,
+            "prompt_tokens_details": {
+              "cached_tokens": 1024,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Wed, 24 Sep 2025 09:53:15 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Compare the number
+        of open issues vs open pull requests in the microsoft/vscode repository and
+        tell me which is higher\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To compare the number of
+        open issues and open pull requests in the microsoft/vscode repository, I should
+        first list the open issues and then list the open pull requests.\",\n      \"action\":
+        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
+        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#268137:
+        Screen going blank when using dual screen (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
+        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
+        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
+        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
+        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
+        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
+        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
+        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
+        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
+        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
+        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
+        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
+        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
+        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
+        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
+        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
+        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
+        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
+        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
+        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
+        terminal activates base conda environment instead of configured environment
+        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
+        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
+        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
+        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
+        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
+        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
+        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
+        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n    }\n  ],\n  \"observation\":
+        \"Found 20 issue(s):\\n#268137: Screen going blank when using dual screen
+        (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
+        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
+        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
+        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
+        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
+        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
+        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
+        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
+        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
+        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
+        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
+        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
+        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
+        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
+        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
+        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
+        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
+        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
+        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
+        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
+        terminal activates base conda environment instead of configured environment
+        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
+        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
+        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
+        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
+        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
+        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
+        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
+        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
+        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
+        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
+        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
+        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
+        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '10968'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 24 Sep 2025 09:53:19 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2038'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2053'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '197430'
+      X-Ratelimit-Reset-Requests:
+      - 1m8.521s
+      X-Ratelimit-Reset-Tokens:
+      - 771ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 984164d21a6d8675-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CJGTVuEOHl2AJP5C5A3Jz1SqE6QGD",
+          "object": "chat.completion",
+          "created": 1758707597,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"There are 20 open issues in the microsoft/vscode repository. I need to retrieve the number of open pull requests to compare them.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 2644,
+            "completion_tokens": 51,
+            "total_tokens": 2695,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Wed, 24 Sep 2025 09:53:19 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Compare the number
+        of open issues vs open pull requests in the microsoft/vscode repository and
+        tell me which is higher\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To compare the number of
+        open issues and open pull requests in the microsoft/vscode repository, I should
+        first list the open issues and then list the open pull requests.\",\n      \"action\":
+        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
+        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#268137:
+        Screen going blank when using dual screen (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
+        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
+        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
+        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
+        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
+        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
+        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
+        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
+        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
+        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
+        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
+        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
+        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
+        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
+        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
+        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
+        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
+        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
+        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
+        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
+        terminal activates base conda environment instead of configured environment
+        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
+        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
+        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
+        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
+        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
+        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
+        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
+        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
+        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
+        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
+        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
+        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
+        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
+        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
+        \"github_get_issue\",\n        \"description\": \"Get details of a specific
+        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
+        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
+        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
+        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
+        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
+        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
+        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
+        \"object\",\n              \"propertyNames\": {\n                \"type\":
+        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
+        \"string\"\n              },\n              \"description\": \"Parameter fields
+        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '15719'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 24 Sep 2025 09:53:21 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1744'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1771'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9991'
+      X-Ratelimit-Remaining-Tokens:
+      - '196410'
+      X-Ratelimit-Reset-Requests:
+      - 1m14.922s
+      X-Ratelimit-Reset-Tokens:
+      - 1.077s
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 984164e0080f8675-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CJGTXuk7kGA4q9qdsab4VbS9ufGZe",
+          "object": "chat.completion",
+          "created": 1758707599,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Now that I have the number of open issues (20), I need to list the open pull requests in the microsoft/vscode repository to compare the counts.\",\n  \"action\": \"github_list_prs\",\n  \"action_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 3208,
+            "completion_tokens": 81,
+            "total_tokens": 3289,
+            "prompt_tokens_details": {
+              "cached_tokens": 1024,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Wed, 24 Sep 2025 09:53:21 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
+        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
+        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
+        will be structured in the following way, with the appropriate values filled
+        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
+        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Process the observation from
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Compare the number
+        of open issues vs open pull requests in the microsoft/vscode repository and
+        tell me which is higher\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To compare the number of
+        open issues and open pull requests in the microsoft/vscode repository, I should
+        first list the open issues and then list the open pull requests.\",\n      \"action\":
+        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
+        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#268137:
+        Screen going blank when using dual screen (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
+        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
+        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
+        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
+        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
+        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
+        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
+        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
+        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
+        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
+        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
+        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
+        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
+        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
+        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
+        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
+        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
+        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
+        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
+        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
+        terminal activates base conda environment instead of configured environment
+        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
+        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
+        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
+        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
+        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
+        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
+        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
+        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"Now that I have the number of open issues (20), I
+        need to list the open pull requests in the microsoft/vscode repository to
+        compare the counts.\",\n      \"action\": \"github_list_prs\",\n      \"action_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 pull request(s):\\n#268131: Engineering - extract Windows ci jobs
+        in a template (OPEN)\\n  lszomoru/product-build-windows-ci → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268131\\n\\n#268123: Add test coverage
+        to runTests tool (OPEN)\\n  alexr00/odd-cheetah → main\\n  URL: https://github.com/microsoft/vscode/pull/268123\\n\\n#268109:
+        Chat: improve welcome for no-auth flow (#5872) (OPEN)\\n  ben/outer-dragon
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268109\\n\\n#268093:
+        Feature/107183 add ability to right align tree items description (OPEN)\\n  feature/107183-add-ability-to-right-align-TreeItems-description
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268093\\n\\n#268090:
+        add opt-in setting to show OS notification when a chat response is received
+        (OPEN)\\n  sensible-rooster → main\\n  URL: https://github.com/microsoft/vscode/pull/268090\\n\\n#268089:
+        chatSessions API redesign/experiment (OPEN)\\n  joshspicer/chatSessionParticipant
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268089\\n\\n#268081:
+        Claude with worktree (OPEN)\\n  osortega/claude-git-worktree → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268081\\n\\n#268080: Empty state
+        chat history 2.0 (OPEN)\\n  eli/empty-state-chat-history-2 → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268080\\n\\n#268072: Set suppressInSnippetMode
+        default to true to prevent inline completions from interfering with snippets
+        (OPEN)\\n  copilot/fix-054c0b93-82b2-4b82-b8fa-f1bca13ccf2e → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268072\\n\\n#268058: Show full date/time
+        for history items (OPEN)\\n  vijayu/sessionDateTime → main\\n  URL: https://github.com/microsoft/vscode/pull/268058\\n\\n#268039:
+        fix(snap): detect Wayland socket under XDG_RUNTIME_DIR for Fedora (OPEN)\\n  patch-1
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268039\\n\\n#268038:
+        i18n: add missing localizations for monaco-editor (OPEN)\\n  missing-loc →
+        main\\n  URL: https://github.com/microsoft/vscode/pull/268038\\n\\n#268017:
+        add opt-in setting for OS notification when long running (> 2 min) task finishes
+        (OPEN)\\n  applicable-mongoose → main\\n  URL: https://github.com/microsoft/vscode/pull/268017\\n\\n#268005:
+        Chat - switch chat toolbar to use overlay widget (OPEN)\\n  lszomoru/chat-overlay-toolbar
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268005\\n\\n#267991:
+        Copy selection for deleted chunk in inline diff (OPEN)\\n  copy-selection-inline-delete
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267991\\n\\n#267874:
+        Implement AI search success tracking telemetry for user interaction analytics
+        (OPEN)\\n  copilot/fix-de0c7c5c-08fd-4acb-9f35-1e1a2bb982ae → copilot/fix-55f237c2-f853-4d9a-9b3c-3de2aa253bd3\\n  URL:
+        https://github.com/microsoft/vscode/pull/267874\\n\\n#267853: Don''t eagerly
+        attach pasted images in `provideDocumentPasteEdits` (OPEN)\\n  dev/mjbvz/alone-gazelle
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267853\\n\\n#267829:
+        Fix history list not updating when deleting chats from command palette (OPEN)\\n  copilot/fix-794bcb92-6906-4959-a26d-dcfbd3449d71
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267829\\n\\n#267823:
+        Change padding from 4px to 5px to increase target size to at least 24… (OPEN)\\n  padding-patch
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267823\\n\\n#267799:
+        Fix memory leak with installing cursor change position listener (OPEN)\\n  patch-4
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267799\\n\"\n    }\n  ],\n  \"observation\":
+        \"Found 20 pull request(s):\\n#268131: Engineering - extract Windows ci jobs
+        in a template (OPEN)\\n  lszomoru/product-build-windows-ci → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268131\\n\\n#268123: Add test coverage
+        to runTests tool (OPEN)\\n  alexr00/odd-cheetah → main\\n  URL: https://github.com/microsoft/vscode/pull/268123\\n\\n#268109:
+        Chat: improve welcome for no-auth flow (#5872) (OPEN)\\n  ben/outer-dragon
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268109\\n\\n#268093:
+        Feature/107183 add ability to right align tree items description (OPEN)\\n  feature/107183-add-ability-to-right-align-TreeItems-description
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268093\\n\\n#268090:
+        add opt-in setting to show OS notification when a chat response is received
+        (OPEN)\\n  sensible-rooster → main\\n  URL: https://github.com/microsoft/vscode/pull/268090\\n\\n#268089:
+        chatSessions API redesign/experiment (OPEN)\\n  joshspicer/chatSessionParticipant
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268089\\n\\n#268081:
+        Claude with worktree (OPEN)\\n  osortega/claude-git-worktree → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268081\\n\\n#268080: Empty state
+        chat history 2.0 (OPEN)\\n  eli/empty-state-chat-history-2 → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268080\\n\\n#268072: Set suppressInSnippetMode
+        default to true to prevent inline completions from interfering with snippets
+        (OPEN)\\n  copilot/fix-054c0b93-82b2-4b82-b8fa-f1bca13ccf2e → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268072\\n\\n#268058: Show full date/time
+        for history items (OPEN)\\n  vijayu/sessionDateTime → main\\n  URL: https://github.com/microsoft/vscode/pull/268058\\n\\n#268039:
+        fix(snap): detect Wayland socket under XDG_RUNTIME_DIR for Fedora (OPEN)\\n  patch-1
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268039\\n\\n#268038:
+        i18n: add missing localizations for monaco-editor (OPEN)\\n  missing-loc →
+        main\\n  URL: https://github.com/microsoft/vscode/pull/268038\\n\\n#268017:
+        add opt-in setting for OS notification when long running (> 2 min) task finishes
+        (OPEN)\\n  applicable-mongoose → main\\n  URL: https://github.com/microsoft/vscode/pull/268017\\n\\n#268005:
+        Chat - switch chat toolbar to use overlay widget (OPEN)\\n  lszomoru/chat-overlay-toolbar
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268005\\n\\n#267991:
+        Copy selection for deleted chunk in inline diff (OPEN)\\n  copy-selection-inline-delete
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267991\\n\\n#267874:
+        Implement AI search success tracking telemetry for user interaction analytics
+        (OPEN)\\n  copilot/fix-de0c7c5c-08fd-4acb-9f35-1e1a2bb982ae → copilot/fix-55f237c2-f853-4d9a-9b3c-3de2aa253bd3\\n  URL:
+        https://github.com/microsoft/vscode/pull/267874\\n\\n#267853: Don''t eagerly
+        attach pasted images in `provideDocumentPasteEdits` (OPEN)\\n  dev/mjbvz/alone-gazelle
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267853\\n\\n#267829:
+        Fix history list not updating when deleting chats from command palette (OPEN)\\n  copilot/fix-794bcb92-6906-4959-a26d-dcfbd3449d71
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267829\\n\\n#267823:
+        Change padding from 4px to 5px to increase target size to at least 24… (OPEN)\\n  padding-patch
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267823\\n\\n#267799:
+        Fix memory leak with installing cursor change position listener (OPEN)\\n  patch-4
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267799\\n\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
+        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
+        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
+        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
+        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
+        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '15485'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 24 Sep 2025 09:53:23 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1281'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1297'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9990'
+      X-Ratelimit-Remaining-Tokens:
+      - '196330'
+      X-Ratelimit-Reset-Requests:
+      - 1m20.64s
+      X-Ratelimit-Reset-Tokens:
+      - 1.101s
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 984164f21a9b8675-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CJGTay4UwlFZKfD0lIsg8FXQt7yZQ",
+          "object": "chat.completion",
+          "created": 1758707602,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The number of open issues (20) is equal to the number of open pull requests (20) in the microsoft/vscode repository.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 3997,
+            "completion_tokens": 51,
+            "total_tokens": 4048,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Wed, 24 Sep 2025 09:53:23 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Compare the number
+        of open issues vs open pull requests in the microsoft/vscode repository and
+        tell me which is higher\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To compare the number of
+        open issues and open pull requests in the microsoft/vscode repository, I should
+        first list the open issues and then list the open pull requests.\",\n      \"action\":
+        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
+        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#268137:
+        Screen going blank when using dual screen (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
+        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
+        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
+        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
+        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
+        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
+        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
+        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
+        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
+        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
+        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
+        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
+        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
+        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
+        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
+        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
+        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
+        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
+        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
+        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
+        terminal activates base conda environment instead of configured environment
+        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
+        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
+        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
+        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
+        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
+        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
+        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
+        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"Now that I have the number of open issues (20), I
+        need to list the open pull requests in the microsoft/vscode repository to
+        compare the counts.\",\n      \"action\": \"github_list_prs\",\n      \"action_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 pull request(s):\\n#268131: Engineering - extract Windows ci jobs
+        in a template (OPEN)\\n  lszomoru/product-build-windows-ci → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268131\\n\\n#268123: Add test coverage
+        to runTests tool (OPEN)\\n  alexr00/odd-cheetah → main\\n  URL: https://github.com/microsoft/vscode/pull/268123\\n\\n#268109:
+        Chat: improve welcome for no-auth flow (#5872) (OPEN)\\n  ben/outer-dragon
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268109\\n\\n#268093:
+        Feature/107183 add ability to right align tree items description (OPEN)\\n  feature/107183-add-ability-to-right-align-TreeItems-description
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268093\\n\\n#268090:
+        add opt-in setting to show OS notification when a chat response is received
+        (OPEN)\\n  sensible-rooster → main\\n  URL: https://github.com/microsoft/vscode/pull/268090\\n\\n#268089:
+        chatSessions API redesign/experiment (OPEN)\\n  joshspicer/chatSessionParticipant
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268089\\n\\n#268081:
+        Claude with worktree (OPEN)\\n  osortega/claude-git-worktree → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268081\\n\\n#268080: Empty state
+        chat history 2.0 (OPEN)\\n  eli/empty-state-chat-history-2 → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268080\\n\\n#268072: Set suppressInSnippetMode
+        default to true to prevent inline completions from interfering with snippets
+        (OPEN)\\n  copilot/fix-054c0b93-82b2-4b82-b8fa-f1bca13ccf2e → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/268072\\n\\n#268058: Show full date/time
+        for history items (OPEN)\\n  vijayu/sessionDateTime → main\\n  URL: https://github.com/microsoft/vscode/pull/268058\\n\\n#268039:
+        fix(snap): detect Wayland socket under XDG_RUNTIME_DIR for Fedora (OPEN)\\n  patch-1
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268039\\n\\n#268038:
+        i18n: add missing localizations for monaco-editor (OPEN)\\n  missing-loc →
+        main\\n  URL: https://github.com/microsoft/vscode/pull/268038\\n\\n#268017:
+        add opt-in setting for OS notification when long running (> 2 min) task finishes
+        (OPEN)\\n  applicable-mongoose → main\\n  URL: https://github.com/microsoft/vscode/pull/268017\\n\\n#268005:
+        Chat - switch chat toolbar to use overlay widget (OPEN)\\n  lszomoru/chat-overlay-toolbar
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/268005\\n\\n#267991:
+        Copy selection for deleted chunk in inline diff (OPEN)\\n  copy-selection-inline-delete
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267991\\n\\n#267874:
+        Implement AI search success tracking telemetry for user interaction analytics
+        (OPEN)\\n  copilot/fix-de0c7c5c-08fd-4acb-9f35-1e1a2bb982ae → copilot/fix-55f237c2-f853-4d9a-9b3c-3de2aa253bd3\\n  URL:
+        https://github.com/microsoft/vscode/pull/267874\\n\\n#267853: Don''t eagerly
+        attach pasted images in `provideDocumentPasteEdits` (OPEN)\\n  dev/mjbvz/alone-gazelle
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267853\\n\\n#267829:
+        Fix history list not updating when deleting chats from command palette (OPEN)\\n  copilot/fix-794bcb92-6906-4959-a26d-dcfbd3449d71
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267829\\n\\n#267823:
+        Change padding from 4px to 5px to increase target size to at least 24… (OPEN)\\n  padding-patch
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267823\\n\\n#267799:
+        Fix memory leak with installing cursor change position listener (OPEN)\\n  patch-4
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/267799\\n\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
+        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
+        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
+        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
+        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
+        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
+        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
+        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
+        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
+        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
+        \"github_get_issue\",\n        \"description\": \"Get details of a specific
+        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
+        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
+        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
+        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
+        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
+        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
+        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
+        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
+        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
+        \"object\",\n              \"propertyNames\": {\n                \"type\":
+        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
+        \"string\"\n              },\n              \"description\": \"Parameter fields
+        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
+        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
+        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
+        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '19698'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 24 Sep 2025 09:53:25 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1974'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1985'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9989'
+      X-Ratelimit-Remaining-Tokens:
+      - '195444'
+      X-Ratelimit-Reset-Requests:
+      - 1m27.803s
+      X-Ratelimit-Reset-Tokens:
+      - 1.366s
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 984164fb7c318675-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CJGTb1LwHL7DyVuISniaG7MJMtcWD",
+          "object": "chat.completion",
+          "created": 1758707603,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have found that there are 20 open issues and 20 open pull requests in the microsoft/vscode repository. Since the counts are equal, I need to provide a final answer to summarize this comparison.\",\n  \"action\": \"finish\",\n  \"action_input\": \"There are 20 open issues and 20 open pull requests in the microsoft/vscode repository, which means the numbers are equal.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 4344,
+            "completion_tokens": 95,
+            "total_tokens": 4439,
+            "prompt_tokens_details": {
+              "cached_tokens": 1920,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Wed, 24 Sep 2025 09:53:25 GMT
+recorded_with: VCR 6.3.1
