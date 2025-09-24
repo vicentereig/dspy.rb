@@ -168,7 +168,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:43:15 GMT
+      - Wed, 24 Sep 2025 09:42:29 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -180,13 +180,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '2077'
+      - '2083'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2277'
+      - '2276'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -215,23 +215,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9818232b2bc0cd33-LAX
+      - 984154f1d90d1d6c-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHRw14Jgk3vjAPan1gytrBu2zpjQ8",
+          "id": "chatcmpl-CJGJ1wb63pqSZRH0e6cGpxW7ZEhBd",
           "object": "chat.completion",
-          "created": 1758274993,
+          "created": 1758706947,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To complete the task of listing the open issues for the repository 'microsoft/vscode', I will use the 'github_list_issues' tool from the available tools. Since the task specifies open issues, I will set the state parameter to 'open'.\",\n  \"action\": \"github_list_issues\",\n  \"action_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since the task is to list the open issues for the repository 'microsoft/vscode', I should use the 'github_list_issues' tool with the 'state' parameter set to 'open' to get the relevant issues.\",\n  \"action\": \"github_list_issues\",\n  \"action_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -241,8 +241,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 2270,
-            "completion_tokens": 102,
-            "total_tokens": 2372,
+            "completion_tokens": 96,
+            "total_tokens": 2366,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -257,7 +257,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 19 Sep 2025 09:43:15 GMT
+  recorded_at: Wed, 24 Sep 2025 09:42:29 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -300,85 +300,81 @@ http_interactions:
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"List the open issues
         for this repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To complete the task of
-        listing the open issues for the repository ''microsoft/vscode'', I will use
-        the ''github_list_issues'' tool from the available tools. Since the task specifies
-        open issues, I will set the state parameter to ''open''.\",\n      \"action\":
-        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
-        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#267466:
-        Primary sidebar does not restore its width when additional windows are opened
-        (OPEN)\\n  Labels: new release\\n  URL: https://github.com/microsoft/vscode/issues/267466\\n\\n#267464:
-        Profile output becomes unresponsive (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/267464\\n\\n#267463:
-        Search in profile output not working (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/267463\\n\\n#267462:
-        同样的代码通过 ws 注册的 server 函数 (基于 anvil 框架)  pycharm 就可以正常调试 vscode 最新版升级后只能打断点
-        无法单步调试 点击没反应 (OPEN)\\n  Labels: ai-translated\\n  Assignees: mjbvz\\n  URL:
-        https://github.com/microsoft/vscode/issues/267462\\n\\n#267461: When using
-        the chatOutputRenderer API, the webview in the history message disappears
-        (OPEN)\\n  Labels: new release\\n  Assignees: justschen\\n  URL: https://github.com/microsoft/vscode/issues/267461\\n\\n#267460:
-        Run problems (OPEN)\\n  Assignees: mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/267460\\n\\n#267459:
-        OS-Level Notifications for VSCode Tasks Completion (OPEN)\\n  Assignees: meganrogge\\n  URL:
-        https://github.com/microsoft/vscode/issues/267459\\n\\n#267458: AI chat never
-        works (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/267458\\n\\n#267457:
-        New chat button does not work (OPEN)\\n  Labels: new release\\n  Assignees:
-        justschen\\n  URL: https://github.com/microsoft/vscode/issues/267457\\n\\n#267456:
-        Slow (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267456\\n\\n#267455:
-        Close all tabs on the left (OPEN)\\n  Assignees: benibenj\\n  URL: https://github.com/microsoft/vscode/issues/267455\\n\\n#267454:
-        Chrome Devtools cannot discover VS Code when launching it with --remote-debugging-port=0
-        (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267454\\n\\n#267453:
-        Created files outside workspace (OPEN)\\n  Labels: new release\\n  Assignees:
-        lramos15\\n  URL: https://github.com/microsoft/vscode/issues/267453\\n\\n#267450:
-        Cannot find module error (OPEN)\\n  Labels: new release\\n  Assignees: chrmarti\\n  URL:
-        https://github.com/microsoft/vscode/issues/267450\\n\\n#267449: support MarkdownString
-        in TerminalLink.tooltip and DocumentLink.tooltip (OPEN)\\n  Assignees: Tyriar\\n  URL:
-        https://github.com/microsoft/vscode/issues/267449\\n\\n#267448: How to restore
-        has been checked \\\"No more notice\\\"? (OPEN)\\n  Assignees: bpasero\\n  URL:
-        https://github.com/microsoft/vscode/issues/267448\\n\\n#267445: Accessibility/A11y:
-        quickInputBox aria role is textbox when it should be combobox (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/267445\\n\\n#267444:
-        Refund me (OPEN)\\n  Labels: info-needed, new release\\n  URL: https://github.com/microsoft/vscode/issues/267444\\n\\n#267443:
-        Terminal is not opening  (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/267443\\n\\n#267442:
-        Пишет что в коде ошибка и показывает правильный написание хотя этой ошибки
-        нет и уже правильно написано (OPEN)\\n  Labels: info-needed, ai-translated,
-        new release\\n  URL: https://github.com/microsoft/vscode/issues/267442\\n\"\n    }\n  ],\n  \"observation\":
-        \"Found 20 issue(s):\\n#267466: Primary sidebar does not restore its width
-        when additional windows are opened (OPEN)\\n  Labels: new release\\n  URL:
-        https://github.com/microsoft/vscode/issues/267466\\n\\n#267464: Profile output
-        becomes unresponsive (OPEN)\\n  Labels: triage-needed, new release\\n  Assignees:
-        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/267464\\n\\n#267463:
-        Search in profile output not working (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/267463\\n\\n#267462:
-        同样的代码通过 ws 注册的 server 函数 (基于 anvil 框架)  pycharm 就可以正常调试 vscode 最新版升级后只能打断点
-        无法单步调试 点击没反应 (OPEN)\\n  Labels: ai-translated\\n  Assignees: mjbvz\\n  URL:
-        https://github.com/microsoft/vscode/issues/267462\\n\\n#267461: When using
-        the chatOutputRenderer API, the webview in the history message disappears
-        (OPEN)\\n  Labels: new release\\n  Assignees: justschen\\n  URL: https://github.com/microsoft/vscode/issues/267461\\n\\n#267460:
-        Run problems (OPEN)\\n  Assignees: mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/267460\\n\\n#267459:
-        OS-Level Notifications for VSCode Tasks Completion (OPEN)\\n  Assignees: meganrogge\\n  URL:
-        https://github.com/microsoft/vscode/issues/267459\\n\\n#267458: AI chat never
-        works (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/267458\\n\\n#267457:
-        New chat button does not work (OPEN)\\n  Labels: new release\\n  Assignees:
-        justschen\\n  URL: https://github.com/microsoft/vscode/issues/267457\\n\\n#267456:
-        Slow (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267456\\n\\n#267455:
-        Close all tabs on the left (OPEN)\\n  Assignees: benibenj\\n  URL: https://github.com/microsoft/vscode/issues/267455\\n\\n#267454:
-        Chrome Devtools cannot discover VS Code when launching it with --remote-debugging-port=0
-        (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267454\\n\\n#267453:
-        Created files outside workspace (OPEN)\\n  Labels: new release\\n  Assignees:
-        lramos15\\n  URL: https://github.com/microsoft/vscode/issues/267453\\n\\n#267450:
-        Cannot find module error (OPEN)\\n  Labels: new release\\n  Assignees: chrmarti\\n  URL:
-        https://github.com/microsoft/vscode/issues/267450\\n\\n#267449: support MarkdownString
-        in TerminalLink.tooltip and DocumentLink.tooltip (OPEN)\\n  Assignees: Tyriar\\n  URL:
-        https://github.com/microsoft/vscode/issues/267449\\n\\n#267448: How to restore
-        has been checked \\\"No more notice\\\"? (OPEN)\\n  Assignees: bpasero\\n  URL:
-        https://github.com/microsoft/vscode/issues/267448\\n\\n#267445: Accessibility/A11y:
-        quickInputBox aria role is textbox when it should be combobox (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/267445\\n\\n#267444:
-        Refund me (OPEN)\\n  Labels: info-needed, new release\\n  URL: https://github.com/microsoft/vscode/issues/267444\\n\\n#267443:
-        Terminal is not opening  (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/267443\\n\\n#267442:
-        Пишет что в коде ошибка и показывает правильный написание хотя этой ошибки
-        нет и уже правильно написано (OPEN)\\n  Labels: info-needed, ai-translated,
-        new release\\n  URL: https://github.com/microsoft/vscode/issues/267442\\n\"\n}\n```\n\nRespond
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"Since the task is to list
+        the open issues for the repository ''microsoft/vscode'', I should use the
+        ''github_list_issues'' tool with the ''state'' parameter set to ''open'' to
+        get the relevant issues.\",\n      \"action\": \"github_list_issues\",\n      \"action_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 issue(s):\\n#268134: Very bad performance , crashes and deletion
+        of the program (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268134\\n\\n#268132:
+        Enhance References View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
+        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
+        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
+        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
+        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
+        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
+        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
+        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
+        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
+        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
+        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
+        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
+        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
+        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
+        terminal activates base conda environment instead of configured environment
+        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
+        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
+        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
+        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
+        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
+        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
+        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
+        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\\n#268104:
+        Fetch tool seems to have cached a 404 for a page (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268104\\n\\n#268103: Fetch tool
+        should better indicate in UI when the request fails (OPEN)\\n  Assignees:
+        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268103\\n\\n#268102:
+        Chat fetch tool can''t read content from my private GitHub repos (OPEN)\\n  Assignees:
+        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268102\\n\"\n    }\n  ],\n  \"observation\":
+        \"Found 20 issue(s):\\n#268134: Very bad performance , crashes and deletion
+        of the program (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268134\\n\\n#268132:
+        Enhance References View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
+        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
+        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
+        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
+        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
+        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
+        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
+        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
+        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
+        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
+        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
+        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
+        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
+        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
+        terminal activates base conda environment instead of configured environment
+        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
+        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
+        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
+        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
+        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
+        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
+        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
+        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\\n#268104:
+        Fetch tool seems to have cached a 404 for a page (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268104\\n\\n#268103: Fetch tool
+        should better indicate in UI when the request fails (OPEN)\\n  Assignees:
+        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268103\\n\\n#268102:
+        Chat fetch tool can''t read content from my private GitHub repos (OPEN)\\n  Assignees:
+        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268102\\n\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
         JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
@@ -417,14 +413,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '11962'
+      - '11009'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:43:23 GMT
+      - Wed, 24 Sep 2025 09:42:34 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -436,25 +432,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1935'
+      - '1442'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2047'
+      - '2744'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '197189'
+      - '197421'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 13.355s
       X-Ratelimit-Reset-Tokens:
-      - 843ms
+      - 773ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -471,23 +467,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98182365ca88cd33-LAX
+      - 9841550aba3f1d6c-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHRwA3H3xFoPWmbISvOt92uEnUTwb",
+          "id": "chatcmpl-CJGJ6fa06L6RR5w8aG7mubO72o6tR",
           "object": "chat.completion",
-          "created": 1758275002,
+          "created": 1758706952,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"Successfully retrieved a list of 20 open issues for the repository 'microsoft/vscode'. Each issue includes details such as labels, assignees, and URLs for more information.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"A total of 20 open issues were found for the repository 'microsoft/vscode', which include a variety of problems and feature requests, highlighting areas for improvement and user feedback.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -496,9 +492,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2932,
+            "prompt_tokens": 2684,
             "completion_tokens": 60,
-            "total_tokens": 2992,
+            "total_tokens": 2744,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -513,7 +509,60 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 19 Sep 2025 09:43:23 GMT
+  recorded_at: Wed, 24 Sep 2025 09:42:34 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaIQLAf_oT5sADvrtB84K3po071gAAEBAAAnIQEAAKv8AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAAy902gAA71XbW/bNhD+Kwftg1vAsSW/xLaADEgbp3WRuE3iZB/iwKCks8RaIlWSsusE+e87Sm6nZRm2Ocg+CLZE6e654z3PHW8fnFBmmRSO/+AwYxQPCoPa3qEw3GxbgmXo+M7J1ZdtSwVO00mkNruHmmcBa6UyZCkt7D6ICx7R2vn9ajv9uupMP35/dz32hhc37y5m4/Tk4uby08ztD6eziXt+EnvnJ+Oe8/jYdFIZk9/bByfFNaZkYTI9/UxmDc9QG5blju8N+sOBezjq9zxv1KL/naZDi5rFFo1RLMQFj47mTt/rDobIRgfYXw4PeoeD6GB4OOweeN1g1O9H0aA3iuYOSIPpQudMLMhBuDq6vQOFLDQtblAxw6U48nZPTCKLODFk+4qLEMEkdDG9Aq7BSEi5NuUzmaOgZ7pADUupymcKc6m5kWoLjYyHSmq5NO21DmWEjSZMQJPxNIJCV3YbMTdJESys0UVlq0FOZAobWqheIcAGG5AzRVtBaEGjsUAaFoB9G2I0O++UUCbMDlWL4q5CostGOHf+6u7JOwsu8sIcPcyd0u3cOfp17lhHc6cJc8fGVz17Gt3cedwZkoFGtWY7j6eyEBF03ArTG/3Wn8/FL53Dodft+XCDlKmARZCjohxmzCa8CaFiOqG0Mvo0oqCsLZDLMshcyZgyAW8+fxlP35IxgOvLMx8SY3Ltt9tViC2q9fZTjO0q5HblnT79CaXjw1gkpfdLXKJC+qfhhuPmxX46NT+dkQ+fCqofchVr2CS2guzecbHS9E/b6EKMuIhbdcdnLMBU+8DFUh4IxAijvQF1RnVAQ9+W5MZW9orA4PecK4xezfew7nvw//oe1H33fTiOIngv8y2MlSL6nlfqYvk0EaQWKb9CQTTNpCVrItfEPMtMw/PnIJKe0td1kMda85juaVHdJ0x2Bt7+4Pt18EScd9cf4HL82+VkNob3n0/Gr5a1Ok06ng8nXLMgRdotQ+mxvKQ2YugnooU8R6aoeOtoamnQxOetO3xBGrw6GteHGQmCJlkEQ3hIGFMsVQwSHicpXQYiSUQW0sBGKpJwASEqw+wv07TyX3eSoQ7J8v4RuLUIPGJfIcp0UtXZMmNiC0tkplCEjQQvlDlPCfzz+ZxtU1RnKEm5VGT2xuTVWekRM2aKxzGV+3R8VWmUpm4UJnZjlzx9Pms71AcKv5Fd07QfP8VbpEUc4Eqw/aHWeeARDy6RaSn8JxJCdOZizVIe+dBzu6+cvjpFvK5fyge1KENAqF1nXLAUbHelnki5C6juaF9FxADFmispMrQtW2iD1AjLTRdLHhc2kPobzweRYcwEtcQY9w+gWw+AWuEVsThMqhFkSi3wjAuEU4V4//fcJuOKwn7B1tYbpedV+nz8ZQJtsHOrHQXslGU7hkXBQOcY8iUPoZxKIUyYVQBdatLzGJUMUkl5FboJ2ddgfb8/2LoQuUTj49huUUgTkN3jUCpV5LYALF+AANGgS5NOeVe+9G9A7o3OrRPapTZ7RUkDbWT+Q6w3iUWyYdyUpKa8kvqoqvJoCvs5b9lJ9J9z+ZVGGpJFFPsjrjdnl3h9iiQ4lX+NmJWTd8LWlD1GjiLa/p7bK4Ezmoypbb8qxd06xd3un+FVE32Axs7mXEQ8pBqwneZ6UqlnNZqXsghLxlP9ymDrdHaJzu8tM5Z/IA6ZaBg7rEd2w40t3KWSGWRbGj9LlYIP3Hwsguo488poS9r/OIRYfHpBtRgd3T5/WrmzVBL2dPbk/LYgTzkdFegkMhfO493j3e8gg/+m8g4AAA==
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BaIQLAf_oT5sADvrtB84K3po071gAAEBAAAnIQEAAKv8AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Wed, 24 Sep 2025 09:42:36 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-mad2200101-MAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 24 Sep 2025 09:42:37 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -575,48 +624,46 @@ http_interactions:
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"List the open issues
         for this repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To complete the task of
-        listing the open issues for the repository ''microsoft/vscode'', I will use
-        the ''github_list_issues'' tool from the available tools. Since the task specifies
-        open issues, I will set the state parameter to ''open''.\",\n      \"action\":
-        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
-        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#267466:
-        Primary sidebar does not restore its width when additional windows are opened
-        (OPEN)\\n  Labels: new release\\n  URL: https://github.com/microsoft/vscode/issues/267466\\n\\n#267464:
-        Profile output becomes unresponsive (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/267464\\n\\n#267463:
-        Search in profile output not working (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/267463\\n\\n#267462:
-        同样的代码通过 ws 注册的 server 函数 (基于 anvil 框架)  pycharm 就可以正常调试 vscode 最新版升级后只能打断点
-        无法单步调试 点击没反应 (OPEN)\\n  Labels: ai-translated\\n  Assignees: mjbvz\\n  URL:
-        https://github.com/microsoft/vscode/issues/267462\\n\\n#267461: When using
-        the chatOutputRenderer API, the webview in the history message disappears
-        (OPEN)\\n  Labels: new release\\n  Assignees: justschen\\n  URL: https://github.com/microsoft/vscode/issues/267461\\n\\n#267460:
-        Run problems (OPEN)\\n  Assignees: mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/267460\\n\\n#267459:
-        OS-Level Notifications for VSCode Tasks Completion (OPEN)\\n  Assignees: meganrogge\\n  URL:
-        https://github.com/microsoft/vscode/issues/267459\\n\\n#267458: AI chat never
-        works (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/267458\\n\\n#267457:
-        New chat button does not work (OPEN)\\n  Labels: new release\\n  Assignees:
-        justschen\\n  URL: https://github.com/microsoft/vscode/issues/267457\\n\\n#267456:
-        Slow (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267456\\n\\n#267455:
-        Close all tabs on the left (OPEN)\\n  Assignees: benibenj\\n  URL: https://github.com/microsoft/vscode/issues/267455\\n\\n#267454:
-        Chrome Devtools cannot discover VS Code when launching it with --remote-debugging-port=0
-        (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267454\\n\\n#267453:
-        Created files outside workspace (OPEN)\\n  Labels: new release\\n  Assignees:
-        lramos15\\n  URL: https://github.com/microsoft/vscode/issues/267453\\n\\n#267450:
-        Cannot find module error (OPEN)\\n  Labels: new release\\n  Assignees: chrmarti\\n  URL:
-        https://github.com/microsoft/vscode/issues/267450\\n\\n#267449: support MarkdownString
-        in TerminalLink.tooltip and DocumentLink.tooltip (OPEN)\\n  Assignees: Tyriar\\n  URL:
-        https://github.com/microsoft/vscode/issues/267449\\n\\n#267448: How to restore
-        has been checked \\\"No more notice\\\"? (OPEN)\\n  Assignees: bpasero\\n  URL:
-        https://github.com/microsoft/vscode/issues/267448\\n\\n#267445: Accessibility/A11y:
-        quickInputBox aria role is textbox when it should be combobox (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/267445\\n\\n#267444:
-        Refund me (OPEN)\\n  Labels: info-needed, new release\\n  URL: https://github.com/microsoft/vscode/issues/267444\\n\\n#267443:
-        Terminal is not opening  (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/267443\\n\\n#267442:
-        Пишет что в коде ошибка и показывает правильный написание хотя этой ошибки
-        нет и уже правильно написано (OPEN)\\n  Labels: info-needed, ai-translated,
-        new release\\n  URL: https://github.com/microsoft/vscode/issues/267442\\n\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"Since the task is to list
+        the open issues for the repository ''microsoft/vscode'', I should use the
+        ''github_list_issues'' tool with the ''state'' parameter set to ''open'' to
+        get the relevant issues.\",\n      \"action\": \"github_list_issues\",\n      \"action_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 issue(s):\\n#268134: Very bad performance , crashes and deletion
+        of the program (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268134\\n\\n#268132:
+        Enhance References View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
+        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
+        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
+        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
+        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
+        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
+        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
+        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
+        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
+        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
+        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
+        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
+        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
+        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
+        terminal activates base conda environment instead of configured environment
+        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
+        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
+        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
+        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
+        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
+        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
+        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
+        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\\n#268104:
+        Fetch tool seems to have cached a 404 for a page (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
+        https://github.com/microsoft/vscode/issues/268104\\n\\n#268103: Fetch tool
+        should better indicate in UI when the request fails (OPEN)\\n  Assignees:
+        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268103\\n\\n#268102:
+        Chat fetch tool can''t read content from my private GitHub repos (OPEN)\\n  Assignees:
+        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268102\\n\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
         \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
         \"github_list_issues\",\n        \"description\": \"List GitHub issues with
@@ -717,14 +764,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '16209'
+      - '15712'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:43:32 GMT
+      - Wed, 24 Sep 2025 09:42:47 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -736,25 +783,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '7523'
+      - '12597'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '7686'
+      - '12823'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9997'
       X-Ratelimit-Remaining-Tokens:
-      - '196291'
+      - '196412'
       X-Ratelimit-Reset-Requests:
-      - 14.354s
+      - 18.735s
       X-Ratelimit-Reset-Tokens:
-      - 1.112s
+      - 1.076s
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -771,23 +818,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 981823782fe9cd33-LAX
+      - 9841551f7d051d6c-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHRwDIjRPHACvWE3pQ6Xt2H9cJY1Z",
+          "id": "chatcmpl-CJGJ8EjRNpyPD1ABSqzguS26kXAjS",
           "object": "chat.completion",
-          "created": 1758275005,
+          "created": 1758706954,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have successfully listed the open issues for the repository 'microsoft/vscode'. Now, I will report the findings, summarizing the details of the open issues. This will provide a clear overview of what issues currently exist that need attention.\",\n  \"action\": \"finish\",\n  \"action_input\": \"There are currently 20 open issues in the 'microsoft/vscode' repository. Key issues include: \\n1. #267466: Primary sidebar does not restore its width when additional windows are opened. \\n2. #267464: Profile output becomes unresponsive. \\n3. #267463: Search in profile output not working. \\n4. #267462: Issue with code debugging interaction. \\n5. #267461: ChatOutputRenderer API causing issues. \\nFor a full list, please refer to the GitHub repository.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"The open issues for the repository 'microsoft/vscode' have been successfully retrieved. I should create a summary of the open issues to provide a concise overview to the user.\",\n  \"action\": \"finish\",\n  \"action_input\": \"Total open issues: 20\\n\\n1. #268134: Very bad performance, crashes and deletion of the program - [Link](https://github.com/microsoft/vscode/issues/268134)\\n2. #268132: Enhance References View - [Link](https://github.com/microsoft/vscode/issues/268132)\\n3. #268129: Just hangs when it thinks its proceeding - [Link](https://github.com/microsoft/vscode/issues/268129)\\n4. #268128: shows token expired - [Link](https://github.com/microsoft/vscode/issues/268128)\\n5. #268127: shows token expired - [Link](https://github.com/microsoft/vscode/issues/268127)\\n6. #268125: Add Copy Error Message to IntelliSense mouse hover tooltip - [Link](https://github.com/microsoft/vscode/issues/268125)\\n7. #268124: BUG REWRITE CODE - [Link](https://github.com/microsoft/vscode/issues/268124)\\n8. #268121: Disable extension button disappearing - [Link](https://github.com/microsoft/vscode/issues/268121)\\n9. #268120: The same text selection highlight does not work in certain cases - [Link](https://github.com/microsoft/vscode/issues/268120)\\n10. #268118: unable to use any features of copilot - [Link](https://github.com/microsoft/vscode/issues/268118)\\n11. #268115: Trigger NES when switching files - [Link](https://github.com/microsoft/vscode/issues/268115)\\n12. #268114: Reason: token expired or invalid: 403 - [Link](https://github.com/microsoft/vscode/issues/268114)\\n13. #268113: Integrated terminal activates base conda environment instead of configured environment - [Link](https://github.com/microsoft/vscode/issues/268113)\\n14. #268112: Search with New Line Freezing - [Link](https://github.com/microsoft/vscode/issues/268112)\\n15. #268111: Add API / command for showing a specific local chat session - [Link](https://github.com/microsoft/vscode/issues/268111)\\n16. #268108: Agent creates corrupted file on every file creation - [Link](https://github.com/microsoft/vscode/issues/268108)\\n17. #268107: Show stop button while waiting for user confirmation of tool - [Link](https://github.com/microsoft/vscode/issues/268107)\\n18. #268104: Fetch tool seems to have cached a 404 for a page - [Link](https://github.com/microsoft/vscode/issues/268104)\\n19. #268103: Fetch tool should better indicate in UI when the request fails - [Link](https://github.com/microsoft/vscode/issues/268103)\\n20. #268102: Chat fetch tool can't read content from my private GitHub repos - [Link](https://github.com/microsoft/vscode/issues/268102)\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -796,9 +843,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 3354,
-            "completion_tokens": 191,
-            "total_tokens": 3545,
+            "prompt_tokens": 3227,
+            "completion_tokens": 708,
+            "total_tokens": 3935,
             "prompt_tokens_details": {
               "cached_tokens": 1024,
               "audio_tokens": 0
@@ -813,5 +860,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 19 Sep 2025 09:43:32 GMT
+  recorded_at: Wed, 24 Sep 2025 09:42:47 GMT
 recorded_with: VCR 6.3.1

@@ -16,17 +16,19 @@ http_interactions:
         {\n      \"type\": \"string\",\n      \"description\": \"Step by step reasoning
         process\"\n    }\n  },\n  \"required\": [\n    \"answer\",\n    \"explanation\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
-        values filled in.\n\nHere are some examples:\n\n### Example 1\n## Input\n```json\n{\n  \"problem\":
-        \"What is 6 + 7?\"\n}\n```\n## Reasoning\nI need to add 6 and 7. 6 + 7 = 13.\n##
-        Output\n```json\n{\n  \"answer\": \"13\",\n  \"explanation\": \"Add 6 and
-        7\",\n  \"reasoning\": \"6 + 7 = 13\"\n}\n```\n\n## Input values\n```json\n{input_values}\n```\n##
-        Output values\nRespond exclusively with the output schema fields in the json
-        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
-        your objective is: Solve math problems with clear reasoning. Think step by
-        step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"problem\":
-        \"What is 9 + 4?\"\n}\n```\n\nRespond with the corresponding output schema
-        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
-        values`."}],"temperature":0.0}'
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Solve math problems with clear reasoning. Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"problem\": \"What is 9 + 4?\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"answer\": \"The numerical
+        answer\",\n  \"explanation\": \"How the problem was solved\",\n  \"reasoning\":
+        \"Step by step reasoning process\"\n}\n```\n\nRequired fields: answer, explanation,
+        reasoning\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
+        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
+        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -43,7 +45,7 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.9.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
@@ -57,14 +59,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '1886'
+      - '2115'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 07:14:12 GMT
+      - Wed, 24 Sep 2025 09:45:40 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -76,54 +78,58 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '756'
+      - '1269'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '759'
+      - '1280'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9987'
       X-Ratelimit-Remaining-Tokens:
-      - '199597'
+      - '199538'
       X-Ratelimit-Reset-Requests:
-      - 15.192s
+      - 1m50.503s
       X-Ratelimit-Reset-Tokens:
-      - 120ms
+      - 138ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a510679c0125dc-EWR
+      - 984159a51a9103dd-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BprO86nIbZPidlKpWgtk3QAZMLQ6M",
+          "id": "chatcmpl-CJGM7jC5dActNn4ZC6XJ6EUX8Tkvw",
           "object": "chat.completion",
-          "created": 1751699652,
+          "created": 1758707139,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"answer\": \"13\",\n  \"explanation\": \"Add 9 and 4\",\n  \"reasoning\": \"9 + 4 = 13\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"answer\": \"13\",\n  \"explanation\": \"To find the sum of 9 and 4, we add the two numbers together.\",\n  \"reasoning\": \"First, we take the number 9. Then, we add 4 to it. 9 + 4 equals 13.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -132,9 +138,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 457,
-            "completion_tokens": 44,
-            "total_tokens": 501,
+            "prompt_tokens": 468,
+            "completion_tokens": 74,
+            "total_tokens": 542,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -147,7 +153,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
+          "system_fingerprint": "fp_51db84afab"
         }
-  recorded_at: Sat, 05 Jul 2025 07:14:12 GMT
+  recorded_at: Wed, 24 Sep 2025 09:45:40 GMT
 recorded_with: VCR 6.3.1

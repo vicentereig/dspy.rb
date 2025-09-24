@@ -169,7 +169,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:44:36 GMT
+      - Wed, 24 Sep 2025 09:44:03 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -181,23 +181,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '4026'
+      - '2863'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '4136'
+      - '2878'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9995'
+      - '9983'
       X-Ratelimit-Remaining-Tokens:
       - '197252'
       X-Ratelimit-Reset-Requests:
-      - 41.976s
+      - 2m20.291s
       X-Ratelimit-Reset-Tokens:
       - 824ms
       X-Request-Id:
@@ -216,23 +216,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9818251c8e032a8b-LAX
+      - 9841573aec6603dd-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHRxI9dGlPpQZ3JPq2nHBYAO0tONZ",
+          "id": "chatcmpl-CJGKW73XckIFJT6rVdC14kLj4FlxN",
           "object": "chat.completion",
-          "created": 1758275072,
+          "created": 1758707040,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To get basic information about the microsoft/vscode repository, I should make an API request to the GitHub API. Given that my task specifies retrieving data such as stars, forks, and description, I can use the github_api_request tool to access the appropriate endpoint that provides this information.\",\n  \"action\": \"github_api_request\",\n  \"action_input\": {\n    \"endpoint\": \"repos/microsoft/vscode\",\n    \"method\": \"GET\",\n    \"fields\": {\n      \"fields\": \"stargazers_count, forks_count, description\"\n    },\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To retrieve basic information about the microsoft/vscode repository, I should use the github_api_request tool to directly access the GitHub API and get the required data such as stars, forks, and description.\",\n  \"action\": \"github_api_request\",\n  \"action_input\": {\n    \"endpoint\": \"repos/microsoft/vscode\",\n    \"method\": \"GET\",\n    \"fields\": {\n      \"stars\": \"true\",\n      \"forks\": \"true\",\n      \"description\": \"true\"\n    },\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -242,10 +242,10 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 2286,
-            "completion_tokens": 139,
-            "total_tokens": 2425,
+            "completion_tokens": 129,
+            "total_tokens": 2415,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1024,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -258,7 +258,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 19 Sep 2025 09:44:36 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:03 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -302,26 +302,25 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Use the GitHub API
         to get basic information about the microsoft/vscode repository (stars, forks,
         description)\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get basic information
-        about the microsoft/vscode repository, I should make an API request to the
-        GitHub API. Given that my task specifies retrieving data such as stars, forks,
-        and description, I can use the github_api_request tool to access the appropriate
-        endpoint that provides this information.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve basic information
+        about the microsoft/vscode repository, I should use the github_api_request
+        tool to directly access the GitHub API and get the required data such as stars,
+        forks, and description.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
         {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
-        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
-        forks_count, description\"\n        },\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"API request failed: unknown flag: --repo\\n\\nUsage:  gh api <endpoint>
-        [flags]\\n\\nFlags:\\n      --cache duration        Cache the response, e.g.
-        \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F, --field key=value       Add
-        a typed parameter in key=value format\\n  -H, --header key:value      Add
-        a HTTP request header in key:value format\\n      --hostname string       The
-        GitHub hostname for the request (default \\\"github.com\\\")\\n  -i, --include               Include
-        HTTP response status line and headers in the output\\n      --input file            The
-        file to use as body for the HTTP request (use \\\"-\\\" to read from standard
-        input)\\n  -q, --jq string             Query to select values from the response
-        using jq syntax\\n  -X, --method string         The HTTP method for the request
-        (default \\\"GET\\\")\\n      --paginate              Make additional HTTP
-        requests to fetch all pages of results\\n  -p, --preview names         GitHub
+        \"GET\",\n        \"fields\": {\n          \"stars\": \"true\",\n          \"forks\":
+        \"true\",\n          \"description\": \"true\"\n        },\n        \"repo\":
+        \"microsoft/vscode\"\n      },\n      \"observation\": \"API request failed:
+        unknown flag: --repo\\n\\nUsage:  gh api <endpoint> [flags]\\n\\nFlags:\\n      --cache
+        duration        Cache the response, e.g. \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F,
+        --field key=value       Add a typed parameter in key=value format\\n  -H,
+        --header key:value      Add a HTTP request header in key:value format\\n      --hostname
+        string       The GitHub hostname for the request (default \\\"github.com\\\")\\n  -i,
+        --include               Include HTTP response status line and headers in the
+        output\\n      --input file            The file to use as body for the HTTP
+        request (use \\\"-\\\" to read from standard input)\\n  -q, --jq string             Query
+        to select values from the response using jq syntax\\n  -X, --method string         The
+        HTTP method for the request (default \\\"GET\\\")\\n      --paginate              Make
+        additional HTTP requests to fetch all pages of results\\n  -p, --preview names         GitHub
         API preview names to request (without the \\\"-preview\\\" suffix)\\n  -f,
         --raw-field key=value   Add a string parameter in key=value format\\n      --silent                Do
         not print the response body\\n      --slurp                 Use with \\\"--paginate\\\"
@@ -384,14 +383,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8086'
+      - '8025'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:44:38 GMT
+      - Wed, 24 Sep 2025 09:44:05 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -403,25 +402,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1737'
+      - '1435'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1750'
+      - '1462'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9994'
+      - '9983'
       X-Ratelimit-Remaining-Tokens:
-      - '198143'
+      - '198161'
       X-Ratelimit-Reset-Requests:
-      - 45.729s
+      - 2m25.825s
       X-Ratelimit-Reset-Tokens:
-      - 557ms
+      - 551ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -438,23 +437,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9818253e2cd82a8b-LAX
+      - 9841574e3d1f03dd-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHRxNUBGzTvLDXkRAmRDFfjVdXkXb",
+          "id": "chatcmpl-CJGKZTaaMy0X6wC6ZvrP9DVIotyBh",
           "object": "chat.completion",
-          "created": 1758275077,
+          "created": 1758707043,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The API request to the GitHub API failed due to an unknown flag being used in the command. The flag '--repo' is not valid according to the provided usage instructions.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The API request failed due to an unknown flag: --repo. This indicates that the request may have been constructed incorrectly or there are some invalid parameters included.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -463,9 +462,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1701,
-            "completion_tokens": 59,
-            "total_tokens": 1760,
+            "prompt_tokens": 1691,
+            "completion_tokens": 55,
+            "total_tokens": 1746,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -480,7 +479,60 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 19 Sep 2025 09:44:38 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:05 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaIQLAf_oT5sADvrtB84K3po071gAAEBAAAnIQEAAKv8AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAGe902gAA4VVf2/iOBD9KqP8tScBC9dSKHestHv9uVK77S1dnVQq5MROcDF2aju0XMV3vxk7UKB7dxFNE3v88ub5zfj+NcnMfG50MnhNmPdWppUXjt6E9tIvW5rNRTJITr7fLFs2TRrJ1DhfDzo5T1lLmYwpnKgXFJXkOHf192x5/Tj79fri5cvdaad/++PL7ehUndz++PPrqN3tX48u21cnRefq5PQwWa0aiTIFfvf+NVFiIRQiXF6ffUNYL+fCeTYvk0Gn1+332r32Ybdz0G3hcyPBOccKIuMty8RE8uE4weleX7Djpujm/ebhUY83+0f9g2bnID3udjnvHR7zcQLGCzVxJdMTxM9mw/sHsIJlviW9sMxLo4edesRPTVVMPWKPDA6hTkgSUuZkBlLnxs5DPLDUVB78VMBcZtY4k/uPC5cZLnBVaZz0xi4bcAkOARWHyokQXUg/rdIJK+XEiqcKEwZvjMIbcGlF5tUSWJZhsiH8XPqLKoXPN5fANIdCxG/SUozmwJln4KpsCswBJmddA5DkDP9RPBcus7Ikxi3UIaaIf5TxOHnPZS9mInVZ+eHrGLecl0ZqDBh+Gichw4/7iY+TBoxxn1BCHuPOT0dxMJdCcUeDiBVoxgBvq3pZIL0/uEV/e2pFc8QhDr7nsaqzMKkTdsHqdEnEteY5k0rwAVR6ps2zhlyxYgDNZkAda/zdkdsGAAVKW0r4fa3AJ7inYPcQw87oeYAPEK5mM2MZbhCvoq+gvv4Io3HrXGm0Ew0QraIF4/E4OThqtx09NMLrUXv+9tKZ0j3gN88aiB+khJlYDhdMVaLG/8w5MPDLEj1RMotVi85Gw24FRu9GpAtCmgrGMQgjBltQEeliNLrZiFUHRrTBO7SY97pboAut1EXNa/Tm4U0ALt2YmOA/cJGzSvmQb/RkC3sVvf0S6UqiK3WmKr5OeH1d1qM14agtVYKvHCipRaiDmIGjFOjLWLro6y3yweeQoye2sYl8GMPipPrFEksNX24S2BHpA0UQ5ybdaAl6kENuzZzoaM4sh/CdOqknSurxaVeveN1Wwi4JwgmFLQGC5C5ibXsIWdFSAllqz14i8F8EHMtwH3y0Zl1P/+dWUPVu9iDqVLJCaub3NuGKzVAcziU5nqkdXRylkQtPHUop9GaBiZicUsDvuMi4JMalFQspnoE84jbYWw1wNyAIXLN+ltS2Y2sMW1CHhp1wVZ7Ll1r0nL5k2fNPyigavxbs/2soCuLQHtrveRJODGjjkTD2i90NI/9sL1eVLfdXwx0GUkoxl43ob77ylcUTCH/WsiWpuSOtwKVI/Ov3b9cxAkctmPQRrVQL7kkGL+alos3cMclZSDGujnVSu4zBuYH1mt/QmlFr7I9TocpaGo+Rm4YVc1wImxr3b3WbV2rXMKFeN3q9L1hqu+tTik5ON8HC48P7nx9nD4DHt6bjfO/An2CHKRXuMHLVyeph9fAPZVzV6SIJAAA=
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BaIQLAf_oT5sADvrtB84K3po071gAAEBAAAnIQEAAKv8AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Wed, 24 Sep 2025 09:44:07 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-mad2200101-MAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 24 Sep 2025 09:44:07 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -543,26 +595,25 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Use the GitHub API
         to get basic information about the microsoft/vscode repository (stars, forks,
         description)\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get basic information
-        about the microsoft/vscode repository, I should make an API request to the
-        GitHub API. Given that my task specifies retrieving data such as stars, forks,
-        and description, I can use the github_api_request tool to access the appropriate
-        endpoint that provides this information.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve basic information
+        about the microsoft/vscode repository, I should use the github_api_request
+        tool to directly access the GitHub API and get the required data such as stars,
+        forks, and description.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
         {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
-        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
-        forks_count, description\"\n        },\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"API request failed: unknown flag: --repo\\n\\nUsage:  gh api <endpoint>
-        [flags]\\n\\nFlags:\\n      --cache duration        Cache the response, e.g.
-        \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F, --field key=value       Add
-        a typed parameter in key=value format\\n  -H, --header key:value      Add
-        a HTTP request header in key:value format\\n      --hostname string       The
-        GitHub hostname for the request (default \\\"github.com\\\")\\n  -i, --include               Include
-        HTTP response status line and headers in the output\\n      --input file            The
-        file to use as body for the HTTP request (use \\\"-\\\" to read from standard
-        input)\\n  -q, --jq string             Query to select values from the response
-        using jq syntax\\n  -X, --method string         The HTTP method for the request
-        (default \\\"GET\\\")\\n      --paginate              Make additional HTTP
-        requests to fetch all pages of results\\n  -p, --preview names         GitHub
+        \"GET\",\n        \"fields\": {\n          \"stars\": \"true\",\n          \"forks\":
+        \"true\",\n          \"description\": \"true\"\n        },\n        \"repo\":
+        \"microsoft/vscode\"\n      },\n      \"observation\": \"API request failed:
+        unknown flag: --repo\\n\\nUsage:  gh api <endpoint> [flags]\\n\\nFlags:\\n      --cache
+        duration        Cache the response, e.g. \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F,
+        --field key=value       Add a typed parameter in key=value format\\n  -H,
+        --header key:value      Add a HTTP request header in key:value format\\n      --hostname
+        string       The GitHub hostname for the request (default \\\"github.com\\\")\\n  -i,
+        --include               Include HTTP response status line and headers in the
+        output\\n      --input file            The file to use as body for the HTTP
+        request (use \\\"-\\\" to read from standard input)\\n  -q, --jq string             Query
+        to select values from the response using jq syntax\\n  -X, --method string         The
+        HTTP method for the request (default \\\"GET\\\")\\n      --paginate              Make
+        additional HTTP requests to fetch all pages of results\\n  -p, --preview names         GitHub
         API preview names to request (without the \\\"-preview\\\" suffix)\\n  -f,
         --raw-field key=value   Add a string parameter in key=value format\\n      --silent                Do
         not print the response body\\n      --slurp                 Use with \\\"--paginate\\\"
@@ -669,14 +720,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '14417'
+      - '14356'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:44:41 GMT
+      - Wed, 24 Sep 2025 09:44:07 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -688,25 +739,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1712'
+      - '2687'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1729'
+      - '2707'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9993'
+      - '9982'
       X-Ratelimit-Remaining-Tokens:
-      - '196733'
+      - '196751'
       X-Ratelimit-Reset-Requests:
-      - 52.13s
+      - 2m32.864s
       X-Ratelimit-Reset-Tokens:
-      - 980ms
+      - 974ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -723,23 +774,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9818254c8dcb2a8b-LAX
+      - 98415758689b03dd-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHRxPQ7GgWxgI87xRynCVCIIdeyiR",
+          "id": "chatcmpl-CJGKb8ICsPhtNTTuIAlCGzdD3ycZo",
           "object": "chat.completion",
-          "created": 1758275079,
+          "created": 1758707045,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"The initial API request to get information about the microsoft/vscode repository failed due to an unknown flag. I need to adjust the parameters by removing the 'repo' field from the action_input and ensure the request matches the GitHub API specifications. I will try making the same API request again, omitting invalid parameters.\",\n  \"action\": \"github_api_request\",\n  \"action_input\": {\n    \"endpoint\": \"repos/microsoft/vscode\",\n    \"method\": \"GET\",\n    \"fields\": {\n      \"fields\": \"stargazers_count, forks_count, description\"\n    }\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"The previous attempt to get repository information encountered an error due to an unsupported flag. Since the goal is to obtain information about the microsoft/vscode repository, I should try making a minimal GitHub API request without the additional fields that caused the issue. I will use the 'github_api_request' tool again with a simpler action input, without specifying 'repo'.\",\n  \"action\": \"github_api_request\",\n  \"action_input\": {\n    \"endpoint\": \"repos/microsoft/vscode\",\n    \"method\": \"GET\",\n    \"fields\": {},\n    \"repo\": null\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -748,9 +799,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2765,
-            "completion_tokens": 135,
-            "total_tokens": 2900,
+            "prompt_tokens": 2755,
+            "completion_tokens": 133,
+            "total_tokens": 2888,
             "prompt_tokens_details": {
               "cached_tokens": 1024,
               "audio_tokens": 0
@@ -763,66 +814,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_51db84afab"
+          "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 19 Sep 2025 09:44:40 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=Ba_GFBCgfrYFADvrtB84K3pozSYcAAEBAAAnIQEAAOveAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        H4sIAAkmzWgAA4VWf28aORD9KqP9qycBhfyk3FGpvSRNKiVNrqQ6KRshs/YuDl57Y3tJaMR3vxl7IUB6d1YCa+/4eebNmzF3L0lmytLoZPCSMO+tnNReOJoJ7aVfdDQrRTJITr5fLzp2krSSqXG+WXSynLCOMhlT+KLZUNSS47vLn7PF1cNs7+r8+fPtaa9/8+PzzehUndz8+OvrqHvYvxpddC9Pit7lyelBsly2EmUKPPfuJVFiLhQiXFydfUNYL0vhPCurZNA7PuzvHR92j/vHB4ed/f3jVoLvHCvIGW9ZJsaSD9Ok1zvq7h0d5W3RZ6J9IPZFu99n+23xIcsnLMt5PztIEzBeqLGrmB4jfjYb3t2DFSzzHemFZV4aPew1K35q6mLqEXtkoBAeJszJDKTOjS2DKbCJqT34qYBSZtY4k/v3c5cZLhCjMk56YxctuACHWIpDyWYCmIZP1xdo8FhjkOBNAPgi/Xk9oTcdfJ4LjavMQ7kAz9wMXCUymUvhcB9mTMylLoAzz8DV2RSYA4zHuhagczP8YpoDFy6zsiJPyYcMD66dCKcV0k/ryZhVcvzqh1HkDMsy5DdYsaqyprKSeQFC88pI7aNbuD6XiI8z6TYp6SDHkT78JzbT5O1ZOzZjqavaD1/SZHVImgw/pkmg8P0us2nSghQ1gOnh0e7L6SguIj+KO1p82ZykCXFTsJ/CunFmau0bmlaTDaLSZElIdHTc+vb4ZeO8mThh56yJcjOlOZNK8AHUeqbNk4ZcsWIA7XZATTX+3ZKABwAFpq6S8Mcq8I9wR8buPpqd0fMAHyCMdjtjGeaF11Gq0Iw/wyplzApXGe1EC0Sn6ECapsn+Ubfr6KEVpkfd8nXSm9JnwG+ftRA/kAYzsRjOmapFg/+Jc2DgF5XgUDGLjQCLBbO+YRgFEJHOCWkqGEcjtBhsQEWk89Hoek1WYxjRBm/QYtyrBoQqt6T8OEavdbM2wK0NExH+HRc5q5UP8UYpdrD90ey36K4kd6XOVM1XAa/GRbPaOBy5pUrztQMltQh1FiOgMggnY0tAOW84H+QNOWpiE5ucD2tYc1SWWMITwxfrALZIekcW5HObPmgLapBDbk1J7mjOLIdwThPUIwX18LjNVxw3tbALgnBCicxDoNxFrE0NoVe0lUAW2rPnCPw3Acfq2wUfrbxuXv9nKqho1zmIPFWskJp6zda4DD2Tc0mKZ2qLF0dh5MJTB1QKtVlgICanEPAcFz2uyOPKYssUT0AacWvs16YL2waB4MbrJ0k3QWzzIQWNaciEq/NcPjek53SSZU+/KKMo/Iaw/6+hSIhDeWDH3RknBrShFhy78UbCSD+b21Vtq93dcIuGFFKMZU36q658bTVdUsxatiA2t6gVuBUd//r921W0wFULZvKAUmoI90SDF2WlKJlbIjkLIcbdsU4alTH4gvdgs+d3lGbkGvvjVKiqocaj5bphxRjnwk6M+7e6zWu1LZhQr2u+3hYstd3V5UQXohtj4fHh3a9vsXvAny2afiHs/IbAiwUjwQyjrzpZ3i/v/wFgVZJKdQkAAA==
-    headers:
-      Content-Encoding:
-      - gzip
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - Ba_GFBCgfrYFADvrtB84K3pozSYcAAEBAAAnIQEAAOveAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: Accepted
-    headers:
-      Date:
-      - Fri, 19 Sep 2025 09:44:42 GMT
-      Content-Type:
-      - application/json; charset=UTF-8
-      Content-Length:
-      - '0'
-      Connection:
-      - keep-alive
-      Cf-Ray:
-      - 981825607e13c982-LAX
-      Cf-Cache-Status:
-      - DYNAMIC
-      Server:
-      - cloudflare
-      Nr-Rate-Limited:
-      - allowed
-      X-Envoy-Upstream-Service-Time:
-      - '1'
-      Vary:
-      - accept-encoding
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Fri, 19 Sep 2025 09:44:42 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:07 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -866,45 +860,45 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Use the GitHub API
         to get basic information about the microsoft/vscode repository (stars, forks,
         description)\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get basic information
-        about the microsoft/vscode repository, I should make an API request to the
-        GitHub API. Given that my task specifies retrieving data such as stars, forks,
-        and description, I can use the github_api_request tool to access the appropriate
-        endpoint that provides this information.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve basic information
+        about the microsoft/vscode repository, I should use the github_api_request
+        tool to directly access the GitHub API and get the required data such as stars,
+        forks, and description.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
         {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
-        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
-        forks_count, description\"\n        },\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"API request failed: unknown flag: --repo\\n\\nUsage:  gh api <endpoint>
-        [flags]\\n\\nFlags:\\n      --cache duration        Cache the response, e.g.
-        \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F, --field key=value       Add
-        a typed parameter in key=value format\\n  -H, --header key:value      Add
-        a HTTP request header in key:value format\\n      --hostname string       The
-        GitHub hostname for the request (default \\\"github.com\\\")\\n  -i, --include               Include
-        HTTP response status line and headers in the output\\n      --input file            The
-        file to use as body for the HTTP request (use \\\"-\\\" to read from standard
-        input)\\n  -q, --jq string             Query to select values from the response
-        using jq syntax\\n  -X, --method string         The HTTP method for the request
-        (default \\\"GET\\\")\\n      --paginate              Make additional HTTP
-        requests to fetch all pages of results\\n  -p, --preview names         GitHub
+        \"GET\",\n        \"fields\": {\n          \"stars\": \"true\",\n          \"forks\":
+        \"true\",\n          \"description\": \"true\"\n        },\n        \"repo\":
+        \"microsoft/vscode\"\n      },\n      \"observation\": \"API request failed:
+        unknown flag: --repo\\n\\nUsage:  gh api <endpoint> [flags]\\n\\nFlags:\\n      --cache
+        duration        Cache the response, e.g. \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F,
+        --field key=value       Add a typed parameter in key=value format\\n  -H,
+        --header key:value      Add a HTTP request header in key:value format\\n      --hostname
+        string       The GitHub hostname for the request (default \\\"github.com\\\")\\n  -i,
+        --include               Include HTTP response status line and headers in the
+        output\\n      --input file            The file to use as body for the HTTP
+        request (use \\\"-\\\" to read from standard input)\\n  -q, --jq string             Query
+        to select values from the response using jq syntax\\n  -X, --method string         The
+        HTTP method for the request (default \\\"GET\\\")\\n      --paginate              Make
+        additional HTTP requests to fetch all pages of results\\n  -p, --preview names         GitHub
         API preview names to request (without the \\\"-preview\\\" suffix)\\n  -f,
         --raw-field key=value   Add a string parameter in key=value format\\n      --silent                Do
         not print the response body\\n      --slurp                 Use with \\\"--paginate\\\"
         to return an array of all pages of either JSON arrays or objects\\n  -t, --template
         string       Format JSON output using a Go template; see \\\"gh help formatting\\\"\\n      --verbose               Include
         full HTTP request and response in the output\\n  \\n\"\n    },\n    {\n      \"step\":
-        2,\n      \"thought\": \"The initial API request to get information about
-        the microsoft/vscode repository failed due to an unknown flag. I need to adjust
-        the parameters by removing the ''repo'' field from the action_input and ensure
-        the request matches the GitHub API specifications. I will try making the same
-        API request again, omitting invalid parameters.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        2,\n      \"thought\": \"The previous attempt to get repository information
+        encountered an error due to an unsupported flag. Since the goal is to obtain
+        information about the microsoft/vscode repository, I should try making a minimal
+        GitHub API request without the additional fields that caused the issue. I
+        will use the ''github_api_request'' tool again with a simpler action input,
+        without specifying ''repo''.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
         {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
-        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
-        forks_count, description\"\n        }\n      },\n      \"observation\": \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
-        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-19T09:44:17Z\\\",\\\"pushed_at\\\":\\\"2025-09-19T03:46:25Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1065246,\\\"stargazers_count\\\":176829,\\\"watchers_count\\\":176829,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35083,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13590,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
-        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35083,\\\"open_issues\\\":13590,\\\"watchers\\\":176829,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35083,\\\"subscribers_count\\\":3370}\"\n    }\n  ],\n  \"observation\":
+        \"GET\",\n        \"fields\": {},\n        \"repo\": null\n      },\n      \"observation\":
         \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
-        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-19T09:44:17Z\\\",\\\"pushed_at\\\":\\\"2025-09-19T03:46:25Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1065246,\\\"stargazers_count\\\":176829,\\\"watchers_count\\\":176829,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35083,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13590,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
-        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35083,\\\"open_issues\\\":13590,\\\"watchers\\\":176829,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35083,\\\"subscribers_count\\\":3370}\"\n}\n```\n\nRespond
+        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-24T09:27:09Z\\\",\\\"pushed_at\\\":\\\"2025-09-24T09:35:51Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1066342,\\\"stargazers_count\\\":176965,\\\"watchers_count\\\":176965,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35167,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13687,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
+        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35167,\\\"open_issues\\\":13687,\\\"watchers\\\":176965,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35167,\\\"subscribers_count\\\":3373}\"\n    }\n  ],\n  \"observation\":
+        \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
+        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-24T09:27:09Z\\\",\\\"pushed_at\\\":\\\"2025-09-24T09:35:51Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1066342,\\\"stargazers_count\\\":176965,\\\"watchers_count\\\":176965,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35167,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13687,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
+        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35167,\\\"open_issues\\\":13687,\\\"watchers\\\":176965,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35167,\\\"subscribers_count\\\":3373}\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
         JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
@@ -943,14 +937,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '23093'
+      - '23029'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:44:45 GMT
+      - Wed, 24 Sep 2025 09:44:11 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -962,25 +956,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '832'
+      - '2132'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '846'
+      - '2144'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9993'
+      - '9981'
       X-Ratelimit-Remaining-Tokens:
-      - '194870'
+      - '194888'
       X-Ratelimit-Reset-Requests:
-      - 55.253s
+      - 2m37.726s
       X-Ratelimit-Reset-Tokens:
-      - 1.539s
+      - 1.533s
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -997,23 +991,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9818256f0cb82a8b-LAX
+      - 9841576fdec603dd-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHRxU8fhWlllx4cQffKRDivGpgP4y",
+          "id": "chatcmpl-CJGKfiGsjoHP9drSlHkosk7ZYv6AL",
           "object": "chat.completion",
-          "created": 1758275084,
+          "created": 1758707049,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The GitHub API successfully returned the requested information about the microsoft/vscode repository, including 176,829 stars and 35,083 forks. The description of the repository is 'Visual Studio Code'.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The API call successfully retrieved information about the microsoft/vscode repository, including its id, name, description, stars, and forks.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1022,11 +1016,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 4942,
-            "completion_tokens": 65,
-            "total_tokens": 5007,
+            "prompt_tokens": 4930,
+            "completion_tokens": 50,
+            "total_tokens": 4980,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1152,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -1037,16 +1031,16 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_51db84afab"
+          "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 19 Sep 2025 09:44:45 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:11 GMT
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=Ba_GFBCgfrYFADvrtB84K3pozSYcAAEBAAAnIQEAAOveAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaIQLAf_oT5sADvrtB84K3po071gAAEBAAAnIQEAAKv8AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        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
+        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
     headers:
       Content-Encoding:
       - gzip
@@ -1057,7 +1051,7 @@ http_interactions:
       Nr-Utilizationextra:
       - AQARAAUAAAAIAABgAA
       Nr-Session:
-      - Ba_GFBCgfrYFADvrtB84K3pozSYcAAEBAAAnIQEAAOveAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      - BaIQLAf_oT5sADvrtB84K3po071gAAEBAAAnIQEAAKv8AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
       Nr-Agenttags:
       - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
       Accept-Encoding:
@@ -1071,32 +1065,28 @@ http_interactions:
   response:
     status:
       code: 202
-      message: Accepted
+      message: ''
     headers:
-      Date:
-      - Fri, 19 Sep 2025 09:44:47 GMT
-      Content-Type:
-      - application/json; charset=UTF-8
-      Content-Length:
-      - '0'
       Connection:
       - keep-alive
-      Cf-Ray:
-      - 9818257fbaafc982-LAX
-      Cf-Cache-Status:
-      - DYNAMIC
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Wed, 24 Sep 2025 09:44:12 GMT
       Server:
-      - cloudflare
+      - envoy
       Nr-Rate-Limited:
       - allowed
-      X-Envoy-Upstream-Service-Time:
-      - '0'
-      Vary:
-      - accept-encoding
+      X-Served-By:
+      - cache-mad2200101-MAD
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 19 Sep 2025 09:44:47 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:13 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1159,42 +1149,42 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Use the GitHub API
         to get basic information about the microsoft/vscode repository (stars, forks,
         description)\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get basic information
-        about the microsoft/vscode repository, I should make an API request to the
-        GitHub API. Given that my task specifies retrieving data such as stars, forks,
-        and description, I can use the github_api_request tool to access the appropriate
-        endpoint that provides this information.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve basic information
+        about the microsoft/vscode repository, I should use the github_api_request
+        tool to directly access the GitHub API and get the required data such as stars,
+        forks, and description.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
         {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
-        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
-        forks_count, description\"\n        },\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"API request failed: unknown flag: --repo\\n\\nUsage:  gh api <endpoint>
-        [flags]\\n\\nFlags:\\n      --cache duration        Cache the response, e.g.
-        \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F, --field key=value       Add
-        a typed parameter in key=value format\\n  -H, --header key:value      Add
-        a HTTP request header in key:value format\\n      --hostname string       The
-        GitHub hostname for the request (default \\\"github.com\\\")\\n  -i, --include               Include
-        HTTP response status line and headers in the output\\n      --input file            The
-        file to use as body for the HTTP request (use \\\"-\\\" to read from standard
-        input)\\n  -q, --jq string             Query to select values from the response
-        using jq syntax\\n  -X, --method string         The HTTP method for the request
-        (default \\\"GET\\\")\\n      --paginate              Make additional HTTP
-        requests to fetch all pages of results\\n  -p, --preview names         GitHub
+        \"GET\",\n        \"fields\": {\n          \"stars\": \"true\",\n          \"forks\":
+        \"true\",\n          \"description\": \"true\"\n        },\n        \"repo\":
+        \"microsoft/vscode\"\n      },\n      \"observation\": \"API request failed:
+        unknown flag: --repo\\n\\nUsage:  gh api <endpoint> [flags]\\n\\nFlags:\\n      --cache
+        duration        Cache the response, e.g. \\\"3600s\\\", \\\"60m\\\", \\\"1h\\\"\\n  -F,
+        --field key=value       Add a typed parameter in key=value format\\n  -H,
+        --header key:value      Add a HTTP request header in key:value format\\n      --hostname
+        string       The GitHub hostname for the request (default \\\"github.com\\\")\\n  -i,
+        --include               Include HTTP response status line and headers in the
+        output\\n      --input file            The file to use as body for the HTTP
+        request (use \\\"-\\\" to read from standard input)\\n  -q, --jq string             Query
+        to select values from the response using jq syntax\\n  -X, --method string         The
+        HTTP method for the request (default \\\"GET\\\")\\n      --paginate              Make
+        additional HTTP requests to fetch all pages of results\\n  -p, --preview names         GitHub
         API preview names to request (without the \\\"-preview\\\" suffix)\\n  -f,
         --raw-field key=value   Add a string parameter in key=value format\\n      --silent                Do
         not print the response body\\n      --slurp                 Use with \\\"--paginate\\\"
         to return an array of all pages of either JSON arrays or objects\\n  -t, --template
         string       Format JSON output using a Go template; see \\\"gh help formatting\\\"\\n      --verbose               Include
         full HTTP request and response in the output\\n  \\n\"\n    },\n    {\n      \"step\":
-        2,\n      \"thought\": \"The initial API request to get information about
-        the microsoft/vscode repository failed due to an unknown flag. I need to adjust
-        the parameters by removing the ''repo'' field from the action_input and ensure
-        the request matches the GitHub API specifications. I will try making the same
-        API request again, omitting invalid parameters.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
+        2,\n      \"thought\": \"The previous attempt to get repository information
+        encountered an error due to an unsupported flag. Since the goal is to obtain
+        information about the microsoft/vscode repository, I should try making a minimal
+        GitHub API request without the additional fields that caused the issue. I
+        will use the ''github_api_request'' tool again with a simpler action input,
+        without specifying ''repo''.\",\n      \"action\": \"github_api_request\",\n      \"action_input\":
         {\n        \"endpoint\": \"repos/microsoft/vscode\",\n        \"method\":
-        \"GET\",\n        \"fields\": {\n          \"fields\": \"stargazers_count,
-        forks_count, description\"\n        }\n      },\n      \"observation\": \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
-        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-19T09:44:17Z\\\",\\\"pushed_at\\\":\\\"2025-09-19T03:46:25Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1065246,\\\"stargazers_count\\\":176829,\\\"watchers_count\\\":176829,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35083,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13590,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
-        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35083,\\\"open_issues\\\":13590,\\\"watchers\\\":176829,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35083,\\\"subscribers_count\\\":3370}\"\n    }\n  ],\n  \"available_tools\":
+        \"GET\",\n        \"fields\": {},\n        \"repo\": null\n      },\n      \"observation\":
+        \"{\\\"id\\\":41881900,\\\"node_id\\\":\\\"MDEwOlJlcG9zaXRvcnk0MTg4MTkwMA==\\\",\\\"name\\\":\\\"vscode\\\",\\\"full_name\\\":\\\"microsoft/vscode\\\",\\\"private\\\":false,\\\"owner\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"html_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"description\\\":\\\"Visual
+        Studio Code\\\",\\\"fork\\\":false,\\\"url\\\":\\\"https://api.github.com/repos/microsoft/vscode\\\",\\\"forks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/forks\\\",\\\"keys_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/keys{/key_id}\\\",\\\"collaborators_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/collaborators{/collaborator}\\\",\\\"teams_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/teams\\\",\\\"hooks_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/hooks\\\",\\\"issue_events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/events{/number}\\\",\\\"events_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/events\\\",\\\"assignees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/assignees{/user}\\\",\\\"branches_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/branches{/branch}\\\",\\\"tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/tags\\\",\\\"blobs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/blobs{/sha}\\\",\\\"git_tags_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/tags{/sha}\\\",\\\"git_refs_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/refs{/sha}\\\",\\\"trees_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/trees{/sha}\\\",\\\"statuses_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/statuses/{sha}\\\",\\\"languages_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/languages\\\",\\\"stargazers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/stargazers\\\",\\\"contributors_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contributors\\\",\\\"subscribers_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscribers\\\",\\\"subscription_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/subscription\\\",\\\"commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/commits{/sha}\\\",\\\"git_commits_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/git/commits{/sha}\\\",\\\"comments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/comments{/number}\\\",\\\"issue_comment_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues/comments{/number}\\\",\\\"contents_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/contents/{+path}\\\",\\\"compare_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/compare/{base}...{head}\\\",\\\"merges_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/merges\\\",\\\"archive_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/{archive_format}{/ref}\\\",\\\"downloads_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/downloads\\\",\\\"issues_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/issues{/number}\\\",\\\"pulls_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/pulls{/number}\\\",\\\"milestones_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/milestones{/number}\\\",\\\"notifications_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/notifications{?since,all,participating}\\\",\\\"labels_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/labels{/name}\\\",\\\"releases_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/releases{/id}\\\",\\\"deployments_url\\\":\\\"https://api.github.com/repos/microsoft/vscode/deployments\\\",\\\"created_at\\\":\\\"2015-09-03T20:23:38Z\\\",\\\"updated_at\\\":\\\"2025-09-24T09:27:09Z\\\",\\\"pushed_at\\\":\\\"2025-09-24T09:35:51Z\\\",\\\"git_url\\\":\\\"git://github.com/microsoft/vscode.git\\\",\\\"ssh_url\\\":\\\"git@github.com:microsoft/vscode.git\\\",\\\"clone_url\\\":\\\"https://github.com/microsoft/vscode.git\\\",\\\"svn_url\\\":\\\"https://github.com/microsoft/vscode\\\",\\\"homepage\\\":\\\"https://code.visualstudio.com\\\",\\\"size\\\":1066342,\\\"stargazers_count\\\":176965,\\\"watchers_count\\\":176965,\\\"language\\\":\\\"TypeScript\\\",\\\"has_issues\\\":true,\\\"has_projects\\\":true,\\\"has_downloads\\\":true,\\\"has_wiki\\\":true,\\\"has_pages\\\":false,\\\"has_discussions\\\":false,\\\"forks_count\\\":35167,\\\"mirror_url\\\":null,\\\"archived\\\":false,\\\"disabled\\\":false,\\\"open_issues_count\\\":13687,\\\"license\\\":{\\\"key\\\":\\\"mit\\\",\\\"name\\\":\\\"MIT
+        License\\\",\\\"spdx_id\\\":\\\"MIT\\\",\\\"url\\\":\\\"https://api.github.com/licenses/mit\\\",\\\"node_id\\\":\\\"MDc6TGljZW5zZTEz\\\"},\\\"allow_forking\\\":true,\\\"is_template\\\":false,\\\"web_commit_signoff_required\\\":false,\\\"topics\\\":[\\\"editor\\\",\\\"electron\\\",\\\"microsoft\\\",\\\"typescript\\\",\\\"visual-studio-code\\\"],\\\"visibility\\\":\\\"public\\\",\\\"forks\\\":35167,\\\"open_issues\\\":13687,\\\"watchers\\\":176965,\\\"default_branch\\\":\\\"main\\\",\\\"permissions\\\":{\\\"admin\\\":false,\\\"maintain\\\":false,\\\"push\\\":false,\\\"triage\\\":false,\\\"pull\\\":true},\\\"temp_clone_token\\\":\\\"\\\",\\\"custom_properties\\\":{\\\"activeRepoStatus\\\":\\\"true\\\",\\\"durableOwnershipDisable\\\":\\\"false\\\",\\\"durableOwnershipNextCheckDate\\\":\\\"2024-04-19T05:10:48.521Z\\\",\\\"durableOwnershipWarn\\\":\\\"false\\\",\\\"global-rulesets-opt-out\\\":\\\"false\\\"},\\\"organization\\\":{\\\"login\\\":\\\"microsoft\\\",\\\"id\\\":6154722,\\\"node_id\\\":\\\"MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=\\\",\\\"avatar_url\\\":\\\"https://avatars.githubusercontent.com/u/6154722?v=4\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/microsoft\\\",\\\"html_url\\\":\\\"https://github.com/microsoft\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/microsoft/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/microsoft/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/microsoft/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/microsoft/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/microsoft/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/microsoft/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/microsoft/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/microsoft/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/microsoft/received_events\\\",\\\"type\\\":\\\"Organization\\\",\\\"user_view_type\\\":\\\"public\\\",\\\"site_admin\\\":false},\\\"network_count\\\":35167,\\\"subscribers_count\\\":3373}\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
         \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
         \"github_list_issues\",\n        \"description\": \"List GitHub issues with
@@ -1295,14 +1285,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '23004'
+      - '22940'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:44:47 GMT
+      - Wed, 24 Sep 2025 09:44:14 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1314,25 +1304,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1332'
+      - '2981'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1350'
+      - '3009'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9992'
+      - '9981'
       X-Ratelimit-Remaining-Tokens:
-      - '193483'
+      - '194856'
       X-Ratelimit-Reset-Requests:
-      - 1m2.76s
+      - 2m44.052s
       X-Ratelimit-Reset-Tokens:
-      - 1.954s
+      - 1.543s
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -1349,23 +1339,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 981825774ad22a8b-LAX
+      - 9841577e3b6203dd-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHRxWftujMuYOaytf0Y53W7YygbYg",
+          "id": "chatcmpl-CJGKhGLdhNQHwOyPnxILwbg7pIRit",
           "object": "chat.completion",
-          "created": 1758275086,
+          "created": 1758707051,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Now that I have successfully retrieved the basic information about the microsoft/vscode repository, including the stars and forks count, I should summarize this information for presentation. I will provide details like the number of stars, forks, and the description of the repository in my final answer.\",\n  \"action\": \"finish\",\n  \"action_input\": {\n    \"stars\": 176829,\n    \"forks\": 35083,\n    \"description\": \"Visual Studio Code\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have obtained the basic information about the microsoft/vscode repository successfully. Next, I should consider what to do with this information. Since I have the necessary details now, I can either present them or further analyze or filter issues or pull requests related to this repository. For now, I will finish the task by summarizing the obtained repository details.\",\n  \"action\": \"finish\",\n  \"action_input\": \"The microsoft/vscode repository has 176965 stars, 35167 forks, and its description is 'Visual Studio Code'.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1374,11 +1364,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 4622,
-            "completion_tokens": 110,
-            "total_tokens": 4732,
+            "prompt_tokens": 4610,
+            "completion_tokens": 123,
+            "total_tokens": 4733,
             "prompt_tokens_details": {
-              "cached_tokens": 1536,
+              "cached_tokens": 1408,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -1389,62 +1379,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_51db84afab"
+          "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 19 Sep 2025 09:44:47 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=metric_data&protocol_version=17&run_id=BXecu7PlelseADvrtB84K3pozSbQAAEBAAAnIQEAAPP0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        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
-    headers:
-      Content-Encoding:
-      - gzip
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BXecu7PlelseADvrtB84K3pozSbQAAEBAAAnIQEAAPP0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: Accepted
-    headers:
-      Date:
-      - Fri, 19 Sep 2025 09:47:41 GMT
-      Content-Type:
-      - application/json; charset=UTF-8
-      Content-Length:
-      - '0'
-      Connection:
-      - keep-alive
-      Cf-Ray:
-      - 981829befd9c7aa4-LAX
-      Cf-Cache-Status:
-      - DYNAMIC
-      Server:
-      - cloudflare
-      Nr-Rate-Limited:
-      - allowed
-      Vary:
-      - accept-encoding
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Fri, 19 Sep 2025 09:47:41 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:14 GMT
 recorded_with: VCR 6.3.1

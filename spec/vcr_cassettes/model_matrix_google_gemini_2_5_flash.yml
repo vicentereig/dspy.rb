@@ -2,6 +2,59 @@
 http_interactions:
 - request:
     method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWMo4bOQ7-2VADvrtB84K3po073YAAEBAAAnIQEAAKy3AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1758707096387.92,"message":"✓
+        Forced strategy: Enhanced Prompting (compatible)\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BWMo4bOQ7-2VADvrtB84K3po073YAAEBAAAnIQEAAKy3AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Wed, 24 Sep 2025 09:44:58 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350058-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 24 Sep 2025 09:44:58 GMT
+- request:
+    method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
@@ -144,11 +197,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Sat, 13 Sep 2025 23:54:25 GMT
+      - Wed, 24 Sep 2025 09:45:01 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '573'
+      - '578'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -156,7 +209,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=4313
+      - gfet4t7; dur=5094
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -168,7 +221,7 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"model compatibility test todo\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\",\n      \"gemini-2.5-flash\",\n      \"enhanced_prompting\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-new-1\",\n      \"title\": \"model compatibility test todo\",\n      \"description\": \"Compatibility test for gemini-2.5-flash/enhanced_prompting\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\",\n        \"gemini-2.5-flash\",\n        \"enhanced_prompting\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 1,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": []\n}\n```"
+                    "text": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Model compatibility test (gemini-2.5-flash/enhanced_prompting)\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"new-todo-1\",\n      \"title\": \"Model compatibility test (gemini-2.5-flash/enhanced_prompting)\",\n      \"description\": \"Create a todo to test model compatibility with gemini-2.5-flash/enhanced_prompting.\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 1,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": []\n}\n```"
                   }
                 ],
                 "role": "model"
@@ -179,20 +232,73 @@ http_interactions:
           ],
           "usageMetadata": {
             "promptTokenCount": 2755,
-            "candidatesTokenCount": 251,
-            "totalTokenCount": 3582,
+            "candidatesTokenCount": 242,
+            "totalTokenCount": 3549,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
                 "tokenCount": 2755
               }
             ],
-            "thoughtsTokenCount": 576
+            "thoughtsTokenCount": 552
           },
           "modelVersion": "gemini-2.5-flash",
-          "responseId": "MQTGaIO-HKmT1MkPrt3MiA0"
+          "responseId": "nb3TaP2VH-m1nsEP4trWkAM"
         }
-  recorded_at: Sat, 13 Sep 2025 23:54:25 GMT
+  recorded_at: Wed, 24 Sep 2025 09:45:01 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWMo4bOQ7-2VADvrtB84K3po073YAAEBAAAnIQEAAKy3AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1758707101500.504,"message":"✓
+        Forced strategy: Gemini Structured Output (strict)\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BWMo4bOQ7-2VADvrtB84K3po073YAAEBAAAnIQEAAKy3AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Wed, 24 Sep 2025 09:45:03 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350058-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 24 Sep 2025 09:45:03 GMT
 - request:
     method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
@@ -328,11 +434,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Sat, 13 Sep 2025 23:54:28 GMT
+      - Wed, 24 Sep 2025 09:45:06 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '539'
+      - '517'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -340,7 +446,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=2525
+      - gfet4t7; dur=4654
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -352,7 +458,7 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Model compatibility test todo (gemini-2.5-flash/gemini_structured_output)\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"new-todo-1\",\n      \"title\": \"Model compatibility test todo (gemini-2.5-flash/gemini_structured_output)\",\n      \"description\": \"\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 1,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": []\n}"
+                    "text": "{\"action\": {\"_type\": \"CreateTodoAction\", \"title\": \"Model compatibility test\", \"priority\": \"medium\", \"tags\": [\"testing\", \"gemini-2.5-flash\", \"gemini_structured_output\"]}, \"affected_todos\": [{\"_type\": \"TodoItem\", \"id\": \"new-todo-1\", \"title\": \"Model compatibility test\", \"description\": \"Conduct a model compatibility test for gemini-2.5-flash/gemini_structured_output\", \"status\": \"pending\", \"tags\": [\"testing\", \"gemini-2.5-flash\", \"gemini_structured_output\"], \"priority\": \"medium\"}], \"summary\": {\"_type\": \"TodoSummary\", \"total_todos\": 1, \"upcoming_due\": 0}, \"related_actions\": []}"
                   }
                 ],
                 "role": "model"
@@ -363,18 +469,18 @@ http_interactions:
           ],
           "usageMetadata": {
             "promptTokenCount": 2516,
-            "candidatesTokenCount": 217,
-            "totalTokenCount": 2924,
+            "candidatesTokenCount": 178,
+            "totalTokenCount": 3175,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
                 "tokenCount": 2516
               }
             ],
-            "thoughtsTokenCount": 191
+            "thoughtsTokenCount": 481
           },
           "modelVersion": "gemini-2.5-flash",
-          "responseId": "NATGaPTMCvSl1MkP2rWM-Qw"
+          "responseId": "or3TaMPZCoXMnsEPxZ7fwA0"
         }
-  recorded_at: Sat, 13 Sep 2025 23:54:28 GMT
+  recorded_at: Wed, 24 Sep 2025 09:45:06 GMT
 recorded_with: VCR 6.3.1

@@ -2,59 +2,6 @@
 http_interactions:
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BVg-g_jlslboADvrtB84K3po0t9sAAEBAAAnIQEAAGVpAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        H4sIAAnf0mgAA71Y3U7bMBh9lchXm9RatmPHTiUuqBq2TkCBFiREUeWmpnjkT4mL6FCfYrd7uj3JvkpM2l0oi3wVxY6/43Nsn+9z7l5RWuZ5WaDBK9LO1Xa5cabZv5nCWbfFhc4NGqDR9GKL6yXqoceycW+Njc2XGmdlqjPoeBuw3tgV9J39eNqef39i519fhtcJVZc3w8tZko0ub66+zYhQ57MxORut6dko4Wi366GsXAPu3SvKzLPJIML4/GQCYZ3NTeN0XqEBlUJFglAqiZKYiB6Crkav93NxtU7Nwq6O5kg8SB6ppepHTJk+p3HYV1zpvoliJRQMfkijOQpKZ7JFU+liAeHTp6O7+6A2uikLCJG8VJlNrcu2wco2epmZVfBsdQAy3C5G4+nx8DRZTIbT5OrmeDg+Hc9uISDMu3AwuFw2pn7WS5vt9fg7fo7mBdr13sePihhLLtS/DH//+hmclHUKU2mArTPr7SBIikdd7Jsu6jKvnC3WwSdY0Uo7C6CfD4GMGA6VaEWcVKbQNpi6epO6TQ19k42rNi74BN/Y1B2GybFioVeWEstYekWMcRS169ohoqRYiMgrYohDorxuVymwEtQzYizbOXZ6QGSESTvkceEe67KyaTAryyy4bsxHweghYMnL3nWdLYuPwrF2uC8mt0WHcnK/RzHG8PS7ZxTBLPbKUjGslG+WHNPYK8kIS/EOx+mWpcIk5j5pxgTL9tzRKcmYYcggXklyLEPmlSUjBPvkyAjUVsJb8mAEkkfUXlh1lT0YkZiT9iXsUFAKC8hDb4JSisOYtFtcZ4pSBmWjT69hVEA6bjebrgSNsAjb/bs7PSUU/j7lZARzxQ9h+F96MrhmMI8nnjEsidf9yQSm73DQLktUxmCX+rwSxxwSk5TtPtMdS3DSSOGwm98b97v7P2uGcRTGEgAA
-    headers:
-      Content-Encoding:
-      - gzip
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BVg-g_jlslboADvrtB84K3po0t9sAAEBAAAnIQEAAGVpAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: ''
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '0'
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Envoy-Upstream-Service-Time:
-      - '0'
-      Date:
-      - Tue, 23 Sep 2025 17:55:21 GMT
-      Server:
-      - envoy
-      Nr-Rate-Limited:
-      - allowed
-      X-Served-By:
-      - cache-mad22075-MAD
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Tue, 23 Sep 2025 17:55:22 GMT
-- request:
-    method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
@@ -197,11 +144,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 17:55:22 GMT
+      - Wed, 24 Sep 2025 09:44:30 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '556'
+      - '571'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -209,7 +156,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=1451
+      - gfet4t7; dur=1531
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -221,19 +168,19 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"model compatibility test\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"gemini-2.0-flash/enhanced_prompting\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-999\",\n      \"title\": \"model compatibility test\",\n      \"description\": \"\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"gemini-2.0-flash/enhanced_prompting\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 10,\n    \"upcoming_due\": 2\n  },\n  \"related_actions\": []\n}\n```"
+                    "text": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"model compatibility test\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-789\",\n      \"title\": \"model compatibility test\",\n      \"description\": \"gemini-2.0-flash/enhanced_prompting\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 10,\n    \"upcoming_due\": 5\n  },\n  \"related_actions\": []\n}\n```"
                   }
                 ],
                 "role": "model"
               },
               "finishReason": "STOP",
-              "avgLogprobs": -0.033239629031357604
+              "avgLogprobs": -0.021157417482542761
             }
           ],
           "usageMetadata": {
             "promptTokenCount": 2750,
-            "candidatesTokenCount": 211,
-            "totalTokenCount": 2961,
+            "candidatesTokenCount": 206,
+            "totalTokenCount": 2956,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
@@ -243,14 +190,14 @@ http_interactions:
             "candidatesTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 211
+                "tokenCount": 206
               }
             ]
           },
           "modelVersion": "gemini-2.0-flash",
-          "responseId": "Cd_SaP6HCpGC7M8PlK7GuQI"
+          "responseId": "fb3TaMa2EZ7hnsEPwuCKqA0"
         }
-  recorded_at: Tue, 23 Sep 2025 17:55:22 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:30 GMT
 - request:
     method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=<GEMINI_API_KEY>
@@ -386,11 +333,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 17:55:24 GMT
+      - Wed, 24 Sep 2025 09:44:31 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '485'
+      - '469'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -398,7 +345,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=1483
+      - gfet4t7; dur=1043
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -410,19 +357,19 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"model compatibility test (gemini-2.0-flash/gemini_structured_output)\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 0,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": []\n}"
+                    "text": "{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Model Compatibility Test\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 0,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": []\n}"
                   }
                 ],
                 "role": "model"
               },
               "finishReason": "STOP",
-              "avgLogprobs": -0.02207539101277501
+              "avgLogprobs": -0.023647032051442939
             }
           ],
           "usageMetadata": {
             "promptTokenCount": 2511,
-            "candidatesTokenCount": 121,
-            "totalTokenCount": 2632,
+            "candidatesTokenCount": 107,
+            "totalTokenCount": 2618,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
@@ -432,12 +379,12 @@ http_interactions:
             "candidatesTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 121
+                "tokenCount": 107
               }
             ]
           },
           "modelVersion": "gemini-2.0-flash",
-          "responseId": "Ct_SaN6CLIminsEPys-X2Qk"
+          "responseId": "fr3TaIeQNNPlnsEP5NiqiQw"
         }
-  recorded_at: Tue, 23 Sep 2025 17:55:24 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:31 GMT
 recorded_with: VCR 6.3.1

@@ -2,15 +2,14 @@
 http_interactions:
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BVg-g_jlslboADvrtB84K3po0t9sAAEBAAAnIQEAAGVpAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWMo4bOQ7-2VADvrtB84K3po073YAAEBAAAnIQEAAKy3AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
     body:
-      encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1758650122538.934,"message":"✓
-        Forced strategy: Gemini Structured Output (strict)\n"},{"level":"INFO","timestamp":1758650124125.087,"message":"✓
-        Forced strategy: Enhanced Prompting (compatible)\n"}]}]'
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAIG902gAA71XXU/bMBT9K5GfNqm1bMdx7Eo8UDVsnYACLUiIospJQ/HIlxIX0aH+ir3u1+2X7FZi2t7SQmTlKXbs43Pu9T03d68oKfO8LNDgFWlraxOvbdrs3tLCGrvBhc5TNECj6cUG1zHqoceysW+DjcljjbMy0RlMvC1Yrc0S5s5+PG3Ovz+x868vw+uIysub4eUsykaXN1ffZiSQ57MxORut6Nko4mi77aGsXAHu3SvK0uc0gx3G5ycT2NaaPG2szis0oGEgQxISIZVQOBSB6iGYbPRqdxpb6yRdmOXRHD34LFYPhPe5UKrPCWd9xYjuEymCeKnj4CGI58grbZotmkoXCwBIno7u7r061U1ZwBbRS5WZxNhs4y1No+MsXXrPRnsgxO1iNJ4eD0+jxWQ4ja5ujofj0/HsFjaEkxcWFpdxk9bPOjbZTpG/6+doXqBtby+GigQUc/o/v9+/fnonZZ3AQRrgatPVZuBFxaMudkMXdZlX1hQr7xNEtNLWAOTngwA5piqQrZCTKi208aa2Xid2XcPcZG2rtfU+wTcmsYeBCiw4c0lTEEwYd4rIMPPdcuTYF6FTRAEcnaYrVAAiAseIjPhu7wdg7iHrcWEf67IyiTcry8y7btL3gnG//Wr8Q4tedkXXmrJ4L17g73H7v6S5KTpUNKRO8yZk2G8H7DRtQh8L2Z6qXZIUOGiPZLckQwx+5bTMSQrm4ZimZJhLp4YlA7APxxkrBQTTqYEojpVy3O6oEBOXCUsJhaaOKUcOQgmUOl8eYlgfsxBKfByEtD2KXUoKLWsgnCka4nCPitOdoBIrvsdfQIeCUobpHn1VR4JSH7q49jvYmaAUenHmsrBRGmJ+EMOP6SlxQKjDDKUKC587zVDGoGw7blQp87GvXPo+ZQEWqt33u2UJvu+wh4PHV1gSl7EEf4IiIGS7C+/B8n57/wdV+mrUtRMAAA==
     headers:
       Content-Encoding:
-      - identity
+      - gzip
       Host:
       - collector.newrelic.com
       Nr-Utilizationmetadata:
@@ -18,7 +17,7 @@ http_interactions:
       Nr-Utilizationextra:
       - AQARAAUAAAAIAABgAA
       Nr-Session:
-      - BVg-g_jlslboADvrtB84K3po0t9sAAEBAAAnIQEAAGVpAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      - BWMo4bOQ7-2VADvrtB84K3po073YAAEBAAAnIQEAAKy3AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
       Nr-Agenttags:
       - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
       Accept-Encoding:
@@ -41,19 +40,19 @@ http_interactions:
       Content-Type:
       - application/json; charset=UTF-8
       X-Envoy-Upstream-Service-Time:
-      - '0'
+      - '1'
       Date:
-      - Tue, 23 Sep 2025 17:55:26 GMT
+      - Wed, 24 Sep 2025 09:44:33 GMT
       Server:
       - envoy
       Nr-Rate-Limited:
       - allowed
       X-Served-By:
-      - cache-mad22025-MAD
+      - cache-toj-leto2350058-TOJ
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Tue, 23 Sep 2025 17:55:27 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:34 GMT
 - request:
     method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=<GEMINI_API_KEY>
@@ -198,11 +197,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 17:55:32 GMT
+      - Wed, 24 Sep 2025 09:44:44 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '576'
+      - '575'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -210,7 +209,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=8007
+      - gfet4t7; dur=12709
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -222,7 +221,7 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Create a model compatibility test todo (gemini-2.5-pro/enhanced_prompting)\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-gen-1\",\n      \"title\": \"Create a model compatibility test todo (gemini-2.5-pro/enhanced_prompting)\",\n      \"description\": \"A new task to test model compatibility.\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 1,\n    \"upcoming_due\": 0\n  },\n  \"related_actions\": []\n}\n```"
+                    "text": "## Output values\n```json\n{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"Model compatibility test (gemini-2.5-pro/enhanced_prompting)\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-gen-1\",\n      \"title\": \"Model compatibility test (gemini-2.5-pro/enhanced_prompting)\",\n      \"description\": \"Create a test for model compatibility with gemini-2.5-pro/enhanced_prompting\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 26,\n    \"upcoming_due\": 5\n  },\n  \"related_actions\": []\n}\n```"
                   }
                 ],
                 "role": "model"
@@ -233,26 +232,26 @@ http_interactions:
           ],
           "usageMetadata": {
             "promptTokenCount": 2755,
-            "candidatesTokenCount": 234,
-            "totalTokenCount": 3631,
+            "candidatesTokenCount": 242,
+            "totalTokenCount": 4065,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
                 "tokenCount": 2755
               }
             ],
-            "thoughtsTokenCount": 642
+            "thoughtsTokenCount": 1068
           },
           "modelVersion": "gemini-2.5-pro",
-          "responseId": "FN_SaKylC_zxnsEPi7v_8AU"
+          "responseId": "jL3TaL7sIYH0kdUPkt_RoAM"
         }
-  recorded_at: Tue, 23 Sep 2025 17:55:32 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:44 GMT
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BVg-g_jlslboADvrtB84K3po0t9sAAEBAAAnIQEAAGVpAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWMo4bOQ7-2VADvrtB84K3po073YAAEBAAAnIQEAAKy3AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
     body:
       encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1758650132184.3992,"message":"✓
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1758707084543.686,"message":"✓
         Forced strategy: Gemini Structured Output (strict)\n"}]}]'
     headers:
       Content-Encoding:
@@ -264,7 +263,7 @@ http_interactions:
       Nr-Utilizationextra:
       - AQARAAUAAAAIAABgAA
       Nr-Session:
-      - BVg-g_jlslboADvrtB84K3po0t9sAAEBAAAnIQEAAGVpAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      - BWMo4bOQ7-2VADvrtB84K3po073YAAEBAAAnIQEAAKy3AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
       Nr-Agenttags:
       - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
       Accept-Encoding:
@@ -289,17 +288,17 @@ http_interactions:
       X-Envoy-Upstream-Service-Time:
       - '0'
       Date:
-      - Tue, 23 Sep 2025 17:55:36 GMT
+      - Wed, 24 Sep 2025 09:44:48 GMT
       Server:
       - envoy
       Nr-Rate-Limited:
       - allowed
       X-Served-By:
-      - cache-mad22025-MAD
+      - cache-toj-leto2350058-TOJ
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Tue, 23 Sep 2025 17:55:36 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:48 GMT
 - request:
     method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=<GEMINI_API_KEY>
@@ -435,11 +434,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 17:55:41 GMT
+      - Wed, 24 Sep 2025 09:44:56 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '556'
+      - '564'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -447,7 +446,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=9553
+      - gfet4t7; dur=11713
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -459,7 +458,7 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"model compatibility test todo\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"gemini-2.5-pro\",\n      \"gemini_structured_output\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"todo-789\",\n      \"title\": \"model compatibility test todo\",\n      \"description\": \"Run compatibility tests for the gemini-2.5-pro model with gemini_structured_output.\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"gemini-2.5-pro\",\n        \"gemini_structured_output\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 6,\n    \"upcoming_due\": 3\n  },\n  \"related_actions\": []\n}"
+                    "text": "{\n  \"action\": {\n    \"_type\": \"CreateTodoAction\",\n    \"title\": \"model compatibility test todo (gemini-2.5-pro/gemini_structured_output)\",\n    \"priority\": \"medium\",\n    \"tags\": [\n      \"testing\"\n    ]\n  },\n  \"affected_todos\": [\n    {\n      \"_type\": \"TodoItem\",\n      \"id\": \"temp-id-9012\",\n      \"title\": \"model compatibility test todo (gemini-2.5-pro/gemini_structured_output)\",\n      \"description\": \"Create a new task to test model compatibility for gemini-2.5-pro/gemini_structured_output.\",\n      \"status\": \"pending\",\n      \"tags\": [\n        \"testing\"\n      ],\n      \"priority\": \"medium\"\n    }\n  ],\n  \"summary\": {\n    \"_type\": \"TodoSummary\",\n    \"total_todos\": 15,\n    \"upcoming_due\": 4\n  },\n  \"related_actions\": []\n}"
                   }
                 ],
                 "role": "model"
@@ -470,18 +469,18 @@ http_interactions:
           ],
           "usageMetadata": {
             "promptTokenCount": 2516,
-            "candidatesTokenCount": 241,
-            "totalTokenCount": 3604,
+            "candidatesTokenCount": 246,
+            "totalTokenCount": 3782,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
                 "tokenCount": 2516
               }
             ],
-            "thoughtsTokenCount": 847
+            "thoughtsTokenCount": 1020
           },
           "modelVersion": "gemini-2.5-pro",
-          "responseId": "Hd_SaNa9LtDd7M8Ps5OcgAk"
+          "responseId": "mL3TaJGiF_TlnsEPxbPloA0"
         }
-  recorded_at: Tue, 23 Sep 2025 17:55:41 GMT
+  recorded_at: Wed, 24 Sep 2025 09:44:56 GMT
 recorded_with: VCR 6.3.1

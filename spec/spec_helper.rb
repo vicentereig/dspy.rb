@@ -62,6 +62,7 @@ VCR.configure do |config|
   config.filter_sensitive_data('<OPENAI_API_KEY>') { ENV['OPENAI_API_KEY'] }
   config.filter_sensitive_data('<ANTHROPIC_API_KEY>') { ENV['ANTHROPIC_API_KEY'] }
   config.filter_sensitive_data('<GEMINI_API_KEY>') { ENV['GEMINI_API_KEY'] }
+  config.filter_sensitive_data('<NEW_RELIC_LICENSE_KEY>') { ENV['NEW_RELIC_LICENSE_KEY'] }
 
   # Filter out sensitive headers and response data
   # Organization IDs in OpenAI responses
@@ -108,6 +109,11 @@ VCR.configure do |config|
     # Redact request IDs
     if interaction.response.headers['X-Request-Id']
       interaction.response.headers['X-Request-Id'] = ['<REQUEST_ID>']
+    end
+
+    # Filter NewRelic license keys in URLs
+    if interaction.request.uri.include?('newrelic.com') && interaction.request.uri.include?('license_key=')
+      interaction.request.uri = interaction.request.uri.gsub(/license_key=[^&]+/, 'license_key=<NEW_RELIC_LICENSE_KEY>')
     end
   end
 end

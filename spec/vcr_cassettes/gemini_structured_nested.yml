@@ -75,7 +75,7 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 16:57:53 GMT
+      - Wed, 24 Sep 2025 09:45:22 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
@@ -87,7 +87,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=68
+      - gfet4t7; dur=70
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -100,7 +100,7 @@ http_interactions:
             "status": "INVALID_ARGUMENT"
           }
         }
-  recorded_at: Tue, 23 Sep 2025 16:57:53 GMT
+  recorded_at: Wed, 24 Sep 2025 09:45:22 GMT
 - request:
     method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
@@ -176,7 +176,7 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 16:57:53 GMT
+      - Wed, 24 Sep 2025 09:45:22 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
@@ -188,7 +188,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=62
+      - gfet4t7; dur=68
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -201,13 +201,13 @@ http_interactions:
             "status": "INVALID_ARGUMENT"
           }
         }
-  recorded_at: Tue, 23 Sep 2025 16:57:53 GMT
+  recorded_at: Wed, 24 Sep 2025 09:45:22 GMT
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=265ff33536964dfa3ff96eaa58fba95cFFFFNRAL&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BeV751C9DIIBADvrtB84K3po0tHUAAEBAAAnIQEAABP7AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BT0DTIP3WXqCADvrtB84K3po074UAAEBAAAnIQEAAK0kAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
     body:
       encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1758646673785.99,"message":"Max
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1758707122620.9158,"message":"Max
         retries reached for gemini_structured_output, trying next strategy\n"}]}]'
     headers:
       Content-Encoding:
@@ -219,7 +219,7 @@ http_interactions:
       Nr-Utilizationextra:
       - AQARAAUAAAAIAABgAA
       Nr-Session:
-      - BeV751C9DIIBADvrtB84K3po0tHUAAEBAAAnIQEAABP7AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      - BT0DTIP3WXqCADvrtB84K3po074UAAEBAAAnIQEAAK0kAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
       Nr-Agenttags:
       - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
       Accept-Encoding:
@@ -236,25 +236,25 @@ http_interactions:
       message: ''
     headers:
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
       X-Envoy-Upstream-Service-Time:
-      - '0'
+      - '1'
       Date:
-      - Tue, 23 Sep 2025 16:57:54 GMT
+      - Wed, 24 Sep 2025 09:45:26 GMT
       Server:
       - envoy
       Nr-Rate-Limited:
       - allowed
-      Content-Type:
-      - application/json; charset=UTF-8
       X-Served-By:
-      - cache-toj-leto2350053-TOJ
+      - cache-mad22080-MAD
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Tue, 23 Sep 2025 16:57:54 GMT
+  recorded_at: Wed, 24 Sep 2025 09:45:26 GMT
 - request:
     method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
@@ -345,11 +345,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 16:57:58 GMT
+      - Wed, 24 Sep 2025 09:45:27 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '795'
+      - '832'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -357,7 +357,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=4258
+      - gfet4t7; dur=5338
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -369,19 +369,19 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "```json\n{\n  \"structure\": {\n    \"_type\": \"GeminiLevel1\",\n    \"section\": \"Programming Languages\",\n    \"groups\": [\n      {\n        \"_type\": \"GeminiLevel2\",\n        \"category\": \"Paradigm\",\n        \"subcategories\": [\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Imperative\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"C\",\n                \"tags\": [\"Procedural\", \"Compiled\"]\n              },\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Java\",\n                \"tags\": [\"Object-Oriented\", \"Compiled\"]\n              }\n            ],\n            \"metadata\": {\n              \"exampleMetadata\": \"some value\"\n            }\n          },\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Declarative\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"SQL\",\n                \"tags\": [\"Database\", \"Query Language\"]\n              },\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Prolog\",\n                \"tags\": [\"Logic\", \"Interpreted\"]\n              }\n            ],\n            \"metadata\": {}\n          }\n        ],\n        \"count\": 4\n      },\n      {\n        \"_type\": \"GeminiLevel2\",\n        \"category\": \"Typing\",\n        \"subcategories\": [\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Statically Typed\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"C++\",\n                \"tags\": [\"Compiled\", \"Object-Oriented\"]\n              }\n            ],\n            \"metadata\": {}\n          },\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Dynamically Typed\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Python\",\n                \"tags\": [\"Interpreted\", \"Multi-paradigm\"]\n              }\n            ],\n            \"metadata\": {}\n          }\n        ],\n        \"count\": 2\n      }\n    ],\n    \"total\": 6,\n    \"summary\": \"Categorization of programming languages by paradigm and typing.\"\n  },\n  \"depth_level\": 4,\n  \"complexity_score\": 2.5\n}\n```\n"
+                    "text": "```json\n{\n  \"structure\": {\n    \"_type\": \"GeminiLevel1\",\n    \"section\": \"Programming Languages\",\n    \"groups\": [\n      {\n        \"_type\": \"GeminiLevel2\",\n        \"category\": \"Paradigm\",\n        \"subcategories\": [\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Object-Oriented\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Java\",\n                \"tags\": [\"OOP\", \"JVM\"]\n              },\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Python\",\n                \"tags\": [\"OOP\", \"Multi-paradigm\"]\n              },\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"C++\",\n                \"tags\": [\"OOP\", \"Systems Programming\"]\n              }\n            ],\n            \"metadata\": {\n              \"popularity\": \"High\"\n            }\n          },\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Functional\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Haskell\",\n                \"tags\": [\"Functional\", \"Pure\"]\n              },\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Scala\",\n                \"tags\": [\"Functional\", \"JVM\"]\n              }\n            ],\n            \"metadata\": {\n              \"popularity\": \"Medium\"\n            }\n          }\n        ],\n        \"count\": 5\n      },\n      {\n        \"_type\": \"GeminiLevel2\",\n        \"category\": \"Typing\",\n        \"subcategories\": [\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Statically Typed\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"C#\",\n                \"tags\": [\"Statically Typed\", \".NET\"]\n              },\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"C++\",\n                \"tags\": [\"Statically Typed\", \"Systems Programming\"]\n              }\n            ],\n            \"metadata\": {\n              \"popularity\": \"High\"\n            }\n          },\n          {\n            \"_type\": \"GeminiLevel3\",\n            \"name\": \"Dynamically Typed\",\n            \"items\": [\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"Python\",\n                \"tags\": [\"Dynamically Typed\", \"Scripting\"]\n              },\n              {\n                \"_type\": \"GeminiLevel4\",\n                \"value\": \"JavaScript\",\n                \"tags\": [\"Dynamically Typed\", \"Web Development\"]\n              }\n            ],\n            \"metadata\": {\n              \"popularity\": \"High\"\n            }\n          }\n        ],\n        \"count\": 4\n      }\n    ],\n    \"total\": 9,\n    \"summary\": \"A categorization of programming languages based on paradigm and typing.\"\n  },\n  \"depth_level\": 4,\n  \"complexity_score\": 2.5\n}\n```\n"
                   }
                 ],
                 "role": "model"
               },
               "finishReason": "STOP",
-              "avgLogprobs": -0.026676881563413392
+              "avgLogprobs": -0.022010735103062222
             }
           ],
           "usageMetadata": {
             "promptTokenCount": 1306,
-            "candidatesTokenCount": 572,
-            "totalTokenCount": 1878,
+            "candidatesTokenCount": 714,
+            "totalTokenCount": 2020,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
@@ -391,12 +391,12 @@ http_interactions:
             "candidatesTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 572
+                "tokenCount": 714
               }
             ]
           },
           "modelVersion": "gemini-1.5-flash",
-          "responseId": "kdHSaOOdOsLNnsEP-7a5uQY"
+          "responseId": "sr3TaI-2LMXqkdUPgOyy6Ag"
         }
-  recorded_at: Tue, 23 Sep 2025 16:57:58 GMT
+  recorded_at: Wed, 24 Sep 2025 09:45:27 GMT
 recorded_with: VCR 6.3.1
