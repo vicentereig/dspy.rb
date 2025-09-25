@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dspy (0.27.3)
+    dspy (0.27.4)
       anthropic (~> 1.5.0)
       async (~> 2.29)
       dry-configurable (~> 1.0)
@@ -99,7 +99,7 @@ GEM
       onnxruntime (>= 0.9)
       tokenizers (>= 0.5.3)
     io-event (1.14.0)
-    json (2.14.1)
+    json (2.15.0)
     jwt (3.1.2)
       base64
     logger (1.7.0)
@@ -161,7 +161,7 @@ GEM
       multi_json (~> 1.10)
     sorbet-result (1.4.0)
       sorbet-runtime (~> 0.5)
-    sorbet-runtime (0.6.12556)
+    sorbet-runtime (0.6.12566)
     sorbet-schema (0.9.2)
       sorbet-result (~> 1.1)
       sorbet-runtime (~> 0.5)
