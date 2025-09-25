@@ -5,6 +5,35 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.4] - 2025-01-25
+
+### Added
+- **OpenRouter Support** (@kovyrin - first contribution!) - Complete integration with 100+ LLMs
+  - Automatic fallback when models don't support structured outputs
+  - Custom headers support (HTTP-Referer, X-Title)  
+  - Full telemetry coverage through OpenAIAdapter inheritance
+  - Comprehensive integration tests with VCR cassettes
+  - Documentation guide for setup and configuration
+
+### Enhanced
+- **Gemini Flash Structured Outputs** - Extended support for Gemini 2.0 models
+  - Added support for gemini-2.0-flash and gemini-2.0-flash-001
+  - Improved schema conversion reliability
+  - Comprehensive test coverage
+
+### Fixed
+- **Security** - NewRelic license key filtering in VCR cassettes
+- **Test Infrastructure** - Replaced SSEVCR with standard VCR for better reliability
+- **CI/CD** - Added OpenRouter support to continuous integration
+
+### Documentation
+- Added comprehensive OpenRouter setup guide
+- Updated JSON modes comparison with Gemini 2.0 benchmarks
+- Enhanced installation documentation
+
+### Contributors
+- @kovyrin - First contribution! OpenRouter integration
+
 ## [0.27.3] - 2025-09-20
 
 ### Added
