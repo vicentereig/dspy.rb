@@ -369,13 +369,22 @@ module DSPy
     sig { params(input_kwargs: T::Hash[Symbol, T.untyped], reasoning_result: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
     def create_enhanced_result(input_kwargs, reasoning_result)
       output_field_name = @original_signature_class.output_struct_class.props.keys.first
+      final_answer = reasoning_result[:final_answer]
 
       output_data = input_kwargs.merge({
         history: reasoning_result[:history].map(&:to_h),
         iterations: reasoning_result[:iterations],
         tools_used: reasoning_result[:tools_used]
       })
-      output_data[output_field_name] = reasoning_result[:final_answer]
+
+      # Check if final_answer is a String but the expected type is NOT String
+      # This happens when max iterations is reached or the LLM generates an error message
+      output_field_type = @original_signature_class.output_struct_class.props[output_field_name][:type_object]
+      if final_answer.is_a?(String) && !string_compatible_type?(output_field_type)
+        output_data[output_field_name] = default_value_for_type(output_field_type)
+      else
+        output_data[output_field_name] = final_answer
+      end
 
       @enhanced_output_struct.new(**output_data)
     end
@@ -500,6 +509,56 @@ module DSPy
     sig { returns(String) }
     def default_no_answer_message
       "No answer reached within #{@max_iterations} iterations"
+    end
+
+    # Checks if a type is String or compatible with String (e.g., T.any(String, ...) or T.nilable(String))
+    sig { params(type_object: T.untyped).returns(T::Boolean) }
+    def string_compatible_type?(type_object)
+      case type_object
+      when T::Types::Simple
+        type_object.raw_type == String
+      when T::Types::Union
+        # Check if any of the union types is String
+        type_object.types.any? { |t| t.is_a?(T::Types::Simple) && t.raw_type == String }
+      else
+        false
+      end
+    end
+
+    # Returns an appropriate default value for a given Sorbet type
+    # This is used when max iterations is reached without a successful completion
+    sig { params(type_object: T.untyped).returns(T.untyped) }
+    def default_value_for_type(type_object)
+      # Handle TypedArray (T::Array[...])
+      if type_object.is_a?(T::Types::TypedArray)
+        return []
+      end
+
+      # Handle TypedHash (T::Hash[...])
+      if type_object.is_a?(T::Types::TypedHash)
+        return {}
+      end
+
+      # Handle simple types
+      case type_object
+      when T::Types::Simple
+        raw_type = type_object.raw_type
+        case raw_type.to_s
+        when 'String' then ''
+        when 'Integer' then 0
+        when 'Float' then 0.0
+        when 'TrueClass', 'FalseClass' then false
+        else
+          # For T::Struct types, return nil as fallback
+          nil
+        end
+      when T::Types::Union
+        # For unions, return nil (assuming it's nilable) or first non-nil default
+        nil
+      else
+        # Default fallback for unknown types
+        nil
+      end
     end
 
     # Tool execution method
