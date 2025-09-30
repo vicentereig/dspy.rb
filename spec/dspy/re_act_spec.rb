@@ -652,4 +652,57 @@ RSpec.describe DSPy::ReAct do
     end
   end
 
+  describe 'max iterations with typed output field' do
+    # Define a T::Struct for the output type
+    class CourseResult < T::Struct
+      const :name, String
+      const :code, String
+      const :credits, Integer
+    end
+
+    # Define signature with typed array output
+    class FindCoursesSignature < DSPy::Signature
+      description "Find courses matching the query"
+
+      input do
+        const :query, String
+      end
+
+      output do
+        const :courses, T::Array[CourseResult]
+      end
+    end
+
+    # Define a tool that won't help solve the problem
+    class IrrelevantTool < DSPy::Tools::Base
+      tool_name 'irrelevant_tool'
+      tool_description "A tool that doesn't help find courses"
+
+      sig { returns(String) }
+      def call
+        "This tool doesn't help with courses"
+      end
+    end
+
+    let(:tools) { [IrrelevantTool.new] }
+    let(:agent) { DSPy::ReAct.new(FindCoursesSignature, tools: tools, max_iterations: 1) }
+
+    before(:all) do
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      end
+    end
+
+    it 'handles max iterations without TypeError when output field is typed' do
+      result = VCR.use_cassette('openai/gpt4o-mini/react_max_iterations_typed_output') do
+        agent.forward(query: "Find computer science courses")
+      end
+
+      # Should not raise TypeError
+      # Should return a valid result with empty array or handle gracefully
+      expect(result).to respond_to(:courses)
+      expect(result.courses).to be_a(Array)
+    end
+  end
+
 end
