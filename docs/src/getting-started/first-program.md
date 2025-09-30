@@ -219,29 +219,29 @@ This isn't just type checking—it's **runtime validation** that ensures your LL
 DSPy.rb's ReAct agents also use idiomatic Ruby type definitions for tools:
 
 ```ruby
-# Define tools with clear Ruby interfaces
-class WeatherTool < DSPy::Tool
-  description "Get current weather for a location"
-  
-  input do
-    const :location, String, desc: "City name or coordinates"
-    const :units, T.nilable(String), enum: ["celsius", "fahrenheit"], default: "celsius"
-  end
-  
-  output do
+# Define tools with clear Ruby interfaces and Sorbet type signatures
+class WeatherTool < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name 'weather'
+  tool_description "Get current weather for a location"
+
+  # Define a response struct for type safety
+  class WeatherResponse < T::Struct
     const :temperature, Float
     const :condition, String
     const :humidity, Float
-    const :forecast, T::Array[T.untyped], desc: "Next 3 days forecast"
+    const :forecast, T::Array[T.untyped]
   end
-  
+
+  sig { params(location: String, units: String).returns(WeatherResponse) }
   def call(location:, units: "celsius")
     # Your weather API logic here
     WeatherResponse.new(
       temperature: 22.5,
       condition: "Partly cloudy",
       humidity: 0.65,
-      forecast: [...]
+      forecast: []
     )
   end
 end
