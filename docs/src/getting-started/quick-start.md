@@ -203,11 +203,15 @@ end
 
 ### Duck Typing with Tools
 
-Create tools that follow Ruby's duck typing principles:
+Create tools that follow Ruby's duck typing principles with proper type signatures:
 
 ```ruby
 # Any object that responds to #call can be a tool
+# Best practice: Use Sorbet signatures for better LLM tool usage
 class WeatherTool
+  extend T::Sig
+
+  sig { params(location: String).returns(T::Hash[Symbol, T.untyped]) }
   def call(location:)
     # In real app, this would call an API
     { temperature: 72, conditions: "sunny" }
@@ -226,6 +230,8 @@ agent = DSPy::ReAct.new(
   }
 )
 ```
+
+**Note**: Sorbet type signatures help DSPy.rb generate accurate JSON schemas for the LLM, leading to more reliable tool usage and better handling of complex types.
 
 ## Key Concepts
 
