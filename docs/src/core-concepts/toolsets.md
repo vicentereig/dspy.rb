@@ -59,6 +59,12 @@ agent = DSPy::ReAct.new(
 )
 ```
 
+**Why Sorbet Signatures Matter**: Type signatures (`sig { ... }`) enable DSPy.rb to generate accurate JSON schemas that describe your tools to the LLM. This dramatically improves the LLM's ability to use tools correctly by:
+- Providing precise parameter types and descriptions
+- Indicating which parameters are required vs optional
+- Supporting complex types (enums, structs, arrays, unions)
+- Preventing runtime errors from type mismatches
+
 ## Memory Toolset Example
 
 The included `MemoryToolset` shows how to implement a working toolset:
