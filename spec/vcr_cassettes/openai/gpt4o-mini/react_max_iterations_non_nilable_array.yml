@@ -1,0 +1,205 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
+        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
+        {\n                  \"type\": \"string\"\n                },\n                \"description\":
+        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
+        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        \"null\"\n              }\n            ],\n            \"description\": \"Union
+        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"irrelevant_tool\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
+        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
+        object matching the tool''s schema. If action is \\\"finish\\\", this field
+        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Find computer science
+        courses\\\"}\",\n  \"history\": [],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"irrelevant_tool\",\n      \"description\": \"A tool that doesn''t help find
+        courses\",\n      \"schema\": {\n        \"name\": \"irrelevant_tool\",\n        \"description\":
+        \"A tool that doesn''t help find courses\",\n        \"parameters\": {\n          \"type\":
+        \"object\",\n          \"properties\": {},\n          \"required\": []\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
+        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
+        about what to do next, considering the history and observations.\",\n  \"action\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
+        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
+        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
+        Includes all required fields\n3. Uses the correct data types for each field\n4.
+        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '6591'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Sep 2025 16:40:06 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1940'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2352'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '198526'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 442ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 987528ee780b4289-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CLXgSw696lqbGei2PDb8Z6IXO8iP6",
+          "object": "chat.completion",
+          "created": 1759250404,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find relevant computer science courses, but there are no available tools that can help with this task as the only tool provided is irrelevant. Therefore, I should indicate that no relevant tool is available and finish the process.\",\n  \"action\": \"finish\",\n  \"action_input\": \"No relevant tools available to find computer science courses.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1294,
+            "completion_tokens": 83,
+            "total_tokens": 1377,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Tue, 30 Sep 2025 16:40:06 GMT
+recorded_with: VCR 6.3.1

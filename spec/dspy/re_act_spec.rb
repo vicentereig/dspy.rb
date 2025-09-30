@@ -660,7 +660,7 @@ RSpec.describe DSPy::ReAct do
       const :credits, Integer
     end
 
-    # Define signature with typed array output
+    # Define signature with nilable typed array output (matching the real issue)
     class FindCoursesSignature < DSPy::Signature
       description "Find courses matching the query"
 
@@ -669,7 +669,7 @@ RSpec.describe DSPy::ReAct do
       end
 
       output do
-        const :courses, T::Array[CourseResult]
+        const :courses, T.nilable(T::Array[CourseResult])
       end
     end
 
@@ -693,15 +693,41 @@ RSpec.describe DSPy::ReAct do
       end
     end
 
-    it 'handles max iterations without TypeError when output field is typed' do
+    it 'handles max iterations without TypeError when output field is nilable typed array' do
       result = VCR.use_cassette('openai/gpt4o-mini/react_max_iterations_typed_output') do
         agent.forward(query: "Find computer science courses")
       end
 
       # Should not raise TypeError
-      # Should return a valid result with empty array or handle gracefully
+      # For nilable types, the default value should be nil (not an empty array)
       expect(result).to respond_to(:courses)
-      expect(result.courses).to be_a(Array)
+      expect(result.courses).to be_nil
+    end
+
+    context 'with non-nilable array output' do
+      class NonNilableCoursesSignature < DSPy::Signature
+        description "Find courses matching the query (non-nilable)"
+
+        input do
+          const :query, String
+        end
+
+        output do
+          const :courses, T::Array[CourseResult]
+        end
+      end
+
+      let(:agent) { DSPy::ReAct.new(NonNilableCoursesSignature, tools: tools, max_iterations: 1) }
+
+      it 'returns empty array for non-nilable array types' do
+        result = VCR.use_cassette('openai/gpt4o-mini/react_max_iterations_non_nilable_array') do
+          agent.forward(query: "Find computer science courses")
+        end
+
+        # For non-nilable array types, return empty array
+        expect(result).to respond_to(:courses)
+        expect(result.courses).to eq([])
+      end
     end
   end
 
