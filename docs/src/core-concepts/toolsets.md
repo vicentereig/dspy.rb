@@ -54,7 +54,7 @@ end
 # Use with ReAct agent
 toolset = MyToolset.new
 agent = DSPy::ReAct.new(
-  signature: MySignature,
+  MySignature,
   tools: toolset.class.to_tools
 )
 ```
@@ -70,6 +70,20 @@ agent = DSPy::ReAct.new(
 The included `MemoryToolset` shows how to implement a working toolset:
 
 ```ruby
+# Define a signature for question-answering
+class QuestionAnswerSignature < DSPy::Signature
+  description "Answer questions using available memory tools"
+
+  input do
+    const :question, String
+  end
+
+  output do
+    const :answer, String
+  end
+end
+
+# Create memory toolset instance
 memory = DSPy::Tools::MemoryToolset.new
 
 # The LLM sees these individual tools:
@@ -83,8 +97,9 @@ memory = DSPy::Tools::MemoryToolset.new
 # - memory_count
 # - memory_get_metadata
 
+# Create ReAct agent with signature as positional argument
 agent = DSPy::ReAct.new(
-  signature: QASignature,
+  QuestionAnswerSignature,
   tools: memory.class.to_tools
 )
 ```
