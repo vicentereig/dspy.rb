@@ -33,15 +33,19 @@ Use toolsets when you have related operations that share state or logic:
 
 ```ruby
 class MyToolset < DSPy::Tools::Toolset
+  extend T::Sig
+
   toolset_name "my_tools"
-  
+
   tool :operation_one, description: "Does something"
   tool :operation_two, description: "Does something else"
-  
+
+  sig { params(input: String).returns(String) }
   def operation_one(input:)
     # Implementation
   end
-  
+
+  sig { params(value: String, optional: T.nilable(String)).returns(String) }
   def operation_two(value:, optional: nil)
     # Implementation
   end
