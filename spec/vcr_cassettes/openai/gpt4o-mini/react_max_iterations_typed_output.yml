@@ -15,12 +15,21 @@ http_interactions:
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
+        {\n            \"oneOf\": [\n              {\n                \"type\": \"object\",\n                \"properties\":
+        {\n                  \"_type\": {\n                    \"type\": \"string\",\n                    \"const\":
+        \"FinishInput\"\n                  },\n                  \"value\": {\n                    \"type\":
+        \"string\"\n                  }\n                },\n                \"required\":
+        [\n                  \"_type\",\n                  \"value\"\n                ],\n                \"description\":
+        \"DSPy::FinishInput struct\"\n              },\n              {\n                \"type\":
+        \"object\",\n                \"properties\": {\n                  \"_type\":
+        {\n                    \"type\": \"string\",\n                    \"const\":
+        \"ToolInput\"\n                  },\n                  \"parameters\": {\n                    \"type\":
+        \"object\",\n                    \"propertyNames\": {\n                      \"type\":
+        \"string\"\n                    },\n                    \"additionalProperties\":
+        {\n                      \"type\": \"string\"\n                    },\n                    \"description\":
+        \"A mapping where keys are strings and values are strings\"\n                  }\n                },\n                \"required\":
+        [\n                  \"_type\",\n                  \"parameters\"\n                ],\n                \"description\":
+        \"DSPy::ToolInput struct\"\n              },\n              {\n                \"type\":
         \"null\"\n              }\n            ],\n            \"description\": \"Union
         of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
         [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
@@ -45,13 +54,22 @@ http_interactions:
         {\n      \"type\": \"string\",\n      \"enum\": [\n        \"irrelevant_tool\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
         input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"_type\": {\n              \"type\": \"string\",\n              \"const\":
+        \"FinishInput\"\n            },\n            \"value\": {\n              \"type\":
+        \"string\"\n            }\n          },\n          \"required\": [\n            \"_type\",\n            \"value\"\n          ],\n          \"description\":
+        \"DSPy::FinishInput struct\"\n        },\n        {\n          \"type\": \"object\",\n          \"properties\":
+        {\n            \"_type\": {\n              \"type\": \"string\",\n              \"const\":
+        \"ToolInput\"\n            },\n            \"parameters\": {\n              \"type\":
+        \"object\",\n              \"propertyNames\": {\n                \"type\":
+        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
+        \"string\"\n              },\n              \"description\": \"A mapping where
+        keys are strings and values are strings\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"parameters\"\n          ],\n          \"description\":
+        \"DSPy::ToolInput struct\"\n        }\n      ],\n      \"description\": \"Input
+        for the chosen action. If action is a tool name, provide a ToolInput with
+        parameters matching the tool''s schema. If action is \\\"finish\\\", provide
+        a FinishInput with the final result value.\"\n    }\n  },\n  \"required\":
         [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
@@ -105,14 +123,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '6591'
+      - '8123'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Tue, 30 Sep 2025 16:33:47 GMT
+      - Wed, 01 Oct 2025 18:14:15 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -124,25 +142,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1689'
+      - '3335'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1930'
+      - '3412'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9990'
       X-Ratelimit-Remaining-Tokens:
-      - '198526'
+      - '198179'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 1m26.377s
       X-Ratelimit-Reset-Tokens:
-      - 442ms
+      - 546ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -159,23 +177,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98751fae18d9a0f4-EWR
+      - 987df0366eca83d1-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CLXaLfGXzLx1dchFXJf4q5b0c6jV2",
+          "id": "chatcmpl-CLvd6gsD2aobn0KPwam3YS4I3b0PF",
           "object": "chat.completion",
-          "created": 1759250025,
+          "created": 1759342452,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"There are no relevant tools available to help find computer science courses. Instead, I will conclude this task as there is not enough information to proceed.\",\n  \"action\": \"finish\",\n  \"action_input\": \"No tools available for finding computer science courses.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no relevant tool available to find computer science courses and the only tool listed is irrelevant, I should take no meaningful action and indicate that this task cannot be completed with the current tools.\",\n  \"action\": \"finish\",\n  \"action_input\": {\n    \"_type\": \"FinishInput\",\n    \"value\": \"No available tools to find computer science courses.\"\n  }\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -184,9 +202,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1294,
-            "completion_tokens": 66,
-            "total_tokens": 1360,
+            "prompt_tokens": 1534,
+            "completion_tokens": 91,
+            "total_tokens": 1625,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -201,5 +219,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Tue, 30 Sep 2025 16:33:46 GMT
+  recorded_at: Wed, 01 Oct 2025 18:14:15 GMT
 recorded_with: VCR 6.3.1

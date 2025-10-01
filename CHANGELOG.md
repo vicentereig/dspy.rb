@@ -5,6 +5,74 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+#### ⚠️ BREAKING CHANGE: ReAct action_input Type Safety
+
+**What Changed:**
+- ReAct's `action_input` field now uses discriminated union types with wrapper structs (`FinishInput` and `ToolInput`)
+- This change enables OpenAI structured outputs compatibility with ReAct agents
+
+**Migration Required:**
+
+History entries now contain wrapped structs with `_type` discriminators:
+
+```ruby
+# Before (≤ 0.27.x):
+history = [
+  {
+    step: 1,
+    action: "add_numbers",
+    action_input: {x: 42, y: 58},  # Plain hash
+    observation: "100"
+  }
+]
+
+# After (≥ 0.28.x):
+history = [
+  {
+    step: 1,
+    action: "add_numbers",
+    action_input: {
+      _type: "ToolInput",           # Discriminator field
+      parameters: {x: 42, y: 58}    # Wrapped in parameters
+    },
+    observation: "100"
+  }
+]
+```
+
+**Benefits:**
+- ✅ **OpenAI Structured Outputs**: ReAct now works with `structured_outputs: true` at the LM level
+- ✅ **Better Type Safety**: Explicit wrapper types improve Sorbet type checking
+- ✅ **Aligns with ADR-004**: Follows library's discriminated union pattern
+
+**What You Need to Do:**
+
+If you're accessing `action_input` from history entries in your code:
+
+```ruby
+# Before:
+history.each do |entry|
+  params = entry[:action_input]  # Was a plain hash or string
+end
+
+# After:
+history.each do |entry|
+  action_input = entry[:action_input]
+  if action_input['_type'] == 'ToolInput'
+    params = action_input['parameters']  # Extract from wrapper
+  elsif action_input['_type'] == 'FinishInput'
+    result = action_input['value']       # Extract from wrapper
+  end
+end
+```
+
+**Fixes:**
+- Resolves GitHub issue #129 - OpenAI structured outputs incompatibility with ReAct
+
 ## [0.27.4] - 2025-01-25
 
 ### Added

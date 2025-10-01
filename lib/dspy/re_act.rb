@@ -9,23 +9,39 @@ require 'json'
 require_relative 'mixins/struct_builder'
 
 module DSPy
+  # Wrapper structs for action_input discriminated union
+  # These enable OpenAI structured outputs compatibility by adding _type discriminators
+  class FinishInput < T::Struct
+    const :value, String
+  end
+
+  class ToolInput < T::Struct
+    const :parameters, T::Hash[T.untyped, T.untyped]
+  end
+
   # Define a simple struct for history entries with proper type annotations
   class HistoryEntry < T::Struct
     const :step, Integer
     prop :thought, T.nilable(String)
     prop :action, T.nilable(String)
-    prop :action_input, T.nilable(T.any(String, Numeric, T::Hash[T.untyped, T.untyped], T::Array[T.untyped]))
+    prop :action_input, T.nilable(T.any(FinishInput, ToolInput))
     prop :observation, T.nilable(String)
 
     # Custom serialization to ensure compatibility with the rest of the code
     def to_h
-      {
+      result = {
         step: step,
         thought: thought,
         action: action,
-        action_input: action_input,
         observation: observation
-      }.compact
+      }
+
+      # Serialize action_input struct to hash with _type discriminator
+      if action_input
+        result[:action_input] = DSPy::TypeSerializer.serialize(action_input)
+      end
+
+      result.compact
     end
   end
   # Base class for ReAct thought generation - will be customized per input type
@@ -37,8 +53,8 @@ module DSPy
         description: "Reasoning about what to do next, considering the history and observations."
       const :action, String,
         description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
-      const :action_input, T.any(String, T::Hash[T.untyped, T.untyped]),
-        description: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final result based on processing the input data. This result MUST be directly taken from the relevant Observation in the history if available."
+      const :action_input, T.any(FinishInput, ToolInput),
+        description: "Input for the chosen action. If action is a tool name, provide a ToolInput with parameters matching the tool's schema. If action is \"finish\", provide a FinishInput with the final result value."
     end
   end
 
@@ -202,8 +218,8 @@ module DSPy
             description: "Reasoning about what to do next, considering the history and observations."
           const :action, action_enum_class,
             description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
-          const :action_input, T.any(String, T::Hash[T.untyped, T.untyped]),
-            description: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final result based on processing the input data."
+          const :action_input, T.any(FinishInput, ToolInput),
+            description: "Input for the chosen action. If action is a tool name, provide a ToolInput with parameters matching the tool's schema. If action is \"finish\", provide a FinishInput with the final result value."
         end
       end
     end
@@ -409,29 +425,32 @@ module DSPy
       !!@tools[action_str.downcase]
     end
 
-    sig { params(action: T.nilable(T.any(String, T::Enum)), action_input: T.untyped, iteration: Integer).returns(String) }
+    sig { params(action: T.nilable(T.any(String, T::Enum)), action_input: T.any(FinishInput, ToolInput), iteration: Integer).returns(String) }
     def execute_tool_with_instrumentation(action, action_input, iteration)
       return "Unknown action: #{action}. Available actions: #{@tools.keys.join(', ')}, finish" unless action
-      
+
       action_str = action.respond_to?(:serialize) ? action.serialize : action.to_s
-      
+
       if @tools[action_str.downcase]
+        # Unwrap ToolInput to get the parameters hash
+        tool_params = action_input.is_a?(ToolInput) ? action_input.parameters : {}
+
         DSPy::Context.with_span(
           operation: 'react.tool_call',
           **DSPy::ObservationType::Tool.langfuse_attributes,
           'dspy.module' => 'ReAct',
           'react.iteration' => iteration,
           'tool.name' => action_str.downcase,
-          'tool.input' => action_input
+          'tool.input' => tool_params
         ) do
-          execute_action(action_str, action_input)
+          execute_action(action_str, tool_params)
         end
       else
         "Unknown action: #{action_str}. Available actions: #{@tools.keys.join(', ')}, finish"
       end
     end
 
-    sig { params(step: Integer, thought: String, action: String, action_input: T.untyped, observation: String).returns(HistoryEntry) }
+    sig { params(step: Integer, thought: String, action: String, action_input: T.any(FinishInput, ToolInput), observation: String).returns(HistoryEntry) }
     def create_history_entry(step, thought, action, action_input, observation)
       HistoryEntry.new(
         step: step,
@@ -471,18 +490,20 @@ module DSPy
 
       action_str = final_thought.action.respond_to?(:serialize) ? final_thought.action.serialize : final_thought.action.to_s
       if action_str.downcase != FINISH_ACTION
-        forced_answer = if observation_result.interpretation && !observation_result.interpretation.empty?
-                          observation_result.interpretation
-                        else
-                          history.last&.observation || "No answer available"
-                        end
+        forced_answer_text = if observation_result.interpretation && !observation_result.interpretation.empty?
+                               observation_result.interpretation
+                             else
+                               history.last&.observation || "No answer available"
+                             end
+        # Wrap the forced answer in FinishInput
+        forced_answer = FinishInput.new(value: forced_answer_text)
         handle_finish_action(forced_answer, history.last&.observation, iteration + 1, final_thought.thought, FINISH_ACTION, history)
       else
         handle_finish_action(final_thought.action_input, history.last&.observation, iteration + 1, final_thought.thought, final_thought.action, history)
       end
     end
 
-    sig { params(iteration: Integer, thought: String, action: String, action_input: T.untyped, observation: String, tools_used: T::Array[String]).void }
+    sig { params(iteration: Integer, thought: String, action: String, action_input: T.any(FinishInput, ToolInput), observation: String, tools_used: T::Array[String]).void }
     def emit_iteration_complete_event(iteration, thought, action, action_input, observation, tools_used)
       DSPy.event('react.iteration_complete', {
         'react.iteration' => iteration,
@@ -562,20 +583,18 @@ module DSPy
     end
 
     # Tool execution method
-    sig { params(action: String, action_input: T.untyped).returns(String) }
+    sig { params(action: String, action_input: T::Hash[T.untyped, T.untyped]).returns(String) }
     def execute_action(action, action_input)
       tool_name = action.downcase
       tool = @tools[tool_name]
       return "Tool '#{action}' not found. Available tools: #{@tools.keys.join(', ')}" unless tool
 
       begin
-        result = if action_input.nil? ||
-                   (action_input.is_a?(String) && action_input.strip.empty?)
+        result = if action_input.nil? || action_input.empty?
           # No input provided
           tool.dynamic_call({})
         else
-          # Pass the action_input directly to dynamic_call, which can handle
-          # either a Hash or a JSON string
+          # Pass the action_input hash to dynamic_call
           tool.dynamic_call(action_input)
         end
         result.to_s
@@ -620,7 +639,7 @@ module DSPy
           step: 1,
           thought: "I need to think about this question...",
           action: "some_tool",
-          action_input: "input for tool",
+          action_input: ToolInput.new(parameters: {"param" => "value"}),
           observation: "result from tool"
         }
       ]
@@ -629,24 +648,32 @@ module DSPy
       example
     end
 
-    sig { params(action_input: T.untyped, last_observation: T.nilable(String), step: Integer, thought: String, action: T.any(String, T::Enum), history: T::Array[HistoryEntry]).returns(String) }
+    sig { params(action_input: T.any(FinishInput, ToolInput), last_observation: T.nilable(String), step: Integer, thought: String, action: T.any(String, T::Enum), history: T::Array[HistoryEntry]).returns(String) }
     def handle_finish_action(action_input, last_observation, step, thought, action, history)
-      final_answer = action_input.to_s
+      # Extract the value from FinishInput
+      final_answer = if action_input.is_a?(FinishInput)
+                       action_input.value
+                     else
+                       # Fallback for unexpected types (shouldn't happen with proper schema)
+                       action_input.to_s
+                     end
 
       # If final_answer is empty but we have a last observation, use it
       if (final_answer.nil? || final_answer.empty?) && last_observation
         final_answer = last_observation
+        # Wrap it back in FinishInput for storage
+        action_input = FinishInput.new(value: final_answer)
       end
 
       # Convert action enum to string for storage in history
       action_str = action.respond_to?(:serialize) ? action.serialize : action.to_s
 
-      # Always add the finish action to history
+      # Always add the finish action to history with the wrapped struct
       history << HistoryEntry.new(
         step: step,
         thought: thought,
         action: action_str,
-        action_input: final_answer,
+        action_input: action_input,
         observation: nil  # No observation for finish action
       )
 

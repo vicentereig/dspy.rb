@@ -116,9 +116,11 @@ RSpec.describe DSPy::ReAct do
       end
     end
 
-    it 'history entries have action_input as a string or hash' do
+    it 'history entries have action_input as FinishInput or ToolInput struct' do
       prediction.history.each do |entry|
-        expect(entry[:action_input]).to satisfy { |val| val.is_a?(String) || val.is_a?(Hash) }
+        expect(entry[:action_input]).to satisfy { |val|
+          val.is_a?(Hash) && (val['_type'] == 'FinishInput' || val['_type'] == 'ToolInput')
+        }
       end
     end
 

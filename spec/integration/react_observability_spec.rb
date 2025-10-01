@@ -41,7 +41,7 @@ RSpec.describe 'ReAct Observability Integration' do
       mock_lm = instance_double(DSPy::LM)
       allow(DSPy).to receive(:current_lm).and_return(mock_lm)
       allow(mock_lm).to receive(:chat).and_return(
-        { thought: 'I can answer directly', action: 'finish', action_input: '8' }
+        { thought: 'I can answer directly', action: 'finish', action_input: DSPy::FinishInput.new(value: '8') }
       )
       
       # Capture span.start events (following pattern from context_spec.rb)
@@ -87,11 +87,11 @@ RSpec.describe 'ReAct Observability Integration' do
         call_count += 1
         case call_count
         when 1
-          { thought: 'I need to use the add tool', action: 'add_numbers', action_input: '{"x": 5, "y": 3}' }
+          { thought: 'I need to use the add tool', action: 'add_numbers', action_input: DSPy::ToolInput.new(parameters: {"x" => 5, "y" => 3}) }
         when 2
           { interpretation: 'The tool returned 8', next_step: 'finish' }
         else
-          { thought: 'I have the answer', action: 'finish', action_input: '8' }
+          { thought: 'I have the answer', action: 'finish', action_input: DSPy::FinishInput.new(value: '8') }
         end
       end
       
