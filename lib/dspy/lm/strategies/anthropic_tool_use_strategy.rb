@@ -119,72 +119,12 @@ module DSPy
         sig { params(fields: T::Hash[Symbol, T.untyped]).returns(T::Hash[String, T.untyped]) }
         def build_properties_from_fields(fields)
           properties = {}
-          
+
           fields.each do |field_name, descriptor|
-            properties[field_name.to_s] = convert_type_to_json_schema(descriptor.type)
+            properties[field_name.to_s] = DSPy::TypeSystem::SorbetJsonSchema.type_to_json_schema(descriptor.type)
           end
-          
+
           properties
-        end
-
-        sig { params(type: T.untyped).returns(T::Hash[String, T.untyped]) }
-        def convert_type_to_json_schema(type)
-          # Handle raw Ruby class types - use === for class comparison
-          if type == String
-            return { type: "string" }
-          elsif type == Integer
-            return { type: "integer" }
-          elsif type == Float
-            return { type: "number" }
-          elsif type == TrueClass || type == FalseClass
-            return { type: "boolean" }
-          end
-          
-          # Handle Sorbet types
-          case type
-          when T::Types::Simple
-            case type.raw_type.to_s
-            when "String"
-              { type: "string" }
-            when "Integer"
-              { type: "integer" }
-            when "Float", "Numeric"
-              { type: "number" }
-            when "TrueClass", "FalseClass"
-              { type: "boolean" }
-            else
-              { type: "string" } # Default fallback
-            end
-          when T::Types::TypedArray
-            {
-              type: "array",
-              items: convert_type_to_json_schema(type.type)
-            }
-          when T::Types::TypedHash
-            {
-              type: "object",
-              additionalProperties: convert_type_to_json_schema(type.values)
-            }
-          else
-            # For complex types, try to introspect
-            if type.respond_to?(:props)
-              {
-                type: "object",
-                properties: build_properties_from_props(type.props)
-              }
-            else
-              { type: "object" } # Generic object fallback
-            end
-          end
-        end
-
-        sig { params(props: T.untyped).returns(T::Hash[String, T.untyped]) }
-        def build_properties_from_props(props)
-          result = {}
-          props.each do |prop_name, prop_info|
-            result[prop_name.to_s] = convert_type_to_json_schema(prop_info[:type])
-          end
-          result
         end
       end
     end
