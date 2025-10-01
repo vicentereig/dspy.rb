@@ -12,8 +12,10 @@ module DSPy
       extend T::Helpers
 
       # Convert a Sorbet type to JSON Schema format
-      sig { params(type: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
-      def self.type_to_json_schema(type)
+      sig { params(type: T.untyped, visited: T.nilable(T::Set[T.untyped])).returns(T::Hash[Symbol, T.untyped]) }
+      def self.type_to_json_schema(type, visited = nil)
+        visited ||= Set.new
+        
         # Handle T::Boolean type alias first
         if type == T::Boolean
           return { type: "boolean" }
@@ -21,7 +23,7 @@ module DSPy
 
         # Handle type aliases by resolving to their underlying type
         if type.is_a?(T::Private::Types::TypeAlias)
-          return self.type_to_json_schema(type.aliased_type)
+          return self.type_to_json_schema(type.aliased_type, visited)
         end
 
         # Handle raw class types first
@@ -38,11 +40,26 @@ module DSPy
             { type: "number" }
           elsif type == Numeric
             { type: "number" }
+          elsif type == Date
+            { type: "string", format: "date" }
+          elsif type == DateTime
+            { type: "string", format: "date-time" }
+          elsif type == Time
+            { type: "string", format: "date-time" }
           elsif [TrueClass, FalseClass].include?(type)
             { type: "boolean" }
           elsif type < T::Struct
             # Handle custom T::Struct classes by generating nested object schema
-            self.generate_struct_schema(type)
+            # Check for recursion
+            if visited.include?(type)
+              # Return a reference to avoid infinite recursion
+              {
+                "$ref" => "#/definitions/#{type.name.split('::').last}",
+                description: "Recursive reference to #{type.name}"
+              }
+            else
+              self.generate_struct_schema(type, visited)
+            end
           else
             { type: "string" }  # Default fallback
           end
@@ -56,6 +73,12 @@ module DSPy
             { type: "number" }
           when "Numeric"
             { type: "number" }
+          when "Date"
+            { type: "string", format: "date" }
+          when "DateTime"
+            { type: "string", format: "date-time" }
+          when "Time"
+            { type: "string", format: "date-time" }
           when "TrueClass", "FalseClass"
             { type: "boolean" }
           when "T::Boolean"
@@ -68,7 +91,14 @@ module DSPy
               { type: "string", enum: values }
             elsif type.raw_type < T::Struct
               # Handle custom T::Struct classes
-              generate_struct_schema(type.raw_type)
+              if visited.include?(type.raw_type)
+                {
+                  "$ref" => "#/definitions/#{type.raw_type.name.split('::').last}",
+                  description: "Recursive reference to #{type.raw_type.name}"
+                }
+              else
+                generate_struct_schema(type.raw_type, visited)
+              end
             else
               { type: "string" }  # Default fallback
             end
@@ -77,13 +107,13 @@ module DSPy
           # Handle arrays properly with nested item type
           {
             type: "array",
-            items: self.type_to_json_schema(type.type)
+            items: self.type_to_json_schema(type.type, visited)
           }
         elsif type.is_a?(T::Types::TypedHash)
           # Handle hashes as objects with additionalProperties
           # TypedHash has keys and values methods to access its key and value types
-          key_schema = self.type_to_json_schema(type.keys)
-          value_schema = self.type_to_json_schema(type.values)
+          key_schema = self.type_to_json_schema(type.keys, visited)
+          value_schema = self.type_to_json_schema(type.values, visited)
           
           # Create a more descriptive schema for nested structures
           {
@@ -99,7 +129,7 @@ module DSPy
           required = []
           
           type.types.each do |key, value_type|
-            properties[key] = self.type_to_json_schema(value_type)
+            properties[key] = self.type_to_json_schema(value_type, visited)
             required << key
           end
           
@@ -125,7 +155,7 @@ module DSPy
             end
             
             if non_nil_type
-              base_schema = self.type_to_json_schema(non_nil_type)
+              base_schema = self.type_to_json_schema(non_nil_type, visited)
               if base_schema[:type].is_a?(String)
                 # Convert single type to array with null
                 { type: [base_schema[:type], "null"] }.merge(base_schema.except(:type))
@@ -141,13 +171,13 @@ module DSPy
             # Generate oneOf schema for all types
             if type.respond_to?(:types) && type.types.length > 1
               {
-                oneOf: type.types.map { |t| self.type_to_json_schema(t) },
+                oneOf: type.types.map { |t| self.type_to_json_schema(t, visited) },
                 description: "Union of multiple types"
               }
             else
               # Single type or fallback
               first_type = type.respond_to?(:types) ? type.types.first : type
-              self.type_to_json_schema(first_type)
+              self.type_to_json_schema(first_type, visited)
             end
           end
         elsif type.is_a?(T::Types::Union)
@@ -168,7 +198,7 @@ module DSPy
           
           if non_nil_types.size == 1 && is_nilable
             # This is T.nilable(SomeType) - generate proper schema with null allowed
-            base_schema = self.type_to_json_schema(non_nil_types.first)
+            base_schema = self.type_to_json_schema(non_nil_types.first, visited)
             if base_schema[:type].is_a?(String)
               # Convert single type to array with null
               { type: [base_schema[:type], "null"] }.merge(base_schema.except(:type))
@@ -178,11 +208,11 @@ module DSPy
             end
           elsif non_nil_types.size == 1
             # Non-nilable single type union (shouldn't happen in practice)
-            self.type_to_json_schema(non_nil_types.first)
+            self.type_to_json_schema(non_nil_types.first, visited)
           elsif non_nil_types.size > 1
             # Handle complex unions with oneOf for better JSON schema compliance
             base_schema = {
-              oneOf: non_nil_types.map { |t| self.type_to_json_schema(t) },
+              oneOf: non_nil_types.map { |t| self.type_to_json_schema(t, visited) },
               description: "Union of multiple types"
             }
             if is_nilable
@@ -205,9 +235,14 @@ module DSPy
       end
 
       # Generate JSON schema for custom T::Struct classes
-      sig { params(struct_class: T.class_of(T::Struct)).returns(T::Hash[Symbol, T.untyped]) }
-      def self.generate_struct_schema(struct_class)
+      sig { params(struct_class: T.class_of(T::Struct), visited: T.nilable(T::Set[T.untyped])).returns(T::Hash[Symbol, T.untyped]) }
+      def self.generate_struct_schema(struct_class, visited = nil)
+        visited ||= Set.new
+        
         return { type: "string", description: "Struct (schema introspection not available)" } unless struct_class.respond_to?(:props)
+
+        # Add this struct to visited set to detect recursion
+        visited.add(struct_class)
 
         properties = {}
         required = []
@@ -227,7 +262,7 @@ module DSPy
 
         struct_class.props.each do |prop_name, prop_info|
           prop_type = prop_info[:type_object] || prop_info[:type]
-          properties[prop_name] = self.type_to_json_schema(prop_type)
+          properties[prop_name] = self.type_to_json_schema(prop_type, visited)
           
           # A field is required if it's not fully optional
           # fully_optional is true for nilable prop fields
@@ -236,6 +271,9 @@ module DSPy
             required << prop_name.to_s
           end
         end
+
+        # Remove this struct from visited set after processing
+        visited.delete(struct_class)
 
         {
           type: "object",
