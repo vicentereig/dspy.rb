@@ -5,7 +5,7 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.27.6] - 2025-01-29
+## [0.27.6] - 2025-10-01
 
 ### Added
 - **Recursive Type Support** - JSON schema generation now handles self-referencing types
@@ -23,7 +23,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Recursive type handling in JSON schema generation preventing infinite loops
 
-## [0.27.4] - 2025-01-25
+## [0.27.5] - 2025-09-30
+
+### Fixed
+- **ReAct Agent Type Handling** - Fixed TypeError when max iterations reached with typed outputs (#129)
+  - Fixed handling of `T.nilable(T::Array[...])` and other typed output fields
+  - Returns appropriate defaults: `nil` for nilable types, `[]` for arrays, `{}` for hashes
+  - Added comprehensive test coverage for both nilable and non-nilable typed outputs
+
+### Documentation
+- Updated getting started guides to show proper Sorbet type signatures for Tools
+- Emphasized importance of type signatures for reliable LLM tool usage
+
+## [0.27.4] - 2025-09-25
 
 ### Added
 - **OpenRouter Support** (@kovyrin - first contribution!) - Complete integration with 100+ LLMs
@@ -121,6 +133,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced `DSPy::Mixins::TypeCoercion` with comprehensive Sorbet type support
 - Updated Tools::Base and Tools::Toolset to use unified type system architecture
 - Full backward compatibility maintained with existing tool implementations
+
+## [0.27.1] - 2025-09-14
+
+### Fixed
+- **OpenTelemetry Context Propagation** - Fixed span nesting for non-concurrent execution
+  - Fixed spans appearing as orphaned root traces instead of nesting under parent modules
+  - Use thread-specific context keys for proper thread isolation
+  - Synchronize Fiber storage with Thread storage for OpenTelemetry compatibility
+  - Ensure context propagates correctly in both async and non-async modes
+  - Traces now properly nest in Langfuse and other OpenTelemetry consumers
 
 ## [0.27.0] - 2025-09-13
 
