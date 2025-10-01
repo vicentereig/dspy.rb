@@ -5,6 +5,24 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.6] - 2025-01-29
+
+### Added
+- **Recursive Type Support** - JSON schema generation now handles self-referencing types
+  - Fixed stack overflow errors with recursive T::Struct types (e.g., tree structures, mind maps)
+  - Proper `$ref` generation following JSON Schema standards
+  - Support for nilable and array-wrapped recursive types
+  - Comprehensive test coverage for recursive patterns
+
+### Enhanced
+- **Unified Type System** - Refactored Anthropic tool use strategy to use centralized type conversion
+  - Removed 60 lines of duplicate type conversion code
+  - All strategies now use `DSPy::TypeSystem::SorbetJsonSchema` for consistency
+  - Anthropic tool use strategy gains support for recursive types, enums, and union types
+
+### Fixed
+- Recursive type handling in JSON schema generation preventing infinite loops
+
 ## [0.27.4] - 2025-01-25
 
 ### Added
