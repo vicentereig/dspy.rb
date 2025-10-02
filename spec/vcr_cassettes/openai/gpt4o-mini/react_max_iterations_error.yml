@@ -41,7 +41,7 @@ http_interactions:
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"text_grep\",\n        \"text_wc\",\n        \"text_rg\",\n        \"text_extract_lines\",\n        \"text_filter_lines\",\n        \"text_unique_lines\",\n        \"text_sort_lines\",\n        \"text_summarize_text\",\n        \"finish\"\n      ],\n      \"description\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"useless_tool\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
         input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
         {\n      \"type\": \"string\",\n      \"description\": \"Input for the chosen
@@ -55,86 +55,12 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to process the given
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"text\\\":\\\"2024-01-01 10:00:01
-        INFO: Application started\\\\n2024-01-01 10:00:05 ERROR: Connection failed\\\\n2024-01-01
-        10:00:10 WARN: Retrying connection\\\\n2024-01-01 10:00:15 INFO: Connected
-        successfully\\\\n2024-01-01 10:00:20 ERROR: Database timeout\\\\n2024-01-01
-        10:00:25 INFO: Query completed\\\\n2024-01-01 10:00:30 DEBUG: Processing complete\\\\n\\\",\\\"task\\\":\\\"Search
-        this log data for ERROR messages\\\"}\",\n  \"history\": [],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"text_grep\",\n      \"description\": \"Search
-        for patterns in text using grep\",\n      \"schema\": {\n        \"name\":
-        \"text_grep\",\n        \"description\": \"Search for patterns in text using
-        grep\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"ignore_case\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        ignore_case (optional)\"\n            },\n            \"count_only\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter count_only (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_wc\",\n      \"description\": \"Count lines, words, and characters
-        in text\",\n      \"schema\": {\n        \"name\": \"text_wc\",\n        \"description\":
-        \"Count lines, words, and characters in text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"lines_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        lines_only (optional)\"\n            },\n            \"words_only\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter words_only (optional)\"\n            },\n            \"chars_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        chars_only (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"schema\":
-        {\n        \"name\": \"text_rg\",\n        \"description\": \"Fast text search
-        using ripgrep\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"context\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        context (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
-        from text\",\n      \"schema\": {\n        \"name\": \"text_extract_lines\",\n        \"description\":
-        \"Extract specific line ranges from text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"start_line\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        start_line\"\n            },\n            \"end_line\": {\n              \"type\":
-        [\n                \"integer\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter end_line (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"start_line\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
-        not matching a pattern\",\n      \"schema\": {\n        \"name\": \"text_filter_lines\",\n        \"description\":
-        \"Filter lines matching or not matching a pattern\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"text\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"invert\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        invert (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"schema\":
-        {\n        \"name\": \"text_unique_lines\",\n        \"description\": \"Get
-        unique lines from text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"preserve_order\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        preserve_order (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"schema\":
-        {\n        \"name\": \"text_sort_lines\",\n        \"description\": \"Sort
-        lines in text\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"reverse\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter reverse (optional)\"\n            },\n            \"numeric\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        numeric (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
-        of text content\",\n      \"schema\": {\n        \"name\": \"text_summarize_text\",\n        \"description\":
-        \"Generate statistical summary of text content\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"text\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        text\"\n            }\n          },\n          \"required\": [\n            \"text\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Find the answer
+        to life\\\"}\",\n  \"history\": [],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"useless_tool\",\n      \"description\": \"A tool that doesn''t help\",\n      \"schema\":
+        {\n        \"name\": \"useless_tool\",\n        \"description\": \"A tool
+        that doesn''t help\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {},\n          \"required\": []\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":1.0}'
     headers:
@@ -167,14 +93,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '12547'
+      - '5482'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 20:22:45 GMT
+      - Thu, 02 Oct 2025 20:14:03 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -186,25 +112,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '4407'
+      - '4028'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '4431'
+      - '4180'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9988'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '197196'
+      - '198785'
       X-Ratelimit-Reset-Requests:
-      - 1m42.033s
+      - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 841ms
+      - 364ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -221,23 +147,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9886e9c848ce0f70-EWR
+      - 9886dd0bac348c65-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMK6yPdEha63MCFOuueuR6FGoCSe3",
+          "id": "chatcmpl-CMJyZQ0uIMduURSXoGrBvUSYV839N",
           "object": "chat.completion",
-          "created": 1759436560,
+          "created": 1759436039,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to search through the provided log data for ERROR messages. The available tool 'text_grep' is suitable for this purpose as it allows me to specify a pattern to search in the text.\",\n  \"action\": \"text_grep\",\n  \"action_input\": {\n    \"text\": \"2024-01-01 10:00:01 INFO: Application started\\n2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:10 WARN: Retrying connection\\n2024-01-01 10:00:15 INFO: Connected successfully\\n2024-01-01 10:00:20 ERROR: Database timeout\\n2024-01-01 10:00:25 INFO: Query completed\\n2024-01-01 10:00:30 DEBUG: Processing complete\\n\",\n    \"pattern\": \"ERROR\",\n    \"ignore_case\": true\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since there is no direct way to find the answer to life and the available tool is deemed useless, it might not be beneficial to use the tool. Instead, I should simply indicate that there is no valuable action to take.\",\n  \"action\": \"useless_tool\",\n  \"action_input\": \"{}\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -246,11 +172,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2429,
-            "completion_tokens": 212,
-            "total_tokens": 2641,
+            "prompt_tokens": 1074,
+            "completion_tokens": 76,
+            "total_tokens": 1150,
             "prompt_tokens_details": {
-              "cached_tokens": 1024,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -263,7 +189,61 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Thu, 02 Oct 2025 20:22:45 GMT
+  recorded_at: Thu, 02 Oct 2025 20:14:03 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BVFp0-eu7N4lADvrtB0vtKZo3t1EAAEBAAAnIQEAAH6ZAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.lan","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759436043115.7273,"message":"trace_id=\"80060622-3116-4193-b7e9-1c5e571612e4\"
+        otel_span_stack=[] input_tokens=1074 output_tokens=76 total_tokens=1150 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=nil event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BVFp0-eu7N4lADvrtB0vtKZo3t1EAAEBAAAnIQEAAH6ZAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Thu, 02 Oct 2025 20:14:03 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-iad-kjyo7100058-IAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Thu, 02 Oct 2025 20:14:03 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -303,24 +283,13 @@ http_interactions:
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"text\\\":\\\"2024-01-01 10:00:01
-        INFO: Application started\\\\n2024-01-01 10:00:05 ERROR: Connection failed\\\\n2024-01-01
-        10:00:10 WARN: Retrying connection\\\\n2024-01-01 10:00:15 INFO: Connected
-        successfully\\\\n2024-01-01 10:00:20 ERROR: Database timeout\\\\n2024-01-01
-        10:00:25 INFO: Query completed\\\\n2024-01-01 10:00:30 DEBUG: Processing complete\\\\n\\\",\\\"task\\\":\\\"Search
-        this log data for ERROR messages\\\"}\",\n  \"history\": [\n    {\n      \"step\":
-        1,\n      \"thought\": \"I need to search through the provided log data for
-        ERROR messages. The available tool ''text_grep'' is suitable for this purpose
-        as it allows me to specify a pattern to search in the text.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"2024-01-01
-        10:00:01 INFO: Application started\\n2024-01-01 10:00:05 ERROR: Connection
-        failed\\n2024-01-01 10:00:10 WARN: Retrying connection\\n2024-01-01 10:00:15
-        INFO: Connected successfully\\n2024-01-01 10:00:20 ERROR: Database timeout\\n2024-01-01
-        10:00:25 INFO: Query completed\\n2024-01-01 10:00:30 DEBUG: Processing complete\\n\",\n        \"pattern\":
-        \"ERROR\",\n        \"ignore_case\": true\n      },\n      \"observation\":
-        \"2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:20 ERROR:
-        Database timeout\\n\"\n    }\n  ],\n  \"observation\": \"2024-01-01 10:00:05
-        ERROR: Connection failed\\n2024-01-01 10:00:20 ERROR: Database timeout\\n\"\n}\n```\n\nRespond
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Find the answer
+        to life\\\"}\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"Since there is no direct way to find the answer to life and the available
+        tool is deemed useless, it might not be beneficial to use the tool. Instead,
+        I should simply indicate that there is no valuable action to take.\",\n      \"action\":
+        \"useless_tool\",\n      \"action_input\": \"{}\",\n      \"observation\":
+        \"This doesn''t help\"\n    }\n  ],\n  \"observation\": \"This doesn''t help\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":1.0}'
     headers:
@@ -353,14 +322,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '5084'
+      - '4156'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 20:22:46 GMT
+      - Thu, 02 Oct 2025 20:14:08 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -372,25 +341,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1304'
+      - '4223'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1373'
+      - '4442'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9987'
+      - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '198862'
+      - '199083'
       X-Ratelimit-Reset-Requests:
-      - 1m46.112s
+      - 12.393s
       X-Ratelimit-Reset-Tokens:
-      - 341ms
+      - 275ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -407,23 +376,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9886e9e4db8b0f70-EWR
+      - 9886dd264ce88c65-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMK73GnnLKkWd1hVqM4ZVyDufutVk",
+          "id": "chatcmpl-CMJyed8zFNlTJTEMY8xWesC8SaTaz",
           "object": "chat.completion",
-          "created": 1759436565,
+          "created": 1759436044,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The tool has successfully retrieved the ERROR messages from the log data, identifying two key issues: a connection failure and a database timeout.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The previous action was ineffective in providing valuable information regarding the query about the answer to life.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -432,9 +401,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1164,
-            "completion_tokens": 50,
-            "total_tokens": 1214,
+            "prompt_tokens": 834,
+            "completion_tokens": 42,
+            "total_tokens": 876,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -449,7 +418,61 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Thu, 02 Oct 2025 20:22:46 GMT
+  recorded_at: Thu, 02 Oct 2025 20:14:08 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BVFp0-eu7N4lADvrtB0vtKZo3t1EAAEBAAAnIQEAAH6ZAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.lan","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759436048214.7488,"message":"trace_id=\"80060622-3116-4193-b7e9-1c5e571612e4\"
+        otel_span_stack=[] input_tokens=834 output_tokens=42 total_tokens=876 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=nil event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BVFp0-eu7N4lADvrtB0vtKZo3t1EAAEBAAAnIQEAAH6ZAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Thu, 02 Oct 2025 20:14:08 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-iad-kjyo7100058-IAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Thu, 02 Oct 2025 20:14:08 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -491,7 +514,7 @@ http_interactions:
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"text_grep\",\n        \"text_wc\",\n        \"text_rg\",\n        \"text_extract_lines\",\n        \"text_filter_lines\",\n        \"text_unique_lines\",\n        \"text_sort_lines\",\n        \"text_summarize_text\",\n        \"finish\"\n      ],\n      \"description\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"useless_tool\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
         input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
         {\n      \"type\": \"string\",\n      \"description\": \"Input for the chosen
@@ -505,97 +528,17 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate a thought about what to do next to process the given
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"text\\\":\\\"2024-01-01 10:00:01
-        INFO: Application started\\\\n2024-01-01 10:00:05 ERROR: Connection failed\\\\n2024-01-01
-        10:00:10 WARN: Retrying connection\\\\n2024-01-01 10:00:15 INFO: Connected
-        successfully\\\\n2024-01-01 10:00:20 ERROR: Database timeout\\\\n2024-01-01
-        10:00:25 INFO: Query completed\\\\n2024-01-01 10:00:30 DEBUG: Processing complete\\\\n\\\",\\\"task\\\":\\\"Search
-        this log data for ERROR messages\\\"}\",\n  \"history\": [\n    {\n      \"step\":
-        1,\n      \"thought\": \"I need to search through the provided log data for
-        ERROR messages. The available tool ''text_grep'' is suitable for this purpose
-        as it allows me to specify a pattern to search in the text.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"2024-01-01
-        10:00:01 INFO: Application started\\n2024-01-01 10:00:05 ERROR: Connection
-        failed\\n2024-01-01 10:00:10 WARN: Retrying connection\\n2024-01-01 10:00:15
-        INFO: Connected successfully\\n2024-01-01 10:00:20 ERROR: Database timeout\\n2024-01-01
-        10:00:25 INFO: Query completed\\n2024-01-01 10:00:30 DEBUG: Processing complete\\n\",\n        \"pattern\":
-        \"ERROR\",\n        \"ignore_case\": true\n      },\n      \"observation\":
-        \"2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:20 ERROR:
-        Database timeout\\n\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
-        \"text_grep\",\n      \"description\": \"Search for patterns in text using
-        grep\",\n      \"schema\": {\n        \"name\": \"text_grep\",\n        \"description\":
-        \"Search for patterns in text using grep\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"pattern\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        pattern\"\n            },\n            \"ignore_case\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter ignore_case (optional)\"\n            },\n            \"count_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        count_only (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_wc\",\n      \"description\": \"Count lines, words, and characters
-        in text\",\n      \"schema\": {\n        \"name\": \"text_wc\",\n        \"description\":
-        \"Count lines, words, and characters in text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"lines_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        lines_only (optional)\"\n            },\n            \"words_only\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter words_only (optional)\"\n            },\n            \"chars_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        chars_only (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"schema\":
-        {\n        \"name\": \"text_rg\",\n        \"description\": \"Fast text search
-        using ripgrep\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"context\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        context (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
-        from text\",\n      \"schema\": {\n        \"name\": \"text_extract_lines\",\n        \"description\":
-        \"Extract specific line ranges from text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"start_line\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        start_line\"\n            },\n            \"end_line\": {\n              \"type\":
-        [\n                \"integer\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter end_line (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"start_line\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
-        not matching a pattern\",\n      \"schema\": {\n        \"name\": \"text_filter_lines\",\n        \"description\":
-        \"Filter lines matching or not matching a pattern\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"text\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"invert\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        invert (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"schema\":
-        {\n        \"name\": \"text_unique_lines\",\n        \"description\": \"Get
-        unique lines from text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"preserve_order\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        preserve_order (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"schema\":
-        {\n        \"name\": \"text_sort_lines\",\n        \"description\": \"Sort
-        lines in text\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"reverse\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter reverse (optional)\"\n            },\n            \"numeric\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        numeric (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
-        of text content\",\n      \"schema\": {\n        \"name\": \"text_summarize_text\",\n        \"description\":
-        \"Generate statistical summary of text content\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"text\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        text\"\n            }\n          },\n          \"required\": [\n            \"text\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Find the answer
+        to life\\\"}\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"Since there is no direct way to find the answer to life and the available
+        tool is deemed useless, it might not be beneficial to use the tool. Instead,
+        I should simply indicate that there is no valuable action to take.\",\n      \"action\":
+        \"useless_tool\",\n      \"action_input\": \"{}\",\n      \"observation\":
+        \"This doesn''t help\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
+        \"useless_tool\",\n      \"description\": \"A tool that doesn''t help\",\n      \"schema\":
+        {\n        \"name\": \"useless_tool\",\n        \"description\": \"A tool
+        that doesn''t help\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
+        {},\n          \"required\": []\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":1.0}'
     headers:
@@ -628,14 +571,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '13412'
+      - '5879'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 20:22:50 GMT
+      - Thu, 02 Oct 2025 20:14:13 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -647,25 +590,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '3338'
+      - '5020'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '3371'
+      - '5040'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9987'
+      - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '196992'
+      - '198693'
       X-Ratelimit-Reset-Requests:
-      - 1m44.627s
+      - 16.667s
       X-Ratelimit-Reset-Tokens:
-      - 902ms
+      - 392ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -682,23 +625,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9886e9ee1c400f70-EWR
+      - 9886dd463ee68c65-EWR
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMK74H9M5a5Yt9HxrjF9cxilW6zq0",
+          "id": "chatcmpl-CMJyiBEZTm0wcP9kbqfBTrZl1BvME",
           "object": "chat.completion",
-          "created": 1759436566,
+          "created": 1759436048,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have identified the ERROR messages in the log data. Next, I can either summarize the errors or filter the lines further if needed. Since I already have the ERROR messages, I will choose to summarize the content.\",\n  \"action\": \"text_summarize_text\",\n  \"action_input\": {\n    \"text\": \"2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:20 ERROR: Database timeout\\n\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Given the previous interaction indicating that the tool is useless and does not provide any helpful output, it is clear that no further steps are necessary. I should finish by stating that the search for the answer to life is inherently philosophical and doesn't have a definitive answer.\",\n  \"action\": \"finish\",\n  \"action_input\": \"The answer to life is subjective and varies from person to person.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -707,9 +650,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2685,
-            "completion_tokens": 117,
-            "total_tokens": 2802,
+            "prompt_tokens": 1163,
+            "completion_tokens": 92,
+            "total_tokens": 1255,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -724,5 +667,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Thu, 02 Oct 2025 20:22:50 GMT
+  recorded_at: Thu, 02 Oct 2025 20:14:13 GMT
 recorded_with: VCR 6.3.1

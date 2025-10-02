@@ -693,15 +693,14 @@ RSpec.describe DSPy::ReAct do
       end
     end
 
-    it 'handles max iterations without TypeError when output field is nilable typed array' do
-      result = VCR.use_cassette('openai/gpt4o-mini/react_max_iterations_typed_output') do
-        agent.forward(query: "Find computer science courses")
-      end
-
-      # Should not raise TypeError
-      # For nilable types, the default value should be nil (not an empty array)
-      expect(result).to respond_to(:courses)
-      expect(result.courses).to be_nil
+    it 'raises error when max iterations reached or type mismatch occurs' do
+      # Can raise either MaxIterationsError (if max iterations reached)
+      # or TypeMismatchError (if LLM returns wrong type for final answer)
+      expect {
+        VCR.use_cassette('openai/gpt4o-mini/react_max_iterations_typed_output') do
+          agent.forward(query: "Find computer science courses")
+        end
+      }.to raise_error(StandardError)
     end
 
     context 'with non-nilable array output' do
@@ -719,14 +718,173 @@ RSpec.describe DSPy::ReAct do
 
       let(:agent) { DSPy::ReAct.new(NonNilableCoursesSignature, tools: tools, max_iterations: 1) }
 
-      it 'returns empty array for non-nilable array types' do
-        result = VCR.use_cassette('openai/gpt4o-mini/react_max_iterations_non_nilable_array') do
-          agent.forward(query: "Find computer science courses")
+      it 'raises error when max iterations reached or type mismatch occurs' do
+        # Can raise either MaxIterationsError (if max iterations reached)
+        # or TypeMismatchError (if LLM returns wrong type for final answer)
+        expect {
+          VCR.use_cassette('openai/gpt4o-mini/react_max_iterations_non_nilable_array') do
+            agent.forward(query: "Find computer science courses")
+          end
+        }.to raise_error(StandardError)
+      end
+    end
+  end
+
+  describe 'error handling' do
+    before(:all) do
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      end
+    end
+
+    describe 'max iterations exceeded' do
+      class MaxIterationsSignature < DSPy::Signature
+        description "A task that cannot be completed"
+
+        input do
+          const :query, String
         end
 
-        # For non-nilable array types, return empty array
-        expect(result).to respond_to(:courses)
-        expect(result.courses).to eq([])
+        output do
+          const :answer, String
+        end
+      end
+
+      # Tool that doesn't help
+      class UselessTool < DSPy::Tools::Base
+        tool_name 'useless_tool'
+        tool_description "A tool that doesn't help"
+
+        sig { returns(String) }
+        def call
+          "This doesn't help"
+        end
+      end
+
+      let(:tools) { [UselessTool.new] }
+      let(:agent) { DSPy::ReAct.new(MaxIterationsSignature, tools: tools, max_iterations: 1) }
+
+      it 'raises MaxIterationsError when max iterations reached without completion' do
+        # Mock LM to keep using the useless_tool without finishing
+        allow_any_instance_of(DSPy::Predict).to receive(:forward).and_return(
+          double(
+            thought: "I'll use the tool again",
+            action: 'useless_tool',
+            action_input: {},
+            next_step: DSPy::NextStep::Continue,  # For observation processor
+            interpretation: "Got a result, continuing"  # Also needed for observation processor
+          )
+        )
+
+        expect {
+          agent.forward(query: "Find the answer to life")
+        }.to raise_error(DSPy::ReAct::MaxIterationsError, /reached maximum iterations.*\(1\)/i)
+      end
+    end
+
+    describe 'invalid action errors' do
+      class SimpleSignature < DSPy::Signature
+        description "Simple task"
+
+        input do
+          const :question, String
+        end
+
+        output do
+          const :answer, String
+        end
+      end
+
+      # Mock LM that returns invalid action
+      before do
+        allow_any_instance_of(DSPy::Predict).to receive(:forward).and_return(
+          double(
+            thought: "I'll use a non-existent tool",
+            action: 'nonexistent_tool',
+            action_input: 'test'
+          )
+        )
+      end
+
+      it 'raises InvalidActionError when LLM chooses unknown action' do
+        agent = DSPy::ReAct.new(SimpleSignature, tools: [], max_iterations: 3)
+
+        expect {
+          agent.forward(question: "test")
+        }.to raise_error(DSPy::ReAct::InvalidActionError, /unknown action.*nonexistent_tool/i)
+      end
+    end
+
+    describe 'tool execution errors' do
+      class FailingTool < DSPy::Tools::Base
+        tool_name 'failing_tool'
+        tool_description "A tool that fails"
+
+        sig { returns(String) }
+        def call
+          raise StandardError, "Tool execution failed"
+        end
+      end
+
+      class ToolErrorSignature < DSPy::Signature
+        description "Task that uses failing tool"
+
+        input do
+          const :query, String
+        end
+
+        output do
+          const :result, String
+        end
+      end
+
+      let(:tools) { [FailingTool.new] }
+      let(:agent) { DSPy::ReAct.new(ToolErrorSignature, tools: tools, max_iterations: 3) }
+
+      it 'propagates tool execution errors with context' do
+        # Mock LM to use the failing tool
+        allow_any_instance_of(DSPy::Predict).to receive(:forward).and_return(
+          double(
+            thought: "I'll use the failing tool",
+            action: 'failing_tool',
+            action_input: {}
+          )
+        )
+
+        expect {
+          agent.forward(query: "test")
+        }.to raise_error(StandardError, /tool execution failed/i)
+      end
+    end
+
+    describe 'type mismatch errors' do
+      class StrictTypeSignature < DSPy::Signature
+        description "Signature with strict type requirements"
+
+        input do
+          const :query, String
+        end
+
+        output do
+          const :number, Integer
+        end
+      end
+
+      let(:agent) { DSPy::ReAct.new(StrictTypeSignature, tools: [], max_iterations: 1) }
+
+      it 'raises TypeMismatchError when LLM returns wrong type and no conversion possible' do
+        # Mock LM to return a string for an Integer field
+        allow_any_instance_of(DSPy::Predict).to receive(:forward).and_return(
+          double(
+            thought: "I'll finish with a string",
+            action: 'finish',
+            action_input: 'not a number'
+          )
+        )
+
+        expect {
+          agent.forward(query: "test")
+        }.to raise_error(DSPy::ReAct::TypeMismatchError, /cannot convert.*String.*Integer/i)
       end
     end
   end

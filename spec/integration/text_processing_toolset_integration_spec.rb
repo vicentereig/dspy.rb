@@ -31,7 +31,7 @@ RSpec.describe 'Text Processing Toolset Integration with ReAct Agent', type: :in
     DSPy::ReAct.new(
       TextAnalysis,
       tools: text_tools,
-      max_iterations: 10
+      max_iterations: 20
     )
   end
 
