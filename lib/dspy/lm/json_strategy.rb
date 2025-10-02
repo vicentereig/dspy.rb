@@ -40,9 +40,17 @@ module DSPy
           # OpenAI/Ollama: try to extract JSON from various formats
           extract_json_from_content(response.content)
         elsif adapter_class_name.include?('AnthropicAdapter')
-          # Anthropic: try tool use first, fall back to content extraction
-          extracted = extract_anthropic_tool_json(response)
-          extracted || extract_json_from_content(response.content)
+          # Anthropic: try tool use first if structured_outputs enabled, else use content extraction
+          structured_outputs_enabled = adapter.instance_variable_get(:@structured_outputs_enabled)
+          structured_outputs_enabled = true if structured_outputs_enabled.nil?  # Default to true
+
+          if structured_outputs_enabled
+            extracted = extract_anthropic_tool_json(response)
+            extracted || extract_json_from_content(response.content)
+          else
+            # Skip tool extraction, use enhanced prompting extraction
+            extract_json_from_content(response.content)
+          end
         elsif adapter_class_name.include?('GeminiAdapter')
           # Gemini: try to extract JSON from various formats
           extract_json_from_content(response.content)
@@ -75,6 +83,14 @@ module DSPy
       # Anthropic preparation
       sig { params(messages: T::Array[T::Hash[Symbol, T.untyped]], request_params: T::Hash[Symbol, T.untyped]).void }
       def prepare_anthropic_request(messages, request_params)
+        # Only use tool-based extraction if structured_outputs is enabled (default: true)
+        structured_outputs_enabled = adapter.instance_variable_get(:@structured_outputs_enabled)
+
+        # Default to true if not set (backward compatibility)
+        structured_outputs_enabled = true if structured_outputs_enabled.nil?
+
+        return unless structured_outputs_enabled
+
         # Convert signature to tool schema
         tool_schema = convert_to_anthropic_tool_schema
 

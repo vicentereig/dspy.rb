@@ -94,6 +94,55 @@ RSpec.describe DSPy::LM::JSONStrategy do
       result = strategy.extract_json(response)
       expect(JSON.parse(result)).to eq({ 'name' => 'John' })
     end
+
+    context 'with structured_outputs: true (default)' do
+      before do
+        allow(anthropic_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(true)
+      end
+
+      it 'uses tool-based extraction' do
+        messages = [{ role: 'user', content: 'Hello' }]
+        request_params = {}
+
+        strategy.prepare_request(messages, request_params)
+
+        expect(request_params[:tools]).to be_an(Array)
+        expect(request_params[:tool_choice]).to eq({ type: 'tool', name: 'json_output' })
+        expect(messages.last[:content]).to include('use the json_output tool')
+      end
+    end
+
+    context 'with structured_outputs: false' do
+      before do
+        allow(anthropic_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(false)
+      end
+
+      it 'skips tool-based extraction' do
+        messages = [{ role: 'user', content: 'Hello' }]
+        request_params = {}
+
+        strategy.prepare_request(messages, request_params)
+
+        expect(request_params[:tools]).to be_nil
+        expect(request_params[:tool_choice]).to be_nil
+        expect(messages.last[:content]).not_to include('use the json_output tool')
+      end
+
+      it 'uses enhanced prompting extraction' do
+        response = DSPy::LM::Response.new(
+          content: '```json\n{"name": "Jane"}\n```',
+          usage: nil,
+          metadata: DSPy::LM::AnthropicResponseMetadata.new(
+            provider: 'anthropic',
+            model: 'claude-3-5-sonnet',
+            stop_reason: 'end_turn'
+          )
+        )
+
+        result = strategy.extract_json(response)
+        expect(result).to eq('{"name": "Jane"}')
+      end
+    end
   end
 
   describe 'with Gemini adapter' do

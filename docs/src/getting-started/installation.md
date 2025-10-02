@@ -225,7 +225,7 @@ Different providers support structured JSON extraction in different ways:
 |----------|-------------------|---------------|
 | **OpenAI** | ✅ Native JSON mode | `structured_outputs: true` |
 | **Gemini** | ✅ Native JSON schema | `structured_outputs: true` |
-| **Anthropic** | ✅ Tool-based extraction | Automatic (always enabled) |
+| **Anthropic** | ✅ Tool-based extraction (default)<br/>✅ Enhanced prompting | `structured_outputs: true` (default)<br/>`structured_outputs: false` |
 | **Ollama** | ✅ OpenAI-compatible JSON | `structured_outputs: true` |
 | **OpenRouter** | ⚠️ Varies by model | Check model capabilities |
 
@@ -240,13 +240,21 @@ DSPy.configure do |c|
   )
 end
 
-# Anthropic - tool extraction always enabled
+# Anthropic - tool extraction by default (can be disabled)
 DSPy.configure do |c|
+  # Use tool-based extraction (default, most reliable)
   c.lm = DSPy::LM.new(
     'anthropic/claude-sonnet-4-5-20250929',
-    api_key: ENV['ANTHROPIC_API_KEY']
-    # No structured_outputs parameter needed
+    api_key: ENV['ANTHROPIC_API_KEY'],
+    structured_outputs: true  # Default, can be omitted
   )
+
+  # Or use enhanced prompting instead
+  # c.lm = DSPy::LM.new(
+  #   'anthropic/claude-sonnet-4-5-20250929',
+  #   api_key: ENV['ANTHROPIC_API_KEY'],
+  #   structured_outputs: false  # Use enhanced prompting extraction
+  # )
 end
 ```
 

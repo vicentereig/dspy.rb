@@ -13,7 +13,7 @@ module DSPy
         'openrouter' => 'OpenrouterAdapter'
       }.freeze
 
-      PROVIDERS_WITH_EXTRA_OPTIONS = %w[openai ollama gemini openrouter].freeze
+      PROVIDERS_WITH_EXTRA_OPTIONS = %w[openai anthropic ollama gemini openrouter].freeze
 
       class << self
         # Creates an adapter instance based on model_id
