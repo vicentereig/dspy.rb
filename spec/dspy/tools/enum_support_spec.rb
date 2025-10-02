@@ -121,11 +121,12 @@ RSpec.describe 'Tools Enum Support', :vcr do
         expect(result).to eq("Error: Division by zero")
       end
 
-      it 'handles invalid enum values gracefully' do
+      it 'raises error for invalid enum values' do
         tool = CalculatorTool.new
-        
-        result = tool.dynamic_call({'operation' => 'invalid', 'num1' => 5, 'num2' => 3})
-        expect(result).to match(/Invalid enum value|Error/)
+
+        expect {
+          tool.dynamic_call({'operation' => 'invalid', 'num1' => 5, 'num2' => 3})
+        }.to raise_error(TypeError, /Expected type|Can't set|Invalid enum/)
       end
 
       it 'converts enum in nested struct parameters' do

@@ -263,9 +263,9 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
       expect(result).to include("Tags: complex, nested")
     end
 
-    it 'handles validation errors consistently' do
+    it 'raises error for validation failures' do
       tool = TaskManagerTool.new
-      
+
       # Invalid enum value
       invalid_data = {
         'task' => {
@@ -284,8 +284,9 @@ RSpec.describe 'Type Consistency Across DSPy Components', :vcr do
         'config' => {}
       }
 
-      result = tool.dynamic_call(invalid_data)
-      expect(result).to match(/Error/)
+      expect {
+        tool.dynamic_call(invalid_data)
+      }.to raise_error(TypeError, /Can't set/)
     end
   end
 

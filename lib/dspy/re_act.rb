@@ -66,6 +66,11 @@ module DSPy
     extend T::Sig
     include Mixins::StructBuilder
 
+    # Custom error classes
+    class MaxIterationsError < StandardError; end
+    class InvalidActionError < StandardError; end
+    class TypeMismatchError < StandardError; end
+
     # AvailableTool struct for better type safety in ReAct agents
     class AvailableTool < T::Struct
       const :name, String
@@ -160,12 +165,7 @@ module DSPy
       return value if value.is_a?(String) || value.is_a?(Numeric) || value.is_a?(TrueClass) || value.is_a?(FalseClass)
 
       # For structured data, serialize to JSON-compatible format
-      begin
-        TypeSerializer.serialize(value)
-      rescue
-        # Fallback to string representation if serialization fails
-        value.to_s
-      end
+      TypeSerializer.serialize(value)
     end
 
     # Serialize history for LLM consumption
@@ -305,7 +305,7 @@ module DSPy
         history: history,
         iterations: iterations_count,
         tools_used: tools_used.uniq,
-        final_answer: final_answer || default_no_answer_message
+        final_answer: final_answer
       }
     end
 
@@ -400,6 +400,13 @@ module DSPy
       output_field_name = @original_signature_class.output_struct_class.props.keys.first
       final_answer = reasoning_result[:final_answer]
 
+      # If final_answer is nil, max iterations was reached without completion
+      if final_answer.nil?
+        iterations = reasoning_result[:iterations]
+        tools_used = reasoning_result[:tools_used]
+        raise MaxIterationsError, "Agent reached maximum iterations (#{iterations}) without producing a final answer. Tools used: #{tools_used.join(', ')}"
+      end
+
       output_data = input_kwargs.merge({
         history: reasoning_result[:history].map(&:to_h),
         iterations: reasoning_result[:iterations],
@@ -445,17 +452,14 @@ module DSPy
       # If already matches, return as-is (even if empty string for String types)
       return final_answer if type_matches?(final_answer, output_field_type)
 
-      # Handle "no answer" cases
-      if final_answer.nil? || (final_answer.is_a?(String) && final_answer.start_with?("No"))
-        return default_value_for_type(output_field_type)
-      end
-
       # Try basic conversion
       converted = convert_to_expected_type(final_answer, output_field_type)
       return converted if type_matches?(converted, output_field_type)
 
-      # Return as-is and let validation catch any type mismatch
-      final_answer
+      # Type mismatch - raise error with helpful message
+      expected_type = type_name(output_field_type)
+      actual_type = final_answer.class.name
+      raise TypeMismatchError, "Cannot convert final answer from #{actual_type} to #{expected_type}. Value: #{final_answer.inspect}"
     end
 
     # Deserialize structured types (arrays, hashes, structs)
@@ -476,13 +480,10 @@ module DSPy
       converted = convert_to_expected_type(final_answer, output_field_type)
       return converted if type_matches?(converted, output_field_type)
 
-      # Handle "no answer" cases
-      if final_answer.nil? || (final_answer.is_a?(String) && final_answer.start_with?("No"))
-        return default_value_for_type(output_field_type)
-      end
-
-      # Last resort: return default value for the type
-      default_value_for_type(output_field_type)
+      # Type mismatch - raise error with helpful message
+      expected_type = type_name(output_field_type)
+      actual_type = final_answer.class.name
+      raise TypeMismatchError, "Cannot convert final answer from #{actual_type} to #{expected_type}. Value: #{final_answer.inspect}"
     end
 
     # Convert value to expected type
@@ -547,23 +548,24 @@ module DSPy
 
     sig { params(action: T.nilable(T.any(String, T::Enum)), action_input: T.untyped, iteration: Integer).returns(T.untyped) }
     def execute_tool_with_instrumentation(action, action_input, iteration)
-      return "Unknown action: #{action}. Available actions: #{@tools.keys.join(', ')}, finish" unless action
+      raise InvalidActionError, "No action provided" unless action
 
       action_str = action.respond_to?(:serialize) ? action.serialize : action.to_s
 
-      if @tools[action_str.downcase]
-        DSPy::Context.with_span(
-          operation: 'react.tool_call',
-          **DSPy::ObservationType::Tool.langfuse_attributes,
-          'dspy.module' => 'ReAct',
-          'react.iteration' => iteration,
-          'tool.name' => action_str.downcase,
-          'tool.input' => action_input
-        ) do
-          execute_action(action_str, action_input)
-        end
-      else
-        "Unknown action: #{action_str}. Available actions: #{@tools.keys.join(', ')}, finish"
+      unless @tools[action_str.downcase]
+        available = @tools.keys.join(', ')
+        raise InvalidActionError, "Unknown action: #{action_str}. Available actions: #{available}, finish"
+      end
+
+      DSPy::Context.with_span(
+        operation: 'react.tool_call',
+        **DSPy::ObservationType::Tool.langfuse_attributes,
+        'dspy.module' => 'ReAct',
+        'react.iteration' => iteration,
+        'tool.name' => action_str.downcase,
+        'tool.input' => action_input
+      ) do
+        execute_action(action_str, action_input)
       end
     end
 
@@ -580,8 +582,6 @@ module DSPy
 
     sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], observation: T.untyped, available_tools_desc: T::Array[AvailableTool], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
     def process_observation_and_decide_next_step(input_struct, history, observation, available_tools_desc, iteration)
-      return { should_finish: false } if observation.is_a?(String) && observation.include?("Unknown action")
-
       observation_result = @observation_processor.forward(
         input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
         history: serialize_history_for_llm(history),
@@ -607,10 +607,13 @@ module DSPy
 
       action_str = final_thought.action.respond_to?(:serialize) ? final_thought.action.serialize : final_thought.action.to_s
       if action_str.downcase != FINISH_ACTION
+        # Use interpretation if available, otherwise use last observation
         forced_answer = if observation_result.interpretation && !observation_result.interpretation.empty?
                           observation_result.interpretation
+                        elsif history.last&.observation
+                          history.last.observation
                         else
-                          history.last&.observation || "No answer available"
+                          raise MaxIterationsError, "Observation processor indicated finish but no answer is available"
                         end
         handle_finish_action(forced_answer, history.last&.observation, iteration + 1, final_thought.thought, FINISH_ACTION, history)
       else
@@ -640,11 +643,6 @@ module DSPy
           'react.final_history_length' => history.length
         })
       end
-    end
-
-    sig { returns(String) }
-    def default_no_answer_message
-      "No answer reached within #{@max_iterations} iterations"
     end
 
     # Checks if a type is a scalar (primitives that don't need special serialization)
@@ -699,6 +697,25 @@ module DSPy
     # Alias for backward compatibility
     alias string_compatible_type? string_type?
 
+    # Get a readable type name from a Sorbet type object
+    sig { params(type_object: T.untyped).returns(String) }
+    def type_name(type_object)
+      case type_object
+      when T::Types::TypedArray
+        element_type = type_object.type
+        "T::Array[#{type_name(element_type)}]"
+      when T::Types::TypedHash
+        "T::Hash"
+      when T::Types::Simple
+        type_object.raw_type.to_s
+      when T::Types::Union
+        types_str = type_object.types.map { |t| type_name(t) }.join(', ')
+        "T.any(#{types_str})"
+      else
+        type_object.to_s
+      end
+    end
+
     # Returns an appropriate default value for a given Sorbet type
     # This is used when max iterations is reached without a successful completion
     sig { params(type_object: T.untyped).returns(T.untyped) }
@@ -740,21 +757,15 @@ module DSPy
     def execute_action(action, action_input)
       tool_name = action.downcase
       tool = @tools[tool_name]
-      return "Tool '#{action}' not found. Available tools: #{@tools.keys.join(', ')}" unless tool
 
-      begin
-        result = if action_input.nil? ||
-                   (action_input.is_a?(String) && action_input.strip.empty?)
-          # No input provided
-          tool.dynamic_call({})
-        else
-          # Pass the action_input directly to dynamic_call, which can handle
-          # either a Hash or a JSON string
-          tool.dynamic_call(action_input)
-        end
-        result  # Return raw result, preserving type information
-      rescue => e
-        "Error executing tool '#{action}': #{e.message}"
+      # This should not happen since we check in execute_tool_with_instrumentation
+      raise InvalidActionError, "Tool '#{action}' not found" unless tool
+
+      # Execute tool - let errors propagate
+      if action_input.nil? || (action_input.is_a?(String) && action_input.strip.empty?)
+        tool.dynamic_call({})
+      else
+        tool.dynamic_call(action_input)
       end
     end
 

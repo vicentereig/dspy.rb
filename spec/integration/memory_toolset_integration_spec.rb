@@ -30,7 +30,7 @@ RSpec.describe 'Memory Toolset Integration with ReAct Agent', type: :integration
     DSPy::ReAct.new(
       MemoryQA,
       tools: memory_tools,
-      max_iterations: 3
+      max_iterations: 15
     )
   end
 

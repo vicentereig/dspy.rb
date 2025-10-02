@@ -145,11 +145,11 @@ module DSPy
                 when String
                   begin
                     JSON.parse(args_json)
-                  rescue JSON::ParserError
-                    return "Error: Invalid JSON input"
+                  rescue JSON::ParserError => e
+                    raise ArgumentError, "Invalid JSON input: #{e.message}"
                   end
                 else
-                  return "Error: Expected Hash or JSON string"
+                  raise ArgumentError, "Expected Hash or JSON string, got #{args_json.class}"
                 end
 
           # Convert string keys to symbols and validate types
@@ -168,7 +168,7 @@ module DSPy
               if args.key?(key)
                 kwargs[param_name] = coerce_value_to_type(args[key], param_type)
               elsif schema[:required].include?(key)
-                return "Error: Missing required parameter: #{key}"
+                raise ArgumentError, "Missing required parameter: #{key}"
               end
             end
             
@@ -180,15 +180,13 @@ module DSPy
               if args.key?(key)
                 kwargs[param_name] = coerce_value_to_type(args[key], param_type)
               elsif schema[:required].include?(key)
-                return "Error: Missing required parameter: #{key}"
+                raise ArgumentError, "Missing required parameter: #{key}"
               end
             end
           end
 
           call(**kwargs)
         end
-      rescue => e
-        "Error: #{e.message}"
       end
 
       # Subclasses must implement their own call method with their own signature

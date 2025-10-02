@@ -125,18 +125,18 @@ RSpec.describe 'DSPy::Tools::Baseq DSL' do
       expect(result).to eq(40)
     end
 
-    it 'returns error for missing required parameters' do
+    it 'raises error for missing required parameters' do
       tool = SorbetAddNumbers.new
-      result = tool.dynamic_call('{"x": 10}')
-      expect(result).to be_a(String)
-      expect(result).to include("Missing required parameter: y")
+      expect {
+        tool.dynamic_call('{"x": 10}')
+      }.to raise_error(ArgumentError, /Missing required parameter: y/)
     end
 
-    it 'returns error for invalid JSON input' do
+    it 'raises error for invalid JSON input' do
       tool = SorbetAddNumbers.new
-      result = tool.dynamic_call('invalid json')
-      expect(result).to be_a(String)
-      expect(result).to include("Invalid JSON input")
+      expect {
+        tool.dynamic_call('invalid json')
+      }.to raise_error(ArgumentError, /Invalid JSON input/)
     end
 
     it 'handles tools with no parameters' do
