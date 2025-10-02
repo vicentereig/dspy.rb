@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative '../../../lib/dspy/lm/json_strategy'
+require_relative '../../../../lib/dspy/lm/json_strategy'
 
 RSpec.describe DSPy::LM::JSONStrategy do
   let(:signature_class) { Class.new(DSPy::Signature) }
