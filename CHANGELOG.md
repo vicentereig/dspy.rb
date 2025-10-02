@@ -5,6 +5,90 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28.0] - 2025-10-02
+
+### Added
+- **Anthropic Structured Outputs Configuration** - New `structured_outputs` parameter for Anthropic adapter
+  - `structured_outputs: true` (default) - Uses tool-based JSON extraction (most reliable)
+  - `structured_outputs: false` - Uses enhanced prompting extraction
+  - Enables choice between tool-based and prompt-based extraction strategies
+  - Full backward compatibility with existing code
+  - Added to `PROVIDERS_WITH_EXTRA_OPTIONS` for parameter passing
+
+### Breaking Changes
+- **⚠️ BREAKING: Error Handling in ReAct and Tools** - Proper exceptions replace silent error masking (#133)
+  - **New Exception Classes**:
+    - `DSPy::ReAct::MaxIterationsError` - raised when agent hits max iterations without completion
+    - `DSPy::ReAct::InvalidActionError` - raised when LLM chooses unknown action
+    - `DSPy::ReAct::TypeMismatchError` - raised when final answer type doesn't match expected type
+  - **ReAct Module Changes**:
+    - Removed all `|| default_no_answer_message` error masking fallbacks
+    - Removed `start_with?("No")` heuristics for error detection
+    - Errors now propagate naturally instead of returning default values
+  - **Tools::Base Changes**:
+    - Removed rescue-all block that converted exceptions to error strings
+    - Tool execution errors now propagate with proper ArgumentError for invalid inputs
+    - No more silent error conversion to strings
+  - **Migration Guide**: Wrap agent calls in begin/rescue blocks to handle new exceptions:
+    ```ruby
+    # Before (0.27.6)
+    result = agent.forward(query: "...")
+    if result.answer.nil?
+      handle_failure
+    end
+
+    # After (0.28.0)
+    begin
+      result = agent.forward(query: "...")
+    rescue DSPy::ReAct::MaxIterationsError => e
+      handle_max_iterations(e)
+    rescue DSPy::ReAct::TypeMismatchError => e
+      handle_type_error(e)
+    end
+    ```
+
+### Fixed
+- **ReAct Type Preservation** (#133) - Fixed ReAct agents stringifying structured tool outputs
+  - Changed `HistoryEntry.observation` type from `String` to `T.untyped` to preserve structured data
+  - Changed `ThoughtBase.action_input` type from `T.any(String, T::Hash)` to `T.untyped`
+  - Tool results (T::Struct, arrays, hashes) now flow through agent pipeline without stringification
+  - LLM sees JSON representation while code retains proper Ruby types
+  - Enables elegant structured data workflows with ReAct agents
+
+### Enhanced
+- **Type System Improvements** - Better structured data handling in ReAct
+  - New `serialize_for_llm` method: Converts values for LLM display while preserving types
+  - New `serialize_history_for_llm` method: Prepares history for LLM consumption
+  - New `deserialize_final_answer` method: Intelligently deserializes based on expected output type
+  - New `type_matches?` method: Validates if a value matches expected Sorbet type
+  - New `type_name` method: Returns readable type names for error messages
+  - Intelligent type-based serialization and deserialization throughout ReAct pipeline
+
+### Examples
+- **basic_search_agent.rb** - Demonstrates structured output preservation in ReAct agents
+  - Shows how Course structs (T::Struct) flow through agent pipeline
+  - Example of proper exception handling patterns with new error classes
+  - Demonstrates both successful workflows and error handling
+
+### Documentation
+- **Provider Documentation Updates**
+  - Added Anthropic `structured_outputs` parameter to installation guide
+  - Updated provider support table showing both Anthropic modes (tool-based and enhanced prompting)
+  - Fixed invalid configuration examples across 5 documentation files
+  - Removed references to non-existent `config.structured_outputs.*` settings
+  - Added comprehensive provider access section to README showing 200+ models across 5 providers
+  - Updated docs landing page with visual provider cards and code examples
+- **Troubleshooting Guide**
+  - Updated with Anthropic structured_outputs information
+  - Added provider support comparison table
+
+### Technical Details
+- Modified `DSPy::LM::Adapters::AnthropicAdapter` to accept and store `structured_outputs` parameter
+- Updated `DSPy::LM::JSONStrategy` to conditionally apply tool-based extraction for Anthropic
+- Added `anthropic` to `PROVIDERS_WITH_EXTRA_OPTIONS` in `AdapterFactory`
+- Comprehensive test coverage for both Anthropic structured_outputs modes
+- All 1899 tests passing with new error handling and type preservation
+
 ## [0.27.6] - 2025-10-01
 
 ### Added
