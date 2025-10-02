@@ -420,11 +420,14 @@ module DSPy
     # Deserialize final answer to match expected output type
     sig { params(final_answer: T.untyped, output_field_type: T.untyped, history: T::Array[HistoryEntry]).returns(T.untyped) }
     def deserialize_final_answer(final_answer, output_field_type, history)
-      # When finish is called, check if the last tool observation matches the expected type
-      # If so, use it directly - the LLM calling "finish" is just a signal we're done
-      last_tool_observation = history.reverse.find { |entry| !entry.observation.nil? }&.observation
-      if last_tool_observation && type_matches?(last_tool_observation, output_field_type)
-        return last_tool_observation
+      # For structured types (arrays, structs), use last tool observation if it matches
+      # This preserves type information that would be lost in LLM synthesis
+      # Skip this for String types - let the LLM synthesize a proper answer
+      unless string_type?(output_field_type)
+        last_tool_observation = history.reverse.find { |entry| !entry.observation.nil? }&.observation
+        if last_tool_observation && type_matches?(last_tool_observation, output_field_type)
+          return last_tool_observation
+        end
       end
 
       # If final_answer already matches the expected type, use it
@@ -608,7 +611,7 @@ module DSPy
 
     # Checks if a type is String or compatible with String (e.g., T.any(String, ...) or T.nilable(String))
     sig { params(type_object: T.untyped).returns(T::Boolean) }
-    def string_compatible_type?(type_object)
+    def string_type?(type_object)
       case type_object
       when T::Types::Simple
         type_object.raw_type == String
@@ -619,6 +622,9 @@ module DSPy
         false
       end
     end
+
+    # Alias for backward compatibility
+    alias string_compatible_type? string_type?
 
     # Returns an appropriate default value for a given Sorbet type
     # This is used when max iterations is reached without a successful completion
