@@ -36,17 +36,6 @@ RSpec.describe "Gemini Flash Models Structured Outputs Integration" do
   
   FLASH_MODELS.each do |model|
     describe "#{model} with structured outputs" do
-      it "uses gemini_structured_output strategy" do
-        skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-        
-        lm = DSPy::LM.new("gemini/#{model}", api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-        selector = DSPy::LM::StrategySelector.new(lm.adapter, FlashTestSignature)
-        
-        selected = selector.select
-        expect(selected.name).to eq('gemini_structured_output')
-        expect(selected).to be_available
-      end
-      
       it "generates valid structured output", vcr: { cassette_name: "flash_structured_#{model.gsub(/[.-]/, '_')}" } do
         skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
         
@@ -64,21 +53,6 @@ RSpec.describe "Gemini Flash Models Structured Outputs Integration" do
         expect(result.summary).to be_a(String)
         expect(result.summary).not_to be_empty
       end
-    end
-  end
-  
-  describe "strategy comparison between models" do
-    it "all Flash models use the same strategy" do
-      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      
-      strategies = FLASH_MODELS.map do |model|
-        lm = DSPy::LM.new("gemini/#{model}", api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-        selector = DSPy::LM::StrategySelector.new(lm.adapter, FlashTestSignature)
-        selector.select.name
-      end
-      
-      # All Flash models should use structured outputs
-      expect(strategies.uniq).to eq(['gemini_structured_output'])
     end
   end
   

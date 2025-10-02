@@ -37,17 +37,17 @@ module DSPy
         adapter_class_name = adapter.class.name
 
         if adapter_class_name.include?('OpenAIAdapter') || adapter_class_name.include?('OllamaAdapter')
-          # OpenAI/Ollama: content is already JSON
-          response.content
+          # OpenAI/Ollama: try to extract JSON from various formats
+          extract_json_from_content(response.content)
         elsif adapter_class_name.include?('AnthropicAdapter')
           # Anthropic: extract from tool use
           extract_anthropic_tool_json(response)
         elsif adapter_class_name.include?('GeminiAdapter')
-          # Gemini: content is already JSON
-          response.content
+          # Gemini: try to extract JSON from various formats
+          extract_json_from_content(response.content)
         else
-          # Unknown provider: return content as-is
-          response.content
+          # Unknown provider: try to extract JSON
+          extract_json_from_content(response.content)
         end
       end
 
@@ -148,6 +148,57 @@ module DSPy
         end
 
         nil
+      end
+
+      # Extract JSON from content that may contain markdown or plain JSON
+      sig { params(content: String).returns(String) }
+      def extract_json_from_content(content)
+        return content if content.nil? || content.empty?
+
+        # Try 1: Check for ```json code block
+        if content.include?('```json')
+          json_match = content.match(/```json\s*\n(.*?)\n```/m)
+          return json_match[1].strip if json_match
+        end
+
+        # Try 2: Check for generic ``` code block
+        if content.include?('```')
+          code_match = content.match(/```\s*\n(.*?)\n```/m)
+          if code_match
+            potential_json = code_match[1].strip
+            # Verify it's JSON
+            begin
+              JSON.parse(potential_json)
+              return potential_json
+            rescue JSON::ParserError
+              # Not valid JSON, continue
+            end
+          end
+        end
+
+        # Try 3: Try parsing entire content as JSON
+        begin
+          JSON.parse(content)
+          return content
+        rescue JSON::ParserError
+          # Not pure JSON, try extracting
+        end
+
+        # Try 4: Look for JSON object pattern in text
+        json_pattern = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/m
+        json_match = content.match(json_pattern)
+        if json_match
+          potential_json = json_match[0]
+          begin
+            JSON.parse(potential_json)
+            return potential_json
+          rescue JSON::ParserError
+            # Not valid JSON
+          end
+        end
+
+        # Return content as-is if no JSON found
+        content
       end
     end
   end
