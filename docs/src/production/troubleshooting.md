@@ -122,31 +122,39 @@ lm = DSPy::LM.new("openai/gpt-4", api_key: "your-key-here")
 
 ## JSON Parsing Issues
 
-### Error: JSON parsing failures with structured outputs
+### Error: JSON parsing failures
 
 **Problem**: LLM returns invalid JSON that can't be parsed.
 
-**Solution**: DSPy automatically retries with fallback strategies. For best reliability, use providers with native structured outputs:
+**Solution**: DSPy.rb uses robust extraction strategies that try multiple patterns (code blocks, raw JSON, nested objects). For best reliability, use providers with native structured outputs:
 
 ```ruby
-# Configure retry behavior
 DSPy.configure do |config|
-  config.structured_outputs.retry_enabled = true
-  config.structured_outputs.max_retries = 3
-  config.structured_outputs.fallback_enabled = true
-  
-  # Use providers with native structured outputs for better reliability
-  # OpenAI structured outputs
-  config.lm = DSPy::LM.new("openai/gpt-4o-mini", 
-                           api_key: ENV["OPENAI_API_KEY"],
-                           structured_outputs: true)
-  
-  # Gemini structured outputs 
-  # config.lm = DSPy::LM.new("gemini/gemini-1.5-flash", 
-  #                          api_key: ENV["GEMINI_API_KEY"],
-  #                          structured_outputs: true)
+  # OpenAI with native structured outputs (recommended)
+  config.lm = DSPy::LM.new(
+    "openai/gpt-4o-mini",
+    api_key: ENV["OPENAI_API_KEY"],
+    structured_outputs: true
+  )
+
+  # Gemini with native structured outputs (recommended)
+  # config.lm = DSPy::LM.new(
+  #   "gemini/gemini-2.5-flash",
+  #   api_key: ENV["GEMINI_API_KEY"],
+  #   structured_outputs: true
+  # )
+
+  # Anthropic uses enhanced prompting (structured_outputs not supported)
+  # config.lm = DSPy::LM.new(
+  #   "anthropic/claude-sonnet-4-5-20250929",
+  #   api_key: ENV["ANTHROPIC_API_KEY"]
+  # )
 end
 ```
+
+**Provider Support**:
+- **OpenAI/Gemini/Ollama**: Use `structured_outputs: true` for native JSON mode
+- **Anthropic**: Automatically uses tool-based extraction (always enabled, no parameter needed)
 
 ## Memory Issues
 

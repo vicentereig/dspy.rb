@@ -133,22 +133,31 @@ Original content length: 156 chars
 
 Not just "invalid JSON" - you get context to actually debug the issue.
 
-## Configuration When You Need It
+## Configuration Per Provider
 
-The defaults work well, but you can customize behavior:
+Enable native structured outputs for maximum reliability:
 
 ```ruby
 DSPy.configure do |config|
-  # Control retry behavior
-  config.structured_outputs.retry_enabled = true
-  config.structured_outputs.max_retries = 3
-  
-  # Choose strategy: Strict (provider-optimized) or Compatible (enhanced prompting)
-  config.structured_outputs.strategy = DSPy::Strategy::Strict
-  # config.structured_outputs.strategy = DSPy::Strategy::Compatible
-  
-  # Disable delays in tests
-  config.test_mode = true
+  # OpenAI: Native structured outputs (highly recommended)
+  config.lm = DSPy::LM.new(
+    "openai/gpt-4o-mini",
+    api_key: ENV["OPENAI_API_KEY"],
+    structured_outputs: true
+  )
+
+  # Gemini: Native structured outputs (highly recommended)
+  # config.lm = DSPy::LM.new(
+  #   "gemini/gemini-2.5-flash",
+  #   api_key: ENV["GEMINI_API_KEY"],
+  #   structured_outputs: true
+  # )
+
+  # Anthropic: Uses tool-based extraction automatically
+  # config.lm = DSPy::LM.new(
+  #   "anthropic/claude-sonnet-4-5-20250929",
+  #   api_key: ENV["ANTHROPIC_API_KEY"]
+  # )
 end
 ```
 
@@ -156,11 +165,12 @@ end
 
 In our testing with production workloads:
 
-- **OpenAI + structured outputs**: 0% JSON parsing errors (down from ~5%)
-- **Anthropic with extraction**: <0.1% errors (down from ~2%)
-- **Enhanced prompting**: ~0.5% errors (down from ~8%)
+- **OpenAI + structured outputs**: Near-zero JSON parsing errors
+- **Gemini + structured outputs**: Near-zero JSON parsing errors
+- **Anthropic tool extraction**: <0.1% errors
+- **Enhanced prompting fallback**: ~0.5% errors
 
-The retry mechanism catches most remaining failures, bringing the effective error rate near zero for all providers.
+The robust extraction strategies handle edge cases gracefully, providing reliable parsing across all providers.
 
 ## Migration is Seamless
 
