@@ -27,23 +27,15 @@ RSpec.describe DSPy do
       expect(DSPy.config.structured_outputs).to respond_to(:anthropic)
     end
 
-    it 'has test_mode setting' do
-      expect(DSPy.config).to respond_to(:test_mode)
-      expect(DSPy.config.test_mode).to eq(false)
-    end
-
     it 'supports configuration blocks' do
       DSPy.configure do |config|
-        config.test_mode = true
         config.structured_outputs.openai = true
       end
 
-      expect(DSPy.config.test_mode).to eq(true)
       expect(DSPy.config.structured_outputs.openai).to eq(true)
 
       # Reset to defaults
       DSPy.configure do |config|
-        config.test_mode = false
         config.structured_outputs.openai = false
       end
     end

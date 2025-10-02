@@ -20,7 +20,6 @@ Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |f| 
 
 DSPy.configure do |c|
   c.logger = Dry.Logger(:dspy, formatter: :string) { |s| s.add_backend(stream: "log/test.log") }
-  c.test_mode = false
 end
 
 # Pre-download embedding model for tests
