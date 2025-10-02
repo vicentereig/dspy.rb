@@ -417,34 +417,72 @@ module DSPy
       @enhanced_output_struct.new(**output_data)
     end
 
+    # Find the most recent non-nil tool observation in history
+    sig { params(history: T::Array[HistoryEntry]).returns(T.untyped) }
+    def find_last_tool_observation(history)
+      history.reverse.find { |entry| !entry.observation.nil? }&.observation
+    end
+
     # Deserialize final answer to match expected output type
+    # Routes to appropriate deserialization based on type classification
     sig { params(final_answer: T.untyped, output_field_type: T.untyped, history: T::Array[HistoryEntry]).returns(T.untyped) }
     def deserialize_final_answer(final_answer, output_field_type, history)
-      # For structured types (arrays, structs), use last tool observation if it matches
-      # This preserves type information that would be lost in LLM synthesis
-      # Skip this for String types - let the LLM synthesize a proper answer
-      unless string_type?(output_field_type)
-        last_tool_observation = history.reverse.find { |entry| !entry.observation.nil? }&.observation
-        if last_tool_observation && type_matches?(last_tool_observation, output_field_type)
-          return last_tool_observation
-        end
+      if scalar_type?(output_field_type)
+        deserialize_scalar(final_answer, output_field_type)
+      elsif structured_type?(output_field_type)
+        deserialize_structured(final_answer, output_field_type, history)
+      else
+        # Fallback for unknown types
+        return final_answer if type_matches?(final_answer, output_field_type)
+        convert_to_expected_type(final_answer, output_field_type)
+      end
+    end
+
+    # Deserialize scalar types (String, Integer, Boolean, etc.)
+    # Scalars: Trust LLM synthesis, minimal conversion
+    sig { params(final_answer: T.untyped, output_field_type: T.untyped).returns(T.untyped) }
+    def deserialize_scalar(final_answer, output_field_type)
+      # If already matches, return as-is (even if empty string for String types)
+      return final_answer if type_matches?(final_answer, output_field_type)
+
+      # Handle "no answer" cases
+      if final_answer.nil? || (final_answer.is_a?(String) && final_answer.start_with?("No"))
+        return default_value_for_type(output_field_type)
       end
 
-      # If final_answer already matches the expected type, use it
+      # Try basic conversion
+      converted = convert_to_expected_type(final_answer, output_field_type)
+      return converted if type_matches?(converted, output_field_type)
+
+      # Return as-is and let validation catch any type mismatch
+      final_answer
+    end
+
+    # Deserialize structured types (arrays, hashes, structs)
+    # Structured: Prefer tool observation to preserve type information
+    sig { params(final_answer: T.untyped, output_field_type: T.untyped, history: T::Array[HistoryEntry]).returns(T.untyped) }
+    def deserialize_structured(final_answer, output_field_type, history)
+      # First, try to use the last tool observation if it matches the expected type
+      # This preserves type information that would be lost in LLM synthesis
+      last_tool_observation = find_last_tool_observation(history)
+      if last_tool_observation && type_matches?(last_tool_observation, output_field_type)
+        return last_tool_observation
+      end
+
+      # If final_answer already matches, use it
       return final_answer if type_matches?(final_answer, output_field_type)
 
       # Try to convert based on expected type
       converted = convert_to_expected_type(final_answer, output_field_type)
       return converted if type_matches?(converted, output_field_type)
 
-      # If conversion failed, check if this is a "no answer" case
-      # Either nil or the default message string
+      # Handle "no answer" cases
       if final_answer.nil? || (final_answer.is_a?(String) && final_answer.start_with?("No"))
         return default_value_for_type(output_field_type)
       end
 
-      # Return final_answer as-is and let validation catch any type mismatch
-      final_answer
+      # Last resort: return default value for the type
+      default_value_for_type(output_field_type)
     end
 
     # Convert value to expected type
@@ -607,6 +645,41 @@ module DSPy
     sig { returns(String) }
     def default_no_answer_message
       "No answer reached within #{@max_iterations} iterations"
+    end
+
+    # Checks if a type is a scalar (primitives that don't need special serialization)
+    sig { params(type_object: T.untyped).returns(T::Boolean) }
+    def scalar_type?(type_object)
+      case type_object
+      when T::Types::Simple
+        scalar_classes = [String, Integer, Float, Numeric, TrueClass, FalseClass]
+        scalar_classes.any? { |klass| type_object.raw_type == klass || type_object.raw_type <= klass }
+      when T::Types::Union
+        # Union is scalar if all its types are scalars
+        type_object.types.all? { |t| scalar_type?(t) }
+      else
+        false
+      end
+    end
+
+    # Checks if a type is structured (arrays, hashes, structs that need type preservation)
+    sig { params(type_object: T.untyped).returns(T::Boolean) }
+    def structured_type?(type_object)
+      return true if type_object.is_a?(T::Types::TypedArray)
+      return true if type_object.is_a?(T::Types::TypedHash)
+
+      if type_object.is_a?(T::Types::Simple)
+        raw_type = type_object.raw_type
+        return true if raw_type.respond_to?(:<=) && raw_type <= T::Struct
+      end
+
+      # For union types (like T.nilable(T::Array[...])), check if any non-nil type is structured
+      if type_object.is_a?(T::Types::Union)
+        non_nil_types = type_object.types.reject { |t| t.is_a?(T::Types::Simple) && t.raw_type == NilClass }
+        return non_nil_types.any? { |t| structured_type?(t) }
+      end
+
+      false
     end
 
     # Checks if a type is String or compatible with String (e.g., T.any(String, ...) or T.nilable(String))
