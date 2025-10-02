@@ -53,7 +53,6 @@ class JSONModesBenchmark
   ].freeze
 
   GOOGLE_MODELS = %w[
-    gemini-1.5-pro gemini-1.5-flash
     gemini-2.0-flash-exp
     gemini-2.5-flash
   ].freeze
@@ -66,8 +65,6 @@ class JSONModesBenchmark
     'gpt-4o-mini' => { input: 0.15, output: 0.60 },
     'claude-3-5-sonnet-20241022' => { input: 3.00, output: 15.00 },
     'claude-3-5-haiku-20241022' => { input: 0.80, output: 4.00 },
-    'gemini-1.5-pro' => { input: 1.25, output: 5.00 },
-    'gemini-1.5-flash' => { input: 0.075, output: 0.30 },
     'gemini-2.0-flash-exp' => { input: 0.00, output: 0.00 },
     'gemini-2.5-flash' => { input: 0.075, output: 0.30 }
   }.freeze
@@ -87,6 +84,7 @@ class JSONModesBenchmark
     puts "Native Structured Outputs Benchmark"
     puts "===================================="
     puts "Testing #{ALL_MODELS.length} models with native structured outputs"
+    puts "OpenAI: #{OPENAI_MODELS.length}, Anthropic: #{ANTHROPIC_MODELS.length}, Google: #{GOOGLE_MODELS.length}"
     puts
   end
 
@@ -126,7 +124,8 @@ class JSONModesBenchmark
       lm = create_lm_for_model(model)
       DSPy.configure { |config| config.lm = lm }
 
-      # Run test
+      # Run test and capture result
+      result = nil
       response_time = Benchmark.realtime do
         predictor = DSPy::Predict.new(TodoListManagementSignature)
         result = predictor.call(
@@ -137,8 +136,11 @@ class JSONModesBenchmark
         validate_result(result)
       end
 
-      # Get usage metrics
-      usage = lm.instance_variable_get(:@last_response)&.usage
+      # Get usage from the LM adapter's last response
+      adapter = lm.instance_variable_get(:@adapter)
+      last_response = adapter.instance_variable_get(:@last_response)
+
+      usage = last_response&.usage
       input_tokens = usage&.input_tokens || 0
       output_tokens = usage&.output_tokens || 0
 
