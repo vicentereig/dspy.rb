@@ -43,29 +43,30 @@ class TodoListManagementSignature < DSPy::Signature
 end
 
 class JSONModesBenchmark
-  # Model constants for testing native structured outputs
+  # Model constants for testing native structured outputs (January 2025)
   OPENAI_MODELS = %w[
     gpt-4o gpt-4o-mini
   ].freeze
 
   ANTHROPIC_MODELS = %w[
-    claude-3-5-sonnet-20241022 claude-3-5-haiku-20241022
+    claude-sonnet-4-5-20250929
+    claude-opus-4-1-20250805
   ].freeze
 
   GOOGLE_MODELS = %w[
-    gemini-2.0-flash-exp
+    gemini-2.5-pro
     gemini-2.5-flash
   ].freeze
 
   ALL_MODELS = (OPENAI_MODELS + ANTHROPIC_MODELS + GOOGLE_MODELS).freeze
 
-  # Model pricing per 1M tokens (input/output) - October 2025
+  # Model pricing per 1M tokens (input/output) - January 2025
   MODEL_PRICING = {
     'gpt-4o' => { input: 2.50, output: 10.00 },
     'gpt-4o-mini' => { input: 0.15, output: 0.60 },
-    'claude-3-5-sonnet-20241022' => { input: 3.00, output: 15.00 },
-    'claude-3-5-haiku-20241022' => { input: 0.80, output: 4.00 },
-    'gemini-2.0-flash-exp' => { input: 0.00, output: 0.00 },
+    'claude-sonnet-4-5-20250929' => { input: 3.00, output: 15.00 },
+    'claude-opus-4-1-20250805' => { input: 15.00, output: 75.00 },
+    'gemini-2.5-pro' => { input: 1.25, output: 5.00 },
     'gemini-2.5-flash' => { input: 0.075, output: 0.30 }
   }.freeze
 
@@ -124,6 +125,16 @@ class JSONModesBenchmark
       lm = create_lm_for_model(model)
       DSPy.configure { |config| config.lm = lm }
 
+      # Track usage with event subscription
+      captured_usage = nil
+      subscription = DSPy.events.subscribe('lm.tokens') do |_, attrs|
+        captured_usage = {
+          input: attrs[:input_tokens],
+          output: attrs[:output_tokens],
+          total: attrs[:total_tokens]
+        }
+      end
+
       # Run test and capture result
       result = nil
       response_time = Benchmark.realtime do
@@ -136,13 +147,12 @@ class JSONModesBenchmark
         validate_result(result)
       end
 
-      # Get usage from the LM adapter's last response
-      adapter = lm.instance_variable_get(:@adapter)
-      last_response = adapter.instance_variable_get(:@last_response)
+      # Unsubscribe from event
+      DSPy.events.unsubscribe('lm.tokens', subscription)
 
-      usage = last_response&.usage
-      input_tokens = usage&.input_tokens || 0
-      output_tokens = usage&.output_tokens || 0
+      # Get usage from captured event
+      input_tokens = captured_usage&.dig(:input) || 0
+      output_tokens = captured_usage&.dig(:output) || 0
 
       # Calculate cost
       pricing = MODEL_PRICING[model]
