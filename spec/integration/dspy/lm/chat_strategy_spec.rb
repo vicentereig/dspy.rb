@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative '../../../lib/dspy/lm/chat_strategy'
+require_relative '../../../../lib/dspy/lm/chat_strategy'
 
 RSpec.describe DSPy::LM::ChatStrategy do
   let(:adapter) { instance_double(DSPy::LM::Adapter) }
