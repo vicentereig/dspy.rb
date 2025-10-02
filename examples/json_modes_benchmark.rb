@@ -82,9 +82,10 @@ class JSONModesBenchmark
       }
     }
 
-    puts "Native Structured Outputs Benchmark"
-    puts "===================================="
-    puts "Testing #{ALL_MODELS.length} models with native structured outputs"
+    puts "JSON Parsing Strategies Benchmark"
+    puts "=================================="
+    puts "Comparing Enhanced Prompting vs Native Structured Outputs"
+    puts "Testing #{ALL_MODELS.length} models"
     puts "OpenAI: #{OPENAI_MODELS.length}, Anthropic: #{ANTHROPIC_MODELS.length}, Google: #{GOOGLE_MODELS.length}"
     puts
   end
@@ -113,16 +114,30 @@ class JSONModesBenchmark
     puts "-" * 60
 
     @results[:models][model] = {
+      enhanced_prompting: {},
+      structured_outputs: {}
+    }
+
+    # Test both strategies
+    test_strategy(model, :enhanced_prompting, false)
+    test_strategy(model, :structured_outputs, true)
+  end
+
+  def test_strategy(model, strategy_name, structured_outputs)
+    puts "  #{strategy_name.to_s.gsub('_', ' ').capitalize}..."
+
+    result_key = @results[:models][model][strategy_name]
+    result_key.merge!(
       success: false,
       response_time: 0.0,
       cost: 0.0,
       tokens: { input: 0, output: 0 },
       error: nil
-    }
+    )
 
     begin
-      # Configure LM with structured outputs enabled
-      lm = create_lm_for_model(model)
+      # Configure LM with appropriate strategy
+      lm = create_lm_for_model(model, structured_outputs)
       DSPy.configure { |config| config.lm = lm }
 
       # Track usage with event subscription
@@ -148,7 +163,7 @@ class JSONModesBenchmark
       end
 
       # Unsubscribe from event
-      DSPy.events.unsubscribe('lm.tokens', subscription)
+      DSPy.events.unsubscribe(subscription)
 
       # Get usage from captured event
       input_tokens = captured_usage&.dig(:input) || 0
@@ -163,7 +178,7 @@ class JSONModesBenchmark
         0.0
       end
 
-      @results[:models][model].merge!(
+      result_key.merge!(
         success: true,
         response_time: response_time,
         cost: cost,
@@ -174,36 +189,36 @@ class JSONModesBenchmark
       @results[:summary][:total_cost] += cost
       @results[:summary][:total_response_time] += response_time
 
-      puts "✅ Success (#{(response_time * 1000).round(0)}ms, $#{cost.round(6)})"
+      puts "    ✅ Success (#{(response_time * 1000).round(0)}ms, $#{cost.round(6)}, #{input_tokens}→#{output_tokens} tokens)"
 
     rescue => e
-      @results[:models][model][:error] = e.message
+      result_key[:error] = e.message
       @results[:summary][:failed_tests] += 1
-      puts "❌ Failed: #{e.message}"
+      puts "    ❌ Failed: #{e.message}"
     ensure
       @results[:summary][:total_tests] += 1
     end
   end
 
-  def create_lm_for_model(model)
+  def create_lm_for_model(model, structured_outputs)
     case model
     when /^gpt-/
       DSPy::LM.new(
         "openai/#{model}",
         api_key: ENV['OPENAI_API_KEY'],
-        structured_outputs: true
+        structured_outputs: structured_outputs
       )
     when /^claude-/
       DSPy::LM.new(
         "anthropic/#{model}",
         api_key: ENV['ANTHROPIC_API_KEY'],
-        structured_outputs: true
+        structured_outputs: structured_outputs
       )
     when /^gemini-/
       DSPy::LM.new(
         "gemini/#{model}",
         api_key: ENV['GEMINI_API_KEY'],
-        structured_outputs: true
+        structured_outputs: structured_outputs
       )
     else
       raise ArgumentError, "Unknown model provider: #{model}"
@@ -217,9 +232,9 @@ class JSONModesBenchmark
   end
 
   def print_summary(duration)
-    puts "\n" + "="*60
+    puts "\n" + "="*80
     puts "BENCHMARK RESULTS"
-    puts "="*60
+    puts "="*80
 
     summary = @results[:summary]
     success_rate = summary[:total_tests] > 0 ?
@@ -236,17 +251,20 @@ class JSONModesBenchmark
     puts "  Total cost: $#{summary[:total_cost].round(4)}"
     puts "  Total duration: #{duration.round(1)}s"
 
-    puts "\nPer-Model Results:"
-    puts "  #{'Model'.ljust(35)} #{'Status'.ljust(10)} #{'Time'.ljust(10)} #{'Cost'.ljust(12)} #{'Tokens'}"
-    puts "  " + "-" * 85
+    puts "\nPer-Model Comparison:"
+    puts "  #{'Model'.ljust(30)} #{'Strategy'.ljust(20)} #{'Status'.ljust(8)} #{'Time'.ljust(10)} #{'Cost'.ljust(12)} #{'Tokens'}"
+    puts "  " + "-" * 95
 
-    @results[:models].each do |model, data|
-      status = data[:success] ? "✅" : "❌"
-      time = data[:success] ? "#{(data[:response_time] * 1000).round(0)}ms" : "N/A"
-      cost = data[:success] ? "$#{data[:cost].round(6)}" : "N/A"
-      tokens = data[:success] ? "#{data[:tokens][:input]}→#{data[:tokens][:output]}" : "N/A"
+    @results[:models].each do |model, strategies|
+      strategies.each do |strategy_name, data|
+        status = data[:success] ? "✅" : "❌"
+        time = data[:success] ? "#{(data[:response_time] * 1000).round(0)}ms" : "N/A"
+        cost = data[:success] ? "$#{data[:cost].round(6)}" : "N/A"
+        tokens = data[:success] ? "#{data[:tokens][:input]}→#{data[:tokens][:output]}" : "N/A"
+        strategy_display = strategy_name.to_s.gsub('_', ' ').capitalize
 
-      puts "  #{model.ljust(35)} #{status.ljust(10)} #{time.ljust(10)} #{cost.ljust(12)} #{tokens}"
+        puts "  #{model.ljust(30)} #{strategy_display.ljust(20)} #{status.ljust(8)} #{time.ljust(10)} #{cost.ljust(12)} #{tokens}"
+      end
     end
 
     puts
@@ -254,10 +272,36 @@ class JSONModesBenchmark
 
   def export_results
     timestamp = Time.now.strftime("%Y%m%d_%H%M%S")
-    filename = "benchmark_results_#{timestamp}.json"
 
-    File.write(filename, JSON.pretty_generate(@results))
-    puts "📊 Results exported to: #{filename}"
+    # Export JSON
+    json_filename = "benchmark_#{timestamp}.json"
+    File.write(json_filename, JSON.pretty_generate(@results))
+    puts "📊 JSON results exported to: #{json_filename}"
+
+    # Export CSV
+    csv_filename = "benchmark_#{timestamp}.csv"
+    CSV.open(csv_filename, 'w') do |csv|
+      # Header
+      csv << ['Model', 'Strategy', 'Success', 'Response Time (ms)', 'Cost ($)', 'Input Tokens', 'Output Tokens', 'Total Tokens', 'Error']
+
+      # Data rows
+      @results[:models].each do |model, strategies|
+        strategies.each do |strategy_name, data|
+          csv << [
+            model,
+            strategy_name.to_s.gsub('_', ' ').capitalize,
+            data[:success] ? 'Yes' : 'No',
+            data[:success] ? (data[:response_time] * 1000).round(0) : 'N/A',
+            data[:success] ? data[:cost].round(6) : 'N/A',
+            data[:success] ? data[:tokens][:input] : 'N/A',
+            data[:success] ? data[:tokens][:output] : 'N/A',
+            data[:success] ? (data[:tokens][:input] + data[:tokens][:output]) : 'N/A',
+            data[:error] || ''
+          ]
+        end
+      end
+    end
+    puts "📊 CSV results exported to: #{csv_filename}"
   end
 end
 

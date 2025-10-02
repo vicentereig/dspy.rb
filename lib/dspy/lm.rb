@@ -64,7 +64,10 @@ module DSPy
         response = instrument_lm_request(messages, signature_class.name) do
           chat_with_strategy(messages, signature_class, &block)
         end
-        
+
+        # Emit the standard lm.tokens event (consistent with raw_chat)
+        emit_token_usage(response, signature_class.name)
+
         # Parse response (no longer needs separate instrumentation)
         parsed_result = parse_response(response, input_values, signature_class)
         
