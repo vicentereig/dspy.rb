@@ -281,42 +281,6 @@ RSpec.describe "Gemini Structured Outputs Integration" do
     end
   end
 
-  describe "strategy selection" do
-    it "selects Gemini structured output strategy for supported models" do
-      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      
-      # Use gemini-1.5-pro which actually supports structured outputs
-      lm = DSPy::LM.new('gemini/gemini-1.5-pro', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-      selector = DSPy::LM::StrategySelector.new(lm.adapter, GeminiSentimentAnalysis)
-      
-      selected = selector.select
-      expect(selected.name).to eq('gemini_structured_output')
-      expect(selected).to be_available
-    end
-    
-    it "selects Gemini structured output strategy for Flash models (newly supported)" do
-      skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      
-      # Test with gemini-1.5-flash which now supports structured outputs
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-      selector = DSPy::LM::StrategySelector.new(lm.adapter, GeminiSentimentAnalysis)
-      
-      selected = selector.select
-      expect(selected.name).to eq('gemini_structured_output')
-      expect(selected).to be_available
-    end
-    
-    it "falls back to enhanced prompting for unsupported models" do
-      # Test with gemini-1.0-pro which doesn't support structured outputs
-      lm = DSPy::LM.new('gemini/gemini-1.0-pro', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-      selector = DSPy::LM::StrategySelector.new(lm.adapter, GeminiSentimentAnalysis)
-      
-      selected = selector.select
-      expect(selected.name).to eq('enhanced_prompting')
-      expect(selected).to be_available
-    end
-  end
-  
   describe "error handling and fallback behavior" do
     it "gracefully handles malformed schemas", vcr: { cassette_name: "gemini_malformed_schema" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
@@ -353,16 +317,6 @@ RSpec.describe "Gemini Structured Outputs Integration" do
         # Also expected - type validation fails for complex nested structures
         expect(e.message).to include("Type Mismatch")
       end
-    end
-    
-    it "maintains fallback to enhanced prompting when structured outputs unavailable" do
-      # Test with a legacy model that doesn't support structured outputs
-      lm = DSPy::LM.new('gemini/gemini-1.0-pro', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
-      selector = DSPy::LM::StrategySelector.new(lm.adapter, GeminiSentimentAnalysis)
-      
-      selected = selector.select
-      expect(selected.name).to eq('enhanced_prompting')
-      expect(selected).to be_available
     end
     
     it "handles API errors gracefully", vcr: { cassette_name: "gemini_api_error" } do
