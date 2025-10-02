@@ -97,41 +97,30 @@ class GeminiOptionalFieldsSignature < DSPy::Signature
   end
 end
 
-# Deeply nested structures for testing
-class GeminiLevel4 < T::Struct
-  const :value, String
+# Nested structures for testing (2 levels - Gemini has strict nesting limits)
+class GeminiCategory < T::Struct
+  const :name, String
+  const :count, Integer
   const :tags, T::Array[String]
 end
 
-class GeminiLevel3 < T::Struct
-  const :name, String
-  const :items, T::Array[GeminiLevel4]
-  const :metadata, T::Hash[String, T.untyped]
-end
-
-class GeminiLevel2 < T::Struct
-  const :category, String
-  const :subcategories, T::Array[GeminiLevel3]
-  const :count, Integer
-end
-
-class GeminiLevel1 < T::Struct
+class GeminiStructure < T::Struct
   const :section, String
-  const :groups, T::Array[GeminiLevel2]
+  const :categories, T::Array[GeminiCategory]
   const :total, Integer
   const :summary, String
 end
 
-class GeminiDeepNestingSignature < DSPy::Signature
-  description "Test signature with deeply nested structures"
-  
+class GeminiNestedSignature < DSPy::Signature
+  description "Test signature with nested structures"
+
   input do
     const :topic, String, description: "Topic to structure"
   end
-  
+
   output do
-    const :structure, GeminiLevel1, description: "Deeply nested hierarchical structure"
-    const :depth_level, Integer, description: "Maximum depth reached"
+    const :structure, GeminiStructure, description: "Hierarchical structure (2 levels)"
+    const :depth_level, Integer, description: "Nesting depth used"
     const :complexity_score, Float, description: "Complexity rating"
   end
 end
@@ -233,50 +222,32 @@ RSpec.describe "Gemini Structured Outputs Integration" do
       end
     end
     
-    it "handles deeply nested structures", vcr: { cassette_name: "gemini_structured_nested" } do
+    it "handles nested structures (2 levels)", vcr: { cassette_name: "gemini_structured_nested" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
-      skip 'Gemini API limitation: schema exceeds maximum allowed nesting depth'
 
       lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       DSPy.configure { |config| config.lm = lm }
-      
-      predictor = DSPy::Predict.new(GeminiDeepNestingSignature)
+
+      predictor = DSPy::Predict.new(GeminiNestedSignature)
       result = predictor.call(topic: "Programming languages categorization")
-      
+
       # Verify top level structure
-      expect(result.structure).to be_a(GeminiLevel1)
+      expect(result.structure).to be_a(GeminiStructure)
       expect(result.structure.section).to be_a(String)
-      expect(result.structure.groups).to be_a(Array)
+      expect(result.structure.categories).to be_a(Array)
       expect(result.structure.total).to be_a(Integer)
       expect(result.structure.summary).to be_a(String)
-      
-      # Verify second level (if present)
-      if result.structure.groups.any?
-        group = result.structure.groups.first
-        expect(group).to be_a(GeminiLevel2)
-        expect(group.category).to be_a(String)
-        expect(group.subcategories).to be_a(Array)
-        expect(group.count).to be_a(Integer)
-        
-        # Verify third level (if present)
-        if group.subcategories.any?
-          subcat = group.subcategories.first
-          expect(subcat).to be_a(GeminiLevel3)
-          expect(subcat.name).to be_a(String)
-          expect(subcat.items).to be_a(Array)
-          expect(subcat.metadata).to be_a(Hash)
-          
-          # Verify fourth level (if present)
-          if subcat.items.any?
-            item = subcat.items.first
-            expect(item).to be_a(GeminiLevel4)
-            expect(item.value).to be_a(String)
-            expect(item.tags).to be_a(Array)
-            item.tags.each { |tag| expect(tag).to be_a(String) }
-          end
-        end
+
+      # Verify second level (categories)
+      if result.structure.categories.any?
+        category = result.structure.categories.first
+        expect(category).to be_a(GeminiCategory)
+        expect(category.name).to be_a(String)
+        expect(category.count).to be_a(Integer)
+        expect(category.tags).to be_a(Array)
+        category.tags.each { |tag| expect(tag).to be_a(String) }
       end
-      
+
       expect(result.depth_level).to be_a(Integer)
       expect(result.complexity_score).to be_a(Float)
     end
