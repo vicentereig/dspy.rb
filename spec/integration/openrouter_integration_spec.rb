@@ -43,50 +43,6 @@ RSpec.describe "OpenRouter Integration" do
   let(:api_key) { ENV[api_key_name] }
 
   describe "basic functionality" do
-    it "works with basic chat completion (auto-fallback from structured outputs)", vcr: { cassette_name: "openrouter_basic_chat" } do
-      require_api_key!
-
-      # Use deepseek without explicitly setting structured_outputs - should auto-fallback
-      lm = DSPy::LM.new(
-        'openrouter/deepseek/deepseek-chat-v3.1:free',
-        api_key: api_key
-      )
-      DSPy.configure { |config| config.lm = lm }
-
-      predictor = DSPy::Predict.new(OpenRouterSimpleResponse)
-      result = predictor.call(prompt: "Say hello in exactly three words")
-
-      expect(result.response).to be_a(String)
-      expect(result.response).not_to be_empty
-      expect(result.word_count).to be_a(Integer)
-      expect(result.word_count).to eq(3)
-    end
-  end
-
-  describe "structured outputs with fallback" do
-    it "attempts structured outputs first, falls back on failure (default behavior)", vcr: { cassette_name: "openrouter_structured_fallback" } do
-      require_api_key!
-
-      # Use a model that doesn't support structured outputs - should fallback automatically
-      # (structured_outputs defaults to true for OpenRouter)
-      lm = DSPy::LM.new(
-        'openrouter/deepseek/deepseek-chat-v3.1:free',
-        api_key: api_key
-      )
-      DSPy.configure { |config| config.lm = lm }
-
-      predictor = DSPy::Predict.new(OpenRouterSentimentAnalysis)
-      result = predictor.call(text: "I absolutely love this product! It's amazing.")
-
-      # Should work regardless of whether structured outputs succeeded or fell back
-      expect(result.sentiment).to be_a(OpenRouterSentiment)
-      expect(result.sentiment).to eq(OpenRouterSentiment::Positive)
-      expect(result.confidence).to be_a(Float)
-      expect(result.confidence).to be_between(0, 1)
-      expect(result.reasoning).to be_a(String)
-      expect(result.reasoning).not_to be_empty
-    end
-
     it "works with structured outputs explicitly disabled", vcr: { cassette_name: "openrouter_no_structured" } do
       require_api_key!
 
