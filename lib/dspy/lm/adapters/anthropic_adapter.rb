@@ -6,10 +6,11 @@ require_relative '../vision_models'
 module DSPy
   class LM
     class AnthropicAdapter < Adapter
-      def initialize(model:, api_key:)
-        super
+      def initialize(model:, api_key:, structured_outputs: true)
+        super(model: model, api_key: api_key)
         validate_api_key!(api_key, 'anthropic')
         @client = Anthropic::Client.new(api_key: api_key)
+        @structured_outputs_enabled = structured_outputs
       end
 
       def chat(messages:, signature: nil, **extra_params, &block)

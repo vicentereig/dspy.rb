@@ -23,6 +23,21 @@ RSpec.describe DSPy::LM::AnthropicAdapter do
       adapter = described_class.new(model: 'claude-3-sonnet', api_key: 'test-key')
       expect(adapter.model).to eq('claude-3-sonnet')
     end
+
+    it 'defaults structured_outputs to true' do
+      adapter = described_class.new(model: 'claude-3-sonnet', api_key: 'test-key')
+      expect(adapter.instance_variable_get(:@structured_outputs_enabled)).to be true
+    end
+
+    it 'accepts structured_outputs: true' do
+      adapter = described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', structured_outputs: true)
+      expect(adapter.instance_variable_get(:@structured_outputs_enabled)).to be true
+    end
+
+    it 'accepts structured_outputs: false' do
+      adapter = described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', structured_outputs: false)
+      expect(adapter.instance_variable_get(:@structured_outputs_enabled)).to be false
+    end
   end
 
   describe '#chat' do

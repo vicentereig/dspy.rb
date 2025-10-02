@@ -153,10 +153,18 @@ DSPy.configure do |config|
   #   structured_outputs: true
   # )
 
-  # Anthropic: Uses tool-based extraction automatically
+  # Anthropic: Tool-based extraction (default, recommended)
   # config.lm = DSPy::LM.new(
   #   "anthropic/claude-sonnet-4-5-20250929",
-  #   api_key: ENV["ANTHROPIC_API_KEY"]
+  #   api_key: ENV["ANTHROPIC_API_KEY"],
+  #   structured_outputs: true  # Default
+  # )
+
+  # Anthropic: Enhanced prompting (alternative)
+  # config.lm = DSPy::LM.new(
+  #   "anthropic/claude-sonnet-4-5-20250929",
+  #   api_key: ENV["ANTHROPIC_API_KEY"],
+  #   structured_outputs: false
   # )
 end
 ```
