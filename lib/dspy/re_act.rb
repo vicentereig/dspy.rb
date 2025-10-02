@@ -154,10 +154,10 @@ module DSPy
     private
 
     # Serialize value for LLM display
-    sig { params(value: T.untyped).returns(T.any(String, T::Hash[T.untyped, T.untyped], T::Array[T.untyped])) }
+    sig { params(value: T.untyped).returns(T.untyped) }
     def serialize_for_llm(value)
       return value if value.nil?
-      return value if value.is_a?(String)
+      return value if value.is_a?(String) || value.is_a?(Numeric) || value.is_a?(TrueClass) || value.is_a?(FalseClass)
 
       # For structured data, serialize to JSON-compatible format
       begin
@@ -310,7 +310,7 @@ module DSPy
     end
 
     # Executes a single iteration of the ReAct loop
-    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[AvailableTool], iteration: Integer, tools_used: T::Array[String], last_observation: T.nilable(String)).returns(T::Hash[Symbol, T.untyped]) }
+    sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[AvailableTool], iteration: Integer, tools_used: T::Array[String], last_observation: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
     def execute_single_iteration(input_struct, history, available_tools_desc, iteration, tools_used, last_observation)
       # Track each iteration with agent span
       DSPy::Context.with_span(
@@ -434,8 +434,11 @@ module DSPy
       converted = convert_to_expected_type(final_answer, output_field_type)
       return converted if type_matches?(converted, output_field_type)
 
-      # If conversion failed and we have a nil final_answer, return default
-      return default_value_for_type(output_field_type) if final_answer.nil?
+      # If conversion failed, check if this is a "no answer" case
+      # Either nil or the default message string
+      if final_answer.nil? || (final_answer.is_a?(String) && final_answer.start_with?("No"))
+        return default_value_for_type(output_field_type)
+      end
 
       # Return final_answer as-is and let validation catch any type mismatch
       final_answer
@@ -574,7 +577,7 @@ module DSPy
       end
     end
 
-    sig { params(iteration: Integer, thought: String, action: String, action_input: T.untyped, observation: String, tools_used: T::Array[String]).void }
+    sig { params(iteration: Integer, thought: String, action: String, action_input: T.untyped, observation: T.untyped, tools_used: T::Array[String]).void }
     def emit_iteration_complete_event(iteration, thought, action, action_input, observation, tools_used)
       DSPy.event('react.iteration_complete', {
         'react.iteration' => iteration,
