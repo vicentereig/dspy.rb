@@ -59,22 +59,41 @@ puts result.sentiment    # => #<Sentiment::Positive>
 puts result.confidence   # => 0.85
 ```
 
-### Alternative Providers
+### Access to 200+ Models Across 5 Providers
 
-DSPy.rb supports multiple providers with native structured outputs:
+DSPy.rb provides unified access to major LLM providers with provider-specific optimizations:
 
 ```ruby
-# Google Gemini with native structured outputs
+# OpenAI (GPT-4, GPT-4o, GPT-4o-mini, GPT-5, etc.)
 DSPy.configure do |c|
-  c.lm = DSPy::LM.new('gemini/gemini-1.5-flash',
-                      api_key: ENV['GEMINI_API_KEY'], 
-                      structured_outputs: true)  # Supports gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini',
+                      api_key: ENV['OPENAI_API_KEY'],
+                      structured_outputs: true)  # Native JSON mode
 end
 
-# Anthropic Claude with tool-based extraction
+# Google Gemini (Gemini 1.5 Pro, Flash, Gemini 2.0, etc.)
 DSPy.configure do |c|
-  c.lm = DSPy::LM.new('anthropic/claude-3-sonnet-20241022',
-                      api_key: ENV['ANTHROPIC_API_KEY'])  # Automatic strategy selection
+  c.lm = DSPy::LM.new('gemini/gemini-2.5-flash',
+                      api_key: ENV['GEMINI_API_KEY'],
+                      structured_outputs: true)  # Native structured outputs
+end
+
+# Anthropic Claude (Claude 3.5, Claude 4, etc.)
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('anthropic/claude-sonnet-4-5-20250929',
+                      api_key: ENV['ANTHROPIC_API_KEY'],
+                      structured_outputs: true)  # Tool-based extraction (default)
+end
+
+# Ollama - Run any local model (Llama, Mistral, Gemma, etc.)
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('ollama/llama3.2')  # Free, runs locally, no API key needed
+end
+
+# OpenRouter - Access to 200+ models from multiple providers
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openrouter/deepseek/deepseek-chat-v3.1:free',
+                      api_key: ENV['OPENROUTER_API_KEY'])
 end
 ```
 
