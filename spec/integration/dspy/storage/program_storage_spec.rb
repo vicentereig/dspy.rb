@@ -360,7 +360,7 @@ RSpec.describe DSPy::Storage::ProgramStorage do
     describe 'real program deserialization' do
       it 'deserializes a real ChainOfThought program from fixture' do
         # Load the fixture data
-        fixture_path = File.join(__dir__, '../../fixtures/saved_program.json')
+        fixture_path = File.join(__dir__, '../../../fixtures/saved_program.json')
         fixture_data = JSON.parse(File.read(fixture_path), symbolize_names: true)
         program_data = fixture_data[:program_data]
         
