@@ -9,44 +9,33 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/under-the-ho
 image: /images/og/under-the-hood-json-extraction.png
 ---
 
-DSPy.rb uses 5 different strategies to extract JSON from LLMs. Here's how each one works.
+DSPy.rb uses provider-specific JSON extraction strategies. Here's how each one works.
 
-When you call `predict.forward()`, DSPy.rb picks the best strategy for your LLM provider. Each strategy is designed to get reliable JSON output from different models.
+When you call `predict.forward()`, DSPy.rb automatically selects the appropriate strategy for your LLM provider.
 
 ## How Strategy Selection Works
 
-DSPy.rb ranks strategies by priority and picks the best one available:
+DSPy.rb uses a simple two-strategy system:
+
+The selector checks your LLM provider and model, then uses the appropriate strategy automatically:
 
 ```ruby
-# From lib/dspy/lm/strategy_selector.rb
-STRATEGIES = [
-  Strategies::OpenAIStructuredOutputStrategy,     # Priority: 100
-  Strategies::GeminiStructuredOutputStrategy,     # Priority: 100
-  Strategies::AnthropicToolUseStrategy,          # Priority: 95
-  Strategies::AnthropicExtractionStrategy,       # Priority: 90
-  Strategies::EnhancedPromptingStrategy          # Priority: 50
-].freeze
-```
-
-The selector checks your LLM provider and model, then uses the highest-priority strategy that works:
-
-```ruby
-def select
-  # Allow manual override via configuration
-  if DSPy.config.structured_outputs.strategy
-    # ... handle manual selection
+def chat_with_strategy(messages, signature_class)
+  # Choose strategy based on whether we need JSON extraction
+  strategy = if signature_class
+    JSONStrategy.new(adapter, signature_class)
+  else
+    ChatStrategy.new(adapter)
   end
 
-  # Select the highest priority available strategy
-  available_strategies = @strategies.select(&:available?)
-  selected = available_strategies.max_by(&:priority)
-  
-  DSPy.logger.debug("Selected JSON extraction strategy: #{selected.name}")
-  selected
+  # Execute with the selected strategy (no retry, no fallback)
+  execute_chat_with_strategy(messages, signature_class, strategy)
 end
 ```
 
-## OpenAI: Native Structured Outputs (Priority 100)
+The JSONStrategy adapts to each provider's capabilities - using native structured outputs when available, falling back to enhanced prompting when needed.
+
+## OpenAI: Native Structured Outputs
 
 For OpenAI models that support structured outputs (GPT-4o, GPT-4o-mini), DSPy.rb uses OpenAI's built-in JSON feature:
 
@@ -82,7 +71,7 @@ when T::Types::TypedArray
   }
 ```
 
-## Gemini: Native Structured Outputs (Priority 100)
+## Gemini: Native Structured Outputs
 
 For Gemini models that support structured outputs (gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp), DSPy.rb uses Google's built-in JSON schema feature:
 

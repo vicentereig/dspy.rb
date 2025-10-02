@@ -217,6 +217,39 @@ end
    end
    ```
 
+### Structured Outputs Support
+
+Different providers support structured JSON extraction in different ways:
+
+| Provider | Structured Outputs | How to Enable |
+|----------|-------------------|---------------|
+| **OpenAI** | ✅ Native JSON mode | `structured_outputs: true` |
+| **Gemini** | ✅ Native JSON schema | `structured_outputs: true` |
+| **Anthropic** | ✅ Tool-based extraction | Automatic (always enabled) |
+| **Ollama** | ✅ OpenAI-compatible JSON | `structured_outputs: true` |
+| **OpenRouter** | ⚠️ Varies by model | Check model capabilities |
+
+**Example:**
+```ruby
+# OpenAI with native structured outputs
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new(
+    'openai/gpt-4o-mini',
+    api_key: ENV['OPENAI_API_KEY'],
+    structured_outputs: true
+  )
+end
+
+# Anthropic - tool extraction always enabled
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new(
+    'anthropic/claude-sonnet-4-5-20250929',
+    api_key: ENV['ANTHROPIC_API_KEY']
+    # No structured_outputs parameter needed
+  )
+end
+```
+
 ## Verification
 
 Test your installation:

@@ -173,27 +173,32 @@ Inside retry operations, `Async::Task.current.sleep()` provides true non-blockin
 
 ## Configuration Options
 
-The system works great out of the box, but you can tune it:
+DSPy.rb's async architecture provides true concurrency out of the box:
 
 ```ruby
 DSPy.configure do |config|
-  # Enable/disable retries (enabled by default)
-  config.structured_outputs.retry_enabled = true
-  
-  # Retries work with all LLM providers
-  config.lm = DSPy::LM.new('anthropic/claude-3-haiku')
+  # All LLM providers benefit from async architecture
+  config.lm = DSPy::LM.new(
+    'anthropic/claude-3-haiku',
+    api_key: ENV['ANTHROPIC_API_KEY']
+  )
   # or
-  config.lm = DSPy::LM.new('ollama/llama2')
+  config.lm = DSPy::LM.new(
+    'ollama/llama2',
+    api_key: ENV['OLLAMA_API_KEY']
+  )
 end
 ```
 
+> **Note**: As of v0.28.0, automatic retry mechanisms have been simplified. DSPy.rb focuses on robust extraction strategies rather than automatic retries. For retry logic, implement it at the application level using Ruby's built-in retry or async patterns.
+
 ## What You Get
 
-✅ **True concurrency** - Retries don't block other operations  
-✅ **Responsive applications** - No more frozen threads during backoff delays  
-✅ **Better reliability** - Same retry logic, just non-blocking  
-✅ **Zero migration** - Existing code works unchanged  
-✅ **Perfect Rails integration** - Request threads stay free during retries  
+✅ **True concurrency** - Async operations don't block other work
+✅ **Responsive applications** - Non-blocking I/O throughout
+✅ **Better architecture** - Leverages Ruby's Async gem for performance
+✅ **Zero migration** - Existing code works unchanged
+✅ **Perfect Rails integration** - Request threads stay free during LLM calls  
 
 ## Real Performance Impact
 
