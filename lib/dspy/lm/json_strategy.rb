@@ -40,8 +40,9 @@ module DSPy
           # OpenAI/Ollama: try to extract JSON from various formats
           extract_json_from_content(response.content)
         elsif adapter_class_name.include?('AnthropicAdapter')
-          # Anthropic: extract from tool use
-          extract_anthropic_tool_json(response)
+          # Anthropic: try tool use first, fall back to content extraction
+          extracted = extract_anthropic_tool_json(response)
+          extracted || extract_json_from_content(response.content)
         elsif adapter_class_name.include?('GeminiAdapter')
           # Gemini: try to extract JSON from various formats
           extract_json_from_content(response.content)
@@ -155,7 +156,7 @@ module DSPy
       def extract_json_from_content(content)
         return content if content.nil? || content.empty?
 
-        # Try 1: Check for ```json code block
+        # Try 1: Check for ```json code block (with or without preceding text)
         if content.include?('```json')
           json_match = content.match(/```json\s*\n(.*?)\n```/m)
           return json_match[1].strip if json_match
@@ -184,8 +185,8 @@ module DSPy
           # Not pure JSON, try extracting
         end
 
-        # Try 4: Look for JSON object pattern in text
-        json_pattern = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/m
+        # Try 4: Look for JSON object pattern in text (greedy match for nested objects)
+        json_pattern = /\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\}/m
         json_match = content.match(json_pattern)
         if json_match
           potential_json = json_match[0]
