@@ -20,8 +20,8 @@ require_relative 'lm/adapters/gemini_adapter'
 require_relative 'lm/adapters/openrouter_adapter'
 
 # Load strategy system
-require_relative 'lm/strategy_selector'
-require_relative 'lm/retry_handler'
+require_relative 'lm/chat_strategy'
+require_relative 'lm/json_strategy'
 
 # Load message builder and message types
 require_relative 'lm/message'
@@ -96,21 +96,15 @@ module DSPy
     private
 
     def chat_with_strategy(messages, signature_class, &block)
-      # Select the best strategy for JSON extraction
-      strategy_selector = StrategySelector.new(adapter, signature_class)
-      initial_strategy = strategy_selector.select
-      
-      if DSPy.config.structured_outputs.retry_enabled && signature_class
-        # Use retry handler for JSON responses
-        retry_handler = RetryHandler.new(adapter, signature_class)
-        
-        retry_handler.with_retry(initial_strategy) do |strategy|
-          execute_chat_with_strategy(messages, signature_class, strategy, &block)
-        end
+      # Choose strategy based on whether we need JSON extraction
+      strategy = if signature_class
+        JSONStrategy.new(adapter, signature_class)
       else
-        # No retry logic, just execute once
-        execute_chat_with_strategy(messages, signature_class, initial_strategy, &block)
+        ChatStrategy.new(adapter)
       end
+
+      # Execute with the selected strategy (no retry, no fallback)
+      execute_chat_with_strategy(messages, signature_class, strategy, &block)
     end
 
     def execute_chat_with_strategy(messages, signature_class, strategy, &block)

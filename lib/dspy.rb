@@ -23,14 +23,7 @@ module DSPy
   setting :structured_outputs do
     setting :openai, default: false
     setting :anthropic, default: false  # Reserved for future use
-    setting :strategy, default: nil  # Can be DSPy::Strategy::Strict, DSPy::Strategy::Compatible, or nil for auto
-    setting :retry_enabled, default: true
-    setting :max_retries, default: 3
-    setting :fallback_enabled, default: true
   end
-
-  # Test mode disables sleeps in retry logic
-  setting :test_mode, default: false
 
   def self.logger
     @logger ||= create_logger
@@ -206,7 +199,6 @@ require_relative 'dspy/prompt'
 require_relative 'dspy/example'
 require_relative 'dspy/lm'
 require_relative 'dspy/image'
-require_relative 'dspy/strategy'
 require_relative 'dspy/prediction'
 require_relative 'dspy/predict'
 require_relative 'dspy/events/subscribers'
