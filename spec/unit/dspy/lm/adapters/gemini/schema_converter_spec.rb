@@ -113,29 +113,20 @@ RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
   end
   
   describe '.supports_structured_outputs?' do
-    it 'returns true for models with full schema support' do
-      expect(described_class.supports_structured_outputs?("gemini/gemini-1.5-pro")).to eq(true)
-      expect(described_class.supports_structured_outputs?("gemini-1.5-pro")).to eq(true)
-    end
-    
-    it 'returns true for Gemini Flash models (now supported)' do
-      # Flash models now support structured outputs as of Sept 2025
-      expect(described_class.supports_structured_outputs?("gemini/gemini-1.5-flash")).to eq(true)
-      expect(described_class.supports_structured_outputs?("gemini-1.5-flash")).to eq(true)
-      expect(described_class.supports_structured_outputs?("gemini/gemini-1.5-flash-8b")).to eq(true)
-      expect(described_class.supports_structured_outputs?("gemini-1.5-flash-8b")).to eq(true)
-    end
-    
     it 'returns true for Gemini 2.0 Flash models' do
       expect(described_class.supports_structured_outputs?("gemini/gemini-2.0-flash")).to eq(true)
       expect(described_class.supports_structured_outputs?("gemini-2.0-flash")).to eq(true)
-      expect(described_class.supports_structured_outputs?("gemini/gemini-2.0-flash-001")).to eq(true)
-      expect(described_class.supports_structured_outputs?("gemini-2.0-flash-001")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini/gemini-2.0-flash-lite")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini-2.0-flash-lite")).to eq(true)
     end
-    
-    it 'returns true for Gemini 2.5 Pro models' do
+
+    it 'returns true for Gemini 2.5 models (current)' do
       expect(described_class.supports_structured_outputs?("gemini/gemini-2.5-pro")).to eq(true)
       expect(described_class.supports_structured_outputs?("gemini-2.5-pro")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini/gemini-2.5-flash")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini-2.5-flash")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini/gemini-2.5-flash-lite")).to eq(true)
+      expect(described_class.supports_structured_outputs?("gemini-2.5-flash-lite")).to eq(true)
     end
     
     it 'returns false for unsupported legacy models' do
@@ -144,6 +135,15 @@ RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
       expect(described_class.supports_structured_outputs?("gemini-1.0-pro")).to eq(false)
       expect(described_class.supports_structured_outputs?("gemini/gemini-1.0-pro-002")).to eq(false)
       expect(described_class.supports_structured_outputs?("gemini-1.0-pro-002")).to eq(false)
+    end
+
+    it 'returns false for deprecated Gemini 1.5 series (deprecated Oct 2025)' do
+      expect(described_class.supports_structured_outputs?("gemini/gemini-1.5-pro")).to eq(false)
+      expect(described_class.supports_structured_outputs?("gemini-1.5-pro")).to eq(false)
+      expect(described_class.supports_structured_outputs?("gemini/gemini-1.5-flash")).to eq(false)
+      expect(described_class.supports_structured_outputs?("gemini-1.5-flash")).to eq(false)
+      expect(described_class.supports_structured_outputs?("gemini/gemini-1.5-flash-8b")).to eq(false)
+      expect(described_class.supports_structured_outputs?("gemini-1.5-flash-8b")).to eq(false)
     end
     
   end

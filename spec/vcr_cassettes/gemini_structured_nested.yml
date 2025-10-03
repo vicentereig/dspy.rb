@@ -2,6 +2,64 @@
 http_interactions:
 - request:
     method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BTWIxw6F1RpdADvrtBCL5gxo4DYIAAEBAAAnIQEAAShuAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"MustafaKhalil","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759524262971.857,"message":"trace_id=\"64596110-b34a-45ef-baf1-deff177cbaf5\"
+        otel_span_stack=[] input_tokens=143 output_tokens=43 total_tokens=679 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=\"GeminiUnionTypeSignature\"
+        event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759524266276.2407,"message":"trace_id=\"64596110-b34a-45ef-baf1-deff177cbaf5\"
+        otel_span_stack=[] input_tokens=132 output_tokens=56 total_tokens=408 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=\"GeminiOptionalFieldsSignature\"
+        event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgANTXVzdGFmYUtoYWxpbBcADU11c3RhZmFLaGFsaWw
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BTWIxw6F1RpdADvrtBCL5gxo4DYIAAEBAAAnIQEAAShuAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Fri, 03 Oct 2025 20:44:27 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-iad-kiad7000090-IAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 03 Oct 2025 20:44:27 GMT
+- request:
+    method: post
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
@@ -32,11 +90,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:30:22 GMT
+      - Fri, 03 Oct 2025 20:44:37 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '577'
+      - '786'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -44,7 +102,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=7889
+      - gfet4t7; dur=11372
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -56,7 +114,7 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "{\"structure\":{\"_type\":\"ProgrammingLanguageCategorization\",\"section\":\"Programming Languages\",\"categories\":[{\"_type\":\"Category\",\"name\":\"Compiled Languages\",\"count\":4,\"tags\":[\"C\",\"C++\",\"Java\",\"Go\"]},{\"_type\":\"Category\",\"name\":\"Interpreted Languages\",\"count\":3,\"tags\":[\"Python\",\"JavaScript\",\"Ruby\"]},{\"_type\":\"Category\",\"name\":\"Scripting Languages\",\"count\":3,\"tags\":[\"Bash\",\"Perl\",\"PHP\"]}],\"total\":10,\"summary\":\"A categorization of programming languages into compiled, interpreted, and scripting paradigms, highlighting popular examples within each group.\"},\"depth_level\":4,\"complexity_score\":0.75}"
+                    "text": "{\"structure\":{\"_type\":\"LanguageCategorization\",\"section\":\"Programming Languages\",\"categories\":[{\"_type\":\"Category\",\"name\":\"High-level Languages\",\"count\":150,\"tags\":[\"abstraction\",\"human-readable\",\"cross-platform\",\"productivity\"]},{\"_type\":\"Category\",\"name\":\"Low-level Languages\",\"count\":10,\"tags\":[\"hardware-interaction\",\"performance\",\"memory-management\",\"assembly\",\"machine-code\"]},{\"_type\":\"Category\",\"name\":\"Object-Oriented Languages\",\"count\":80,\"tags\":[\"OOP\",\"encapsulation\",\"inheritance\",\"polymorphism\",\"classes\"]},{\"_type\":\"Category\",\"name\":\"Functional Languages\",\"count\":30,\"tags\":[\"pure-functions\",\"immutability\",\"declarative\",\"first-class-functions\"]},{\"_type\":\"Category\",\"name\":\"Scripting Languages\",\"count\":60,\"tags\":[\"interpreted\",\"automation\",\"web-development\",\"dynamic-typing\"]}],\"total\":330,\"summary\":\"This categorization classifies programming languages based on their level of abstraction, paradigms, and common usage, highlighting key characteristics for each group. Languages often fall into multiple categories.\"},\"depth_level\":4,\"complexity_score\":0.75}"
                   }
                 ],
                 "role": "model"
@@ -67,18 +125,18 @@ http_interactions:
           ],
           "usageMetadata": {
             "promptTokenCount": 129,
-            "candidatesTokenCount": 136,
-            "totalTokenCount": 957,
+            "candidatesTokenCount": 239,
+            "totalTokenCount": 1528,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
                 "tokenCount": 129
               }
             ],
-            "thoughtsTokenCount": 692
+            "thoughtsTokenCount": 1160
           },
           "modelVersion": "gemini-2.5-flash",
-          "responseId": "XjLgaNDaJtWv1MkPnKLMuQE"
+          "responseId": "tTXgaLraJuKy1MkP2OXdiQE"
         }
-  recorded_at: Fri, 03 Oct 2025 20:30:22 GMT
+  recorded_at: Fri, 03 Oct 2025 20:44:37 GMT
 recorded_with: VCR 6.3.1

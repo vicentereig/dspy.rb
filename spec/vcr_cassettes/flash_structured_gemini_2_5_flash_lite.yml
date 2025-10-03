@@ -5,9 +5,17 @@ http_interactions:
     uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BTWIxw6F1RpdADvrtBCL5gxo4DYIAAEBAAAnIQEAAShuAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
     body:
       encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"MustafaKhalil","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759524277664.546,"message":"trace_id=\"64596110-b34a-45ef-baf1-deff177cbaf5\"
-        otel_span_stack=[] input_tokens=129 output_tokens=239 total_tokens=1528 gen_ai.system=\"gemini\"
-        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=\"GeminiNestedSignature\"
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"MustafaKhalil","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759524284065.998,"message":"trace_id=\"64596110-b34a-45ef-baf1-deff177cbaf5\"
+        otel_span_stack=[] input_tokens=118 output_tokens=51 total_tokens=765 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=nil event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759524284945.097,"message":"trace_id=\"64596110-b34a-45ef-baf1-deff177cbaf5\"
+        otel_span_stack=[] input_tokens=134 output_tokens=39 total_tokens=173 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.0-flash\" dspy.signature=\"FlashTestSignature\"
+        event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759524285742.471,"message":"trace_id=\"64596110-b34a-45ef-baf1-deff177cbaf5\"
+        otel_span_stack=[] input_tokens=134 output_tokens=35 total_tokens=169 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.0-flash-lite\" dspy.signature=\"FlashTestSignature\"
+        event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759524287717.655,"message":"trace_id=\"64596110-b34a-45ef-baf1-deff177cbaf5\"
+        otel_span_stack=[] input_tokens=136 output_tokens=27 total_tokens=323 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=\"FlashTestSignature\"
         event=\"lm.tokens\"\n"}]}]'
     headers:
       Content-Encoding:
@@ -44,28 +52,29 @@ http_interactions:
       X-Envoy-Upstream-Service-Time:
       - '1'
       Date:
-      - Fri, 03 Oct 2025 20:44:37 GMT
+      - Fri, 03 Oct 2025 20:44:47 GMT
       Server:
       - envoy
       Nr-Rate-Limited:
       - allowed
       X-Served-By:
-      - cache-iad-kiad7000026-IAD
+      - cache-iad-kiad7000090-IAD
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 03 Oct 2025 20:44:38 GMT
+  recorded_at: Fri, 03 Oct 2025 20:44:48 GMT
 - request:
     method: post
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
         are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-        [\n    \"query\"\n  ]\n}\n```\n\nYour objective is: Potentially problematic
-        signature"}]},{"role":"user","parts":[{"text":"## Input Values\n```json\n{\n  \"query\":
-        \"Test deep nesting\"\n}\n```"}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"result":{"type":"string"},"deep_data":{"type":"object"}},"required":["result","deep_data"]}}}'
+        \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Text to analyze\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\n\nYour
+        objective is: Simple test signature for Flash model validation"}]},{"role":"user","parts":[{"text":"##
+        Input Values\n```json\n{\n  \"text\": \"This is an amazing product that exceeds
+        expectations!\"\n}\n```"}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"sentiment":{"type":"string","enum":["positive","negative","neutral"]},"confidence":{"type":"number"},"summary":{"type":"string"}},"required":["sentiment","confidence","summary"]}}}'
     headers:
       User-Agent:
       - Faraday v2.14.0
@@ -87,11 +96,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:44:44 GMT
+      - Fri, 03 Oct 2025 20:44:48 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '449'
+      - '364'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -99,7 +108,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=6304
+      - gfet4t7; dur=516
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -111,7 +120,7 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "{\"result\":\"Potentially problematic signature\",\"deep_data\":{\"query_context\":\"Test deep nesting\",\"signature_details\":{\"issue_type\":\"Ambiguous\",\"potential_impact\":\"Uncertainty in interpretation\",\"resolution_suggestion\":\"Clarify signature requirements\"}}}"
+                    "text": "{\n  \"sentiment\": \"positive\",\n  \"confidence\": 0.95,\n  \"summary\": \"The user is very satisfied with the product.\"\n}"
                   }
                 ],
                 "role": "model"
@@ -121,19 +130,18 @@ http_interactions:
             }
           ],
           "usageMetadata": {
-            "promptTokenCount": 118,
-            "candidatesTokenCount": 51,
-            "totalTokenCount": 765,
+            "promptTokenCount": 136,
+            "candidatesTokenCount": 37,
+            "totalTokenCount": 173,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 118
+                "tokenCount": 136
               }
-            ],
-            "thoughtsTokenCount": 596
+            ]
           },
-          "modelVersion": "gemini-2.5-flash",
-          "responseId": "vDXgaILtAeGL1MkPrZbxkAw"
+          "modelVersion": "gemini-2.5-flash-lite",
+          "responseId": "wDXgaN-oDb6q1MkP4PHigAw"
         }
-  recorded_at: Fri, 03 Oct 2025 20:44:44 GMT
+  recorded_at: Fri, 03 Oct 2025 20:44:48 GMT
 recorded_with: VCR 6.3.1

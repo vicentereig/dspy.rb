@@ -2,14 +2,69 @@
 http_interactions:
 - request:
     method: post
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BZ33p6e004VfADvrtBCL5gxo4DaAAAEBAAAnIQEAAS0oAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"MustafaKhalil","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759524368666.703,"message":"trace_id=\"8e787ce2-1a5e-4cbd-8b8e-e535a0252f5a\"
+        otel_span_stack=[] input_tokens=529 output_tokens=25 total_tokens=810 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=\"RawPrompt\" request_id=\"5ef68f43aa0666e1\"
+        duration=2.981879 event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgANTXVzdGFmYUtoYWxpbBcADU11c3RhZmFLaGFsaWw
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BZ33p6e004VfADvrtBCL5gxo4DaAAAEBAAAnIQEAAS0oAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Fri, 03 Oct 2025 20:46:11 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-iad-kiad7000141-IAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 03 Oct 2025 20:46:11 GMT
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
       string: '{"contents":[{"role":"user","parts":[{"text":"Analyze sentiment: \"Great
         product!\""}]}]}'
     headers:
       User-Agent:
-      - Faraday v2.13.4
+      - Faraday v2.14.0
       Content-Type:
       - application/json
       Expect:
@@ -28,11 +83,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Mon, 22 Sep 2025 16:37:43 GMT
+      - Fri, 03 Oct 2025 20:46:14 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '372'
+      - '428'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -40,7 +95,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=451
+      - gfet4t7; dur=4576
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -52,34 +107,29 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "The sentiment expressed in \"Great product!\" is overwhelmingly **positive**.\n"
+                    "text": "**Positive**\n\n*   **Reasoning:** The word \"Great\" is a strong positive descriptor, indicating high satisfaction and approval. The exclamation mark further emphasizes this positive sentiment, suggesting enthusiasm."
                   }
                 ],
                 "role": "model"
               },
               "finishReason": "STOP",
-              "avgLogprobs": -0.039734806333269389
+              "index": 0
             }
           ],
           "usageMetadata": {
-            "promptTokenCount": 7,
-            "candidatesTokenCount": 14,
-            "totalTokenCount": 21,
+            "promptTokenCount": 8,
+            "candidatesTokenCount": 39,
+            "totalTokenCount": 514,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 7
+                "tokenCount": 8
               }
             ],
-            "candidatesTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 14
-              }
-            ]
+            "thoughtsTokenCount": 467
           },
-          "modelVersion": "gemini-1.5-flash",
-          "responseId": "V3vRaJLWFcjQz7IP-OzZgQs"
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "FjbgaIL7G7ff_uMPo7C9oQc"
         }
-  recorded_at: Mon, 22 Sep 2025 16:37:43 GMT
+  recorded_at: Fri, 03 Oct 2025 20:46:14 GMT
 recorded_with: VCR 6.3.1

@@ -2,7 +2,68 @@
 http_interactions:
 - request:
     method: post
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BZ33p6e004VfADvrtBCL5gxo4DaAAAEBAAAnIQEAAS0oAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"MustafaKhalil","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759524363063.1528,"message":"trace_id=\"8e787ce2-1a5e-4cbd-8b8e-e535a0252f5a\"
+        otel_span_stack=[] input_tokens=15 output_tokens=1 total_tokens=47 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=\"RawPrompt\" request_id=\"1a90d05f20a4285a\"
+        duration=0.91162 event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759524364379.3372,"message":"trace_id=\"8e787ce2-1a5e-4cbd-8b8e-e535a0252f5a\"
+        otel_span_stack=[] input_tokens=16 output_tokens=18 total_tokens=74 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=\"RawPrompt\" request_id=\"26adb49df32ea895\"
+        duration=1.308143 event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759524365680.268,"message":"trace_id=\"8e787ce2-1a5e-4cbd-8b8e-e535a0252f5a\"
+        otel_span_stack=[] input_tokens=272 output_tokens=1 total_tokens=308 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=\"RawPrompt\" request_id=\"28c471183ebd8ab2\"
+        duration=1.297387 event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgANTXVzdGFmYUtoYWxpbBcADU11c3RhZmFLaGFsaWw
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BZ33p6e004VfADvrtBCL5gxo4DaAAAEBAAAnIQEAAS0oAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Fri, 03 Oct 2025 20:46:06 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-iad-kiad7000141-IAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 03 Oct 2025 20:46:06 GMT
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
       string: '{"contents":[{"role":"user","parts":[{"text":"What colors are these
@@ -16,23 +77,23 @@ http_interactions:
       - ''
   response:
     status:
-      code: 404
+      code: 200
       message: ''
     headers:
+      Content-Type:
+      - application/json; charset=UTF-8
       Vary:
       - Origin
       - Referer
       - X-Origin
-      Content-Type:
-      - application/json; charset=UTF-8
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:34:32 GMT
+      - Fri, 03 Oct 2025 20:46:08 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '210'
+      - '361'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -40,18 +101,45 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=69
+      - gfet4t7; dur=2889
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "error": {
-            "code": 404,
-            "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
-            "status": "NOT_FOUND"
-          }
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "Here are the colors of the two images in order:\n\n1.  **Red**\n2.  **Blue**"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 529,
+            "candidatesTokenCount": 25,
+            "totalTokenCount": 810,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 13
+              },
+              {
+                "modality": "IMAGE",
+                "tokenCount": 516
+              }
+            ],
+            "thoughtsTokenCount": 256
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "EDbgaOPaIbzj_uMPvf_OqQo"
         }
-  recorded_at: Fri, 03 Oct 2025 20:34:32 GMT
+  recorded_at: Fri, 03 Oct 2025 20:46:08 GMT
 recorded_with: VCR 6.3.1

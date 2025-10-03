@@ -2,7 +2,62 @@
 http_interactions:
 - request:
     method: post
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BTWIxw6F1RpdADvrtBCL5gxo4DYIAAEBAAAnIQEAAShuAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"MustafaKhalil","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759524254816.394,"message":"trace_id=\"64596110-b34a-45ef-baf1-deff177cbaf5\"
+        otel_span_stack=[] input_tokens=138 output_tokens=49 total_tokens=334 gen_ai.system=\"gemini\"
+        gen_ai.request.model=\"gemini-2.5-flash\" dspy.signature=\"GeminiSentimentAnalysis\"
+        event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgANTXVzdGFmYUtoYWxpbBcADU11c3RhZmFLaGFsaWw
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BTWIxw6F1RpdADvrtBCL5gxo4DYIAAEBAAAnIQEAAShuAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Fri, 03 Oct 2025 20:44:17 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-iad-kiad7000090-IAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 03 Oct 2025 20:44:18 GMT
+- request:
+    method: post
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
@@ -21,23 +76,23 @@ http_interactions:
       - ''
   response:
     status:
-      code: 404
+      code: 200
       message: ''
     headers:
+      Content-Type:
+      - application/json; charset=UTF-8
       Vary:
       - Origin
       - Referer
       - X-Origin
-      Content-Type:
-      - application/json; charset=UTF-8
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:30:14 GMT
+      - Fri, 03 Oct 2025 20:44:18 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '210'
+      - '512'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -45,18 +100,41 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=75
+      - gfet4t7; dur=3729
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "error": {
-            "code": 404,
-            "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
-            "status": "NOT_FOUND"
-          }
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\"items\":[{\"_type\":\"ProgrammingLanguage\",\"name\":\"Python\",\"value\":1500000,\"tags\":[\"programming\",\"language\",\"popular\",\"web development\",\"data science\",\"machine learning\"]},{\"_type\":\"ProgrammingLanguage\",\"name\":\"JavaScript\",\"value\":1400000,\"tags\":[\"programming\",\"language\",\"popular\",\"web development\",\"frontend\",\"backend\"]},{\"_type\":\"ProgrammingLanguage\",\"name\":\"Java\",\"value\":1200000,\"tags\":[\"programming\",\"language\",\"popular\",\"enterprise\",\"android development\",\"backend\"]}],\"metadata\":{\"_type\":\"ResponseMetadata\",\"total_count\":3,\"processed_at\":\"2023-10-27T10:30:00Z\"}}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 132,
+            "candidatesTokenCount": 150,
+            "totalTokenCount": 663,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 132
+              }
+            ],
+            "thoughtsTokenCount": 381
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "ojXgaNrgILql1MkPtqHggQw"
         }
-  recorded_at: Fri, 03 Oct 2025 20:30:14 GMT
+  recorded_at: Fri, 03 Oct 2025 20:44:18 GMT
 recorded_with: VCR 6.3.1

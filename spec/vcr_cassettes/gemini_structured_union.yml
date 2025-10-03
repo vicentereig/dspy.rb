@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
@@ -11,7 +11,7 @@ http_interactions:
         \"Action command to execute\"\n    }\n  },\n  \"required\": [\n    \"command\"\n  ]\n}\n```\n\nYour
         objective is: Test signature with union types for action discrimination"}]},{"role":"user","parts":[{"text":"##
         Input Values\n```json\n{\n  \"command\": \"Create a new task called ''Test
-        Union Types'' with high priority\"\n}\n```"}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"action":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string"},"name":{"type":"string"},"priority":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","name","priority","tags"]},{"type":"object","properties":{"_type":{"type":"string"},"item_id":{"type":"string"},"changes":{"type":"string"},"reason":{"type":"string"}},"required":["_type","item_id","changes","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"item_id":{"type":"string"},"confirmation":{"type":"boolean"}},"required":["_type","item_id","confirmation"]}],"description":"Action
+        Union Types'' with high priority\"\n}\n```"}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"action":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","enum":["GeminiCreateAction"]},"name":{"type":"string"},"priority":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","name","priority","tags"]},{"type":"object","properties":{"_type":{"type":"string","enum":["GeminiUpdateAction"]},"item_id":{"type":"string"},"changes":{"type":"string"},"reason":{"type":"string"}},"required":["_type","item_id","changes","reason"]},{"type":"object","properties":{"_type":{"type":"string","enum":["GeminiDeleteAction"]},"item_id":{"type":"string"},"confirmation":{"type":"boolean"}},"required":["_type","item_id","confirmation"]}],"description":"Action
         to execute"},"success":{"type":"boolean"},"message":{"type":"string"}},"required":["action","success","message"]}}}'
     headers:
       User-Agent:
@@ -22,23 +22,23 @@ http_interactions:
       - ''
   response:
     status:
-      code: 404
+      code: 200
       message: ''
     headers:
+      Content-Type:
+      - application/json; charset=UTF-8
       Vary:
       - Origin
       - Referer
       - X-Origin
-      Content-Type:
-      - application/json; charset=UTF-8
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:30:14 GMT
+      - Fri, 03 Oct 2025 21:11:17 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '210'
+      - '405'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -46,18 +46,41 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=69
+      - gfet4t7; dur=2497
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "error": {
-            "code": 404,
-            "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
-            "status": "NOT_FOUND"
-          }
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\"action\":{\"_type\":\"GeminiCreateAction\",\"name\":\"Test Union Types\",\"priority\":\"high\",\"tags\":[]},\"success\":true,\"message\":\"Successfully parsed command to create a new task.\"}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 143,
+            "candidatesTokenCount": 41,
+            "totalTokenCount": 450,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 143
+              }
+            ],
+            "thoughtsTokenCount": 266
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "9TvgaNnnEoP3jMcPjZHaiQM"
         }
-  recorded_at: Fri, 03 Oct 2025 20:30:14 GMT
+  recorded_at: Fri, 03 Oct 2025 21:11:17 GMT
 recorded_with: VCR 6.3.1

@@ -8,7 +8,7 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-modes-c
 image: /images/og/json-modes-comparison.png
 ---
 
-Getting reliable, structured data from Large Language Models is crucial for production applications. [DSPy.rb](https://github.com/vicentereig/dspy.rb) supports both enhanced prompting (universal) and native structured outputs (provider-specific). After benchmarking 6 latest models head-to-head, here's your complete guide to choosing the right approach.
+Getting reliable, structured data from Large Language Models is crucial for production applications. [DSPy.rb](https://github.com/vicentereig/dspy.rb) supports both enhanced prompting (universal) and native structured outputs (provider-specific). After benchmarking 8 latest models head-to-head, here's your complete guide to choosing the right approach.
 
 <style>
 /* Charts.css Custom Styling for JSON Modes Comparison */
@@ -98,7 +98,7 @@ Getting reliable, structured data from Large Language Models is crucial for prod
 }
 </style>
 
-This test compares [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s two primary strategies: Enhanced Prompting (universal) and Native Structured Outputs (provider-specific) using the latest models from OpenAI, Anthropic, and Google as of October 2025.
+This test compares [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s two primary strategies: Enhanced Prompting (universal) and Native Structured Outputs (provider-specific) using the latest models from OpenAI, Anthropic, and Google as of September 2025.
 
 ## Two Strategies Compared
 
@@ -110,20 +110,22 @@ This test compares [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s two prima
 
 ## Benchmark Results Overview
 
-Both strategies achieved 100% success rate across all 6 models (12 tests total). Here are the head-to-head comparisons:
+Both strategies achieved 100% success rate across all 8 models (16 tests total). Here are the head-to-head comparisons:
 
 | Provider | Model | Enhanced Prompting | Native Structured | Winner |
 |----------|-------|-------------------|-------------------|--------|
-| **OpenAI** | gpt-4o | 3556ms / $0.002833 | 2733ms / $0.002443 | 🏆 Structured (23% faster, 14% cheaper) |
-| **OpenAI** | gpt-4o-mini | 5636ms / $0.000169 | 1784ms / $0.000142 | 🏆 Structured (68% faster, 16% cheaper) |
-| **Anthropic** | claude-sonnet-4-5 | 3630ms / $0.004581 | 4797ms / $0.007167 | 🏆 Enhanced (24% faster, 36% cheaper) |
-| **Anthropic** | claude-opus-4-1 | 5077ms / $0.02238 | 5588ms / $0.031365 | 🏆 Enhanced (9% faster, 29% cheaper) |
-| **Google** | gemini-2.5-pro | 8873ms / $0.001613 | 9850ms / $0.001578 | 🏆 Enhanced (10% faster, 2% more expensive) |
-| **Google** | gemini-2.5-flash | 8650ms / $0.000084 | 17315ms / $0.000085 | 🏆 Enhanced (50% faster, 1% cheaper) |
+| **OpenAI** | gpt-4o | 2302ms / $0.002833 | 1769ms / $0.001658 | 🏆 Structured (23% faster, 41% cheaper) |
+| **OpenAI** | gpt-4o-mini | 2944ms / $0.000169 | 2111ms / $0.000097 | 🏆 Structured (28% faster, 43% cheaper) |
+| **OpenAI** | gpt-5 | 16005ms / $0.011895 | 22921ms / $0.015065 | 🏆 Enhanced (43% faster, 21% cheaper) |
+| **OpenAI** | gpt-5-mini | 8303ms / $0.001361 | 10694ms / $0.001881 | 🏆 Enhanced (29% faster, 28% cheaper) |
+| **Anthropic** | claude-sonnet-4-5 | 3411ms / $0.004581 | 3401ms / $0.005886 | 🏆 Enhanced (similar speed, 22% cheaper) |
+| **Anthropic** | claude-opus-4-1 | 4993ms / $0.02238 | 4796ms / $0.025335 | 🏆 Enhanced (4% slower, 12% cheaper) |
+| **Google** | gemini-2.5-pro | 10478ms / $0.001623 | 6787ms / $0.001023 | 🏆 Structured (35% faster, 37% cheaper) |
+| **Google** | gemini-2.5-flash | 15704ms / $0.000096 | 7943ms / $0.000050 | 🏆 Structured (49% faster, 48% cheaper) |
 
 ### Response Time Comparison by Model
 
-<table class="charts-css bar show-labels data-end data-spacing-8" style="height: 350px; --labels-size: 140px;">
+<table class="charts-css bar show-labels data-end data-spacing-8" style="height: 450px; --labels-size: 150px;">
   <thead>
     <tr>
       <th scope="col">Model / Strategy</th>
@@ -132,105 +134,132 @@ Both strategies achieved 100% success rate across all 6 models (12 tests total).
   </thead>
   <tbody>
     <tr>
-      <th scope="row">gpt-4o-mini (Structured)</th>
-      <td style="--size: calc(1.784 / 17.315); --color: #22c55e;">
-        <span class="data">1.784s</span>
+      <th scope="row">gpt-4o (Structured)</th>
+      <td style="--size: calc(1.769 / 22.921); --color: #22c55e;">
+        <span class="data">1.769s</span>
       </td>
     </tr>
     <tr>
-      <th scope="row">gpt-4o (Structured)</th>
-      <td style="--size: calc(2.733 / 17.315); --color: #16a34a;">
-        <span class="data">2.733s</span>
+      <th scope="row">gpt-4o-mini (Structured)</th>
+      <td style="--size: calc(2.111 / 22.921); --color: #16a34a;">
+        <span class="data">2.111s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gpt-4o (Enhanced)</th>
-      <td style="--size: calc(3.556 / 17.315); --color: #3b82f6;">
-        <span class="data">3.556s</span>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">claude-sonnet-4-5 (Enhanced)</th>
-      <td style="--size: calc(3.630 / 17.315); --color: #8b5cf6;">
-        <span class="data">3.630s</span>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">claude-sonnet-4-5 (Structured)</th>
-      <td style="--size: calc(4.797 / 17.315); --color: #a78bfa;">
-        <span class="data">4.797s</span>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">claude-opus-4-1 (Enhanced)</th>
-      <td style="--size: calc(5.077 / 17.315); --color: #c084fc;">
-        <span class="data">5.077s</span>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">claude-opus-4-1 (Structured)</th>
-      <td style="--size: calc(5.588 / 17.315); --color: #d8b4fe;">
-        <span class="data">5.588s</span>
+      <td style="--size: calc(2.302 / 22.921); --color: #3b82f6;">
+        <span class="data">2.302s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gpt-4o-mini (Enhanced)</th>
-      <td style="--size: calc(5.636 / 17.315); --color: #60a5fa;">
-        <span class="data">5.636s</span>
+      <td style="--size: calc(2.944 / 22.921); --color: #60a5fa;">
+        <span class="data">2.944s</span>
       </td>
     </tr>
     <tr>
-      <th scope="row">gemini-2.5-flash (Enhanced)</th>
-      <td style="--size: calc(8.650 / 17.315); --color: #34d399;">
-        <span class="data">8.650s</span>
+      <th scope="row">claude-sonnet-4-5 (Structured)</th>
+      <td style="--size: calc(3.401 / 22.921); --color: #8b5cf6;">
+        <span class="data">3.401s</span>
       </td>
     </tr>
     <tr>
-      <th scope="row">gemini-2.5-pro (Enhanced)</th>
-      <td style="--size: calc(8.873 / 17.315); --color: #fbbf24;">
-        <span class="data">8.873s</span>
+      <th scope="row">claude-sonnet-4-5 (Enhanced)</th>
+      <td style="--size: calc(3.411 / 22.921); --color: #a78bfa;">
+        <span class="data">3.411s</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">claude-opus-4-1 (Structured)</th>
+      <td style="--size: calc(4.796 / 22.921); --color: #c084fc;">
+        <span class="data">4.796s</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">claude-opus-4-1 (Enhanced)</th>
+      <td style="--size: calc(4.993 / 22.921); --color: #d8b4fe;">
+        <span class="data">4.993s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gemini-2.5-pro (Structured)</th>
-      <td style="--size: calc(9.850 / 17.315); --color: #fb923c;">
-        <span class="data">9.850s</span>
+      <td style="--size: calc(6.787 / 22.921); --color: #34d399;">
+        <span class="data">6.787s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gemini-2.5-flash (Structured)</th>
-      <td style="--size: 1.0; --color: #ef4444;">
-        <span class="data">17.315s</span>
+      <td style="--size: calc(7.943 / 22.921); --color: #10b981;">
+        <span class="data">7.943s</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5-mini (Enhanced)</th>
+      <td style="--size: calc(8.303 / 22.921); --color: #14b8a6;">
+        <span class="data">8.303s</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gemini-2.5-pro (Enhanced)</th>
+      <td style="--size: calc(10.478 / 22.921); --color: #fbbf24;">
+        <span class="data">10.478s</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5-mini (Structured)</th>
+      <td style="--size: calc(10.694 / 22.921); --color: #fb923c;">
+        <span class="data">10.694s</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gemini-2.5-flash (Enhanced)</th>
+      <td style="--size: calc(15.704 / 22.921); --color: #f87171;">
+        <span class="data">15.704s</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5 (Enhanced)</th>
+      <td style="--size: calc(16.005 / 22.921); --color: #dc2626;">
+        <span class="data">16.005s</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5 (Structured)</th>
+      <td style="--size: 1.0; --color: #991b1b;">
+        <span class="data">22.921s</span>
       </td>
     </tr>
   </tbody>
 </table>
 
-*Based on [benchmark data](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb) from September 18, 2025. GPT-4o-mini with structured outputs is the fastest at 1.784s (68% faster than enhanced prompting), while Gemini 2.5-flash shows dramatic slowdown with structured outputs (17.315s vs 8.650s with enhanced prompting).*
+*Based on [benchmark data](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb) from September 2025. GPT-4o with structured outputs is the fastest at 1.769s, while GPT-5 with structured outputs is the slowest at 22.921s. GPT-4o models show dramatic improvements with structured outputs, while GPT-5 models perform better with enhanced prompting.*
 
 ## Token Consumption Analysis
 
-Token usage varies by both model and strategy. Native structured outputs typically add more input tokens (schema) but reduce output tokens (tighter generation).
+Token usage varies dramatically by both model and strategy. Modern structured output implementations optimize token efficiency by sending schemas through API parameters rather than in prompts.
 
 ### Token Usage by Model and Strategy
 
 | Model | Enhanced Prompting | Native Structured | Difference |
 |-------|-------------------|-------------------|------------|
-| **gpt-4o** | 477→164 (641 total) | 589→97 (686 total) | +112 input, -67 output (+45 total) |
-| **gpt-4o-mini** | 477→163 (640 total) | 589→89 (678 total) | +112 input, -74 output (+38 total) |
-| **claude-sonnet-4-5** | 597→186 (783 total) | 1339→210 (1549 total) | +742 input, +24 output (+766 total) |
-| **claude-opus-4-1** | 597→179 (776 total) | 1066→205 (1271 total) | +469 input, +26 output (+495 total) |
-| **gemini-2.5-pro** | 554→184 (738 total) | 554→177 (731 total) | Same input, -7 output (-7 total) |
-| **gemini-2.5-flash** | 554→140 (694 total) | 554→145 (699 total) | Same input, +5 output (+5 total) |
+| **gpt-4o** | 477→164 (641 total) | 255→102 (357 total) | -222 input, -62 output (-284 total, 44% reduction) |
+| **gpt-4o-mini** | 477→163 (640 total) | 255→98 (353 total) | -222 input, -65 output (-287 total, 45% reduction) |
+| **gpt-5** | 476→1130 (1606 total) | 476→1447 (1923 total) | Same input, +317 output (+317 total, 20% increase) |
+| **gpt-5-mini** | 476→621 (1097 total) | 476→881 (1357 total) | Same input, +260 output (+260 total, 24% increase) |
+| **claude-sonnet-4-5** | 597→186 (783 total) | 927→207 (1134 total) | +330 input, +21 output (+351 total, 45% increase) |
+| **claude-opus-4-1** | 597→179 (776 total) | 654→207 (861 total) | +57 input, +28 output (+85 total, 11% increase) |
+| **gemini-2.5-pro** | 554→186 (740 total) | 158→165 (323 total) | -396 input, -21 output (-417 total, 56% reduction) |
+| **gemini-2.5-flash** | 554→180 (734 total) | 158→127 (285 total) | -396 input, -53 output (-449 total, 61% reduction) |
 
 **Key Insights:**
-- **OpenAI**: Structured outputs add significant input tokens (+112) but reduce output tokens significantly (-67 to -74)
-- **Anthropic**: Structured outputs dramatically increase token consumption (+495 to +766 total tokens)
-- **Google**: Minimal token difference between strategies (-7 to +5 tokens)
+- **OpenAI (GPT-4)**: Structured outputs dramatically reduce token consumption (-44% to -45% total) by sending schemas via API
+- **OpenAI (GPT-5)**: Higher output token generation (+20% to +24%) indicates extensive reasoning/thinking tokens
+- **Anthropic**: Structured outputs still increase tokens (+11% to +45%) due to tool-use architecture
+- **Google**: Structured outputs achieve massive token reduction (-56% to -61% total) through native API integration
 
 ### Token Efficiency by Model Family
 
-<table class="charts-css column show-labels data-end data-spacing-6" style="height: 350px; --labels-size: 40px;">
+<table class="charts-css column show-labels data-end data-spacing-6" style="height: 400px; --labels-size: 45px;">
   <thead>
     <tr>
       <th scope="col">Model</th>
@@ -240,48 +269,60 @@ Token usage varies by both model and strategy. Native structured outputs typical
   <tbody>
     <tr>
       <th scope="row">gpt-4o-mini</th>
-      <td style="--size: calc(659 / 1166); --color: #22c55e;">
-        <span class="data">659 tokens</span>
+      <td style="--size: calc(496.5 / 1764.5); --color: #22c55e;">
+        <span class="data">497 tokens</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gpt-4o</th>
-      <td style="--size: calc(663.5 / 1166); --color: #16a34a;">
-        <span class="data">664 tokens</span>
+      <td style="--size: calc(499 / 1764.5); --color: #16a34a;">
+        <span class="data">499 tokens</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gemini-2.5-flash</th>
-      <td style="--size: calc(696.5 / 1166); --color: #3b82f6;">
-        <span class="data">697 tokens</span>
+      <td style="--size: calc(509.5 / 1764.5); --color: #3b82f6;">
+        <span class="data">510 tokens</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gemini-2.5-pro</th>
-      <td style="--size: calc(734.5 / 1166); --color: #60a5fa;">
-        <span class="data">735 tokens</span>
+      <td style="--size: calc(531.5 / 1764.5); --color: #60a5fa;">
+        <span class="data">532 tokens</span>
       </td>
     </tr>
     <tr>
       <th scope="row">claude-opus-4-1</th>
-      <td style="--size: calc(1023.5 / 1166); --color: #f59e0b;">
-        <span class="data">1024 tokens</span>
+      <td style="--size: calc(818.5 / 1764.5); --color: #8b5cf6;">
+        <span class="data">819 tokens</span>
       </td>
     </tr>
     <tr>
       <th scope="row">claude-sonnet-4-5</th>
+      <td style="--size: calc(958.5 / 1764.5); --color: #a78bfa;">
+        <span class="data">959 tokens</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5-mini</th>
+      <td style="--size: calc(1227 / 1764.5); --color: #fbbf24;">
+        <span class="data">1227 tokens</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5</th>
       <td style="--size: 1.0; --color: #ef4444;">
-        <span class="data">1166 tokens</span>
+        <span class="data">1765 tokens</span>
       </td>
     </tr>
   </tbody>
 </table>
 
-*OpenAI and Google models are most token-efficient (659-735 tokens average), while Anthropic Claude models use significantly more tokens (1024-1166 tokens average).*
+*GPT-4o and Google models are most token-efficient (497-532 tokens average). Claude models use moderate tokens (819-959 average). GPT-5 models generate significantly more tokens (1227-1765 average) due to extensive reasoning/thinking output.*
 
 ### Cost Comparison: All Models and Strategies
 
-<table class="charts-css column show-labels data-end data-spacing-4" style="height: 400px; --labels-size: 50px;">
+<table class="charts-css column show-labels data-end data-spacing-4" style="height: 500px; --labels-size: 55px;">
   <thead>
     <tr>
       <th scope="col">Model / Strategy</th>
@@ -290,81 +331,105 @@ Token usage varies by both model and strategy. Native structured outputs typical
   </thead>
   <tbody>
     <tr>
-      <th scope="row">gemini-2.5-flash (Enhanced)</th>
-      <td style="--size: calc(0.000084 / 0.031365); --color: #22c55e;">
-        <span class="data">$0.000084</span>
+      <th scope="row">gemini-2.5-flash (Structured)</th>
+      <td style="--size: calc(0.000050 / 0.025335); --color: #22c55e;">
+        <span class="data">$0.000050</span>
       </td>
     </tr>
     <tr>
-      <th scope="row">gemini-2.5-flash (Structured)</th>
-      <td style="--size: calc(0.000085 / 0.031365); --color: #16a34a;">
-        <span class="data">$0.000085</span>
+      <th scope="row">gemini-2.5-flash (Enhanced)</th>
+      <td style="--size: calc(0.000096 / 0.025335); --color: #16a34a;">
+        <span class="data">$0.000096</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gpt-4o-mini (Structured)</th>
-      <td style="--size: calc(0.000142 / 0.031365); --color: #3b82f6;">
-        <span class="data">$0.000142</span>
+      <td style="--size: calc(0.000097 / 0.025335); --color: #3b82f6;">
+        <span class="data">$0.000097</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gpt-4o-mini (Enhanced)</th>
-      <td style="--size: calc(0.000169 / 0.031365); --color: #60a5fa;">
+      <td style="--size: calc(0.000169 / 0.025335); --color: #60a5fa;">
         <span class="data">$0.000169</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gemini-2.5-pro (Structured)</th>
-      <td style="--size: calc(0.001578 / 0.031365); --color: #34d399;">
-        <span class="data">$0.001578</span>
+      <td style="--size: calc(0.001023 / 0.025335); --color: #34d399;">
+        <span class="data">$0.001023</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5-mini (Enhanced)</th>
+      <td style="--size: calc(0.001361 / 0.025335); --color: #10b981;">
+        <span class="data">$0.001361</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gemini-2.5-pro (Enhanced)</th>
-      <td style="--size: calc(0.001613 / 0.031365); --color: #10b981;">
-        <span class="data">$0.001613</span>
+      <td style="--size: calc(0.001623 / 0.025335); --color: #14b8a6;">
+        <span class="data">$0.001623</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gpt-4o (Structured)</th>
-      <td style="--size: calc(0.002443 / 0.031365); --color: #8b5cf6;">
-        <span class="data">$0.002443</span>
+      <td style="--size: calc(0.001658 / 0.025335); --color: #06b6d4;">
+        <span class="data">$0.001658</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5-mini (Structured)</th>
+      <td style="--size: calc(0.001881 / 0.025335); --color: #0ea5e9;">
+        <span class="data">$0.001881</span>
       </td>
     </tr>
     <tr>
       <th scope="row">gpt-4o (Enhanced)</th>
-      <td style="--size: calc(0.002833 / 0.031365); --color: #a78bfa;">
+      <td style="--size: calc(0.002833 / 0.025335); --color: #8b5cf6;">
         <span class="data">$0.002833</span>
       </td>
     </tr>
     <tr>
       <th scope="row">claude-sonnet-4-5 (Enhanced)</th>
-      <td style="--size: calc(0.004581 / 0.031365); --color: #f59e0b;">
+      <td style="--size: calc(0.004581 / 0.025335); --color: #a78bfa;">
         <span class="data">$0.004581</span>
       </td>
     </tr>
     <tr>
       <th scope="row">claude-sonnet-4-5 (Structured)</th>
-      <td style="--size: calc(0.007167 / 0.031365); --color: #fbbf24;">
-        <span class="data">$0.007167</span>
+      <td style="--size: calc(0.005886 / 0.025335); --color: #c084fc;">
+        <span class="data">$0.005886</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5 (Enhanced)</th>
+      <td style="--size: calc(0.011895 / 0.025335); --color: #f59e0b;">
+        <span class="data">$0.011895</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">gpt-5 (Structured)</th>
+      <td style="--size: calc(0.015065 / 0.025335); --color: #fbbf24;">
+        <span class="data">$0.015065</span>
       </td>
     </tr>
     <tr>
       <th scope="row">claude-opus-4-1 (Enhanced)</th>
-      <td style="--size: calc(0.02238 / 0.031365); --color: #fb923c;">
+      <td style="--size: calc(0.02238 / 0.025335); --color: #fb923c;">
         <span class="data">$0.02238</span>
       </td>
     </tr>
     <tr>
       <th scope="row">claude-opus-4-1 (Structured)</th>
       <td style="--size: 1.0; --color: #ef4444;">
-        <span class="data">$0.031365</span>
+        <span class="data">$0.025335</span>
       </td>
     </tr>
   </tbody>
 </table>
 
-*Gemini 2.5 Flash with Enhanced Prompting delivers the lowest cost at $0.000084 per extraction—373x cheaper than Claude Opus with Structured Outputs. [View benchmark source](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb).*
+*Gemini 2.5 Flash with Structured Outputs delivers the lowest cost at $0.000050 per extraction—507x cheaper than Claude Opus with Structured Outputs. [View benchmark source](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb).*
 
 ### Performance by Provider (Average across models)
 
@@ -378,56 +443,59 @@ Token usage varies by both model and strategy. Native structured outputs typical
   </thead>
   <tbody>
     <tr>
-      <th scope="row">OpenAI</th>
-      <td style="--size: calc(4.596 / 13.583); --color: #3b82f6;">
-        <span class="data">4.596s</span>
-      </td>
-      <td style="--size: calc(2.259 / 13.583); --color: #60a5fa;">
-        <span class="data">2.259s</span>
-      </td>
-    </tr>
-    <tr>
       <th scope="row">Anthropic</th>
-      <td style="--size: calc(4.354 / 13.583); --color: #8b5cf6;">
-        <span class="data">4.354s</span>
+      <td style="--size: calc(4.202 / 13.091); --color: #8b5cf6;">
+        <span class="data">4.202s</span>
       </td>
-      <td style="--size: calc(5.193 / 13.583); --color: #a78bfa;">
-        <span class="data">5.193s</span>
+      <td style="--size: calc(4.099 / 13.091); --color: #a78bfa;">
+        <span class="data">4.099s</span>
       </td>
     </tr>
     <tr>
       <th scope="row">Google</th>
-      <td style="--size: calc(8.762 / 13.583); --color: #f59e0b;">
-        <span class="data">8.762s</span>
+      <td style="--size: 1.0; --color: #f59e0b;">
+        <span class="data">13.091s</span>
       </td>
-      <td style="--size: 1.0; --color: #fbbf24;">
-        <span class="data">13.583s</span>
+      <td style="--size: calc(7.365 / 13.091); --color: #fbbf24;">
+        <span class="data">7.365s</span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">OpenAI</th>
+      <td style="--size: calc(7.389 / 13.091); --color: #3b82f6;">
+        <span class="data">7.389s</span>
+      </td>
+      <td style="--size: calc(9.374 / 13.091); --color: #60a5fa;">
+        <span class="data">9.374s</span>
       </td>
     </tr>
   </tbody>
 </table>
 
-*OpenAI shows dramatic improvement with structured outputs (51% faster average). Anthropic and Google both perform better with enhanced prompting—Anthropic is 16% faster with enhanced prompting, while Google is 35% faster with enhanced prompting.*
+*Anthropic shows nearly identical performance between strategies (2.5% faster with structured). Google dramatically improves with structured outputs (44% faster average). OpenAI shows mixed results due to GPT-5's slower structured output performance offsetting GPT-4o's improvements (21% slower average with structured).*
 
 ## Quick Decision Matrix
 
 | Use Case | Recommended Strategy | Model | Cost | Speed |
 |----------|---------------------|-------|------|-------|
-| **OpenAI Users** | Native Structured | gpt-4o-mini | $0.000142 | 1.784s |
-| **Cost-Optimized** | Enhanced Prompting | gemini-2.5-flash | $0.000084 | 8.650s |
-| **Speed-Optimized** | Native Structured | gpt-4o-mini | $0.000142 | 1.784s |
-| **Anthropic Users** | Enhanced Prompting | claude-sonnet-4-5 | $0.004581 | 3.630s |
+| **Cost-Optimized** | Native Structured | gemini-2.5-flash | $0.000050 | 7.943s |
+| **Speed-Optimized** | Native Structured | gpt-4o | $0.001658 | 1.769s |
+| **OpenAI GPT-4o Users** | Native Structured | gpt-4o / gpt-4o-mini | $0.000097-$0.001658 | 1.769-2.111s |
+| **OpenAI GPT-5 Users** | Enhanced Prompting | gpt-5 / gpt-5-mini | $0.001361-$0.011895 | 8.303-16.005s |
+| **Anthropic Users** | Enhanced Prompting | claude-sonnet-4-5 | $0.004581 | 3.411s |
+| **Google Users** | Native Structured | gemini-2.5-pro / flash | $0.000050-$0.001023 | 6.787-7.943s |
 | **Multi-Provider** | Enhanced Prompting | Varies | Varies | Varies |
-| **Google Users** | Enhanced Prompting | gemini-2.5-pro | $0.001613 | 8.873s |
 
 ## Key Findings
 
-- **OpenAI Wins Big**: Structured outputs are 23-68% faster and 14-16% cheaper for GPT models
-- **Anthropic Favors Enhanced**: Enhanced prompting is 9-24% faster and 29-36% cheaper than structured outputs
-- **Google Favors Enhanced**: Enhanced prompting is 10-50% faster for both Pro and Flash models
-- **Cost Champion**: Gemini 2.5 Flash with enhanced prompting at $0.000084 per extraction
-- **Speed Champion**: GPT-4o-mini with structured outputs at 1.784s
-- **Universal Reliability**: 100% success rate across all 12 tests (6 models × 2 strategies)
+- **GPT-4o Dominates**: Structured outputs are 23-28% faster and 41-43% cheaper with superior token efficiency (-44% to -45%)
+- **GPT-5 Reasoning Overhead**: Enhanced prompting 29-43% faster; GPT-5 generates 1130-1447 output tokens (extensive reasoning)
+- **Google Wins Both Ways**: Structured outputs 35-49% faster, 37-48% cheaper, and 56-61% fewer tokens
+- **Anthropic Prefers Enhanced**: Enhanced prompting similar speed but 12-22% cheaper than structured outputs
+- **Cost Champion**: Gemini 2.5 Flash with structured outputs at $0.000050 per extraction
+- **Speed Champion**: GPT-4o with structured outputs at 1.769s
+- **Token Efficiency Revolution**: Structured outputs now MORE efficient for OpenAI and Google (vs old implementations)
+- **Universal Reliability**: 100% success rate across all 16 tests (8 models × 2 strategies)
 
 ## Implementation
 
@@ -487,20 +555,22 @@ This example shows [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s core comp
 
 ## Recommendations
 
-**For OpenAI users**: Enable `structured_outputs: true` for 23-68% faster responses and 14-16% cost savings. This is a clear win with no downsides, especially for gpt-4o-mini (68% faster).
+**For OpenAI GPT-4o users**: Enable `structured_outputs: true` for dramatic wins—23-28% faster, 41-43% cheaper, and 44-45% fewer tokens. This is a clear win with no downsides.
 
-**For Anthropic users**: Use enhanced prompting for 9-24% faster responses and 29-36% cost savings. Structured outputs significantly increase token consumption and costs for Claude models.
+**For OpenAI GPT-5 users**: Use enhanced prompting for 29-43% faster responses and 21-28% cost savings. GPT-5's extensive reasoning generates 1130-1447 output tokens, making structured outputs slower and more expensive.
 
-**For Google Gemini users**:
-- **Both Pro and Flash**: Use enhanced prompting for 10-50% faster performance
-- **Flash models**: Enhanced prompting avoids dramatic slowdown (8.65s vs 17.32s with structured)
-- **Pro models**: Enhanced prompting is 10% faster and only slightly more expensive
+**For Anthropic users**: Use enhanced prompting for 12-22% cost savings. Performance is nearly identical between strategies, but enhanced prompting uses fewer tokens.
 
-**For multi-provider applications**: Enhanced prompting is the best default strategy, offering excellent performance across all providers.
+**For Google Gemini users**: Enable `structured_outputs: true` for exceptional results:
+- **Gemini 2.5 Flash**: 49% faster, 48% cheaper, 61% fewer tokens
+- **Gemini 2.5 Pro**: 35% faster, 37% cheaper, 56% fewer tokens
+- Structured outputs achieve massive token efficiency through native API integration
 
-**Budget-conscious applications**: Use Gemini 2.5 Flash with enhanced prompting ($0.000084 per extraction)—373x cheaper than Claude Opus with structured outputs.
+**For multi-provider applications**: Enhanced prompting remains the best default strategy for universal compatibility, though provider-specific optimization can yield significant improvements.
 
-**Speed-critical applications**: Use GPT-4o-mini with structured outputs (1.784s average)—the fastest option tested.
+**Budget-conscious applications**: Use Gemini 2.5 Flash with structured outputs ($0.000050 per extraction)—507x cheaper than Claude Opus with structured outputs.
+
+**Speed-critical applications**: Use GPT-4o with structured outputs (1.769s average)—the fastest option tested.
 
 For enterprise deployments, implement [production observability](https://vicentereig.github.io/dspy.rb/production/observability/) to monitor extraction quality across providers.
 
@@ -526,4 +596,4 @@ This enhancement will integrate seamlessly with [DSPy.rb](https://github.com/vic
 
 ---
 
-*Benchmark data: 12 tests across 2 strategies and 6 latest AI models (September 2025). Total cost: $0.0744. View [benchmark source code](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb) and [raw data](https://github.com/vicentereig/dspy.rb/blob/main/benchmark_20251003_155004.json).*
+*Benchmark data: 16 tests across 2 strategies and 8 latest AI models (September 2025). Total cost: $0.0959. View [benchmark source code](https://github.com/vicentereig/dspy.rb/blob/main/examples/json_modes_benchmark.rb) and [raw data](https://github.com/vicentereig/dspy.rb/blob/main/benchmark_20251003_165710.json).*

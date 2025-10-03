@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
@@ -21,23 +21,23 @@ http_interactions:
       - ''
   response:
     status:
-      code: 404
+      code: 200
       message: ''
     headers:
+      Content-Type:
+      - application/json; charset=UTF-8
       Vary:
       - Origin
       - Referer
       - X-Origin
-      Content-Type:
-      - application/json; charset=UTF-8
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:30:14 GMT
+      - Fri, 03 Oct 2025 20:44:14 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '210'
+      - '442'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -45,18 +45,41 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=70
+      - gfet4t7; dur=1481
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "error": {
-            "code": 404,
-            "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
-            "status": "NOT_FOUND"
-          }
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\"sentiment\": \"positive\", \"confidence\": 0.98, \"reasoning\": \"The text contains strong positive indicators such as \\\"absolutely love\\\" and \\\"exceeded all my expectations\\\", clearly expressing high satisfaction with the product.\"}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 138,
+            "candidatesTokenCount": 49,
+            "totalTokenCount": 334,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 138
+              }
+            ],
+            "thoughtsTokenCount": 147
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "njXgaNfiL8Cs1MkP466RuAE"
         }
-  recorded_at: Fri, 03 Oct 2025 20:30:14 GMT
+  recorded_at: Fri, 03 Oct 2025 20:44:14 GMT
 recorded_with: VCR 6.3.1

@@ -35,7 +35,12 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
   describe 'API backward compatibility' do
     let(:inference_module) do
       module_double = double('InferenceModule')
+      prompt_double = double('Prompt')
+      allow(prompt_double).to receive(:render_system_prompt).and_return('You are a helpful assistant')
+      allow(prompt_double).to receive(:render_user_prompt).with(anything).and_return('Question: What is AI?\nAnswer:')
+      allow(prompt_double).to receive(:to_h).and_return({})
       allow(module_double).to receive(:signature_class).and_return(double('SignatureClass', name: 'TestSignature'))
+      allow(module_double).to receive(:prompt).and_return(prompt_double)
       allow(module_double).to receive(:system_signature).and_return('You are a helpful assistant')
       allow(module_double).to receive(:user_signature).with(anything).and_return('Question: What is AI?\nAnswer:')
       module_double
@@ -112,7 +117,12 @@ RSpec.describe 'DSPy::LM Migration Integration', type: :integration do
     let(:signature_class) { TestMigrationSignature }
     let(:inference_module) do
       module_double = double('InferenceModule')
+      prompt_double = double('Prompt')
+      allow(prompt_double).to receive(:render_system_prompt).and_return('You are a helpful assistant')
+      allow(prompt_double).to receive(:render_user_prompt).with(anything).and_return('Question: What is AI?\nAnswer:')
+      allow(prompt_double).to receive(:to_h).and_return({})
       allow(module_double).to receive(:signature_class).and_return(signature_class)
+      allow(module_double).to receive(:prompt).and_return(prompt_double)
       allow(module_double).to receive(:system_signature).and_return('You are a helpful assistant')
       allow(module_double).to receive(:user_signature).with(anything).and_return('Question: What is AI?\nAnswer:')
       module_double

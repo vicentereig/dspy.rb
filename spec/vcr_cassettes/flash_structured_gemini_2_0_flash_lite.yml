@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=<GEMINI_API_KEY>
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
@@ -21,23 +21,23 @@ http_interactions:
       - ''
   response:
     status:
-      code: 404
+      code: 200
       message: ''
     headers:
+      Content-Type:
+      - application/json; charset=UTF-8
       Vary:
       - Origin
       - Referer
       - X-Origin
-      Content-Type:
-      - application/json; charset=UTF-8
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:30:23 GMT
+      - Fri, 03 Oct 2025 20:44:45 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '213'
+      - '398'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -45,18 +45,46 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=77
+      - gfet4t7; dur=764
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "error": {
-            "code": 404,
-            "message": "models/gemini-1.5-flash-8b is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
-            "status": "NOT_FOUND"
-          }
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\n  \"sentiment\": \"positive\",\n  \"confidence\": 0.95,\n  \"summary\": \"Product is amazing and exceeds expectations.\"\n}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "avgLogprobs": -0.080872869491577154
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 134,
+            "candidatesTokenCount": 35,
+            "totalTokenCount": 169,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 134
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 35
+              }
+            ]
+          },
+          "modelVersion": "gemini-2.0-flash-lite",
+          "responseId": "vTXgaIQ_m6jUyQ_1yvvQCA"
         }
-  recorded_at: Fri, 03 Oct 2025 20:30:23 GMT
+  recorded_at: Fri, 03 Oct 2025 20:44:45 GMT
 recorded_with: VCR 6.3.1

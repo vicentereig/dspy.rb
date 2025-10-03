@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=<GEMINI_API_KEY>
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
       string: '{"contents":[{"role":"user","parts":[{"text":"You are a helpful geography
@@ -16,23 +16,23 @@ http_interactions:
       - ''
   response:
     status:
-      code: 404
+      code: 200
       message: ''
     headers:
+      Content-Type:
+      - application/json; charset=UTF-8
       Vary:
       - Origin
       - Referer
       - X-Origin
-      Content-Type:
-      - application/json; charset=UTF-8
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:34:32 GMT
+      - Fri, 03 Oct 2025 20:46:04 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '210'
+      - '356'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -40,18 +40,41 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=101
+      - gfet4t7; dur=1273
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "error": {
-            "code": 404,
-            "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
-            "status": "NOT_FOUND"
-          }
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "Ah, an excellent question about European geography!\n\nThe capital of Spain is **Madrid**."
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 16,
+            "candidatesTokenCount": 18,
+            "totalTokenCount": 74,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 16
+              }
+            ],
+            "thoughtsTokenCount": 40
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "DDbgaJjjFOuZ_uMPk7372A4"
         }
-  recorded_at: Fri, 03 Oct 2025 20:34:32 GMT
+  recorded_at: Fri, 03 Oct 2025 20:46:04 GMT
 recorded_with: VCR 6.3.1

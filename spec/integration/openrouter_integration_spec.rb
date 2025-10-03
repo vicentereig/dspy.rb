@@ -67,10 +67,11 @@ RSpec.describe "OpenRouter Integration" do
     it "works with structured outputs natively supported (no fallback needed)", vcr: { cassette_name: "openrouter_structured_native" } do
       require_api_key!
 
-      # Use Grok which supports structured outputs natively
+      # Use a model that supports structured outputs natively
       # (structured_outputs defaults to true for OpenRouter)
+      # Using google/gemini-2.5-flash as it's available and supports structured outputs
       lm = DSPy::LM.new(
-        'openrouter/x-ai/grok-4-fast:free',
+        'openrouter/google/gemini-2.5-flash',
         api_key: api_key
       )
       DSPy.configure { |config| config.lm = lm }
@@ -93,7 +94,7 @@ RSpec.describe "OpenRouter Integration" do
       require_api_key!
 
       lm = DSPy::LM.new(
-        'openrouter/x-ai/grok-4-fast:free',
+        'openrouter/google/gemini-2.5-flash',
         api_key: api_key,
         http_referrer: 'https://vicentereig.github.io/dspy.rb/',
         x_title: 'DSPy.rb Integration Test'

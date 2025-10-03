@@ -139,8 +139,14 @@ RSpec.describe 'DSPy::LM span tracking' do
       allow(lm.adapter).to receive(:chat).and_return(mock_response)
       
       # Create a mock inference module
+      prompt_double = double('Prompt')
+      allow(prompt_double).to receive(:render_system_prompt).and_return('Answer the question')
+      allow(prompt_double).to receive(:render_user_prompt).with(anything).and_return('What is life?')
+      allow(prompt_double).to receive(:to_h).and_return({})
+
       inference_module = double('inference_module',
         signature_class: signature_class,
+        prompt: prompt_double,
         system_signature: 'Answer the question',
         user_signature: 'What is life?',
         build_prompt_from_inputs: 'What is life?',

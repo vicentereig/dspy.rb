@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key=<GEMINI_API_KEY>
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<GEMINI_API_KEY>
     body:
       encoding: UTF-8
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
@@ -33,11 +33,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:30:24 GMT
+      - Fri, 03 Oct 2025 20:44:47 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '398'
+      - '386'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -45,7 +45,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=734
+      - gfet4t7; dur=1892
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -57,34 +57,29 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "{\n  \"sentiment\": \"positive\",\n  \"confidence\": 0.95,\n  \"summary\": \"The text expresses a positive opinion about a product.\"\n}"
+                    "text": "{\"sentiment\":\"positive\",\"confidence\":0.95,\"summary\":\"The product is highly praised for being amazing and exceeding expectations.\"}"
                   }
                 ],
                 "role": "model"
               },
               "finishReason": "STOP",
-              "avgLogprobs": -0.046162228835256475
+              "index": 0
             }
           ],
           "usageMetadata": {
-            "promptTokenCount": 134,
-            "candidatesTokenCount": 38,
-            "totalTokenCount": 172,
+            "promptTokenCount": 136,
+            "candidatesTokenCount": 27,
+            "totalTokenCount": 323,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 134
+                "tokenCount": 136
               }
             ],
-            "candidatesTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 38
-              }
-            ]
+            "thoughtsTokenCount": 160
           },
-          "modelVersion": "gemini-2.0-flash-001",
-          "responseId": "YDLgaNuiAZut-8YPs7Tv4A0"
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "vzXgaNGiJrez1MkPgpXZyAs"
         }
-  recorded_at: Fri, 03 Oct 2025 20:30:24 GMT
+  recorded_at: Fri, 03 Oct 2025 20:44:47 GMT
 recorded_with: VCR 6.3.1

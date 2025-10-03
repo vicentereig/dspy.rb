@@ -6,7 +6,7 @@ require_relative '../support/test_images'
 
 RSpec.describe 'Gemini Integration' do
   let(:api_key) { ENV['GEMINI_API_KEY'] }
-  let(:model) { 'gemini-1.5-flash' }
+  let(:model) { 'gemini-2.5-flash' }
   
   describe 'basic text generation' do
     it 'generates text response', vcr: { cassette_name: 'gemini_basic_text' } do
@@ -207,7 +207,8 @@ RSpec.describe 'Gemini Integration' do
       expect(response.usage).to be_a(DSPy::LM::Usage)
       expect(response.usage.input_tokens).to be > 0
       expect(response.usage.output_tokens).to be > 0
-      expect(response.usage.total_tokens).to eq(response.usage.input_tokens + response.usage.output_tokens)
+      # Gemini may include cached tokens, so total >= sum of input+output
+      expect(response.usage.total_tokens).to be >= (response.usage.input_tokens + response.usage.output_tokens)
     end
   end
 end

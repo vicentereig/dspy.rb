@@ -11,29 +11,32 @@ module DSPy
           extend T::Sig
 
           # Models that support structured outputs (JSON + Schema)
-          # Based on official Google documentation (Sept 2025)
+          # Based on official Google documentation: https://ai.google.dev/gemini-api/docs/models/gemini
+          # Last updated: Oct 2025
+          # Note: Gemini 1.5 series deprecated Oct 2025
           STRUCTURED_OUTPUT_MODELS = T.let([
-            # Gemini 1.5 series
-            "gemini-1.5-pro",
-            "gemini-1.5-pro-preview-0514",
-            "gemini-1.5-pro-preview-0409", 
-            "gemini-1.5-flash",             # ✅ Now supports structured outputs
-            "gemini-1.5-flash-8b",
             # Gemini 2.0 series
             "gemini-2.0-flash",
-            "gemini-2.0-flash-001",
-            # Gemini 2.5 series
+            "gemini-2.0-flash-lite",
+            # Gemini 2.5 series (current)
             "gemini-2.5-pro",
-            "gemini-2.5-flash", 
-            "gemini-2.5-flash-lite"
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite",
+            "gemini-2.5-flash-image"
           ].freeze, T::Array[String])
 
-          # Models that do not support structured outputs (legacy only)
+          # Models that do not support structured outputs or are deprecated
           UNSUPPORTED_MODELS = T.let([
-            # Legacy Gemini 1.0 series only
-            "gemini-pro",                   
+            # Legacy Gemini 1.0 series
+            "gemini-pro",
             "gemini-1.0-pro-002",
-            "gemini-1.0-pro"
+            "gemini-1.0-pro",
+            # Deprecated Gemini 1.5 series (removed Oct 2025)
+            "gemini-1.5-pro",
+            "gemini-1.5-pro-preview-0514",
+            "gemini-1.5-pro-preview-0409",
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-8b"
           ].freeze, T::Array[String])
 
           sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T::Hash[Symbol, T.untyped]) }
@@ -111,7 +114,13 @@ module DSPy
             case property_schema[:type]
             when "string"
               result = { type: "string" }
-              result[:enum] = property_schema[:enum] if property_schema[:enum]
+              # Gemini responseJsonSchema doesn't support const, so convert to single-value enum
+              # See: https://ai.google.dev/api/generate-content#FIELDS.response_json_schema
+              if property_schema[:const]
+                result[:enum] = [property_schema[:const]]
+              elsif property_schema[:enum]
+                result[:enum] = property_schema[:enum]
+              end
               result
             when "integer"
               { type: "integer" }

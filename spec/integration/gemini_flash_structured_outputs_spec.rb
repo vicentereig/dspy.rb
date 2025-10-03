@@ -27,11 +27,12 @@ end
 
 RSpec.describe "Gemini Flash Models Structured Outputs Integration" do
   # Test all Flash model variants to ensure they use structured outputs
+  # Based on https://ai.google.dev/gemini-api/docs/models/gemini
   FLASH_MODELS = [
-    'gemini-1.5-flash',
-    'gemini-1.5-flash-8b',
     'gemini-2.0-flash',
-    'gemini-2.0-flash-001'
+    'gemini-2.0-flash-lite',
+    'gemini-2.5-flash',
+    'gemini-2.5-flash-lite'
   ].freeze
   
   FLASH_MODELS.each do |model|
@@ -61,7 +62,7 @@ RSpec.describe "Gemini Flash Models Structured Outputs Integration" do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
       # Test with fastest Flash model
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       
       adapter = lm.instance_variable_get(:@adapter)
       response = adapter.chat(
@@ -71,7 +72,8 @@ RSpec.describe "Gemini Flash Models Structured Outputs Integration" do
       expect(response.usage).to be_a(DSPy::LM::Usage)
       expect(response.usage.input_tokens).to be > 0
       expect(response.usage.output_tokens).to be > 0
-      expect(response.usage.total_tokens).to eq(response.usage.input_tokens + response.usage.output_tokens)
+      # Gemini may include cached tokens, so total >= sum of input+output
+      expect(response.usage.total_tokens).to be >= (response.usage.input_tokens + response.usage.output_tokens)
     end
   end
 end

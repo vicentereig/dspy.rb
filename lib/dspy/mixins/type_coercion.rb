@@ -208,26 +208,26 @@ module DSPy
       sig { params(value: T.untyped, union_type: T.untyped).returns(T.untyped) }
       def coerce_union_value(value, union_type)
         return value unless value.is_a?(Hash)
-        
+
         # Check for _type discriminator field
         type_name = value[:_type] || value["_type"]
         return value unless type_name
-        
+
         # Find matching struct type in the union
         union_type.types.each do |type|
           next if type == T::Utils.coerce(NilClass)
-          
+
           if type.is_a?(T::Types::Simple) && type.raw_type < T::Struct
             struct_name = type.raw_type.name.split('::').last
             if struct_name == type_name
               # Convert string keys to symbols and remove _type
               symbolized_hash = value.transform_keys(&:to_sym)
               symbolized_hash.delete(:_type)
-              
+
               # Coerce struct field values based on their types
               struct_class = type.raw_type
               struct_props = struct_class.props
-              
+
               # ONLY include fields that exist in the struct
               coerced_hash = {}
               struct_props.each_key do |key|
@@ -236,13 +236,13 @@ module DSPy
                   coerced_hash[key] = coerce_value_to_type(symbolized_hash[key], prop_type)
                 end
               end
-              
+
               # Create the struct instance with coerced values
               return struct_class.new(**coerced_hash)
             end
           end
         end
-        
+
         # If no matching type found, return original value
         value
       rescue ArgumentError => e

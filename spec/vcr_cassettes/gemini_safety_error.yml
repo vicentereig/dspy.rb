@@ -28,7 +28,7 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Fri, 03 Oct 2025 20:34:32 GMT
+      - Fri, 03 Oct 2025 20:44:48 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
@@ -40,7 +40,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=56
+      - gfet4t7; dur=52
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -53,5 +53,5 @@ http_interactions:
             "status": "NOT_FOUND"
           }
         }
-  recorded_at: Fri, 03 Oct 2025 20:34:32 GMT
+  recorded_at: Fri, 03 Oct 2025 20:44:48 GMT
 recorded_with: VCR 6.3.1

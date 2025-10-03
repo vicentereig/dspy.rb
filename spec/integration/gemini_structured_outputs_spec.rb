@@ -130,7 +130,7 @@ RSpec.describe "Gemini Structured Outputs Integration" do
     it "generates valid JSON with simple enum output", vcr: { cassette_name: "gemini_structured_simple" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       DSPy.configure { |config| config.lm = lm }
       
       predictor = DSPy::Predict.new(GeminiSentimentAnalysis)
@@ -147,7 +147,7 @@ RSpec.describe "Gemini Structured Outputs Integration" do
     it "generates valid JSON with complex nested structures", vcr: { cassette_name: "gemini_structured_complex" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       DSPy.configure { |config| config.lm = lm }
       
       predictor = DSPy::Predict.new(GeminiComplexOutput)
@@ -175,7 +175,7 @@ RSpec.describe "Gemini Structured Outputs Integration" do
     it "handles union types with proper discrimination", vcr: { cassette_name: "gemini_structured_union" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       DSPy.configure { |config| config.lm = lm }
       
       predictor = DSPy::Predict.new(GeminiUnionTypeSignature)
@@ -200,7 +200,7 @@ RSpec.describe "Gemini Structured Outputs Integration" do
     it "handles optional/nilable fields correctly", vcr: { cassette_name: "gemini_structured_optional" } do
       skip 'Requires GEMINI_API_KEY' unless ENV['GEMINI_API_KEY']
       
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       DSPy.configure { |config| config.lm = lm }
       
       predictor = DSPy::Predict.new(GeminiOptionalFieldsSignature)
@@ -272,7 +272,7 @@ RSpec.describe "Gemini Structured Outputs Integration" do
         end
       end
       
-      lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
+      lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'], structured_outputs: true)
       DSPy.configure { |config| config.lm = lm }
       
       predictor = DSPy::Predict.new(malformed_signature)
