@@ -2,6 +2,65 @@
 http_interactions:
 - request:
     method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BZogZMbIorEXADvrtBCL5gxo4D54AAEBAAAnIQEAAYDhAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"MustafaKhalil","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759526451253.2249,"message":"trace_id=\"f0399358-9cec-4ead-8934-685964decae7\"
+        otel_span_stack=[] input_tokens=366 output_tokens=63 total_tokens=429 gen_ai.system=\"openrouter\"
+        gen_ai.request.model=\"deepseek/deepseek-chat-v3.1:free\" dspy.signature=\"OpenRouterSentimentAnalysis\"
+        event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgANTXVzdGFmYUtoYWxpbBcADU11c3RhZmFLaGFsaWw
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BZogZMbIorEXADvrtBCL5gxo4D54AAEBAAAnIQEAAYDhAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Fri, 03 Oct 2025 21:20:51 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 988f7c638df305bf-IAD
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 03 Oct 2025 21:20:51 GMT
+- request:
+    method: post
     uri: https://openrouter.ai/api/v1/chat/completions
     body:
       encoding: UTF-8
@@ -51,7 +110,7 @@ http_interactions:
       Content-Type:
       - application/json
       Authorization:
-      - Bearer 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
+      - Bearer <OPENROUTER_API_KEY>
       X-Stainless-Retry-Count:
       - '0'
       X-Stainless-Timeout:
@@ -64,7 +123,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 03 Oct 2025 20:47:48 GMT
+      - Fri, 03 Oct 2025 21:20:51 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -85,12 +144,12 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 988f4bf3ed72c96b-IAD
+      - 988f7c609893d67b-IAD
     body:
       encoding: ASCII-8BIT
-      string: "\n         \n{\"id\":\"gen-1759524467-bq84LvefDKtyIBbS2cjr\",\"provider\":\"Google\",\"model\":\"google/gemini-2.5-flash\",\"object\":\"chat.completion\",\"created\":1759524467,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"STOP\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n
+      string: "\n         \n{\"id\":\"gen-1759526451-rjMKHuBx8qhnqwQyFDgb\",\"provider\":\"Google\",\"model\":\"google/gemini-2.5-flash\",\"object\":\"chat.completion\",\"created\":1759526451,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"STOP\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n
         \ \\\"sentiment\\\": \\\"positive\\\",\\n  \\\"confidence\\\": 0.95,\\n  \\\"reasoning\\\":
         \\\"The text uses positive words like 'excellent' and 'highly recommended',
         indicating a favorable opinion of the product.\\\"\\n}\",\"refusal\":null,\"reasoning\":null}}],\"usage\":{\"prompt_tokens\":421,\"completion_tokens\":51,\"total_tokens\":472,\"prompt_tokens_details\":{\"cached_tokens\":0},\"completion_tokens_details\":{\"reasoning_tokens\":0,\"image_tokens\":0}}}"
-  recorded_at: Fri, 03 Oct 2025 20:47:49 GMT
+  recorded_at: Fri, 03 Oct 2025 21:20:52 GMT
 recorded_with: VCR 6.3.1

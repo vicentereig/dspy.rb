@@ -47,7 +47,7 @@ http_interactions:
       Content-Type:
       - application/json
       Authorization:
-      - Bearer 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
+      - Bearer <OPENROUTER_API_KEY>
       X-Title:
       - DSPy.rb Integration Test
       Http-Referer:
@@ -64,7 +64,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 03 Oct 2025 20:47:49 GMT
+      - Fri, 03 Oct 2025 21:20:52 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -85,11 +85,10 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 988f4bfd5fdea0ca-IAD
+      - 988f7c667dac9837-IAD
     body:
       encoding: ASCII-8BIT
-      string: "\n         \n{\"id\":\"gen-1759524469-Gso9pzGT4YrtVNOYYqox\",\"provider\":\"Google\",\"model\":\"google/gemini-2.5-flash\",\"object\":\"chat.completion\",\"created\":1759524469,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"STOP\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"{\\n
-        \ \\\"response\\\": \\\"Header test successful\\\",\\n  \\\"word_count\\\":
-        3\\n}\",\"refusal\":null,\"reasoning\":null}}],\"usage\":{\"prompt_tokens\":355,\"completion_tokens\":22,\"total_tokens\":377,\"prompt_tokens_details\":{\"cached_tokens\":0},\"completion_tokens_details\":{\"reasoning_tokens\":0,\"image_tokens\":0}}}"
-  recorded_at: Fri, 03 Oct 2025 20:47:49 GMT
+      string: '{"id":"gen-1759526452-1qysK5wV62Mg1eulxE4C","provider":"Google","model":"google/gemini-2.5-flash","object":"chat.completion","created":1759526452,"choices":[{"logprobs":null,"finish_reason":"stop","native_finish_reason":"STOP","index":0,"message":{"role":"assistant","content":"{\n  \"response\":
+        \"Header test successful\",\n  \"word_count\": 3\n}","refusal":null,"reasoning":null}}],"usage":{"prompt_tokens":355,"completion_tokens":22,"total_tokens":377,"prompt_tokens_details":{"cached_tokens":0},"completion_tokens_details":{"reasoning_tokens":0,"image_tokens":0}}}'
+  recorded_at: Fri, 03 Oct 2025 21:20:53 GMT
 recorded_with: VCR 6.3.1

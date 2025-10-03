@@ -48,7 +48,7 @@ http_interactions:
       Content-Type:
       - application/json
       Authorization:
-      - Bearer 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
+      - Bearer <OPENROUTER_API_KEY>
       X-Stainless-Retry-Count:
       - '0'
       X-Stainless-Timeout:
@@ -61,7 +61,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 03 Oct 2025 20:35:25 GMT
+      - Fri, 03 Oct 2025 21:20:47 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -82,14 +82,14 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 988f39d0c8d5e5c9-IAD
+      - 988f7c468a019c55-IAD
     body:
       encoding: ASCII-8BIT
       string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n{\"id\":\"gen-1759523725-RTroGp0TfJzAAPX046Ql\",\"provider\":\"DeepInfra\",\"model\":\"deepseek/deepseek-chat-v3.1:free\",\"object\":\"chat.completion\",\"created\":1759523725,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"##
+        \        \n\n         \n\n         \n\n         \n{\"id\":\"gen-1759526447-9093FX0tXBsRLHE2VZ0J\",\"provider\":\"DeepInfra\",\"model\":\"deepseek/deepseek-chat-v3.1:free\",\"object\":\"chat.completion\",\"created\":1759526447,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"##
         Output values\\n```json\\n{\\n  \\\"sentiment\\\": \\\"neutral\\\",\\n  \\\"confidence\\\":
-        0.7,\\n  \\\"reasoning\\\": \\\"The phrase 'okay, nothing special' indicates
-        neither strong positive nor negative feelings. It expresses a moderate, indifferent
-        opinion without enthusiasm or disappointment.\\\"\\n}\\n```\",\"refusal\":null,\"reasoning\":null}}],\"usage\":{\"prompt_tokens\":366,\"completion_tokens\":63,\"total_tokens\":429,\"prompt_tokens_details\":null}}"
-  recorded_at: Fri, 03 Oct 2025 20:35:28 GMT
+        0.75,\\n  \\\"reasoning\\\": \\\"The phrase 'okay, nothing special' indicates
+        neither strong positive nor negative sentiment. It suggests average or mediocre
+        quality without expressing enthusiasm or disappointment.\\\"\\n}\\n```\",\"refusal\":null,\"reasoning\":null}}],\"usage\":{\"prompt_tokens\":366,\"completion_tokens\":63,\"total_tokens\":429,\"prompt_tokens_details\":null}}"
+  recorded_at: Fri, 03 Oct 2025 21:20:51 GMT
 recorded_with: VCR 6.3.1

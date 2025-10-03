@@ -61,6 +61,7 @@ VCR.configure do |config|
   config.filter_sensitive_data('<OPENAI_API_KEY>') { ENV['OPENAI_API_KEY'] }
   config.filter_sensitive_data('<ANTHROPIC_API_KEY>') { ENV['ANTHROPIC_API_KEY'] }
   config.filter_sensitive_data('<GEMINI_API_KEY>') { ENV['GEMINI_API_KEY'] }
+  config.filter_sensitive_data('<OPENROUTER_API_KEY>') { ENV['OPENROUTER_API_KEY'] }
   config.filter_sensitive_data('<NEW_RELIC_LICENSE_KEY>') { ENV['NEW_RELIC_LICENSE_KEY'] }
 
   # Filter out sensitive headers and response data
