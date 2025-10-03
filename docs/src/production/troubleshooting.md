@@ -172,20 +172,27 @@ end
 
 **Problem**: In-memory storage reaches capacity limits.
 
-**Solution**: Configure memory limits or use persistent storage:
+**Solution**: Use the MemoryManager to handle memory with automatic compaction:
 
 ```ruby
-# Configure memory limits
-memory = DSPy::Memory.new(
-  max_entries: 1000,
-  compaction_enabled: true
+# Basic memory manager with automatic compaction
+manager = DSPy::Memory::MemoryManager.new
+
+# Store a memory (compaction runs automatically when needed)
+manager.store_memory(
+  "User prefers dark mode",
+  user_id: "user_123",
+  tags: ["preference", "ui"]
 )
 
-# Use persistent storage
-memory = DSPy::Memory.new(
-  storage: :file,
-  path: "data/memory.json"
-)
+# Manually trigger compaction if needed
+manager.compact_if_needed!(user_id: "user_123")
+
+# Force compaction (useful for cleanup)
+manager.force_compact!(user_id: "user_123")
+
+# Clear memories for a user
+manager.clear_memories(user_id: "user_123")
 ```
 
 ## Performance Issues

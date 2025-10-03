@@ -195,7 +195,6 @@ Built-in predictors for different reasoning patterns:
 
 - **Predict** - Basic LLM calls
 - **ChainOfThought** - Step-by-step reasoning
-- **ProgramOfThought** - Code generation and execution
 - **ReAct** - Tool-using agents
 - **CodeAct** - Dynamic code generation
 
@@ -432,27 +431,6 @@ Adds automatic reasoning to any signature:
 cot = DSPy::ChainOfThought.new(ComplexAnalysis)
 result = cot.call(data: complex_data)
 puts result.reasoning  # Step-by-step explanation
-```
-
-### ProgramOfThought
-
-Generates and executes code:
-
-```ruby
-class MathProblem < DSPy::Signature
-  description "Solve mathematical problems"
-  
-  input do
-    const :problem, String
-  end
-  
-  output do
-    const :answer, T.any(Integer, Float, String)
-  end
-end
-
-solver = DSPy::ProgramOfThought.new(MathProblem)
-result = solver.call(problem: "What is the sum of squares from 1 to 10?")
 ```
 
 ### ReAct
@@ -1454,10 +1432,11 @@ examples = [
 ]
 
 # Optimize
+program = DSPy::ChainOfThought.new(SentimentAnalysis)
 optimizer = DSPy::SimpleOptimizer.new
-optimized_module = optimizer.compile(
-  module_instance: classifier,
-  training_examples: examples
+optimized_program = optimizer.compile(
+  program,
+  trainset: examples
 )
 ```
 
@@ -1798,16 +1777,19 @@ metrics = MetricsCollector.new
 ### Registry & Storage
 
 ```ruby
-# Store compiled modules
-registry = DSPy::Registry.new
-registry.store(
-  module_instance: optimized_classifier,
-  name: "email_classifier_v2",
+# Register optimization results automatically
+registry = DSPy::Registry::RegistryManager.new
+registry.register_optimization_result(
+  optimization_result,
+  signature_name: "EmailClassifier",
   metadata: { accuracy: 0.95 }
 )
 
-# Load later
-classifier = registry.load("email_classifier_v2")
+# Deploy with strategy
+deployed = registry.deploy_with_strategy("EmailClassifier", strategy: "conservative")
+
+# Get deployed version
+current = registry.registry.get_deployed_version("EmailClassifier")
 ```
 
 ## Testing Strategies
@@ -2084,10 +2066,10 @@ end
 class DataPipeline < DSPy::Module
   def initialize
     super
-    
+
     @cleaner = DSPy::Predict.new(DataCleaning)
     @analyzer = DSPy::CodeAct.new(DataAnalysis)
-    @visualizer = DSPy::ProgramOfThought.new(DataVisualization)
+    @visualizer = DSPy::ChainOfThought.new(DataVisualization)
     @reporter = DSPy::ChainOfThought.new(ReportGeneration)
   end
   
