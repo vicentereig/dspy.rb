@@ -131,13 +131,13 @@ class ArticleDrafter < DSPy::Module
     sections = outline.sections.map do |section|
       @draft_section.call(
         topic: topic,
-        name: outline.title,
+        title: outline.title,
         section: section
       )
     end
 
     {
-      name: outline.title,
+      title: outline.title,
       sections: sections.map(&:content)
     }
   end
@@ -178,7 +178,8 @@ results = processor.process_batch([
   "It's okay, I guess."
 ])
 
-results[:positive]&.each { |r| puts r.sentence }
+# Access results by enum value
+results[Classify::Sentiment::Positive]&.each { |r| puts r.sentence }
 ```
 
 ### Block-Based Configuration
@@ -188,12 +189,11 @@ Configure DSPy components with Ruby blocks:
 ```ruby
 # Configure with blocks for cleaner syntax
 DSPy.configure do |config|
-  config.lm = DSPy::LM.new('openai/gpt-4o-mini') do |lm|
-    lm.api_key = ENV.fetch('OPENAI_API_KEY')
-    lm.temperature = 0.7
-    lm.max_tokens = 1000
-  end
-  
+  config.lm = DSPy::LM.new(
+    'openai/gpt-4o-mini',
+    api_key: ENV.fetch('OPENAI_API_KEY')
+  )
+
   # Configure logging for observability
   config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
     logger.add_backend(stream: Rails.root.join('log', 'dspy.log'))
@@ -206,6 +206,19 @@ end
 Create tools that follow Ruby's duck typing principles with proper type signatures:
 
 ```ruby
+# Define a signature for the agent's task
+class WeatherReport < DSPy::Signature
+  description "Generate a weather report for a location"
+
+  input do
+    const :location, String
+  end
+
+  output do
+    const :report, String
+  end
+end
+
 # Any object that responds to #call can be a tool
 # Best practice: Use Sorbet signatures for better LLM tool usage
 class WeatherTool
