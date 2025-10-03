@@ -8,69 +8,37 @@ http_interactions:
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
         are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"command\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Action command to execute\"\n    }\n  },\n  \"required\": [\n    \"command\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"action\": {\n      \"oneOf\": [\n        {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
-        \"string\",\n              \"const\": \"GeminiCreateAction\"\n            },\n            \"name\":
-        {\n              \"type\": \"string\"\n            },\n            \"priority\":
-        {\n              \"type\": \"string\"\n            },\n            \"tags\":
-        {\n              \"type\": \"array\",\n              \"items\": {\n                \"type\":
-        \"string\"\n              }\n            }\n          },\n          \"required\":
-        [\n            \"_type\",\n            \"name\",\n            \"priority\",\n            \"tags\"\n          ],\n          \"description\":
-        \"GeminiCreateAction struct\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
-        \"string\",\n              \"const\": \"GeminiUpdateAction\"\n            },\n            \"item_id\":
-        {\n              \"type\": \"string\"\n            },\n            \"changes\":
-        {\n              \"type\": \"string\"\n            },\n            \"reason\":
-        {\n              \"type\": \"string\"\n            }\n          },\n          \"required\":
-        [\n            \"_type\",\n            \"item_id\",\n            \"changes\",\n            \"reason\"\n          ],\n          \"description\":
-        \"GeminiUpdateAction struct\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
-        \"string\",\n              \"const\": \"GeminiDeleteAction\"\n            },\n            \"item_id\":
-        {\n              \"type\": \"string\"\n            },\n            \"confirmation\":
-        {\n              \"type\": \"boolean\"\n            }\n          },\n          \"required\":
-        [\n            \"_type\",\n            \"item_id\",\n            \"confirmation\"\n          ],\n          \"description\":
-        \"GeminiDeleteAction struct\"\n        }\n      ],\n      \"description\":
-        \"Action to execute\"\n    },\n    \"success\": {\n      \"type\": \"boolean\",\n      \"description\":
-        \"Whether action is valid\"\n    },\n    \"message\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Status message\"\n    }\n  },\n  \"required\": [\n    \"action\",\n    \"success\",\n    \"message\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        \"Action command to execute\"\n    }\n  },\n  \"required\": [\n    \"command\"\n  ]\n}\n```\n\nYour
         objective is: Test signature with union types for action discrimination"}]},{"role":"user","parts":[{"text":"##
         Input Values\n```json\n{\n  \"command\": \"Create a new task called ''Test
-        Union Types'' with high priority\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"action":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string"},"name":{"type":"string"},"priority":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","name","priority","tags"]},{"type":"object","properties":{"_type":{"type":"string"},"item_id":{"type":"string"},"changes":{"type":"string"},"reason":{"type":"string"}},"required":["_type","item_id","changes","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"item_id":{"type":"string"},"confirmation":{"type":"boolean"}},"required":["_type","item_id","confirmation"]}],"description":"Action
+        Union Types'' with high priority\"\n}\n```"}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"action":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string"},"name":{"type":"string"},"priority":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","name","priority","tags"]},{"type":"object","properties":{"_type":{"type":"string"},"item_id":{"type":"string"},"changes":{"type":"string"},"reason":{"type":"string"}},"required":["_type","item_id","changes","reason"]},{"type":"object","properties":{"_type":{"type":"string"},"item_id":{"type":"string"},"confirmation":{"type":"boolean"}},"required":["_type","item_id","confirmation"]}],"description":"Action
         to execute"},"success":{"type":"boolean"},"message":{"type":"string"}},"required":["action","success","message"]}}}'
     headers:
       User-Agent:
-      - Faraday v2.13.4
+      - Faraday v2.14.0
       Content-Type:
       - application/json
       Expect:
       - ''
   response:
     status:
-      code: 200
+      code: 404
       message: ''
     headers:
-      Content-Type:
-      - application/json; charset=UTF-8
       Vary:
       - Origin
       - Referer
       - X-Origin
+      Content-Type:
+      - application/json; charset=UTF-8
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 16:57:52 GMT
+      - Fri, 03 Oct 2025 20:30:14 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '414'
+      - '210'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -78,46 +46,18 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=726
+      - gfet4t7; dur=69
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "candidates": [
-            {
-              "content": {
-                "parts": [
-                  {
-                    "text": "{\"action\": {\"_type\": \"GeminiCreateAction\", \"name\": \"Test Union Types\", \"priority\": \"high\", \"tags\": []}, \"success\": true, \"message\": \"Task created successfully\"}"
-                  }
-                ],
-                "role": "model"
-              },
-              "finishReason": "STOP",
-              "avgLogprobs": -0.0047322691164233465
-            }
-          ],
-          "usageMetadata": {
-            "promptTokenCount": 823,
-            "candidatesTokenCount": 44,
-            "totalTokenCount": 867,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 823
-              }
-            ],
-            "candidatesTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 44
-              }
-            ]
-          },
-          "modelVersion": "gemini-1.5-flash",
-          "responseId": "j9HSaMbUHYv_nsEP4-y9yAI"
+          "error": {
+            "code": 404,
+            "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+            "status": "NOT_FOUND"
+          }
         }
-  recorded_at: Tue, 23 Sep 2025 16:57:52 GMT
+  recorded_at: Fri, 03 Oct 2025 20:30:14 GMT
 recorded_with: VCR 6.3.1

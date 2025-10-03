@@ -36,17 +36,17 @@ http_interactions:
       Host:
       - localhost:11434
       X-Stainless-Arch:
-      - x64
+      - arm64
       X-Stainless-Lang:
       - ruby
       X-Stainless-Os:
-      - Linux
+      - MacOS
       X-Stainless-Package-Version:
-      - 0.13.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.8
+      - 3.3.6
       Content-Type:
       - application/json
       Authorization:
@@ -65,15 +65,15 @@ http_interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 28 Jul 2025 14:22:22 GMT
+      - Fri, 03 Oct 2025 20:35:21 GMT
       Content-Length:
-      - '440'
+      - '474'
     body:
       encoding: UTF-8
-      string: '{"id":"chatcmpl-89","object":"chat.completion","created":1753712542,"model":"llama3.2","system_fingerprint":"fp_ollama","choices":[{"index":0,"message":{"role":"assistant","content":"{\n  \"sentiment\":
+      string: '{"id":"chatcmpl-841","object":"chat.completion","created":1759523721,"model":"llama3.2","system_fingerprint":"fp_ollama","choices":[{"index":0,"message":{"role":"assistant","content":"{\n  \"sentiment\":
         \"NEUTRAL\",\n  \"key_phrases\": [\n    \"Apple Inc.\",\n    \"Cupertino\"\n  ],\n  \"entities\":
-        [\n    {\n      },\n  {\n    }\n  ]\n}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":399,"completion_tokens":47,"total_tokens":446}}
+        [\n    {\n      },\n      {\n        },\n      {\n          }\n    ]\n}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":399,"completion_tokens":51,"total_tokens":450}}
 
         '
-  recorded_at: Mon, 28 Jul 2025 14:22:22 GMT
+  recorded_at: Fri, 03 Oct 2025 20:35:21 GMT
 recorded_with: VCR 6.3.1

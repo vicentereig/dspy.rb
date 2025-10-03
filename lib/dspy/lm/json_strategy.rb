@@ -102,11 +102,6 @@ module DSPy
           type: "tool",
           name: "json_output"
         }
-
-        # Update last user message
-        if messages.any? && messages.last[:role] == "user"
-          messages.last[:content] += "\n\nPlease use the json_output tool to provide your response."
-        end
       end
 
       # Gemini preparation

@@ -8,23 +8,10 @@ http_interactions:
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Text to analyze\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"sentiment\": {\n      \"type\": \"string\",\n      \"enum\":
-        [\n        \"positive\",\n        \"negative\",\n        \"neutral\"\n      ],\n      \"description\":
-        \"Detected sentiment\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"description\":
-        \"Confidence score between 0 and 1\"\n    },\n    \"reasoning\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Explanation for the sentiment\"\n    }\n  },\n  \"required\":
-        [\n    \"sentiment\",\n    \"confidence\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        \"Text to analyze\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\n\nYour
         objective is: Analyze the sentiment of a text"},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"text\": \"I absolutely love this product! It
-        exceeded all my expectations.\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`."}],"temperature":0.0,"response_format":{"type":"json_schema","json_schema":{"name":"sentimentanalysis","strict":true,"schema":{"type":"object","properties":{"sentiment":{"type":"string","enum":["positive","negative","neutral"],"description":"Detected
+        exceeded all my expectations.\"\n}\n```"}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"sentimentanalysis","strict":true,"schema":{"type":"object","properties":{"sentiment":{"type":"string","enum":["positive","negative","neutral"],"description":"Detected
         sentiment"},"confidence":{"type":"number","description":"Confidence score
         between 0 and 1"},"reasoning":{"type":"string","description":"Explanation
         for the sentiment"}},"required":["sentiment","confidence","reasoning"],"additionalProperties":false}}}}'
@@ -44,7 +31,7 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.13.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
@@ -58,14 +45,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '2188'
+      - '1063'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 11 Jul 2025 12:25:00 GMT
+      - Fri, 03 Oct 2025 20:29:51 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -77,11 +64,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1617'
+      - '1040'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1622'
+      - '1209'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -89,42 +78,44 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '199636'
+      - '199892'
       X-Ratelimit-Reset-Requests:
       - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 109ms
+      - 32ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95d847e43b0c2f8b-MAD
+      - 988f31a7abfa2000-IAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bs76AkkL7LfVf3gsUS3ee1oH0kToh",
+          "id": "chatcmpl-CMghSHs28EiWIpeBd8Ubx31K5SYwV",
           "object": "chat.completion",
-          "created": 1752236698,
+          "created": 1759523390,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "{\"sentiment\":\"positive\",\"confidence\":0.95,\"reasoning\":\"The text expresses strong positive feelings towards the product, using phrases like 'absolutely love' and 'exceeded all my expectations', indicating a high level of satisfaction.\"}",
+                "content": "{\"sentiment\":\"positive\",\"confidence\":0.95,\"reasoning\":\"The text conveys strong positive emotions through the use of phrases like 'absolutely love' and 'exceeded all my expectations,' indicating a high level of satisfaction with the product.\"}",
                 "refusal": null,
                 "annotations": []
               },
@@ -133,9 +124,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 449,
-            "completion_tokens": 49,
-            "total_tokens": 498,
+            "prompt_tokens": 202,
+            "completion_tokens": 51,
+            "total_tokens": 253,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -148,7 +139,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
+          "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 11 Jul 2025 12:25:00 GMT
+  recorded_at: Fri, 03 Oct 2025 20:29:51 GMT
 recorded_with: VCR 6.3.1

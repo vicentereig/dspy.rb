@@ -97,36 +97,39 @@ Combines reasoning with action - perfect for agents that need to use tools:
 
 ```ruby
 class Calculator < DSPy::Tools::Base
-  extend T::Sig
-  
   tool_name "calculator"
   tool_description "Perform mathematical calculations"
-  
-  sig { params(operation: String, a: Float, b: Float).returns(String) }
+
+  sig { params(operation: String, a: Float, b: Float).returns(T.any(Float, String)) }
   def call(operation:, a:, b:)
-    case operation
+    case operation.downcase
     when "add"
-      (a + b).to_s
+      a + b
     when "multiply"
-      (a * b).to_s
+      a * b
+    when "subtract"
+      a - b
+    when "divide"
+      return "Error: Cannot divide by zero" if b == 0
+      a / b
     else
-      "Unknown operation"
+      "Unknown operation: #{operation}"
     end
   end
 end
 
 class MathAgent < DSPy::Signature
   description "Solve math problems using available tools."
-  
+
   input { const :problem, String }
-  output { const :answer, String }
+  output { const :answer, T.any(Float, String) }
 end
 
 agent = DSPy::ReAct.new(MathAgent, tools: [Calculator.new])
 result = agent.call(problem: "What is (15 + 7) * 3?")
 
 # The agent will reason about the problem and use tools
-puts result.answer # => "66"
+puts result.answer # => 66.0 or "66"
 ```
 
 ## Modules: Composing Complex Workflows
@@ -147,7 +150,7 @@ class DocumentProcessor < DSPy::Module
     {
       classification: classification,
       summary: summary,
-      processed_at: Time.current
+      processed_at: Time.now
     }
   end
 end
@@ -172,9 +175,20 @@ examples = [
 ]
 
 # Use examples for evaluation
-evaluator = DSPy::Evaluate.new(metric: :exact_match)
-results = evaluator.evaluate(examples: examples) do |example|
-  classifier.call(example.input_values)
+evaluator = DSPy::Evaluate.new
+
+# Define metric
+exact_match = ->(example, prediction, trace) {
+  example.expected_values[:sentiment] == prediction.sentiment &&
+  example.expected_values[:confidence] == prediction.confidence
+}
+
+results = evaluator.evaluate(
+  examples: examples,
+  signature_class: ClassifyText,
+  metric: exact_match
+) do |example|
+  classifier.call(**example.input_values)
 end
 ```
 

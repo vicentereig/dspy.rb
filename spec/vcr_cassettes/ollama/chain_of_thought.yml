@@ -20,7 +20,7 @@ http_interactions:
         objective is:  Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
         \"If a train travels 60 mph for 2.5 hours, how many miles did it travel?\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0,"response_format":{"type":"json_schema","json_schema":{"name":"dspy_output_1753712542","strict":true,"schema":{"type":"object","properties":{"answer":{"type":"integer"},"reasoning":{"type":"string","description":"Step
+        with the heading `## Output values`."}],"temperature":0.0,"response_format":{"type":"json_schema","json_schema":{"name":"mathproblem","strict":true,"schema":{"type":"object","properties":{"answer":{"type":"integer"},"reasoning":{"type":"string","description":"Step
         by step reasoning process"}},"required":["answer","reasoning"],"additionalProperties":false}}}}'
     headers:
       Accept-Encoding:
@@ -32,17 +32,17 @@ http_interactions:
       Host:
       - localhost:11434
       X-Stainless-Arch:
-      - x64
+      - arm64
       X-Stainless-Lang:
       - ruby
       X-Stainless-Os:
-      - Linux
+      - MacOS
       X-Stainless-Package-Version:
-      - 0.13.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.8
+      - 3.3.6
       Content-Type:
       - application/json
       Authorization:
@@ -52,7 +52,7 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '1689'
+      - '1678'
   response:
     status:
       code: 200
@@ -61,16 +61,16 @@ http_interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 28 Jul 2025 14:22:38 GMT
+      - Fri, 03 Oct 2025 20:35:24 GMT
       Content-Length:
-      - '480'
+      - '481'
     body:
       encoding: UTF-8
-      string: '{"id":"chatcmpl-30","object":"chat.completion","created":1753712558,"model":"llama3.2","system_fingerprint":"fp_ollama","choices":[{"index":0,"message":{"role":"assistant","content":"{\n  \"answer\":
+      string: '{"id":"chatcmpl-668","object":"chat.completion","created":1759523724,"model":"llama3.2","system_fingerprint":"fp_ollama","choices":[{"index":0,"message":{"role":"assistant","content":"{\n  \"answer\":
         150,\n  \"reasoning\": \"To find the distance traveled, we multiply the speed
         (60 mph) by the time (2.5 hours). This gives us: distance = speed * time =
         60 * 2.5 = 150 miles.\"\n}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":328,"completion_tokens":61,"total_tokens":389}}
 
         '
-  recorded_at: Mon, 28 Jul 2025 14:22:38 GMT
+  recorded_at: Fri, 03 Oct 2025 20:35:24 GMT
 recorded_with: VCR 6.3.1

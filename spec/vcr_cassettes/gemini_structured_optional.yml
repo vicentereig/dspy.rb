@@ -8,51 +8,35 @@ http_interactions:
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
         are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
-        \"User query\"\n    }\n  },\n  \"required\": [\n    \"query\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"result\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Main result (required)\"\n    },\n    \"confidence\": {\n      \"type\":
-        [\n        \"number\",\n        \"null\"\n      ],\n      \"description\":
-        \"Optional confidence score\"\n    },\n    \"metadata\": {\n      \"type\":
-        [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
-        \"Optional metadata string\"\n    },\n    \"category\": {\n      \"type\":
-        [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
-        \"Optional category\"\n    },\n    \"error_code\": {\n      \"type\": [\n        \"integer\",\n        \"null\"\n      ],\n      \"description\":
-        \"Optional error code\"\n    }\n  },\n  \"required\": [\n    \"result\",\n    \"confidence\",\n    \"metadata\",\n    \"category\",\n    \"error_code\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        \"User query\"\n    }\n  },\n  \"required\": [\n    \"query\"\n  ]\n}\n```\n\nYour
         objective is: Test signature with optional/nilable fields"}]},{"role":"user","parts":[{"text":"##
-        Input Values\n```json\n{\n  \"query\": \"Analyze this simple request\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"result":{"type":"string"},"confidence":{"type":"string"},"metadata":{"type":"string"},"category":{"type":"string"},"error_code":{"type":"string"}},"required":["result","confidence","metadata","category","error_code"]}}}'
+        Input Values\n```json\n{\n  \"query\": \"Analyze this simple request\"\n}\n```"}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"result":{"type":"string"},"confidence":{"type":"string"},"metadata":{"type":"string"},"category":{"type":"string"},"error_code":{"type":"string"}},"required":["result","confidence","metadata","category","error_code"]}}}'
     headers:
       User-Agent:
-      - Faraday v2.13.4
+      - Faraday v2.14.0
       Content-Type:
       - application/json
       Expect:
       - ''
   response:
     status:
-      code: 200
+      code: 404
       message: ''
     headers:
-      Content-Type:
-      - application/json; charset=UTF-8
       Vary:
       - Origin
       - Referer
       - X-Origin
+      Content-Type:
+      - application/json; charset=UTF-8
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 16:57:53 GMT
+      - Fri, 03 Oct 2025 20:30:14 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '417'
+      - '210'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -60,46 +44,18 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=853
+      - gfet4t7; dur=63
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "candidates": [
-            {
-              "content": {
-                "parts": [
-                  {
-                    "text": "{\"result\": \"Analysis of the request indicates it is simple.\", \"confidence\":  \"0.9\", \"metadata\": \"This is metadata about the analysis.\", \"category\": \"Analysis\", \"error_code\": \n  \"0\"}"
-                  }
-                ],
-                "role": "model"
-              },
-              "finishReason": "STOP",
-              "avgLogprobs": -0.264710750579834
-            }
-          ],
-          "usageMetadata": {
-            "promptTokenCount": 496,
-            "candidatesTokenCount": 50,
-            "totalTokenCount": 546,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 496
-              }
-            ],
-            "candidatesTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 50
-              }
-            ]
-          },
-          "modelVersion": "gemini-1.5-flash",
-          "responseId": "kNHSaMiYD-q2nsEPrsmo2QI"
+          "error": {
+            "code": 404,
+            "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+            "status": "NOT_FOUND"
+          }
         }
-  recorded_at: Tue, 23 Sep 2025 16:57:52 GMT
+  recorded_at: Fri, 03 Oct 2025 20:30:14 GMT
 recorded_with: VCR 6.3.1

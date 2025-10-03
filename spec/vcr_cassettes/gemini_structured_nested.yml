@@ -8,34 +8,9 @@ http_interactions:
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
         are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Topic to structure\"\n    }\n  },\n  \"required\": [\n    \"topic\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"structure\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
-        \"GeminiStructure\"\n        },\n        \"section\": {\n          \"type\":
-        \"string\"\n        },\n        \"categories\": {\n          \"type\": \"array\",\n          \"items\":
-        {\n            \"type\": \"object\",\n            \"properties\": {\n              \"_type\":
-        {\n                \"type\": \"string\",\n                \"const\": \"GeminiCategory\"\n              },\n              \"name\":
-        {\n                \"type\": \"string\"\n              },\n              \"count\":
-        {\n                \"type\": \"integer\"\n              },\n              \"tags\":
-        {\n                \"type\": \"array\",\n                \"items\": {\n                  \"type\":
-        \"string\"\n                }\n              }\n            },\n            \"required\":
-        [\n              \"_type\",\n              \"name\",\n              \"count\",\n              \"tags\"\n            ],\n            \"description\":
-        \"GeminiCategory struct\"\n          }\n        },\n        \"total\": {\n          \"type\":
-        \"integer\"\n        },\n        \"summary\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
-        [\n        \"_type\",\n        \"section\",\n        \"categories\",\n        \"total\",\n        \"summary\"\n      ],\n      \"description\":
-        \"Hierarchical structure (2 levels)\"\n    },\n    \"depth_level\": {\n      \"type\":
-        \"integer\",\n      \"description\": \"Nesting depth used\"\n    },\n    \"complexity_score\":
-        {\n      \"type\": \"number\",\n      \"description\": \"Complexity rating\"\n    }\n  },\n  \"required\":
-        [\n    \"structure\",\n    \"depth_level\",\n    \"complexity_score\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        \"Topic to structure\"\n    }\n  },\n  \"required\": [\n    \"topic\"\n  ]\n}\n```\n\nYour
         objective is: Test signature with nested structures"}]},{"role":"user","parts":[{"text":"##
-        Input Values\n```json\n{\n  \"topic\": \"Programming languages categorization\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"structure":{"type":"object","properties":{"_type":{"type":"string"},"section":{"type":"string"},"categories":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"name":{"type":"string"},"count":{"type":"integer"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","name","count","tags"]}},"total":{"type":"integer"},"summary":{"type":"string"}},"required":["_type","section","categories","total","summary"]},"depth_level":{"type":"integer"},"complexity_score":{"type":"number"}},"required":["structure","depth_level","complexity_score"]}}}'
+        Input Values\n```json\n{\n  \"topic\": \"Programming languages categorization\"\n}\n```"}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"structure":{"type":"object","properties":{"_type":{"type":"string"},"section":{"type":"string"},"categories":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string"},"name":{"type":"string"},"count":{"type":"integer"},"tags":{"type":"array","items":{"type":"string"}}},"required":["_type","name","count","tags"]}},"total":{"type":"integer"},"summary":{"type":"string"}},"required":["_type","section","categories","total","summary"]},"depth_level":{"type":"integer"},"complexity_score":{"type":"number"}},"required":["structure","depth_level","complexity_score"]}}}'
     headers:
       User-Agent:
       - Faraday v2.14.0
@@ -57,11 +32,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Thu, 02 Oct 2025 16:37:27 GMT
+      - Fri, 03 Oct 2025 20:30:22 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '842'
+      - '577'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -69,7 +44,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=24192
+      - gfet4t7; dur=7889
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -81,7 +56,7 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "{\n  \"structure\": {\n    \"_type\": \"GeminiStructure\",\n    \"section\": \"Programming Language Classifications\",\n    \"categories\": [\n      {\n        \"_type\": \"GeminiCategory\",\n        \"name\": \"Interpreted & Scripting Languages\",\n        \"count\": 4,\n        \"tags\": [\"Dynamic Typing\", \"Ease of Use\", \"Web Development\", \"Automation\", \"Rapid Prototyping\"]\n      },\n      {\n        \"_type\": \"GeminiCategory\",\n        \"name\": \"Compiled & System Languages\",\n        \"count\": 3,\n        \"tags\": [\"Performance\", \"Memory Control\", \"Operating Systems\", \"Embedded Systems\", \"Hardware Interaction\"]\n      },\n      {\n        \"_type\": \"GeminiCategory\",\n        \"name\": \"Object-Oriented Languages\",\n        \"count\": 5,\n        \"tags\": [\"Encapsulation\", \"Inheritance\", \"Polymorphism\", \"Classes\", \"Objects\", \"Modularity\"]\n      },\n      {\n        \"_type\": \"GeminiCategory\",\n        \"name\": \"Functional Paradigm Languages\",\n        \"count\": 3,\n        \"tags\": [\"Immutability\", \"Pure Functions\", \"Recursion\", \"Higher-Order Functions\", \"Concurrency\"]\n      }\n    ],\n    \"total\": 15,\n    \"summary\": \"This structure categorizes programming languages based on their execution models, primary paradigms, and common use cases, highlighting key characteristics and distinctions within the broader field of software development.\"\n  },\n  \"depth_level\": 2,\n  \"complexity_score\": 0.75\n}"
+                    "text": "{\"structure\":{\"_type\":\"ProgrammingLanguageCategorization\",\"section\":\"Programming Languages\",\"categories\":[{\"_type\":\"Category\",\"name\":\"Compiled Languages\",\"count\":4,\"tags\":[\"C\",\"C++\",\"Java\",\"Go\"]},{\"_type\":\"Category\",\"name\":\"Interpreted Languages\",\"count\":3,\"tags\":[\"Python\",\"JavaScript\",\"Ruby\"]},{\"_type\":\"Category\",\"name\":\"Scripting Languages\",\"count\":3,\"tags\":[\"Bash\",\"Perl\",\"PHP\"]}],\"total\":10,\"summary\":\"A categorization of programming languages into compiled, interpreted, and scripting paradigms, highlighting popular examples within each group.\"},\"depth_level\":4,\"complexity_score\":0.75}"
                   }
                 ],
                 "role": "model"
@@ -91,19 +66,19 @@ http_interactions:
             }
           ],
           "usageMetadata": {
-            "promptTokenCount": 693,
-            "candidatesTokenCount": 363,
-            "totalTokenCount": 3170,
+            "promptTokenCount": 129,
+            "candidatesTokenCount": 136,
+            "totalTokenCount": 957,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 693
+                "tokenCount": 129
               }
             ],
-            "thoughtsTokenCount": 2114
+            "thoughtsTokenCount": 692
           },
           "modelVersion": "gemini-2.5-flash",
-          "responseId": "R6reaK3ONrWq1MkP4pvvwQk"
+          "responseId": "XjLgaNDaJtWv1MkPnKLMuQE"
         }
-  recorded_at: Thu, 02 Oct 2025 16:37:27 GMT
+  recorded_at: Fri, 03 Oct 2025 20:30:22 GMT
 recorded_with: VCR 6.3.1

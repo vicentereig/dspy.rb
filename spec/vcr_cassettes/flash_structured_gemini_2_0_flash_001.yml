@@ -8,24 +8,13 @@ http_interactions:
       string: '{"contents":[{"role":"user","parts":[{"text":"Your input schema fields
         are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Text to analyze\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"sentiment\": {\n      \"type\": \"string\",\n      \"enum\":
-        [\n        \"positive\",\n        \"negative\",\n        \"neutral\"\n      ],\n      \"description\":
-        \"Detected sentiment\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"description\":
-        \"Confidence score\"\n    },\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Brief summary\"\n    }\n  },\n  \"required\": [\n    \"sentiment\",\n    \"confidence\",\n    \"summary\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        \"Text to analyze\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\n\nYour
         objective is: Simple test signature for Flash model validation"}]},{"role":"user","parts":[{"text":"##
         Input Values\n```json\n{\n  \"text\": \"This is an amazing product that exceeds
-        expectations!\"\n}\n```\n\nRespond with the corresponding output schema fields
-        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"sentiment":{"type":"string","enum":["positive","negative","neutral"]},"confidence":{"type":"number"},"summary":{"type":"string"}},"required":["sentiment","confidence","summary"]}}}'
+        expectations!\"\n}\n```"}]}],"generation_config":{"response_mime_type":"application/json","response_json_schema":{"type":"object","properties":{"sentiment":{"type":"string","enum":["positive","negative","neutral"]},"confidence":{"type":"number"},"summary":{"type":"string"}},"required":["sentiment","confidence","summary"]}}}'
     headers:
       User-Agent:
-      - Faraday v2.13.4
+      - Faraday v2.14.0
       Content-Type:
       - application/json
       Expect:
@@ -44,11 +33,11 @@ http_interactions:
       Content-Encoding:
       - gzip
       Date:
-      - Mon, 22 Sep 2025 16:35:17 GMT
+      - Fri, 03 Oct 2025 20:30:24 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '400'
+      - '398'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -56,7 +45,7 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=997
+      - gfet4t7; dur=734
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
@@ -68,23 +57,23 @@ http_interactions:
               "content": {
                 "parts": [
                   {
-                    "text": "{\n  \"sentiment\": \"positive\",\n  \"confidence\": 0.95,\n  \"summary\": \"The text expresses strong positive sentiment towards a product.\"\n}"
+                    "text": "{\n  \"sentiment\": \"positive\",\n  \"confidence\": 0.95,\n  \"summary\": \"The text expresses a positive opinion about a product.\"\n}"
                   }
                 ],
                 "role": "model"
               },
               "finishReason": "STOP",
-              "avgLogprobs": -0.0259317347877904
+              "avgLogprobs": -0.046162228835256475
             }
           ],
           "usageMetadata": {
-            "promptTokenCount": 409,
+            "promptTokenCount": 134,
             "candidatesTokenCount": 38,
-            "totalTokenCount": 447,
+            "totalTokenCount": 172,
             "promptTokensDetails": [
               {
                 "modality": "TEXT",
-                "tokenCount": 409
+                "tokenCount": 134
               }
             ],
             "candidatesTokensDetails": [
@@ -95,7 +84,7 @@ http_interactions:
             ]
           },
           "modelVersion": "gemini-2.0-flash-001",
-          "responseId": "xHrRaIGJMOXoz7IP55jviQk"
+          "responseId": "YDLgaNuiAZut-8YPs7Tv4A0"
         }
-  recorded_at: Mon, 22 Sep 2025 16:35:17 GMT
+  recorded_at: Fri, 03 Oct 2025 20:30:24 GMT
 recorded_with: VCR 6.3.1

@@ -37,22 +37,7 @@ http_interactions:
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
-        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"courses_toolset_search_courses\",\n        \"finish\"\n      ],\n      \"description\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"type\": \"string\",\n      \"description\": \"Input for the chosen
-        action. If action is a tool name, this MUST be a JSON object matching the
-        tool''s schema. If action is \\\"finish\\\", this field MUST contain the final
-        result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\n\nYour
         objective is: Generate a thought about what to do next to process the given
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Recommend AI and
@@ -62,9 +47,7 @@ http_interactions:
         \"recommend courses related to the query\",\n        \"parameters\": {\n          \"type\":
         \"object\",\n          \"properties\": {\n            \"query\": {\n              \"type\":
         \"string\",\n              \"description\": \"Parameter query\"\n            }\n          },\n          \"required\":
-        [\n            \"query\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"dspy_output_1759433400","strict":true,"schema":{"type":"object","properties":{"thought":{"type":"string","description":"Reasoning
+        [\n            \"query\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```"}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"dspy_output_1759523730","strict":true,"schema":{"type":"object","properties":{"thought":{"type":"string","description":"Reasoning
         about what to do next, considering the history and observations."},"action":{"type":"string","enum":["courses_toolset_search_courses","finish"],"description":"The
         action to take. MUST be one of the tool names listed in `available_tools`
         input, or the literal string \"finish\" to provide the final answer."},"action_input":{"type":"string","description":"Input
@@ -101,14 +84,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '6587'
+      - '5110'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 19:30:04 GMT
+      - Fri, 03 Oct 2025 20:35:33 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -120,13 +103,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '2503'
+      - '2482'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2662'
+      - '2652'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -134,11 +117,11 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '198724'
+      - '199067'
       X-Ratelimit-Reset-Requests:
       - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 382ms
+      - 279ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -155,23 +138,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98869ca59a814374-EWR
+      - 988f39f6dfe3c997-IAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMJI1FUdEG7ntUBYsPa6qn0AMC7lK",
+          "id": "chatcmpl-CMgmxStSctXOKH3J1Qn9Lqfd7h9S3",
           "object": "chat.completion",
-          "created": 1759433401,
+          "created": 1759523731,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "{\"thought\":\"Since the input context is asking for recommendations on AI and ML courses, I should utilize the available tool 'courses_toolset_search_courses' which is specifically designed for recommending courses based on a query. Therefore, my next action should be to call this tool with the appropriate query.\",\"action\":\"courses_toolset_search_courses\",\"action_input\":\"{\\\"query\\\":\\\"Recommend AI and ML courses\\\"}\"}",
+                "content": "{\"thought\":\"The input context indicates a request to recommend courses related to AI and ML. Given that the history is empty, I should proceed directly with the available tool that can search for courses based on the provided query. The tool `courses_toolset_search_courses` is suitable for this task, as it matches the query in the input context.\",\"action\":\"courses_toolset_search_courses\",\"action_input\":\"{\\\"query\\\":\\\"Recommend AI and ML courses\\\"}\"}",
                 "refusal": null,
                 "annotations": []
               },
@@ -180,9 +163,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1275,
-            "completion_tokens": 80,
-            "total_tokens": 1355,
+            "prompt_tokens": 955,
+            "completion_tokens": 91,
+            "total_tokens": 1046,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -197,7 +180,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Thu, 02 Oct 2025 19:30:04 GMT
+  recorded_at: Fri, 03 Oct 2025 20:35:33 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -225,29 +208,19 @@ http_interactions:
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
         \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
-        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
-        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
-        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
-        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
-        adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Recommend AI and
-        ML courses\\\"}\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
-        \"Since the input context is asking for recommendations on AI and ML courses,
-        I should utilize the available tool ''courses_toolset_search_courses'' which
-        is specifically designed for recommending courses based on a query. Therefore,
-        my next action should be to call this tool with the appropriate query.\",\n      \"action\":
-        \"courses_toolset_search_courses\",\n      \"action_input\": \"{\\\"query\\\":\\\"Recommend
-        AI and ML courses\\\"}\",\n      \"observation\": [\n        {\n          \"_type\":
-        \"Course\",\n          \"id\": 1,\n          \"course_title\": \"Introduction
-        to AI\",\n          \"description\": \"Learn the basics of Artificial Intelligence.\",\n          \"link\":
-        \"https://example.com/intro-to-ai\"\n        },\n        {\n          \"_type\":
+        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\n\nYour
+        objective is: Process the observation from a tool and decide what to do next."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"input_context\": \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Recommend
+        AI and ML courses\\\"}\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"The input context indicates a request to recommend courses related to AI
+        and ML. Given that the history is empty, I should proceed directly with the
+        available tool that can search for courses based on the provided query. The
+        tool `courses_toolset_search_courses` is suitable for this task, as it matches
+        the query in the input context.\",\n      \"action\": \"courses_toolset_search_courses\",\n      \"action_input\":
+        \"{\\\"query\\\":\\\"Recommend AI and ML courses\\\"}\",\n      \"observation\":
+        [\n        {\n          \"_type\": \"Course\",\n          \"id\": 1,\n          \"course_title\":
+        \"Introduction to AI\",\n          \"description\": \"Learn the basics of
+        Artificial Intelligence.\",\n          \"link\": \"https://example.com/intro-to-ai\"\n        },\n        {\n          \"_type\":
         \"Course\",\n          \"id\": 2,\n          \"course_title\": \"Advanced
         Machine Learning\",\n          \"description\": \"Deep dive into machine learning
         algorithms and techniques.\",\n          \"link\": \"https://example.com/advanced-ml\"\n        },\n        {\n          \"_type\":
@@ -262,9 +235,7 @@ http_interactions:
         and techniques.\",\n      \"link\": \"https://example.com/advanced-ml\"\n    },\n    {\n      \"_type\":
         \"Course\",\n      \"id\": 3,\n      \"course_title\": \"Data Science Fundamentals\",\n      \"description\":
         \"Understand data analysis, visualization, and statistical methods.\",\n      \"link\":
-        \"https://example.com/data-science-fundamentals\"\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"dspy_output_1759433404","strict":true,"schema":{"type":"object","properties":{"interpretation":{"type":"string","description":"Interpretation
+        \"https://example.com/data-science-fundamentals\"\n    }\n  ]\n}\n```"}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"dspy_output_1759523733","strict":true,"schema":{"type":"object","properties":{"interpretation":{"type":"string","description":"Interpretation
         of the observation"},"next_step":{"type":"string","enum":["continue","finish"],"description":"What
         to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''"}},"required":["interpretation","next_step"],"additionalProperties":false}}}}'
     headers:
@@ -297,14 +268,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '6380'
+      - '5383'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 19:30:06 GMT
+      - Fri, 03 Oct 2025 20:35:35 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -316,13 +287,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1898'
+      - '1295'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1941'
+      - '1466'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -330,11 +301,11 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9998'
       X-Ratelimit-Remaining-Tokens:
-      - '198679'
+      - '198908'
       X-Ratelimit-Reset-Requests:
-      - 14.658s
+      - 14.111s
       X-Ratelimit-Reset-Tokens:
-      - 396ms
+      - 327ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -351,23 +322,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98869cb89d054374-EWR
+      - 988f3a083a24c997-IAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMJI4VyzFRCldmS7rHEiI7zRGDUCO",
+          "id": "chatcmpl-CMgn0kpJqVeSa94DDzI4O3CjvR6iW",
           "object": "chat.completion",
-          "created": 1759433404,
+          "created": 1759523734,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "{\"interpretation\":\"The observation contains three recommended courses related to AI and ML: 'Introduction to AI', 'Advanced Machine Learning', and 'Data Science Fundamentals'. Each course includes a link for further information.\",\"next_step\":\"finish\"}",
+                "content": "{\"interpretation\":\"The observation consists of three recommended courses that pertain to AI and ML, which aligns with the original query. These courses provide a range of information from basics to advanced concepts in the field of artificial intelligence and machine learning.\",\"next_step\":\"finish\"}",
                 "refusal": null,
                 "annotations": []
               },
@@ -376,9 +347,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1281,
-            "completion_tokens": 46,
-            "total_tokens": 1327,
+            "prompt_tokens": 1056,
+            "completion_tokens": 53,
+            "total_tokens": 1109,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -393,121 +364,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Thu, 02 Oct 2025 19:30:06 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BboMU9XC5gjZADvrtB0vtKZo3tMwAAEBAAAnIQEAADq9AgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-    body:
-      encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.lan","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759433400978.4783,"message":"trace_id=\"d27c404b-9e9f-43e8-a1a1-4d750e6ab570\"
-        otel_span_stack=[] input_tokens=1187 output_tokens=73 total_tokens=1260 gen_ai.system=\"openai\"
-        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=nil event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759433400980.554,"message":"trace_id=\"d27c404b-9e9f-43e8-a1a1-4d750e6ab570\"
-        otel_span_stack=[] input_tokens=1131 output_tokens=58 total_tokens=1189 gen_ai.system=\"openai\"
-        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=nil event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759433400981.642,"message":"trace_id=\"d27c404b-9e9f-43e8-a1a1-4d750e6ab570\"
-        otel_span_stack=[] input_tokens=1420 output_tokens=191 total_tokens=1611 gen_ai.system=\"openai\"
-        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=nil event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759433404157.286,"message":"trace_id=\"d27c404b-9e9f-43e8-a1a1-4d750e6ab570\"
-        otel_span_stack=[] input_tokens=1275 output_tokens=80 total_tokens=1355 gen_ai.system=\"openai\"
-        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=nil event=\"lm.tokens\"\n"}]}]'
-    headers:
-      Content-Encoding:
-      - identity
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BboMU9XC5gjZADvrtB0vtKZo3tMwAAEBAAAnIQEAADq9AgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: ''
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '0'
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Envoy-Upstream-Service-Time:
-      - '0'
-      Date:
-      - Thu, 02 Oct 2025 19:30:06 GMT
-      Server:
-      - envoy
-      Nr-Rate-Limited:
-      - allowed
-      X-Served-By:
-      - cache-iad-kjyo7100161-IAD
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Thu, 02 Oct 2025 19:30:06 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BboMU9XC5gjZADvrtB0vtKZo3tMwAAEBAAAnIQEAADq9AgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-    body:
-      encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.lan","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759433406211.583,"message":"trace_id=\"d27c404b-9e9f-43e8-a1a1-4d750e6ab570\"
-        otel_span_stack=[] input_tokens=1281 output_tokens=46 total_tokens=1327 gen_ai.system=\"openai\"
-        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=nil event=\"lm.tokens\"\n"}]}]'
-    headers:
-      Content-Encoding:
-      - identity
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BboMU9XC5gjZADvrtB0vtKZo3tMwAAEBAAAnIQEAADq9AgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: ''
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '0'
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Envoy-Upstream-Service-Time:
-      - '0'
-      Date:
-      - Thu, 02 Oct 2025 19:30:10 GMT
-      Server:
-      - envoy
-      Nr-Rate-Limited:
-      - allowed
-      X-Served-By:
-      - cache-iad-kjyo7100161-IAD
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Thu, 02 Oct 2025 19:30:10 GMT
+  recorded_at: Fri, 03 Oct 2025 20:35:35 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -545,35 +402,20 @@ http_interactions:
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
-        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"courses_toolset_search_courses\",\n        \"finish\"\n      ],\n      \"description\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"type\": \"string\",\n      \"description\": \"Input for the chosen
-        action. If action is a tool name, this MUST be a JSON object matching the
-        tool''s schema. If action is \\\"finish\\\", this field MUST contain the final
-        result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\n\nYour
         objective is: Generate a thought about what to do next to process the given
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Recommend AI and
         ML courses\\\"}\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
-        \"Since the input context is asking for recommendations on AI and ML courses,
-        I should utilize the available tool ''courses_toolset_search_courses'' which
-        is specifically designed for recommending courses based on a query. Therefore,
-        my next action should be to call this tool with the appropriate query.\",\n      \"action\":
-        \"courses_toolset_search_courses\",\n      \"action_input\": \"{\\\"query\\\":\\\"Recommend
-        AI and ML courses\\\"}\",\n      \"observation\": [\n        {\n          \"_type\":
-        \"Course\",\n          \"id\": 1,\n          \"course_title\": \"Introduction
-        to AI\",\n          \"description\": \"Learn the basics of Artificial Intelligence.\",\n          \"link\":
-        \"https://example.com/intro-to-ai\"\n        },\n        {\n          \"_type\":
+        \"The input context indicates a request to recommend courses related to AI
+        and ML. Given that the history is empty, I should proceed directly with the
+        available tool that can search for courses based on the provided query. The
+        tool `courses_toolset_search_courses` is suitable for this task, as it matches
+        the query in the input context.\",\n      \"action\": \"courses_toolset_search_courses\",\n      \"action_input\":
+        \"{\\\"query\\\":\\\"Recommend AI and ML courses\\\"}\",\n      \"observation\":
+        [\n        {\n          \"_type\": \"Course\",\n          \"id\": 1,\n          \"course_title\":
+        \"Introduction to AI\",\n          \"description\": \"Learn the basics of
+        Artificial Intelligence.\",\n          \"link\": \"https://example.com/intro-to-ai\"\n        },\n        {\n          \"_type\":
         \"Course\",\n          \"id\": 2,\n          \"course_title\": \"Advanced
         Machine Learning\",\n          \"description\": \"Deep dive into machine learning
         algorithms and techniques.\",\n          \"link\": \"https://example.com/advanced-ml\"\n        },\n        {\n          \"_type\":
@@ -586,9 +428,7 @@ http_interactions:
         courses related to the query\",\n        \"parameters\": {\n          \"type\":
         \"object\",\n          \"properties\": {\n            \"query\": {\n              \"type\":
         \"string\",\n              \"description\": \"Parameter query\"\n            }\n          },\n          \"required\":
-        [\n            \"query\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"dspy_output_1759433406","strict":true,"schema":{"type":"object","properties":{"thought":{"type":"string","description":"Reasoning
+        [\n            \"query\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```"}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"dspy_output_1759523735","strict":true,"schema":{"type":"object","properties":{"thought":{"type":"string","description":"Reasoning
         about what to do next, considering the history and observations."},"action":{"type":"string","enum":["courses_toolset_search_courses","finish"],"description":"The
         action to take. MUST be one of the tool names listed in `available_tools`
         input, or the literal string \"finish\" to provide the final answer."},"action_input":{"type":"string","description":"Input
@@ -625,14 +465,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '7986'
+      - '6544'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 19:30:11 GMT
+      - Fri, 03 Oct 2025 20:35:40 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -644,13 +484,13 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '4633'
+      - '4852'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '4821'
+      - '4865'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
@@ -658,11 +498,11 @@ http_interactions:
       X-Ratelimit-Remaining-Requests:
       - '9997'
       X-Ratelimit-Remaining-Tokens:
-      - '198402'
+      - '198736'
       X-Ratelimit-Reset-Requests:
-      - 20.829s
+      - 21.31s
       X-Ratelimit-Reset-Tokens:
-      - 479ms
+      - 379ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -679,23 +519,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98869cc579284374-EWR
+      - 988f3a14bfe4c997-IAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMJI6hsq92qia3hQiNfCwpvxikUg1",
+          "id": "chatcmpl-CMgn1o7yFNuoc4lg5UlIpPJEBwElF",
           "object": "chat.completion",
-          "created": 1759433406,
+          "created": 1759523735,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "{\"thought\":\"I have received course recommendations based on the query for AI and ML courses. The next step is to summarize these recommendations and present the findings. I will provide the final answer detailing the courses available, along with their descriptions and links for further information.\",\"action\":\"finish\",\"action_input\":\"Here are some recommended courses for AI and ML:\\n\\n1. **Introduction to AI**: Learn the basics of Artificial Intelligence. [Link](https://example.com/intro-to-ai)\\n2. **Advanced Machine Learning**: Deep dive into machine learning algorithms and techniques. [Link](https://example.com/advanced-ml)\\n3. **Data Science Fundamentals**: Understand data analysis, visualization, and statistical methods. [Link](https://example.com/data-science-fundamentals)\"}",
+                "content": "{\"thought\":\"Based on the observation from the previous action, three AI and ML courses have been retrieved: 'Introduction to AI', 'Advanced Machine Learning', and 'Data Science Fundamentals'. I need to summarize these findings for the user in a clear format, providing the course titles along with descriptions and links for further exploration. This will provide the user with a well-rounded recommendation tailored to their query.\",\"action\":\"finish\",\"action_input\":\"Here are some recommended courses on AI and ML:\\n1. **Introduction to AI**: Learn the basics of Artificial Intelligence. [Link](https://example.com/intro-to-ai)\\n2. **Advanced Machine Learning**: Deep dive into machine learning algorithms and techniques. [Link](https://example.com/advanced-ml)\\n3. **Data Science Fundamentals**: Understand data analysis, visualization, and statistical methods. [Link](https://example.com/data-science-fundamentals)\"}",
                 "refusal": null,
                 "annotations": []
               },
@@ -704,9 +544,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1552,
-            "completion_tokens": 163,
-            "total_tokens": 1715,
+            "prompt_tokens": 1243,
+            "completion_tokens": 189,
+            "total_tokens": 1432,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -721,5 +561,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Thu, 02 Oct 2025 19:30:11 GMT
+  recorded_at: Fri, 03 Oct 2025 20:35:40 GMT
 recorded_with: VCR 6.3.1

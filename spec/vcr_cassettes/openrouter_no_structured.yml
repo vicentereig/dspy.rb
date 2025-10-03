@@ -23,13 +23,7 @@ http_interactions:
         objective is: Analyze the sentiment of a text using OpenRouter"},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"text\": \"This product is okay, nothing special.\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"sentiment\": \"Detected
-        sentiment\",\n  \"confidence\": 3.14,\n  \"reasoning\": \"Explanation for
-        the sentiment\"\n}\n```\n\nRequired fields: sentiment, confidence, reasoning\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":0.0}'
+        with the heading `## Output values`."}],"temperature":0.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -54,20 +48,20 @@ http_interactions:
       Content-Type:
       - application/json
       Authorization:
-      - Bearer <OPENROUTER_API_KEY>
+      - Bearer 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
       X-Stainless-Retry-Count:
       - '0'
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '2208'
+      - '1719'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sun, 21 Sep 2025 00:22:32 GMT
+      - Fri, 03 Oct 2025 20:35:25 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -88,15 +82,14 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 982568a228baabf7-YYZ
+      - 988f39d0c8d5e5c9-IAD
     body:
       encoding: ASCII-8BIT
       string: "\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n\n         \n\n         \n\n
-        \        \n\n         \n\n         \n\n         \n{\"id\":\"gen-1758414152-ZNVgGkti85N2iubsSuWS\",\"provider\":\"DeepInfra\",\"model\":\"deepseek/deepseek-chat-v3.1:free\",\"object\":\"chat.completion\",\"created\":1758414152,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"##
+        \        \n\n         \n{\"id\":\"gen-1759523725-RTroGp0TfJzAAPX046Ql\",\"provider\":\"DeepInfra\",\"model\":\"deepseek/deepseek-chat-v3.1:free\",\"object\":\"chat.completion\",\"created\":1759523725,\"choices\":[{\"logprobs\":null,\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"##
         Output values\\n```json\\n{\\n  \\\"sentiment\\\": \\\"neutral\\\",\\n  \\\"confidence\\\":
-        0.75,\\n  \\\"reasoning\\\": \\\"The phrase 'okay, nothing special' indicates
-        neither strong positive nor negative emotion. It suggests average or mediocre
-        quality without expressing enthusiasm or disappointment.\\\"\\n}\\n```\",\"refusal\":null,\"reasoning\":null}}],\"usage\":{\"prompt_tokens\":476,\"completion_tokens\":63,\"total_tokens\":539,\"prompt_tokens_details\":null}}"
-  recorded_at: Sun, 21 Sep 2025 00:22:38 GMT
+        0.7,\\n  \\\"reasoning\\\": \\\"The phrase 'okay, nothing special' indicates
+        neither strong positive nor negative feelings. It expresses a moderate, indifferent
+        opinion without enthusiasm or disappointment.\\\"\\n}\\n```\",\"refusal\":null,\"reasoning\":null}}],\"usage\":{\"prompt_tokens\":366,\"completion_tokens\":63,\"total_tokens\":429,\"prompt_tokens_details\":null}}"
+  recorded_at: Fri, 03 Oct 2025 20:35:28 GMT
 recorded_with: VCR 6.3.1

@@ -9,30 +9,30 @@ http_interactions:
         Answer with just the color name."},{"inline_data":{"mime_type":"image/png","data":"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR42mP4z8BAEmIY1TCqYfhqAACQ+f8B8u7oVwAAAABJRU5ErkJggg=="}}]}]}'
     headers:
       User-Agent:
-      - Faraday v2.13.4
+      - Faraday v2.14.0
       Content-Type:
       - application/json
       Expect:
       - ''
   response:
     status:
-      code: 200
+      code: 404
       message: ''
     headers:
-      Content-Type:
-      - application/json; charset=UTF-8
       Vary:
       - Origin
       - Referer
       - X-Origin
+      Content-Type:
+      - application/json; charset=UTF-8
       Content-Encoding:
       - gzip
       Date:
-      - Tue, 23 Sep 2025 16:58:05 GMT
+      - Fri, 03 Oct 2025 20:34:32 GMT
       Server:
       - scaffolding on HTTPServer2
       Content-Length:
-      - '333'
+      - '210'
       X-Xss-Protection:
       - '0'
       X-Frame-Options:
@@ -40,50 +40,18 @@ http_interactions:
       X-Content-Type-Options:
       - nosniff
       Server-Timing:
-      - gfet4t7; dur=951
+      - gfet4t7; dur=72
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "candidates": [
-            {
-              "content": {
-                "parts": [
-                  {
-                    "text": "Red\n"
-                  }
-                ],
-                "role": "model"
-              },
-              "finishReason": "STOP",
-              "avgLogprobs": -0.0010213751811534166
-            }
-          ],
-          "usageMetadata": {
-            "promptTokenCount": 271,
-            "candidatesTokenCount": 2,
-            "totalTokenCount": 273,
-            "promptTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 13
-              },
-              {
-                "modality": "IMAGE",
-                "tokenCount": 258
-              }
-            ],
-            "candidatesTokensDetails": [
-              {
-                "modality": "TEXT",
-                "tokenCount": 2
-              }
-            ]
-          },
-          "modelVersion": "gemini-1.5-flash",
-          "responseId": "nNHSaNStNLHd7M8PmY-J0Qk"
+          "error": {
+            "code": 404,
+            "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+            "status": "NOT_FOUND"
+          }
         }
-  recorded_at: Tue, 23 Sep 2025 16:58:05 GMT
+  recorded_at: Fri, 03 Oct 2025 20:34:32 GMT
 recorded_with: VCR 6.3.1

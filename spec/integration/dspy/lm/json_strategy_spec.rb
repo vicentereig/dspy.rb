@@ -73,7 +73,6 @@ RSpec.describe DSPy::LM::JSONStrategy do
       expect(request_params[:tools]).to be_an(Array)
       expect(request_params[:tools].first[:name]).to eq('json_output')
       expect(request_params[:tool_choice]).to eq({ type: 'tool', name: 'json_output' })
-      expect(messages.last[:content]).to include('use the json_output tool')
     end
 
     it 'extracts JSON from tool use response' do
@@ -108,7 +107,6 @@ RSpec.describe DSPy::LM::JSONStrategy do
 
         expect(request_params[:tools]).to be_an(Array)
         expect(request_params[:tool_choice]).to eq({ type: 'tool', name: 'json_output' })
-        expect(messages.last[:content]).to include('use the json_output tool')
       end
     end
 

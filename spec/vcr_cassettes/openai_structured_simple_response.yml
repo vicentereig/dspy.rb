@@ -2,25 +2,72 @@
 http_interactions:
 - request:
     method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BU6KhnrBbvclADvrtBCL5gxo4DKEAAEBAAAnIQEAAQigAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"MustafaKhalil","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759523391961.3281,"message":"trace_id=\"590b339b-a2c2-487c-acb6-f89bd23ad434\"
+        otel_span_stack=[] input_tokens=202 output_tokens=51 total_tokens=253 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"SentimentAnalysis\"
+        event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1759523394862.386,"message":"trace_id=\"590b339b-a2c2-487c-acb6-f89bd23ad434\"
+        otel_span_stack=[] input_tokens=251 output_tokens=113 total_tokens=364 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"ComplexOutput\" event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgANTXVzdGFmYUtoYWxpbBcADU11c3RhZmFLaGFsaWw
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BU6KhnrBbvclADvrtBCL5gxo4DKEAAEBAAAnIQEAAQigAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Fri, 03 Oct 2025 20:29:55 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-iad-kiad7000077-IAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Fri, 03 Oct 2025 20:29:55 GMT
+- request:
+    method: post
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"prompt\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Input prompt\"\n    }\n  },\n  \"required\": [\n    \"prompt\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"response\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Response\"\n    },\n    \"word_count\": {\n      \"type\": \"integer\",\n      \"description\":
-        \"Number of words in response\"\n    }\n  },\n  \"required\": [\n    \"response\",\n    \"word_count\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        \"Input prompt\"\n    }\n  },\n  \"required\": [\n    \"prompt\"\n  ]\n}\n```\n\nYour
         objective is: Generate a simple response"},{"role":"user","content":"## Input
-        Values\n```json\n{\n  \"prompt\": \"Say hello in exactly three words\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0,"response_format":{"type":"json_schema","json_schema":{"name":"dspy_output_1752237206","strict":true,"schema":{"type":"object","properties":{"response":{"type":"string","description":"Response"},"word_count":{"type":"integer","description":"Number
+        Values\n```json\n{\n  \"prompt\": \"Say hello in exactly three words\"\n}\n```"}],"temperature":1.0,"response_format":{"type":"json_schema","json_schema":{"name":"dspy_output_1759523394","strict":true,"schema":{"type":"object","properties":{"response":{"type":"string","description":"Response"},"word_count":{"type":"integer","description":"Number
         of words in response"}},"required":["response","word_count"],"additionalProperties":false}}}}'
     headers:
       Accept-Encoding:
@@ -38,7 +85,7 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.13.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
@@ -52,14 +99,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '1765'
+      - '889'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 11 Jul 2025 12:33:27 GMT
+      - Fri, 03 Oct 2025 20:29:55 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -71,54 +118,58 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '444'
+      - '487'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '449'
+      - '647'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9997'
       X-Ratelimit-Remaining-Tokens:
-      - '199698'
+      - '199901'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 21.48s
       X-Ratelimit-Reset-Tokens:
-      - 90ms
+      - 29ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95d8544edda72160-MAD
+      - 988f31c3980fc5aa-IAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-Bs7EMNs9dsxOT3HJRA66Aj2DuNa4N",
+          "id": "chatcmpl-CMghXrcWjnhJ1vCbv107Jzjqcpqzf",
           "object": "chat.completion",
-          "created": 1752237206,
+          "created": 1759523395,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "{\"response\":\"Hello, how are you?\",\"word_count\":5}",
+                "content": "{\"response\":\"Hello there, friend!\",\"word_count\":4}",
                 "refusal": null,
                 "annotations": []
               },
@@ -127,9 +178,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 371,
-            "completion_tokens": 15,
-            "total_tokens": 386,
+            "prompt_tokens": 177,
+            "completion_tokens": 14,
+            "total_tokens": 191,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -142,7 +193,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": null
+          "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Fri, 11 Jul 2025 12:33:27 GMT
+  recorded_at: Fri, 03 Oct 2025 20:29:55 GMT
 recorded_with: VCR 6.3.1

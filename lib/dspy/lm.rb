@@ -26,6 +26,7 @@ require_relative 'lm/json_strategy'
 # Load message builder and message types
 require_relative 'lm/message'
 require_relative 'lm/message_builder'
+require_relative 'structured_outputs_prompt'
 
 module DSPy
   class LM
@@ -176,24 +177,51 @@ module DSPy
 
     def build_messages(inference_module, input_values)
       messages = []
-      
+
+      # Determine if structured outputs will be used and wrap prompt if so
+      base_prompt = inference_module.prompt
+      prompt = if will_use_structured_outputs?(inference_module.signature_class)
+        StructuredOutputsPrompt.new(**base_prompt.to_h)
+      else
+        base_prompt
+      end
+
       # Add system message
-      system_prompt = inference_module.system_signature
+      system_prompt = prompt.render_system_prompt
       if system_prompt
         messages << Message.new(
           role: Message::Role::System,
           content: system_prompt
         )
       end
-      
+
       # Add user message
-      user_prompt = inference_module.user_signature(input_values)
+      user_prompt = prompt.render_user_prompt(input_values)
       messages << Message.new(
         role: Message::Role::User,
         content: user_prompt
       )
-      
+
       messages
+    end
+
+    def will_use_structured_outputs?(signature_class)
+      return false unless signature_class
+
+      adapter_class_name = adapter.class.name
+
+      if adapter_class_name.include?('OpenAIAdapter') || adapter_class_name.include?('OllamaAdapter')
+        adapter.instance_variable_get(:@structured_outputs_enabled) &&
+          DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?(adapter.model)
+      elsif adapter_class_name.include?('GeminiAdapter')
+        adapter.instance_variable_get(:@structured_outputs_enabled) &&
+          DSPy::LM::Adapters::Gemini::SchemaConverter.supports_structured_outputs?(adapter.model)
+      elsif adapter_class_name.include?('AnthropicAdapter')
+        structured_outputs_enabled = adapter.instance_variable_get(:@structured_outputs_enabled)
+        structured_outputs_enabled.nil? ? true : structured_outputs_enabled
+      else
+        false
+      end
     end
 
     def parse_response(response, input_values, signature_class)

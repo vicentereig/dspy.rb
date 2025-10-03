@@ -30,17 +30,17 @@ http_interactions:
       Host:
       - localhost:11434
       X-Stainless-Arch:
-      - x64
+      - arm64
       X-Stainless-Lang:
       - ruby
       X-Stainless-Os:
-      - Linux
+      - MacOS
       X-Stainless-Package-Version:
-      - 0.13.0
+      - 0.22.1
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.8
+      - 3.3.6
       Content-Type:
       - application/json
       Authorization:
@@ -59,14 +59,14 @@ http_interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 28 Jul 2025 14:22:08 GMT
+      - Fri, 03 Oct 2025 20:35:18 GMT
       Content-Length:
       - '338'
     body:
       encoding: UTF-8
-      string: '{"id":"chatcmpl-279","object":"chat.completion","created":1753712528,"model":"llama3.2","system_fingerprint":"fp_ollama","choices":[{"index":0,"message":{"role":"assistant","content":"{\n  \"answer\":
+      string: '{"id":"chatcmpl-990","object":"chat.completion","created":1759523718,"model":"llama3.2","system_fingerprint":"fp_ollama","choices":[{"index":0,"message":{"role":"assistant","content":"{\n  \"answer\":
         \"Paris\",\n  \"confidence\": 0.9\n}"},"finish_reason":"stop"}],"usage":{"prompt_tokens":299,"completion_tokens":19,"total_tokens":318}}
 
         '
-  recorded_at: Mon, 28 Jul 2025 14:22:08 GMT
+  recorded_at: Fri, 03 Oct 2025 20:35:18 GMT
 recorded_with: VCR 6.3.1
