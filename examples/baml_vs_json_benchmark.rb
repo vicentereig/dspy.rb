@@ -158,17 +158,7 @@ class BAMLvsJSONBenchmark
 
     # Test both schema formats in Enhanced Prompting mode
     test_format(model, :json_format)
-    # TODO: Uncomment when BAML format is implemented
-    # test_format(model, :baml_format)
-
-    puts "  ⏭️  BAML format test skipped (not yet implemented)"
-    @results[:models][model][:baml_format] = {
-      success: false,
-      response_time: 0.0,
-      cost: 0.0,
-      tokens: { input: 0, output: 0 },
-      error: "BAML format not yet implemented in Prompt class"
-    }
+    test_format(model, :baml_format)
   end
 
   def test_format(model, format_name)
@@ -185,8 +175,8 @@ class BAMLvsJSONBenchmark
     )
 
     begin
-      # Configure LM with Enhanced Prompting (structured_outputs: false)
-      lm = create_lm_for_model(model)
+      # Configure LM with Enhanced Prompting and specified schema format
+      lm = create_lm_for_model(model, schema_format: schema_format)
       DSPy.configure { |config| config.lm = lm }
 
       # Track usage with event subscription
@@ -204,8 +194,10 @@ class BAMLvsJSONBenchmark
       response_time = Benchmark.realtime do
         predictor = DSPy::Predict.new(TaskDecomposition)
 
-        # TODO: When schema_format is implemented, pass it to predictor
-        # For now, it defaults to JSON
+        # Verify the predictor is using the correct schema format
+        unless predictor.prompt.schema_format == schema_format
+          raise "Predictor schema_format mismatch: expected #{schema_format}, got #{predictor.prompt.schema_format}"
+        end
 
         result = predictor.call(
           topic: "Sustainable technology adoption in developing countries",
@@ -264,26 +256,29 @@ class BAMLvsJSONBenchmark
     end
   end
 
-  def create_lm_for_model(model)
+  def create_lm_for_model(model, schema_format: :json)
     # Always use Enhanced Prompting (structured_outputs: false) for this benchmark
     case model
     when /^gpt-/
       DSPy::LM.new(
         "openai/#{model}",
         api_key: ENV['OPENAI_API_KEY'],
-        structured_outputs: false  # Force Enhanced Prompting
+        structured_outputs: false,  # Force Enhanced Prompting
+        schema_format: schema_format
       )
     when /^claude-/
       DSPy::LM.new(
         "anthropic/#{model}",
         api_key: ENV['ANTHROPIC_API_KEY'],
-        structured_outputs: false  # Force Enhanced Prompting
+        structured_outputs: false,  # Force Enhanced Prompting
+        schema_format: schema_format
       )
     when /^gemini-/
       DSPy::LM.new(
         "gemini/#{model}",
         api_key: ENV['GEMINI_API_KEY'],
-        structured_outputs: false  # Force Enhanced Prompting
+        structured_outputs: false,  # Force Enhanced Prompting
+        schema_format: schema_format
       )
     else
       raise ArgumentError, "Unknown model provider: #{model}"
@@ -348,7 +343,6 @@ class BAMLvsJSONBenchmark
     end
 
     puts
-    puts "📝 Note: BAML format implementation pending - currently only JSON format tested"
   end
 
   def export_results
