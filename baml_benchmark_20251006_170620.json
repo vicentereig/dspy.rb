@@ -1,0 +1,197 @@
+{
+  "models": {
+    "gpt-4o": {
+      "json_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      },
+      "baml_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      }
+    },
+    "gpt-4o-mini": {
+      "json_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      },
+      "baml_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      }
+    },
+    "gpt-5": {
+      "json_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      },
+      "baml_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      }
+    },
+    "gpt-5-mini": {
+      "json_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      },
+      "baml_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      }
+    },
+    "claude-sonnet-4-5-20250929": {
+      "json_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      },
+      "baml_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      }
+    },
+    "claude-opus-4-1-20250805": {
+      "json_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      },
+      "baml_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      }
+    },
+    "gemini-2.5-pro": {
+      "json_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      },
+      "baml_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      }
+    },
+    "gemini-2.5-flash": {
+      "json_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      },
+      "baml_format": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "undefined method `configuration' for module DSPy"
+      }
+    }
+  },
+  "summary": {
+    "total_tests": 16,
+    "successful_tests": 0,
+    "failed_tests": 16,
+    "total_cost": 0.0,
+    "total_response_time": 0.0,
+    "total_tokens_saved": 0
+  },
+  "schema_sizes": {
+    "json_chars": 1953,
+    "baml_chars": 351,
+    "savings_pct": 82.0,
+    "json_input": "{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\": \"The main research topic to investigate\"\n    },\n    \"context\": {\n      \"type\": \"string\",\n      \"description\": \"Any additional context or constraints\"\n    },\n    \"complexity_level\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"basic\",\n        \"intermediate\",\n        \"advanced\"\n      ],\n      \"description\": \"Desired complexity level for task decomposition\"\n    }\n  },\n  \"required\": [\n    \"topic\",\n    \"context\",\n    \"complexity_level\"\n  ]\n}",
+    "json_output": "{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"subtasks\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Autonomously defined research subtasks with clear objectives\"\n    },\n    \"task_types\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Type classification for each task (analysis, synthesis, investigation, etc.)\"\n    },\n    \"priority_order\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"integer\"\n      },\n      \"description\": \"Strategic priority rankings (1-5 scale) for each subtask\"\n    },\n    \"estimated_effort\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"integer\"\n      },\n      \"description\": \"Effort estimates in hours for each subtask\"\n    },\n    \"dependencies\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Task dependency relationships for optimal sequencing\"\n    },\n    \"agent_requirements\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Suggested agent types/skills needed for each task\"\n    }\n  },\n  \"required\": [\n    \"subtasks\",\n    \"task_types\",\n    \"priority_order\",\n    \"estimated_effort\",\n    \"dependencies\",\n    \"agent_requirements\"\n  ]\n}",
+    "baml_input": "enum ComplexityLevel {\n  \"basic\"\n  \"intermediate\"\n  \"advanced\"\n}\n\nclass #<Class:0x000000012ac93350> {\n  topic string\n  context string\n  complexity_level ComplexityLevel\n}",
+    "baml_output": "class #<Class:0x000000012ac30520> {\n  subtasks string[]\n  task_types string[]\n  priority_order int[]\n  estimated_effort int[]\n  dependencies string[]\n  agent_requirements string[]\n}"
+  }
+}
