@@ -36,6 +36,7 @@ Gem::Specification.new do |spec|
   # Sorbet integration dependencies
   spec.add_dependency "sorbet-runtime", "~> 0.5"
   spec.add_dependency "sorbet-schema", "~> 0.3"
+  spec.add_dependency "sorbet-baml", "~> 0.1"
 
   # Numerical computing for Bayesian optimization (pure Ruby)
   spec.add_dependency "numo-narray", "~> 0.9"
