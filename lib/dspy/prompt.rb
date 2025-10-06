@@ -255,13 +255,22 @@ module DSPy
     # Render BAML schema for input or output
     sig { params(schema: T::Hash[Symbol, T.untyped], type: Symbol).returns(String) }
     def render_baml_schema(schema, type)
-      # If we have a signature_class, use sorbet-baml's to_baml method
+      # If we have a signature_class, use sorbet-baml's to_baml method with custom name
       if @signature_class
         begin
           require 'sorbet_baml'
 
           struct_class = type == :input ? @signature_class.input_struct_class : @signature_class.output_struct_class
-          return struct_class.to_baml if struct_class
+          if struct_class
+            # Generate a proper class name from signature class name
+            base_name = @signature_class_name || @signature_class.name || "Schema"
+            class_name = type == :input ? "#{base_name}Input" : "#{base_name}Output"
+
+            # Get raw BAML and replace the ugly class name
+            raw_baml = struct_class.to_baml
+            # Replace the class definition line with a proper name
+            return raw_baml.sub(/^class #<Class:0x[0-9a-f]+>/, "class #{class_name}")
+          end
         rescue LoadError
           # Fall back to manual BAML generation if sorbet_baml is not available
         end
