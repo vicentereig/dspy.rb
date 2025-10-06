@@ -31,15 +31,16 @@ require_relative 'structured_outputs_prompt'
 module DSPy
   class LM
     extend T::Sig
-    attr_reader :model_id, :api_key, :model, :provider, :adapter
+    attr_reader :model_id, :api_key, :model, :provider, :adapter, :schema_format
 
-    def initialize(model_id, api_key: nil, **options)
+    def initialize(model_id, api_key: nil, schema_format: :json, **options)
       @model_id = model_id
       @api_key = api_key
-      
+      @schema_format = schema_format
+
       # Parse provider and model from model_id
       @provider, @model = parse_model_id(model_id)
-      
+
       # Create appropriate adapter with options
       @adapter = AdapterFactory.create(model_id, api_key: api_key, **options)
     end

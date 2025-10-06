@@ -61,7 +61,15 @@ module DSPy
     def initialize(signature_class)
       super()
       @signature_class = signature_class
-      @prompt = Prompt.from_signature(signature_class)
+
+      # Get schema_format from configured LM, default to :json
+      schema_format = if DSPy.configuration && DSPy.configuration.lm
+        DSPy.configuration.lm.schema_format || :json
+      else
+        :json
+      end
+
+      @prompt = Prompt.from_signature(signature_class, schema_format: schema_format)
       @demos = nil
     end
 
