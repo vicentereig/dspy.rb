@@ -216,6 +216,435 @@ DSPy.with_lm(local_model) do
 end
 ```
 
+## Lifecycle Callbacks
+
+DSPy.rb modules support Rails-style lifecycle callbacks that run before, after, or around the `forward` method. This enables clean separation of concerns for cross-cutting concerns like logging, metrics, context management, and memory operations.
+
+### Available Callback Types
+
+- **`before`** - Runs before `forward` executes
+- **`after`** - Runs after `forward` completes
+- **`around`** - Wraps `forward` execution (must call `yield`)
+
+### Basic Usage
+
+#### Before Callbacks
+
+Before callbacks execute before the `forward` method runs. They're useful for setup, initialization, or preparing context.
+
+```ruby
+class LoggingSignature < DSPy::Signature
+  description "Answer questions with logging"
+
+  input do
+    const :question, String
+  end
+
+  output do
+    const :answer, String
+  end
+end
+
+class LoggingModule < DSPy::Module
+  before :setup_context
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(LoggingSignature)
+    @start_time = nil
+  end
+
+  def forward(question:)
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def setup_context
+    @start_time = Time.now
+    puts "Starting prediction at #{@start_time}"
+  end
+end
+
+# Usage
+module_instance = LoggingModule.new
+result = module_instance.call(question: "What is DSPy.rb?")
+# Output: "Starting prediction at 2025-10-06 12:00:00 -0700"
+```
+
+#### After Callbacks
+
+After callbacks execute after the `forward` method completes. They're ideal for cleanup, logging results, or recording metrics.
+
+```ruby
+class MetricsModule < DSPy::Module
+  after :log_metrics
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(QuestionSignature)
+    @start_time = nil
+  end
+
+  def forward(question:)
+    @start_time = Time.now
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def log_metrics
+    duration = Time.now - @start_time
+    puts "Prediction completed in #{duration} seconds"
+  end
+end
+
+# Usage
+module_instance = MetricsModule.new
+result = module_instance.call(question: "Explain callbacks")
+# Output: "Prediction completed in 1.23 seconds"
+```
+
+#### Around Callbacks
+
+Around callbacks wrap the entire `forward` method execution. They must call `yield` to execute the wrapped method, and can perform actions both before and after.
+
+```ruby
+class MemoryModule < DSPy::Module
+  around :manage_memory
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(QuestionSignature)
+  end
+
+  def forward(question:)
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def manage_memory
+    # Load context from memory
+    context = load_context_from_memory
+    puts "Loaded context: #{context}"
+
+    # Execute the forward method
+    result = yield
+
+    # Save updated context
+    save_context_to_memory(result)
+    puts "Saved context to memory"
+
+    result
+  end
+
+  def load_context_from_memory
+    # Implementation
+    {}
+  end
+
+  def save_context_to_memory(result)
+    # Implementation
+  end
+end
+```
+
+### Combined Callbacks
+
+You can use multiple callback types together. They execute in a specific order:
+
+1. `before` callbacks
+2. `around` callbacks (before `yield`)
+3. `forward` method
+4. `around` callbacks (after `yield`)
+5. `after` callbacks
+
+```ruby
+class FullyInstrumentedModule < DSPy::Module
+  before :setup_metrics
+  after :log_metrics
+  around :manage_context
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(QuestionSignature)
+    @metrics = {}
+  end
+
+  def forward(question:)
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def setup_metrics
+    @metrics[:start_time] = Time.now
+    puts "1. Before callback: Setting up metrics"
+  end
+
+  def manage_context
+    puts "2. Around callback (before): Loading context"
+    load_context
+
+    result = yield
+
+    puts "4. Around callback (after): Saving context"
+    save_context
+
+    result
+  end
+
+  def log_metrics
+    @metrics[:duration] = Time.now - @metrics[:start_time]
+    puts "5. After callback: Logged duration of #{@metrics[:duration]}s"
+  end
+
+  def load_context
+    # Load from memory, database, etc.
+  end
+
+  def save_context
+    # Save to memory, database, etc.
+  end
+end
+
+# Usage
+module_instance = FullyInstrumentedModule.new
+result = module_instance.call(question: "What happens?")
+# Output:
+# 1. Before callback: Setting up metrics
+# 2. Around callback (before): Loading context
+# [forward method executes - step 3]
+# 4. Around callback (after): Saving context
+# 5. After callback: Logged duration of 1.23s
+```
+
+### Multiple Callbacks of Same Type
+
+You can register multiple callbacks of the same type. They execute in registration order:
+
+```ruby
+class MultiCallbackModule < DSPy::Module
+  before :first_setup
+  before :second_setup
+  before :third_setup
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(QuestionSignature)
+  end
+
+  def forward(question:)
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def first_setup
+    puts "First setup"
+  end
+
+  def second_setup
+    puts "Second setup"
+  end
+
+  def third_setup
+    puts "Third setup"
+  end
+end
+
+# Callbacks execute in order: first_setup, second_setup, third_setup
+```
+
+### Inheritance
+
+Callbacks are inherited from parent classes. Parent callbacks execute before child callbacks:
+
+```ruby
+class BaseModule < DSPy::Module
+  before :base_setup
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(QuestionSignature)
+  end
+
+  def forward(question:)
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def base_setup
+    puts "Base setup"
+  end
+end
+
+class DerivedModule < BaseModule
+  before :derived_setup
+
+  private
+
+  def derived_setup
+    puts "Derived setup"
+  end
+end
+
+# Usage
+module_instance = DerivedModule.new
+result = module_instance.call(question: "Test")
+# Output:
+# Base setup
+# Derived setup
+```
+
+### Common Use Cases
+
+#### 1. Observability and Metrics
+
+```ruby
+class ObservableModule < DSPy::Module
+  before :start_tracing
+  after :end_tracing
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(QuestionSignature)
+    @trace_id = nil
+  end
+
+  def forward(question:)
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def start_tracing
+    @trace_id = SecureRandom.uuid
+    @start_time = Time.now
+
+    # Send to APM/observability platform
+    send_trace_start(@trace_id, method: "forward")
+  end
+
+  def end_tracing
+    duration = Time.now - @start_time
+
+    # Send completion to APM/observability platform
+    send_trace_end(@trace_id, duration: duration)
+  end
+end
+```
+
+#### 2. Memory and State Management
+
+```ruby
+class StatefulModule < DSPy::Module
+  around :manage_state
+
+  def initialize(user_id:)
+    super()
+    @user_id = user_id
+    @predictor = DSPy::ReAct.new(
+      AssistantSignature,
+      tools: DSPy::Tools::MemoryToolset.to_tools
+    )
+  end
+
+  def forward(message:)
+    @predictor.call(message: message, user_id: @user_id)
+  end
+
+  private
+
+  def manage_state
+    # Load user's conversation history
+    load_conversation_history(@user_id)
+
+    # Execute prediction
+    result = yield
+
+    # Save updated conversation
+    save_conversation(@user_id, result)
+
+    result
+  end
+end
+```
+
+#### 3. Rate Limiting and Circuit Breaking
+
+```ruby
+class RateLimitedModule < DSPy::Module
+  before :check_rate_limit
+  after :record_request
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(QuestionSignature)
+    @request_count = 0
+    @last_reset = Time.now
+  end
+
+  def forward(question:)
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def check_rate_limit
+    # Reset counter every minute
+    if Time.now - @last_reset > 60
+      @request_count = 0
+      @last_reset = Time.now
+    end
+
+    raise "Rate limit exceeded" if @request_count >= 100
+  end
+
+  def record_request
+    @request_count += 1
+  end
+end
+```
+
+#### 4. Error Recovery and Retry Logic
+
+```ruby
+class ResilientModule < DSPy::Module
+  around :with_retry
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(QuestionSignature)
+  end
+
+  def forward(question:)
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def with_retry
+    max_retries = 3
+    retry_count = 0
+
+    begin
+      yield
+    rescue StandardError => e
+      retry_count += 1
+      if retry_count < max_retries
+        sleep(2 ** retry_count) # Exponential backoff
+        retry
+      else
+        raise e
+      end
+    end
+  end
+end
+```
+
 ## Manual Module Composition
 
 ### Sequential Processing
