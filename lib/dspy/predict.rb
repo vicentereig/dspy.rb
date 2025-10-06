@@ -63,11 +63,7 @@ module DSPy
       @signature_class = signature_class
 
       # Get schema_format from configured LM, default to :json
-      schema_format = if DSPy.config && DSPy.config.lm
-        DSPy.config.lm.schema_format || :json
-      else
-        :json
-      end
+      schema_format = DSPy.config.lm&.schema_format || :json
 
       @prompt = Prompt.from_signature(signature_class, schema_format: schema_format)
       @demos = nil
