@@ -23,7 +23,7 @@ last_modified_at: 2025-08-26 00:00:00 +0000
 Add DSPy.rb to your Gemfile:
 
 ```ruby
-gem 'dspy', '~> 0.27.3'
+gem 'dspy'
 ```
 
 Or install it directly:
@@ -40,23 +40,14 @@ gem 'dspy', github: 'vicentereig/dspy.rb'
 
 ## Required Dependencies
 
-DSPy.rb requires Ruby 3.3+ and includes these core dependencies:
+DSPy.rb requires Ruby 3.3+ and automatically installs these dependencies:
 
-```ruby
-# Core dependencies (automatically installed)
-gem 'dry-configurable', '~> 1.0'
-gem 'dry-logger', '~> 1.0'
-gem 'async', '~> 2.29'
+- **Core dependencies**: dry-configurable (~> 1.0), dry-logger (~> 1.0), async (~> 2.29)
+- **LLM provider clients**: openai (~> 0.22.0), anthropic (~> 1.5.0), gemini-ai (~> 4.3)
+- **Sorbet integration**: sorbet-runtime (~> 0.5), sorbet-schema (~> 0.3)
+- **Other**: informers (~> 1.2), opentelemetry-sdk (~> 1.8)
 
-# Official LM provider clients
-gem 'openai', '~> 0.9.0'
-gem 'anthropic', '~> 1.5.0'
-# Note: Ollama support is built-in via OpenAI compatibility layer
-
-# Sorbet integration dependencies
-gem 'sorbet-runtime', '~> 0.5'
-gem 'sorbet-schema', '~> 0.3'
-```
+You don't need to add these to your Gemfile—they're installed automatically when you install dspy.
 
 ## Observability
 

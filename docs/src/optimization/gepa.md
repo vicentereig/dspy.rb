@@ -48,11 +48,13 @@ program = DSPy::Predict.new(QASignature)
 
 # Create training examples
 trainset = [
-  DSPy::Example.new(QASignature,
+  DSPy::Example.new(
+    signature_class: QASignature,
     input: { question: "What is 2+2?" },
     expected: { answer: "4" }
   ),
-  DSPy::Example.new(QASignature,
+  DSPy::Example.new(
+    signature_class: QASignature,
     input: { question: "What is the capital of France?" },
     expected: { answer: "Paris" }
   )

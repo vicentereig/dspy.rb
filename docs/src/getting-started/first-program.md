@@ -32,10 +32,7 @@ require 'dspy'
 
 # Configure your language model
 DSPy.configure do |config|
-  config.lm = DSPy::LM::OpenAI.new(
-    api_key: ENV['OPENAI_API_KEY'],
-    model: "gpt-4"
-  )
+  config.lm = DSPy::LM.new('openai/gpt-4', api_key: ENV['OPENAI_API_KEY'])
 end
 ```
 

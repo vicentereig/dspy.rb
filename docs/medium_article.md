@@ -202,8 +202,16 @@ end
 
 # Create some training examples
 training_examples = [
-  DSPy::Example.new(text: "I love this product!", sentiment: Sentiment::Positive),
-  DSPy::Example.new(text: "Worst purchase ever", sentiment: Sentiment::Negative),
+  DSPy::Example.new(
+    signature_class: ClassifySentiment,
+    input: { text: "I love this product!" },
+    expected: { sentiment: ClassifySentiment::Sentiment::Positive, confidence: 0.9 }
+  ),
+  DSPy::Example.new(
+    signature_class: ClassifySentiment,
+    input: { text: "Worst purchase ever" },
+    expected: { sentiment: ClassifySentiment::Sentiment::Negative, confidence: 0.95 }
+  )
   # ... more examples
 ]
 
@@ -421,21 +429,26 @@ Train and optimize:
 # Create training data
 training_examples = [
   DSPy::Example.new(
-    email: Email.new(
-      subject: "API returning 500 errors",
-      from: "dev@company.com",
-      body: "Our production API started returning 500s after the deploy..."
-    ),
-    category: Category::Technical,
-    priority: Priority::High,
-    summary: "Production API returning 500 errors after deploy"
-  ),
+    signature_class: ClassifyEmail,
+    input: {
+      email: Email.new(
+        subject: "API returning 500 errors",
+        from: "dev@company.com",
+        body: "Our production API started returning 500s after the deploy..."
+      )
+    },
+    expected: {
+      category: Category::Technical,
+      priority: Priority::High,
+      summary: "Production API returning 500 errors after deploy"
+    }
+  )
   # ... more examples
 ]
 
 # Optimize the classifier
 program = DSPy::Predict.new(ClassifyEmail)
-metric = proc { |example, prediction| prediction.category == example.expected_category }
+metric = proc { |example, prediction| prediction.category == example.expected_values[:category] }
 optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)  # balanced -> medium
 result = optimizer.compile(program, trainset: training_examples)
 # Note: metric is now used directly by MIPROv2

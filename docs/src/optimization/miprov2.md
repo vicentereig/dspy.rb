@@ -467,16 +467,19 @@ result = optimizer.compile(program, trainset: training_examples, valset: validat
 # Use diverse, high-quality training examples
 training_examples = [
   DSPy::Example.new(
-    text: "I love this product! It's amazing.",
-    expected_sentiment: "positive"
+    signature_class: ClassifyText,
+    input: { text: "I love this product! It's amazing." },
+    expected: { sentiment: "positive", confidence: 0.9 }
   ),
   DSPy::Example.new(
-    text: "This is the worst experience I've ever had.",
-    expected_sentiment: "negative"
+    signature_class: ClassifyText,
+    input: { text: "This is the worst experience I've ever had." },
+    expected: { sentiment: "negative", confidence: 0.95 }
   ),
   DSPy::Example.new(
-    text: "The product is okay, nothing special.",
-    expected_sentiment: "neutral"
+    signature_class: ClassifyText,
+    input: { text: "The product is okay, nothing special." },
+    expected: { sentiment: "neutral", confidence: 0.7 }
   )
   # ... more diverse examples
 ]
