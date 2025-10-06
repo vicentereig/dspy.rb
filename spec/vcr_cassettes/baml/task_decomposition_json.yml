@@ -1,0 +1,168 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The main research topic to investigate\"\n    },\n    \"context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Any additional context or constraints\"\n    },\n    \"complexity_level\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"basic\",\n        \"intermediate\",\n        \"advanced\"\n      ],\n      \"description\":
+        \"Desired complexity level for task decomposition\"\n    }\n  },\n  \"required\":
+        [\n    \"topic\",\n    \"context\",\n    \"complexity_level\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"subtasks\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Autonomously
+        defined research subtasks with clear objectives\"\n    },\n    \"task_types\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Type classification for each task (analysis, synthesis, investigation, etc.)\"\n    },\n    \"priority_order\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"integer\"\n      },\n      \"description\":
+        \"Strategic priority rankings (1-5 scale) for each subtask\"\n    },\n    \"estimated_effort\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"integer\"\n      },\n      \"description\":
+        \"Effort estimates in hours for each subtask\"\n    },\n    \"dependencies\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Task dependency relationships for optimal sequencing\"\n    },\n    \"agent_requirements\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Suggested agent types/skills needed for each task (for future agent mapping)\"\n    }\n  },\n  \"required\":
+        [\n    \"subtasks\",\n    \"task_types\",\n    \"priority_order\",\n    \"estimated_effort\",\n    \"dependencies\",\n    \"agent_requirements\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Autonomously analyze a research topic and define optimal subtasks
+        with strategic prioritization"},{"role":"user","content":"## Input Values\n```json\n{\n  \"topic\":
+        \"Renewable energy adoption in urban environments\",\n  \"context\": \"Focus
+        on practical implementation challenges\",\n  \"complexity_level\": \"intermediate\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3210'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 06 Oct 2025 20:49:20 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '4359'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '4884'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199298'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 210ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98a80638a9ce0f4a-EWR
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CNmQuILzmWp82JQpQ0oCazPCZ7N3f",
+          "object": "chat.completion",
+          "created": 1759783756,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"subtasks\": [\n    \"Identify the current state of renewable energy adoption in urban environments\",\n    \"Analyze implementation challenges faced by municipalities\",\n    \"Research successful case studies of renewable energy in urban areas\",\n    \"Evaluate potential policy mechanisms to enhance adoption\",\n    \"Develop recommendations for stakeholders\"\n  ],\n  \"task_types\": [\n    \"investigation\",\n    \"analysis\",\n    \"synthesis\",\n    \"evaluation\",\n    \"synthesis\"\n  ],\n  \"priority_order\": [\n    1,\n    2,\n    3,\n    4,\n    5\n  ],\n  \"estimated_effort\": [\n    10,\n    15,\n    12,\n    8,\n    6\n  ],\n  \"dependencies\": [\n    \"None\",\n    \"Identify current state -> Analyze implementation challenges\",\n    \"Analyze implementation challenges -> Research successful case studies\",\n    \"Research successful case studies -> Evaluate potential policy mechanisms\",\n    \"Evaluate potential policy mechanisms -> Develop recommendations\"\n  ],\n  \"agent_requirements\": [\n    \"Research analyst\",\n    \"Policy expert\",\n    \"Data analyst\",\n    \"Urban planner\",\n    \"Sustainability consultant\"\n  ]\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 686,
+            "completion_tokens": 249,
+            "total_tokens": 935,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 06 Oct 2025 20:49:20 GMT
+recorded_with: VCR 6.3.1
