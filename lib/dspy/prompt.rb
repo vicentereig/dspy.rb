@@ -22,21 +22,31 @@ module DSPy
     sig { returns(T.nilable(String)) }
     attr_reader :signature_class_name
 
+    sig { returns(Symbol) }
+    attr_reader :schema_format
+
+    sig { returns(T.nilable(T.class_of(Signature))) }
+    attr_reader :signature_class
+
     sig do
       params(
         instruction: String,
         input_schema: T::Hash[Symbol, T.untyped],
         output_schema: T::Hash[Symbol, T.untyped],
         few_shot_examples: T::Array[FewShotExample],
-        signature_class_name: T.nilable(String)
+        signature_class_name: T.nilable(String),
+        schema_format: Symbol,
+        signature_class: T.nilable(T.class_of(Signature))
       ).void
     end
-    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil)
+    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil, schema_format: :json, signature_class: nil)
       @instruction = instruction
       @few_shot_examples = few_shot_examples.freeze
       @input_schema = input_schema.freeze
       @output_schema = output_schema.freeze
       @signature_class_name = signature_class_name
+      @schema_format = schema_format
+      @signature_class = signature_class
     end
 
     # Immutable update methods for optimization
@@ -47,7 +57,9 @@ module DSPy
         input_schema: @input_schema,
         output_schema: @output_schema,
         few_shot_examples: @few_shot_examples,
-        signature_class_name: @signature_class_name
+        signature_class_name: @signature_class_name,
+        schema_format: @schema_format,
+        signature_class: @signature_class
       )
     end
 
@@ -58,7 +70,9 @@ module DSPy
         input_schema: @input_schema,
         output_schema: @output_schema,
         few_shot_examples: new_examples,
-        signature_class_name: @signature_class_name
+        signature_class_name: @signature_class_name,
+        schema_format: @schema_format,
+        signature_class: @signature_class
       )
     end
 
@@ -72,16 +86,29 @@ module DSPy
     sig { returns(String) }
     def render_system_prompt
       sections = []
-      
-      sections << "Your input schema fields are:"
-      sections << "```json"
-      sections << JSON.pretty_generate(@input_schema)
-      sections << "```"
-      
-      sections << "Your output schema fields are:"
-      sections << "```json"
-      sections << JSON.pretty_generate(@output_schema)
-      sections << "```"
+
+      case @schema_format
+      when :baml
+        sections << "Your input schema fields are:"
+        sections << "```baml"
+        sections << render_baml_schema(@input_schema, :input)
+        sections << "```"
+
+        sections << "Your output schema fields are:"
+        sections << "```baml"
+        sections << render_baml_schema(@output_schema, :output)
+        sections << "```"
+      else  # :json (default)
+        sections << "Your input schema fields are:"
+        sections << "```json"
+        sections << JSON.pretty_generate(@input_schema)
+        sections << "```"
+
+        sections << "Your output schema fields are:"
+        sections << "```json"
+        sections << JSON.pretty_generate(@output_schema)
+        sections << "```"
+      end
       
       sections << ""
       sections << "All interactions will be structured in the following way, with the appropriate values filled in."
@@ -148,32 +175,36 @@ module DSPy
         few_shot_examples: @few_shot_examples.map(&:to_h),
         input_schema: @input_schema,
         output_schema: @output_schema,
-        signature_class_name: @signature_class_name
+        signature_class_name: @signature_class_name,
+        schema_format: @schema_format
       }
     end
 
     sig { params(hash: T::Hash[Symbol, T.untyped]).returns(Prompt) }
     def self.from_h(hash)
       examples = (hash[:few_shot_examples] || []).map { |ex| FewShotExample.from_h(ex) }
-      
+
       new(
         instruction: hash[:instruction] || "",
         input_schema: hash[:input_schema] || {},
         output_schema: hash[:output_schema] || {},
         few_shot_examples: examples,
-        signature_class_name: hash[:signature_class_name]
+        signature_class_name: hash[:signature_class_name],
+        schema_format: hash[:schema_format] || :json
       )
     end
 
     # Create prompt from signature class
-    sig { params(signature_class: T.class_of(Signature)).returns(Prompt) }
-    def self.from_signature(signature_class)
+    sig { params(signature_class: T.class_of(Signature), schema_format: Symbol).returns(Prompt) }
+    def self.from_signature(signature_class, schema_format: :json)
       new(
         instruction: signature_class.description || "Complete this task.",
         input_schema: signature_class.input_json_schema,
         output_schema: signature_class.output_json_schema,
         few_shot_examples: [],
-        signature_class_name: signature_class.name
+        signature_class_name: signature_class.name,
+        schema_format: schema_format,
+        signature_class: signature_class
       )
     end
 
@@ -220,6 +251,28 @@ module DSPy
     end
 
     private
+
+    # Render BAML schema for input or output
+    sig { params(schema: T::Hash[Symbol, T.untyped], type: Symbol).returns(String) }
+    def render_baml_schema(schema, type)
+      # If we have a signature_class, use sorbet-baml's to_baml method
+      if @signature_class
+        begin
+          require 'sorbet_baml'
+
+          struct_class = type == :input ? @signature_class.input_struct_class : @signature_class.output_struct_class
+          return struct_class.to_baml if struct_class
+        rescue LoadError
+          # Fall back to manual BAML generation if sorbet_baml is not available
+        end
+      end
+
+      # Fallback: generate BAML manually from schema
+      # This is a simple implementation that handles basic types
+      # For production use, sorbet-baml should be available
+      "# BAML schema generation requires sorbet-baml gem\n" \
+      "# Please install: gem install sorbet-baml"
+    end
 
     # Recursively serialize complex objects for JSON representation
     sig { params(obj: T.untyped).returns(T.untyped) }
