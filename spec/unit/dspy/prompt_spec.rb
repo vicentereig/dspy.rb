@@ -431,11 +431,123 @@ RSpec.describe DSPy::Prompt do
         output_schema: output_schema,
         signature_class_name: "MathQA"
       )
-      
+
       hash = original.to_h
       restored = DSPy::Prompt.from_h(hash)
-      
+
       expect(restored).to eq(original)
+    end
+  end
+
+  describe 'schema_format parameter' do
+    it 'defaults to :json format' do
+      prompt = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema
+      )
+
+      expect(prompt.schema_format).to eq(:json)
+    end
+
+    it 'accepts :baml format' do
+      prompt = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        schema_format: :baml
+      )
+
+      expect(prompt.schema_format).to eq(:baml)
+    end
+
+    it 'preserves schema_format in with_instruction' do
+      original = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        schema_format: :baml
+      )
+
+      updated = original.with_instruction("New instruction")
+
+      expect(updated.schema_format).to eq(:baml)
+    end
+
+    it 'includes schema_format in serialization' do
+      prompt = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        schema_format: :baml
+      )
+
+      hash = prompt.to_h
+
+      expect(hash[:schema_format]).to eq(:baml)
+    end
+
+    it 'restores schema_format from hash' do
+      hash = {
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        schema_format: :baml
+      }
+
+      prompt = DSPy::Prompt.from_h(hash)
+
+      expect(prompt.schema_format).to eq(:baml)
+    end
+
+    it 'defaults to :json when deserializing without schema_format' do
+      hash = {
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema
+      }
+
+      prompt = DSPy::Prompt.from_h(hash)
+
+      expect(prompt.schema_format).to eq(:json)
+    end
+  end
+
+  describe 'BAML schema rendering' do
+    it 'renders BAML format in system prompt when schema_format is :baml' do
+      prompt = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        schema_format: :baml,
+        signature_class: MathQA
+      )
+
+      system_prompt = prompt.render_system_prompt
+
+      # Should use BAML format for schema definitions
+      expect(system_prompt).to include('```baml')
+      expect(system_prompt).to include('Your input schema fields are')
+      expect(system_prompt).to include('Your output schema fields are')
+
+      # Schema sections should not use JSON format
+      schema_section = system_prompt.split('All interactions will').first
+      expect(schema_section).not_to include('```json')
+    end
+
+    it 'renders JSON format in system prompt when schema_format is :json' do
+      prompt = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        schema_format: :json
+      )
+
+      system_prompt = prompt.render_system_prompt
+
+      # Should use JSON format for schema definitions
+      expect(system_prompt).to include('```json')
+      expect(system_prompt).not_to include('```baml')
     end
   end
 end
