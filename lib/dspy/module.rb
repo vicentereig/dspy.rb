@@ -3,15 +3,22 @@
 require 'sorbet-runtime'
 require 'dry-configurable'
 require_relative 'context'
+require_relative 'callbacks'
 
 module DSPy
   class Module
     extend T::Sig
     extend T::Generic
     include Dry::Configurable
+    include DSPy::Callbacks
 
     # Per-instance LM configuration
     setting :lm, default: nil
+
+    # Define callback hooks for forward method
+    create_before_callback :forward
+    create_after_callback :forward
+    create_around_callback :forward
 
     # The main forward method that users will call is generic and type parameterized
     sig do

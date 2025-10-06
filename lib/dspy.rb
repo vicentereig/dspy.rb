@@ -191,6 +191,7 @@ module DSPy
   end
 end
 
+require_relative 'dspy/callbacks'
 require_relative 'dspy/module'
 require_relative 'dspy/field'
 require_relative 'dspy/signature'
