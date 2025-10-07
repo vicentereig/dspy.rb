@@ -232,10 +232,27 @@ bundle exec rspec spec/my_test_spec.rb
 ## Common Debugging Tips
 
 1. **Enable debug logging**:
+
+In development, DSPy.rb automatically logs to `log/development.log`. Simply tail the log file:
+
+```bash
+tail -f log/development.log
+```
+
+To enable debug level logging with output to stdout:
+
 ```ruby
 DSPy.configure do |config|
-  config.logger.level = :debug
+  config.logger = Dry.Logger(:dspy, formatter: :string) do |s|
+    s.add_backend(level: :debug, stream: $stdout)
+  end
 end
+```
+
+Or redirect logs to stdout using the environment variable:
+
+```bash
+DSPY_LOG=/dev/stdout ruby your_script.rb
 ```
 
 2. **Check module configuration**:
@@ -252,10 +269,12 @@ response = lm.generate("Test prompt")
 puts response
 ```
 
-4. **Use logging for debugging**:
+4. **Use JSON logging for production**:
 ```ruby
 DSPy.configure do |config|
-  config.logger = Dry.Logger(:dspy, formatter: :json)
+  config.logger = Dry.Logger(:dspy, formatter: :json) do |s|
+    s.add_backend(stream: $stdout)
+  end
 end
 ```
 
