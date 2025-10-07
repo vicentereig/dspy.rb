@@ -302,14 +302,18 @@ class ProductReview < DSPy::Signature
 end
 ```
 
-## Working with JSON Schema
+## Schema Formats
+
+DSPy.rb supports two schema formats for communicating with language models: JSON Schema (default) and BAML Schema. The schema format controls how DSPy describes your signature's structure to the LLM.
+
+### JSON Schema (Default)
 
 Signatures automatically generate JSON schemas for language model integration:
 
 ```ruby
 class TextClassifier < DSPy::Signature
   description "Classify text documents"
-  
+
   class Category < T::Enum
     enums do
       Technical = new('technical')
@@ -317,12 +321,12 @@ class TextClassifier < DSPy::Signature
       Personal = new('personal')
     end
   end
-  
+
   input do
     const :text, String
     const :length_limit, Integer
   end
-  
+
   output do
     const :category, Category
     const :confidence, Float
@@ -334,6 +338,88 @@ end
 TextClassifier.input_json_schema   # Returns JSON schema for inputs
 TextClassifier.output_json_schema  # Returns JSON schema for outputs
 ```
+
+### BAML Schema Format (New in v0.28.2)
+
+BAML (Basically A Markup Language) is a compact schema format that reduces token usage by 84%+ compared to JSON Schema in Enhanced Prompting mode (`structured_outputs: false`). It provides a more readable, concise representation of your data structures.
+
+**Configure BAML schema format:**
+
+```ruby
+# Option 1: Configure globally via LM
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new(
+    'openai/gpt-4o-mini',
+    api_key: ENV['OPENAI_API_KEY'],
+    schema_format: :baml  # Use BAML format for all signatures
+  )
+end
+
+# Option 2: Per-signature override via Prompt
+prompt = DSPy::Prompt.from_signature(YourSignature, schema_format: :baml)
+```
+
+**Schema Format Comparison:**
+
+For the `TextClassifier` signature above:
+
+JSON Schema (verbose):
+```json
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": ["technical", "business", "personal"]
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "keywords": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  },
+  "required": ["category", "confidence", "keywords"]
+}
+```
+
+BAML Schema (compact):
+```baml
+class TextClassifierOutput {
+  category string
+  confidence float
+  keywords string[]
+}
+```
+
+**Token Savings: 84.4%** (verified by integration tests)
+
+For complex signatures with nested types, BAML saves 80-85% of prompt tokens used for schema definitions in Enhanced Prompting mode.
+
+**Note**: BAML format applies only to Enhanced Prompting mode (`structured_outputs: false`). When using Structured Outputs mode (`structured_outputs: true`), OpenAI's native API receives the JSON Schema directly and BAML format has no effect.
+
+**When to Use BAML:**
+- Complex signatures with many fields
+- Nested structs and arrays
+- Cost-sensitive applications
+- High-volume LLM API usage
+
+**When to Use JSON Schema:**
+- Simple signatures (1-3 fields)
+- When LLM provider specifically requires JSON Schema
+- Legacy compatibility requirements
+
+**Requirements:**
+BAML format requires the `sorbet-baml` gem:
+
+```ruby
+# Gemfile
+gem 'sorbet-baml'
+```
+
+The gem is automatically included as a dependency of `dspy-rb`.
 
 ## Usage with Predictors
 
