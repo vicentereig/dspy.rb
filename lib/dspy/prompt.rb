@@ -22,8 +22,16 @@ module DSPy
     sig { returns(T.nilable(String)) }
     attr_reader :signature_class_name
 
+    # Returns the effective schema format
+    # Precedence: instance variable (if not :json default) > config.lm > :json
     sig { returns(Symbol) }
-    attr_reader :schema_format
+    def schema_format
+      # If @schema_format was explicitly set to something other than :json, respect it
+      return @schema_format if @schema_format && @schema_format != :json
+
+      # Otherwise, read from config if available
+      DSPy.config.lm&.schema_format || @schema_format || :json
+    end
 
     sig { returns(T.nilable(T.class_of(Signature))) }
     attr_reader :signature_class
@@ -87,7 +95,7 @@ module DSPy
     def render_system_prompt
       sections = []
 
-      case @schema_format
+      case schema_format
       when :baml
         sections << "Your input schema fields are:"
         sections << "```baml"
