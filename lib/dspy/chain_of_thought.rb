@@ -46,7 +46,8 @@ module DSPy
         input_schema: @signature_class.input_json_schema,
         output_schema: @signature_class.output_json_schema,
         few_shot_examples: new_prompt.few_shot_examples,
-        signature_class_name: @signature_class.name
+        signature_class_name: @signature_class.name,
+        schema_format: new_prompt.schema_format
       )
       
       instance.instance_variable_set(:@prompt, enhanced_prompt)
