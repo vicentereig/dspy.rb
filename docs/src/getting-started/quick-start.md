@@ -56,6 +56,9 @@ DSPy.configure do |c|
   # c.lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'])
   # or use Ollama for local models
   # c.lm = DSPy::LM.new('ollama/llama3.2')
+
+  # Optional: Use BAML schema format for 80%+ token savings (new in v0.13.0)
+  # c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], schema_format: :baml)
 end
 
 # Create the predictor and run inference

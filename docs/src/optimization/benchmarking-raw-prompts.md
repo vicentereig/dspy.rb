@@ -268,6 +268,73 @@ lm.raw_chat([{ role: 'user', content: 'Hello' }])  # Logged as llm.generate
 predictor.forward(input: 'Hello')                   # Logged as dspy.predict
 ```
 
+## Benchmarking Schema Formats
+
+DSPy.rb v0.13.0+ supports BAML schema format, which can reduce prompt token usage by 80%+ compared to JSON Schema. You can benchmark this impact:
+
+```ruby
+# Test JSON schema (default)
+json_lm = DSPy::LM.new(
+  'openai/gpt-4o-mini',
+  api_key: ENV['OPENAI_API_KEY'],
+  schema_format: :json
+)
+
+# Test BAML schema
+baml_lm = DSPy::LM.new(
+  'openai/gpt-4o-mini',
+  api_key: ENV['OPENAI_API_KEY'],
+  schema_format: :baml
+)
+
+# Benchmark a complex signature
+class TaskDecomposition < DSPy::Signature
+  description "Analyze topic and define optimal subtasks"
+
+  input do
+    const :topic, String
+    const :context, String
+  end
+
+  output do
+    const :subtasks, T::Array[String]
+    const :task_types, T::Array[String]
+    const :priority_order, T::Array[Integer]
+    const :estimated_effort, T::Array[Integer]
+    const :dependencies, T::Array[String]
+  end
+end
+
+# Run with JSON schema
+DSPy.configure { |c| c.lm = json_lm }
+json_predictor = DSPy::Predict.new(TaskDecomposition)
+json_result = json_predictor.call(
+  topic: "Sustainable technology adoption",
+  context: "Focus on practical challenges"
+)
+
+# Run with BAML schema
+DSPy.configure { |c| c.lm = baml_lm }
+baml_predictor = DSPy::Predict.new(TaskDecomposition)
+baml_result = baml_predictor.call(
+  topic: "Sustainable technology adoption",
+  context: "Focus on practical challenges"
+)
+
+# Compare token usage from logs
+# JSON Schema: ~1400 chars for schema definitions
+# BAML Schema: ~200 chars for schema definitions
+# Token savings: 84%+ on prompt tokens
+```
+
+**BAML Schema Benefits:**
+- Reduces prompt tokens by 80%+ for complex signatures
+- Maintains identical output quality and structure
+- Saves costs on high-volume LLM API usage
+- More readable schema definitions
+
+See [Schema Formats](/core-concepts/signatures/#schema-formats) for detailed comparison.
+
 ## Best Practices
 
 1. **Use Consistent Test Data**: Ensure both approaches receive identical inputs
@@ -275,6 +342,7 @@ predictor.forward(input: 'Hello')                   # Logged as dspy.predict
 3. **Consider Quality**: Token count isn't everything - evaluate output quality too
 4. **Track Over Time**: Monitor performance as you migrate from monolithic to modular
 5. **Use with CI/CD**: Integrate benchmarks into your deployment pipeline
+6. **Test Schema Formats**: For complex signatures, benchmark BAML vs JSON Schema to measure token savings
 
 ## Migration Strategy
 

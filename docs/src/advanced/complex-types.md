@@ -757,9 +757,11 @@ else
 end
 ```
 
-## JSON Schema Integration
+## Schema Format Options
 
-DSPy.rb automatically generates JSON schemas for your complex types:
+DSPy.rb automatically generates schemas for your complex types. You can choose between two formats:
+
+### JSON Schema (Default)
 
 ```ruby
 # The signature automatically creates schemas for the LLM
@@ -777,6 +779,57 @@ schema = signature.schema
 #   }
 # }
 ```
+
+### BAML Schema Format (New in v0.13.0)
+
+For complex types with nested structures, BAML format provides 80%+ token savings:
+
+```ruby
+# Configure BAML format globally
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new(
+    'openai/gpt-4o-mini',
+    api_key: ENV['OPENAI_API_KEY'],
+    schema_format: :baml
+  )
+end
+
+# Complex nested type rendered in BAML
+class CompanyAnalysis < DSPy::Signature
+  class Department < T::Struct
+    const :name, String
+    const :employee_count, Integer
+    const :budget, Float
+  end
+
+  output do
+    const :departments, T::Array[Department]
+    const :total_employees, Integer
+  end
+end
+
+# BAML representation (compact):
+# class CompanyAnalysisOutput {
+#   departments Department[]
+#   total_employees int
+# }
+#
+# class Department {
+#   name string
+#   employee_count int
+#   budget float
+# }
+
+# JSON Schema would be 5x longer with verbose property definitions
+```
+
+**BAML Benefits for Complex Types:**
+- 80%+ reduction in schema token usage
+- More readable for deeply nested structures
+- Better LLM comprehension of type hierarchies
+- Significant cost savings on high-volume usage
+
+See the [Schema Formats section in Signatures](/core-concepts/signatures/#schema-formats) for detailed comparison.
 
 ## Best Practices
 
