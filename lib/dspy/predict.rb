@@ -57,6 +57,8 @@ module DSPy
     def initialize(signature_class)
       super()
       @signature_class = signature_class
+
+      # Prompt will read schema_format from config automatically
       @prompt = Prompt.from_signature(signature_class)
     end
 

@@ -39,7 +39,7 @@ RSpec.describe 'DSPy Configuration Error Handling' do
   after do
     # Restore a default LM to avoid affecting other tests
     DSPy.configure do |config|
-      mock_lm = instance_double(DSPy::LM, model: 'gpt-3.5-turbo')
+      mock_lm = instance_double(DSPy::LM, model: 'gpt-3.5-turbo', schema_format: :json)
       config.lm = T.unsafe(mock_lm)
     end
   end

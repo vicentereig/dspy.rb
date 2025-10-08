@@ -393,7 +393,7 @@ These examples show real usage patterns and can be run with your API keys.
 
 ### Advanced Applications
 - **[RAG Optimization](/advanced/rag/)** - Use GEPA to optimize retrieval-augmented generation systems  
-- **[Complex Types](/advanced/complex-types/)** - Optimize programs working with structured data
+- **[Rich Types](/advanced/complex-types/)** - Optimize programs working with structured data
 - **[Multi-stage Pipelines](/advanced/pipelines/)** - Optimize complex processing workflows
 
 ### Framework Comparison

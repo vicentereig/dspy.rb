@@ -1,0 +1,17 @@
+Model,Format,Success,Response Time (ms),Cost ($),Input Tokens,Output Tokens,Total Tokens,Error
+gpt-4o,JSON,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gpt-4o,BAML,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gpt-4o-mini,JSON,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gpt-4o-mini,BAML,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gpt-5,JSON,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gpt-5,BAML,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gpt-5-mini,JSON,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gpt-5-mini,BAML,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+claude-sonnet-4-5-20250929,JSON,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+claude-sonnet-4-5-20250929,BAML,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+claude-opus-4-1-20250805,JSON,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+claude-opus-4-1-20250805,BAML,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gemini-2.5-pro,JSON,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gemini-2.5-pro,BAML,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gemini-2.5-flash,JSON,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy
+gemini-2.5-flash,BAML,No,N/A,N/A,N/A,N/A,N/A,undefined method `configuration' for module DSPy

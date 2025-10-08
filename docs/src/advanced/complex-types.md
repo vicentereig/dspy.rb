@@ -1,11 +1,11 @@
 ---
 layout: docs
-name: Complex Types
+name: Rich Types
 description: Working with enums, structs, and collections in DSPy.rb
 breadcrumb:
 - name: Advanced
   url: "/advanced/"
-- name: Complex Types
+- name: Rich Types
   url: "/advanced/complex-types/"
 prev:
   name: Advanced
@@ -16,7 +16,7 @@ next:
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-07-21 00:00:00 +0000
 ---
-# Complex Types
+# Rich Types
 
 DSPy.rb provides support for structured data types beyond simple strings through integration with Sorbet's type system. You can use enums, structs, arrays, and hashes to create well-defined interfaces for your LLM applications.
 
@@ -757,9 +757,11 @@ else
 end
 ```
 
-## JSON Schema Integration
+## Schema Format Options
 
-DSPy.rb automatically generates JSON schemas for your complex types:
+DSPy.rb automatically generates schemas for your rich types. You can choose between two formats:
+
+### JSON Schema (Default)
 
 ```ruby
 # The signature automatically creates schemas for the LLM
@@ -777,6 +779,57 @@ schema = signature.schema
 #   }
 # }
 ```
+
+### BAML Schema Format (New in v0.13.0)
+
+For rich types with nested structures, BAML format provides 80%+ token savings:
+
+```ruby
+# Configure BAML format globally
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new(
+    'openai/gpt-4o-mini',
+    api_key: ENV['OPENAI_API_KEY'],
+    schema_format: :baml
+  )
+end
+
+# Complex nested type rendered in BAML
+class CompanyAnalysis < DSPy::Signature
+  class Department < T::Struct
+    const :name, String
+    const :employee_count, Integer
+    const :budget, Float
+  end
+
+  output do
+    const :departments, T::Array[Department]
+    const :total_employees, Integer
+  end
+end
+
+# BAML representation (compact):
+# class CompanyAnalysisOutput {
+#   departments Department[]
+#   total_employees int
+# }
+#
+# class Department {
+#   name string
+#   employee_count int
+#   budget float
+# }
+
+# JSON Schema would be 5x longer with verbose property definitions
+```
+
+**BAML Benefits for Rich Types:**
+- 80%+ reduction in schema token usage
+- More readable for deeply nested structures
+- Better LLM comprehension of type hierarchies
+- Significant cost savings on high-volume usage
+
+See the [Schema Formats section in Signatures](/core-concepts/signatures/#schema-formats) for detailed comparison.
 
 ## Best Practices
 
@@ -931,12 +984,12 @@ result2 = predictor.call(input: "more text")
 ```
 
 **Provider Optimization:**
-Different providers handle complex types differently:
+Different providers handle rich types differently:
 - **OpenAI Structured Outputs**: Excellent for 1-3 level nesting
 - **Anthropic**: Robust JSON extraction handles most complexity
 - **Enhanced Prompting**: Fallback for any provider, handles simpler structures better
 
-### Troubleshooting Complex Types
+### Troubleshooting Rich Types
 
 **Type Coercion Issues:**
 If you get Hash objects instead of T::Struct instances:

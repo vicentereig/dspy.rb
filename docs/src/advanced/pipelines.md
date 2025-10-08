@@ -8,7 +8,7 @@ breadcrumb:
 - name: Multi-stage Pipelines
   url: "/advanced/pipelines/"
 prev:
-  name: Complex Types
+  name: Rich Types
   url: "/advanced/complex-types/"
 next:
   name: Retrieval Augmented Generation

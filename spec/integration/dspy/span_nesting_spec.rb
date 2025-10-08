@@ -43,13 +43,14 @@ RSpec.describe "Span Nesting in DSPy::Predict" do
     end
     
     # Mock the LM to simulate the real flow without API calls
+    allow(mock_lm).to receive(:schema_format).and_return(:json)
     allow(mock_lm).to receive(:chat) do |inference_module, input_values|
       # Simulate the LM.chat method creating its own span
       DSPy::Context.with_span(operation: 'llm.generate', 'langfuse.observation.type' => 'generation') do
         { response: "Mock LM response" }
       end
     end
-    
+
     # Configure DSPy with mock LM
     DSPy.configure { |config| config.lm = mock_lm }
   end
