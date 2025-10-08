@@ -287,7 +287,7 @@ baml_lm = DSPy::LM.new(
   schema_format: :baml
 )
 
-# Benchmark a complex signature
+# Benchmark a rich signature
 class TaskDecomposition < DSPy::Signature
   description "Analyze topic and define optimal subtasks"
 
@@ -328,7 +328,7 @@ baml_result = baml_predictor.call(
 ```
 
 **BAML Schema Benefits:**
-- Reduces prompt tokens by 80%+ for complex signatures
+- Reduces prompt tokens by 80%+ for rich signatures
 - Maintains identical output quality and structure
 - Saves costs on high-volume LLM API usage
 - More readable schema definitions
@@ -342,7 +342,7 @@ See [Schema Formats](/core-concepts/signatures/#schema-formats) for detailed com
 3. **Consider Quality**: Token count isn't everything - evaluate output quality too
 4. **Track Over Time**: Monitor performance as you migrate from monolithic to modular
 5. **Use with CI/CD**: Integrate benchmarks into your deployment pipeline
-6. **Test Schema Formats**: For complex signatures, benchmark BAML vs JSON Schema to measure token savings
+6. **Test Schema Formats**: For rich signatures, benchmark BAML vs JSON Schema to measure token savings
 
 ## Migration Strategy
 

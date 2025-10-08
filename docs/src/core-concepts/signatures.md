@@ -186,7 +186,7 @@ class FlexibleExtraction < DSPy::Signature
 end
 ```
 
-For more complex union types with structs and automatic type conversion, see the [Union Types section in Complex Types](/advanced/complex-types/#union-types).
+For more complex union types with structs and automatic type conversion, see the [Union Types section in Rich Types](/advanced/complex-types/#union-types).
 
 ## Optional Fields
 
@@ -396,7 +396,7 @@ class TextClassifierOutput {
 
 **Token Savings: 84.4%** (verified by integration tests)
 
-For complex signatures with nested types, BAML saves 80-85% of prompt tokens used for schema definitions in Enhanced Prompting mode.
+For rich signatures with nested types, BAML saves 80-85% of prompt tokens used for schema definitions in Enhanced Prompting mode.
 
 **Note**: BAML format applies only to Enhanced Prompting mode (`structured_outputs: false`). When using Structured Outputs mode (`structured_outputs: true`), OpenAI's native API receives the JSON Schema directly and BAML format has no effect.
 
@@ -448,7 +448,7 @@ DSPy automatically converts LLM JSON responses to the proper Ruby types:
 - **Arrays**: Elements are converted recursively
 - **Defaults**: Missing fields use their default values
 
-See [Complex Types](/advanced/complex-types/#automatic-type-conversion-with-dspy-prediction) for detailed information.
+See [Rich Types](/advanced/complex-types/#automatic-type-conversion-with-dspy-prediction) for detailed information.
 
 ## Testing Signatures
 

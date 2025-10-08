@@ -441,5 +441,5 @@ Both examples demonstrate:
 
 - Run the examples locally with your API keys
 - Explore custom signature designs for your use cases
-- Learn about [complex types](./complex-types.md) for advanced structured outputs
+- Learn about [rich types](./complex-types.md) for advanced structured outputs
 - Check [provider documentation](../production/troubleshooting.md) for model-specific features

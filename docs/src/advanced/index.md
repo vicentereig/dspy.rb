@@ -29,8 +29,8 @@ Build complex multi-stage processing pipelines that combine multiple modules for
 ### [RAG (Retrieval-Augmented Generation)](./rag/)
 Implement retrieval-augmented generation patterns to ground your LLM responses in real data.
 
-### [Complex Types](./complex-types/)
-Work with structured data, nested objects, and complex type hierarchies in your signatures.
+### [Rich Types](./complex-types/)
+Work with structured data, nested objects, and rich type hierarchies in your signatures.
 
 ### [Rails Integration](./rails-integration/)
 Integrate DSPy.rb seamlessly with Ruby on Rails applications, including enum handling and service patterns.

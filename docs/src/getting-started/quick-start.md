@@ -247,7 +247,7 @@ agent = DSPy::ReAct.new(
 )
 ```
 
-**Note**: Sorbet type signatures help DSPy.rb generate accurate JSON schemas for the LLM, leading to more reliable tool usage and better handling of complex types.
+**Note**: Sorbet type signatures help DSPy.rb generate accurate JSON schemas for the LLM, leading to more reliable tool usage and better handling of rich types.
 
 ## Key Concepts
 

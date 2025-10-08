@@ -9,7 +9,7 @@ breadcrumb:
   url: "/advanced/memory-systems/"
 nav:
   prev:
-    name: Complex Types
+    name: Rich Types
     url: "/advanced/complex-types/"
   next:
     name: RAG
