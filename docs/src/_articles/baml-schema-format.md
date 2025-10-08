@@ -3,7 +3,7 @@ layout: blog
 title: "Rich Signatures, Lean Schemas"
 date: 2025-10-07
 description: "When signatures hit 5+ fields, JSON Schema overhead eats hundreds of tokens per call. BAML keeps them compact—no retraining needed."
-author: "DSPy.rb Team"
+author: "Vicente Reig Rincon de Arellano"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/baml-schema-format/"
 image: /images/og/baml-schema-format.png
 ---
@@ -18,8 +18,12 @@ Here's a basic signature - just input and output:
 
 ```ruby
 class SentimentAnalysis < DSPy::Signature
-  input :text, String
-  output :sentiment, String, desc: "positive, negative, or neutral"
+  input do
+    const :text, String
+  end
+  output do
+    const :sentiment, String, description: "positive, negative, or neutral"
+  end
 end
 ```
 
@@ -31,18 +35,25 @@ But real applications need more structure. Task decomposition, for example:
 
 ```ruby
 class TaskDecomposition < DSPy::Signature
-  input :main_task, String
+  description "Autonomously analyze a research topic and define optimal subtasks"
 
-  output :subtasks, T::Array[String]
-  output :task_types, T::Array[String]
-  output :priority_order, T::Array[Integer]
-  output :dependencies, T::Hash[String, T::Array[String]]
-  output :estimated_hours, T::Array[Float]
-  output :risk_level, String
+  input do
+    const :topic, String, description: "The main research topic to investigate"
+    const :context, String, description: "Any additional context or constraints"
+  end
+
+  output do
+    const :subtasks, T::Array[String], description: "Research subtasks with clear objectives"
+    const :task_types, T::Array[String], description: "Type classification for each task"
+    const :priority_order, T::Array[Integer], description: "Priority rankings (1-5 scale)"
+    const :estimated_effort, T::Array[Integer], description: "Effort estimates in hours"
+    const :dependencies, T::Array[String], description: "Task dependency relationships"
+    const :agent_requirements, T::Array[String], description: "Suggested agent types/skills"
+  end
 end
 ```
 
-Six fields. Nested types. This is where schemas start creeping into your prompts.
+Six output fields with descriptions. Nested types. This is where schemas start creeping into your prompts.
 
 ## The Schema Problem
 
@@ -55,32 +66,36 @@ With Enhanced Prompting (the default mode in DSPy.rb), schemas are embedded dire
   "properties": {
     "subtasks": {
       "type": "array",
-      "items": {"type": "string"}
+      "items": {"type": "string"},
+      "description": "Research subtasks with clear objectives"
     },
     "task_types": {
       "type": "array",
-      "items": {"type": "string"}
+      "items": {"type": "string"},
+      "description": "Type classification for each task"
     },
     "priority_order": {
       "type": "array",
-      "items": {"type": "integer"}
+      "items": {"type": "integer"},
+      "description": "Priority rankings (1-5 scale)"
+    },
+    "estimated_effort": {
+      "type": "array",
+      "items": {"type": "integer"},
+      "description": "Effort estimates in hours"
     },
     "dependencies": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "array",
-        "items": {"type": "string"}
-      }
-    },
-    "estimated_hours": {
       "type": "array",
-      "items": {"type": "number"}
+      "items": {"type": "string"},
+      "description": "Task dependency relationships"
     },
-    "risk_level": {
-      "type": "string"
+    "agent_requirements": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Suggested agent types/skills"
     }
   },
-  "required": ["subtasks", "task_types", "priority_order", "dependencies", "estimated_hours", "risk_level"]
+  "required": ["subtasks", "task_types", "priority_order", "estimated_effort", "dependencies", "agent_requirements"]
 }
 ```
 
@@ -90,16 +105,16 @@ For rich signatures, JSON Schema verbosity becomes a real cost. Each API call ca
 
 ## BAML: The Simple Fix
 
-DSPy.rb v0.28.2 adds [BAML](https://docs.boundaryml.com) schema format support. BAML provides the same information compactly:
+[DSPy.rb v0.28.2](https://github.com/vicentereig/dspy.rb) adds [BAML](https://github.com/vicentereig/sorbet-baml) schema format support via the [`sorbet-baml`](https://github.com/vicentereig/sorbet-baml) gem. BAML provides the same information compactly:
 
 ```baml
 class TaskDecomposition {
   subtasks string[]
   task_types string[]
   priority_order int[]
-  dependencies map<string, string[]>
-  estimated_hours float[]
-  risk_level string
+  estimated_effort int[]
+  dependencies string[]
+  agent_requirements string[]
 }
 ```
 
@@ -144,7 +159,10 @@ end
 
 # Use any signature - BAML is automatic
 predictor = DSPy::Predict.new(TaskDecomposition)
-result = predictor.call(main_task: "Build user authentication")
+result = predictor.call(
+  topic: "Build user authentication",
+  context: "Focus on security best practices"
+)
 ```
 
 Works with all providers in Enhanced Prompting mode: OpenAI, Anthropic, Gemini, Ollama.
