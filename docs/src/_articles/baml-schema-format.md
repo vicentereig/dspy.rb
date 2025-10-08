@@ -20,7 +20,7 @@ DSPy.rb v0.28.2 adds [BAML](https://docs.boundaryml.com) schema format support -
 # Enhanced Prompting - BAML saves 84%+ tokens
 lm = DSPy::LM.new(
   'openai/gpt-4o-mini',
-  structured_outputs: false,  # Schema in prompt
+  structured_outputs: false,  # Schema in prompt (default)
   schema_format: :baml        # Use compact format
 )
 ```
@@ -88,15 +88,6 @@ predictor = DSPy::Predict.new(YourSignature)
 result = predictor.call(input: "...")
 ```
 
-Or per-signature:
-
-```ruby
-prompt = DSPy::Prompt.from_signature(
-  YourSignature,
-  schema_format: :baml
-)
-```
-
 ## Verified Performance
 
 From [integration tests](https://github.com/vicentereig/dspy.rb/blob/main/spec/integration/baml_schema_format_spec.rb):
@@ -151,11 +142,11 @@ DSPy::LM.new('ollama/llama3.2', schema_format: :baml)
 
 ## Requirements
 
-[`sorbet-baml`](https://github.com/maxveldink/sorbet-baml) gem (automatically included with `dspy-rb`):
+[`sorbet-baml`](https://github.com/vicentereig/sorbet-baml) gem (automatically included with `dspy`):
 
 ```ruby
 # Gemfile
-gem 'dspy-rb'
+gem 'dspy'
 ```
 
 No additional setup needed - BAML generation is automatic from your Sorbet types.
