@@ -1,11 +1,11 @@
 ---
 layout: docs
-name: Complex Types
+name: Rich Types
 description: Working with enums, structs, and collections in DSPy.rb
 breadcrumb:
 - name: Advanced
   url: "/advanced/"
-- name: Complex Types
+- name: Rich Types
   url: "/advanced/complex-types/"
 prev:
   name: Advanced
@@ -16,7 +16,7 @@ next:
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-07-21 00:00:00 +0000
 ---
-# Complex Types
+# Rich Types
 
 DSPy.rb provides support for structured data types beyond simple strings through integration with Sorbet's type system. You can use enums, structs, arrays, and hashes to create well-defined interfaces for your LLM applications.
 
@@ -759,7 +759,7 @@ end
 
 ## Schema Format Options
 
-DSPy.rb automatically generates schemas for your complex types. You can choose between two formats:
+DSPy.rb automatically generates schemas for your rich types. You can choose between two formats:
 
 ### JSON Schema (Default)
 
@@ -782,7 +782,7 @@ schema = signature.schema
 
 ### BAML Schema Format (New in v0.13.0)
 
-For complex types with nested structures, BAML format provides 80%+ token savings:
+For rich types with nested structures, BAML format provides 80%+ token savings:
 
 ```ruby
 # Configure BAML format globally
@@ -823,7 +823,7 @@ end
 # JSON Schema would be 5x longer with verbose property definitions
 ```
 
-**BAML Benefits for Complex Types:**
+**BAML Benefits for Rich Types:**
 - 80%+ reduction in schema token usage
 - More readable for deeply nested structures
 - Better LLM comprehension of type hierarchies
@@ -984,12 +984,12 @@ result2 = predictor.call(input: "more text")
 ```
 
 **Provider Optimization:**
-Different providers handle complex types differently:
+Different providers handle rich types differently:
 - **OpenAI Structured Outputs**: Excellent for 1-3 level nesting
 - **Anthropic**: Robust JSON extraction handles most complexity
 - **Enhanced Prompting**: Fallback for any provider, handles simpler structures better
 
-### Troubleshooting Complex Types
+### Troubleshooting Rich Types
 
 **Type Coercion Issues:**
 If you get Hash objects instead of T::Struct instances:

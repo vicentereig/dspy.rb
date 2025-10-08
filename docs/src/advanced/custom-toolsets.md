@@ -86,7 +86,7 @@ end
 class AdvancedToolset < DSPy::Tools::Toolset
   toolset_name "advanced"
   
-  tool :process_task, description: "Process a task with complex types"
+  tool :process_task, description: "Process a task with rich types"
   
   # LLMs can provide JSON that gets automatically converted
   sig { params(

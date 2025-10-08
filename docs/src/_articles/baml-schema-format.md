@@ -10,26 +10,43 @@ image: /images/og/baml-schema-format.png
 
 # BAML Schema Format: 84%+ Token Savings
 
-DSPy.rb v0.28.2 adds [BAML](https://docs.boundaryml.com) schema format support - a compact alternative to JSON Schema that saves 84%+ prompt tokens in Enhanced Prompting mode.
+I find writing Signatures instead of Prompts similar to modeling databases with ActiveRecord. You use objects to model the world as you want your prompt to see it. Start simple, add complexity as needed, and the framework handles the details.
 
-## Enhanced Prompting vs Structured Outputs
+## Starting Simple
 
-**BAML applies only to Enhanced Prompting mode** (`structured_outputs: false`), where schemas are embedded in prompts:
+Here's a basic signature - just input and output:
 
 ```ruby
-# Enhanced Prompting - BAML saves 84%+ tokens
-lm = DSPy::LM.new(
-  'openai/gpt-4o-mini',
-  structured_outputs: false,  # Schema in prompt (default)
-  schema_format: :baml        # Use compact format
-)
+class SentimentAnalysis < DSPy::Signature
+  input :text, String
+  output :sentiment, String, desc: "positive, negative, or neutral"
+end
 ```
 
-With `structured_outputs: true`, OpenAI receives JSON Schema via API - the schema never appears in the prompt, so BAML has no effect.
+Clean. Minimal. The LM receives a compact schema that fits in a few lines.
 
-## The Problem
+## Signatures Get Richer
 
-JSON schemas are verbose. Example output schema:
+But real applications need more structure. Task decomposition, for example:
+
+```ruby
+class TaskDecomposition < DSPy::Signature
+  input :main_task, String
+
+  output :subtasks, T::Array[String]
+  output :task_types, T::Array[String]
+  output :priority_order, T::Array[Integer]
+  output :dependencies, T::Hash[String, T::Array[String]]
+  output :estimated_hours, T::Array[Float]
+  output :risk_level, String
+end
+```
+
+Six fields. Nested types. This is where schemas start creeping into your prompts.
+
+## The Schema Problem
+
+With Enhanced Prompting (the default mode in DSPy.rb), schemas are embedded directly in prompts. Here's what the LM actually receives for `TaskDecomposition`:
 
 ```json
 {
@@ -47,33 +64,75 @@ JSON schemas are verbose. Example output schema:
     "priority_order": {
       "type": "array",
       "items": {"type": "integer"}
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {"type": "string"}
+      }
+    },
+    "estimated_hours": {
+      "type": "array",
+      "items": {"type": "number"}
+    },
+    "risk_level": {
+      "type": "string"
     }
   },
-  "required": ["subtasks", "task_types", "priority_order"]
+  "required": ["subtasks", "task_types", "priority_order", "dependencies", "estimated_hours", "risk_level"]
 }
 ```
 
-**1,378 characters (~345 tokens)**
+**1,378 characters. ~345 tokens. Every. Single. Call.**
 
-## The Solution
+For rich signatures, JSON Schema verbosity becomes a real cost. Each API call carries hundreds of tokens just describing the output structure.
 
-BAML provides the same information compactly:
+## BAML: The Simple Fix
+
+DSPy.rb v0.28.2 adds [BAML](https://docs.boundaryml.com) schema format support. BAML provides the same information compactly:
 
 ```baml
-class TaskDecompositionOutput {
+class TaskDecomposition {
   subtasks string[]
   task_types string[]
   priority_order int[]
+  dependencies map<string, string[]>
+  estimated_hours float[]
+  risk_level string
 }
 ```
 
-**200 characters (~50 tokens)**
+**200 characters. ~50 tokens. 85.5% savings.**
 
-**Savings: 85.5% fewer tokens**
+Same structure. Same type safety. Same validation. But 295 fewer tokens per call.
+
+## Verified Performance
+
+From our [integration tests](https://github.com/vicentereig/dspy.rb/blob/main/spec/integration/baml_schema_format_spec.rb) across multiple signatures:
+
+**TaskDecomposition (6 fields):**
+- JSON: 1,378 chars (~345 tokens)
+- BAML: 200 chars (~50 tokens)
+- **Savings: 85.5% (~295 tokens/call)**
+
+**ResearchExecution (6 fields):**
+- JSON: 1,148 chars (~287 tokens)
+- BAML: 195 chars (~49 tokens)
+- **Savings: 83.0% (~238 tokens/call)**
+
+**Aggregate across all tests:**
+- JSON: 2,526 chars (~632 tokens)
+- BAML: 395 chars (~99 tokens)
+- **Savings: 84.4% (~533 tokens/call)**
+
+Quality: 100% identical outputs across all tests.
+
+No training needed. No optimization required. Your baseline signatures just got more efficient.
 
 ## How to Use
 
-Configure globally:
+One configuration change:
 
 ```ruby
 DSPy.configure do |c|
@@ -84,78 +143,38 @@ DSPy.configure do |c|
 end
 
 # Use any signature - BAML is automatic
-predictor = DSPy::Predict.new(YourSignature)
-result = predictor.call(input: "...")
+predictor = DSPy::Predict.new(TaskDecomposition)
+result = predictor.call(main_task: "Build user authentication")
 ```
 
-## Verified Performance
+Works with all providers in Enhanced Prompting mode: OpenAI, Anthropic, Gemini, Ollama.
 
-From [integration tests](https://github.com/vicentereig/dspy.rb/blob/main/spec/integration/baml_schema_format_spec.rb):
+## When It Matters
 
-**TaskDecomposition (6 fields):**
-- JSON: 1,378 chars (~345 tokens)
-- BAML: 200 chars (~50 tokens)
-- Savings: **85.5% (~295 tokens/call)**
+BAML shines with:
+- **Complex signatures** (5+ fields, nested types)
+- **High-volume applications** (the savings compound)
+- **Cost-sensitive projects** (every token counts)
 
-**ResearchExecution (6 fields):**
-- JSON: 1,148 chars (~287 tokens)
-- BAML: 195 chars (~49 tokens)
-- Savings: **83.0% (~238 tokens/call)**
+For simple 1-3 field signatures, the difference is negligible.
 
-**Aggregate:**
-- JSON: 2,526 chars (~632 tokens)
-- BAML: 395 chars (~99 tokens)
-- Savings: **84.4% (~533 tokens/call)**
-
-Quality: 100% identical outputs across all tests.
-
-## When to Use BAML
-
-**Use BAML when:**
-- Complex signatures (5+ fields)
-- Enhanced Prompting mode (`structured_outputs: false`)
-- High API call volumes
-- Cost-sensitive applications
-
-**Stick with JSON when:**
-- Simple signatures (1-3 fields)
-- Structured Outputs mode (`structured_outputs: true`)
-- Legacy compatibility needed
-
-## Provider Support
-
-Works with all providers in Enhanced Prompting mode:
-
-```ruby
-# OpenAI
-DSPy::LM.new('openai/gpt-4o-mini', schema_format: :baml)
-
-# Anthropic
-DSPy::LM.new('anthropic/claude-sonnet-4-5', schema_format: :baml)
-
-# Google Gemini
-DSPy::LM.new('gemini/gemini-2.5-pro', schema_format: :baml)
-
-# Ollama (local)
-DSPy::LM.new('ollama/llama3.2', schema_format: :baml)
-```
+If you're using OpenAI's Structured Outputs mode (`structured_outputs: true`), schemas are sent via API instead of in prompts - BAML has no effect there since schemas never appear in the prompt.
 
 ## Requirements
 
-[`sorbet-baml`](https://github.com/vicentereig/sorbet-baml) gem (automatically included with `dspy`):
+The [`sorbet-baml`](https://github.com/vicentereig/sorbet-baml) gem is automatically included with DSPy.rb:
 
 ```ruby
 # Gemfile
 gem 'dspy'
 ```
 
-No additional setup needed - BAML generation is automatic from your Sorbet types.
+BAML generation is automatic from your Sorbet type signatures - no additional setup needed.
 
 ## Resources
 
 - [Schema Formats Documentation](https://vicentereig.github.io/dspy.rb/core-concepts/signatures/#schema-formats)
-- [Complex Types Guide](https://vicentereig.github.io/dspy.rb/advanced/complex-types/#schema-format-options)
+- [Rich Types Guide](https://vicentereig.github.io/dspy.rb/advanced/complex-types/#schema-format-options)
 - [Getting Started](https://vicentereig.github.io/dspy.rb/getting-started/quick-start/)
 - [DSPy.rb GitHub](https://github.com/vicentereig/dspy.rb)
 - [Integration Tests](https://github.com/vicentereig/dspy.rb/blob/main/spec/integration/baml_schema_format_spec.rb)
-- [OpenAI Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs) (comparison)
