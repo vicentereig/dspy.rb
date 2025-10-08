@@ -1,14 +1,14 @@
 ---
 layout: blog
-title: "BAML Schema Format: 84%+ Token Savings"
+title: "Rich Signatures, Lean Schemas"
 date: 2025-10-07
-description: "BAML schema format reduces prompt tokens by 84% in Enhanced Prompting mode"
+description: "When signatures hit 5+ fields, JSON Schema overhead eats hundreds of tokens per call. BAML keeps them compact—no retraining needed."
 author: "DSPy.rb Team"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/baml-schema-format/"
 image: /images/og/baml-schema-format.png
 ---
 
-# BAML Schema Format: 84%+ Token Savings
+# Rich Signatures, Lean Schemas
 
 I find writing Signatures instead of Prompts similar to modeling databases with ActiveRecord. You use objects to model the world as you want your prompt to see it. Start simple, add complexity as needed, and the framework handles the details.
 
