@@ -44,7 +44,7 @@ module DSPy
           @use_task_description = true
           @use_input_output_analysis = true
           @use_few_shot_examples = true
-          @proposal_model = "gpt-4o-mini"
+          @proposal_model = DSPy.config.lm.model
         end
       end
 
@@ -433,6 +433,8 @@ module DSPy
         if analysis[:common_themes]&.include?("classification")
           requirements << "Encourage careful categorization"
         end
+
+        requirements << "Max instruction length: #{ @config.max_instruction_length } characters"
         
         requirements.join(". ") + "."
       end

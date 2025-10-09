@@ -144,6 +144,50 @@ module DSPy
       super(enhanced_signature)
     end
 
+    # Expose the prompt from the thought generator for inspection
+    sig { returns(DSPy::Prompt) }
+    def prompt
+      @thought_generator.instance_variable_get(:@prompt)
+    end
+
+    # Override with_instruction to properly handle ReAct's complex initialization
+    sig { params(instruction: String).returns(ReAct) }
+    def with_instruction(instruction)
+      # Create new ReAct instance with original signature and same tools/config
+      new_react = self.class.new(
+        @original_signature_class,
+        tools: @tools.values,
+        max_iterations: @max_iterations
+      )
+
+      # Apply instruction to internal thought generator
+      new_react.instance_variable_set(
+        :@thought_generator,
+        new_react.instance_variable_get(:@thought_generator).with_instruction(instruction)
+      )
+
+      new_react
+    end
+
+    # Override with_examples to properly handle ReAct's complex initialization
+    sig { params(examples: T::Array[FewShotExample]).returns(ReAct) }
+    def with_examples(examples)
+      # Create new ReAct instance with original signature and same tools/config
+      new_react = self.class.new(
+        @original_signature_class,
+        tools: @tools.values,
+        max_iterations: @max_iterations
+      )
+
+      # Apply examples to internal thought generator
+      new_react.instance_variable_set(
+        :@thought_generator,
+        new_react.instance_variable_get(:@thought_generator).with_examples(examples)
+      )
+
+      new_react
+    end
+
     sig { params(kwargs: T.untyped).returns(T.untyped).override }
     def forward(**kwargs)
       # Validate input
@@ -582,6 +626,7 @@ module DSPy
 
     sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], observation: T.untyped, available_tools_desc: T::Array[AvailableTool], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
     def process_observation_and_decide_next_step(input_struct, history, observation, available_tools_desc, iteration)
+      # Using a finish tool like the original does would be a lot better! This doubles the number of LLM calls to do the job.
       observation_result = @observation_processor.forward(
         input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
         history: serialize_history_for_llm(history),

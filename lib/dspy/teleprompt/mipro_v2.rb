@@ -102,6 +102,7 @@ module DSPy
       # Dry-configurable settings for MIPROv2
       setting :num_trials, default: 12
       setting :num_instruction_candidates, default: 5
+      setting :max_instruction_length, default: 1000 # original 200 was WAY TOO SHORT
       setting :bootstrap_sets, default: 5
       setting :max_bootstrapped_examples, default: 4
       setting :max_labeled_examples, default: 16
@@ -304,6 +305,9 @@ module DSPy
           # Phase 2: Generate instruction candidates
           emit_event('phase_start', { phase: 2, name: 'instruction_proposal' })
           proposal_result = phase_2_propose_instructions(program, typed_trainset, bootstrap_result)
+          proposal_result.candidate_instructions.each do
+            puts "CANDIDATE: #{ it }"
+          end
           emit_event('phase_complete', { 
             phase: 2, 
             num_candidates: proposal_result.num_candidates,
@@ -372,6 +376,7 @@ module DSPy
 
         # Configure proposer for this optimization run
         @proposer.config.num_instruction_candidates = config.num_instruction_candidates
+        @proposer.config.max_instruction_length = config.max_instruction_length
 
         @proposer.propose_instructions(
           signature_class,
