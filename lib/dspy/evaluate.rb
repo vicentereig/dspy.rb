@@ -446,9 +446,9 @@ module DSPy
       proc do |example, prediction|
         expected = extract_field(example, field)
         actual = extract_field(prediction, field)
-        
-        return false if expected.nil? || actual.nil?
-        
+
+        next false if expected.nil? || actual.nil?
+
         if case_sensitive
           expected.to_s == actual.to_s
         else
@@ -468,9 +468,9 @@ module DSPy
       proc do |example, prediction|
         expected = extract_field(example, field)
         actual = extract_field(prediction, field)
-        
-        return false if expected.nil? || actual.nil?
-        
+
+        next false if expected.nil? || actual.nil?
+
         if case_sensitive
           actual.to_s.include?(expected.to_s)
         else
@@ -490,15 +490,15 @@ module DSPy
       proc do |example, prediction|
         expected = extract_field(example, field)
         actual = extract_field(prediction, field)
-        
-        return { passed: false, error: "Missing values" } if expected.nil? || actual.nil?
-        
+
+        next { passed: false, error: "Missing values" } if expected.nil? || actual.nil?
+
         begin
           expected_num = Float(expected)
           actual_num = Float(actual)
           difference = (expected_num - actual_num).abs
           passed = difference <= tolerance
-          
+
           {
             passed: passed,
             difference: difference,
