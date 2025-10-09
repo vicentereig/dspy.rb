@@ -305,6 +305,9 @@ module DSPy
           # Phase 2: Generate instruction candidates
           emit_event('phase_start', { phase: 2, name: 'instruction_proposal' })
           proposal_result = phase_2_propose_instructions(program, typed_trainset, bootstrap_result)
+          proposal_result.candidate_instructions.each do
+            puts "CANDIDATE: #{ it }"
+          end
           emit_event('phase_complete', { 
             phase: 2, 
             num_candidates: proposal_result.num_candidates,
