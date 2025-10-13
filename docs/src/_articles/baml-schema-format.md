@@ -243,40 +243,46 @@ From our [integration tests](https://github.com/vicentereig/dspy.rb/blob/main/sp
 
 ### Token Comparison by Schema Format
 
-<table class="charts-css bar show-labels data-end data-spacing-10" style="height: 350px; --labels-size: 180px;">
+<table class="charts-css bar multiple show-labels data-end data-spacing-8" style="height: 450px; --labels-size: 180px;">
   <thead>
     <tr>
-      <th scope="col">Signature / Format</th>
-      <th scope="col">Token Count</th>
+      <th scope="col">Signature</th>
+      <th scope="col">JSON Schema</th>
+      <th scope="col">BAML Schema</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th scope="row">ResearchExecution (BAML)</th>
-      <td style="--size: calc(49 / 345); --color: #22c55e;">
-        <span class="data">49 tokens</span>
+      <th scope="row">TaskDecomposition (6 fields)</th>
+      <td style="--size: calc(345 / 632); --color: #ef4444;">
+        <span class="data">345 tokens</span>
       </td>
-    </tr>
-    <tr>
-      <th scope="row">TaskDecomposition (BAML)</th>
-      <td style="--size: calc(50 / 345); --color: #16a34a;">
+      <td style="--size: calc(50 / 632); --color: #22c55e;">
         <span class="data">50 tokens</span>
       </td>
     </tr>
     <tr>
-      <th scope="row">ResearchExecution (JSON)</th>
-      <td style="--size: calc(287 / 345); --color: #ef4444;">
+      <th scope="row">ResearchExecution (6 fields)</th>
+      <td style="--size: calc(287 / 632); --color: #dc2626;">
         <span class="data">287 tokens</span>
+      </td>
+      <td style="--size: calc(49 / 632); --color: #16a34a;">
+        <span class="data">49 tokens</span>
       </td>
     </tr>
     <tr>
-      <th scope="row">TaskDecomposition (JSON)</th>
-      <td style="--size: 1.0; --color: #dc2626;">
-        <span class="data">345 tokens</span>
+      <th scope="row"><strong>Aggregate (all tests)</strong></th>
+      <td style="--size: 1.0; --color: #b91c1c;">
+        <span class="data">632 tokens</span>
+      </td>
+      <td style="--size: calc(99 / 632); --color: #15803d;">
+        <span class="data">99 tokens</span>
       </td>
     </tr>
   </tbody>
 </table>
+
+*Side-by-side comparison: Red bars show JSON Schema token consumption, green bars show BAML Schema savings. TaskDecomposition: 85.5% reduction (345→50 tokens). ResearchExecution: 83.0% reduction (287→49 tokens). **Aggregate: 84.4% reduction (632→99 tokens)** across all tests.*
 
 ### Detailed Performance Breakdown
 
