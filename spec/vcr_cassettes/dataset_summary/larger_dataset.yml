@@ -1,0 +1,1074 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BcqWLXzK8iV7ADvrtB84K3po7RN4AAEBAAAnIQEAALlEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1760367413889.915,"message":"trace_id=\"4cd4a18d-a125-4e61-b191-c756515bf639\"
+        otel_span_stack=[] input_tokens=428 output_tokens=62 total_tokens=490 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"DSPy::Propose::DatasetSummaryGenerator::ObservationSummarizer\"
+        event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BcqWLXzK8iV7ADvrtB84K3po7RN4AAEBAAAnIQEAALlEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Mon, 13 Oct 2025 14:56:57 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-bur-kbur8200096-BUR
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 13 Oct 2025 14:56:57 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"examples\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Sample data points from the dataset\"\n    }\n  },\n  \"required\": [\n    \"examples\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"observations\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Somethings that holds true for most
+        or all of the data you observed\"\n    }\n  },\n  \"required\": [\n    \"observations\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Given several examples from a dataset please write observations
+        about trends that hold for most or all of the samples. Some areas you may
+        consider in your observations: topics, content, syntax, conciceness, etc.
+        It will be useful to make an educated guess as to the nature of the task this
+        dataset will enable. Don''t be afraid to be creative"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"examples\": \"[DSPy::Example(DatasetSummaryTestQA)
+        input={:question => \\\"Question 0 about science?\\\", :context => \\\"Context
+        0 explaining scientific concept\\\"} expected={:answer => \\\"Answer 0\\\",
+        :confidence => 0.8}, DSPy::Example(DatasetSummaryTestQA) input={:question
+        => \\\"Question 1 about science?\\\", :context => \\\"Context 1 explaining
+        scientific concept\\\"} expected={:answer => \\\"Answer 1\\\", :confidence
+        => 0.81}, DSPy::Example(DatasetSummaryTestQA) input={:question => \\\"Question
+        2 about science?\\\", :context => \\\"Context 2 explaining scientific concept\\\"}
+        expected={:answer => \\\"Answer 2\\\", :confidence => 0.8200000000000001}]\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2317'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 14:56:59 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3565'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '4364'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9996'
+      X-Ratelimit-Remaining-Tokens:
+      - '199481'
+      X-Ratelimit-Reset-Requests:
+      - 31.571s
+      X-Ratelimit-Reset-Tokens:
+      - 155ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98dfafb6ed2b90fe-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQEGmfvXC01GSZ3GStuYrChxNVTD2",
+          "object": "chat.completion",
+          "created": 1760367416,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"observations\": \"The dataset consists of examples related to scientific questions and explanations. Each entry follows a consistent structure where a question is posed about a scientific topic, followed by a context that explains the concept. The expected answers demonstrate a high level of confidence, indicating that the dataset is likely designed for training a question-answering model focused on scientific content. The uniformity in the syntax and formulation of the questions suggests a specific goal of ensuring clear and concise communication of scientific information.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 524,
+            "completion_tokens": 107,
+            "total_tokens": 631,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 14:56:59 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BcqWLXzK8iV7ADvrtB84K3po7RN4AAEBAAAnIQEAALlEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1760367419694.544,"message":"trace_id=\"4cd4a18d-a125-4e61-b191-c756515bf639\"
+        otel_span_stack=[] input_tokens=524 output_tokens=107 total_tokens=631 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"DSPy::Propose::DatasetSummaryGenerator::DatasetDescriptor\"
+        event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BcqWLXzK8iV7ADvrtB84K3po7RN4AAEBAAAnIQEAALlEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Mon, 13 Oct 2025 14:57:02 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-bur-kbur8200096-BUR
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 13 Oct 2025 14:57:02 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"examples\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Sample data points from the dataset\"\n    },\n    \"prior_observations\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Some prior observations
+        I made about the data\"\n    }\n  },\n  \"required\": [\n    \"examples\",\n    \"prior_observations\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"observations\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Somethings that holds true for most
+        or all of the data you observed or COMPLETE if you have nothing to add\"\n    }\n  },\n  \"required\":
+        [\n    \"observations\"\n  ]\n}\n```\n\nAll interactions will be structured
+        in the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Given several examples from a dataset please write observations
+        about trends that hold for most or all of the samples. I will also provide
+        you with a few observations I have already made.  Please add your own observations
+        or if you feel the observations are comprehensive say ''COMPLETE'' Some areas
+        you may consider in your observations: topics, content, syntax, conciceness,
+        etc. It will be useful to make an educated guess as to the nature of the task
+        this dataset will enable. Don''t be afraid to be creative"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"prior_observations\": \"The dataset consists
+        of examples related to scientific questions and explanations. Each entry follows
+        a consistent structure where a question is posed about a scientific topic,
+        followed by a context that explains the concept. The expected answers demonstrate
+        a high level of confidence, indicating that the dataset is likely designed
+        for training a question-answering model focused on scientific content. The
+        uniformity in the syntax and formulation of the questions suggests a specific
+        goal of ensuring clear and concise communication of scientific information.\",\n  \"examples\":
+        \"[DSPy::Example(DatasetSummaryTestQA) input={:question => \\\"Question 3
+        about science?\\\", :context => \\\"Context 3 explaining scientific concept\\\"}
+        expected={:answer => \\\"Answer 3\\\", :confidence => 0.8300000000000001},
+        DSPy::Example(DatasetSummaryTestQA) input={:question => \\\"Question 4 about
+        science?\\\", :context => \\\"Context 4 explaining scientific concept\\\"}
+        expected={:answer => \\\"Answer 4\\\", :confidence => 0.8400000000000001},
+        DSPy::Example(DatasetSummaryTestQA) input={:question => \\\"Question 5 about
+        science?\\\", :context => \\\"Context 5 explaining scientific concept\\\"}
+        expected={:answer => \\\"Answer 5\\\", :confidence => 0.8500000000000001}]\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3319'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 14:57:03 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2406'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3026'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9995'
+      X-Ratelimit-Remaining-Tokens:
+      - '199236'
+      X-Ratelimit-Reset-Requests:
+      - 35.259s
+      X-Ratelimit-Reset-Tokens:
+      - 229ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98dfafd7fe3690fe-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        ewogICJpZCI6ICJjaGF0Y21wbC1DUUVHcjVacUVYZVVIQ0xYenhWMGZxRmRIT3Y4QyIsCiAgIm9iamVjdCI6ICJjaGF0LmNvbXBsZXRpb24iLAogICJjcmVhdGVkIjogMTc2MDM2NzQyMSwKICAibW9kZWwiOiAiZ3B0LTRvLW1pbmktMjAyNC0wNy0xOCIsCiAgImNob2ljZXMiOiBbCiAgICB7CiAgICAgICJpbmRleCI6IDAsCiAgICAgICJtZXNzYWdlIjogewogICAgICAgICJyb2xlIjogImFzc2lzdGFudCIsCiAgICAgICAgImNvbnRlbnQiOiAiIyMgT3V0cHV0IHZhbHVlc1xuYGBganNvblxue1xuICBcIm9ic2VydmF0aW9uc1wiOiBcIlRoZSBkYXRhc2V0IHNob3dzIGEgY2xlYXIgcGF0dGVybiB3aGVyZSBxdWVzdGlvbnMgYXJlIHNwZWNpZmljYWxseSB0YWlsb3JlZCB0byBhZGRyZXNzIGRpc3RpbmN0IHNjaWVudGlmaWMgY29uY2VwdHMsIGFuZCBlYWNoIGNvbnRleHQgaXMgZGVzaWduZWQgdG8gcHJvdmlkZSB0aG9yb3VnaCBleHBsYW5hdGlvbnMgdGhhdCBsZWFkIHRvIGNvbmZpZGVudCBhbnN3ZXJzLiBBZGRpdGlvbmFsbHksIHRoZSBvYnNlcnZlZCBjb25maWRlbmNlIGxldmVscyBhcmUgZ3JhZHVhbGx5IGluY3JlYXNpbmcsIGluZGljYXRpbmcgdGhhdCBhcyB0aGUgZXhhbXBsZXMgcHJvZ3Jlc3MsIHRoZSBleHBlY3RlZCBhbnN3ZXJzIHRlbmQgdG8gcmVmbGVjdCBhIG1vcmUgY29tcHJlaGVuc2l2ZSB1bmRlcnN0YW5kaW5nIG9mIHRoZSB1bmRlcmx5aW5nIHNjaWVudGlmaWMgcHJpbmNpcGxlcy4gVGhpcyB0cmVuZCBoaWdobGlnaHRzIHRoZSBkYXRhc2V04oCZcyBmb2N1cyBvbiBpbmNyZW1lbnRhbCBsZWFybmluZyBhbmQgYXNzZXNzbWVudCBvZiBrbm93bGVkZ2UgcmVsYXRlZCB0byBzY2llbnRpZmljIGlucXVpcnkuIE92ZXJhbGwsIHRoZSBkYXRhc2V0IGFwcGVhcnMgcm9idXN0IGZvciB0cmFpbmluZyBtb2RlbHMgYWltZWQgYXQgZW5oYW5jaW5nIGNvbXByZWhlbnNpb24gYW5kIGFjY3VyYWN5IGluIHNjaWVudGlmaWMgcXVlc3Rpb24tYW5zd2VyaW5nIHRhc2tzLlwiXG59XG5gYGAiLAogICAgICAgICJyZWZ1c2FsIjogbnVsbCwKICAgICAgICAiYW5ub3RhdGlvbnMiOiBbXQogICAgICB9LAogICAgICAibG9ncHJvYnMiOiBudWxsLAogICAgICAiZmluaXNoX3JlYXNvbiI6ICJzdG9wIgogICAgfQogIF0sCiAgInVzYWdlIjogewogICAgInByb21wdF90b2tlbnMiOiA3MTIsCiAgICAiY29tcGxldGlvbl90b2tlbnMiOiAxMjIsCiAgICAidG90YWxfdG9rZW5zIjogODM0LAogICAgInByb21wdF90b2tlbnNfZGV0YWlscyI6IHsKICAgICAgImNhY2hlZF90b2tlbnMiOiAwLAogICAgICAiYXVkaW9fdG9rZW5zIjogMAogICAgfSwKICAgICJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjogewogICAgICAicmVhc29uaW5nX3Rva2VucyI6IDAsCiAgICAgICJhdWRpb190b2tlbnMiOiAwLAogICAgICAiYWNjZXB0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwLAogICAgICAicmVqZWN0ZWRfcHJlZGljdGlvbl90b2tlbnMiOiAwCiAgICB9CiAgfSwKICAic2VydmljZV90aWVyIjogImRlZmF1bHQiLAogICJzeXN0ZW1fZmluZ2VycHJpbnQiOiAiZnBfNTYwYWY2ZTU1OSIKfQo=
+  recorded_at: Mon, 13 Oct 2025 14:57:03 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"examples\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Sample data points from the dataset\"\n    },\n    \"prior_observations\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Some prior observations
+        I made about the data\"\n    }\n  },\n  \"required\": [\n    \"examples\",\n    \"prior_observations\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"observations\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Somethings that holds true for most
+        or all of the data you observed or COMPLETE if you have nothing to add\"\n    }\n  },\n  \"required\":
+        [\n    \"observations\"\n  ]\n}\n```\n\nAll interactions will be structured
+        in the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Given several examples from a dataset please write observations
+        about trends that hold for most or all of the samples. I will also provide
+        you with a few observations I have already made.  Please add your own observations
+        or if you feel the observations are comprehensive say ''COMPLETE'' Some areas
+        you may consider in your observations: topics, content, syntax, conciceness,
+        etc. It will be useful to make an educated guess as to the nature of the task
+        this dataset will enable. Don''t be afraid to be creative"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"prior_observations\": \"The dataset consists
+        of examples related to scientific questions and explanations. Each entry follows
+        a consistent structure where a question is posed about a scientific topic,
+        followed by a context that explains the concept. The expected answers demonstrate
+        a high level of confidence, indicating that the dataset is likely designed
+        for training a question-answering model focused on scientific content. The
+        uniformity in the syntax and formulation of the questions suggests a specific
+        goal of ensuring clear and concise communication of scientific information.The
+        dataset shows a clear pattern where questions are specifically tailored to
+        address distinct scientific concepts, and each context is designed to provide
+        thorough explanations that lead to confident answers. Additionally, the observed
+        confidence levels are gradually increasing, indicating that as the examples
+        progress, the expected answers tend to reflect a more comprehensive understanding
+        of the underlying scientific principles. This trend highlights the dataset’s
+        focus on incremental learning and assessment of knowledge related to scientific
+        inquiry. Overall, the dataset appears robust for training models aimed at
+        enhancing comprehension and accuracy in scientific question-answering tasks.\",\n  \"examples\":
+        \"[DSPy::Example(DatasetSummaryTestQA) input={:question => \\\"Question 6
+        about science?\\\", :context => \\\"Context 6 explaining scientific concept\\\"}
+        expected={:answer => \\\"Answer 6\\\", :confidence => 0.8600000000000001},
+        DSPy::Example(DatasetSummaryTestQA) input={:question => \\\"Question 7 about
+        science?\\\", :context => \\\"Context 7 explaining scientific concept\\\"}
+        expected={:answer => \\\"Answer 7\\\", :confidence => 0.8700000000000001},
+        DSPy::Example(DatasetSummaryTestQA) input={:question => \\\"Question 8 about
+        science?\\\", :context => \\\"Context 8 explaining scientific concept\\\"}
+        expected={:answer => \\\"Answer 8\\\", :confidence => 0.88}]\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4010'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 14:57:06 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2767'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2779'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9995'
+      X-Ratelimit-Remaining-Tokens:
+      - '199062'
+      X-Ratelimit-Reset-Requests:
+      - 41.215s
+      X-Ratelimit-Reset-Tokens:
+      - 281ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98dfafef2fc790fe-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQEGtFKozofMGEk8IjYQpGfaH4GkY",
+          "object": "chat.completion",
+          "created": 1760367423,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"observations\": \"The examples in the dataset further reinforce the earlier observations regarding the structured approach to scientific inquiry, with each entry succinctly linking a question to its corresponding context. The confidence levels of the expected answers continue to rise, indicating a carefully curated progression towards more complex scientific concepts. This trend suggests that the dataset not only aims for clarity but also progressively enhances the learner's ability to tackle increasingly challenging scientific questions. Furthermore, the consistent structure of the questions and contexts indicates an emphasis on systematic learning, which is crucial for training effective question-answering models in scientific domains.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 812,
+            "completion_tokens": 126,
+            "total_tokens": 938,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 14:57:06 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BcqWLXzK8iV7ADvrtB84K3po7RN4AAEBAAAnIQEAALlEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1760367423403.072,"message":"trace_id=\"4cd4a18d-a125-4e61-b191-c756515bf639\"
+        otel_span_stack=[] input_tokens=712 output_tokens=122 total_tokens=834 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"DSPy::Propose::DatasetSummaryGenerator::DatasetDescriptorWithPriorObservations\"
+        event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1760367426439.824,"message":"trace_id=\"4cd4a18d-a125-4e61-b191-c756515bf639\"
+        otel_span_stack=[] input_tokens=812 output_tokens=126 total_tokens=938 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"DSPy::Propose::DatasetSummaryGenerator::DatasetDescriptorWithPriorObservations\"
+        event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BcqWLXzK8iV7ADvrtB84K3po7RN4AAEBAAAnIQEAALlEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Mon, 13 Oct 2025 14:57:07 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-bur-kbur8200096-BUR
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 13 Oct 2025 14:57:07 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"examples\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Sample data points from the dataset\"\n    },\n    \"prior_observations\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Some prior observations
+        I made about the data\"\n    }\n  },\n  \"required\": [\n    \"examples\",\n    \"prior_observations\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"observations\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Somethings that holds true for most
+        or all of the data you observed or COMPLETE if you have nothing to add\"\n    }\n  },\n  \"required\":
+        [\n    \"observations\"\n  ]\n}\n```\n\nAll interactions will be structured
+        in the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Given several examples from a dataset please write observations
+        about trends that hold for most or all of the samples. I will also provide
+        you with a few observations I have already made.  Please add your own observations
+        or if you feel the observations are comprehensive say ''COMPLETE'' Some areas
+        you may consider in your observations: topics, content, syntax, conciceness,
+        etc. It will be useful to make an educated guess as to the nature of the task
+        this dataset will enable. Don''t be afraid to be creative"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"prior_observations\": \"The dataset consists
+        of examples related to scientific questions and explanations. Each entry follows
+        a consistent structure where a question is posed about a scientific topic,
+        followed by a context that explains the concept. The expected answers demonstrate
+        a high level of confidence, indicating that the dataset is likely designed
+        for training a question-answering model focused on scientific content. The
+        uniformity in the syntax and formulation of the questions suggests a specific
+        goal of ensuring clear and concise communication of scientific information.The
+        dataset shows a clear pattern where questions are specifically tailored to
+        address distinct scientific concepts, and each context is designed to provide
+        thorough explanations that lead to confident answers. Additionally, the observed
+        confidence levels are gradually increasing, indicating that as the examples
+        progress, the expected answers tend to reflect a more comprehensive understanding
+        of the underlying scientific principles. This trend highlights the dataset’s
+        focus on incremental learning and assessment of knowledge related to scientific
+        inquiry. Overall, the dataset appears robust for training models aimed at
+        enhancing comprehension and accuracy in scientific question-answering tasks.The
+        examples in the dataset further reinforce the earlier observations regarding
+        the structured approach to scientific inquiry, with each entry succinctly
+        linking a question to its corresponding context. The confidence levels of
+        the expected answers continue to rise, indicating a carefully curated progression
+        towards more complex scientific concepts. This trend suggests that the dataset
+        not only aims for clarity but also progressively enhances the learner''s ability
+        to tackle increasingly challenging scientific questions. Furthermore, the
+        consistent structure of the questions and contexts indicates an emphasis on
+        systematic learning, which is crucial for training effective question-answering
+        models in scientific domains.\",\n  \"examples\": \"[DSPy::Example(DatasetSummaryTestQA)
+        input={:question => \\\"Question 9 about science?\\\", :context => \\\"Context
+        9 explaining scientific concept\\\"} expected={:answer => \\\"Answer 9\\\",
+        :confidence => 0.89}]\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4285'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 14:57:11 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3488'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3712'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '198988'
+      X-Ratelimit-Reset-Requests:
+      - 46.245s
+      X-Ratelimit-Reset-Tokens:
+      - 303ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98dfb0021adb90fe-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQEGx2hpy07zARd2XzVdpG1BmJgrX",
+          "object": "chat.completion",
+          "created": 1760367427,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"observations\": \"The dataset demonstrates a logical progression of complexity in scientific questions, with contexts designed to enhance understanding. Each entry maintains a structured format that contributes to consistent learning outcomes. The rising confidence levels across examples indicate that as the questions become more intricate, the contexts are also increasingly informative, thereby aiding in comprehension. This reinforces the dataset's utility for training models focused on developing robust capabilities in scientific inquiry and education. The clear structural consistency and focus on distinct scientific topics suggest a well-thought-out methodology aimed at fostering detailed knowledge acquisition.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 805,
+            "completion_tokens": 119,
+            "total_tokens": 924,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 14:57:10 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BcqWLXzK8iV7ADvrtB84K3po7RN4AAEBAAAnIQEAALlEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1760367430774.6648,"message":"trace_id=\"4cd4a18d-a125-4e61-b191-c756515bf639\"
+        otel_span_stack=[] input_tokens=805 output_tokens=119 total_tokens=924 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"DSPy::Propose::DatasetSummaryGenerator::DatasetDescriptorWithPriorObservations\"
+        event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BcqWLXzK8iV7ADvrtB84K3po7RN4AAEBAAAnIQEAALlEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Mon, 13 Oct 2025 14:57:13 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-bur-kbur8200096-BUR
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 13 Oct 2025 14:57:12 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"observations\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Observations I have made about my dataset\"\n    }\n  },\n  \"required\":
+        [\n    \"observations\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Two to Three sentence summary of only the most significant highlights of
+        my observations\"\n    }\n  },\n  \"required\": [\n    \"summary\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Given a series of observations I have made about my dataset,
+        please summarize them into a brief 2-3 sentence summary which highlights only
+        the most important details."},{"role":"user","content":"## Input Values\n```json\n{\n  \"observations\":
+        \"The dataset consists of examples related to scientific questions and explanations.
+        Each entry follows a consistent structure where a question is posed about
+        a scientific topic, followed by a context that explains the concept. The expected
+        answers demonstrate a high level of confidence, indicating that the dataset
+        is likely designed for training a question-answering model focused on scientific
+        content. The uniformity in the syntax and formulation of the questions suggests
+        a specific goal of ensuring clear and concise communication of scientific
+        information.The dataset shows a clear pattern where questions are specifically
+        tailored to address distinct scientific concepts, and each context is designed
+        to provide thorough explanations that lead to confident answers. Additionally,
+        the observed confidence levels are gradually increasing, indicating that as
+        the examples progress, the expected answers tend to reflect a more comprehensive
+        understanding of the underlying scientific principles. This trend highlights
+        the dataset’s focus on incremental learning and assessment of knowledge related
+        to scientific inquiry. Overall, the dataset appears robust for training models
+        aimed at enhancing comprehension and accuracy in scientific question-answering
+        tasks.The examples in the dataset further reinforce the earlier observations
+        regarding the structured approach to scientific inquiry, with each entry succinctly
+        linking a question to its corresponding context. The confidence levels of
+        the expected answers continue to rise, indicating a carefully curated progression
+        towards more complex scientific concepts. This trend suggests that the dataset
+        not only aims for clarity but also progressively enhances the learner''s ability
+        to tackle increasingly challenging scientific questions. Furthermore, the
+        consistent structure of the questions and contexts indicates an emphasis on
+        systematic learning, which is crucial for training effective question-answering
+        models in scientific domains.The dataset demonstrates a logical progression
+        of complexity in scientific questions, with contexts designed to enhance understanding.
+        Each entry maintains a structured format that contributes to consistent learning
+        outcomes. The rising confidence levels across examples indicate that as the
+        questions become more intricate, the contexts are also increasingly informative,
+        thereby aiding in comprehension. This reinforces the dataset''s utility for
+        training models focused on developing robust capabilities in scientific inquiry
+        and education. The clear structural consistency and focus on distinct scientific
+        topics suggest a well-thought-out methodology aimed at fostering detailed
+        knowledge acquisition.\"\n}\n```\n\nRespond with the corresponding output
+        schema fields wrapped in a ```json ``` block,\nstarting with the heading `##
+        Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4220'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 14:57:13 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2364'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2401'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '198996'
+      X-Ratelimit-Reset-Requests:
+      - 51.125s
+      X-Ratelimit-Reset-Tokens:
+      - 301ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98dfb01d3cfb90fe-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQEH17BiUy6K8nikyyc3CAfDXs62I",
+          "object": "chat.completion",
+          "created": 1760367431,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The dataset is specifically designed for training question-answering models focused on scientific topics, featuring a consistent structure that links questions to informative contexts. There is a noticeable trend of increasing confidence levels in expected answers, indicating a progression towards more complex scientific concepts and enhancing the learner's comprehension and inquiry skills.\"\n} \n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 731,
+            "completion_tokens": 74,
+            "total_tokens": 805,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 14:57:13 GMT
+recorded_with: VCR 6.3.1
