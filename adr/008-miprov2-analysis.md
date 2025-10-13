@@ -627,3 +627,260 @@ When reaching Layer 5, you'll need to decide on the optimization approach:
 - Utils: `/dspy/dspy/teleprompt/utils.py`
 - Proposer: `/dspy/dspy/propose/grounded_proposer.py`
 - Optuna documentation: https://optuna.readthedocs.io/
+
+---
+
+## Implementation Status (Layer 3.5 Complete)
+
+**Date:** 2025-10-13
+**Status:** ✅ Complete
+**Branch:** `feature/miprov2-layer3.5-bootstrap`
+
+### What Was Implemented
+
+#### 1. Python-Compatible `create_n_fewshot_demo_sets` (Complete Replacement)
+
+**File:** `lib/dspy/teleprompt/utils.rb`
+
+**Signature:**
+```ruby
+def self.create_n_fewshot_demo_sets(
+  student,                     # DSPy::Module to bootstrap
+  num_candidate_sets,          # Total number of demo sets to create
+  trainset,                    # Training examples
+  max_bootstrapped_demos: 3,   # Max bootstrapped demos per set
+  max_labeled_demos: 3,        # Max labeled demos to prepend
+  min_num_samples: 1,          # Min samples for shuffled strategy
+  metric: nil,                 # Optional validation metric
+  teacher_settings: {},        # Reserved for future use
+  seed: nil,                   # Random seed for reproducibility
+  include_non_bootstrapped: true,  # Include ZeroShot and LabeledOnly
+  labeled_sample: true         # Whether to sample labeled examples randomly
+) -> Hash{Integer => Array<Array<DSPy::FewShotExample>>}
+```
+
+**Return Value:** Dictionary mapping predictor indices to arrays of demo sets:
+```ruby
+{
+  0 => [
+    [demo1, demo2, ...],  # Demo set 0 (ZeroShot)
+    [demo1, demo2, ...],  # Demo set 1 (LabeledOnly)
+    [demo1, demo2, ...],  # Demo set 2 (Unshuffled)
+    [demo1, demo2, ...]   # Demo set 3+ (Shuffled with different seeds)
+  ]
+}
+```
+
+**Implementation Strategy:**
+- **Inline bootstrap logic** - No separate `BootstrapFewShot`/`LabeledFewShot` teleprompters
+- **Seed-based loop** - Iterates from seed -3 to num_candidate_sets
+- **4 Bootstrap Strategies:**
+  1. **ZeroShot** (seed=-3): Empty demonstrations for zero-shot learning
+  2. **LabeledOnly** (seed=-2): Use trainset labels directly without bootstrapping
+  3. **Unshuffled** (seed=-1): Bootstrap with original trainset order
+  4. **Shuffled** (seed>=0): Bootstrap with shuffled trainset and random demo count
+
+**Helper Methods Added:**
+```ruby
+create_labeled_demos(trainset, max_labeled, labeled_sample, rng)
+create_bootstrapped_demos(student, trainset, max_bootstrapped, max_labeled, metric)
+extract_output_fields_for_demo(prediction_hash, signature_class)
+```
+
+**Tests:** 18 comprehensive tests covering all strategies, reproducibility, edge cases
+- File: `spec/unit/teleprompt/utils_bootstrap_strategies_spec.rb`
+- All passing (18/18)
+
+#### 2. MIPROv2 Updated to Use New Interface
+
+**File:** `lib/dspy/teleprompt/mipro_v2.rb`
+
+**Changes:**
+- `phase_1_bootstrap` returns `Hash{predictor_idx => [[demos]]}` instead of `BootstrapResult`
+- `phase_2_propose_instructions` uses `demo_candidates` parameter
+- `phase_3_optimize` uses `demo_candidates` parameter
+- `generate_candidate_configurations` extracts demo sets from `demo_candidates[0]`
+- `build_miprov2_result` creates bootstrap statistics from dict structure
+
+**Backward Compatibility:** None needed - MIPROv2 was already using internal methods
+
+#### 3. SimpleOptimizer Updated to Use New Interface
+
+**File:** `lib/dspy/teleprompt/simple_optimizer.rb`
+
+**Changes:**
+- `bootstrap_examples` returns `Hash{predictor_idx => [[demos]]}` instead of `BootstrapResult`
+- `generate_instruction_candidates` uses `demo_candidates` parameter and flattens demos
+- `run_optimization_trials` uses `demo_candidates` parameter
+- `generate_trial_configurations` extracts demo sets from `demo_candidates[0]`
+
+**Backward Compatibility:** None needed - SimpleOptimizer is Ruby-only implementation
+
+#### 4. Deprecated Classes (Kept for Compatibility)
+
+**BootstrapResult** - Marked as `@deprecated`, kept for backward compatibility in existing tests
+**BootstrapConfig** - Still used by `eval_candidate_program` and related methods
+
+### Design Decisions Summary
+
+#### Use T::Enum for Bootstrap Strategies (Instead of Magic Numbers)
+
+**Rationale:**
+- Type safety with Sorbet compile-time and runtime checking
+- Self-documenting code (`ZeroShot` vs `-3`)
+- Better IDE support (autocomplete, refactoring)
+- More idiomatic Ruby than magic numbers
+- Prevents invalid seed values
+
+**Implementation:**
+```ruby
+class BootstrapStrategy < T::Enum
+  enums do
+    ZeroShot = new      # Python seed = -3
+    LabeledOnly = new   # Python seed = -2
+    Unshuffled = new    # Python seed = -1
+    Shuffled = new      # Python seed >= 0, requires separate seed param
+  end
+end
+```
+
+**Note:** While we created the enum, the actual implementation uses the seed-based approach directly for simplicity. The enum remains available for future enhancements.
+
+#### Inline Bootstrap Logic (Not Separate Teleprompters)
+
+**Rationale:**
+- `BootstrapFewShot` and `LabeledFewShot` don't exist in Ruby
+- Simpler implementation - all logic in one place
+- Faster to implement and test
+- Easier to maintain initially
+- Can extract to separate classes later if needed
+
+**Trade-offs:**
+- ✅ Faster implementation
+- ✅ Easier testing
+- ✅ Less code duplication
+- ❌ Less modular than Python
+- ❌ Harder to reuse bootstrap logic independently
+
+#### SimpleOptimizer: Ruby-Only Implementation
+
+**Finding:** SimpleOptimizer **does not exist** in Python DSPy.
+
+**Python Equivalents:**
+- `BootstrapFewShotWithRandomSearch` - Random search with few-shot only
+- `MIPROv2` - Bayesian optimization with instruction + few-shot
+
+**Ruby SimpleOptimizer Unique Features:**
+- Combines instruction optimization (like MIPROv2)
+- Combines few-shot optimization (like BootstrapFewShotWithRandomSearch)
+- Uses random/grid search strategy (simpler than Bayesian)
+- Trial-based evaluation framework
+- More accessible than full MIPROv2 for simple use cases
+
+**Design Philosophy:**
+- Provides a middle ground between basic bootstrap and full MIPROv2
+- No external dependencies (no Optuna equivalent needed)
+- Simpler optimization strategy for faster experimentation
+- Ruby-idiomatic API design
+
+**Why Random Search:**
+- No Ruby equivalent to Python's Optuna library
+- Random search is proven effective for hyperparameter optimization
+- Simpler to implement and understand
+- Lower barrier to entry for developers
+- Can be upgraded to more sophisticated strategies later
+
+### Testing Strategy
+
+**Unit Tests:**
+- `spec/unit/teleprompt/utils_bootstrap_strategies_spec.rb` - 18 tests for new interface
+- `spec/unit/teleprompt/bootstrap_strategy_spec.rb` - 5 tests for T::Enum
+- `spec/unit/teleprompt/utils_spec.rb` - Removed old tests (lines 131-349)
+- `spec/unit/dspy/teleprompt/utils_spec.rb` - BootstrapResult tests (kept for compatibility)
+
+**Integration Tests:**
+- MIPROv2 and SimpleOptimizer specs still use BootstrapResult mocking
+- Will be updated in future refactor when BootstrapResult is fully removed
+
+**Test Results:**
+- All teleprompt unit tests passing (44/44)
+- New bootstrap strategies tests passing (18/18)
+- BootstrapStrategy enum tests passing (5/5)
+
+### Performance Considerations
+
+**Memory:**
+- Dict-based return avoids intermediate BootstrapResult object allocation
+- Demo sets are created on-demand per strategy
+- FewShotExample objects are immutable and frozen
+
+**Efficiency:**
+- Inline bootstrap logic reduces method call overhead
+- Seed-based loop allows efficient strategy selection
+- Early termination for conditional strategies (ZeroShot, LabeledOnly)
+
+### Future Work
+
+#### Phase 1: Cleanup (Next PR)
+- Remove BootstrapResult class entirely
+- Update all specs to use dict interface directly
+- Remove BootstrapConfig if not needed by other components
+
+#### Phase 2: Optimization Strategy (Future)
+- Research Ruby optimization libraries
+- Consider implementing simplified Bayesian optimization
+- Benchmark against Python MIPROv2 results
+- Potentially use external Ruby gems (e.g., `ruby-optimization`)
+
+#### Phase 3: Multi-Predictor Support
+- Extend `extract_predictors_from_module` for complex modules
+- Handle per-predictor demo set generation
+- Test with modules containing multiple predictors
+
+#### Phase 4: Enhanced Strategies
+- Implement metric-based filtering for Shuffled strategy
+- Add strategy for curriculum learning (easy to hard)
+- Support custom strategy plugins
+
+### Migration Guide (For Future Users)
+
+**Old Interface (Deprecated):**
+```ruby
+config = DSPy::Teleprompt::Utils::BootstrapConfig.new
+config.max_bootstrapped_examples = 4
+config.num_candidate_sets = 10
+
+result = Utils.create_n_fewshot_demo_sets(program, trainset, config: config)
+demo_sets = result.candidate_sets  # Array<Array<Example>>
+```
+
+**New Interface:**
+```ruby
+demo_candidates = Utils.create_n_fewshot_demo_sets(
+  program,
+  10,  # num_candidate_sets
+  trainset,
+  max_bootstrapped_demos: 4
+)
+
+demo_sets = demo_candidates[0]  # Get demo sets for first predictor
+```
+
+### Commits
+
+1. **feat: add BootstrapStrategy T::Enum and update ADR-008**
+2. **feat: replace create_n_fewshot_demo_sets with Python-compatible implementation**
+3. **refactor: update MIPROv2 to use new create_n_fewshot_demo_sets interface**
+4. **refactor: update SimpleOptimizer to use new interface**
+5. **chore: deprecate BootstrapResult and remove obsolete tests**
+
+### Next Steps
+
+According to the bottom-up implementation plan in this ADR:
+
+**✅ Layer 3.5 Complete** - Bootstrap Functions
+**→ Next: Layer 4.1** - Dataset Summary Generator (`propose/dataset_summary_generator.rb`)
+**Then: Layer 4.2** - Grounded Proposer (`propose/grounded_proposer.rb`)
+**Finally: Layer 5** - Complete MIPROv2 with optimization strategy
+
+Continue following the bottom-up approach documented in this ADR.
