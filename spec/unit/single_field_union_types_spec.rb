@@ -48,7 +48,7 @@ RSpec.describe "Single-field union types" do
         const :result, String
       end
 
-      class UnionTypeSignature < DSPy::Signature
+      class UnionTypeTestSignature < DSPy::Signature
         description "Test signature for union types with type discrimination"
 
         input do
@@ -61,7 +61,7 @@ RSpec.describe "Single-field union types" do
       end
 
       it "generates oneOf schema with _type fields for each struct" do
-        schema = UnionTypeSignature.output_json_schema
+        schema = UnionTypeTestSignature.output_json_schema
 
         action_schema = schema[:properties][:action]
         expect(action_schema).to have_key(:oneOf)
