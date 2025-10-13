@@ -294,18 +294,18 @@ module DSPy
 
           # Phase 1: Bootstrap few-shot examples
           emit_event('phase_start', { phase: 1, name: 'bootstrap' })
-          bootstrap_result = phase_1_bootstrap(program, typed_trainset)
-          emit_event('phase_complete', { 
-            phase: 1, 
-            success_rate: bootstrap_result.statistics[:success_rate],
-            candidate_sets: bootstrap_result.candidate_sets.size
+          demo_candidates = phase_1_bootstrap(program, typed_trainset)
+          emit_event('phase_complete', {
+            phase: 1,
+            num_predictors: demo_candidates.keys.size,
+            demo_sets_per_predictor: demo_candidates[0]&.size || 0
           })
 
           # Phase 2: Generate instruction candidates
           emit_event('phase_start', { phase: 2, name: 'instruction_proposal' })
-          proposal_result = phase_2_propose_instructions(program, typed_trainset, bootstrap_result)
-          emit_event('phase_complete', { 
-            phase: 2, 
+          proposal_result = phase_2_propose_instructions(program, typed_trainset, demo_candidates)
+          emit_event('phase_complete', {
+            phase: 2,
             num_candidates: proposal_result.num_candidates,
             best_instruction_preview: proposal_result.best_instruction[0, 50]
           })
@@ -316,7 +316,7 @@ module DSPy
             program,
             evaluation_set,
             proposal_result,
-            bootstrap_result
+            demo_candidates
           )
           emit_event('phase_complete', { 
             phase: 3, 
@@ -327,7 +327,7 @@ module DSPy
           # Build final result
           final_result = build_miprov2_result(
             optimization_result,
-            bootstrap_result,
+            demo_candidates,
             proposal_result
           )
 
@@ -339,16 +339,18 @@ module DSPy
       private
 
       # Phase 1: Bootstrap few-shot examples from training data
-      sig { params(program: T.untyped, trainset: T::Array[DSPy::Example]).returns(Utils::BootstrapResult) }
+      # Returns a hash mapping predictor indices to arrays of demo sets
+      sig { params(program: T.untyped, trainset: T::Array[DSPy::Example]).returns(T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]]) }
       def phase_1_bootstrap(program, trainset)
-        bootstrap_config = Utils::BootstrapConfig.new
-        bootstrap_config.max_bootstrapped_examples = config.max_bootstrapped_examples
-        bootstrap_config.max_labeled_examples = config.max_labeled_examples
-        bootstrap_config.num_candidate_sets = config.bootstrap_sets
-        bootstrap_config.max_errors = config.max_errors
-        bootstrap_config.num_threads = config.num_threads
-
-        Utils.create_n_fewshot_demo_sets(program, trainset, config: bootstrap_config, metric: @metric)
+        Utils.create_n_fewshot_demo_sets(
+          program,
+          config.bootstrap_sets,  # num_candidate_sets
+          trainset,
+          max_bootstrapped_demos: config.max_bootstrapped_examples,
+          max_labeled_demos: config.max_labeled_examples,
+          metric: @metric,
+          seed: config.seed
+        )
       end
 
       # Phase 2: Generate instruction candidates using grounded proposer
@@ -356,15 +358,16 @@ module DSPy
         params(
           program: T.untyped,
           trainset: T::Array[DSPy::Example],
-          bootstrap_result: Utils::BootstrapResult
+          demo_candidates: T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]]
         ).returns(DSPy::Propose::GroundedProposer::ProposalResult)
       end
-      def phase_2_propose_instructions(program, trainset, bootstrap_result)
+      def phase_2_propose_instructions(program, trainset, demo_candidates)
         # Get current instruction if available
         current_instruction = extract_current_instruction(program)
-        
+
         # Use few-shot examples from bootstrap if available
-        few_shot_examples = bootstrap_result.successful_examples.take(5)
+        # Flatten demo sets from first predictor and take first 5 examples
+        few_shot_examples = demo_candidates[0]&.flatten&.take(5) || []
 
         # Get signature class from program
         signature_class = extract_signature_class(program)
@@ -387,12 +390,12 @@ module DSPy
           program: T.untyped,
           evaluation_set: T::Array[DSPy::Example],
           proposal_result: DSPy::Propose::GroundedProposer::ProposalResult,
-          bootstrap_result: Utils::BootstrapResult
+          demo_candidates: T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]]
         ).returns(T::Hash[Symbol, T.untyped])
       end
-      def phase_3_optimize(program, evaluation_set, proposal_result, bootstrap_result)
+      def phase_3_optimize(program, evaluation_set, proposal_result, demo_candidates)
         # Generate candidate configurations
-        candidates = generate_candidate_configurations(proposal_result, bootstrap_result)
+        candidates = generate_candidate_configurations(proposal_result, demo_candidates)
         
         # Initialize optimization state
         optimization_state = initialize_optimization_state(candidates)
@@ -468,16 +471,16 @@ module DSPy
         }
       end
 
-      # Generate candidate configurations from proposals and bootstrap results
+      # Generate candidate configurations from proposals and demo candidates
       sig do
         params(
           proposal_result: DSPy::Propose::GroundedProposer::ProposalResult,
-          bootstrap_result: Utils::BootstrapResult
+          demo_candidates: T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]]
         ).returns(T::Array[EvaluatedCandidate])
       end
-      def generate_candidate_configurations(proposal_result, bootstrap_result)
+      def generate_candidate_configurations(proposal_result, demo_candidates)
         candidates = []
-        
+
         # Base configuration (no modifications)
         candidates << EvaluatedCandidate.new(
           instruction: "",
@@ -486,7 +489,7 @@ module DSPy
           metadata: {},
           config_id: SecureRandom.hex(6)
         )
-        
+
         # Instruction-only candidates
         proposal_result.candidate_instructions.each_with_index do |instruction, idx|
           candidates << EvaluatedCandidate.new(
@@ -497,12 +500,14 @@ module DSPy
             config_id: SecureRandom.hex(6)
           )
         end
-        
+
         # Few-shot only candidates
-        bootstrap_result.candidate_sets.each_with_index do |candidate_set, idx|
+        # Extract demo sets from first predictor (predictor index 0)
+        demo_sets = demo_candidates[0] || []
+        demo_sets.each_with_index do |demo_set, idx|
           candidates << EvaluatedCandidate.new(
             instruction: "",
-            few_shot_examples: candidate_set,
+            few_shot_examples: demo_set,
             type: CandidateType::FewShotOnly,
             metadata: { bootstrap_rank: idx },
             config_id: SecureRandom.hex(6)
@@ -511,7 +516,7 @@ module DSPy
         
         # Combined candidates (instruction + few-shot)
         top_instructions = proposal_result.candidate_instructions.take(3)
-        top_bootstrap_sets = bootstrap_result.candidate_sets.take(3)
+        top_bootstrap_sets = demo_sets.take(3)
         
         top_instructions.each_with_index do |instruction, i_idx|
           top_bootstrap_sets.each_with_index do |candidate_set, b_idx|
@@ -793,25 +798,25 @@ module DSPy
       sig do
         params(
           optimization_result: T::Hash[Symbol, T.untyped],
-          bootstrap_result: Utils::BootstrapResult,
+          demo_candidates: T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]],
           proposal_result: DSPy::Propose::GroundedProposer::ProposalResult
         ).returns(MIPROv2Result)
       end
-      def build_miprov2_result(optimization_result, bootstrap_result, proposal_result)
+      def build_miprov2_result(optimization_result, demo_candidates, proposal_result)
         best_candidate = optimization_result[:best_candidate]
         best_program = optimization_result[:best_program]
         best_score = optimization_result[:best_score]
         best_evaluation_result = optimization_result[:best_evaluation_result]
-        
+
         scores = { pass_rate: best_score }
-        
+
         history = {
           total_trials: optimization_result[:trials_completed],
           optimization_strategy: config.optimization_strategy,
           early_stopped: optimization_result[:trials_completed] < config.num_trials,
           score_history: optimization_result[:optimization_state][:best_score_history]
         }
-        
+
         metadata = {
           optimizer: "MIPROv2",
           auto_mode: infer_auto_mode,
@@ -820,7 +825,15 @@ module DSPy
           best_candidate_type: best_candidate&.type&.serialize || "unknown",
           optimization_timestamp: Time.now.iso8601
         }
-        
+
+        # Create bootstrap statistics from demo_candidates
+        demo_sets = demo_candidates[0] || []
+        bootstrap_statistics = {
+          num_predictors: demo_candidates.keys.size,
+          demo_sets_per_predictor: demo_sets.size,
+          avg_demos_per_set: demo_sets.empty? ? 0 : demo_sets.map(&:size).sum.to_f / demo_sets.size
+        }
+
         MIPROv2Result.new(
           optimized_program: best_program,
           scores: scores,
@@ -830,7 +843,7 @@ module DSPy
           metadata: metadata,
           evaluated_candidates: @evaluated_candidates,
           optimization_trace: serialize_optimization_trace(optimization_result[:optimization_state]),
-          bootstrap_statistics: bootstrap_result.statistics,
+          bootstrap_statistics: bootstrap_statistics,
           proposal_statistics: proposal_result.analysis,
           best_evaluation_result: best_evaluation_result
         )
