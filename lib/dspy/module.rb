@@ -79,5 +79,31 @@ module DSPy
     def lm
       config.lm || DSPy.current_lm
     end
+
+    # Save the module state to a JSON file
+    # Lightweight serialization for intermediate optimization trials
+    #
+    # @param path [String] Path to save the module state (JSON format)
+    sig { params(path: String).void }
+    def save(path)
+      require 'json'
+      require 'fileutils'
+
+      # Ensure parent directory exists
+      dir = File.dirname(path)
+      FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
+
+      # Serialize module to JSON
+      File.write(path, JSON.pretty_generate(to_h))
+    end
+
+    # Default serialization method - subclasses can override
+    sig { returns(T::Hash[Symbol, T.untyped]) }
+    def to_h
+      {
+        class_name: self.class.name,
+        state: {}
+      }
+    end
   end
 end
