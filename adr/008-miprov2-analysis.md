@@ -874,13 +874,76 @@ demo_sets = demo_candidates[0]  # Get demo sets for first predictor
 4. **refactor: update SimpleOptimizer to use new interface**
 5. **chore: deprecate BootstrapResult and remove obsolete tests**
 
+## Layer 4.1: Dataset Summary Generator - Implementation Complete
+
+**Status:** ✅ Implemented
+**Date:** 2025-10-13
+**Files:**
+- `lib/dspy/propose/dataset_summary_generator.rb` (177 lines)
+- `spec/unit/dspy/propose/dataset_summary_generator_spec.rb` (19 tests)
+- `spec/integration/dataset_summary_generator_spec.rb` (10 tests)
+
+### Implementation Summary
+
+Implemented the dataset summary generator module for creating concise dataset descriptions used in data-aware instruction proposal.
+
+**Three DSPy Signatures:**
+1. `ObservationSummarizer` - Condenses observations into 2-3 sentence summary
+2. `DatasetDescriptor` - Generates initial observations from dataset examples
+3. `DatasetDescriptorWithPriorObservations` - Iteratively refines observations or returns "COMPLETE"
+
+**Helper Functions:**
+- `order_input_keys_in_string` - Ensures consistent ordering of input keys for caching
+- `strip_prefix` - Removes common LLM output prefixes ("Answer:", "Output:", etc.)
+- `create_dataset_summary` - Main function with iterative refinement algorithm
+
+**Ruby-Specific Adaptations:**
+
+1. **Module vs Class:** Implemented as module with class methods instead of standalone functions
+   - More idiomatic Ruby organization
+   - Easier to namespace under `DSPy::Propose`
+
+2. **DSPy.with_lm Block:** Uses `DSPy.with_lm(lm)` instead of Python's `dspy.settings.context(lm=...)`
+   - Leverages Ruby's Fiber-local storage for LM context
+   - Cleaner block-based API
+
+3. **No n/temperature Parameters:** Unlike Python's `dspy.Predict(sig, n=1, temperature=1.0)`, Ruby's `DSPy::Predict.new(sig)` doesn't accept these
+   - Temperature/n controlled via global LM configuration or model-level settings
+   - Simplifies API while maintaining functionality
+
+4. **Algorithm Implementation:**
+   - Processes dataset in configurable batches (default: view_data_batch_size)
+   - Maximum 10 refinement calls to prevent excessive API usage
+   - Early stopping after 5 consecutive "COMPLETE" responses
+   - Graceful error handling with fallback to last successful observations
+
+**Test Coverage:**
+- Unit tests: 19 examples covering signatures, helpers, and edge cases
+- Integration tests: 10 examples with VCR cassettes covering:
+  - Small dataset summaries
+  - Verbose output
+  - Batch processing
+  - Each signature independently
+  - Helper functions with real LLM outputs
+
 ### Next Steps
 
 According to the bottom-up implementation plan in this ADR:
 
 **✅ Layer 3.5 Complete** - Bootstrap Functions
-**→ Next: Layer 4.1** - Dataset Summary Generator (`propose/dataset_summary_generator.rb`)
-**Then: Layer 4.2** - Grounded Proposer (`propose/grounded_proposer.rb`)
-**Finally: Layer 5** - Complete MIPROv2 with optimization strategy
+**✅ Layer 4.1 Complete** - Dataset Summary Generator
+**→ Next: Layer 4.2** - Enhance GroundedProposer with awareness flags
+**Then: Layer 5** - Complete MIPROv2 with optimization strategy
+
+**Layer 4.2 Enhancements Required:**
+1. Add `program_aware`, `data_aware`, `tip_aware`, `fewshot_aware` configuration flags
+2. Integrate `DatasetSummaryGenerator.create_dataset_summary` for data-aware mode
+3. **Remove or make configurable the 200-char `max_instruction_length` restriction**
+   - Current restriction: `GroundedProposer::Config#max_instruction_length = 200`
+   - Used for truncation and normalization in optimization
+   - Python DSPy doesn't have this hard limit
+   - Should be configurable with higher default (e.g., 500-1000) or removed entirely
+4. Follow Python implementation more closely for proposer utility functions
+5. Update MIPROv2 to use enhanced proposer with awareness modes
 
 Continue following the bottom-up approach documented in this ADR.
