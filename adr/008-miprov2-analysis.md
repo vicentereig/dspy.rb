@@ -1,8 +1,8 @@
 # ADR 008: MIPROv2 Python Implementation Analysis
 
-**Status:** Analysis
-**Date:** 2025-10-09
-**Context:** Analysis of Python DSPy MIPROv2 implementation
+**Status:** In Progress - Layer 4.2 Complete
+**Date:** 2025-10-13
+**Context:** Analysis and implementation of Python DSPy MIPROv2
 
 ## Overview
 
@@ -1360,6 +1360,30 @@ According to the bottom-up implementation plan in this ADR:
 - Phase 2-3: Config with awareness flags (program_aware, use_dataset_summary, use_task_demos, use_tip, use_instruct_history)
 - Phase 4: Updated propose_instructions to use awareness flags (dataset summary, program code, task demos, tips)
 - Phase 5: MIPROv2 integration (passes program and trainset to GroundedProposer)
-- Phase 6: All tests passing (57 unit tests + integration tests)
+- Phase 6: All tests passing (60 total: 57 unit + 3 integration)
+
+**Commits:**
+- `60d624a` - feat: add Python-compatible awareness flags to GroundedProposer
+- `3d4861d` - refactor: remove unnecessary 'unknown' fallback in GroundedProposer
+- `8392d74` - fix: correct Python parity integration test assertions
 
 Continue following the bottom-up approach documented in this ADR.
+
+---
+
+## Ready for Layer 5 (Next Session)
+
+**What's Built:**
+- ✅ Bootstrap system (`create_n_fewshot_demo_sets`)
+- ✅ Dataset summary generator
+- ✅ GroundedProposer with full awareness flags
+- ✅ All supporting utilities
+
+**Next: Layer 5 - MIPROv2 Main Class** (Est: 7-10 days)
+
+Key decisions needed:
+1. **Optimization strategy**: Random Search (recommended) vs Epsilon-Greedy vs Optuna
+2. **Trial management**: Data structures for tracking trials and scores
+3. **Minibatching**: Parameter averaging across mini-batches
+
+See "Layer 5: MIPROv2 main class" section above for detailed breakdown.
