@@ -99,6 +99,43 @@ module DSPy
         end
       end
 
+      # Get program with highest average score from minibatch trials
+      # Used as a helper function for Bayesian + minibatching optimizers
+      #
+      # @param param_score_dict [Hash] Maps combo keys to arrays of [score, program, params] tuples
+      # @param fully_evaled_param_combos [Array] List of combo keys that have been fully evaluated
+      # @return [Array] Returns [program, mean_score, combo_key, params]
+      sig do
+        params(
+          param_score_dict: T::Hash[String, T::Array[T::Array[T.untyped]]],
+          fully_evaled_param_combos: T::Array[String]
+        ).returns([T.untyped, Float, String, T::Hash[Symbol, T.untyped]])
+      end
+      def self.get_program_with_highest_avg_score(param_score_dict, fully_evaled_param_combos)
+        # Calculate the mean for each combination of categorical parameters, based on past trials
+        results = []
+        param_score_dict.each do |key, values|
+          scores = values.map { |v| v[0] }
+          mean = scores.sum.to_f / scores.size
+          program = values[0][1]
+          params = values[0][2]
+          results << [key, mean, program, params]
+        end
+
+        # Sort results by the mean in descending order
+        sorted_results = results.sort_by { |_key, mean, _program, _params| -mean }
+
+        # Find the combination with the highest mean, skip fully evaluated ones
+        sorted_results.each do |key, mean, program, params|
+          next if fully_evaled_param_combos.include?(key)
+          return [program, mean, key, params]
+        end
+
+        # If no valid program is found, return the last valid one
+        _key, mean, program, params = sorted_results.last
+        [program, mean, _key, params]
+      end
+
       # Configuration for bootstrap operations
       class BootstrapConfig
         extend T::Sig
