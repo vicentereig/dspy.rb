@@ -29,6 +29,10 @@ RSpec.describe DSPy::Propose::GroundedProposer, 'Python-compatible behavior' do
     end
 
     before do
+      # Mock current_lm for metadata collection
+      mock_lm = double('LM', model: 'gpt-4o-mini')
+      allow(DSPy).to receive(:current_lm).and_return(mock_lm)
+
       # Mock LLM to return long instruction
       allow_any_instance_of(DSPy::Predict).to receive(:call).and_return(
         OpenStruct.new(instruction: long_instruction)

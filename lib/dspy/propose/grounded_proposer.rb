@@ -220,7 +220,7 @@ module DSPy
 
           metadata = {
             generation_timestamp: Time.now.iso8601,
-            model_used: DSPy.current_lm&.model || 'unknown',
+            model_used: DSPy.current_lm.model,
             num_examples_analyzed: [examples.size, @config.view_data_batch_size].min,
             original_instruction: current_instruction
           }
@@ -735,7 +735,7 @@ module DSPy
           'proposal.num_candidates' => result.num_candidates,
           'proposal.best_instruction_length' => result.best_instruction.length,
           'proposal.analysis_themes' => result.analysis[:common_themes] || [],
-          'proposal.model_used' => DSPy.current_lm&.model || 'unknown'
+          'proposal.model_used' => DSPy.current_lm.model
         })
       end
     end
