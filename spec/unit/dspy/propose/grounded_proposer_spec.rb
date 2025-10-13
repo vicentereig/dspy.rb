@@ -258,6 +258,10 @@ RSpec.describe DSPy::Propose::GroundedProposer do
 
   describe '#propose_instructions' do
     before do
+      # Mock current_lm for metadata collection
+      mock_lm = double('LM', model: 'gpt-4o-mini')
+      allow(DSPy).to receive(:current_lm).and_return(mock_lm)
+
       # Mock the LLM calls for instruction generation
       allow_any_instance_of(DSPy::Predict).to receive(:call).and_return(
         OpenStruct.new(instruction: "Analyze the information carefully and provide a detailed response.")
