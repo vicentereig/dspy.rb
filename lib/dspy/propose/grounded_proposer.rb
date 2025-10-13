@@ -21,9 +21,6 @@ module DSPy
         sig { returns(Integer) }
         attr_accessor :max_examples_for_analysis
 
-        sig { returns(Integer) }
-        attr_accessor :max_instruction_length
-
         sig { returns(T::Boolean) }
         attr_accessor :use_task_description
 
@@ -40,7 +37,6 @@ module DSPy
         def initialize
           @num_instruction_candidates = 5
           @max_examples_for_analysis = 10
-          @max_instruction_length = 200
           @use_task_description = true
           @use_input_output_analysis = true
           @use_few_shot_examples = true
@@ -346,16 +342,7 @@ module DSPy
             )
             
             instruction = result.instruction.strip
-            
-            # Truncate if too long
-            if instruction.length > @config.max_instruction_length
-              instruction = instruction[0, @config.max_instruction_length].strip
-              # Try to end at a word boundary
-              if instruction.include?(' ')
-                instruction = instruction.rpartition(' ').first + '.'
-              end
-            end
-            
+
             candidates << instruction if instruction.length > 0
           rescue => error
             DSPy.logger.warn("Failed to generate instruction candidate #{i + 1}: #{error.message}")
@@ -478,25 +465,21 @@ module DSPy
         # Filter out duplicates and empty candidates
         filtered = candidates.uniq.reject(&:empty?)
         
-        # Simple ranking based on length and content quality
+        # Simple ranking based on content quality (Python-compatible: no length scoring)
         filtered.sort_by do |instruction|
           score = 0
-          
-          # Prefer moderate length instructions
-          length_score = [instruction.length, @config.max_instruction_length].min / @config.max_instruction_length.to_f
-          score += length_score * 0.3
-          
+
           # Prefer instructions with action words
           action_words = %w[analyze classify generate explain solve determine identify]
           action_score = action_words.count { |word| instruction.downcase.include?(word) }
           score += action_score * 0.4
-          
+
           # Prefer instructions that mention reasoning for complex tasks
           if analysis[:complexity_indicators][:requires_reasoning]
             reasoning_score = instruction.downcase.match?(/\b(step|think|reason|explain)\b/) ? 1 : 0
             score += reasoning_score * 0.3
           end
-          
+
           -score # Negative for descending sort
         end
       end
