@@ -191,7 +191,7 @@ RSpec.describe DSPy::Propose::GroundedProposer do
 
       expect(config.num_instruction_candidates).to eq(5)
       expect(config.max_examples_for_analysis).to eq(10)
-      expect(config.max_instruction_length).to eq(200)
+      # max_instruction_length removed for Python compatibility
       expect(config.use_task_description).to be(true)
       expect(config.use_input_output_analysis).to be(true)
       expect(config.use_few_shot_examples).to be(true)
@@ -201,11 +201,9 @@ RSpec.describe DSPy::Propose::GroundedProposer do
     it 'allows configuration customization' do
       config = DSPy::Propose::GroundedProposer::Config.new
       config.num_instruction_candidates = 3
-      config.max_instruction_length = 100
       config.use_task_description = false
 
       expect(config.num_instruction_candidates).to eq(3)
-      expect(config.max_instruction_length).to eq(100)
       expect(config.use_task_description).to be(false)
     end
   end
@@ -290,15 +288,12 @@ RSpec.describe DSPy::Propose::GroundedProposer do
     it 'respects configuration limits' do
       config = DSPy::Propose::GroundedProposer::Config.new
       config.num_instruction_candidates = 2
-      config.max_instruction_length = 50
-      
+
       custom_proposer = DSPy::Propose::GroundedProposer.new(config: config)
       result = custom_proposer.propose_instructions(GroundedClassify, simple_examples)
 
       expect(result.num_candidates).to be <= 2
-      result.candidate_instructions.each do |instruction|
-        expect(instruction.length).to be <= 50
-      end
+      # max_instruction_length removed for Python compatibility - instructions not truncated
     end
 
     it 'handles few-shot examples when provided' do

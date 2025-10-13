@@ -689,10 +689,10 @@ module DSPy
           features << ((config_hash / 1000) % 1000).to_f / 1000.0  # Feature 2: different part of hash
           features << ((config_hash / 1_000_000) % 1000).to_f / 1000.0  # Feature 3: high bits
           
-          # Add instruction length if available
+          # Add instruction length if available (Python-compatible: no cap)
           instruction = candidate.instruction
           if instruction && !instruction.empty?
-            features << [instruction.length.to_f / 100.0, 2.0].min  # Instruction length, capped at 200 chars
+            features << instruction.length.to_f / 100.0  # Instruction length, uncapped
           else
             features << 0.5  # Default value
           end
@@ -789,14 +789,13 @@ module DSPy
         state[:no_improvement_count] >= config.early_stopping_patience
       end
 
-      # Calculate diversity score for candidate
+      # Calculate diversity score for candidate (Python-compatible: only few-shot count)
       sig { params(candidate: EvaluatedCandidate).returns(Float) }
       def calculate_diversity_score(candidate)
-        # Simple diversity metric based on instruction length and few-shot count
-        instruction_diversity = candidate.instruction.length / 200.0
+        # Python DSPy doesn't use instruction length for diversity, only few-shot count
         few_shot_diversity = candidate.few_shot_examples.size / 10.0
-        
-        [instruction_diversity + few_shot_diversity, 1.0].min
+
+        [few_shot_diversity, 1.0].min
       end
 
       # Build final MIPROv2 result
