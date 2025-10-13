@@ -255,56 +255,193 @@ module DSPy
         end
       end
 
-      # Create multiple candidate sets of few-shot examples through bootstrapping
+      # Create multiple candidate sets of few-shot demonstrations using different bootstrap strategies
+      #
+      # This is the Python-compatible implementation that uses a seed-based loop to create
+      # demo sets using 4 strategies: ZeroShot (-3), LabeledOnly (-2), Unshuffled (-1), and Shuffled (>=0)
+      #
+      # @param student [DSPy::Module] The student program to bootstrap
+      # @param num_candidate_sets [Integer] Number of demo sets to create (accounts for special seeds)
+      # @param trainset [Array<DSPy::Example>] Training examples
+      # @param max_bootstrapped_demos [Integer] Maximum bootstrapped demonstrations per set
+      # @param max_labeled_demos [Integer] Maximum labeled demonstrations to prepend
+      # @param min_num_samples [Integer] Minimum number of samples for shuffled strategy
+      # @param metric [Proc] Optional metric to validate bootstrapped examples
+      # @param teacher_settings [Hash] Settings for teacher program (future use)
+      # @param seed [Integer] Random seed for reproducibility
+      # @param include_non_bootstrapped [Boolean] Include ZeroShot and LabeledOnly strategies
+      # @param labeled_sample [Boolean] Whether to sample labeled examples randomly
+      # @return [Hash{Integer => Array<Array<DSPy::FewShotExample>>}] Map of predictor index to demo sets
       sig do
         params(
-          program: T.untyped,
+          student: T.untyped,
+          num_candidate_sets: Integer,
           trainset: T::Array[T.untyped],
-          config: BootstrapConfig,
-          metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean))
-        ).returns(BootstrapResult)
+          max_bootstrapped_demos: Integer,
+          max_labeled_demos: Integer,
+          min_num_samples: Integer,
+          metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean)),
+          teacher_settings: T::Hash[Symbol, T.untyped],
+          seed: T.nilable(Integer),
+          include_non_bootstrapped: T::Boolean,
+          labeled_sample: T::Boolean
+        ).returns(T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]])
       end
-      def self.create_n_fewshot_demo_sets(program, trainset, config: BootstrapConfig.new, metric: nil)
-        DSPy::Context.with_span(
-          operation: 'optimization.bootstrap_start',
-          'dspy.module' => 'Bootstrap',
-          'bootstrap.trainset_size' => trainset.size,
-          'bootstrap.max_examples' => config.max_bootstrapped_examples,
-          'bootstrap.num_candidate_sets' => config.num_candidate_sets
-        ) do
-          # Convert to typed examples if needed
-          typed_examples = ensure_typed_examples(trainset)
-          
-          # Generate successful examples through bootstrap
-          successful_examples, failed_examples = generate_successful_examples(
-            program, 
-            typed_examples, 
-            config,
-            metric
-          )
+      def self.create_n_fewshot_demo_sets(
+        student,
+        num_candidate_sets,
+        trainset,
+        max_bootstrapped_demos: 3,
+        max_labeled_demos: 3,
+        min_num_samples: 1,
+        metric: nil,
+        teacher_settings: {},
+        seed: nil,
+        include_non_bootstrapped: true,
+        labeled_sample: true
+      )
+        demo_candidates = Hash.new { |h, k| h[k] = [] }
+        rng = seed ? Random.new(seed) : Random.new
 
-          # Create candidate sets from successful examples
-          candidate_sets = create_candidate_sets(successful_examples, config)
+        # Get number of predictors (simplified: assume single predictor)
+        num_predictors = 1
 
-          # Gather statistics
-          statistics = {
-            total_trainset: trainset.size,
-            successful_count: successful_examples.size,
-            failed_count: failed_examples.size,
-            success_rate: successful_examples.size.to_f / (successful_examples.size + failed_examples.size),
-            candidate_sets_created: candidate_sets.size,
-            average_set_size: candidate_sets.empty? ? 0 : candidate_sets.map(&:size).sum.to_f / candidate_sets.size
-          }
+        # Adjust for 3 special seeds (-3, -2, -1)
+        adjusted_num_sets = num_candidate_sets - 3
 
-          emit_bootstrap_complete_event(statistics)
+        # Loop from -3 to adjusted_num_sets (exclusive)
+        (-3...adjusted_num_sets).each do |current_seed|
+          case current_seed
+          when -3  # ZeroShot strategy
+            next unless include_non_bootstrapped
+            # Empty demo sets for all predictors
+            num_predictors.times { |idx| demo_candidates[idx] << [] }
 
-          BootstrapResult.new(
-            candidate_sets: candidate_sets,
-            successful_examples: successful_examples,
-            failed_examples: failed_examples,
-            statistics: statistics
+          when -2  # LabeledOnly strategy
+            next unless include_non_bootstrapped && max_labeled_demos > 0
+            # Sample or take labeled examples
+            labeled_demos = create_labeled_demos(trainset, max_labeled_demos, labeled_sample, rng)
+            num_predictors.times { |idx| demo_candidates[idx] << labeled_demos }
+
+          when -1  # Unshuffled strategy
+            # Bootstrap without shuffle
+            bootstrapped_demos = create_bootstrapped_demos(
+              student, trainset, max_bootstrapped_demos, max_labeled_demos, metric
+            )
+            num_predictors.times { |idx| demo_candidates[idx] << bootstrapped_demos }
+
+          else  # Shuffled strategies (seed >= 0)
+            # Shuffle trainset with current seed
+            seed_rng = Random.new(current_seed)
+            shuffled_trainset = trainset.shuffle(random: seed_rng)
+
+            # Random demo count between min and max
+            num_demos = seed_rng.rand(min_num_samples..max_bootstrapped_demos)
+
+            # Bootstrap with shuffled data
+            bootstrapped_demos = create_bootstrapped_demos(
+              student, shuffled_trainset, num_demos, max_labeled_demos, metric
+            )
+            num_predictors.times { |idx| demo_candidates[idx] << bootstrapped_demos }
+          end
+        end
+
+        demo_candidates
+      end
+
+      # Create labeled demonstrations from trainset examples
+      sig do
+        params(
+          trainset: T::Array[T.untyped],
+          max_labeled: Integer,
+          labeled_sample: T::Boolean,
+          rng: Random
+        ).returns(T::Array[DSPy::FewShotExample])
+      end
+      def self.create_labeled_demos(trainset, max_labeled, labeled_sample, rng)
+        examples = if labeled_sample
+          trainset.sample([max_labeled, trainset.size].min, random: rng)
+        else
+          trainset.take(max_labeled)
+        end
+
+        examples.map do |ex|
+          DSPy::FewShotExample.new(
+            input: ex.input_values,
+            output: ex.expected_values
           )
         end
+      end
+
+      # Create bootstrapped demonstrations by executing student on trainset
+      sig do
+        params(
+          student: T.untyped,
+          trainset: T::Array[T.untyped],
+          max_bootstrapped: Integer,
+          max_labeled: Integer,
+          metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean))
+        ).returns(T::Array[DSPy::FewShotExample])
+      end
+      def self.create_bootstrapped_demos(student, trainset, max_bootstrapped, max_labeled, metric)
+        successful_demos = []
+
+        # Execute student on trainset to bootstrap demonstrations
+        trainset.each do |example|
+          break if successful_demos.size >= max_bootstrapped
+
+          begin
+            # Call student with input
+            prediction = student.call(**example.input_values)
+            prediction_hash = prediction.respond_to?(:to_h) ? prediction.to_h : prediction
+
+            # Check if prediction matches expected output
+            success = if metric
+              metric.call(example, prediction_hash)
+            else
+              example.matches_prediction?(prediction_hash)
+            end
+
+            if success
+              # Extract only output fields from prediction
+              output_fields = extract_output_fields_for_demo(prediction_hash, example.signature_class)
+
+              demo = DSPy::FewShotExample.new(
+                input: example.input_values,
+                output: output_fields
+              )
+              successful_demos << demo
+            end
+          rescue => e
+            # Continue on errors
+            DSPy.logger.warn("Bootstrap error: #{e.message}") if DSPy.logger
+          end
+        end
+
+        # Prepend labeled examples if requested
+        if max_labeled > 0
+          labeled = trainset.take(max_labeled).map do |ex|
+            DSPy::FewShotExample.new(
+              input: ex.input_values,
+              output: ex.expected_values
+            )
+          end
+          successful_demos = labeled + successful_demos
+        end
+
+        successful_demos
+      end
+
+      # Extract only output fields from prediction hash
+      sig do
+        params(
+          prediction_hash: T::Hash[Symbol, T.untyped],
+          signature_class: T.class_of(DSPy::Signature)
+        ).returns(T::Hash[Symbol, T.untyped])
+      end
+      def self.extract_output_fields_for_demo(prediction_hash, signature_class)
+        output_field_names = signature_class.output_field_descriptors.keys
+        prediction_hash.slice(*output_field_names)
       end
 
       # Evaluate a candidate program on examples with proper error handling
