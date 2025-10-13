@@ -53,11 +53,16 @@ module DSPy
     sig { returns(Prompt) }
     attr_reader :prompt
 
+    # Mutable demos attribute for MIPROv2 compatibility
+    sig { returns(T.nilable(T::Array[FewShotExample])) }
+    attr_accessor :demos
+
     sig { params(signature_class: T.class_of(Signature)).void }
     def initialize(signature_class)
       super()
       @signature_class = signature_class
       @prompt = Prompt.from_signature(signature_class)
+      @demos = nil
     end
 
     # Reconstruct program from serialized hash
