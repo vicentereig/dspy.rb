@@ -142,15 +142,15 @@ module DSPy
           evaluation_set = typed_valset || typed_trainset.take(10)
 
           # Bootstrap few-shot examples if enabled
-          bootstrap_result = nil
+          demo_candidates = nil
           if @optimizer_config.use_few_shot_optimization
-            bootstrap_result = bootstrap_examples(program, typed_trainset)
+            demo_candidates = bootstrap_examples(program, typed_trainset)
           end
 
           # Generate instruction candidates if enabled
           instruction_candidates = []
           if @optimizer_config.use_instruction_optimization && @proposer
-            instruction_candidates = generate_instruction_candidates(program, typed_trainset, bootstrap_result)
+            instruction_candidates = generate_instruction_candidates(program, typed_trainset, demo_candidates)
           end
 
           # Run optimization trials
@@ -158,7 +158,7 @@ module DSPy
             program,
             evaluation_set,
             instruction_candidates,
-            bootstrap_result
+            demo_candidates
           )
 
           # Find best trial
@@ -175,16 +175,18 @@ module DSPy
       private
 
       # Bootstrap few-shot examples from training set
-      sig { params(program: T.untyped, trainset: T::Array[DSPy::Example]).returns(Utils::BootstrapResult) }
+      sig { params(program: T.untyped, trainset: T::Array[DSPy::Example]).returns(T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]]) }
       def bootstrap_examples(program, trainset)
-        bootstrap_config = Utils::BootstrapConfig.new
-        bootstrap_config.max_bootstrapped_examples = @optimizer_config.max_bootstrapped_examples
-        bootstrap_config.max_labeled_examples = @optimizer_config.max_labeled_examples
-        bootstrap_config.num_candidate_sets = [@optimizer_config.num_trials / 2, 5].max
-        bootstrap_config.max_errors = @optimizer_config.max_errors
-        bootstrap_config.num_threads = @optimizer_config.num_threads
+        num_candidate_sets = [@optimizer_config.num_trials / 2, 5].max
 
-        Utils.create_n_fewshot_demo_sets(program, trainset, config: bootstrap_config, metric: @metric)
+        Utils.create_n_fewshot_demo_sets(
+          program,
+          num_candidate_sets,
+          trainset,
+          max_bootstrapped_demos: @optimizer_config.max_bootstrapped_examples,
+          max_labeled_demos: @optimizer_config.max_labeled_examples,
+          metric: @metric
+        )
       end
 
       # Generate instruction candidates using the proposer
@@ -192,17 +194,18 @@ module DSPy
         params(
           program: T.untyped,
           trainset: T::Array[DSPy::Example],
-          bootstrap_result: T.nilable(Utils::BootstrapResult)
+          demo_candidates: T.nilable(T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]])
         ).returns(T::Array[String])
       end
-      def generate_instruction_candidates(program, trainset, bootstrap_result)
+      def generate_instruction_candidates(program, trainset, demo_candidates)
         return [] unless @proposer
 
         # Get current instruction if available
         current_instruction = extract_current_instruction(program)
-        
+
         # Use few-shot examples from bootstrap if available
-        few_shot_examples = bootstrap_result&.successful_examples&.take(5)
+        # Flatten demo sets from first predictor and take first 5 examples
+        few_shot_examples = demo_candidates&.dig(0)&.flatten&.take(5) || []
 
         # Get signature class from program
         signature_class = extract_signature_class(program)
@@ -224,14 +227,14 @@ module DSPy
           program: T.untyped,
           evaluation_set: T::Array[DSPy::Example],
           instruction_candidates: T::Array[String],
-          bootstrap_result: T.nilable(Utils::BootstrapResult)
+          demo_candidates: T.nilable(T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]])
         ).returns(T::Array[TrialResult])
       end
-      def run_optimization_trials(program, evaluation_set, instruction_candidates, bootstrap_result)
+      def run_optimization_trials(program, evaluation_set, instruction_candidates, demo_candidates)
         trials = []
-        
+
         # Generate trial configurations
-        trial_configs = generate_trial_configurations(instruction_candidates, bootstrap_result)
+        trial_configs = generate_trial_configurations(instruction_candidates, demo_candidates)
         
         trial_configs.take(@optimizer_config.num_trials).each_with_index do |config, index|
           trial_number = index + 1
@@ -270,36 +273,39 @@ module DSPy
       sig do
         params(
           instruction_candidates: T::Array[String],
-          bootstrap_result: T.nilable(Utils::BootstrapResult)
+          demo_candidates: T.nilable(T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]])
         ).returns(T::Array[T::Hash[Symbol, T.untyped]])
       end
-      def generate_trial_configurations(instruction_candidates, bootstrap_result)
+      def generate_trial_configurations(instruction_candidates, demo_candidates)
         configs = []
-        
+
+        # Extract demo sets from first predictor
+        demo_sets = demo_candidates&.dig(0) || []
+
         # Base configuration (no changes)
         configs << { instruction: nil, few_shot_examples: [] }
-        
+
         # Instruction-only trials
         instruction_candidates.each do |instruction|
           configs << { instruction: instruction, few_shot_examples: [] }
         end
-        
+
         # Few-shot only trials
-        if bootstrap_result&.candidate_sets&.any?
-          bootstrap_result.candidate_sets.each do |candidate_set|
-            configs << { instruction: nil, few_shot_examples: candidate_set }
+        if demo_sets.any?
+          demo_sets.each do |demo_set|
+            configs << { instruction: nil, few_shot_examples: demo_set }
           end
         end
-        
+
         # Combined instruction + few-shot trials
-        if instruction_candidates.any? && bootstrap_result&.candidate_sets&.any?
+        if instruction_candidates.any? && demo_sets.any?
           instruction_candidates.take(3).each do |instruction|
-            bootstrap_result.candidate_sets.take(2).each do |candidate_set|
-              configs << { instruction: instruction, few_shot_examples: candidate_set }
+            demo_sets.take(2).each do |demo_set|
+              configs << { instruction: instruction, few_shot_examples: demo_set }
             end
           end
         end
-        
+
         # Shuffle for random strategy
         if @optimizer_config.search_strategy == "random"
           configs.shuffle
