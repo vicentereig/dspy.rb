@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
+require 'fileutils'
 require_relative '../evaluate'
 require_relative '../example'
 require_relative 'data_handler'
@@ -134,6 +135,43 @@ module DSPy
         # If no valid program is found, return the last valid one
         _key, mean, program, params = sorted_results.last
         [program, mean, _key, params]
+      end
+
+      # Save a candidate program to the log directory
+      # Used during optimization to save intermediate trial results
+      #
+      # @param program [Module] The program to save
+      # @param log_dir [String, nil] The directory to save to (returns nil if nil)
+      # @param trial_num [Integer] The trial number for naming the file
+      # @param note [String, nil] Optional note to append to filename
+      # @return [String, nil] The path where program was saved, or nil if log_dir is nil
+      sig do
+        params(
+          program: T.untyped,
+          log_dir: T.nilable(String),
+          trial_num: Integer,
+          note: T.nilable(String)
+        ).returns(T.nilable(String))
+      end
+      def self.save_candidate_program(program, log_dir, trial_num, note: nil)
+        return nil if log_dir.nil?
+
+        # Ensure the directory exists
+        eval_programs_dir = File.join(log_dir, "evaluated_programs")
+        FileUtils.mkdir_p(eval_programs_dir) unless Dir.exist?(eval_programs_dir)
+
+        # Define the save path for the program
+        filename = if note
+          "program_#{trial_num}_#{note}.json"
+        else
+          "program_#{trial_num}.json"
+        end
+        save_path = File.join(eval_programs_dir, filename)
+
+        # Save the program
+        program.save(save_path)
+
+        save_path
       end
 
       # Configuration for bootstrap operations
