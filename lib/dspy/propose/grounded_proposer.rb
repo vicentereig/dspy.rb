@@ -11,36 +11,78 @@ module DSPy
     class GroundedProposer
       extend T::Sig
 
-      # Configuration for instruction proposal
+      # Python-compatible TIPS dictionary for instruction generation
+      TIPS = {
+        "none" => "",
+        "creative" => "Don't be afraid to be creative when creating the new instruction!",
+        "simple" => "Keep the instruction clear and concise.",
+        "description" => "Make sure your instruction is very informative and descriptive.",
+        "high_stakes" => "The instruction should include a high stakes scenario in which the LM must solve the task!",
+        "persona" => 'Include a persona that is relevant to the task in the instruction (ie. "You are a ...")'
+      }.freeze
+
+      # Configuration for instruction proposal (Python-compatible)
       class Config
         extend T::Sig
 
+        # Core parameters
         sig { returns(Integer) }
         attr_accessor :num_instruction_candidates
 
+        # Python-compatible awareness flags (match Python defaults exactly)
+        sig { returns(T::Boolean) }
+        attr_accessor :program_aware
+
+        sig { returns(T::Boolean) }
+        attr_accessor :use_dataset_summary
+
+        sig { returns(T::Boolean) }
+        attr_accessor :use_task_demos
+
+        sig { returns(T::Boolean) }
+        attr_accessor :use_tip
+
+        sig { returns(T::Boolean) }
+        attr_accessor :use_instruct_history
+
+        # Additional parameters
         sig { returns(Integer) }
-        attr_accessor :max_examples_for_analysis
+        attr_accessor :view_data_batch_size
+
+        sig { returns(Integer) }
+        attr_accessor :num_demos_in_context
 
         sig { returns(T::Boolean) }
-        attr_accessor :use_task_description
+        attr_accessor :set_tip_randomly
 
         sig { returns(T::Boolean) }
-        attr_accessor :use_input_output_analysis
+        attr_accessor :set_history_randomly
+
+        sig { returns(Float) }
+        attr_accessor :init_temperature
 
         sig { returns(T::Boolean) }
-        attr_accessor :use_few_shot_examples
-
-        sig { returns(String) }
-        attr_accessor :proposal_model
+        attr_accessor :verbose
 
         sig { void }
         def initialize
+          # Core parameters
           @num_instruction_candidates = 5
-          @max_examples_for_analysis = 10
-          @use_task_description = true
-          @use_input_output_analysis = true
-          @use_few_shot_examples = true
-          @proposal_model = "gpt-4o-mini"
+
+          # Python-compatible awareness flags (match Python defaults)
+          @program_aware = true
+          @use_dataset_summary = true
+          @use_task_demos = true
+          @use_tip = true
+          @use_instruct_history = true
+
+          # Additional parameters
+          @view_data_batch_size = 10
+          @num_demos_in_context = 3
+          @set_tip_randomly = true
+          @set_history_randomly = true
+          @init_temperature = 1.0
+          @verbose = false
         end
       end
 
@@ -84,10 +126,65 @@ module DSPy
       sig { returns(Config) }
       attr_reader :config
 
-      sig { params(config: T.nilable(Config)).void }
-      def initialize(config: nil)
-        @config = config || Config.new
+      sig do
+        params(
+          config: T.nilable(Config),
+          program: T.nilable(T.untyped),
+          trainset: T.nilable(T::Array[DSPy::Example])
+        ).void
       end
+      def initialize(config: nil, program: nil, trainset: nil)
+        @config = config || Config.new
+        @program = program
+        @trainset = trainset
+        @dataset_summary = nil
+        @program_code_string = nil
+
+        # Generate dataset summary if data-aware mode enabled (Python: use_dataset_summary)
+        if @config.use_dataset_summary && trainset && !trainset.empty?
+          begin
+            require_relative 'dataset_summary_generator'
+            @dataset_summary = DatasetSummaryGenerator.create_dataset_summary(
+              trainset,
+              @config.view_data_batch_size,
+              DSPy.current_lm,
+              verbose: @config.verbose
+            )
+          rescue => e
+            DSPy.logger.warn("Failed to generate dataset summary: #{e.message}")
+            @dataset_summary = nil
+          end
+        end
+
+        # Extract program source code if program-aware mode enabled
+        if @config.program_aware && program
+          @program_code_string = extract_program_source(program)
+        end
+      end
+
+      private
+
+      # Extract source code from program for program-aware mode
+      sig { params(program: T.untyped).returns(T.nilable(String)) }
+      def extract_program_source(program)
+        # Get the program's class
+        klass = program.is_a?(Class) ? program : program.class
+
+        # Try to get source location
+        source_location = klass.instance_method(:forward).source_location rescue nil
+        return nil unless source_location
+
+        file, line = source_location
+        # Read the source file and extract the class definition
+        # This is a simplified version - could be enhanced with method_source gem
+        code = "Program: #{klass.name}\nSource: #{file}:#{line}"
+        code
+      rescue => e
+        DSPy.logger.warn("Could not extract program source: #{e.message}")
+        nil
+      end
+
+      public
 
       # Generate instruction candidates for a signature and training examples
       sig do
@@ -112,9 +209,10 @@ module DSPy
           
           # Generate instruction candidates
           candidates = generate_instruction_candidates(
-            signature_class, 
-            analysis, 
-            current_instruction
+            signature_class,
+            analysis,
+            current_instruction,
+            few_shot_examples: few_shot_examples
           )
 
           # Filter and rank candidates
@@ -122,8 +220,8 @@ module DSPy
 
           metadata = {
             generation_timestamp: Time.now.iso8601,
-            model_used: @config.proposal_model,
-            num_examples_analyzed: [examples.size, @config.max_examples_for_analysis].min,
+            model_used: DSPy.current_lm&.model || 'unknown',
+            num_examples_analyzed: [examples.size, @config.view_data_batch_size].min,
             original_instruction: current_instruction
           }
 
@@ -200,7 +298,7 @@ module DSPy
       # Analyze patterns in training examples
       sig { params(examples: T::Array[T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
       def analyze_example_patterns(examples)
-        analysis_examples = examples.take(@config.max_examples_for_analysis)
+        analysis_examples = examples.take(@config.view_data_batch_size)
         
         {
           total_examples: examples.size,
@@ -319,12 +417,18 @@ module DSPy
         params(
           signature_class: T.class_of(DSPy::Signature),
           analysis: T::Hash[Symbol, T.untyped],
-          current_instruction: T.nilable(String)
+          current_instruction: T.nilable(String),
+          few_shot_examples: T.nilable(T::Array[T.untyped])
         ).returns(T::Array[String])
       end
-      def generate_instruction_candidates(signature_class, analysis, current_instruction)
+      def generate_instruction_candidates(signature_class, analysis, current_instruction, few_shot_examples: nil)
         # Build context for instruction generation
-        context = build_generation_context(signature_class, analysis, current_instruction)
+        context = build_generation_context(
+          signature_class,
+          analysis,
+          current_instruction,
+          few_shot_examples: few_shot_examples
+        )
         
         # Create instruction generation signature
         instruction_signature = create_instruction_generation_signature
@@ -362,32 +466,56 @@ module DSPy
         params(
           signature_class: T.class_of(DSPy::Signature),
           analysis: T::Hash[Symbol, T.untyped],
-          current_instruction: T.nilable(String)
+          current_instruction: T.nilable(String),
+          few_shot_examples: T.nilable(T::Array[T.untyped])
         ).returns(String)
       end
-      def build_generation_context(signature_class, analysis, current_instruction)
+      def build_generation_context(signature_class, analysis, current_instruction, few_shot_examples: nil)
         context_parts = []
-        
-        context_parts << "Task: #{signature_class.description}" if @config.use_task_description
-        
-        if @config.use_input_output_analysis
-          # Build detailed field descriptions including enum values
-          input_descriptions = analysis[:input_fields].map { |f| format_field_description(f) }
-          output_descriptions = analysis[:output_fields].map { |f| format_field_description(f) }
-          
-          context_parts << "Input fields: #{input_descriptions.join(', ')}"
-          context_parts << "Output fields: #{output_descriptions.join(', ')}"
+
+        # Include dataset summary if enabled and available
+        if @config.use_dataset_summary && @dataset_summary
+          context_parts << "Dataset Summary: #{@dataset_summary}"
         end
-        
+
+        # Include program code if enabled and available
+        if @config.program_aware && @program_code_string
+          context_parts << "Program Code:\n#{@program_code_string}"
+        end
+
+        # Always include task description (fundamental to understanding the task)
+        context_parts << "Task: #{signature_class.description}"
+
+        # Always include field analysis (fundamental to understanding inputs/outputs)
+        input_descriptions = analysis[:input_fields].map { |f| format_field_description(f) }
+        output_descriptions = analysis[:output_fields].map { |f| format_field_description(f) }
+
+        context_parts << "Input fields: #{input_descriptions.join(', ')}"
+        context_parts << "Output fields: #{output_descriptions.join(', ')}"
+
+        # Include task demos if enabled and available
+        if @config.use_task_demos && few_shot_examples && !few_shot_examples.empty?
+          demo_strings = few_shot_examples.take(@config.num_demos_in_context).map do |example|
+            format_example_as_demo(example)
+          end
+          context_parts << "Task Demos:\n#{demo_strings.join("\n\n")}"
+        end
+
         if analysis[:common_themes] && analysis[:common_themes].any?
           context_parts << "Task themes: #{analysis[:common_themes].join(', ')}"
         end
-        
+
         if current_instruction
           context_parts << "Current instruction: \"#{current_instruction}\""
         end
-        
-        context_parts.join("\n")
+
+        # Include tip if enabled
+        if @config.use_tip
+          tip = select_tip
+          context_parts << "Tip: #{tip}" if tip && !tip.empty?
+        end
+
+        context_parts.join("\n\n")
       end
 
       # Format field description with enum values if applicable
@@ -398,6 +526,42 @@ module DSPy
           "#{base} [values: #{field[:enum_values].join(', ')}]"
         else
           base
+        end
+      end
+
+      # Format an example as a demo for context
+      sig { params(example: T.untyped).returns(String) }
+      def format_example_as_demo(example)
+        return example.to_s unless example.respond_to?(:inputs) && example.respond_to?(:expected)
+
+        parts = []
+
+        # Format inputs
+        if example.inputs && !example.inputs.empty?
+          input_strs = example.inputs.map { |k, v| "#{k}: #{v.inspect}" }
+          parts << "Inputs: #{input_strs.join(', ')}"
+        end
+
+        # Format expected outputs
+        if example.expected && !example.expected.empty?
+          output_strs = example.expected.map { |k, v| "#{k}: #{v.inspect}" }
+          parts << "Expected: #{output_strs.join(', ')}"
+        end
+
+        parts.join(" | ")
+      end
+
+      # Select a tip based on configuration
+      sig { returns(T.nilable(String)) }
+      def select_tip
+        if @config.set_tip_randomly
+          # Randomly select a tip (excluding "none")
+          tip_keys = TIPS.keys.reject { |k| k == "none" }
+          selected_key = tip_keys.sample
+          TIPS[selected_key]
+        else
+          # Return empty string when not using random tips
+          ""
         end
       end
 
@@ -571,7 +735,7 @@ module DSPy
           'proposal.num_candidates' => result.num_candidates,
           'proposal.best_instruction_length' => result.best_instruction.length,
           'proposal.analysis_themes' => result.analysis[:common_themes] || [],
-          'proposal.model_used' => @config.proposal_model
+          'proposal.model_used' => DSPy.current_lm&.model || 'unknown'
         })
       end
     end

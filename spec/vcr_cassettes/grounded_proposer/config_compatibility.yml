@@ -1,0 +1,837 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Make sure your instruction is very informative and descriptive.\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 1\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2092'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:34 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2407'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2568'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 1m4.244s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e0951f2a0a0fdb-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGiK1bRnS7ny8OXWRjYLj30x4blU",
+          "object": "chat.completion",
+          "created": 1760376812,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"For each scientific question provided, analyze the question and its context thoroughly. Construct your answer by sequentially breaking down the concepts involved, ensuring you address any underlying principles. Include a detailed reasoning section that explains your thought process and the steps taken to arrive at your conclusion. Aim for clarity and precision, making sure your response is easy to understand while being comprehensive.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 437,
+            "completion_tokens": 86,
+            "total_tokens": 523,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:34 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BXjQaxzJADXzADvrtB84K3po7TgIAAEBAAAnIQEAASDTAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1760376810475.457,"message":"trace_id=\"a1ba62fa-8a73-47c5-bc74-aba3d022bc44\"
+        otel_span_stack=[] proposal.num_candidates=5 proposal.best_instruction_length=471
+        proposal.analysis_themes=[] proposal.model_used=\"gpt-4o-mini\" event=\"optimization.instruction_proposal_complete\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXjQaxzJADXzADvrtB84K3po7TgIAAEBAAAnIQEAASDTAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Mon, 13 Oct 2025 17:33:35 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-bur-kbur8200028-BUR
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 13 Oct 2025 17:33:35 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Make sure your instruction is very informative and descriptive.\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 2\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2092'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:36 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1969'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1995'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9991'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 1m10.174s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e095334f3d0fdb-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGiMyIxxIkvZ75yUA9XdCAY0MPgG",
+          "object": "chat.completion",
+          "created": 1760376814,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"For the given scientific question, first analyze the context provided, then break down the problem into smaller, manageable components. Provide a thorough and detailed answer that includes relevant theories, principles, and examples where applicable. Clearly explain your reasoning process at each step to ensure the answer is comprehensive and easy to follow.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 437,
+            "completion_tokens": 75,
+            "total_tokens": 512,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:36 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Make sure your instruction is very informative and descriptive.\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 3\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2092'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:39 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2205'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2356'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9991'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 1m16.163s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e095416fc80fdb-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGiP7TcVRP0k5BLxIwwrao4Qoy0A",
+          "object": "chat.completion",
+          "created": 1760376817,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"For each complex scientific question provided in the input, first identify key concepts and terms in the question and the context. Then, systematically break down the problem by listing the relevant scientific principles that apply. Use these principles to formulate a detailed answer, ensuring you fully explain each step of your reasoning process. Finally, present your answer clearly, followed by a concise summary of the reasoning used to arrive at that answer.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 437,
+            "completion_tokens": 96,
+            "total_tokens": 533,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:39 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Make sure your instruction is very informative and descriptive.\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 4\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2092'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:42 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2211'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2458'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9990'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 1m21.665s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e095535c150fdb-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGiSTH0XqW0cAmz63G1fglQ4prlR",
+          "object": "chat.completion",
+          "created": 1760376820,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"When answering complex scientific questions, provide a detailed and comprehensive response that includes a clear explanation of the concepts involved. Begin by breaking down the question into its key components. Use the provided context to support your answer, ensuring that your response is well-reasoned and grounded in scientific principles. Additionally, outline your reasoning process step-by-step to guide the reader through your thought process, making it easy to follow and understand.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 437,
+            "completion_tokens": 98,
+            "total_tokens": 535,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:42 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Make sure your instruction is very informative and descriptive.\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 5\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2092'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:45 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2141'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2306'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9989'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 1m27.8s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e095672e5c0fdb-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGiVslhofUHS862H39v2pVVoZdSz",
+          "object": "chat.completion",
+          "created": 1760376823,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"For each complex scientific question provided, deliver a detailed answer that includes clear reasoning. Begin by breaking down the question into manageable parts, then address each part systematically. Ensure that your response not only answers the question but also explains the reasoning behind your answer in a step-by-step manner. Use examples and related concepts to enhance understanding.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 437,
+            "completion_tokens": 80,
+            "total_tokens": 517,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:45 GMT
+recorded_with: VCR 6.3.1

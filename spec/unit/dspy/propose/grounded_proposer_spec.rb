@@ -190,21 +190,24 @@ RSpec.describe DSPy::Propose::GroundedProposer do
       config = DSPy::Propose::GroundedProposer::Config.new
 
       expect(config.num_instruction_candidates).to eq(5)
-      expect(config.max_examples_for_analysis).to eq(10)
-      # max_instruction_length removed for Python compatibility
-      expect(config.use_task_description).to be(true)
-      expect(config.use_input_output_analysis).to be(true)
-      expect(config.use_few_shot_examples).to be(true)
-      expect(config.proposal_model).to eq("gpt-4o-mini")
+      expect(config.view_data_batch_size).to eq(10)
+      # Python-compatible awareness flags
+      expect(config.program_aware).to be(true)
+      expect(config.use_dataset_summary).to be(true)
+      expect(config.use_task_demos).to be(true)
+      expect(config.use_tip).to be(true)
+      expect(config.use_instruct_history).to be(true)
     end
 
     it 'allows configuration customization' do
       config = DSPy::Propose::GroundedProposer::Config.new
       config.num_instruction_candidates = 3
-      config.use_task_description = false
+      config.view_data_batch_size = 5
+      config.program_aware = false
 
       expect(config.num_instruction_candidates).to eq(3)
-      expect(config.use_task_description).to be(false)
+      expect(config.view_data_batch_size).to eq(5)
+      expect(config.program_aware).to be(false)
     end
   end
 

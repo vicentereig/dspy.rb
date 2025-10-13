@@ -1,0 +1,836 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Don''t be afraid to be creative when creating the new instruction!\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 1\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2094'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:03 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2500'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2642'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e0945fa96e0904-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGhp2RvAnL1HO1pqoKFE8Hl7Xz5e",
+          "object": "chat.completion",
+          "created": 1760376781,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"When answering complex scientific questions, clearly dissect the question into manageable components. Begin by outlining the key concepts and terms involved. Then, provide a detailed, structured response that includes relevant background information and any necessary calculations or diagrams. Finally, clearly state the reasoning behind your answer, supporting it with logical steps and references to scientific principles or studies.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 439,
+            "completion_tokens": 82,
+            "total_tokens": 521,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:03 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BXjQaxzJADXzADvrtB84K3po7TgIAAEBAAAnIQEAASDTAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        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
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXjQaxzJADXzADvrtB84K3po7TgIAAEBAAAnIQEAASDTAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '2'
+      Date:
+      - Mon, 13 Oct 2025 17:33:05 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-bur-kbur8200028-BUR
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 13 Oct 2025 17:33:05 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Don''t be afraid to be creative when creating the new instruction!\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 2\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2094'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:07 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2490'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2913'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 13.634s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e094747cc70904-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGhs6qqeeivTy3C5Wrxx3kNad77O",
+          "object": "chat.completion",
+          "created": 1760376784,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"For any complex scientific question provided, deliver an in-depth answer that not only addresses the query but also includes detailed reasoning. Structure your response clearly by first rephrasing the question, then providing a step-by-step breakdown of relevant concepts and theories, and finally arriving at your answer. Ensure that your explanations are thorough, accurate, and help the reader understand the underlying scientific principles.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 439,
+            "completion_tokens": 90,
+            "total_tokens": 529,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:07 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Don''t be afraid to be creative when creating the new instruction!\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 3\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2094'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:09 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2098'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2111'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 19.472s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e0948a3aaa0904-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGhvrqKLXnYB7vLPVT6oFlMliKxv",
+          "object": "chat.completion",
+          "created": 1760376787,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"For each complex scientific question provided, formulate a comprehensive answer that details the relevant concepts, principles, and theories. Clearly outline your reasoning process in a step-by-step manner, ensuring that each step logically leads to the next. Be creative in your explanations, incorporating real-world examples or analogies where appropriate to enhance understanding. Always conclude with a summary that encapsulates the main points of your answer.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 439,
+            "completion_tokens": 93,
+            "total_tokens": 532,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:09 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Don''t be afraid to be creative when creating the new instruction!\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 4\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2094'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:12 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2098'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2255'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 25.295s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e094991ae40904-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGhySRRt8czURxfhSyL0HsgTuWR9",
+          "object": "chat.completion",
+          "created": 1760376790,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"When presented with a complex scientific question, provide a detailed answer by breaking down the question into smaller parts. Start with a clear definition of key terms, then explain the relevant concepts systematically. Incorporate relevant scientific principles and data, and conclude with a summary that ties together your reasoning. Remember to document each step to enhance clarity and facilitate understanding.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 439,
+            "completion_tokens": 83,
+            "total_tokens": 522,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:12 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"task_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Context about the task and current setup\"\n    },\n    \"requirements\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Requirements for
+        the instruction\"\n    },\n    \"candidate_number\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Which candidate this is (for variety)\"\n    }\n  },\n  \"required\": [\n    \"task_context\",\n    \"requirements\",\n    \"candidate_number\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"instruction\": {\n      \"type\":
+        \"string\",\n      \"description\": \"A clear, specific instruction for the
+        task\"\n    }\n  },\n  \"required\": [\n    \"instruction\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task_context\": \"Task: Provide detailed, comprehensive
+        answers to complex scientific questions\\n\\nInput fields: question (String),
+        context (String)\\n\\nOutput fields: answer (String), reasoning (String)\\n\\nTip:
+        Don''t be afraid to be creative when creating the new instruction!\",\n  \"requirements\":
+        \"Be specific and actionable. Guide the model''s reasoning process. Encourage
+        step-by-step thinking.\",\n  \"candidate_number\": 5\n}\n```\n\nRespond with
+        the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2094'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 13 Oct 2025 17:33:14 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1938'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1951'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9996'
+      X-Ratelimit-Remaining-Tokens:
+      - '199540'
+      X-Ratelimit-Reset-Requests:
+      - 31.553s
+      X-Ratelimit-Reset-Tokens:
+      - 138ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 98e094aabb900904-LAX
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CQGi0fEXb24zMulCS7K2HGkTdPIiC",
+          "object": "chat.completion",
+          "created": 1760376792,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"For each complex scientific question provided, break down the question into its fundamental components. Analyze each part systematically and detail your reasoning process step-by-step to construct a comprehensive answer. Ensure that your response includes not just the final answer but also a clear explanation of how you arrived at it, citing relevant scientific concepts and principles.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 439,
+            "completion_tokens": 78,
+            "total_tokens": 517,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Mon, 13 Oct 2025 17:33:14 GMT
+recorded_with: VCR 6.3.1
