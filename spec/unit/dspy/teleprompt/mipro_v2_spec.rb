@@ -425,23 +425,15 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
         )
       )
 
-      # Mock bootstrap to return some examples
+      # Mock bootstrap to return demo candidates (new dict interface)
       allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return(
-        DSPy::Teleprompt::Utils::BootstrapResult.new(
-          candidate_sets: [
-            training_examples.take(2),
-            training_examples.drop(1).take(2),
-            training_examples.drop(2).take(2)
-          ],
-          successful_examples: training_examples.take(4),
-          failed_examples: [training_examples.last],
-          statistics: { 
-            success_rate: 0.8, 
-            successful_count: 4, 
-            failed_count: 1,
-            candidate_sets_created: 3
-          }
-        )
+        {
+          0 => [
+            training_examples.take(2).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) },
+            training_examples.drop(1).take(2).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) },
+            training_examples.drop(2).take(2).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) }
+          ]
+        }
       )
     end
 
@@ -475,7 +467,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
 
       # MIPROv2-specific checks
       expect(result.evaluated_candidates).to be_an(Array)
-      expect(result.bootstrap_statistics).to include(:success_rate)
+      expect(result.bootstrap_statistics).to include(:num_predictors, :demo_sets_per_predictor, :avg_demos_per_set)
       expect(result.proposal_statistics).to include(:common_themes)
       expect(result.metadata[:optimizer]).to eq("MIPROv2")
     end
@@ -1078,12 +1070,11 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
 
       # Mock components to avoid complex setup
       allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return(
-        DSPy::Teleprompt::Utils::BootstrapResult.new(
-          candidate_sets: [training_examples.take(1)],
-          successful_examples: training_examples.take(2),
-          failed_examples: [],
-          statistics: { success_rate: 1.0 }
-        )
+        {
+          0 => [
+            training_examples.take(1).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) }
+          ]
+        }
       )
       
       allow_any_instance_of(DSPy::Propose::GroundedProposer).to receive(:propose_instructions).and_return(

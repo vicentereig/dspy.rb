@@ -348,8 +348,7 @@ module DSPy
           trainset,
           max_bootstrapped_demos: config.max_bootstrapped_examples,
           max_labeled_demos: config.max_labeled_examples,
-          metric: @metric,
-          seed: config.seed
+          metric: @metric
         )
       end
 
@@ -736,11 +735,17 @@ module DSPy
         # Apply few-shot examples if provided
         if candidate.few_shot_examples.any? && program.respond_to?(:with_examples)
           few_shot_examples = candidate.few_shot_examples.map do |example|
-            DSPy::FewShotExample.new(
-              input: example.input_values,
-              output: example.expected_values,
-              reasoning: extract_reasoning_from_example(example)
-            )
+            # If already a FewShotExample, use it directly
+            if example.is_a?(DSPy::FewShotExample)
+              example
+            else
+              # Convert from DSPy::Example
+              DSPy::FewShotExample.new(
+                input: example.input_values,
+                output: example.expected_values,
+                reasoning: extract_reasoning_from_example(example)
+              )
+            end
           end
           modified_program = modified_program.with_examples(few_shot_examples)
         end

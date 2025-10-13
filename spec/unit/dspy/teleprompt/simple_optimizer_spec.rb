@@ -253,17 +253,14 @@ RSpec.describe DSPy::Teleprompt::SimpleOptimizer do
         )
       )
 
-      # Mock bootstrap to return some examples
+      # Mock bootstrap to return demo candidates (new dict interface)
       allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return(
-        DSPy::Teleprompt::Utils::BootstrapResult.new(
-          candidate_sets: [
-            training_examples.take(2),
-            training_examples.drop(1).take(2)
-          ],
-          successful_examples: training_examples.take(3),
-          failed_examples: [],
-          statistics: { success_rate: 1.0 }
-        )
+        {
+          0 => [
+            training_examples.take(2).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) },
+            training_examples.drop(1).take(2).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) }
+          ]
+        }
       )
     end
 
@@ -330,17 +327,17 @@ RSpec.describe DSPy::Teleprompt::SimpleOptimizer do
 
   describe 'trial configuration generation' do
     let(:instruction_candidates) { ["Instruction 1", "Instruction 2"] }
-    let(:bootstrap_result) do
-      DSPy::Teleprompt::Utils::BootstrapResult.new(
-        candidate_sets: [training_examples.take(2), training_examples.drop(1).take(2)],
-        successful_examples: training_examples.take(3),
-        failed_examples: [],
-        statistics: {}
-      )
+    let(:demo_candidates) do
+      {
+        0 => [
+          training_examples.take(2).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) },
+          training_examples.drop(1).take(2).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) }
+        ]
+      }
     end
 
     it 'generates diverse trial configurations' do
-      configs = optimizer.send(:generate_trial_configurations, instruction_candidates, bootstrap_result)
+      configs = optimizer.send(:generate_trial_configurations, instruction_candidates, demo_candidates)
 
       expect(configs.size).to be > 1
       
@@ -367,8 +364,8 @@ RSpec.describe DSPy::Teleprompt::SimpleOptimizer do
       config.search_strategy = "random"
       random_optimizer = DSPy::Teleprompt::SimpleOptimizer.new(config: config)
 
-      configs1 = random_optimizer.send(:generate_trial_configurations, instruction_candidates, bootstrap_result)
-      configs2 = random_optimizer.send(:generate_trial_configurations, instruction_candidates, bootstrap_result)
+      configs1 = random_optimizer.send(:generate_trial_configurations, instruction_candidates, demo_candidates)
+      configs2 = random_optimizer.send(:generate_trial_configurations, instruction_candidates, demo_candidates)
 
       # Random strategy should potentially produce different orders
       # (This is probabilistic, but with enough configs it should be different)
@@ -555,12 +552,7 @@ RSpec.describe DSPy::Teleprompt::SimpleOptimizer do
         )
       )
       allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return(
-        DSPy::Teleprompt::Utils::BootstrapResult.new(
-          candidate_sets: [],
-          successful_examples: [],
-          failed_examples: [],
-          statistics: {}
-        )
+        { 0 => [] }
       )
     end
 
