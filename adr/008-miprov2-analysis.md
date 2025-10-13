@@ -1352,11 +1352,14 @@ According to the bottom-up implementation plan in this ADR:
 
 **✅ Layer 3.5 Complete** - Bootstrap Functions
 **✅ Layer 4.1 Complete** - Dataset Summary Generator
-**✅ Layer 4.2 Phase 1 Complete** - Python-compatible instruction handling (no length limits)
-**🔄 Layer 4.2 Phases 2-6 In Progress** - Add awareness flags (program_aware, data_aware, etc.)
-**→ Next: Layer 4.2 Phase 2** - Add Python-compatible awareness flags to Config
-**→ Future: Layer 5** - Complete MIPROv2 with optimization strategy
+**✅ Layer 4.2 Complete** - GroundedProposer with full Python-compatible awareness flags
+**→ Next: Layer 5** - Complete MIPROv2 with optimization strategy
 
-**Phase 1 Achievement**: Successfully matched Python's simpler approach - instructions never truncated, scoring based only on quality indicators, no length-based features. All tests passing (108/108).
+**Layer 4.2 Achievement**: Successfully implemented all Python-compatible awareness flags:
+- Phase 1: Python-compatible instruction handling (no length limits)
+- Phase 2-3: Config with awareness flags (program_aware, use_dataset_summary, use_task_demos, use_tip, use_instruct_history)
+- Phase 4: Updated propose_instructions to use awareness flags (dataset summary, program code, task demos, tips)
+- Phase 5: MIPROv2 integration (passes program and trainset to GroundedProposer)
+- Phase 6: All tests passing (57 unit tests + integration tests)
 
 Continue following the bottom-up approach documented in this ADR.

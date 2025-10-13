@@ -372,8 +372,16 @@ module DSPy
         signature_class = extract_signature_class(program)
         raise ArgumentError, "Cannot extract signature class from program" unless signature_class
 
-        # Configure proposer for this optimization run
-        @proposer.config.num_instruction_candidates = config.num_instruction_candidates
+        # Re-initialize proposer with program and trainset for awareness features
+        # This enables program_aware and use_dataset_summary flags to work correctly
+        proposer_config = DSPy::Propose::GroundedProposer::Config.new
+        proposer_config.num_instruction_candidates = config.num_instruction_candidates
+
+        @proposer = DSPy::Propose::GroundedProposer.new(
+          config: proposer_config,
+          program: program,
+          trainset: trainset
+        )
 
         @proposer.propose_instructions(
           signature_class,
