@@ -212,6 +212,9 @@ module DSPy
       end
 
       # Result of bootstrap operation
+      # @deprecated This class is deprecated and kept only for backward compatibility.
+      #   The new create_n_fewshot_demo_sets returns a Hash{predictor_idx => [[demos]]}
+      #   instead of this BootstrapResult object. Use the dict interface directly.
       class BootstrapResult
         extend T::Sig
 
