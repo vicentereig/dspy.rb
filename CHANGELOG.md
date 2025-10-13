@@ -5,6 +5,94 @@ All notable changes to DSPy.rb will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28.2] - 2025-10-13
+
+### Added
+- **BAML Schema Format Support** - Dramatically reduce token consumption for complex signatures
+  - New `:baml` schema format option for `DSPy::LM` configuration
+  - 85% token reduction for rich signatures (345 → 50 tokens for 6-field signatures)
+  - Compact TypeScript-like syntax with inline comments replacing verbose JSON Schema
+  - Universal compatibility with all providers in Enhanced Prompting mode
+  - Automatic schema generation via [`sorbet-baml`](https://github.com/vicentereig/sorbet-baml) gem integration
+  - Configure with: `DSPy::LM.new('openai/gpt-4o-mini', schema_format: :baml)`
+  - Comprehensive integration tests demonstrating 84.4% aggregate token savings
+
+- **MIPROv2 Python Parity Enhancements** - Advanced optimizer improvements for better DSPy ecosystem compatibility
+  - Implemented dataset summary generator for Layer 4.1 (program and task descriptions)
+  - Python-compatible instruction handling with awareness flags (Layer 4.2 Phase 1)
+  - New `BootstrapStrategy` T::Enum for type-safe strategy selection
+  - Utility functions: `get_signature`, `set_signature`, `get_program_with_highest_avg_score`
+  - `save_candidate_program` utility for optimization persistence (Layer 3.3)
+  - `create_minibatch` utility for efficient data sampling (Layer 3.0)
+  - Python-compatible `create_n_fewshot_demo_sets` implementation replacing legacy approach
+
+- **Module Lifecycle Callbacks** - Rails-style hooks for module execution
+  - Before/after callbacks for `forward` method execution
+  - Supports blocks, method names, or callable objects
+  - Use case: Logging, telemetry, validation, transformation
+  - Example: `before_forward { |inputs| logger.info "Processing: #{inputs}" }`
+
+- **Module Serialization** - Lightweight program state persistence
+  - New `Module#save(filename)` method for quick program snapshots
+  - Complements existing comprehensive `ProgramStorage` system
+  - Enables rapid iteration and state checkpointing during development
+
+- **GPT-5 Model Support** - Extended model coverage for latest OpenAI releases
+  - Added `gpt-5` and `gpt-5-mini` to JSON modes benchmark
+  - Comprehensive token efficiency analysis across all OpenAI model generations
+  - Updated documentation with October 2025 benchmark results
+
+### Enhanced
+- **BAML Documentation** - Comprehensive guide to schema format optimization
+  - New blog article: "Rich Signatures, Lean Schemas"
+  - Side-by-side JSON vs BAML comparisons with real integration test data
+  - Visual charts.css token comparison graphs
+  - Complete working examples with DSPy::Predict usage patterns
+  - Links to integration tests and benchmark data
+
+- **MIPROv2 Architecture** - Improved optimizer reliability and Python compatibility
+  - Removed unnecessary 'unknown' fallback in GroundedProposer
+  - Enhanced awareness flags for Python-compatible instruction generation
+  - Better few-shot example handling and dataset sampling
+  - Deprecated `BootstrapResult` in favor of cleaner interfaces
+  - Comprehensive ADR-008 documentation of design decisions
+
+### Fixed
+- **Test Organization** - Better separation of unit and integration tests
+  - Moved unit tests to `spec/unit/dspy/` directory
+  - Moved integration tests to `spec/integration/dspy/` directory
+  - Improved test isolation and reliability
+  - Fixed fixture paths after test reorganization
+
+- **MIPROv2 Test Reliability** - Corrected test expectations and assertions
+  - Fixed Python parity integration test assertions
+  - Corrected FewShotExample handling in optimizer tests
+  - Resolved test isolation conflicts in union type tests
+
+- **Security Improvements** - Enhanced API key protection
+  - OpenRouter API keys now redacted in VCR cassettes
+  - Consistent security practices across all provider adapters
+
+### Documentation
+- **JSON Modes Comparison Update** - Refreshed with latest model data (October 2025)
+  - Added GPT-5 and GPT-5-mini benchmark results
+  - Updated token efficiency insights across model generations
+  - Enhanced visualization with charts.css
+
+- **API Accuracy Improvements** - Fixed critical documentation inaccuracies
+  - Corrected Example usage patterns throughout documentation
+  - Removed fictional APIs and standardized code examples
+  - Fixed quick-start and core-concepts guide code samples
+  - Updated troubleshooting guide with accurate debug logging instructions
+
+- **Architecture Decision Records** - Enhanced ADR-008 with Ruby-specific design decisions
+  - Comprehensive Layer 4.2 implementation plan
+  - Documentation of MIPROv2 enhancements and Python parity approach
+  - Clear separation of DSPy.rb innovations vs Python DSPy patterns
+
+### Breaking Changes
+None - this release maintains full backward compatibility with existing DSPy.rb applications.
+
 ## [0.28.0] - 2025-10-02
 
 ### Added
