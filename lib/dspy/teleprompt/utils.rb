@@ -12,6 +12,33 @@ module DSPy
     module Utils
       extend T::Sig
 
+      # Create a minibatch from the trainset using random sampling
+      # This function is compatible with Python DSPy's MIPROv2 implementation
+      #
+      # @param trainset [Array] The training dataset to sample from
+      # @param batch_size [Integer] The desired size of the minibatch (default: 50)
+      # @param rng [Random, nil] Optional random number generator for reproducible sampling
+      # @return [Array] A randomly sampled subset of the trainset
+      sig do
+        params(
+          trainset: T::Array[T.untyped],
+          batch_size: Integer,
+          rng: T.nilable(Random)
+        ).returns(T::Array[T.untyped])
+      end
+      def self.create_minibatch(trainset, batch_size = 50, rng = nil)
+        # Ensure batch_size isn't larger than the size of the dataset
+        actual_batch_size = [batch_size, trainset.size].min
+
+        # Randomly sample from trainset
+        # If RNG is provided, use it for reproducible sampling
+        if rng
+          trainset.sample(actual_batch_size, random: rng)
+        else
+          trainset.sample(actual_batch_size)
+        end
+      end
+
       # Configuration for bootstrap operations
       class BootstrapConfig
         extend T::Sig
