@@ -926,24 +926,408 @@ Implemented the dataset summary generator module for creating concise dataset de
   - Each signature independently
   - Helper functions with real LLM outputs
 
+## Layer 4.2: Enhance GroundedProposer - Detailed Implementation Plan
+
+**Status:** 🔄 In Progress
+**Priority:** Remove `max_instruction_length` restriction (user emphasis)
+
+### Current State Analysis
+
+**Ruby GroundedProposer (595 lines):**
+- ❌ No `program_aware`, `data_aware`, `tip_aware`, `fewshot_aware` flags
+- ❌ Has `max_instruction_length = 200` hardcoded (5 locations total)
+- ✅ Basic proposal functionality exists
+- ✅ Has Config class but with different flags
+
+**Python GroundedProposer (440 lines):**
+- ✅ Has all awareness flags: `program_aware`, `use_dataset_summary` (data_aware), `use_task_demos` (fewshot_aware), `use_tip` (tip_aware)
+- ✅ NO max_instruction_length anywhere in Python codebase
+- ✅ Integrates with `create_dataset_summary` for data-aware mode
+- ✅ Dynamic signature generation based on flags
+
+**max_instruction_length Locations in Ruby Codebase:**
+1. `grounded_proposer.rb:25` - Config attr_accessor declaration
+2. `grounded_proposer.rb:43` - Default initialization to 200
+3. `grounded_proposer.rb:351-352` - Truncation logic (cuts instructions)
+4. `grounded_proposer.rb:486` - Normalization in scoring formula
+5. `mipro_v2.rb:695` - Feature normalization `/ 100.0`, capped at 200 chars
+6. `mipro_v2.rb:796` - Diversity scoring `/ 200.0`
+
+### Implementation Plan (TDD Approach)
+
+#### Phase 1: Remove max_instruction_length Restriction ⭐ USER PRIORITY
+
+**Changes to `lib/dspy/propose/grounded_proposer.rb`:**
+1. Remove `max_instruction_length` attr_accessor (line 25)
+2. Remove initialization `@max_instruction_length = 200` (line 43)
+3. Remove truncation logic (lines 351-352) - let LLM-generated instructions be full length
+4. Update scoring at line 486:
+   ```ruby
+   # Before: length_score = [instruction.length, @config.max_instruction_length].min / @config.max_instruction_length.to_f
+   # After: Use dynamic normalization based on candidate set's actual max length
+   max_length = candidate_instructions.map(&:length).max
+   length_score = max_length > 0 ? instruction.length.to_f / max_length : 0.0
+   ```
+
+**Changes to `lib/dspy/teleprompt/mipro_v2.rb`:**
+1. Line 695: Remove hardcoded 200 cap from feature extraction
+   ```ruby
+   # Before: features << [instruction.length.to_f / 100.0, 2.0].min  # Instruction length, capped at 200 chars
+   # After: features << instruction.length.to_f / 100.0  # Instruction length feature (no cap)
+   ```
+2. Line 796: Use dynamic normalization for diversity scoring
+   ```ruby
+   # Before: instruction_diversity = candidate.instruction.length / 200.0
+   # After: max_instr_len = state[:candidates].map { |c| c.instruction.length }.max
+   #        instruction_diversity = max_instr_len > 0 ? candidate.instruction.length.to_f / max_instr_len : 0.0
+   ```
+
+**Tests for Phase 1:**
+- Unit test: Verify instructions > 200 chars are NOT truncated in GroundedProposer
+- Unit test: Verify scoring normalization works with varying length instructions (50, 200, 500, 1000 chars)
+- Integration test: Generate instructions with verbose prompts, verify 500+ char instructions preserved
+- Integration test: MIPROv2 optimization with long instructions doesn't crash or clip
+
+#### Phase 2: Add Python-Compatible Awareness Flags
+
+**Refactor Config class in `grounded_proposer.rb`:**
+```ruby
+class Config
+  extend T::Sig
+
+  # Python-compatible awareness flags (match Python parameter names exactly)
+  sig { returns(T::Boolean) }
+  attr_accessor :program_aware        # Include program source code in context
+
+  sig { returns(T::Boolean) }
+  attr_accessor :use_dataset_summary  # Call DatasetSummaryGenerator (Python: use_dataset_summary)
+
+  sig { returns(T::Boolean) }
+  attr_accessor :use_task_demos       # Include few-shot examples (Python: use_task_demos)
+
+  sig { returns(T::Boolean) }
+  attr_accessor :use_tip              # Include instructional tips (Python: use_tip)
+
+  sig { returns(T::Boolean) }
+  attr_accessor :use_instruct_history # Include historical instructions (Python: use_instruct_history)
+
+  # Additional parameters
+  sig { returns(Integer) }
+  attr_accessor :num_instruction_candidates
+
+  sig { returns(Integer) }
+  attr_accessor :view_data_batch_size
+
+  sig { returns(Integer) }
+  attr_accessor :num_demos_in_context
+
+  sig { returns(T::Boolean) }
+  attr_accessor :set_tip_randomly
+
+  sig { returns(T::Boolean) }
+  attr_accessor :set_history_randomly
+
+  sig { returns(Float) }
+  attr_accessor :init_temperature
+
+  sig { returns(T::Boolean) }
+  attr_accessor :verbose
+
+  sig { void }
+  def initialize
+    # Match Python defaults
+    @program_aware = true
+    @use_dataset_summary = true
+    @use_task_demos = true
+    @use_tip = true
+    @use_instruct_history = false  # Not yet implemented in Layer 4.2
+
+    @num_instruction_candidates = 5
+    @view_data_batch_size = 10
+    @num_demos_in_context = 3
+    @set_tip_randomly = true
+    @set_history_randomly = false
+    @init_temperature = 1.0
+    @verbose = false
+  end
+end
+```
+
+**Remove obsolete flags:**
+- Delete `use_task_description` (replaced by analysis logic)
+- Delete `use_input_output_analysis` (always performed)
+- Delete `use_few_shot_examples` (replaced by `use_task_demos`)
+- Delete `max_examples_for_analysis` (use `view_data_batch_size` instead)
+- Delete `proposal_model` (use global DSPy.lm instead)
+
+**Breaking Changes Note:** Document migration path for existing code using old Config flags.
+
+#### Phase 3: Integrate DatasetSummaryGenerator
+
+**Update GroundedProposer#initialize:**
+```ruby
+sig do
+  params(
+    config: T.nilable(Config),
+    program: T.nilable(T.untyped),  # DSPy::Module for program_aware mode
+    trainset: T.nilable(T::Array[DSPy::Example])
+  ).void
+end
+def initialize(config: nil, program: nil, trainset: nil)
+  @config = config || Config.new
+  @program = program
+  @trainset = trainset
+
+  # Generate dataset summary if data_aware mode enabled (Python: use_dataset_summary)
+  @dataset_summary = nil
+  if @config.use_dataset_summary && trainset && trainset.any?
+    @dataset_summary = DatasetSummaryGenerator.create_dataset_summary(
+      trainset,
+      @config.view_data_batch_size,
+      DSPy.lm,
+      verbose: @config.verbose
+    )
+  end
+
+  # Extract program source code if program_aware mode enabled
+  @program_code_string = nil
+  if @config.program_aware && program
+    @program_code_string = extract_program_source(program)
+  end
+end
+```
+
+**Add helper method:**
+```ruby
+sig { params(program: T.untyped).returns(T.nilable(String)) }
+def extract_program_source(program)
+  # Use Ruby introspection to get source code
+  # Similar to Python's inspect.getsource()
+  if program.class.respond_to?(:source_location)
+    file, line = program.class.source_location
+    # Read source file and extract class definition
+    # Return formatted source code string
+  end
+rescue => e
+  DSPy.logger.warn("Could not extract program source: #{e.message}")
+  nil
+end
+```
+
+#### Phase 4: Update propose_instructions Method
+
+**New method signature:**
+```ruby
+sig do
+  params(
+    signature_class: T.class_of(DSPy::Signature),
+    examples: T::Array[T.untyped],
+    few_shot_examples: T.nilable(T::Array[FewShotExample]),
+    current_instruction: T.nilable(String),
+    demo_candidates: T.nilable(T::Hash[Integer, T::Array[T::Array[FewShotExample]]]),
+    trial_logs: T.nilable(T::Hash[T.untyped, T.untyped])
+  ).returns(ProposalResult)
+end
+def propose_instructions(
+  signature_class,
+  examples,
+  few_shot_examples: nil,
+  current_instruction: nil,
+  demo_candidates: nil,
+  trial_logs: nil
+)
+  # Use awareness flags to conditionally include context
+  context = build_proposal_context(
+    signature_class: signature_class,
+    examples: examples,
+    few_shot_examples: (@config.use_task_demos ? few_shot_examples : nil),
+    demo_candidates: (@config.use_task_demos ? demo_candidates : nil),
+    dataset_summary: (@config.use_dataset_summary ? @dataset_summary : nil),
+    program_code: (@config.program_aware ? @program_code_string : nil),
+    tips: (@config.use_tip ? select_tips : nil),
+    instruction_history: (@config.use_instruct_history ? format_trial_logs(trial_logs) : nil)
+  )
+
+  # Generate instructions using context
+  generate_instructions_with_context(signature_class, context)
+end
+```
+
+**Add context builder:**
+```ruby
+sig { params(kwargs: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
+def build_proposal_context(**kwargs)
+  context = {}
+
+  # Add dataset summary if available
+  context[:dataset_summary] = kwargs[:dataset_summary] if kwargs[:dataset_summary]
+
+  # Add program code if available
+  context[:program_code] = kwargs[:program_code] if kwargs[:program_code]
+
+  # Add tips if enabled
+  if kwargs[:tips]
+    context[:tips] = @config.set_tip_randomly ? kwargs[:tips].sample : kwargs[:tips].first
+  end
+
+  # Add few-shot examples if enabled
+  if kwargs[:few_shot_examples] || kwargs[:demo_candidates]
+    context[:demonstrations] = format_demonstrations(
+      kwargs[:few_shot_examples],
+      kwargs[:demo_candidates],
+      limit: @config.num_demos_in_context
+    )
+  end
+
+  # Add instruction history if enabled
+  context[:instruction_history] = kwargs[:instruction_history] if kwargs[:instruction_history]
+
+  context
+end
+```
+
+#### Phase 5: Update MIPROv2 Integration
+
+**Changes to `lib/dspy/teleprompt/mipro_v2.rb`:**
+
+Update `phase_2_propose_instructions`:
+```ruby
+def phase_2_propose_instructions(program, trainset, demo_candidates)
+  # Initialize proposer with program and trainset for awareness modes
+  proposer = DSPy::Propose::GroundedProposer.new(
+    config: build_proposer_config,
+    program: program,
+    trainset: trainset
+  )
+
+  signature_class = extract_signature_class(program)
+  few_shot_examples = demo_candidates&.dig(0)&.flatten&.take(5) || []
+  current_instruction = extract_current_instruction(program)
+
+  proposer.propose_instructions(
+    signature_class,
+    trainset,
+    few_shot_examples: few_shot_examples,
+    current_instruction: current_instruction,
+    demo_candidates: demo_candidates,
+    trial_logs: @trial_logs  # Pass for instruction history awareness
+  )
+end
+```
+
+Add configuration builder:
+```ruby
+def build_proposer_config
+  proposer_config = DSPy::Propose::GroundedProposer::Config.new
+  proposer_config.num_instruction_candidates = config.num_instruction_candidates
+  proposer_config.program_aware = true  # Enable for MIPROv2
+  proposer_config.use_dataset_summary = true  # Enable data-aware mode
+  proposer_config.use_task_demos = true
+  proposer_config.use_tip = true
+  proposer_config.verbose = false
+  proposer_config
+end
+```
+
+#### Phase 6: Comprehensive Testing
+
+**Unit Tests (`spec/unit/dspy/propose/grounded_proposer_spec.rb`):**
+1. Config initialization with all awareness flags
+2. Flag-based conditional logic (each flag independently)
+3. Dataset summary integration (mock DatasetSummaryGenerator)
+4. Program source extraction
+5. Context building with different flag combinations
+6. Instruction generation with varying context sizes
+7. Long instructions (500+ chars) not truncated
+8. Scoring normalization with dynamic max length
+
+**Integration Tests (`spec/integration/grounded_proposer_awareness_spec.rb`):**
+1. All awareness flags enabled (full context)
+2. Only `use_dataset_summary` enabled
+3. Only `program_aware` enabled
+4. Only `use_task_demos` enabled
+5. All flags disabled (baseline proposal)
+6. Real DSPy::Module program source extraction
+7. Instructions > 500 chars preserved end-to-end
+8. VCR cassettes for all LLM interactions
+
+**MIPROv2 Integration Tests:**
+1. MIPROv2 with enhanced proposer (all awareness modes)
+2. Verify trial_logs passed to proposer for history awareness
+3. End-to-end optimization with data-aware proposer
+4. Performance with long instructions (no truncation)
+
+### Timeline Estimate
+
+**5-7 days** (per original ADR-008 estimate)
+- **Day 1:** Remove max_instruction_length + comprehensive tests ⭐ Priority
+- **Day 2:** Refactor Config class + awareness flags + unit tests
+- **Day 3:** Integrate DatasetSummaryGenerator + program source extraction
+- **Day 4:** Update propose_instructions method + context building
+- **Day 5:** Update MIPROv2 integration + trial_logs passing
+- **Day 6:** Integration tests with VCR + all awareness modes
+- **Day 7:** Documentation + PR + migration guide
+
+### Success Criteria
+
+- [ ] `max_instruction_length` completely removed from entire codebase (6 locations)
+- [ ] All 4 Python awareness flags implemented: `program_aware`, `use_dataset_summary`, `use_task_demos`, `use_tip`
+- [ ] DatasetSummaryGenerator integrated for data-aware mode
+- [ ] Config class parameter names match Python exactly
+- [ ] Instructions > 500 chars work end-to-end without truncation
+- [ ] Dynamic normalization in scoring (no hardcoded lengths)
+- [ ] All existing tests pass (280+ teleprompt/propose tests)
+- [ ] New tests cover all awareness mode combinations
+- [ ] MIPROv2 uses enhanced proposer with configurable awareness
+- [ ] Documentation updated in ADR-008
+- [ ] Migration guide for Config API breaking changes
+
+### Breaking Changes & Migration
+
+**Config API Changes:**
+
+**Removed (no replacement needed):**
+- `use_task_description` - analysis logic always runs
+- `use_input_output_analysis` - always performed
+- `max_examples_for_analysis` - use `view_data_batch_size`
+- `proposal_model` - use global `DSPy.lm`
+- `max_instruction_length` - no more artificial limit
+
+**Renamed (migration required):**
+- `use_few_shot_examples` → `use_task_demos`
+
+**Added (new functionality):**
+- `program_aware` - include program source in context
+- `use_dataset_summary` - call DatasetSummaryGenerator
+- `use_tip` - include instructional tips
+- `use_instruct_history` - include historical instructions
+- `num_demos_in_context` - control demo count
+- `set_tip_randomly` - randomize tip selection
+- `set_history_randomly` - randomize history selection
+- `init_temperature` - LLM temperature for proposals
+
+**Migration Example:**
+```ruby
+# Before (old API)
+config = GroundedProposer::Config.new
+config.max_instruction_length = 500  # REMOVED
+config.use_few_shot_examples = true  # RENAMED
+
+# After (new API)
+config = GroundedProposer::Config.new
+# No max_instruction_length - no artificial limit!
+config.use_task_demos = true  # Renamed from use_few_shot_examples
+config.program_aware = true  # New: include program source
+config.use_dataset_summary = true  # New: generate dataset summary
+```
+
 ### Next Steps
 
 According to the bottom-up implementation plan in this ADR:
 
 **✅ Layer 3.5 Complete** - Bootstrap Functions
 **✅ Layer 4.1 Complete** - Dataset Summary Generator
-**→ Next: Layer 4.2** - Enhance GroundedProposer with awareness flags
-**Then: Layer 5** - Complete MIPROv2 with optimization strategy
-
-**Layer 4.2 Enhancements Required:**
-1. Add `program_aware`, `data_aware`, `tip_aware`, `fewshot_aware` configuration flags
-2. Integrate `DatasetSummaryGenerator.create_dataset_summary` for data-aware mode
-3. **Remove or make configurable the 200-char `max_instruction_length` restriction**
-   - Current restriction: `GroundedProposer::Config#max_instruction_length = 200`
-   - Used for truncation and normalization in optimization
-   - Python DSPy doesn't have this hard limit
-   - Should be configurable with higher default (e.g., 500-1000) or removed entirely
-4. Follow Python implementation more closely for proposer utility functions
-5. Update MIPROv2 to use enhanced proposer with awareness modes
+**🔄 Layer 4.2 In Progress** - Enhance GroundedProposer (detailed plan above)
+**→ Next: Layer 5** - Complete MIPROv2 with optimization strategy
 
 Continue following the bottom-up approach documented in this ADR.
