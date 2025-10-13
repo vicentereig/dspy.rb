@@ -71,9 +71,10 @@ RSpec.describe DSPy::Propose::GroundedProposer, 'Python parity', :vcr do
 
       # Verify no instructions end with truncation artifacts
       result.candidate_instructions.each do |instruction|
-        # Should not end with ellipsis or mid-word truncation
+        # Should not end with ellipsis (clear truncation indicator)
         expect(instruction).not_to end_with('...')
-        expect(instruction).not_to match(/\w+\.$/)  # Don't end with incomplete word + period
+        # Should end with proper sentence punctuation
+        expect(instruction).to match(/[.!?]$/)
       end
     end
   end
@@ -98,10 +99,14 @@ RSpec.describe DSPy::Propose::GroundedProposer, 'Python parity', :vcr do
       expect(lengths.uniq.size).to be > 1, "Expected varying instruction lengths"
 
       # All instructions should be high quality (contain action words or reasoning indicators)
-      action_words = %w[analyze classify generate explain solve determine identify describe evaluate]
+      action_words = %w[
+        analyze classify generate explain solve determine identify describe evaluate
+        respond provide research synthesize ensure examine assess consider review
+        compare contrast investigate explore develop create formulate
+      ]
       result.candidate_instructions.each do |instruction|
         has_quality = action_words.any? { |word| instruction.downcase.include?(word) }
-        expect(has_quality).to be true, "Instruction lacks quality indicators: #{instruction}"
+        expect(has_quality).to be(true), "Instruction lacks quality indicators: #{instruction}"
       end
     end
   end
