@@ -12,6 +12,66 @@ module DSPy
     module Utils
       extend T::Sig
 
+      # Wrapper class that provides Python-compatible signature API
+      # Wraps a Predict instance to provide signature access and modification
+      class SignatureWrapper
+        extend T::Sig
+
+        sig { returns(T.untyped) }
+        attr_reader :predictor
+
+        sig { params(predictor: T.untyped).void }
+        def initialize(predictor)
+          @predictor = predictor
+        end
+
+        sig { returns(String) }
+        def instructions
+          # Get instructions from the predictor's prompt
+          @predictor.prompt.instruction
+        end
+
+        sig { params(new_instructions: String).returns(SignatureWrapper) }
+        def with_instructions(new_instructions)
+          # Return a new wrapper that will apply new instructions when set
+          updated_wrapper = SignatureWrapper.new(@predictor)
+          updated_wrapper.instance_variable_set(:@pending_instructions, new_instructions)
+          updated_wrapper
+        end
+
+        sig { returns(T.nilable(String)) }
+        def pending_instructions
+          @pending_instructions
+        end
+      end
+
+      # Get signature information from a predictor (Python compatibility)
+      # Returns a wrapper that provides Python-like signature API
+      #
+      # @param predictor [Predict] The predictor to get signature from
+      # @return [SignatureWrapper] Wrapper providing signature access
+      sig { params(predictor: T.untyped).returns(SignatureWrapper) }
+      def self.get_signature(predictor)
+        SignatureWrapper.new(predictor)
+      end
+
+      # Set signature on a predictor (Python compatibility)
+      # Updates the predictor's prompt with new instructions
+      #
+      # @param predictor [Predict] The predictor to update
+      # @param updated_signature [SignatureWrapper] The updated signature wrapper
+      sig { params(predictor: T.untyped, updated_signature: SignatureWrapper).void }
+      def self.set_signature(predictor, updated_signature)
+        # Extract pending instructions from the wrapper
+        new_instructions = updated_signature.pending_instructions
+
+        if new_instructions
+          # Update the predictor's prompt with new instructions
+          # We mutate the prompt's instruction directly for MIPROv2 compatibility
+          predictor.prompt.instance_variable_set(:@instruction, new_instructions)
+        end
+      end
+
       # Create a minibatch from the trainset using random sampling
       # This function is compatible with Python DSPy's MIPROv2 implementation
       #
