@@ -346,6 +346,48 @@ TIPS = {
 
 6. **Closure pattern for optimization** - The `objective()` function captures state via closure, allowing Optuna to call it repeatedly while maintaining shared state across trials.
 
+## Ruby-Specific Design Decisions
+
+### T::Enum for Bootstrap Strategies
+
+**Decision**: Use Sorbet's `T::Enum` for bootstrap strategies instead of Python's magic number seeds.
+
+**Rationale:**
+1. **Type Safety**: Sorbet provides compile-time and runtime type checking
+2. **Self-Documentation**: Enum values are self-explanatory (`ZeroShot` vs `-3`)
+3. **IDE Support**: Better autocomplete and refactoring support
+4. **Ruby Idioms**: Enums are more idiomatic Ruby than magic numbers
+5. **Prevents Errors**: Can't pass invalid seed values
+
+**Implementation:**
+```ruby
+class BootstrapStrategy < T::Enum
+  enums do
+    ZeroShot = new      # No demos (Python seed = -3)
+    LabeledOnly = new   # Labeled examples only (Python seed = -2)
+    Unshuffled = new    # Bootstrapped, no shuffle (Python seed = -1)
+    Shuffled = new      # Bootstrapped with shuffle (Python seed >= 0, requires separate seed param)
+  end
+end
+```
+
+**For `Shuffled` strategy**: Still requires a separate integer `seed` parameter for the random number generator, maintaining Python compatibility for reproducibility.
+
+### Inline Bootstrap Logic
+
+**Decision**: Implement bootstrap strategies inline in `create_n_fewshot_demo_sets` rather than using separate `BootstrapFewShot`/`LabeledFewShot` teleprompter classes.
+
+**Rationale:**
+1. **Pragmatic**: These teleprompters don't exist in Ruby yet
+2. **Simpler**: Reduces complexity for initial MIPROv2 implementation
+3. **Maintainable**: All bootstrap logic in one place
+4. **Future-proof**: Can extract to separate classes later if needed
+
+**Trade-offs:**
+- **Pro**: Faster implementation, easier testing, less code
+- **Con**: Less modular than Python, harder to reuse bootstrap logic elsewhere
+- **Mitigation**: Extract to teleprompter classes in future refactor if needed
+
 ## Bottom-Up Implementation Plan
 
 ### Overview
@@ -400,8 +442,13 @@ Core utilities used by MIPROv2. These are pure functions with no LM calls (excep
 **3.5 Bootstrap Functions:**
 - `create_n_fewshot_demo_sets(student, num_candidate_sets, trainset, ...)`
   - Most complex utility function
-  - Uses specific seeds: -3 (zero-shot), -2 (labeled-only), -1 (unshuffled), 0+ (shuffled)
-  - Calls `BootstrapFewShot` and `LabeledFewShot` teleprompters
+  - **Ruby Design Decision**: Use `T::Enum` for bootstrap strategies instead of magic number seeds
+  - Bootstrap strategies (Ruby `BootstrapStrategy` enum):
+    - `ZeroShot` - No demonstrations (Python seed = -3)
+    - `LabeledOnly` - Labeled examples only (Python seed = -2)
+    - `Unshuffled` - Bootstrapped without shuffling (Python seed = -1)
+    - `Shuffled` - Bootstrapped with shuffle and random size (Python seed >= 0)
+  - **Implementation approach**: Inline bootstrap logic rather than using separate `BootstrapFewShot`/`LabeledFewShot` teleprompters (which don't exist in Ruby yet)
   - Python implementation: lines 328-417 in `utils.py`
 
 **File:** `lib/dspy/propose/utils.rb`
