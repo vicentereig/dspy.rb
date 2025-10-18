@@ -704,17 +704,16 @@ extract_output_fields_for_demo(prediction_hash, signature_class)
 
 **Backward Compatibility:** None needed - MIPROv2 was already using internal methods
 
-#### 3. SimpleOptimizer Updated to Use New Interface
+#### 3. SimpleOptimizer Removed (Ruby-only implementation)
 
-**File:** `lib/dspy/teleprompt/simple_optimizer.rb`
+**Rationale:** Python DSPy does not ship a SimpleOptimizer equivalent. To keep the Ruby surface aligned and reduce maintenance burden, the Ruby-only implementation, its tests, and documentation were removed.
 
 **Changes:**
-- `bootstrap_examples` returns `Hash{predictor_idx => [[demos]]}` instead of `BootstrapResult`
-- `generate_instruction_candidates` uses `demo_candidates` parameter and flattens demos
-- `run_optimization_trials` uses `demo_candidates` parameter
-- `generate_trial_configurations` extracts demo sets from `demo_candidates[0]`
+- Deleted `lib/dspy/teleprompt/simple_optimizer.rb`
+- Removed unit specs and documentation under `docs/src/optimization/simple-optimizer.md`
+- Updated storage manager specs, docs, and generated outputs to reference supported optimizers only (e.g., MIPROv2, GEPA)
 
-**Backward Compatibility:** None needed - SimpleOptimizer is Ruby-only implementation
+**Backward Compatibility:** Breaking for any consumers relying on `DSPy::Teleprompt::SimpleOptimizer`. Migration path: adopt `DSPy::Teleprompt::MIPROv2` or other supported optimizers.
 
 #### 4. Deprecated Classes (Kept for Compatibility)
 
@@ -762,33 +761,16 @@ end
 - ❌ Less modular than Python
 - ❌ Harder to reuse bootstrap logic independently
 
-#### SimpleOptimizer: Ruby-Only Implementation
+#### SimpleOptimizer: Ruby-Only Implementation (Removed)
 
-**Finding:** SimpleOptimizer **does not exist** in Python DSPy.
+**Finding:** SimpleOptimizer never existed in Python DSPy. To reduce divergence (and maintenance), we removed the Ruby-only implementation in commit `1803397`.
 
-**Python Equivalents:**
-- `BootstrapFewShotWithRandomSearch` - Random search with few-shot only
-- `MIPROv2` - Bayesian optimization with instruction + few-shot
+**Historical Context (prior to removal):**
+- Combined instruction + few-shot random search in a single optimizer
+- Served as a lightweight alternative to MIPROv2 without external dependencies
+- Offered a random/grid search strategy with trial-based evaluation
 
-**Ruby SimpleOptimizer Unique Features:**
-- Combines instruction optimization (like MIPROv2)
-- Combines few-shot optimization (like BootstrapFewShotWithRandomSearch)
-- Uses random/grid search strategy (simpler than Bayesian)
-- Trial-based evaluation framework
-- More accessible than full MIPROv2 for simple use cases
-
-**Design Philosophy:**
-- Provides a middle ground between basic bootstrap and full MIPROv2
-- No external dependencies (no Optuna equivalent needed)
-- Simpler optimization strategy for faster experimentation
-- Ruby-idiomatic API design
-
-**Why Random Search:**
-- No Ruby equivalent to Python's Optuna library
-- Random search is proven effective for hyperparameter optimization
-- Simpler to implement and understand
-- Lower barrier to entry for developers
-- Can be upgraded to more sophisticated strategies later
+**Current Guidance:** Adopt `DSPy::Teleprompt::MIPROv2` (or future Ruby parity optimizers) for prompt tuning workflows.
 
 ### Testing Strategy
 
@@ -799,8 +781,7 @@ end
 - `spec/unit/dspy/teleprompt/utils_spec.rb` - BootstrapResult tests (kept for compatibility)
 
 **Integration Tests:**
-- MIPROv2 and SimpleOptimizer specs still use BootstrapResult mocking
-- Will be updated in future refactor when BootstrapResult is fully removed
+- MIPROv2 specs still rely on BootstrapResult mocking (pending cleanup)
 
 **Test Results:**
 - All teleprompt unit tests passing (44/44)
@@ -1361,7 +1342,6 @@ According to the bottom-up implementation plan in this ADR:
 - ✅ Progress Update (commit `0ba8a95`): Introduced concurrent minibatch evaluation using `concurrent-ruby`, configurable via `minibatch_size` and `num_threads`, so Layer 5 can scale evaluation throughput while preserving aggregated metrics parity with Python.
 - ✅ Progress Update (commit `62a575e`): Added a program-aware `propose_instructions_for_program` hook and per-predictor metadata so Ruby MIPROv2 can generate instruction candidates aligned with Python’s multi-predictor interface while keeping earlier APIs working.
 - ✅ Progress Update (commit `84621b1`): Generate cross-predictor instruction combinations and store them in trial metadata so multiprompt programs can explore per-module instruction tuples like Python’s Optuna search.
-- [ ] TODO: Plan the deprecation/removal of `SimpleOptimizer` (implementation, specs, and `docs/src/optimization/simple-optimizer.md`) to keep the Ruby surface aligned with Python DSPy.
 - [ ] TODO: Draft the next ADR-008 status update summarizing current progress, open Layer 5 work, and Bayesian optimization decisions, including remaining gaps and trade-offs.
 
 **Layer 4.2 Achievement**: Successfully implemented all Python-compatible awareness flags:

@@ -70,7 +70,6 @@ When working with external libraries in this codebase, **ALWAYS check the docume
   - [Python Comparison](docs/src/advanced/python-comparison.md)
 - [Optimization](docs/src/optimization/index.md)
   - [Evaluation](docs/src/optimization/evaluation.md)
-  - [Simple Optimizer](docs/src/optimization/simple-optimizer.md)
   - [MIPROv2](docs/src/optimization/miprov2.md)
   - [Prompt Optimization](docs/src/optimization/prompt-optimization.md)
   - [Benchmarking](docs/src/optimization/benchmarking-raw-prompts.md)

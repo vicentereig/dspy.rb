@@ -47,9 +47,6 @@ This document provides a comprehensive comparison between the original DSPy Pyth
 - **BayesianSignatureOptimizer** - Bayesian optimization for signature fields
 - **KNNFewShot** - K-nearest neighbors for few-shot example selection
 
-### Ruby-Specific Optimizers
-- **SimpleOptimizer** - Basic optimization for few-shot examples (Ruby innovation)
-
 ## Advanced Features
 
 ### Retrievers and Vector Stores

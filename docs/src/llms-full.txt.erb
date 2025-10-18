@@ -202,7 +202,6 @@ Built-in predictors for different reasoning patterns:
 
 Improve accuracy with data:
 
-- **SimpleOptimizer** - Basic prompt tuning with few-shot examples
 - **MIPROv2** - Advanced multi-prompt optimization with bootstrap sampling, instruction generation, and Bayesian optimization strategies
 - **GEPA** - Genetic-Pareto optimization using natural language reflection, genetic algorithms, and Pareto frontier selection for multi-objective prompt evolution
 - **Evaluation** - Comprehensive framework with built-in metrics, custom evaluation functions, error handling, batch processing, and detailed result analysis
@@ -1413,32 +1412,6 @@ end
 ```
 
 ## Optimization
-
-### SimpleOptimizer
-
-Basic prompt optimization:
-
-```ruby
-# Create training examples
-examples = [
-  DSPy::FewShotExample.new(
-    input: { text: "Great product!" },
-    output: { sentiment: "positive", score: 0.9 }
-  ),
-  DSPy::FewShotExample.new(
-    input: { text: "Terrible service" },
-    output: { sentiment: "negative", score: 0.1 }
-  )
-]
-
-# Optimize
-program = DSPy::ChainOfThought.new(SentimentAnalysis)
-optimizer = DSPy::SimpleOptimizer.new
-optimized_program = optimizer.compile(
-  program,
-  trainset: examples
-)
-```
 
 ### MIPROv2 Optimization
 

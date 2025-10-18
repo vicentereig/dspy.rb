@@ -26,9 +26,6 @@ DSPy.rb optimization is:
 ### [Prompt Optimization](./prompt-optimization/)
 Learn the fundamentals of how DSPy.rb optimizes prompts automatically using examples and metrics.
 
-### [Simple Optimizer](./simple-optimizer/)
-Start with BootstrapFewShot - the easiest optimizer that generates effective few-shot examples.
-
 ### [MIPROv2](./miprov2/)
 State-of-the-art optimization with MIPROv2 featuring Bayesian optimization with Gaussian Processes, multiple optimization strategies, and production-grade performance.
 
@@ -45,7 +42,6 @@ Compare monolithic prompts against modular DSPy implementations to measure impro
 
 We recommend starting with:
 1. Understanding [Prompt Optimization](./prompt-optimization/) concepts
-2. Trying the [Simple Optimizer](./simple-optimizer/) on your modules
-3. Building proper [Evaluation](./evaluation/) metrics
-4. Graduating to [MIPROv2](./miprov2/) for production use
-5. Using [GEPA (Genetic-Pareto)](./gepa/) for advanced genetic algorithm-based optimization
+2. Building proper [Evaluation](./evaluation/) metrics
+3. Graduating to [MIPROv2](./miprov2/) for production use
+4. Using [GEPA (Genetic-Pareto)](./gepa/) for advanced genetic algorithm-based optimization

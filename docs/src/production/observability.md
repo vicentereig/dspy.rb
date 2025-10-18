@@ -379,7 +379,7 @@ class OptimizationTracker < DSPy::Events::BaseSubscriber
 end
 
 tracker = OptimizationTracker.new
-# Automatically tracks MIPROv2, SimpleOptimizer, etc.
+# Automatically tracks DSPy teleprompters like MIPROv2
 ```
 
 ### Module Performance Tracking

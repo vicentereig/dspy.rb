@@ -12,8 +12,8 @@ prev:
   name: Prompt Optimization
   url: "/optimization/prompt-optimization/"
 next:
-  name: Simple Optimizer
-  url: "/optimization/simple-optimizer/"
+  name: GEPA Optimizer
+  url: "/optimization/gepa/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # MIPROv2 Optimizer
@@ -631,4 +631,3 @@ result.evaluated_candidates.each do |candidate|
   puts "---"
 end
 ```
-
