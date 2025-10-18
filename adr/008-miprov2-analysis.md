@@ -1358,7 +1358,7 @@ According to the bottom-up implementation plan in this ADR:
 - ✅ Progress Update (branch `feature/miprov2-layer5-todos`): Implemented per-predictor instruction and few-shot selection inside `generate_candidate_configurations`/`apply_candidate_configuration`, updated optimization traces to log `few_shot_map`, and added parity specs covering multi-predictor programs.
 - ✅ Progress Update: Added predictor discovery helpers (`Module#predictors`, `#named_predictors`), exposed ReAct/CodeAct internals, and covered Utils demo generation with multi-predictor specs so Layer 5 can enumerate and tune nested modules like Python.
 - ✅ Integration Coverage: Added `spec/integration/dspy/mipro_v2_re_act_integration_spec.rb` with VCR cassette (`miprov2/react_light.yml`) to validate end-to-end optimization of a lightweight ReAct program, ensuring per-predictor awareness works with real LM traces.
-- [ ] TODO: Draft the next ADR-008 status update summarizing current progress, open Layer 5 work, and Bayesian optimization decisions, including remaining gaps and trade-offs.
+- ✅ Status Update (2025-10-18): Layer 5 parity is on track—per-predictor flows, predictor discovery, and ReAct integration are in place. Remaining work focuses on documenting Bayesian strategy trade-offs and validating observability emitters with live telemetry once open-telemetry is re-enabled.
 
 **Layer 4.2 Achievement**: Successfully implemented all Python-compatible awareness flags:
 - Phase 1: Python-compatible instruction handling (no length limits)
