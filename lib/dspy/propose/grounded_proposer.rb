@@ -11,6 +11,8 @@ module DSPy
     class GroundedProposer
       extend T::Sig
 
+      MAX_HISTORY_INSTRUCTIONS = 5
+
       # Python-compatible TIPS dictionary for instruction generation
       TIPS = {
         "none" => "",
@@ -192,10 +194,11 @@ module DSPy
           signature_class: T.class_of(DSPy::Signature),
           examples: T::Array[T.untyped],
           few_shot_examples: T.nilable(T::Array[T.untyped]),
-          current_instruction: T.nilable(String)
+          current_instruction: T.nilable(String),
+          trial_logs: T.nilable(T::Hash[Integer, T::Hash[Symbol, T.untyped]])
         ).returns(ProposalResult)
       end
-      def propose_instructions(signature_class, examples, few_shot_examples: nil, current_instruction: nil)
+      def propose_instructions(signature_class, examples, few_shot_examples: nil, current_instruction: nil, trial_logs: nil)
         DSPy::Context.with_span(
           operation: 'optimization.instruction_proposal',
           'dspy.module' => 'GroundedProposer',
@@ -212,7 +215,8 @@ module DSPy
             signature_class,
             analysis,
             current_instruction,
-            few_shot_examples: few_shot_examples
+            few_shot_examples: few_shot_examples,
+            trial_logs: trial_logs
           )
 
           # Filter and rank candidates
@@ -418,16 +422,18 @@ module DSPy
           signature_class: T.class_of(DSPy::Signature),
           analysis: T::Hash[Symbol, T.untyped],
           current_instruction: T.nilable(String),
-          few_shot_examples: T.nilable(T::Array[T.untyped])
+          few_shot_examples: T.nilable(T::Array[T.untyped]),
+          trial_logs: T.nilable(T::Hash[Integer, T::Hash[Symbol, T.untyped]])
         ).returns(T::Array[String])
       end
-      def generate_instruction_candidates(signature_class, analysis, current_instruction, few_shot_examples: nil)
+      def generate_instruction_candidates(signature_class, analysis, current_instruction, few_shot_examples: nil, trial_logs: nil)
         # Build context for instruction generation
         context = build_generation_context(
           signature_class,
           analysis,
           current_instruction,
-          few_shot_examples: few_shot_examples
+          few_shot_examples: few_shot_examples,
+          trial_logs: trial_logs
         )
         
         # Create instruction generation signature
@@ -467,10 +473,11 @@ module DSPy
           signature_class: T.class_of(DSPy::Signature),
           analysis: T::Hash[Symbol, T.untyped],
           current_instruction: T.nilable(String),
-          few_shot_examples: T.nilable(T::Array[T.untyped])
+          few_shot_examples: T.nilable(T::Array[T.untyped]),
+          trial_logs: T.nilable(T::Hash[Integer, T::Hash[Symbol, T.untyped]])
         ).returns(String)
       end
-      def build_generation_context(signature_class, analysis, current_instruction, few_shot_examples: nil)
+      def build_generation_context(signature_class, analysis, current_instruction, few_shot_examples: nil, trial_logs: nil)
         context_parts = []
 
         # Include dataset summary if enabled and available
@@ -513,6 +520,13 @@ module DSPy
         if @config.use_tip
           tip = select_tip
           context_parts << "Tip: #{tip}" if tip && !tip.empty?
+        end
+
+        if @config.use_instruct_history
+          history_summary = build_instruction_history_summary(trial_logs, predictor_index: 0, top_n: MAX_HISTORY_INSTRUCTIONS)
+          unless history_summary.empty?
+            context_parts << "Previous instructions:\n#{history_summary}"
+          end
         end
 
         context_parts.join("\n\n")
@@ -563,6 +577,47 @@ module DSPy
           # Return empty string when not using random tips
           ""
         end
+      end
+
+      sig do
+        params(
+          trial_logs: T.nilable(T::Hash[Integer, T::Hash[Symbol, T.untyped]]),
+          predictor_index: Integer,
+          top_n: Integer
+        ).returns(String)
+      end
+      def build_instruction_history_summary(trial_logs, predictor_index:, top_n:)
+        return "" unless @config.use_instruct_history
+
+        logs = trial_logs || {}
+        aggregate = Hash.new { |hash, key| hash[key] = { total: 0.0, count: 0 } }
+
+        logs.each_value do |entry|
+          score = entry[:score]
+          next unless score.respond_to?(:to_f)
+
+          instructions = entry[:instructions]
+          instruction = nil
+          if instructions.respond_to?(:[])
+            instruction = instructions[predictor_index] || instructions[:default]
+          end
+          instruction ||= entry[:instruction]
+
+          next unless instruction.is_a?(String) && !instruction.empty?
+
+          aggregate[instruction][:total] += score.to_f
+          aggregate[instruction][:count] += 1
+        end
+
+        return "" if aggregate.empty?
+
+        ranked = aggregate.map do |instruction, stats|
+          average = stats[:total] / stats[:count]
+          [instruction, average]
+        end
+
+        top_entries = ranked.sort_by { |(_, avg)| -avg }.take(top_n).reverse
+        top_entries.map { |instruction, avg| format("%s | Score: %.4f", instruction, avg) }.join("\n\n")
       end
 
       # Build requirements text for instruction generation

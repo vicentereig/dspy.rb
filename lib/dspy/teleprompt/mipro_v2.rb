@@ -266,6 +266,7 @@ module DSPy
         @proposer = DSPy::Propose::GroundedProposer.new(config: DSPy::Propose::GroundedProposer::Config.new)
         @optimization_trace = []
         @evaluated_candidates = []
+        @trial_history = {}
       end
 
       # Main MIPROv2 optimization method
@@ -332,6 +333,8 @@ module DSPy
             proposal_result
           )
 
+          @trial_history = optimization_result[:trial_logs] || {}
+
           save_results(final_result)
           final_result
         end
@@ -388,7 +391,8 @@ module DSPy
           signature_class,
           trainset,
           few_shot_examples: few_shot_examples,
-          current_instruction: current_instruction
+          current_instruction: current_instruction,
+          trial_logs: @trial_history
         )
       end
 
@@ -935,7 +939,7 @@ module DSPy
       def create_trial_log_entry(trial_number:, candidate:, evaluation_type:, batch_size:)
         # Preserve interface parity with Python implementation (trial number stored implicitly via hash key)
         trial_number # no-op to acknowledge parameter usage
-        {
+        entry = {
           candidate_id: candidate.config_id,
           candidate_type: candidate.type.serialize,
           instruction_preview: candidate.instruction.to_s[0, 160],
@@ -946,6 +950,12 @@ module DSPy
           status: :in_progress,
           started_at: Time.now.iso8601
         }
+        if candidate.instruction && !candidate.instruction.empty?
+          predictor_index = candidate.metadata[:predictor_index] || 0
+          entry[:instruction] = candidate.instruction
+          entry[:instructions] = { predictor_index => candidate.instruction }
+        end
+        entry
       end
 
       sig do
@@ -980,7 +990,13 @@ module DSPy
         ).void
       end
       def record_param_score(param_score_dict, candidate, score, evaluation_type:)
-        param_score_dict[candidate.config_id] << {
+        instructions_hash = {}
+        if candidate.instruction && !candidate.instruction.empty?
+          predictor_index = candidate.metadata[:predictor_index] || 0
+          instructions_hash[predictor_index] = candidate.instruction
+        end
+
+        record = {
           candidate_id: candidate.config_id,
           candidate_type: candidate.type.serialize,
           score: score,
@@ -988,6 +1004,10 @@ module DSPy
           timestamp: Time.now.iso8601,
           metadata: deep_dup(candidate.metadata)
         }
+        record[:instruction] = candidate.instruction if candidate.instruction && !candidate.instruction.empty?
+        record[:instructions] = instructions_hash unless instructions_hash.empty?
+
+        param_score_dict[candidate.config_id] << record
       end
 
       sig do
@@ -1000,6 +1020,12 @@ module DSPy
       def update_fully_evaled_param_combos(fully_evaled_param_combos, candidate, score)
         existing = fully_evaled_param_combos[candidate.config_id]
         if existing.nil? || score > existing[:score]
+          instructions_hash = {}
+          if candidate.instruction && !candidate.instruction.empty?
+            predictor_index = candidate.metadata[:predictor_index] || 0
+            instructions_hash[predictor_index] = candidate.instruction
+          end
+
           fully_evaled_param_combos[candidate.config_id] = {
             candidate_id: candidate.config_id,
             candidate_type: candidate.type.serialize,
@@ -1007,6 +1033,10 @@ module DSPy
             metadata: deep_dup(candidate.metadata),
             updated_at: Time.now.iso8601
           }
+          unless instructions_hash.empty?
+            fully_evaled_param_combos[candidate.config_id][:instructions] = instructions_hash
+            fully_evaled_param_combos[candidate.config_id][:instruction] = candidate.instruction
+          end
         end
       end
 
@@ -1018,6 +1048,8 @@ module DSPy
           :candidate_id,
           :candidate_type,
           :instruction_preview,
+          :instruction,
+          :instructions,
           :few_shot_count,
           :metadata,
           :evaluation_type,
@@ -1041,7 +1073,7 @@ module DSPy
       def serialize_param_score_dict(param_score_dict)
         return {} unless param_score_dict
 
-        allowed_keys = [:candidate_id, :candidate_type, :score, :evaluation_type, :timestamp, :metadata]
+        allowed_keys = [:candidate_id, :candidate_type, :score, :evaluation_type, :timestamp, :metadata, :instruction, :instructions]
 
         param_score_dict.transform_values do |records|
           records.map do |record|
@@ -1056,7 +1088,7 @@ module DSPy
       def serialize_fully_evaled_param_combos(fully_evaled_param_combos)
         return {} unless fully_evaled_param_combos
 
-        allowed_keys = [:candidate_id, :candidate_type, :score, :metadata, :updated_at]
+        allowed_keys = [:candidate_id, :candidate_type, :score, :metadata, :updated_at, :instruction, :instructions]
 
         fully_evaled_param_combos.transform_values do |record|
           record.each_with_object({}) do |(key, value), memo|

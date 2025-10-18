@@ -351,6 +351,59 @@ RSpec.describe DSPy::Propose::GroundedProposer do
     end
   end
 
+  describe 'instruction history integration' do
+    let(:trial_logs) do
+      {
+        1 => { instructions: { 0 => 'Use detailed reasoning' }, score: 0.72 },
+        2 => { instructions: { 0 => 'Summarize context before answering' }, score: 0.81 },
+        3 => { instructions: { 0 => 'Use detailed reasoning' }, score: 0.88 }
+      }
+    end
+
+    it 'aggregates prior instruction scores into a history string' do
+      proposer.instance_variable_set(:@program, nil)
+      history_string = proposer.send(:build_instruction_history_summary, trial_logs, predictor_index: 0, top_n: 5)
+
+      expect(history_string).to include('Use detailed reasoning')
+      expect(history_string).to include('Summarize context before answering')
+      expect(history_string).to include('Score: 0.8000')
+    end
+
+    it 'includes instruction history in generation context when enabled' do
+      proposer.instance_variable_set(:@program, nil)
+      proposer.config.use_instruct_history = true
+
+      analysis = proposer.send(:analyze_task, ProposerQA, training_examples, nil)
+      context = proposer.send(
+        :build_generation_context,
+        ProposerQA,
+        analysis,
+        nil,
+        few_shot_examples: nil,
+        trial_logs: trial_logs
+      )
+
+      expect(context).to include('Previous instructions')
+      expect(context).to include('Use detailed reasoning')
+    end
+
+    it 'omits instruction history when disabled' do
+      proposer.config.use_instruct_history = false
+
+      analysis = proposer.send(:analyze_task, ProposerQA, training_examples, nil)
+      context = proposer.send(
+        :build_generation_context,
+        ProposerQA,
+        analysis,
+        nil,
+        few_shot_examples: nil,
+        trial_logs: trial_logs
+      )
+
+      expect(context).not_to include('Previous instructions')
+    end
+  end
+
   describe 'analysis methods' do
     describe 'task complexity assessment' do
       it 'correctly identifies complex signatures' do
