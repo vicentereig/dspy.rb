@@ -2,6 +2,7 @@
 
 require 'digest'
 require 'time'
+require 'concurrent-ruby'
 require 'sorbet-runtime'
 require_relative 'teleprompter'
 require_relative 'utils'
@@ -125,6 +126,7 @@ module DSPy
       setting :track_diversity, default: true
       setting :max_errors, default: 3
       setting :num_threads, default: 1
+      setting :minibatch_size, default: nil
 
       # Class-level configuration method - sets defaults for new instances
       def self.configure(&block)
@@ -782,12 +784,106 @@ module DSPy
         modified_program = apply_candidate_configuration(program, candidate)
         
         # Evaluate modified program
-        evaluation_result = evaluate_program(modified_program, evaluation_set)
+        evaluation_result = if use_concurrent_evaluation?(evaluation_set)
+          evaluate_candidate_concurrently(modified_program, evaluation_set)
+        else
+          evaluate_program(modified_program, evaluation_set)
+        end
         
         # Store evaluation details
         @evaluated_candidates << candidate
         
         [evaluation_result.pass_rate, modified_program, evaluation_result]
+      end
+
+      sig { params(evaluation_set: T::Array[DSPy::Example]).returns(T::Boolean) }
+      def use_concurrent_evaluation?(evaluation_set)
+        minibatch_size = config.minibatch_size
+        return false unless minibatch_size&.positive?
+        return false unless config.num_threads && config.num_threads > 1
+
+        evaluation_set.size > minibatch_size
+      end
+
+      sig do
+        params(
+          modified_program: T.untyped,
+          evaluation_set: T::Array[DSPy::Example]
+        ).returns(DSPy::Evaluate::BatchEvaluationResult)
+      end
+      def evaluate_candidate_concurrently(modified_program, evaluation_set)
+        chunk_size = T.must(config.minibatch_size)
+        chunks = evaluation_set.each_slice(chunk_size).map(&:dup)
+        return evaluate_program(modified_program, evaluation_set) if chunks.size <= 1
+
+        pool_size = [config.num_threads, chunks.size].min
+        pool_size = 1 if pool_size <= 0
+        executor = Concurrent::FixedThreadPool.new(pool_size)
+
+        futures = chunks.map do |chunk|
+          Concurrent::Promises.future_on(executor) do
+            evaluate_program(modified_program, chunk)
+          end
+        end
+
+        results = futures.map(&:value!)
+        combine_batch_results(results)
+      ensure
+        if executor
+          executor.shutdown
+          executor.wait_for_termination
+        end
+      end
+
+      sig do
+        params(batch_results: T::Array[DSPy::Evaluate::BatchEvaluationResult]).returns(DSPy::Evaluate::BatchEvaluationResult)
+      end
+      def combine_batch_results(batch_results)
+        return DSPy::Evaluate::BatchEvaluationResult.new(results: [], aggregated_metrics: {}) if batch_results.empty?
+
+        combined_results = batch_results.flat_map(&:results)
+        total_examples = batch_results.sum(&:total_examples)
+        aggregated_metrics = merge_aggregated_metrics(batch_results, total_examples)
+
+        DSPy::Evaluate::BatchEvaluationResult.new(
+          results: combined_results,
+          aggregated_metrics: aggregated_metrics
+        )
+      end
+
+      sig do
+        params(
+          batch_results: T::Array[DSPy::Evaluate::BatchEvaluationResult],
+          total_examples: Integer
+        ).returns(T::Hash[Symbol, T.untyped])
+      end
+      def merge_aggregated_metrics(batch_results, total_examples)
+        return {} if total_examples.zero?
+
+        keys = batch_results.flat_map { |res| res.aggregated_metrics.keys }.uniq
+        keys.each_with_object({}) do |key, memo|
+          numeric_weight = 0.0
+          numeric_sum = 0.0
+          fallback_value = nil
+
+          batch_results.each do |res|
+            value = res.aggregated_metrics[key]
+            next if value.nil?
+
+            if value.is_a?(Numeric)
+              numeric_sum += value.to_f * res.total_examples
+              numeric_weight += res.total_examples
+            else
+              fallback_value = value
+            end
+          end
+
+          if numeric_weight.positive?
+            memo[key] = numeric_sum / numeric_weight
+          elsif fallback_value
+            memo[key] = fallback_value
+          end
+        end
       end
 
       # Apply candidate configuration to program
