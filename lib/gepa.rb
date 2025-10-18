@@ -3,10 +3,13 @@
 module GEPA
   autoload :Telemetry, 'gepa/telemetry'
 
+  autoload :API, 'gepa/api'
+
   module Core
     autoload :EvaluationBatch, 'gepa/core/evaluation_batch'
     autoload :Result, 'gepa/core/result'
     autoload :State, 'gepa/core/state'
+    autoload :Engine, 'gepa/core/engine'
   end
 
   module Strategies
