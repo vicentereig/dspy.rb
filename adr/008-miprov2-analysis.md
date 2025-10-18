@@ -1355,6 +1355,9 @@ According to the bottom-up implementation plan in this ADR:
 **✅ Layer 4.2 Complete** - GroundedProposer with full Python-compatible awareness flags
 **→ Next: Layer 5** - Complete MIPROv2 with optimization strategy
 
+- [ ] TODO: Plan the deprecation/removal of `SimpleOptimizer` (implementation, specs, and `docs/src/optimization/simple-optimizer.md`) to keep the Ruby surface aligned with Python DSPy.
+- [ ] TODO: Draft the next ADR-008 status update summarizing current progress, open Layer 5 work, and Bayesian optimization decisions, including remaining gaps and trade-offs.
+
 **Layer 4.2 Achievement**: Successfully implemented all Python-compatible awareness flags:
 - Phase 1: Python-compatible instruction handling (no length limits)
 - Phase 2-3: Config with awareness flags (program_aware, use_dataset_summary, use_task_demos, use_tip, use_instruct_history)
