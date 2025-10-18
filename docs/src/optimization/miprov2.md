@@ -199,6 +199,50 @@ end
 
 Generate diverse, high-quality few-shot examples using multiple bootstrap strategies:
 
+## Optimizing Composite Programs (ReAct, CodeAct, Chains)
+
+MIPROv2 can optimize any DSPy program that exposes predictors, including composite agents such as `DSPy::ReAct`, `DSPy::CodeAct`, and custom chains. Ruby now mirrors Python’s predictor discovery:
+
+- Each composite module reports its internal `DSPy::Predict` components (e.g., ReAct’s thought and observation predictors).
+- `create_n_fewshot_demo_sets` allocates few-shot buckets per predictor, so multi-module programs receive balanced bootstrap coverage.
+- The optimization trace (`result.optimization_trace[:trial_logs]`) records per-predictor instructions and demo sets for observability parity.
+
+### Minimal ReAct Example
+
+```ruby
+class QA < DSPy::Signature
+  description "Answer short factual questions"
+
+  input  { const :question, String }
+  output { const :answer,   String }
+end
+
+tools = [MyLookupTool.new] # implements DSPy::Tools::Base
+program = DSPy::ReAct.new(QA, tools:, max_iterations: 1)
+
+metric = proc do |example, prediction|
+  prediction.answer&.downcase&.include?(example.expected[:answer].downcase)
+end
+
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+optimizer.configure do |config|
+  config.num_trials = 1                 # keep token usage low
+  config.num_instruction_candidates = 1
+  config.bootstrap_sets = 1
+end
+
+result = optimizer.compile(
+  program,
+  trainset: training_examples,
+  valset:   validation_examples
+)
+
+best_program = result.optimized_program
+trial_logs   = result.optimization_trace[:trial_logs]
+```
+
+The integration spec `spec/integration/dspy/mipro_v2_re_act_integration_spec.rb` (recorded with VCR) showcases this flow end-to-end against OpenAI’s `gpt-4o-mini`, confirming per-predictor awareness with real LLM traces. Use the same pattern for CodeAct or chained predictors—MIPROv2 will enumerate each module, assign demos, and tune instructions automatically.
+
 ```ruby
 # MIPROv2 automatically creates multiple candidate sets of few-shot examples
 # Each set contains examples with reasoning traces generated using CoT
