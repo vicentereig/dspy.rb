@@ -114,4 +114,47 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator do
       expect(described_class).to respond_to(:create_dataset_summary)
     end
   end
+
+  describe '.format_examples_for_prompt' do
+    let(:signature_class) do
+      Class.new(DSPy::Signature) do
+        description "Simple QA signature"
+
+        input do
+          const :question, String
+        end
+
+        output do
+          const :answer, String
+        end
+      end
+    end
+
+    let(:example) do
+      DSPy::Example.new(
+        signature_class: signature_class,
+        input: { question: "What is DSPy?" },
+        expected: { answer: "A declarative optimization framework." }
+      )
+    end
+
+    it 'serializes examples as pretty JSON when schema format is json' do
+      json_string = described_class.format_examples_for_prompt([example], :json)
+
+      expect(json_string).to include('"signature"')
+      expect(json_string).to include('"input"')
+      expect(json_string).to include('"expected"')
+      expect(json_string).to include('"What is DSPy?"')
+    end
+
+    it 'serializes examples as compact BAML when schema format is baml' do
+      baml_string = described_class.format_examples_for_prompt([example], :baml)
+
+      expect(baml_string).to include('-')
+      expect(baml_string).to include('signature')
+      expect(baml_string).to include('input')
+      expect(baml_string).to include('question "What is DSPy?"')
+      expect(baml_string).not_to include('DSPy::Example')
+    end
+  end
 end

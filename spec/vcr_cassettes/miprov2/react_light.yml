@@ -22,167 +22,12 @@ http_interactions:
         consider in your observations: topics, content, syntax, conciceness, etc.
         It will be useful to make an educated guess as to the nature of the task this
         dataset will enable. Don''t be afraid to be creative"},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"examples\": \"[DSPy::Example(MIPROv2ReactSignature)
-        input={:question => \\\"What is the highest mountain on Earth?\\\"} expected={:answer
-        => \\\"Mount Everest\\\"}]\"\n}\n```\n\nRespond with the corresponding output
-        schema fields wrapped in a ```json ``` block,\nstarting with the heading `##
-        Output values`."}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.1
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '1815'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 18 Oct 2025 17:57:42 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1560'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1775'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9999'
-      X-Ratelimit-Remaining-Tokens:
-      - '199599'
-      X-Ratelimit-Reset-Requests:
-      - 8.64s
-      X-Ratelimit-Reset-Tokens:
-      - 120ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      X-Openai-Proxy-Wasm:
-      - v0.1
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 9909eb5e7efcfc06-MAD
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CS5TQMklEUSJ4XUe1fDC9jpFaDzcB",
-          "object": "chat.completion",
-          "created": 1760810260,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"observations\": \"The dataset appears to focus on a question-and-answer format, specifically targeting knowledge-based inquiries. The examples suggest a strong emphasis on providing precise factual information, with a potential focus on geography and world records. The syntax is structured in a way that indicates a formal approach towards the input-output relationship, possibly for a program or system designed to engage in Q&A interactions. Conciseness is prioritized as the answers are straightforward and direct.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 398,
-            "completion_tokens": 101,
-            "total_tokens": 499,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
-        }
-  recorded_at: Sat, 18 Oct 2025 17:57:42 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"observations\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Observations I have made about my dataset\"\n    }\n  },\n  \"required\":
-        [\n    \"observations\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
-        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Two to Three sentence summary of only the most significant highlights of
-        my observations\"\n    }\n  },\n  \"required\": [\n    \"summary\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Given a series of observations I have made about my dataset,
-        please summarize them into a brief 2-3 sentence summary which highlights only
-        the most important details."},{"role":"user","content":"## Input Values\n```json\n{\n  \"observations\":
-        \"The dataset appears to focus on a question-and-answer format, specifically
-        targeting knowledge-based inquiries. The examples suggest a strong emphasis
-        on providing precise factual information, with a potential focus on geography
-        and world records. The syntax is structured in a way that indicates a formal
-        approach towards the input-output relationship, possibly for a program or
-        system designed to engage in Q&A interactions. Conciseness is prioritized
-        as the answers are straightforward and direct.\"\n}\n```\n\nRespond with the
-        corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        Input Values\n```json\n{\n  \"examples\": \"[\\n  {\\n    \\\"signature\\\":
+        \\\"MIPROv2ReactSignature\\\",\\n    \\\"input\\\": {\\n      \\\"_type\\\":
+        \\\"AnonymousStruct\\\",\\n      \\\"question\\\": \\\"What is the highest
+        mountain on Earth?\\\"\\n    },\\n    \\\"expected\\\": {\\n      \\\"_type\\\":
+        \\\"AnonymousStruct\\\",\\n      \\\"answer\\\": \\\"Mount Everest\\\"\\n    }\\n  }\\n]\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
@@ -221,7 +66,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 18 Oct 2025 17:57:43 GMT
+      - Sat, 18 Oct 2025 18:08:38 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -233,25 +78,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '883'
+      - '1450'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '897'
+      - '2182'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9999'
       X-Ratelimit-Remaining-Tokens:
-      - '199546'
+      - '199561'
       X-Ratelimit-Reset-Requests:
-      - 15.489s
+      - 8.64s
       X-Ratelimit-Reset-Tokens:
-      - 136ms
+      - 131ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -268,23 +113,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9909eb6d2cbefc06-MAD
+      - 9909fb5c5c16866e-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CS5TSZypekilW8L3Dr5tAFAZXdcNE",
+          "id": "chatcmpl-CS5e0xydIpXtccgSo2gt3IolI8CXr",
           "object": "chat.completion",
-          "created": 1760810262,
+          "created": 1760810916,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"summary\": \"The dataset emphasizes a question-and-answer format focusing on knowledge-based inquiries, particularly in geography and world records. It showcases a formal approach with concise and direct answers, indicating an intent for efficient Q&A interactions.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"observations\": \"The examples indicate a question-and-answer format where questions are posed, likely in a structured format, and specific answers are expected. This suggests the dataset may be used for applications in natural language processing, specifically for tasks such as automated question answering or chatbots. The use of structured input and output can indicate that the dataset is designed for easy parsing and retrieval of information, emphasizing conciseness and clarity in both questions and answers.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -293,9 +138,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 409,
-            "completion_tokens": 56,
-            "total_tokens": 465,
+            "prompt_tokens": 445,
+            "completion_tokens": 101,
+            "total_tokens": 546,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -310,7 +155,228 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Sat, 18 Oct 2025 17:57:43 GMT
+  recorded_at: Sat, 18 Oct 2025 18:08:38 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"observations\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Observations I have made about my dataset\"\n    }\n  },\n  \"required\":
+        [\n    \"observations\"\n  ]\n}\n```\nYour output schema fields are:\n```json\n{\n  \"$schema\":
+        \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Two to Three sentence summary of only the most significant highlights of
+        my observations\"\n    }\n  },\n  \"required\": [\n    \"summary\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Given a series of observations I have made about my dataset,
+        please summarize them into a brief 2-3 sentence summary which highlights only
+        the most important details."},{"role":"user","content":"## Input Values\n```json\n{\n  \"observations\":
+        \"The examples indicate a question-and-answer format where questions are posed,
+        likely in a structured format, and specific answers are expected. This suggests
+        the dataset may be used for applications in natural language processing, specifically
+        for tasks such as automated question answering or chatbots. The use of structured
+        input and output can indicate that the dataset is designed for easy parsing
+        and retrieval of information, emphasizing conciseness and clarity in both
+        questions and answers.\"\n}\n```\n\nRespond with the corresponding output
+        schema fields wrapped in a ```json ``` block,\nstarting with the heading `##
+        Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.22.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2017'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 18 Oct 2025 18:08:39 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '665'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '679'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '199547'
+      X-Ratelimit-Reset-Requests:
+      - 15.583s
+      X-Ratelimit-Reset-Tokens:
+      - 135ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9909fb6fae10866e-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CS5e2CK8ZtKoy6N9bjpLGDPtwrRD6",
+          "object": "chat.completion",
+          "created": 1760810918,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The dataset showcases a structured question-and-answer format, ideal for natural language processing applications like automated question answering or chatbots. Its design emphasizes clarity and conciseness, promoting efficient information retrieval.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 409,
+            "completion_tokens": 53,
+            "total_tokens": 462,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Sat, 18 Oct 2025 18:08:39 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BbZfwo6yxPbMADvrtB84K3po89f4AAEBAAAnIQEAAQhEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1760810915078.725,"message":"trace_id=\"ad31f83d-6d3f-44f1-a67c-6eae33b63d83\"
+        otel_span_stack=[] phase=1 name=\"bootstrap\" teleprompter.class=\"DSPy::Teleprompt::MIPROv2\"
+        event=\"optimization.phase_start\"\n"},{"level":"INFO","timestamp":1760810915080.1448,"message":"trace_id=\"ad31f83d-6d3f-44f1-a67c-6eae33b63d83\"
+        otel_span_stack=[] phase=1 num_predictors=2 demo_sets_per_predictor=1 teleprompter.class=\"DSPy::Teleprompt::MIPROv2\"
+        event=\"optimization.phase_complete\"\n"},{"level":"INFO","timestamp":1760810915080.206,"message":"trace_id=\"ad31f83d-6d3f-44f1-a67c-6eae33b63d83\"
+        otel_span_stack=[] phase=2 name=\"instruction_proposal\" teleprompter.class=\"DSPy::Teleprompt::MIPROv2\"
+        event=\"optimization.phase_start\"\n"},{"level":"INFO","timestamp":1760810918311.9512,"message":"trace_id=\"ad31f83d-6d3f-44f1-a67c-6eae33b63d83\"
+        otel_span_stack=[] input_tokens=445 output_tokens=101 total_tokens=546 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"DSPy::Propose::DatasetSummaryGenerator::DatasetDescriptor\"
+        event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1760810919144.9612,"message":"trace_id=\"ad31f83d-6d3f-44f1-a67c-6eae33b63d83\"
+        otel_span_stack=[] input_tokens=409 output_tokens=53 total_tokens=462 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"DSPy::Propose::DatasetSummaryGenerator::ObservationSummarizer\"
+        event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BbZfwo6yxPbMADvrtB84K3po89f4AAEBAAAnIQEAAQhEAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Sat, 18 Oct 2025 18:08:39 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350043-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Sat, 18 Oct 2025 18:08:40 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -333,10 +399,10 @@ http_interactions:
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
         objective is: Generate an improved instruction for a language model task"},{"role":"user","content":"##
         Input Values\n```json\n{\n  \"task_context\": \"Dataset Summary: The dataset
-        emphasizes a question-and-answer format focusing on knowledge-based inquiries,
-        particularly in geography and world records. It showcases a formal approach
-        with concise and direct answers, indicating an intent for efficient Q&A interactions.\\n\\nProgram
-        Code:\\nProgram: DSPy::ReAct\\nSource: /Users/vicente/Workspaces/vicente.services/dspy.rb/lib/dspy/callbacks.rb:135\\n\\nTask:
+        showcases a structured question-and-answer format, ideal for natural language
+        processing applications like automated question answering or chatbots. Its
+        design emphasizes clarity and conciseness, promoting efficient information
+        retrieval.\\n\\nProgram Code:\\nProgram: DSPy::ReAct\\nSource: /Users/vicente/Workspaces/vicente.services/dspy.rb/lib/dspy/callbacks.rb:135\\n\\nTask:
         Answer questions using concise grounded reasoning\\n\\nInput fields: question
         (String)\\n\\nOutput fields: question (String), answer (String), history (T::Array[T::Hash[Symbol,
         T.untyped]]), iterations (Integer), tools_used (T::Array[String])\\n\\nCurrent
@@ -376,14 +442,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '2637'
+      - '2635'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 18 Oct 2025 17:57:44 GMT
+      - Sat, 18 Oct 2025 18:08:40 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -395,23 +461,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '914'
+      - '1042'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1007'
+      - '1215'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9998'
       X-Ratelimit-Remaining-Tokens:
       - '199408'
       X-Ratelimit-Reset-Requests:
-      - 23.086s
+      - 14.599s
       X-Ratelimit-Reset-Tokens:
       - 177ms
       X-Request-Id:
@@ -430,23 +496,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9909eb73c8d3fc06-MAD
+      - 9909fb74ea3c866e-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CS5TTXdtDfTZztPNJw6TTGs4QtfGN",
+          "id": "chatcmpl-CS5e3CBBmRoMDK8bmAVEUnrnXuTWx",
           "object": "chat.completion",
-          "created": 1760810263,
+          "created": 1760810919,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"instruction\": \"You are a knowledgeable geography expert. Answer questions with concise grounded reasoning, ensuring your responses are direct and informed by the provided dataset. Include relevant context for your answers and maintain a formal tone.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"instruction\": \"You are a knowledgeable assistant skilled in concise reasoning. Your task is to provide clear and accurate answers to questions based on the dataset. Use logical reasoning and ensure your responses are directly grounded in the information provided.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -455,8 +521,8 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 564,
-            "completion_tokens": 53,
+            "prompt_tokens": 561,
+            "completion_tokens": 56,
             "total_tokens": 617,
             "prompt_tokens_details": {
               "cached_tokens": 0,
@@ -472,64 +538,7 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Sat, 18 Oct 2025 17:57:44 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWbBAOHr5nAEADvrtB84K3po89VkAAEBAAAnIQEAAQGrAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        H4sIABjV82gAA8WWy27bMBBFf0XQOiaopyUBXjRw2qZA3mmBIg4ESprIrClSJak4TpB/78hJXMftog8bWYozGs49vBjy6sEtVdMo6WYPLrNW86KzYPovkJbbBZGsATdzxxenC6ILd8+dKmOfFw1vCkaEKpnAwPMPdccrjB3dzxbH32b+8ce7/c8HXnL2Zf/s8kCMz76cf7qkUXJ8eUiPxrV3ND4I3cfHPVeoGve9enAF3ILACofH70+wrOUNGMua1s28YUwTj/oxxQIkpuGeizHD6r4Zq1kJOa9GEzcNKfVYVA3S4MYbhEHIBoVfhoOUxl5ceFFSptXEdZQFkZuWyRzrl7PR1bXTTpmBkef0ArFQoZQ1WLjFbEyGVqumtaBJKZgxmNBjybLLVSjLjg5Pz09uffwBZUiLOapFCfyeWa4kWW7Q76ftxJ1I93HvzwWnfrQ7wV2TtxoqXlqlzch3KmhUbsCavAX9M4Sp2wSB5msFWPh7FnGU7AiG/3L6XOLZd2XfLgJQrTJMvLUR/CiiJEhpunXxXLadza2agTSjIE0c1dm1FY/iySvLxMtCmKZODTJnnJiFsdAsFYJkHOs/BzR871ACaVQFAuN1awehGjRc9kmVaRfE8Foy22lYQTxdooYsGzOLjOxF1zRMLz6ABM3QgqvAGEypeYtLa5BFQ54a/BuqQUyHJNk51ZCmG1SjeANqHL0V1JPCgL5dmvMpyO/hv8GGwyAgQeLvlmsUh5tcg9dcY2+4Xa6Si/8mE5LQ28FEf55UpB/pJZMVrxhe6Ti4V5ECu8nXp5sAWdvpyA/Cn0lMMrEw3OR2Ctjiq9JLRHlnoPqF02+H3e8m6T/N/iW1KN3h6N+E9gsrvApvOcxxt6+qc5gGhzkzqeYCqhpYIQD9pGp8M0wXDtzh5WmJ806aOWjn+5Zvj38mGKfBjggGL5fnertvfWmi5pjQhG7fNvhgRiejaQron0Yr5zzVvQnjtCjYsCyKXtIWXdTb9AbmuZkqO6JbovskZo3u9eP1D8RW9SMhDAAA
-    headers:
-      Content-Encoding:
-      - gzip
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BWbBAOHr5nAEADvrtB84K3po89VkAAEBAAAnIQEAAQGrAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: Accepted
-    headers:
-      Date:
-      - Sat, 18 Oct 2025 17:57:45 GMT
-      Content-Type:
-      - application/json; charset=UTF-8
-      Content-Length:
-      - '0'
-      Connection:
-      - keep-alive
-      Cf-Ray:
-      - 9909eb7b7e108678-MAD
-      Cf-Cache-Status:
-      - DYNAMIC
-      Server:
-      - cloudflare
-      Nr-Rate-Limited:
-      - allowed
-      X-Envoy-Upstream-Service-Time:
-      - '0'
-      Vary:
-      - accept-encoding
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Sat, 18 Oct 2025 17:57:45 GMT
+  recorded_at: Sat, 18 Oct 2025 18:08:40 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -626,7 +635,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Sat, 18 Oct 2025 17:57:45 GMT
+      - Sat, 18 Oct 2025 18:08:41 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -638,23 +647,23 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '920'
+      - '1076'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '945'
+      - '1101'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9996'
       X-Ratelimit-Remaining-Tokens:
       - '198866'
       X-Ratelimit-Reset-Requests:
-      - 21.919s
+      - 30.605s
       X-Ratelimit-Reset-Tokens:
       - 340ms
       X-Request-Id:
@@ -673,23 +682,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9909eb7afe2ffc06-MAD
+      - 9909fb7dc96e866e-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CS5TUFN6yod0bouXp4QB8bC7DKxb3",
+          "id": "chatcmpl-CS5e4paXmLDB62tfLqOzRcvUQR0Rp",
           "object": "chat.completion",
-          "created": 1760810264,
+          "created": 1760810920,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to answer the question about the highest mountain on Earth. Since there are no available tools, I can provide the answer directly.\",\n  \"action\": \"finish\",\n  \"action_input\": \"The highest mountain on Earth is Mount Everest.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to provide an answer to the question about the highest mountain on Earth. Since there are no available tools and no prior history, I will directly supply the final answer.\",\n  \"action\": \"finish\",\n  \"action_input\": \"The highest mountain on Earth is Mount Everest.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -699,8 +708,8 @@ http_interactions:
           ],
           "usage": {
             "prompt_tokens": 994,
-            "completion_tokens": 64,
-            "total_tokens": 1058,
+            "completion_tokens": 72,
+            "total_tokens": 1066,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -715,191 +724,5 @@ http_interactions:
           "service_tier": "default",
           "system_fingerprint": "fp_560af6e559"
         }
-  recorded_at: Sat, 18 Oct 2025 17:57:45 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Serialized representation of all input
-        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
-        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
-        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
-        \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
-        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
-        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
-        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"finish\"\n      ],\n      \"description\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"type\": \"string\",\n      \"description\": \"Input for the chosen
-        action. If action is a tool name, this MUST be a JSON object matching the
-        tool''s schema. If action is \\\"finish\\\", this field MUST contain the final
-        result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to process the given
-        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"question\\\":\\\"What is the
-        highest mountain on Earth?\\\"}\",\n  \"history\": [],\n  \"available_tools\":
-        []\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.1
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '5113'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 18 Oct 2025 17:57:47 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1102'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1360'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9995'
-      X-Ratelimit-Remaining-Tokens:
-      - '198866'
-      X-Ratelimit-Reset-Requests:
-      - 37.411s
-      X-Ratelimit-Reset-Tokens:
-      - 340ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      X-Openai-Proxy-Wasm:
-      - v0.1
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 9909eb81db93fc06-MAD
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CS5TW6Q6AQW8SgKdqfKbYhGmXuT1z",
-          "object": "chat.completion",
-          "created": 1760810266,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to provide the answer to the question about the highest mountain on Earth, which is a general knowledge question.\",\n  \"action\": \"finish\",\n  \"action_input\": \"The highest mountain on Earth is Mount Everest.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 994,
-            "completion_tokens": 60,
-            "total_tokens": 1054,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
-        }
-  recorded_at: Sat, 18 Oct 2025 17:57:47 GMT
+  recorded_at: Sat, 18 Oct 2025 18:08:41 GMT
 recorded_with: VCR 6.3.1

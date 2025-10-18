@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
+require 'json'
 require_relative '../signature'
 require_relative '../predict'
+require_relative '../type_serializer'
 
 module DSPy
   module Propose
@@ -119,9 +121,11 @@ module DSPy
         DSPy.with_lm(lm) do
           # Initial observation from first batch
           upper_lim = [trainset.length, view_data_batch_size].min
-          examples_repr = order_input_keys_in_string(trainset[0...upper_lim].inspect)
-
+          batch_examples = trainset[0...upper_lim]
           predictor = DSPy::Predict.new(DatasetDescriptor)
+          schema_format = predictor.prompt.schema_format
+          examples_repr = format_examples_for_prompt(batch_examples, schema_format)
+
           observation = predictor.call(examples: examples_repr)
           observations = observation.observations
 
@@ -138,9 +142,12 @@ module DSPy
               puts "Processing batch starting at index #{b}" if verbose
 
               upper_lim = [trainset.length, b + view_data_batch_size].min
-              examples_repr = order_input_keys_in_string(trainset[b...upper_lim].inspect)
 
               predictor = DSPy::Predict.new(DatasetDescriptorWithPriorObservations)
+              schema_format = predictor.prompt.schema_format
+              batch_examples = trainset[b...upper_lim]
+              examples_repr = format_examples_for_prompt(batch_examples, schema_format)
+
               output = predictor.call(
                 prior_observations: observations,
                 examples: examples_repr
@@ -170,6 +177,81 @@ module DSPy
           end
 
           strip_prefix(summary.summary)
+        end
+      end
+
+      sig { params(examples: T::Array[DSPy::Example], schema_format: Symbol).returns(String) }
+      def self.format_examples_for_prompt(examples, schema_format)
+        serialized_examples = examples.map do |example|
+          {
+            signature: example.signature_class.name,
+            input: DSPy::TypeSerializer.serialize(example.input),
+            expected: DSPy::TypeSerializer.serialize(example.expected)
+          }
+        end
+
+        case schema_format
+        when :baml
+          serialize_examples_to_baml(serialized_examples)
+        else
+          JSON.pretty_generate(serialized_examples)
+        end
+      end
+
+      sig { params(serialized_examples: T::Array[T::Hash[Symbol, T.untyped]]).returns(String) }
+      def self.serialize_examples_to_baml(serialized_examples)
+        return "[]" if serialized_examples.empty?
+
+        serialized_examples.map do |example|
+          "-\n#{serialize_value_to_baml(example, 1)}"
+        end.join("\n")
+      end
+
+      sig { params(value: T.untyped, indent: Integer).returns(String) }
+      def self.serialize_value_to_baml(value, indent)
+        indent_str = '  ' * indent
+
+        case value
+        when Hash
+          value.map do |key, val|
+            if collection?(val)
+              "#{indent_str}#{key} {\n#{serialize_value_to_baml(val, indent + 1)}\n#{indent_str}}"
+            else
+              "#{indent_str}#{key} #{primitive_to_baml(val)}"
+            end
+          end.join("\n")
+        when Array
+          if value.empty?
+            "#{indent_str}[]"
+          else
+            value.map do |item|
+              if collection?(item)
+                "#{indent_str}-\n#{serialize_value_to_baml(item, indent + 1)}"
+              else
+                "#{indent_str}- #{primitive_to_baml(item)}"
+              end
+            end.join("\n")
+          end
+        else
+          "#{indent_str}#{primitive_to_baml(value)}"
+        end
+      end
+
+      sig { params(value: T.untyped).returns(T::Boolean) }
+      def self.collection?(value)
+        value.is_a?(Hash) || value.is_a?(Array)
+      end
+
+      sig { params(value: T.untyped).returns(String) }
+      def self.primitive_to_baml(value)
+        case value
+        when nil
+          'null'
+        when TrueClass, FalseClass, Numeric
+          value.to_s
+        else
+          escaped = value.to_s.gsub('"', '\"')
+          "\"#{escaped}\""
         end
       end
     end
