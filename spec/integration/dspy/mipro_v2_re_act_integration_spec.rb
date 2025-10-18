@@ -60,6 +60,8 @@ RSpec.describe 'MIPROv2 optimizing ReAct end-to-end' do
       config.logger = Dry.Logger(:dspy, formatter: :string) { |s| s.add_backend(stream: "log/test.log") }
     end
 
+    baseline_instructions = react_program.predictors.map { |predictor| predictor.prompt.instruction.dup }
+
     optimizer = DSPy::Teleprompt::MIPROv2.new(metric: proc { |example, prediction|
       prediction && prediction.respond_to?(:answer) && prediction.answer&.include?("Everest")
     })
@@ -86,6 +88,13 @@ RSpec.describe 'MIPROv2 optimizing ReAct end-to-end' do
     trial_logs = result.optimization_trace[:trial_logs]
     expect(trial_logs).not_to be_empty
     expect(trial_logs.values.all? { |entry| entry[:status] == :completed }).to eq(true)
+
+    instructions_map = trial_logs.values.map { |entry| entry[:instructions] }.compact.first
+    expect(instructions_map).not_to be_nil
+    expect(instructions_map.keys).to include(0)
+    expect(instructions_map.keys).to include(1)
+    expect(instructions_map[0]).to be_a(String)
+    expect(instructions_map[1]).to be_a(String)
 
     optimized_program = result.optimized_program
     expect(optimized_program.predictors.size).to eq(2)
