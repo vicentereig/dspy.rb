@@ -410,20 +410,27 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
   describe '#compile' do
     before do
       # Mock the grounded proposer to return predictable instructions
-      allow_any_instance_of(DSPy::Propose::GroundedProposer).to receive(:propose_instructions).and_return(
-        DSPy::Propose::GroundedProposer::ProposalResult.new(
-          candidate_instructions: [
+      mock_proposal = DSPy::Propose::GroundedProposer::ProposalResult.new(
+        candidate_instructions: [
+          "Analyze the question and context step by step to provide a comprehensive answer with detailed reasoning",
+          "Examine the provided context carefully and extract key information to formulate a well-reasoned response",
+          "Think through the problem systematically, using the context to support your analysis and conclusion"
+        ],
+        analysis: {
+          complexity_indicators: { requires_reasoning: true },
+          common_themes: ["question_answering", "analytical_reasoning"]
+        },
+        metadata: { model: "test", generation_timestamp: Time.now.iso8601 },
+        predictor_instructions: {
+          0 => [
             "Analyze the question and context step by step to provide a comprehensive answer with detailed reasoning",
             "Examine the provided context carefully and extract key information to formulate a well-reasoned response",
             "Think through the problem systematically, using the context to support your analysis and conclusion"
-          ],
-          analysis: { 
-            complexity_indicators: { requires_reasoning: true },
-            common_themes: ["question_answering", "analytical_reasoning"]
-          },
-          metadata: { model: "test", generation_timestamp: Time.now.iso8601 }
-        )
+          ]
+        }
       )
+
+      allow_any_instance_of(DSPy::Propose::GroundedProposer).to receive(:propose_instructions_for_program).and_return(mock_proposal)
 
       # Mock bootstrap to return demo candidates (new dict interface)
       allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return(
@@ -679,14 +686,16 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
       )
 
       proposer_double = instance_double(DSPy::Propose::GroundedProposer)
-      allow(proposer_double).to receive(:propose_instructions).and_return(proposal_result)
+      allow(proposer_double).to receive(:propose_instructions_for_program).and_return(proposal_result)
       allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return({ 0 => [] })
 
       expect(DSPy::Propose::GroundedProposer).to receive(:new).and_return(proposer_double)
-      expect(proposer_double).to receive(:propose_instructions).with(
-        MIPROv2QA,
-        training_examples,
-        hash_including(trial_logs: trial_history)
+      expect(proposer_double).to receive(:propose_instructions_for_program).with(
+        trainset: training_examples,
+        program: test_program,
+        demo_candidates: { 0 => [] },
+        trial_logs: trial_history,
+        num_instruction_candidates: a_kind_of(Integer)
       ).and_return(proposal_result)
 
       mipro.send(:phase_2_propose_instructions, test_program, training_examples, { 0 => [] })
@@ -910,6 +919,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
       expect(first_log_entry[:evaluation_type]).to eq(:full)
       expect(first_log_entry[:score]).to be_a(Float)
       expect(first_log_entry[:instructions]).to be_a(Hash)
+      expect(first_log_entry[:instructions].keys).to include(0)
 
       expect(trace[:param_score_dict]).to be_a(Hash)
       expect(trace[:param_score_dict]).not_to be_empty

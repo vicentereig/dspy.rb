@@ -374,10 +374,6 @@ module DSPy
         # Flatten demo sets from first predictor and take first 5 examples
         few_shot_examples = demo_candidates[0]&.flatten&.take(5) || []
 
-        # Get signature class from program
-        signature_class = extract_signature_class(program)
-        raise ArgumentError, "Cannot extract signature class from program" unless signature_class
-
         # Re-initialize proposer with program and trainset for awareness features
         # This enables program_aware and use_dataset_summary flags to work correctly
         proposer_config = DSPy::Propose::GroundedProposer::Config.new
@@ -389,12 +385,12 @@ module DSPy
           trainset: trainset
         )
 
-        @proposer.propose_instructions(
-          signature_class,
-          trainset,
-          few_shot_examples: few_shot_examples,
-          current_instruction: current_instruction,
-          trial_logs: @trial_history
+        @proposer.propose_instructions_for_program(
+          trainset: trainset,
+          program: program,
+          demo_candidates: demo_candidates,
+          trial_logs: @trial_history,
+          num_instruction_candidates: config.num_instruction_candidates
         )
       end
 
@@ -559,15 +555,23 @@ module DSPy
           config_id: SecureRandom.hex(6)
         )
 
-        # Instruction-only candidates
-        proposal_result.candidate_instructions.each_with_index do |instruction, idx|
-          candidates << EvaluatedCandidate.new(
-            instruction: instruction,
-            few_shot_examples: [],
-            type: CandidateType::InstructionOnly,
-            metadata: { proposal_rank: idx },
-            config_id: SecureRandom.hex(6)
-          )
+        predictor_instruction_map = if proposal_result.respond_to?(:predictor_instructions) && proposal_result.predictor_instructions.any?
+          proposal_result.predictor_instructions
+        else
+          { 0 => proposal_result.candidate_instructions }
+        end
+
+        # Instruction-only candidates (per predictor)
+        predictor_instruction_map.each do |predictor_index, instructions|
+          instructions.each_with_index do |instruction, idx|
+            candidates << EvaluatedCandidate.new(
+              instruction: instruction,
+              few_shot_examples: [],
+              type: CandidateType::InstructionOnly,
+              metadata: { proposal_rank: idx, predictor_index: predictor_index },
+              config_id: SecureRandom.hex(6)
+            )
+          end
         end
 
         # Few-shot only candidates
@@ -584,24 +588,28 @@ module DSPy
         end
         
         # Combined candidates (instruction + few-shot)
-        top_instructions = proposal_result.candidate_instructions.take(3)
-        top_bootstrap_sets = demo_sets.take(3)
-        
-        top_instructions.each_with_index do |instruction, i_idx|
-          top_bootstrap_sets.each_with_index do |candidate_set, b_idx|
-            candidates << EvaluatedCandidate.new(
-              instruction: instruction,
-              few_shot_examples: candidate_set,
-              type: CandidateType::Combined,
-              metadata: { 
-                instruction_rank: i_idx, 
-                bootstrap_rank: b_idx 
-              },
-              config_id: SecureRandom.hex(6)
-            )
+        predictor_instruction_map.each do |predictor_index, instructions|
+          top_instructions = instructions.take(3)
+          demo_sets = demo_candidates[predictor_index] || []
+          top_bootstrap_sets = demo_sets.take(3)
+
+          top_instructions.each_with_index do |instruction, i_idx|
+            top_bootstrap_sets.each_with_index do |candidate_set, b_idx|
+              candidates << EvaluatedCandidate.new(
+                instruction: instruction,
+                few_shot_examples: candidate_set,
+                type: CandidateType::Combined,
+                metadata: {
+                  instruction_rank: i_idx,
+                  bootstrap_rank: b_idx,
+                  predictor_index: predictor_index
+                },
+                config_id: SecureRandom.hex(6)
+              )
+            end
           end
         end
-        
+
         candidates
       end
 
@@ -1239,13 +1247,16 @@ module DSPy
       sig { params(program: T.untyped).returns(T::Hash[Integer, String]) }
       def extract_program_instructions(program)
         instructions = {}
-        return instructions unless program.respond_to?(:predictors)
-
-        program.predictors.each_with_index do |predictor, index|
-          if predictor.respond_to?(:prompt) && predictor.prompt.respond_to?(:instruction)
-            value = predictor.prompt.instruction
-            instructions[index] = value if value
+        if program.respond_to?(:predictors)
+          program.predictors.each_with_index do |predictor, index|
+            if predictor.respond_to?(:prompt) && predictor.prompt.respond_to?(:instruction)
+              value = predictor.prompt.instruction
+              instructions[index] = value if value
+            end
           end
+        else
+          fallback_instruction = extract_current_instruction(program)
+          instructions[0] = fallback_instruction if fallback_instruction
         end
         instructions
       end

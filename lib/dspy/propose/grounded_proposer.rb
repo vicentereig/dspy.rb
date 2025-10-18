@@ -95,6 +95,9 @@ module DSPy
         sig { returns(T::Array[String]) }
         attr_reader :candidate_instructions
 
+        sig { returns(T::Hash[Integer, T::Array[String]]) }
+        attr_reader :predictor_instructions
+
         sig { returns(T::Hash[Symbol, T.untyped]) }
         attr_reader :analysis
 
@@ -105,11 +108,16 @@ module DSPy
           params(
             candidate_instructions: T::Array[String],
             analysis: T::Hash[Symbol, T.untyped],
-            metadata: T::Hash[Symbol, T.untyped]
+            metadata: T::Hash[Symbol, T.untyped],
+            predictor_instructions: T.nilable(T::Hash[Integer, T::Array[String]])
           ).void
         end
-        def initialize(candidate_instructions:, analysis:, metadata:)
+        def initialize(candidate_instructions:, analysis:, metadata:, predictor_instructions: nil)
           @candidate_instructions = candidate_instructions.freeze
+          normalized_predictor_instructions = (predictor_instructions || {}).each_with_object({}) do |(index, instructions), memo|
+            memo[index] = instructions.dup.freeze
+          end
+          @predictor_instructions = normalized_predictor_instructions.freeze
           @analysis = analysis.freeze
           @metadata = metadata.freeze
         end
@@ -238,6 +246,50 @@ module DSPy
           emit_proposal_complete_event(result)
           result
         end
+      end
+
+      sig do
+        params(
+          trainset: T::Array[T.untyped],
+          program: T.untyped,
+          demo_candidates: T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]],
+          trial_logs: T.nilable(T::Hash[Integer, T::Hash[Symbol, T.untyped]]),
+          num_instruction_candidates: T.nilable(Integer)
+        ).returns(ProposalResult)
+      end
+      def propose_instructions_for_program(trainset:, program:, demo_candidates:, trial_logs: nil, num_instruction_candidates: nil)
+        num_candidates = num_instruction_candidates || @config.num_instruction_candidates
+
+        current_instruction = if program.respond_to?(:prompt) && program.prompt.respond_to?(:instruction)
+          program.prompt.instruction
+        else
+          nil
+        end
+
+        few_shot_examples = demo_candidates[0]&.flatten&.take(@config.num_demos_in_context) || []
+
+        signature_class = if program.respond_to?(:signature_class)
+          program.signature_class
+        else
+          raise ArgumentError, "Program must expose signature_class for instruction proposal"
+        end
+
+        base_result = propose_instructions(
+          signature_class,
+          trainset,
+          few_shot_examples: few_shot_examples,
+          current_instruction: current_instruction,
+          trial_logs: trial_logs
+        )
+
+        predictor_instructions = { 0 => base_result.candidate_instructions.take(num_candidates) }
+
+        ProposalResult.new(
+          candidate_instructions: base_result.candidate_instructions,
+          analysis: base_result.analysis,
+          metadata: base_result.metadata,
+          predictor_instructions: predictor_instructions
+        )
       end
 
       private

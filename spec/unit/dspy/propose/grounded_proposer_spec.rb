@@ -351,6 +351,32 @@ RSpec.describe DSPy::Propose::GroundedProposer do
     end
   end
 
+  describe '#propose_instructions_for_program' do
+    before do
+      allow(DSPy).to receive(:current_lm).and_return(double('LM', model: 'gpt-4o-mini'))
+      allow_any_instance_of(DSPy::Predict).to receive(:call).and_return(
+        OpenStruct.new(instruction: "Analyze the data carefully before responding.")
+      )
+    end
+
+    it 'returns predictor-specific instruction mapping' do
+      predictor = double('Predictor', prompt: OpenStruct.new(instruction: "Answer clearly"))
+      program = double('Program', signature_class: ProposerQA, prompt: OpenStruct.new(instruction: "Answer clearly"), predictors: [predictor])
+      demo_sets = { 0 => [[DSPy::FewShotExample.new(input: {}, output: {})]] }
+      result = proposer.propose_instructions_for_program(
+        trainset: training_examples,
+        program: program,
+        demo_candidates: demo_sets,
+        trial_logs: nil,
+        num_instruction_candidates: 2
+      )
+
+      expect(result).to be_a(DSPy::Propose::GroundedProposer::ProposalResult)
+      expect(result.predictor_instructions).to include(0)
+      expect(result.predictor_instructions[0].length).to be >= 1
+    end
+  end
+
   describe 'instruction history integration' do
     let(:trial_logs) do
       {
