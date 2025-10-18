@@ -4,6 +4,7 @@ require 'digest'
 require 'time'
 require 'concurrent-ruby'
 require 'sorbet-runtime'
+require 'securerandom'
 require_relative 'teleprompter'
 require_relative 'utils'
 require_relative '../propose/grounded_proposer'
@@ -546,73 +547,75 @@ module DSPy
       def generate_candidate_configurations(proposal_result, demo_candidates)
         candidates = []
 
-        # Base configuration (no modifications)
-        candidates << EvaluatedCandidate.new(
-          instruction: "",
-          few_shot_examples: [],
-          type: CandidateType::Baseline,
-          metadata: { instructions_map: {} },
-          config_id: SecureRandom.hex(6)
-        )
-
         predictor_instruction_map = if proposal_result.respond_to?(:predictor_instructions) && proposal_result.predictor_instructions.any?
           proposal_result.predictor_instructions
         else
           { 0 => proposal_result.candidate_instructions }
         end
 
-        instruction_options = predictor_instruction_map.transform_values { |instructions| instructions.take(3) }
-        instruction_maps = instruction_options.reduce([{}]) do |acc, (predictor_index, instructions)|
-          acc.flat_map do |existing_map|
-            instructions.map do |instruction|
-              existing_map.merge(predictor_index => instruction)
-            end
-          end
-        end
+        instruction_maps = build_instruction_maps(predictor_instruction_map)
+        demo_maps = build_demo_maps(demo_candidates)
 
-        if instruction_maps.empty?
-          instruction_maps = [{}]
-        end
+        # Base configuration (no modifications)
+        candidates << EvaluatedCandidate.new(
+          instruction: "",
+          few_shot_examples: [],
+          type: CandidateType::Baseline,
+          metadata: {
+            instructions_map: {},
+            demos_map: {}
+          },
+          config_id: SecureRandom.hex(6)
+        )
 
         instruction_maps.each_with_index do |instruction_map, combo_idx|
-          primary_instruction = instruction_map[0] || ""
+          primary_instruction = instruction_map[0] || instruction_map.values.first || ""
           candidates << EvaluatedCandidate.new(
             instruction: primary_instruction,
             few_shot_examples: [],
             type: CandidateType::InstructionOnly,
             metadata: {
               proposal_rank: combo_idx,
-              instructions_map: instruction_map.transform_values(&:dup)
+              instructions_map: duplicate_instruction_map(instruction_map),
+              demos_map: {}
             },
             config_id: SecureRandom.hex(6)
           )
         end
 
-        # Few-shot only candidates
-        # Extract demo sets from first predictor (predictor index 0)
-        demo_sets = demo_candidates[0] || []
-        demo_sets.each_with_index do |demo_set, idx|
+        demo_maps.each_with_index do |demo_map, idx|
+          next if demo_map.empty?
+
+          flattened_examples = demo_map.values.flatten
           candidates << EvaluatedCandidate.new(
             instruction: "",
-            few_shot_examples: demo_set,
+            few_shot_examples: flattened_examples,
             type: CandidateType::FewShotOnly,
-            metadata: { bootstrap_rank: idx },
+            metadata: {
+              bootstrap_rank: idx,
+              instructions_map: {},
+              demos_map: duplicate_demo_map(demo_map)
+            },
             config_id: SecureRandom.hex(6)
           )
         end
         
         # Combined candidates (instruction + few-shot)
         instruction_maps.each_with_index do |instruction_map, combo_idx|
-          primary_instruction = instruction_map[0] || ""
-          demo_sets.take(3).each_with_index do |candidate_set, b_idx|
+          primary_instruction = instruction_map[0] || instruction_map.values.first || ""
+          demo_maps.first(3).each_with_index do |demo_map, demo_idx|
+            next if demo_map.empty?
+
+            flattened_examples = demo_map.values.flatten
             candidates << EvaluatedCandidate.new(
               instruction: primary_instruction,
-              few_shot_examples: candidate_set,
+              few_shot_examples: flattened_examples,
               type: CandidateType::Combined,
               metadata: {
                 instruction_rank: combo_idx,
-                bootstrap_rank: b_idx,
-                instructions_map: instruction_map.transform_values(&:dup)
+                bootstrap_rank: demo_idx,
+                instructions_map: duplicate_instruction_map(instruction_map),
+                demos_map: duplicate_demo_map(demo_map)
               },
               config_id: SecureRandom.hex(6)
             )
@@ -620,6 +623,94 @@ module DSPy
         end
 
         candidates
+      end
+
+      sig { params(predictor_instruction_map: T::Hash[Integer, T::Array[String]]).returns(T::Array[T::Hash[Integer, String]]) }
+      def build_instruction_maps(predictor_instruction_map)
+        return [{}] if predictor_instruction_map.nil? || predictor_instruction_map.empty?
+
+        normalized = predictor_instruction_map.each_with_object({}) do |(index, instructions), memo|
+          next if instructions.nil? || instructions.empty?
+          memo[index] = instructions.take(3)
+        end
+
+        return [{}] if normalized.empty?
+
+        cartesian_product(normalized)
+      end
+
+      sig do
+        params(demo_candidates: T::Hash[Integer, T::Array[T::Array[DSPy::FewShotExample]]]).returns(T::Array[T::Hash[Integer, T::Array[DSPy::FewShotExample]]])
+      end
+      def build_demo_maps(demo_candidates)
+        return [{}] if demo_candidates.nil? || demo_candidates.empty?
+
+        normalized = demo_candidates.each_with_object({}) do |(index, sets), memo|
+          next if sets.nil? || sets.empty?
+          memo[index] = sets.take(3)
+        end
+
+        return [{}] if normalized.empty?
+
+        cartesian_product(normalized)
+      end
+
+      sig do
+        params(options_hash: T::Hash[Integer, T::Array[T.untyped]]).returns(T::Array[T::Hash[Integer, T.untyped]])
+      end
+      def cartesian_product(options_hash)
+        options_hash.sort_by { |index, _| index }.reduce([{}]) do |acc, (index, values)|
+          next acc if values.nil? || values.empty?
+
+          acc.flat_map do |existing|
+            values.map do |value|
+              existing.merge(index => value)
+            end
+          end
+        end
+      end
+
+      sig { params(instruction_map: T::Hash[Integer, String]).returns(T::Hash[Integer, String]) }
+      def duplicate_instruction_map(instruction_map)
+        instruction_map.each_with_object({}) do |(index, instruction), memo|
+          memo[index] = instruction.is_a?(String) ? instruction.dup : instruction
+        end
+      end
+
+      sig do
+        params(demo_map: T::Hash[Integer, T::Array[DSPy::FewShotExample]]).returns(T::Hash[Integer, T::Array[DSPy::FewShotExample]])
+      end
+      def duplicate_demo_map(demo_map)
+        demo_map.each_with_object({}) do |(index, demos), memo|
+          next if demos.nil?
+          memo[index] = demos.map { |demo| demo }
+        end
+      end
+
+      sig { params(examples: T::Array[T.untyped]).returns(T::Array[DSPy::FewShotExample]) }
+      def normalize_few_shot_examples(examples)
+        examples.map do |example|
+          if example.is_a?(DSPy::FewShotExample)
+            example
+          elsif example.is_a?(DSPy::Example)
+            DSPy::FewShotExample.new(
+              input: example.input_values,
+              output: example.expected_values,
+              reasoning: extract_reasoning_from_example(example)
+            )
+          else
+            example
+          end
+        end
+      end
+
+      sig { params(predictor: T.untyped, examples: T::Array[DSPy::FewShotExample]).void }
+      def assign_predictor_examples(predictor, examples)
+        predictor.demos = examples if predictor.respond_to?(:demos=)
+        return unless predictor.respond_to?(:prompt)
+
+        cloned_examples = examples.map { |ex| ex }
+        predictor.prompt.instance_variable_set(:@few_shot_examples, cloned_examples.freeze)
       end
 
       # Initialize optimization state for candidate selection
@@ -906,39 +997,38 @@ module DSPy
       # Apply candidate configuration to program
       sig { params(program: T.untyped, candidate: EvaluatedCandidate).returns(T.untyped) }
       def apply_candidate_configuration(program, candidate)
-        modified_program = program
         instructions_map = candidate.metadata[:instructions_map] || {}
-        if instructions_map.any? && modified_program.respond_to?(:predictors)
+        demos_map = candidate.metadata[:demos_map] || {}
+
+        modified_program = program
+        if modified_program.respond_to?(:predictors) && (instructions_map.any? || demos_map.any?)
           modified_program = modified_program.clone
           modified_program.predictors.each_with_index do |predictor, idx|
-            next unless instructions_map.key?(idx)
-            signature = Utils.get_signature(predictor)
-            updated_signature = signature.with_instructions(instructions_map[idx])
-            Utils.set_signature(predictor, updated_signature)
+            if instructions_map.key?(idx)
+              signature = Utils.get_signature(predictor)
+              updated_signature = signature.with_instructions(instructions_map[idx])
+              Utils.set_signature(predictor, updated_signature)
+            end
+
+            if demos_map.key?(idx)
+              normalized_examples = normalize_few_shot_examples(demos_map[idx])
+              assign_predictor_examples(predictor, normalized_examples)
+            end
           end
         end
 
-        # Apply instruction if provided
-        if !candidate.instruction.empty? && program.respond_to?(:with_instruction)
+        # Apply instruction if provided (top-level programs still respect with_instruction)
+        if !candidate.instruction.empty? && modified_program.respond_to?(:with_instruction)
           modified_program = modified_program.with_instruction(candidate.instruction)
         end
 
-        # Apply few-shot examples if provided
-        if candidate.few_shot_examples.any? && program.respond_to?(:with_examples)
-          few_shot_examples = candidate.few_shot_examples.map do |example|
-            # If already a FewShotExample, use it directly
-            if example.is_a?(DSPy::FewShotExample)
-              example
-            else
-              # Convert from DSPy::Example
-              DSPy::FewShotExample.new(
-                input: example.input_values,
-                output: example.expected_values,
-                reasoning: extract_reasoning_from_example(example)
-              )
-            end
-          end
-          modified_program = modified_program.with_examples(few_shot_examples)
+        should_apply_global_examples = candidate.few_shot_examples.any? &&
+          modified_program.respond_to?(:with_examples) &&
+          (demos_map.empty? || !modified_program.respond_to?(:predictors))
+
+        if should_apply_global_examples
+          normalized_few_shot = normalize_few_shot_examples(candidate.few_shot_examples)
+          modified_program = modified_program.with_examples(normalized_few_shot)
         end
         
         modified_program
@@ -1023,12 +1113,15 @@ module DSPy
         }
 
         # Create bootstrap statistics from demo_candidates
-        demo_sets = demo_candidates[0] || []
+        num_predictors = demo_candidates.keys.size
+        sets_per_predictor = demo_candidates.values.map(&:size)
+        all_demo_sets = demo_candidates.values.flat_map { |sets| sets }
         bootstrap_statistics = {
-          num_predictors: demo_candidates.keys.size,
-          demo_sets_per_predictor: demo_sets.size,
-          avg_demos_per_set: demo_sets.empty? ? 0 : demo_sets.map(&:size).sum.to_f / demo_sets.size
+          num_predictors: num_predictors,
+          demo_sets_per_predictor: sets_per_predictor.max || 0,
+          avg_demos_per_set: all_demo_sets.empty? ? 0 : all_demo_sets.map(&:size).sum.to_f / all_demo_sets.size
         }
+        bootstrap_statistics[:per_predictor_demo_counts] = sets_per_predictor if sets_per_predictor.any?
 
         optimization_trace = serialize_optimization_trace(optimization_result[:optimization_state])
         optimization_trace[:trial_logs] = serialize_trial_logs(optimization_result[:trial_logs])
@@ -1078,6 +1171,7 @@ module DSPy
         # Preserve interface parity with Python implementation (trial number stored implicitly via hash key)
         trial_number # no-op to acknowledge parameter usage
         instructions_map = candidate.metadata[:instructions_map] || {}
+        demos_map = candidate.metadata[:demos_map] || {}
         entry = {
           candidate_id: candidate.config_id,
           candidate_type: candidate.type.serialize,
@@ -1090,13 +1184,14 @@ module DSPy
           started_at: Time.now.iso8601
         }
         if instructions_map.any?
-          entry[:instructions] = instructions_map.transform_values(&:dup)
+          entry[:instructions] = duplicate_instruction_map(instructions_map)
           entry[:instruction] = entry[:instructions][0] if entry[:instructions].key?(0)
         elsif candidate.instruction && !candidate.instruction.empty?
           predictor_index = candidate.metadata[:predictor_index] || 0
           entry[:instruction] = candidate.instruction
           entry[:instructions] = { predictor_index => candidate.instruction }
         end
+        entry[:few_shot_map] = duplicate_demo_map(demos_map) if demos_map.any?
         entry
       end
 

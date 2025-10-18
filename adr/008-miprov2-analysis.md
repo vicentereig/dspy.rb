@@ -815,8 +815,8 @@ end
 
 #### Phase 3: Multi-Predictor Support
 - Extend `extract_predictors_from_module` for complex modules
-- Handle per-predictor demo set generation
-- Test with modules containing multiple predictors
+- ✅ Handle per-predictor demo set selection inside MIPROv2 optimization (Ruby parity with Python `_select_and_insert_instructions_and_demos`)
+- ⏳ Test with modules containing multiple predictors once predictor discovery helpers land
 
 #### Predictor Discovery Parity (New Gap)
 - Add Python-parity `DSPy::Module#named_predictors` / `#predictors` helpers so optimizers can traverse nested `DSPy::Predict` instances.
@@ -1355,6 +1355,7 @@ According to the bottom-up implementation plan in this ADR:
 - ✅ Progress Update (commit `0ba8a95`): Introduced concurrent minibatch evaluation using `concurrent-ruby`, configurable via `minibatch_size` and `num_threads`, so Layer 5 can scale evaluation throughput while preserving aggregated metrics parity with Python.
 - ✅ Progress Update (commit `62a575e`): Added a program-aware `propose_instructions_for_program` hook and per-predictor metadata so Ruby MIPROv2 can generate instruction candidates aligned with Python’s multi-predictor interface while keeping earlier APIs working.
 - ✅ Progress Update (commit `84621b1`): Generate cross-predictor instruction combinations and store them in trial metadata so multiprompt programs can explore per-module instruction tuples like Python’s Optuna search.
+- ✅ Progress Update (branch `feature/miprov2-layer5-todos`): Implemented per-predictor instruction and few-shot selection inside `generate_candidate_configurations`/`apply_candidate_configuration`, updated optimization traces to log `few_shot_map`, and added parity specs covering multi-predictor programs.
 - [ ] TODO: Draft the next ADR-008 status update summarizing current progress, open Layer 5 work, and Bayesian optimization decisions, including remaining gaps and trade-offs.
 
 **Layer 4.2 Achievement**: Successfully implemented all Python-compatible awareness flags:
