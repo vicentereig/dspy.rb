@@ -551,7 +551,7 @@ module DSPy
           instruction: "",
           few_shot_examples: [],
           type: CandidateType::Baseline,
-          metadata: {},
+          metadata: { instructions_map: {} },
           config_id: SecureRandom.hex(6)
         )
 
@@ -561,17 +561,31 @@ module DSPy
           { 0 => proposal_result.candidate_instructions }
         end
 
-        # Instruction-only candidates (per predictor)
-        predictor_instruction_map.each do |predictor_index, instructions|
-          instructions.each_with_index do |instruction, idx|
-            candidates << EvaluatedCandidate.new(
-              instruction: instruction,
-              few_shot_examples: [],
-              type: CandidateType::InstructionOnly,
-              metadata: { proposal_rank: idx, predictor_index: predictor_index },
-              config_id: SecureRandom.hex(6)
-            )
+        instruction_options = predictor_instruction_map.transform_values { |instructions| instructions.take(3) }
+        instruction_maps = instruction_options.reduce([{}]) do |acc, (predictor_index, instructions)|
+          acc.flat_map do |existing_map|
+            instructions.map do |instruction|
+              existing_map.merge(predictor_index => instruction)
+            end
           end
+        end
+
+        if instruction_maps.empty?
+          instruction_maps = [{}]
+        end
+
+        instruction_maps.each_with_index do |instruction_map, combo_idx|
+          primary_instruction = instruction_map[0] || ""
+          candidates << EvaluatedCandidate.new(
+            instruction: primary_instruction,
+            few_shot_examples: [],
+            type: CandidateType::InstructionOnly,
+            metadata: {
+              proposal_rank: combo_idx,
+              instructions_map: instruction_map.transform_values(&:dup)
+            },
+            config_id: SecureRandom.hex(6)
+          )
         end
 
         # Few-shot only candidates
@@ -588,25 +602,20 @@ module DSPy
         end
         
         # Combined candidates (instruction + few-shot)
-        predictor_instruction_map.each do |predictor_index, instructions|
-          top_instructions = instructions.take(3)
-          demo_sets = demo_candidates[predictor_index] || []
-          top_bootstrap_sets = demo_sets.take(3)
-
-          top_instructions.each_with_index do |instruction, i_idx|
-            top_bootstrap_sets.each_with_index do |candidate_set, b_idx|
-              candidates << EvaluatedCandidate.new(
-                instruction: instruction,
-                few_shot_examples: candidate_set,
-                type: CandidateType::Combined,
-                metadata: {
-                  instruction_rank: i_idx,
-                  bootstrap_rank: b_idx,
-                  predictor_index: predictor_index
-                },
-                config_id: SecureRandom.hex(6)
-              )
-            end
+        instruction_maps.each_with_index do |instruction_map, combo_idx|
+          primary_instruction = instruction_map[0] || ""
+          demo_sets.take(3).each_with_index do |candidate_set, b_idx|
+            candidates << EvaluatedCandidate.new(
+              instruction: primary_instruction,
+              few_shot_examples: candidate_set,
+              type: CandidateType::Combined,
+              metadata: {
+                instruction_rank: combo_idx,
+                bootstrap_rank: b_idx,
+                instructions_map: instruction_map.transform_values(&:dup)
+              },
+              config_id: SecureRandom.hex(6)
+            )
           end
         end
 
@@ -898,12 +907,22 @@ module DSPy
       sig { params(program: T.untyped, candidate: EvaluatedCandidate).returns(T.untyped) }
       def apply_candidate_configuration(program, candidate)
         modified_program = program
-        
+        instructions_map = candidate.metadata[:instructions_map] || {}
+        if instructions_map.any? && modified_program.respond_to?(:predictors)
+          modified_program = modified_program.clone
+          modified_program.predictors.each_with_index do |predictor, idx|
+            next unless instructions_map.key?(idx)
+            signature = Utils.get_signature(predictor)
+            updated_signature = signature.with_instructions(instructions_map[idx])
+            Utils.set_signature(predictor, updated_signature)
+          end
+        end
+
         # Apply instruction if provided
         if !candidate.instruction.empty? && program.respond_to?(:with_instruction)
           modified_program = modified_program.with_instruction(candidate.instruction)
         end
-        
+
         # Apply few-shot examples if provided
         if candidate.few_shot_examples.any? && program.respond_to?(:with_examples)
           few_shot_examples = candidate.few_shot_examples.map do |example|
@@ -1058,6 +1077,7 @@ module DSPy
       def create_trial_log_entry(trial_number:, candidate:, evaluation_type:, batch_size:)
         # Preserve interface parity with Python implementation (trial number stored implicitly via hash key)
         trial_number # no-op to acknowledge parameter usage
+        instructions_map = candidate.metadata[:instructions_map] || {}
         entry = {
           candidate_id: candidate.config_id,
           candidate_type: candidate.type.serialize,
@@ -1069,7 +1089,10 @@ module DSPy
           status: :in_progress,
           started_at: Time.now.iso8601
         }
-        if candidate.instruction && !candidate.instruction.empty?
+        if instructions_map.any?
+          entry[:instructions] = instructions_map.transform_values(&:dup)
+          entry[:instruction] = entry[:instructions][0] if entry[:instructions].key?(0)
+        elsif candidate.instruction && !candidate.instruction.empty?
           predictor_index = candidate.metadata[:predictor_index] || 0
           entry[:instruction] = candidate.instruction
           entry[:instructions] = { predictor_index => candidate.instruction }
