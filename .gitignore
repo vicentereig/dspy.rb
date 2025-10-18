@@ -1,3 +1,4 @@
+tmp/
 examples/*.json
 examples/*.csv
 examples/ade_optimizer_miprov2/data/

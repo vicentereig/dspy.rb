@@ -2,11 +2,13 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
+require 'dotenv/load'
 require 'optparse'
 require 'json'
 require 'csv'
 require 'fileutils'
 require 'securerandom'
+require 'time'
 
 require 'dspy'
 require 'sorbet-runtime'
@@ -20,7 +22,7 @@ FileUtils.mkdir_p(RESULTS_DIR)
 
 module ADEExample
   class ADETextClassifier < DSPy::Signature
-    description "Determine if a clinical sentence describes an adverse drug event (ADE)"
+    description 'Determine if a clinical sentence describes an adverse drug event (ADE)'
 
     class ADELabel < T::Enum
       enums do
@@ -30,11 +32,11 @@ module ADEExample
     end
 
     input do
-      const :text, String, description: "Clinical sentence or patient report"
+      const :text, String, description: 'Clinical sentence or patient report'
     end
 
     output do
-      const :label, ADELabel, description: "Whether the text is ADE-related"
+      const :label, ADELabel, description: 'Whether the text is ADE-related'
     end
   end
 
@@ -65,20 +67,18 @@ module ADEExample
   end
 
   def label_from_prediction(prediction)
-    value = if prediction.respond_to?(:label)
-      prediction.label
-    elsif prediction.is_a?(Hash)
-      prediction[:label] || prediction['label']
-    else
-      prediction
-    end
+    value =
+      if prediction.respond_to?(:label)
+        prediction.label
+      elsif prediction.is_a?(Hash)
+        prediction[:label] || prediction['label']
+      else
+        prediction
+      end
 
-    case value
-    when ADETextClassifier::ADELabel
-      value
-    else
-      ADETextClassifier::ADELabel.deserialize(value.to_s)
-    end
+    return value if value.is_a?(ADETextClassifier::ADELabel)
+
+    ADETextClassifier::ADELabel.deserialize(value.to_s)
   rescue StandardError
     ADETextClassifier::ADELabel::NotRelated
   end
@@ -103,8 +103,8 @@ module ADEExample
       if expected == ADETextClassifier::ADELabel::Related
         totals[:tp] += 1 if predicted == ADETextClassifier::ADELabel::Related
         totals[:fn] += 1 if predicted == ADETextClassifier::ADELabel::NotRelated
-      else
-        totals[:fp] += 1 if predicted == ADETextClassifier::ADELabel::Related
+      elsif predicted == ADETextClassifier::ADELabel::Related
+        totals[:fp] += 1
       end
     end
 
@@ -129,7 +129,7 @@ options = {
 }
 
 OptionParser.new do |parser|
-  parser.banner = "Usage: bundle exec ruby examples/ade_optimizer_miprov2/main.rb [options]"
+parser.banner = 'Usage: bundle exec ruby examples/ade_optimizer_miprov2/main.rb [options]'
 
   parser.on('-l', '--limit N', Integer, 'Number of ADE examples to download (default: 300)') do |limit|
     options[:limit] = limit
@@ -150,7 +150,7 @@ OptionParser.new do |parser|
 end.parse!
 
 unless ENV['OPENAI_API_KEY']
-  warn "⚠️  Please set OPENAI_API_KEY in your environment before running this example."
+  warn '⚠️  Please set OPENAI_API_KEY in your environment before running this example.'
   exit 1
 end
 
@@ -161,8 +161,8 @@ DSPy.configure do |config|
   end
 end
 
-puts "🏥 ADE MIPROv2 Optimization Demo"
-puts "================================"
+puts '🏥 ADE MIPROv2 Optimization Demo'
+puts '================================'
 puts "Limit       : #{options[:limit]}"
 puts "Trials      : #{options[:trials]}"
 puts "Random Seed : #{options[:seed]}"
@@ -181,7 +181,7 @@ puts "🧪 Prepared #{examples.size} DSPy examples"
 
 train_examples, val_examples, test_examples = ADEExample.split_examples(examples, train_ratio: 0.6, val_ratio: 0.2, seed: options[:seed])
 
-puts "📊 Dataset split:"
+puts '📊 Dataset split:'
 puts "   • Train: #{train_examples.size}"
 puts "   • Val  : #{val_examples.size}"
 puts "   • Test : #{test_examples.size}"
@@ -247,10 +247,10 @@ summary = {
   optimization_strategy: result.history[:optimization_strategy]
 }
 
-summary_path = File.join(RESULTS_DIR, "summary.json")
+summary_path = File.join(RESULTS_DIR, 'summary.json')
 File.write(summary_path, JSON.pretty_generate(summary))
 
-csv_path = File.join(RESULTS_DIR, "metrics.csv")
+csv_path = File.join(RESULTS_DIR, 'metrics.csv')
 CSV.open(csv_path, 'w') do |csv|
   csv << %w[metric baseline optimized]
   csv << ['accuracy', baseline_metrics.accuracy, optimized_metrics.accuracy]
@@ -259,7 +259,7 @@ CSV.open(csv_path, 'w') do |csv|
   csv << ['f1', baseline_metrics.f1, optimized_metrics.f1]
 end
 
-trial_log_path = File.join(RESULTS_DIR, "trial_logs.json")
+trial_log_path = File.join(RESULTS_DIR, 'trial_logs.json')
 File.write(trial_log_path, JSON.pretty_generate(result.optimization_trace[:trial_logs]))
 
 puts "\n📂 Results saved to:"
@@ -268,6 +268,6 @@ puts "   • #{csv_path}"
 puts "   • #{trial_log_path}"
 
 puts "\n✨ Best instruction snippet:"
-puts result.metadata[:best_instruction].to_s.lines.first&.strip || "(no instruction recorded)"
+puts result.metadata[:best_instruction].to_s.lines.first&.strip || '(no instruction recorded)'
 
 puts "\nDone!"
