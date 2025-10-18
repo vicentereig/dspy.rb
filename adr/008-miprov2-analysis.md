@@ -1357,6 +1357,7 @@ According to the bottom-up implementation plan in this ADR:
 
 - ✅ Progress Update (commit `e7b3204` / PR #147): Implemented Layer 5 scaffolding for trial management — Ruby MIPROv2 now records `trial_logs`, `param_score_dict`, `fully_evaled_param_combos`, and total evaluation calls, keeping parity-ready hooks for proposer history and minibatch support.
 - ✅ Progress Update (commit `3e24c59`): Enabled instruction-history awareness by feeding stored `trial_logs` into `GroundedProposer` and persisting them across MIPROv2 runs, matching Python’s context-building behavior and covering it with unit tests.
+- ✅ Progress Update (commit pending): Trial logs now capture per-predictor instruction snapshots from evaluated programs, ensuring history-aware proposals reflect the actual compiled prompts and surfacing them in serialized optimization traces.
 - [ ] TODO: Plan the deprecation/removal of `SimpleOptimizer` (implementation, specs, and `docs/src/optimization/simple-optimizer.md`) to keep the Ruby surface aligned with Python DSPy.
 - [ ] TODO: Draft the next ADR-008 status update summarizing current progress, open Layer 5 work, and Bayesian optimization decisions, including remaining gaps and trade-offs.
 

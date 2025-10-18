@@ -887,13 +887,14 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
       expect(first_log_entry).to include(:candidate_id, :candidate_type, :evaluation_type, :score)
       expect(first_log_entry[:evaluation_type]).to eq(:full)
       expect(first_log_entry[:score]).to be_a(Float)
+      expect(first_log_entry[:instructions]).to be_a(Hash)
 
       expect(trace[:param_score_dict]).to be_a(Hash)
       expect(trace[:param_score_dict]).not_to be_empty
 
       first_param_scores = trace[:param_score_dict].values.first
       expect(first_param_scores).to be_an(Array)
-      expect(first_param_scores.first).to include(:score, :evaluation_type)
+      expect(first_param_scores.first).to include(:score, :evaluation_type, :instructions)
 
       expect(trace[:fully_evaled_param_combos]).to be_a(Hash)
     end
