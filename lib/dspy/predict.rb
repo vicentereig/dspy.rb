@@ -138,6 +138,16 @@ module DSPy
       with_prompt(@prompt.add_examples(examples))
     end
 
+    sig { override.returns(T::Array[[String, DSPy::Module]]) }
+    def named_predictors
+      [["self", self]]
+    end
+
+    sig { override.returns(T::Array[DSPy::Module]) }
+    def predictors
+      [self]
+    end
+
     # Remove forward override to let Module#forward handle span creation
 
     sig { params(input_values: T.untyped).returns(T.untyped) }

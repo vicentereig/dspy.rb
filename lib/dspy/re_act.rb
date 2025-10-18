@@ -144,6 +144,19 @@ module DSPy
       super(enhanced_signature)
     end
 
+    sig { override.returns(T::Array[[String, DSPy::Module]]) }
+    def named_predictors
+      pairs = T.let([], T::Array[[String, DSPy::Module]])
+      pairs << ["thought_generator", @thought_generator]
+      pairs << ["observation_processor", @observation_processor]
+      pairs
+    end
+
+    sig { override.returns(T::Array[DSPy::Module]) }
+    def predictors
+      named_predictors.map { |(_, predictor)| predictor }
+    end
+
     sig { params(kwargs: T.untyped).returns(T.untyped).override }
     def forward(**kwargs)
       # Validate input

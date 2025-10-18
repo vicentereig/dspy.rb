@@ -105,5 +105,16 @@ module DSPy
         state: {}
       }
     end
+
+    # Discover nested predictor modules (Python parity helper)
+    sig { returns(T::Array[[String, DSPy::Module]]) }
+    def named_predictors
+      []
+    end
+
+    sig { returns(T::Array[DSPy::Module]) }
+    def predictors
+      named_predictors.map { |(_, predictor)| predictor }
+    end
   end
 end

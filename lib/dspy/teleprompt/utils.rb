@@ -306,8 +306,13 @@ module DSPy
         demo_candidates = Hash.new { |h, k| h[k] = [] }
         rng = seed ? Random.new(seed) : Random.new
 
-        # Get number of predictors (simplified: assume single predictor)
-        num_predictors = 1
+        # Determine number of predictors exposed by the student module
+        num_predictors = if student.respond_to?(:predictors)
+          predictors = Array(student.predictors)
+          predictors.empty? ? 1 : predictors.size
+        else
+          1
+        end
 
         # Adjust for 3 special seeds (-3, -2, -1)
         adjusted_num_sets = num_candidate_sets - 3
