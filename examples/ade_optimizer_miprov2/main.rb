@@ -8,7 +8,6 @@ require 'json'
 require 'csv'
 require 'fileutils'
 require 'securerandom'
-require 'time'
 
 require 'dspy'
 require 'sorbet-runtime'
