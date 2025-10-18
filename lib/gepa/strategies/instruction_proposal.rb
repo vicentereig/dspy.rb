@@ -59,6 +59,26 @@ module GEPA
         end
       end
 
+      sig do
+        params(
+          lm: T.untyped,
+          input_dict: T::Hash[String, T.untyped]
+        ).returns(T::Hash[String, String])
+      end
+      def self.run(lm, input_dict)
+        prompt = prompt_renderer(input_dict)
+        raw_output = if lm.respond_to?(:call)
+          lm.call(prompt)
+        elsif lm.respond_to?(:raw_chat)
+          response = lm.raw_chat([{ role: 'user', content: prompt }])
+          response.respond_to?(:content) ? response.content : response
+        else
+          raise ArgumentError, 'Reflection LM must respond to #call or #raw_chat'
+        end
+
+        output_extractor(raw_output.to_s)
+      end
+
       class << self
         extend T::Sig
         private
@@ -100,4 +120,3 @@ module GEPA
     end
   end
 end
-

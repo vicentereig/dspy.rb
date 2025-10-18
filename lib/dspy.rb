@@ -12,6 +12,7 @@ require_relative 'dspy/observability/observation_type'
 require_relative 'dspy/context'
 require_relative 'dspy/events'
 require_relative 'dspy/events/types'
+require_relative 'dspy/reflection_lm'
 
 module DSPy
   extend Dry::Configurable
