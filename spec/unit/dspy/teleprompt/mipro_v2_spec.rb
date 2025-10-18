@@ -524,6 +524,28 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
       mipro.compile(test_program, trainset: training_examples, valset: validation_examples)
     end
 
+    it 'evaluates candidates concurrently when minibatching is configured' do
+      custom_metric = proc do |_example, prediction|
+        prediction && prediction.respond_to?(:confidence) ? prediction.confidence > 0.5 : false
+      end
+
+      mipro = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric)
+
+      mipro.configure do |config|
+        config.num_trials = 1
+        config.num_instruction_candidates = 1
+        config.bootstrap_sets = 1
+        config.minibatch_size = 2
+        config.num_threads = 2
+      end
+
+      enlarged_valset = validation_examples + training_examples.take(2)
+
+      expect(mipro).to receive(:evaluate_program).at_least(:twice).and_call_original
+
+      mipro.compile(test_program, trainset: training_examples, valset: enlarged_valset)
+    end
+
     it 'produces serialized optimization trace in final result' do
       mipro = DSPy::Teleprompt::MIPROv2.new
       mipro.configure do |config|
