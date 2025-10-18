@@ -422,7 +422,7 @@ module DSPy
         trials_completed = 0
         best_score = 0.0
         best_candidate = nil
-        best_program = nil
+        best_program = program
         best_evaluation_result = nil
         
         config.num_trials.times do |trial_idx|
@@ -450,14 +450,29 @@ module DSPy
             # Evaluate candidate
             score, modified_program, evaluation_result = evaluate_candidate(program, candidate, evaluation_set)
             total_eval_calls += batch_size
+
+            instructions_snapshot = extract_program_instructions(modified_program)
+            trial_logs[trials_completed][:instructions] = instructions_snapshot unless instructions_snapshot.empty?
+            trial_logs[trials_completed][:instruction] = instructions_snapshot[0] if instructions_snapshot.key?(0)
             
             # Update optimization state
             update_optimization_state(optimization_state, candidate, score)
-            record_param_score(param_score_dict, candidate, score, evaluation_type: :full)
-            update_fully_evaled_param_combos(fully_evaled_param_combos, candidate, score)
+            record_param_score(
+              param_score_dict,
+              candidate,
+              score,
+              evaluation_type: :full,
+              instructions: instructions_snapshot
+            )
+            update_fully_evaled_param_combos(
+              fully_evaled_param_combos,
+              candidate,
+              score,
+              instructions: instructions_snapshot
+            )
             
             # Track best result
-            is_best = score > best_score
+            is_best = best_candidate.nil? || score > best_score
             if is_best
               best_score = score
               best_candidate = candidate
@@ -986,12 +1001,13 @@ module DSPy
           param_score_dict: T::Hash[String, T::Array[T::Hash[Symbol, T.untyped]]],
           candidate: EvaluatedCandidate,
           score: Float,
-          evaluation_type: Symbol
+          evaluation_type: Symbol,
+          instructions: T.nilable(T::Hash[Integer, String])
         ).void
       end
-      def record_param_score(param_score_dict, candidate, score, evaluation_type:)
-        instructions_hash = {}
-        if candidate.instruction && !candidate.instruction.empty?
+      def record_param_score(param_score_dict, candidate, score, evaluation_type:, instructions: nil)
+        instructions_hash = instructions || {}
+        if instructions_hash.empty? && candidate.instruction && !candidate.instruction.empty?
           predictor_index = candidate.metadata[:predictor_index] || 0
           instructions_hash[predictor_index] = candidate.instruction
         end
@@ -1004,7 +1020,8 @@ module DSPy
           timestamp: Time.now.iso8601,
           metadata: deep_dup(candidate.metadata)
         }
-        record[:instruction] = candidate.instruction if candidate.instruction && !candidate.instruction.empty?
+        primary_instruction = instructions_hash[0] || candidate.instruction
+        record[:instruction] = primary_instruction if primary_instruction && !primary_instruction.empty?
         record[:instructions] = instructions_hash unless instructions_hash.empty?
 
         param_score_dict[candidate.config_id] << record
@@ -1014,14 +1031,15 @@ module DSPy
         params(
           fully_evaled_param_combos: T::Hash[String, T::Hash[Symbol, T.untyped]],
           candidate: EvaluatedCandidate,
-          score: Float
+          score: Float,
+          instructions: T.nilable(T::Hash[Integer, String])
         ).void
       end
-      def update_fully_evaled_param_combos(fully_evaled_param_combos, candidate, score)
+      def update_fully_evaled_param_combos(fully_evaled_param_combos, candidate, score, instructions: nil)
         existing = fully_evaled_param_combos[candidate.config_id]
         if existing.nil? || score > existing[:score]
-          instructions_hash = {}
-          if candidate.instruction && !candidate.instruction.empty?
+          instructions_hash = instructions || {}
+          if instructions_hash.empty? && candidate.instruction && !candidate.instruction.empty?
             predictor_index = candidate.metadata[:predictor_index] || 0
             instructions_hash[predictor_index] = candidate.instruction
           end
@@ -1035,7 +1053,7 @@ module DSPy
           }
           unless instructions_hash.empty?
             fully_evaled_param_combos[candidate.config_id][:instructions] = instructions_hash
-            fully_evaled_param_combos[candidate.config_id][:instruction] = candidate.instruction
+            fully_evaled_param_combos[candidate.config_id][:instruction] = instructions_hash[0] || candidate.instruction
           end
         end
       end
@@ -1120,6 +1138,20 @@ module DSPy
         else
           nil
         end
+      end
+
+      sig { params(program: T.untyped).returns(T::Hash[Integer, String]) }
+      def extract_program_instructions(program)
+        instructions = {}
+        return instructions unless program.respond_to?(:predictors)
+
+        program.predictors.each_with_index do |predictor, index|
+          if predictor.respond_to?(:prompt) && predictor.prompt.respond_to?(:instruction)
+            value = predictor.prompt.instruction
+            instructions[index] = value if value
+          end
+        end
+        instructions
       end
 
       sig { params(program: T.untyped).returns(T.nilable(T.class_of(DSPy::Signature))) }
