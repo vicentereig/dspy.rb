@@ -1357,6 +1357,7 @@ According to the bottom-up implementation plan in this ADR:
 - ✅ Progress Update (commit `84621b1`): Generate cross-predictor instruction combinations and store them in trial metadata so multiprompt programs can explore per-module instruction tuples like Python’s Optuna search.
 - ✅ Progress Update (branch `feature/miprov2-layer5-todos`): Implemented per-predictor instruction and few-shot selection inside `generate_candidate_configurations`/`apply_candidate_configuration`, updated optimization traces to log `few_shot_map`, and added parity specs covering multi-predictor programs.
 - ✅ Progress Update: Added predictor discovery helpers (`Module#predictors`, `#named_predictors`), exposed ReAct/CodeAct internals, and covered Utils demo generation with multi-predictor specs so Layer 5 can enumerate and tune nested modules like Python.
+- ✅ Integration Coverage: Added `spec/integration/dspy/mipro_v2_re_act_integration_spec.rb` with VCR cassette (`miprov2/react_light.yml`) to validate end-to-end optimization of a lightweight ReAct program, ensuring per-predictor awareness works with real LM traces.
 - [ ] TODO: Draft the next ADR-008 status update summarizing current progress, open Layer 5 work, and Bayesian optimization decisions, including remaining gaps and trade-offs.
 
 **Layer 4.2 Achievement**: Successfully implemented all Python-compatible awareness flags:
