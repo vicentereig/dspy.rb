@@ -20,4 +20,10 @@ module GEPA
   module Utils
     autoload :Pareto, 'gepa/utils/pareto'
   end
+
+  module Proposer
+    autoload :CandidateProposal, 'gepa/proposer/base'
+    autoload :ProposeNewCandidate, 'gepa/proposer/base'
+    autoload :ReflectiveMutationProposer, 'gepa/proposer/reflective_mutation/reflective_mutation'
+  end
 end
