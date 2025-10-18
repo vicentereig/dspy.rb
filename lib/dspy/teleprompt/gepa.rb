@@ -233,8 +233,8 @@ module DSPy
 
         telemetry_context = ::GEPA::Telemetry.build_context
 
-        logger = NullLogger.new
-        tracker = NullExperimentTracker.new
+        logger = ::GEPA::Logging::BufferingLogger.new
+        tracker = ::GEPA::Logging::ExperimentTracker.new
 
         reflective = ::GEPA::Proposer::ReflectiveMutationProposer.new(
           logger: logger,

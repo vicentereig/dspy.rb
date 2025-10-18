@@ -29,4 +29,6 @@ module GEPA
     autoload :ProposeNewCandidate, 'gepa/proposer/base'
     autoload :ReflectiveMutationProposer, 'gepa/proposer/reflective_mutation/reflective_mutation'
   end
+
+  autoload :Logging, 'gepa/logging'
 end
