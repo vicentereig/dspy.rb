@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'digest'
+require 'time'
 require 'sorbet-runtime'
 require_relative 'teleprompter'
 require_relative 'utils'
@@ -406,7 +407,13 @@ module DSPy
         
         # Initialize optimization state
         optimization_state = initialize_optimization_state(candidates)
-        
+
+        # Initialize trial tracking structures
+        trial_logs = {}
+        param_score_dict = Hash.new { |hash, key| hash[key] = [] }
+        fully_evaled_param_combos = {}
+        total_eval_calls = 0
+
         # Run optimization trials
         trials_completed = 0
         best_score = 0.0
@@ -419,6 +426,14 @@ module DSPy
           
           # Select next candidate based on optimization strategy
           candidate = select_next_candidate(candidates, optimization_state, trial_idx)
+          batch_size = evaluation_set.size
+
+          trial_logs[trials_completed] = create_trial_log_entry(
+            trial_number: trials_completed,
+            candidate: candidate,
+            evaluation_type: :full,
+            batch_size: batch_size
+          )
           
           emit_event('trial_start', {
             trial_number: trials_completed,
@@ -430,9 +445,12 @@ module DSPy
           begin
             # Evaluate candidate
             score, modified_program, evaluation_result = evaluate_candidate(program, candidate, evaluation_set)
+            total_eval_calls += batch_size
             
             # Update optimization state
             update_optimization_state(optimization_state, candidate, score)
+            record_param_score(param_score_dict, candidate, score, evaluation_type: :full)
+            update_fully_evaled_param_combos(fully_evaled_param_combos, candidate, score)
             
             # Track best result
             is_best = score > best_score
@@ -442,6 +460,15 @@ module DSPy
               best_program = modified_program
               best_evaluation_result = evaluation_result
             end
+
+            finalize_trial_log_entry(
+              trial_logs,
+              trials_completed,
+              score: score,
+              evaluation_type: :full,
+              batch_size: batch_size,
+              total_eval_calls: total_eval_calls
+            )
 
             emit_event('trial_complete', {
               trial_number: trials_completed,
@@ -457,6 +484,16 @@ module DSPy
             end
 
           rescue => error
+            finalize_trial_log_entry(
+              trial_logs,
+              trials_completed,
+              score: nil,
+              evaluation_type: :full,
+              batch_size: batch_size,
+              total_eval_calls: total_eval_calls,
+              error: error.message
+            )
+
             emit_event('trial_error', {
               trial_number: trials_completed,
               error: error.message,
@@ -474,7 +511,11 @@ module DSPy
           best_evaluation_result: best_evaluation_result,
           trials_completed: trials_completed,
           optimization_state: optimization_state,
-          evaluated_candidates: @evaluated_candidates
+          evaluated_candidates: @evaluated_candidates,
+          trial_logs: trial_logs,
+          param_score_dict: param_score_dict,
+          fully_evaled_param_combos: fully_evaled_param_combos,
+          total_eval_calls: total_eval_calls
         }
       end
 
@@ -826,7 +867,8 @@ module DSPy
           total_trials: optimization_result[:trials_completed],
           optimization_strategy: config.optimization_strategy,
           early_stopped: optimization_result[:trials_completed] < config.num_trials,
-          score_history: optimization_result[:optimization_state][:best_score_history]
+          score_history: optimization_result[:optimization_state][:best_score_history],
+          total_eval_calls: optimization_result[:total_eval_calls]
         }
 
         metadata = {
@@ -846,6 +888,12 @@ module DSPy
           avg_demos_per_set: demo_sets.empty? ? 0 : demo_sets.map(&:size).sum.to_f / demo_sets.size
         }
 
+        optimization_trace = serialize_optimization_trace(optimization_result[:optimization_state])
+        optimization_trace[:trial_logs] = serialize_trial_logs(optimization_result[:trial_logs])
+        optimization_trace[:param_score_dict] = serialize_param_score_dict(optimization_result[:param_score_dict])
+        optimization_trace[:fully_evaled_param_combos] = serialize_fully_evaled_param_combos(optimization_result[:fully_evaled_param_combos])
+        optimization_trace[:total_eval_calls] = optimization_result[:total_eval_calls]
+
         MIPROv2Result.new(
           optimized_program: best_program,
           scores: scores,
@@ -854,7 +902,7 @@ module DSPy
           best_score_value: best_score,
           metadata: metadata,
           evaluated_candidates: @evaluated_candidates,
-          optimization_trace: serialize_optimization_trace(optimization_result[:optimization_state]),
+          optimization_trace: optimization_trace,
           bootstrap_statistics: bootstrap_statistics,
           proposal_statistics: proposal_result.analysis,
           best_evaluation_result: best_evaluation_result
@@ -874,6 +922,159 @@ module DSPy
         end
         
         serialized_trace
+      end
+
+      sig do
+        params(
+          trial_number: Integer,
+          candidate: EvaluatedCandidate,
+          evaluation_type: Symbol,
+          batch_size: Integer
+        ).returns(T::Hash[Symbol, T.untyped])
+      end
+      def create_trial_log_entry(trial_number:, candidate:, evaluation_type:, batch_size:)
+        # Preserve interface parity with Python implementation (trial number stored implicitly via hash key)
+        trial_number # no-op to acknowledge parameter usage
+        {
+          candidate_id: candidate.config_id,
+          candidate_type: candidate.type.serialize,
+          instruction_preview: candidate.instruction.to_s[0, 160],
+          few_shot_count: candidate.few_shot_examples.size,
+          metadata: deep_dup(candidate.metadata),
+          evaluation_type: evaluation_type,
+          batch_size: batch_size,
+          status: :in_progress,
+          started_at: Time.now.iso8601
+        }
+      end
+
+      sig do
+        params(
+          trial_logs: T::Hash[Integer, T::Hash[Symbol, T.untyped]],
+          trial_number: Integer,
+          score: T.nilable(Float),
+          evaluation_type: Symbol,
+          batch_size: Integer,
+          total_eval_calls: Integer,
+          error: T.nilable(String)
+        ).void
+      end
+      def finalize_trial_log_entry(trial_logs, trial_number, score:, evaluation_type:, batch_size:, total_eval_calls:, error: nil)
+        entry = trial_logs[trial_number] || {}
+        entry[:score] = score if score
+        entry[:evaluation_type] = evaluation_type
+        entry[:batch_size] = batch_size
+        entry[:total_eval_calls] = total_eval_calls
+        entry[:status] = error ? :error : :completed
+        entry[:error] = error if error
+        entry[:completed_at] = Time.now.iso8601
+        trial_logs[trial_number] = entry
+      end
+
+      sig do
+        params(
+          param_score_dict: T::Hash[String, T::Array[T::Hash[Symbol, T.untyped]]],
+          candidate: EvaluatedCandidate,
+          score: Float,
+          evaluation_type: Symbol
+        ).void
+      end
+      def record_param_score(param_score_dict, candidate, score, evaluation_type:)
+        param_score_dict[candidate.config_id] << {
+          candidate_id: candidate.config_id,
+          candidate_type: candidate.type.serialize,
+          score: score,
+          evaluation_type: evaluation_type,
+          timestamp: Time.now.iso8601,
+          metadata: deep_dup(candidate.metadata)
+        }
+      end
+
+      sig do
+        params(
+          fully_evaled_param_combos: T::Hash[String, T::Hash[Symbol, T.untyped]],
+          candidate: EvaluatedCandidate,
+          score: Float
+        ).void
+      end
+      def update_fully_evaled_param_combos(fully_evaled_param_combos, candidate, score)
+        existing = fully_evaled_param_combos[candidate.config_id]
+        if existing.nil? || score > existing[:score]
+          fully_evaled_param_combos[candidate.config_id] = {
+            candidate_id: candidate.config_id,
+            candidate_type: candidate.type.serialize,
+            score: score,
+            metadata: deep_dup(candidate.metadata),
+            updated_at: Time.now.iso8601
+          }
+        end
+      end
+
+      sig { params(trial_logs: T.nilable(T::Hash[Integer, T::Hash[Symbol, T.untyped]])).returns(T::Hash[Integer, T::Hash[Symbol, T.untyped]]) }
+      def serialize_trial_logs(trial_logs)
+        return {} unless trial_logs
+
+        allowed_keys = [
+          :candidate_id,
+          :candidate_type,
+          :instruction_preview,
+          :few_shot_count,
+          :metadata,
+          :evaluation_type,
+          :batch_size,
+          :score,
+          :status,
+          :error,
+          :started_at,
+          :completed_at,
+          :total_eval_calls
+        ]
+
+        trial_logs.transform_values do |entry|
+          entry.each_with_object({}) do |(key, value), memo|
+            memo[key] = value if allowed_keys.include?(key)
+          end
+        end
+      end
+
+      sig { params(param_score_dict: T.nilable(T::Hash[String, T::Array[T::Hash[Symbol, T.untyped]]])).returns(T::Hash[String, T::Array[T::Hash[Symbol, T.untyped]]]) }
+      def serialize_param_score_dict(param_score_dict)
+        return {} unless param_score_dict
+
+        allowed_keys = [:candidate_id, :candidate_type, :score, :evaluation_type, :timestamp, :metadata]
+
+        param_score_dict.transform_values do |records|
+          records.map do |record|
+            record.each_with_object({}) do |(key, value), memo|
+              memo[key] = value if allowed_keys.include?(key)
+            end
+          end
+        end
+      end
+
+      sig { params(fully_evaled_param_combos: T.nilable(T::Hash[String, T::Hash[Symbol, T.untyped]])).returns(T::Hash[String, T::Hash[Symbol, T.untyped]]) }
+      def serialize_fully_evaled_param_combos(fully_evaled_param_combos)
+        return {} unless fully_evaled_param_combos
+
+        allowed_keys = [:candidate_id, :candidate_type, :score, :metadata, :updated_at]
+
+        fully_evaled_param_combos.transform_values do |record|
+          record.each_with_object({}) do |(key, value), memo|
+            memo[key] = value if allowed_keys.include?(key)
+          end
+        end
+      end
+
+      sig { params(value: T.untyped).returns(T.untyped) }
+      def deep_dup(value)
+        case value
+        when Hash
+          value.each_with_object({}) { |(k, v), memo| memo[k] = deep_dup(v) }
+        when Array
+          value.map { |element| deep_dup(element) }
+        else
+          value
+        end
       end
 
       # Helper methods
