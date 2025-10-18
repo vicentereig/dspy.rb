@@ -212,6 +212,21 @@ end
 
 puts "\n🚀 Running MIPROv2 optimization (#{options[:trials]} trials)..."
 result = optimizer.compile(baseline_program, trainset: train_examples, valset: val_examples)
+
+trial_logs = result.optimization_trace[:trial_logs] || {}
+if trial_logs.any?
+  puts "\n📝 Trial-by-trial instruction snapshots:"
+  trial_logs.sort.each do |trial_number, entry|
+    instructions = entry.dig(:instructions)
+    next unless instructions
+
+    puts "\n  Trial ##{trial_number}:"
+    instructions.each do |predictor_index, instruction|
+      puts "    • Predictor #{predictor_index}: #{instruction || '(no instruction)'}"
+    end
+  end
+end
+
 optimized_program = result.optimized_program
 optimized_metrics = ADEExample.evaluate(optimized_program, test_examples)
 

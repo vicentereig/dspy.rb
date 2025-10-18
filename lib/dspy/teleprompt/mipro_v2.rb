@@ -287,7 +287,7 @@ module DSPy
           trainset_size: trainset.size,
           valset_size: valset&.size || 0,
           num_trials: config.num_trials,
-          optimization_strategy: config.optimization_strategy,
+          optimization_strategy: optimization_strategy_name,
           mode: infer_auto_mode
         }) do
           # Convert examples to typed format
@@ -1097,7 +1097,7 @@ module DSPy
 
         history = {
           total_trials: optimization_result[:trials_completed],
-          optimization_strategy: config.optimization_strategy,
+          optimization_strategy: optimization_strategy_name,
           early_stopped: optimization_result[:trials_completed] < config.num_trials,
           score_history: optimization_result[:optimization_state][:best_score_history],
           total_eval_calls: optimization_result[:total_eval_calls]
@@ -1106,6 +1106,7 @@ module DSPy
         metadata = {
           optimizer: "MIPROv2",
           auto_mode: infer_auto_mode,
+          optimization_strategy: optimization_strategy_name,
           best_instruction: best_candidate&.instruction || "",
           best_few_shot_count: best_candidate&.few_shot_examples&.size || 0,
           best_candidate_type: best_candidate&.type&.serialize || "unknown",
@@ -1350,6 +1351,14 @@ module DSPy
       end
 
       # Helper methods
+      sig { returns(String) }
+      def optimization_strategy_name
+        strategy = config.optimization_strategy
+        return strategy.serialize if strategy.respond_to?(:serialize)
+
+        strategy.to_s
+      end
+
       sig { params(program: T.untyped).returns(T.nilable(String)) }
       def extract_current_instruction(program)
         if program.respond_to?(:prompt) && program.prompt.respond_to?(:instruction)
