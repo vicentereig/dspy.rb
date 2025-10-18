@@ -67,9 +67,6 @@ module DSPy
           chat_with_strategy(messages, signature_class, &block)
         end
 
-        # Emit the standard lm.tokens event (consistent with raw_chat)
-        emit_token_usage(response, signature_class.name)
-
         # Parse response (no longer needs separate instrumentation)
         parsed_result = parse_response(response, input_values, signature_class)
         
@@ -271,7 +268,7 @@ module DSPy
         'dspy.signature' => signature_class_name
       ) do |span|
         result = execution_block.call
-        
+
         # Add output and usage data directly to span
         if span && result
           # Add completion output
@@ -293,7 +290,9 @@ module DSPy
             span.set_attribute('gen_ai.usage.total_tokens', usage.total_tokens) if usage.total_tokens
           end
         end
-        
+
+        emit_token_usage(result, signature_class_name)
+
         result
       end
       
@@ -409,9 +408,6 @@ module DSPy
           # Direct adapter call, no strategies or JSON parsing
           adapter.chat(messages: hash_messages, signature: nil, &streaming_block)
         end
-        
-        # Emit the standard lm.tokens event (consistent with other LM calls)
-        emit_token_usage(response, 'RawPrompt')
         
         # Return raw response content, not parsed JSON
         response.content
