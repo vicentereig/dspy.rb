@@ -166,9 +166,9 @@ end
       high_score_result = double('HighScoreResult',
         optimized_program: different_program,
         best_score_value: 0.95,
-        metadata: { optimizer: 'GEPA' },
-        class: double(name: 'GEPAResult'),
-        to_h: { best_score_value: 0.95, metadata: { optimizer: 'GEPA' } }
+        metadata: { optimizer: 'TestOptimizerB' },
+        class: double(name: 'TestOptimizerBResult'),
+        to_h: { best_score_value: 0.95, metadata: { optimizer: 'TestOptimizerB' } }
       )
       
       storage_manager.save_optimization_result(
@@ -178,9 +178,9 @@ end
     end
 
     it 'finds programs by optimizer' do
-      programs = storage_manager.find_programs(optimizer: 'GEPA')
+      programs = storage_manager.find_programs(optimizer: 'TestOptimizerB')
       expect(programs.size).to eq(1)
-      expect(programs.first[:optimizer]).to eq('GEPA')
+      expect(programs.first[:optimizer]).to eq('TestOptimizerB')
     end
 
     it 'finds programs by minimum score' do
@@ -285,9 +285,9 @@ end
         result = double("Result#{i}",
           optimized_program: test_program,
           best_score_value: 0.7 + i * 0.1,
-          metadata: { optimizer: i.even? ? 'MIPROv2' : 'GEPA' },
+          metadata: { optimizer: i.even? ? 'MIPROv2' : 'TestOptimizerB' },
           class: double(name: "Result#{i}"),
-          to_h: { best_score_value: 0.7 + i * 0.1, metadata: { optimizer: i.even? ? 'MIPROv2' : 'GEPA' } }
+          to_h: { best_score_value: 0.7 + i * 0.1, metadata: { optimizer: i.even? ? 'MIPROv2' : 'TestOptimizerB' } }
         )
         
         storage_manager.save_optimization_result(result)
@@ -301,7 +301,7 @@ end
       expect(history[:programs].size).to eq(3)
       expect(history[:summary][:total_programs]).to eq(3)
       expect(history[:optimizer_stats]).to have_key('MIPROv2')
-      expect(history[:optimizer_stats]).to have_key('GEPA')
+      expect(history[:optimizer_stats]).to have_key('TestOptimizerB')
       expect(history[:trends]).to have_key(:improvement_percentage)
     end
 
@@ -355,9 +355,9 @@ end
       double('Result2',
         optimized_program: test_program,
         best_score_value: 0.75,
-        metadata: { optimizer: 'GEPA' },
+        metadata: { optimizer: 'TestOptimizerB' },
         class: double(name: 'Result2'),
-        to_h: { best_score_value: 0.75, metadata: { optimizer: 'GEPA' } }
+        to_h: { best_score_value: 0.75, metadata: { optimizer: 'TestOptimizerB' } }
       )
     end
     let(:program2_id) { storage_manager.save_optimization_result(program2_result).program_id }

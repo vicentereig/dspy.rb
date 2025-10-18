@@ -112,7 +112,6 @@ end
 - **Typed Examples** - Type-safe training data with automatic validation
 - **Evaluation Framework** - Advanced metrics beyond simple accuracy with error-resilient pipelines
 - **MIPROv2 Optimization** - Advanced Bayesian optimization with Gaussian Processes, multiple optimization strategies, and storage persistence
-- **GEPA Optimization** - Genetic-Pareto optimization for multi-objective prompt improvement
 
 **Production Features:**
 - **Reliable JSON Extraction** - Native structured outputs for OpenAI and Gemini, Anthropic tool-based extraction, and automatic strategy selection with fallback
@@ -168,7 +167,6 @@ For LLMs and AI assistants working with DSPy.rb:
 - **[Evaluation Framework](docs/src/optimization/evaluation.md)** - Advanced metrics beyond simple accuracy
 - **[Prompt Optimization](docs/src/optimization/prompt-optimization.md)** - Manipulate prompts as objects
 - **[MIPROv2 Optimizer](docs/src/optimization/miprov2.md)** - Advanced Bayesian optimization with Gaussian Processes
-- **[GEPA Optimizer](docs/src/optimization/gepa.md)** - Genetic-Pareto optimization for multi-objective prompt optimization
 
 ### Production Features
 - **[Storage System](docs/src/production/storage.md)** - Persistence and optimization result storage

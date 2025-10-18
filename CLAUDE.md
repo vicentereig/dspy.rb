@@ -322,22 +322,6 @@ end
 
 **Key Learning**: Don't call logging directly in event system. Let logger subscribe to events for complete coverage.
 
-### Sorbet Type System + Testing Anti-patterns
-
-**Problem**: GEPA tests failed with Sorbet type errors when using RSpec mocks for `DSPy::LM` instances.
-
-**Root Cause**: Sorbet runtime checking expects real `DSPy::LM` instances, not test doubles.
-
-**Solution**: Use real LM instances with VCR for integration tests:
-```ruby
-# ❌ Bad - Fails Sorbet type checking
-mock_lm = double('LM', model: 'gpt-4o-mini')
-config.reflection_lm = mock_lm
-
-# ✅ Good - Real instance with VCR
-reflection_lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-config.reflection_lm = reflection_lm
-```
 
 **Key Learning**: With Sorbet runtime checks enabled, integration tests should use real instances with VCR, not mocks.
 

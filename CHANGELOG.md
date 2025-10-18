@@ -422,18 +422,18 @@ None - this release maintains full backward compatibility with existing DSPy.rb 
 
 ### Added
 - **Async Telemetry System** - Non-blocking observability with background export
-- **Complete GEPA Optimization** - Genetic algorithm implementation for program optimization
+- **Complete Genetic Optimizer** - Genetic algorithm implementation for program optimization
 - **GPT-5 Support** - Support for latest OpenAI model
 - **ReflectionEngine** - LLM-based analysis and reflection capabilities
 
 ### Fixed
 - OpenTelemetry/Langfuse span reporting and timing consistency
 - ChainOfThought 0.00s duration issue in span observations
-- GEPA implementation with proper test coverage and examples
+- Genetic optimizer implementation with proper test coverage and examples
 - Local embedding batch processing with informers gem
 
 ### Changed
-- Eliminated simple_mode from GEPA - always use full optimization
+- Eliminated simple_mode from genetic optimizer - always use full optimization
 - Improved test performance and VCR recording speed
 - Enhanced OpenTelemetry span timing and operation naming
 
@@ -450,12 +450,12 @@ None - this release maintains full backward compatibility with existing DSPy.rb 
 ## [0.24.0] - 2025-09-05
 
 ### Added
-- GEPA optimization fixes and improvements
+- Genetic optimizer fixes and improvements
 
 ## [0.23.0] - 2025-09-05
 
 ### Added
-- GEPA Optimizer implementation
+- Genetic optimizer implementation
 
 ## [0.22.1] - 2025-09-05
 
@@ -480,8 +480,7 @@ None - this release maintains full backward compatibility with existing DSPy.rb 
 
 ## [0.22.0] - 2025-09-04
 
-### Added
-- **GEPA (Generalized Event Pattern Analysis) Phase 1** - Advanced telemetry and event processing system
+- **Event Pattern Analysis System Phase 1** - Advanced telemetry and event processing system
   - TraceCollector for comprehensive application monitoring
   - ReflectionEngine for runtime behavior analysis
   - Event-driven architecture for LLM application insights
@@ -498,7 +497,7 @@ This release features contributions from:
 - [@liorbrauer](https://github.com/liorbrauer) (Lior Brauer) - Critical type coercion bug fix
 
 ### Technical Details
-- GEPA Phase 1 provides foundation for advanced LLM application analytics
+- Event pattern analysis phase 1 provides foundation for advanced LLM application analytics
 - Event system enables real-time monitoring and optimization
 - Structured telemetry data improves production debugging capabilities
 

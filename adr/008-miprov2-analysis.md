@@ -711,7 +711,7 @@ extract_output_fields_for_demo(prediction_hash, signature_class)
 **Changes:**
 - Deleted `lib/dspy/teleprompt/simple_optimizer.rb`
 - Removed unit specs and documentation under `docs/src/optimization/simple-optimizer.md`
-- Updated storage manager specs, docs, and generated outputs to reference supported optimizers only (e.g., MIPROv2, GEPA)
+- Updated storage manager specs, docs, and generated outputs to reference supported optimizers only (e.g., MIPROv2)
 
 **Backward Compatibility:** Breaking for any consumers relying on `DSPy::Teleprompt::SimpleOptimizer`. Migration path: adopt `DSPy::Teleprompt::MIPROv2` or other supported optimizers.
 
@@ -826,7 +826,7 @@ end
 
 ### Documentation Updates Needed
 - ✅ Removed SimpleOptimizer references (navigation, guides, optimization index)
-- ✅ Updated optimization overview docs to emphasize MIPROv2 / GEPA
+- ✅ Updated optimization overview docs to emphasize MIPROv2
 - ⏳ After predictor discovery lands, document Layer 5 improvements (instruction history, minibatching knobs, cross-predictor combos)
 - ⏳ Author “Optimizing ReAct / CodeAct / ChainOfThought with MIPROv2” section showing configuration tips and limitations
 - ⏳ Verify observability/OpenTelemetry instrumentation still emits expected optimization events after refactors and update docs if new metrics are exposed

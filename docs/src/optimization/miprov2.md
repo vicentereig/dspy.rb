@@ -12,8 +12,8 @@ prev:
   name: Prompt Optimization
   url: "/optimization/prompt-optimization/"
 next:
-  name: GEPA Optimizer
-  url: "/optimization/gepa/"
+  name: Evaluation
+  url: "/optimization/evaluation/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # MIPROv2 Optimizer

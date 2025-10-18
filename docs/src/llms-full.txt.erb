@@ -203,7 +203,6 @@ Built-in predictors for different reasoning patterns:
 Improve accuracy with data:
 
 - **MIPROv2** - Advanced multi-prompt optimization with bootstrap sampling, instruction generation, and Bayesian optimization strategies
-- **GEPA** - Genetic-Pareto optimization using natural language reflection, genetic algorithms, and Pareto frontier selection for multi-objective prompt evolution
 - **Evaluation** - Comprehensive framework with built-in metrics, custom evaluation functions, error handling, batch processing, and detailed result analysis
 
 ## Signatures
@@ -1444,38 +1443,6 @@ puts "Optimized program: #{result.optimized_program}"
 puts "Optimization history: #{result.history.length} trials"
 ```
 
-### GEPA Optimization
-
-Advanced genetic-Pareto optimization using natural language reflection:
-
-```ruby
-# Create GEPA optimizer with genetic algorithm configuration
-optimizer = DSPy::Teleprompt::GEPA.new(
-  signature: YourSignature,
-  population_size: 20,        # Size of genetic population
-  num_generations: 10,        # Number of evolution cycles  
-  mutation_rate: 0.3,         # Probability of mutation
-  crossover_rate: 0.7,        # Probability of crossover
-  pareto_frontier_size: 5,    # Number of Pareto-optimal solutions to maintain
-  reflection_lm: DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY'])
-)
-
-# Run optimization with training examples
-result = optimizer.optimize(examples: training_examples) do |candidate_predictor, validation_examples|
-  # Custom evaluation function
-  evaluator = DSPy::Evaluate.new(candidate_predictor, metric: your_metric)
-  evaluation_result = evaluator.evaluate(validation_examples, display_progress: false)
-  evaluation_result.pass_rate
-end
-
-puts "Best optimized score: #{result.best_score_value}"
-puts "Pareto frontier size: #{result.pareto_frontier.size}"
-
-# Access optimized predictors from Pareto frontier
-result.pareto_frontier.each_with_index do |solution, index|
-  puts "Solution #{index}: Score #{solution.score}, Complexity #{solution.complexity}"
-end
-```
 
 ### Evaluation Framework
 

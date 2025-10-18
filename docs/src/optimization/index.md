@@ -29,9 +29,6 @@ Learn the fundamentals of how DSPy.rb optimizes prompts automatically using exam
 ### [MIPROv2](./miprov2/)
 State-of-the-art optimization with MIPROv2 featuring Bayesian optimization with Gaussian Processes, multiple optimization strategies, and production-grade performance.
 
-### [GEPA (Genetic-Pareto)](./gepa/)
-GEPA (Genetic-Pareto) optimization with advanced genetic algorithms for multi-objective prompt optimization.
-
 ### [Evaluation](./evaluation/)
 Build metrics and evaluation frameworks to measure and improve your modules systematically.
 
@@ -44,4 +41,3 @@ We recommend starting with:
 1. Understanding [Prompt Optimization](./prompt-optimization/) concepts
 2. Building proper [Evaluation](./evaluation/) metrics
 3. Graduating to [MIPROv2](./miprov2/) for production use
-4. Using [GEPA (Genetic-Pareto)](./gepa/) for advanced genetic algorithm-based optimization

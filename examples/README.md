@@ -12,17 +12,13 @@ ANTHROPIC_API_KEY=your-anthropic-key
 
 ## Examples by Category
 
-### GEPA Optimization (`gepa/`)
+### Optimization (`ade_optimizer_miprov2/`)
 
-Examples using GEPA (Genetic-Pareto) optimization for prompt improvement:
+End-to-end optimization workflow using MIPROv2:
 
-- **`minimal_gepa_test.rb`** - Basic GEPA usage with one training example
-- **`simple_gepa_benchmark.rb`** - Compare GEPA vs MIPROv2 performance  
-- **`gepa_benchmark.rb`** - Comprehensive math word problem benchmark
-
-```bash
-bundle exec ruby examples/gepa/minimal_gepa_test.rb
-```
+- **`main.rb`** - ADE (Automatic Data Evaluation) optimizer walkthrough
+- **`data/`** - Sample datasets for optimization trials
+- **`results/`** - Saved optimization outputs and metrics
 
 ### Multimodal (`multimodal/`)
 
@@ -91,7 +87,7 @@ All examples check for required API keys and will exit with a helpful message if
 
 ```bash
 # Run a specific example
-bundle exec ruby examples/gepa/minimal_gepa_test.rb
+bundle exec ruby examples/sentiment-evaluation/sentiment_classifier.rb
 
 # Run with debug output
 DEBUG=true bundle exec ruby examples/sentiment-evaluation/sentiment_classifier.rb

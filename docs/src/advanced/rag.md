@@ -568,8 +568,7 @@ end
 - **[Rails Integration](/advanced/rails-integration/)** - Integrate RAG systems with Ruby on Rails applications
 
 ### Optimization
-- **[MIPROv2](/optimization/miprov2/)** - Automatically optimize RAG prompts for better performance
-- **[GEPA](/optimization/gepa/)** - Use genetic algorithms to optimize multi-objective RAG systems
+- **[MIPROv2](/optimization/miprov2/)** - Use Bayesian optimization to tune multi-objective RAG systems
 - **[Evaluation](/optimization/evaluation/)** - Systematically test and measure RAG application performance
 
 ### Framework Comparison
@@ -578,4 +577,3 @@ end
 ### Production
 - **[Observability](/production/observability/)** - Monitor and trace RAG applications in production
 - **[Troubleshooting](/production/troubleshooting/)** - Common RAG issues and solutions
-

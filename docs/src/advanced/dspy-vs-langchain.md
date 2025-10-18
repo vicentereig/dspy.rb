@@ -75,7 +75,7 @@ chain = Langchain::Chain::LLMChain.new(llm: llm, prompt: template)
 |---------|---------|-------------|---------|
 | **Type Safety** | ✅ Sorbet integration | ❌ Dynamic typing | DSPy.rb |
 | **Async Processing** | ✅ Native Fiber support | ⚠️ Limited | DSPy.rb |
-| **Prompt Optimization** | ✅ GEPA, MIPROv2 | ❌ Manual only | DSPy.rb |
+| **Prompt Optimization** | ✅ MIPROv2 | ❌ Manual only | DSPy.rb |
 | **Vector Databases** | ⚠️ External integration | ✅ Built-in support | LangChain.rb |
 | **Document Loaders** | ⚠️ Manual implementation | ✅ 20+ formats | LangChain.rb |
 | **Testing Framework** | ✅ RSpec integration | ⚠️ Limited testing | DSPy.rb |
@@ -100,10 +100,10 @@ class RAGSystem < DSPy::Module
   end
 end
 
-# Optimizable with GEPA
 system = RAGSystem.new
-optimizer = DSPy::GEPA.new(population_size: 50)
-optimizer.optimize(system, training_data: examples)
+metric = ->(example, prediction) { prediction[:answer] == example[:answer] }
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+optimizer.compile(system, trainset: training_data, valset: validation_data)
 ```
 
 **LangChain.rb Approach:**
@@ -212,8 +212,9 @@ DSPy.configure do |config|
 end
 
 # Use optimization
-optimizer = DSPy::GEPA.new(population_size: 20)
-optimized_system = optimizer.optimize(system, training_data)
+metric = ->(example, prediction) { prediction[:answer] == example[:answer] }
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+optimized_system = optimizer.compile(system, trainset: training_data, valset: validation_data).optimized_program
 ```
 
 ### LangChain.rb
@@ -303,7 +304,6 @@ For new Ruby LLM projects starting in 2025, DSPy.rb's structured approach and op
 
 ### Optimization
 - **[MIPROv2](/optimization/miprov2/)** - Automated prompt engineering that beats manual tuning  
-- **[GEPA](/optimization/gepa/)** - Genetic algorithm optimization not available in LangChain
 - **[Evaluation](/optimization/evaluation/)** - Systematic testing and measurement
 
 ### Production
