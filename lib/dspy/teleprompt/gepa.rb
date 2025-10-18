@@ -91,19 +91,14 @@ module DSPy
         end
         def evaluate(batch, candidate, capture_traces: false)
           program = build_program(candidate)
-          outputs = []
-          scores = []
-          trajectories = capture_traces ? [] : nil
 
-          batch.each do |example|
-            prediction = program.call(**example.input_values)
-            result = @metric.call(example, prediction)
-            score, feedback = extract_score_and_feedback(result)
-            outputs << prediction
-            scores << score
+          if capture_traces
+            trajectories = batch.map do |example|
+              prediction = program.call(**example.input_values)
+              result = @metric.call(example, prediction)
+              score, feedback = extract_score_and_feedback(result)
 
-            if capture_traces
-              trajectories << {
+              {
                 predictor_name: @predictor_name,
                 example: example,
                 prediction: prediction,
@@ -111,9 +106,22 @@ module DSPy
                 feedback: feedback
               }
             end
-          end
 
-          ::GEPA::Core::EvaluationBatch.new(outputs: outputs, scores: scores, trajectories: trajectories)
+            scores = trajectories.map { |row| row[:score] }
+            outputs = trajectories.map { |row| row[:prediction] }
+            ::GEPA::Core::EvaluationBatch.new(outputs: outputs, scores: scores, trajectories: trajectories)
+          else
+            evaluator = DSPy::Evaluate.new(program, metric: nil, num_threads: nil, max_errors: batch.length * 100, provide_traceback: false)
+            results = batch.map do |example|
+              prediction = program.call(**example.input_values)
+              result = @metric.call(example, prediction)
+              score, = extract_score_and_feedback(result)
+              [prediction, score]
+            end
+            outputs = results.map(&:first)
+            scores = results.map(&:last)
+            ::GEPA::Core::EvaluationBatch.new(outputs: outputs, scores: scores, trajectories: nil)
+          end
         end
 
         sig do
@@ -128,14 +136,22 @@ module DSPy
 
           dataset = {}
           components_to_update.each do |component|
-            rows = eval_batch.trajectories.map do |trajectory|
+            rows = Array(eval_batch.trajectories).map do |trajectory|
               next unless trajectory[:predictor_name] == component
 
               example = trajectory[:example]
+              prediction = trajectory[:prediction]
+              inputs = serialize_struct(example.input)
+              expected = serialize_struct(example.expected)
+              actual = serialize_prediction(prediction)
+
+              diff = build_diff(expected, actual)
+
               {
-                'Inputs' => example.input_values,
-                'Expected' => example.expected_values,
-                'Generated Outputs' => serialize_prediction(trajectory[:prediction]),
+                'Inputs' => inputs,
+                'Expected' => expected,
+                'Generated Outputs' => actual,
+                'Diff' => diff,
                 'Feedback' => trajectory[:feedback] || "Score: #{trajectory[:score]}"
               }
             end.compact
@@ -171,14 +187,41 @@ module DSPy
           end
         end
 
+        sig { params(struct: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
+        def serialize_struct(struct)
+          if struct.respond_to?(:to_h)
+            struct.to_h
+          elsif struct.instance_variables.any?
+            struct.instance_variables.each_with_object({}) do |ivar, memo|
+              key = ivar.to_s.delete_prefix('@').to_sym
+              memo[key] = struct.instance_variable_get(ivar)
+            end
+          else
+            {}
+          end
+        end
+
         sig { params(prediction: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
         def serialize_prediction(prediction)
-          if prediction.respond_to?(:to_h)
+          case prediction
+          when DSPy::Prediction
             prediction.to_h
-          elsif prediction.is_a?(Hash)
+          when Hash
             prediction
           else
-            { value: prediction }
+            serialize_struct(prediction)
+          end
+        end
+
+        sig { params(expected: T::Hash[Symbol, T.untyped], actual: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+        def build_diff(expected, actual)
+          keys = expected.keys | actual.keys
+          keys.each_with_object({}) do |key, memo|
+            exp = expected[key]
+            act = actual[key]
+            next if exp == act
+
+            memo[key] = { expected: exp, actual: act }
           end
         end
 
