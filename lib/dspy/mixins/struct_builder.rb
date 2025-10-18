@@ -19,20 +19,20 @@ module DSPy
         
         Class.new(T::Struct) do
           extend T::Sig
+          define_field = lambda do |name, type, options|
+            const_kwargs = {}
+            const_kwargs[:default] = options[:default] if options.key?(:default)
+            const_kwargs[:factory] = options[:factory] if options.key?(:factory)
+            const_kwargs[:override] = true if props.key?(name)
+            const name, type, **const_kwargs
+          end
           
           # Add properties from each source
           property_sources.each do |_source_name, props|
             props.each do |name, prop|
               type = builder.send(:extract_type_from_prop, prop)
               options = builder.send(:extract_options_from_prop, prop)
-              
-              if options[:default]
-                const name, type, default: options[:default]
-              elsif options[:factory]
-                const name, type, factory: options[:factory]
-              else
-                const name, type
-              end
+              define_field.call(name, type, options)
             end
           end
           
@@ -40,14 +40,7 @@ module DSPy
           additional_fields.each do |name, field_config|
             type = builder.send(:extract_type_from_prop, field_config)
             options = builder.send(:extract_options_from_prop, field_config)
-            
-            if options[:default]
-              const name, type, default: options[:default]
-            elsif options[:factory]
-              const name, type, factory: options[:factory]
-            else
-              const name, type
-            end
+            define_field.call(name, type, options)
           end
           
           include StructSerialization
@@ -65,14 +58,13 @@ module DSPy
       def build_single_property(name, prop)
         type = extract_type_from_prop(prop)
         options = extract_options_from_prop(prop)
-        
-        if options[:default]
-          const name, type, default: options[:default]
-        elsif options[:factory]
-          const name, type, factory: options[:factory]
-        else
-          const name, type
-        end
+
+        const_kwargs = {}
+        const_kwargs[:default] = options[:default] if options.key?(:default)
+        const_kwargs[:factory] = options[:factory] if options.key?(:factory)
+        const_kwargs[:override] = true if respond_to?(:props) && props.key?(name)
+
+        const name, type, **const_kwargs
       end
 
       # Extracts type from property configuration
