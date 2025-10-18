@@ -256,10 +256,21 @@ summary = {
     f1: optimized_metrics.f1
   },
   best_score: result.best_score_value,
-  best_instruction: result.metadata[:best_instruction],
+  best_instruction: nil,
   total_trials: result.history[:total_trials],
   optimization_strategy: result.history[:optimization_strategy]
 }
+
+best_instruction_text = result.metadata[:best_instruction].to_s
+
+if best_instruction_text.empty?
+  best_trial = trial_logs.values.compact.max_by { |entry| entry[:score] || 0 }
+  if best_trial && best_trial[:instructions]&.any?
+    best_instruction_text = best_trial[:instructions].values.compact.first.to_s
+  end
+end
+
+summary[:best_instruction] = best_instruction_text
 
 summary_path = File.join(RESULTS_DIR, 'summary.json')
 File.write(summary_path, JSON.pretty_generate(summary))
@@ -282,6 +293,6 @@ puts "   • #{csv_path}"
 puts "   • #{trial_log_path}"
 
 puts "\n✨ Best instruction snippet:"
-puts result.metadata[:best_instruction].to_s.lines.first&.strip || '(no instruction recorded)'
+puts best_instruction_text.empty? ? '(no instruction recorded)' : best_instruction_text.lines.first.to_s.strip
 
 puts "\nDone!"
