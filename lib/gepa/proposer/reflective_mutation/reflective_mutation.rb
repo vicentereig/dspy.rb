@@ -157,7 +157,7 @@ module GEPA
         ).returns(T::Hash[String, String])
       end
       def propose_new_texts(candidate, reflective_dataset, components_to_update)
-        if @adapter.respond_to?(:propose_new_texts) && @adapter.propose_new_texts
+        if @adapter.respond_to?(:propose_new_texts)
           return @adapter.propose_new_texts(candidate, reflective_dataset, components_to_update)
         end
 
@@ -186,4 +186,3 @@ module GEPA
     end
   end
 end
-

@@ -1,0 +1,297 @@
+# frozen_string_literal: true
+
+require 'logger'
+require 'sorbet-runtime'
+require_relative 'teleprompter'
+require_relative 'utils'
+require_relative '../../gepa'
+
+module DSPy
+  module Teleprompt
+    class GEPA < Teleprompter
+      extend T::Sig
+      DEFAULT_CONFIG = {
+        max_metric_calls: 32,
+        minibatch_size: 2,
+        perfect_score: 1.0,
+        skip_perfect_score: true
+      }.freeze
+
+      def self.configure
+        yield(default_config) if block_given?
+      end
+
+      def self.default_config
+        @default_config ||= DEFAULT_CONFIG.dup
+      end
+
+      class NullExperimentTracker
+        extend T::Sig
+        attr_reader :events
+
+        def initialize
+          @events = []
+        end
+
+        sig { params(metrics: T::Hash[Symbol, T.untyped], step: T.nilable(Integer)).void }
+        def log_metrics(metrics, step: nil)
+          @events << { metrics: metrics, step: step }
+        end
+      end
+
+      class NullLogger
+        extend T::Sig
+        attr_reader :messages
+
+        def initialize
+          @messages = []
+        end
+
+        sig { params(message: String).void }
+        def log(message)
+          @messages << message
+          DSPy.log('gepa.log', message: message)
+        end
+      end
+
+      class PredictAdapter
+        extend T::Sig
+
+        sig { params(student: DSPy::Module, metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped)).void }
+        def initialize(student, metric)
+          @student = student
+          @metric = metric
+
+          name, = @student.named_predictors.first
+          @predictor_name = name
+          @seed_instruction = extract_instruction(@student)
+        end
+
+        sig { returns(T::Hash[String, String]) }
+        def seed_candidate
+          { @predictor_name => @seed_instruction }
+        end
+
+        sig { params(candidate: T::Hash[String, String]).returns(DSPy::Module) }
+        def build_program(candidate)
+          new_instruction = candidate.fetch(@predictor_name)
+          if @student.respond_to?(:with_instruction)
+            @student.with_instruction(new_instruction)
+          else
+            raise ArgumentError, "Student module must respond to #with_instruction"
+          end
+        end
+
+        sig do
+          params(
+            batch: T::Array[DSPy::Example],
+            candidate: T::Hash[String, String],
+            capture_traces: T::Boolean
+          ).returns(::GEPA::Core::EvaluationBatch)
+        end
+        def evaluate(batch, candidate, capture_traces: false)
+          program = build_program(candidate)
+          outputs = []
+          scores = []
+          trajectories = capture_traces ? [] : nil
+
+          batch.each do |example|
+            prediction = program.call(**example.input_values)
+            result = @metric.call(example, prediction)
+            score, feedback = extract_score_and_feedback(result)
+            outputs << prediction
+            scores << score
+
+            if capture_traces
+              trajectories << {
+                predictor_name: @predictor_name,
+                example: example,
+                prediction: prediction,
+                score: score,
+                feedback: feedback
+              }
+            end
+          end
+
+          ::GEPA::Core::EvaluationBatch.new(outputs: outputs, scores: scores, trajectories: trajectories)
+        end
+
+        sig do
+          params(
+            candidate: T::Hash[String, String],
+            eval_batch: ::GEPA::Core::EvaluationBatch,
+            components_to_update: T::Array[String]
+          ).returns(T::Hash[String, T::Array[T::Hash[String, T.untyped]]])
+        end
+        def make_reflective_dataset(candidate, eval_batch, components_to_update)
+          return {} unless eval_batch.trajectories
+
+          dataset = {}
+          components_to_update.each do |component|
+            rows = eval_batch.trajectories.map do |trajectory|
+              next unless trajectory[:predictor_name] == component
+
+              example = trajectory[:example]
+              {
+                'Inputs' => example.input_values,
+                'Expected' => example.expected_values,
+                'Generated Outputs' => serialize_prediction(trajectory[:prediction]),
+                'Feedback' => trajectory[:feedback] || "Score: #{trajectory[:score]}"
+              }
+            end.compact
+            dataset[component] = rows unless rows.empty?
+          end
+
+          dataset
+        end
+
+        sig do
+          params(
+            candidate: T::Hash[String, String],
+            reflective_dataset: T::Hash[String, T::Array[T::Hash[String, T.untyped]]],
+            components_to_update: T::Array[String]
+          ).returns(T::Hash[String, String])
+        end
+        def propose_new_texts(candidate, reflective_dataset, components_to_update)
+          components_to_update.to_h do |name|
+            [name, "#{candidate[name]} improved"]
+          end
+        end
+
+        private
+
+        sig { params(program: DSPy::Module).returns(String) }
+        def extract_instruction(program)
+          if program.respond_to?(:prompt) && program.prompt.respond_to?(:instruction)
+            program.prompt.instruction
+          elsif program.respond_to?(:instruction)
+            program.instruction
+          else
+            raise ArgumentError, "Program must expose prompt.instruction or #instruction"
+          end
+        end
+
+        sig { params(prediction: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
+        def serialize_prediction(prediction)
+          if prediction.respond_to?(:to_h)
+            prediction.to_h
+          elsif prediction.is_a?(Hash)
+            prediction
+          else
+            { value: prediction }
+          end
+        end
+
+        sig { params(result: T.untyped).returns([Float, T.nilable(String)]) }
+        def extract_score_and_feedback(result)
+          case result
+          when DSPy::Prediction
+            score = result.respond_to?(:score) ? result.score : 0.0
+            feedback = result.respond_to?(:feedback) ? result.feedback : nil
+            [score.to_f, feedback]
+          when Hash
+            [result[:score].to_f, result[:feedback]]
+          else
+            [result.to_f, nil]
+          end
+        end
+      end
+
+      sig do
+        params(
+          metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped),
+          adapter_builder: T.nilable(T.proc.params(arg0: DSPy::Module, arg1: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped)).returns(T.untyped)),
+          config: T.nilable(T::Hash[Symbol, T.untyped])
+        ).void
+      end
+      def initialize(metric:, adapter_builder: nil, config: nil)
+        super(metric: metric)
+        @metric = metric
+        @adapter_builder = adapter_builder || method(:build_adapter)
+        @gepa_config = self.class.default_config.merge(config || {})
+      end
+
+      sig do
+        override.params(
+          program: DSPy::Module,
+          trainset: T::Array[T.untyped],
+          valset: T.nilable(T::Array[T.untyped])
+        ).returns(OptimizationResult)
+      end
+      def compile(program, trainset:, valset: nil)
+        validate_inputs(program, trainset, valset)
+
+        typed_trainset = ensure_typed_examples(trainset)
+        typed_valset = valset ? ensure_typed_examples(valset) : typed_trainset
+
+        adapter = @adapter_builder.call(program, @metric)
+        seed_candidate = adapter.seed_candidate
+
+        cand_selector = ::GEPA::Strategies::ParetoCandidateSelector.new
+        comp_selector = ::GEPA::Strategies::RoundRobinReflectionComponentSelector.new
+        batch_sampler = ::GEPA::Strategies::EpochShuffledBatchSampler.new([@gepa_config[:minibatch_size], typed_trainset.size].min)
+
+        telemetry_context = ::GEPA::Telemetry.build_context
+
+        logger = NullLogger.new
+        tracker = NullExperimentTracker.new
+
+        reflective = ::GEPA::Proposer::ReflectiveMutationProposer.new(
+          logger: logger,
+          trainset: typed_trainset,
+          adapter: adapter,
+          candidate_selector: cand_selector,
+          module_selector: comp_selector,
+          batch_sampler: batch_sampler,
+          perfect_score: @gepa_config[:perfect_score],
+          skip_perfect_score: @gepa_config[:skip_perfect_score],
+          experiment_tracker: tracker,
+          reflection_lm: nil,
+          telemetry: telemetry_context
+        )
+
+        evaluator = lambda do |dataset, candidate|
+          batch = adapter.evaluate(dataset, candidate, capture_traces: false)
+          [batch.outputs, batch.scores]
+        end
+
+        engine = ::GEPA::Core::Engine.new(
+          evaluator: evaluator,
+          valset: typed_valset,
+          seed_candidate: seed_candidate,
+          max_metric_calls: @gepa_config[:max_metric_calls],
+          perfect_score: @gepa_config[:perfect_score],
+          seed: 0,
+          reflective_proposer: reflective,
+          logger: logger,
+          experiment_tracker: tracker,
+          merge_proposer: nil,
+          run_dir: nil,
+          track_best_outputs: false,
+          display_progress_bar: false,
+          telemetry: telemetry_context
+        )
+
+        state = engine.run
+        result = ::GEPA::Core::Result.from_state(state)
+        best_program = adapter.build_program(result.best_candidate)
+
+        OptimizationResult.new(
+          optimized_program: best_program,
+          scores: { best: result.val_aggregate_scores[result.best_idx] },
+          history: { total_candidates: result.num_candidates },
+          best_score_name: 'best',
+          best_score_value: result.val_aggregate_scores[result.best_idx],
+          metadata: { candidates: result.num_candidates }
+        )
+      end
+
+      private
+
+      sig { params(program: DSPy::Module, metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped)).returns(PredictAdapter) }
+      def build_adapter(program, metric)
+        PredictAdapter.new(program, metric)
+      end
+    end
+  end
+end

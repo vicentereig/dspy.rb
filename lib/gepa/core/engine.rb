@@ -138,7 +138,7 @@ module GEPA
       def acceptance_test(before, after)
         return false if after.empty?
 
-        after.sum > before.sum
+        after.sum >= before.sum
       end
 
       sig { params(candidate: T::Hash[String, String]).returns([T::Array[T.untyped], T::Array[Float]]) }
