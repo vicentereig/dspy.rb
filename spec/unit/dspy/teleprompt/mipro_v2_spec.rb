@@ -640,6 +640,37 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
     end
   end
 
+  describe 'instruction history forwarding' do
+    it 'passes stored trial history to proposer when available' do
+      mipro = DSPy::Teleprompt::MIPROv2.new
+      trial_history = {
+        1 => { instructions: { 0 => "Prior instruction" }, score: 0.82 }
+      }
+      mipro.instance_variable_set(:@trial_history, trial_history)
+
+      proposal_result = DSPy::Propose::GroundedProposer::ProposalResult.new(
+        candidate_instructions: [
+          "Analyze the question carefully before answering."
+        ],
+        analysis: { common_themes: [] },
+        metadata: { model: "test" }
+      )
+
+      proposer_double = instance_double(DSPy::Propose::GroundedProposer)
+      allow(proposer_double).to receive(:propose_instructions).and_return(proposal_result)
+      allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return({ 0 => [] })
+
+      expect(DSPy::Propose::GroundedProposer).to receive(:new).and_return(proposer_double)
+      expect(proposer_double).to receive(:propose_instructions).with(
+        MIPROv2QA,
+        training_examples,
+        hash_including(trial_logs: trial_history)
+      ).and_return(proposal_result)
+
+      mipro.send(:phase_2_propose_instructions, test_program, training_examples, { 0 => [] })
+    end
+  end
+
   describe 'optimization strategies' do
     let(:mock_candidates) do
       [
