@@ -1,7 +1,15 @@
 # frozen_string_literal: true
 
-require_relative 'gepa/telemetry'
-
 module GEPA
-end
+  autoload :Telemetry, 'gepa/telemetry'
 
+  module Core
+    autoload :EvaluationBatch, 'gepa/core/evaluation_batch'
+    autoload :Result, 'gepa/core/result'
+    autoload :State, 'gepa/core/state'
+  end
+
+  module Utils
+    autoload :Pareto, 'gepa/utils/pareto'
+  end
+end
