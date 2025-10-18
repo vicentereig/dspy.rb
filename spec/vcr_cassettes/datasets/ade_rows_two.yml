@@ -1,0 +1,51 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://datasets-server.huggingface.co/rows?config=Ade_corpus_v2_classification&dataset=ade-benchmark-corpus/ade_corpus_v2&length=2&offset=0&split=train
+    body:
+      encoding: US-ASCII
+      string: ""
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Host:
+      - datasets-server.huggingface.co
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 18 Oct 2025 18:31:00 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "rows": [
+            {
+              "row": {
+                "text": "Headache developed after ibuprofen administration.",
+                "label": 1
+              }
+            },
+            {
+              "row": {
+                "text": "Patient tolerated the treatment without issues.",
+                "label": 0
+              }
+            }
+          ]
+        }
+  recorded_at: Sat, 18 Oct 2025 18:31:00 GMT
+recorded_with: Manual

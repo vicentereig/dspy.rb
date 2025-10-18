@@ -1,0 +1,57 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://datasets-server.huggingface.co/rows?config=Ade_corpus_v2_classification&dataset=ade-benchmark-corpus/ade_corpus_v2&length=3&offset=0&split=train
+    body:
+      encoding: US-ASCII
+      string: ""
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Host:
+      - datasets-server.huggingface.co
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 18 Oct 2025 18:30:30 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "rows": [
+            {
+              "row": {
+                "text": "Patient reported dizziness after starting metoprolol.",
+                "label": 1
+              }
+            },
+            {
+              "row": {
+                "text": "No complaints following the medication regimen.",
+                "label": 0
+              }
+            },
+            {
+              "row": {
+                "text": "Severe rash appeared after taking sulfa drugs.",
+                "label": 1
+              }
+            }
+          ]
+        }
+  recorded_at: Sat, 18 Oct 2025 18:30:30 GMT
+recorded_with: Manual
