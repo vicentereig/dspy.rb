@@ -877,19 +877,25 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
       mock_lm = double('MockLM', model: 'mock-lm')
       allow(DSPy).to receive(:current_lm).and_return(mock_lm)
 
-      allow_any_instance_of(DSPy::Propose::GroundedProposer).to receive(:propose_instructions).and_return(
-        DSPy::Propose::GroundedProposer::ProposalResult.new(
-          candidate_instructions: [
+      proposal_result = DSPy::Propose::GroundedProposer::ProposalResult.new(
+        candidate_instructions: [
+          "Analyze the question and context step by step to provide a comprehensive answer with detailed reasoning",
+          "Examine the provided context carefully and extract key information to formulate a well-reasoned response"
+        ],
+        analysis: {
+          complexity_indicators: { requires_reasoning: true },
+          common_themes: ["question_answering", "analytical_reasoning"]
+        },
+        metadata: { model: "test", generation_timestamp: Time.now.iso8601 },
+        predictor_instructions: {
+          0 => [
             "Analyze the question and context step by step to provide a comprehensive answer with detailed reasoning",
             "Examine the provided context carefully and extract key information to formulate a well-reasoned response"
-          ],
-          analysis: {
-            complexity_indicators: { requires_reasoning: true },
-            common_themes: ["question_answering", "analytical_reasoning"]
-          },
-          metadata: { model: "test", generation_timestamp: Time.now.iso8601 }
-        )
+          ]
+        }
       )
+
+      allow_any_instance_of(DSPy::Propose::GroundedProposer).to receive(:propose_instructions_for_program).and_return(proposal_result)
 
       allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return(
         {

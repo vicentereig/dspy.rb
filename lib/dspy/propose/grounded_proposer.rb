@@ -114,7 +114,7 @@ module DSPy
         end
         def initialize(candidate_instructions:, analysis:, metadata:, predictor_instructions: nil)
           @candidate_instructions = candidate_instructions.freeze
-          normalized_predictor_instructions = (predictor_instructions || {}).each_with_object({}) do |(index, instructions), memo|
+        normalized_predictor_instructions = (predictor_instructions || {}).each_with_object({}) do |(index, instructions), memo|
             memo[index] = instructions.dup.freeze
           end
           @predictor_instructions = normalized_predictor_instructions.freeze
