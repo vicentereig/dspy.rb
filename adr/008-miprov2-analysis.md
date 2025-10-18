@@ -819,10 +819,10 @@ end
 - ⏳ Test with modules containing multiple predictors once predictor discovery helpers land
 
 #### Predictor Discovery Parity (New Gap)
-- Add Python-parity `DSPy::Module#named_predictors` / `#predictors` helpers so optimizers can traverse nested `DSPy::Predict` instances.
-- Update composite modules (`DSPy::ReAct`, `DSPy::CodeAct`) to expose their internal predictors (thought generator, observation processor, extract step).
-- Refactor `DSPy::ChainOfThought` to maintain a persistent internal predictor (or override `predictors`) so its instruction is discoverable.
-- Add unit tests ensuring MIPROv2 sees the correct predictor count for each composite module and propagates instruction maps accordingly.
+- ✅ Add Python-parity `DSPy::Module#named_predictors` / `#predictors` helpers so optimizers can traverse nested modules.
+- ✅ Update composite modules (`DSPy::ReAct`, `DSPy::CodeAct`) to expose their internal predictor pairs (thought → action, code → observe).
+- ✅ Add predictor discovery parity specs covering Predict, ReAct, CodeAct, and Utils demo generation.
+- ⏳ Verify `DSPy::ChainOfThought` + other composite modules maintain consistent predictor exposure in complex nesting scenarios.
 
 ### Documentation Updates Needed
 - ✅ Removed SimpleOptimizer references (navigation, guides, optimization index)
@@ -1356,6 +1356,7 @@ According to the bottom-up implementation plan in this ADR:
 - ✅ Progress Update (commit `62a575e`): Added a program-aware `propose_instructions_for_program` hook and per-predictor metadata so Ruby MIPROv2 can generate instruction candidates aligned with Python’s multi-predictor interface while keeping earlier APIs working.
 - ✅ Progress Update (commit `84621b1`): Generate cross-predictor instruction combinations and store them in trial metadata so multiprompt programs can explore per-module instruction tuples like Python’s Optuna search.
 - ✅ Progress Update (branch `feature/miprov2-layer5-todos`): Implemented per-predictor instruction and few-shot selection inside `generate_candidate_configurations`/`apply_candidate_configuration`, updated optimization traces to log `few_shot_map`, and added parity specs covering multi-predictor programs.
+- ✅ Progress Update: Added predictor discovery helpers (`Module#predictors`, `#named_predictors`), exposed ReAct/CodeAct internals, and covered Utils demo generation with multi-predictor specs so Layer 5 can enumerate and tune nested modules like Python.
 - [ ] TODO: Draft the next ADR-008 status update summarizing current progress, open Layer 5 work, and Bayesian optimization decisions, including remaining gaps and trade-offs.
 
 **Layer 4.2 Achievement**: Successfully implemented all Python-compatible awareness flags:
