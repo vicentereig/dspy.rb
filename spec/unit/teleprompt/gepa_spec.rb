@@ -50,6 +50,21 @@ RSpec.describe DSPy::Teleprompt::GEPA do
     end
   end
 
+  class FakeReflectionLM
+    attr_reader :calls
+
+    def initialize
+      @calls = 0
+    end
+
+    def call(_prompt)
+      @calls += 1
+      "```
+base reflection upgrade
+```"
+    end
+  end
+
   let(:metric) do
     lambda do |example, prediction|
       expected = example.expected_values[:answer]
@@ -86,5 +101,29 @@ RSpec.describe DSPy::Teleprompt::GEPA do
     output = optimized.call(question: 'world')
     expect(output[:answer]).to eq('base improved world')
     expect(result.best_score_value).to eq(1.0)
+  end
+
+  it 'uses the provided reflection LM when available' do
+    reflection_metric = lambda do |_example, prediction|
+      prediction[:answer] == 'base reflection upgrade world' ? 1.0 : 0.0
+    end
+    reflection_trainset = [
+      DSPy::Example.new(
+        signature_class: SimpleSignature,
+        input: { question: 'world' },
+        expected: { answer: 'base reflection upgrade world' }
+      )
+    ]
+
+    reflection_lm = FakeReflectionLM.new
+    teleprompter = described_class.new(metric: reflection_metric, reflection_lm: reflection_lm)
+
+    result = teleprompter.compile(EchoModule.new('base'), trainset: reflection_trainset, valset: reflection_trainset)
+
+    optimized = result.optimized_program
+    expect(reflection_lm.calls).to be > 0
+
+    output = optimized.call(question: 'world')
+    expect(output[:answer]).to eq('base reflection upgrade world')
   end
 end

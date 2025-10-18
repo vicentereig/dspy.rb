@@ -57,10 +57,17 @@ module DSPy
       class PredictAdapter
         extend T::Sig
 
-        sig { params(student: DSPy::Module, metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped)).void }
-        def initialize(student, metric)
+        sig do
+          params(
+            student: DSPy::Module,
+            metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped),
+            reflection_lm: T.nilable(T.untyped)
+          ).void
+        end
+        def initialize(student, metric, reflection_lm: nil)
           @student = student
           @metric = metric
+          @reflection_lm = reflection_lm
 
           name, = @student.named_predictors.first
           @predictor_name = name
@@ -169,8 +176,21 @@ module DSPy
           ).returns(T::Hash[String, String])
         end
         def propose_new_texts(candidate, reflective_dataset, components_to_update)
-          components_to_update.to_h do |name|
-            [name, "#{candidate[name]} improved"]
+          if @reflection_lm
+            components_to_update.to_h do |name|
+              response = ::GEPA::Strategies::InstructionProposalSignature.run(
+                @reflection_lm,
+                {
+                  'current_instruction_doc' => candidate[name],
+                  'dataset_with_feedback' => reflective_dataset.fetch(name, [])
+                }
+              )
+              [name, response.fetch('new_instruction')]
+            end
+          else
+            components_to_update.to_h do |name|
+              [name, "#{candidate[name]} improved"]
+            end
           end
         end
 
@@ -243,13 +263,15 @@ module DSPy
       sig do
         params(
           metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped),
-          adapter_builder: T.nilable(T.proc.params(arg0: DSPy::Module, arg1: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped)).returns(T.untyped)),
+          reflection_lm: T.nilable(T.untyped),
+          adapter_builder: T.nilable(T.proc.params(arg0: DSPy::Module, arg1: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped), reflection_lm: T.nilable(T.untyped)).returns(T.untyped)),
           config: T.nilable(T::Hash[Symbol, T.untyped])
         ).void
       end
-      def initialize(metric:, adapter_builder: nil, config: nil)
+      def initialize(metric:, reflection_lm: nil, adapter_builder: nil, config: nil)
         super(metric: metric)
         @metric = metric
+        @reflection_lm = reflection_lm
         @adapter_builder = adapter_builder || method(:build_adapter)
         @gepa_config = self.class.default_config.merge(config || {})
       end
@@ -267,7 +289,7 @@ module DSPy
         typed_trainset = ensure_typed_examples(trainset)
         typed_valset = valset ? ensure_typed_examples(valset) : typed_trainset
 
-        adapter = @adapter_builder.call(program, @metric)
+        adapter = @adapter_builder.call(program, @metric, reflection_lm: @reflection_lm)
         seed_candidate = adapter.seed_candidate
 
         cand_selector = ::GEPA::Strategies::ParetoCandidateSelector.new
@@ -331,9 +353,9 @@ module DSPy
 
       private
 
-      sig { params(program: DSPy::Module, metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped)).returns(PredictAdapter) }
-      def build_adapter(program, metric)
-        PredictAdapter.new(program, metric)
+      sig { params(program: DSPy::Module, metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped), reflection_lm: T.nilable(T.untyped)).returns(PredictAdapter) }
+      def build_adapter(program, metric, reflection_lm: nil)
+        PredictAdapter.new(program, metric, reflection_lm: reflection_lm)
       end
     end
   end
