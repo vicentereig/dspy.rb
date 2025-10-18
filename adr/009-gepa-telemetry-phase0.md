@@ -1,7 +1,7 @@
 # ADR 009: GEPA Telemetry Phase 0 Plan
 
 ## Status
-Proposed
+Accepted
 
 ## Context
 - Issue: [#107](https://github.com/vicentereig/dspy.rb/issues/107)
@@ -24,7 +24,7 @@ The GEPA optimization flow introduces several long-running phases with nested lo
 Each of these steps maps cleanly to observability spans in the existing Python implementation (via Langfuse / OpenTelemetry). To maintain parity, we need a dedicated telemetry layer before writing the full port so that subsequent phases can instrument logic as it lands.
 
 ## Decision
-Add a reusable `GEPA::Telemetry` module that standardizes span names, attributes, and logging events for every stage of the sequence diagram. Phase 0 will deliver:
+Add a reusable `GEPA::Telemetry` module that standardizes span names, attributes, and logging events for every stage of the sequence diagram. Phase 0 delivered:
 
 1. **Telemetry primitives**
    - `GEPA::Telemetry.with_span(operation, metadata = {}, &block)` → wraps `DSPy::Context.with_span`, injects GEPA metadata, and mirrors Python span names (`gepa.optimize`, `gepa.engine.iteration`, etc.).
@@ -45,21 +45,31 @@ Add a reusable `GEPA::Telemetry` module that standardizes span names, attributes
    | `gepa.engine.acceptance_test` | validation + Pareto update |
 
 3. **Spec scaffolding**
-   - `spec/unit/gepa/telemetry_spec.rb` ensures spans set expected attributes and preserve parent/child relationships when nesting.
-   - Use `DSPy::Observability.enabled?` guard to validate behaviour both with and without OTEL.
+  - `spec/unit/gepa/telemetry_spec.rb` ensures spans set expected attributes and preserve parent/child relationships when nesting.
+  - Use `DSPy::Observability.enabled?` guard to validate behaviour both with and without OTEL.
 
 4. **Developer documentation**
-   - Document Phase 0 plan for future contributors (this ADR).
-   - Provide usage examples showing how later phases (engine, proposer, adapter) will call the helpers.
+   - Documented in this ADR and referenced in issue #107.
 
 ## Consequences
 - Later implementation phases can focus on business logic while calling `GEPA::Telemetry` helpers to emit spans.
 - Ensures parity with Python observability before logic lands, reducing risk of missing instrumentation.
 - Introducing telemetry first allows us to write tests that assert span names/attributes even if the optimizer logic is still a stub.
 
-## Phase 0 Deliverables Checklist
-- [ ] `GEPA::Telemetry` module plus helpers.
-- [ ] Unit tests covering nested span behaviour and attribute propagation.
-- [ ] Placeholder `spec/fixtures/gepa/telemetry_events.yml` (if needed) to validate logging output.
-- [ ] Documentation updates (this ADR referenced from CHANGELOG once merged).
+## Status by Phase
 
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 0 | Telemetry primitives & ADR | ✅ Complete |
+| 1 | Core primitives & Pareto utils | ✅ Complete |
+| 2 | Strategies (selectors, batch sampler, instruction proposer) | ✅ Complete |
+| 3 | Reflective mutation proposer | ✅ Complete |
+| 4 | Engine & API | ✅ Complete |
+| 5 | DSPy teleprompter integration | ✅ Complete |
+| 6 | Logging & experiment tracker shims (Ruby) | ⏳ In progress |
+| 7 | Parity hardening & documentation | ⏳ Pending |
+
+## Next Steps
+
+- Phase 6: Port `gepa/logging` (Ruby shims only). Provide optional hooks for external trackers without introducing new dependencies. Add unit specs to ensure telemetry toggles behave.
+- Phase 7: Finish parity hardening, add end-to-end smoke spec (via `DSPy::Teleprompt::GEPA`) and update docs/CHANGELOG. Cross-check against Python parity suite where possible.
