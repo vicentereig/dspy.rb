@@ -383,7 +383,6 @@ These examples show real usage patterns and can be run with your API keys.
 
 ### Other Optimization Methods
 - **[MIPROv2](/optimization/miprov2/)** - Alternative optimization algorithm for comparison with GEPA
-- **[Simple Optimizer](/optimization/simple-optimizer/)** - Quick random search optimization for getting started
 - **[Prompt Optimization](/optimization/prompt-optimization/)** - General principles of programmatic prompt improvement
 
 ### Evaluation & Metrics

@@ -24,7 +24,7 @@ DSPy.rb treats prompts as first-class objects that can be manipulated, analyzed,
 DSPy.rb provides:
 - **Prompt Objects**: Structured representation of prompts with instruction and examples
 - **Programmatic Manipulation**: Methods to modify prompts systematically
-- **Integration with Optimization**: Automatic prompt improvement through MIPROv2 (with Bayesian optimization) and SimpleOptimizer
+- **Integration with Optimization**: Automatic prompt improvement through MIPROv2 (with Bayesian optimization)
 - **Schema Awareness**: Prompts understand input/output types from signatures
 
 ## Prompt Objects
@@ -172,25 +172,6 @@ optimized_prompt = optimized_predictor.prompt
 puts "Original instruction: #{predictor.prompt.instruction}"
 puts "Optimized instruction: #{optimized_prompt.instruction}"
 puts "Few-shot examples: #{optimized_prompt.few_shot_examples.size}"
-```
-
-### SimpleOptimizer for Quick Prompt Improvement
-
-```ruby
-# Quick prompt optimization
-optimizer = DSPy::SimpleOptimizer.new(signature: ClassifyText)
-
-result = optimizer.optimize(examples: training_examples) do |predictor, val_examples|
-  # Custom evaluation logic
-  correct = 0
-  val_examples.each do |example|
-    prediction = predictor.call(text: example.text)
-    correct += 1 if prediction.sentiment == example.expected_sentiment
-  end
-  correct.to_f / val_examples.size
-end
-
-improved_prompt = result.optimized_program.prompt
 ```
 
 ## Prompt Analysis
@@ -526,4 +507,3 @@ optimized_prompt = result.optimized_program.prompt
 puts "Automatically optimized instruction: #{optimized_prompt.instruction}"
 puts "Automatically selected examples: #{optimized_prompt.few_shot_examples.size}"
 ```
-
