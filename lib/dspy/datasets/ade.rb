@@ -17,15 +17,36 @@ module DSPy
 
       DEFAULT_CACHE_DIR = File.expand_path('../../../tmp/dspy_datasets/ade', __dir__)
 
-      def examples(split: 'train', limit: 200, offset: 0, cache_dir: default_cache_dir)
-        rows = fetch_rows(split: split, limit: limit, offset: offset, cache_dir: cache_dir)
+      MAX_BATCH_SIZE = 100
 
-        rows.map do |row|
-          {
-            'text' => row.fetch('text', ''),
-            'label' => row.fetch('label', 0).to_i
-          }
+      def examples(split: 'train', limit: 200, offset: 0, cache_dir: default_cache_dir)
+        remaining = limit
+        current_offset = offset
+        collected = []
+
+        while remaining.positive?
+          batch_size = [remaining, MAX_BATCH_SIZE].min
+          rows = fetch_rows(
+            split: split,
+            limit: batch_size,
+            offset: current_offset,
+            cache_dir: cache_dir
+          )
+
+          break if rows.empty?
+
+          collected.concat(rows.map do |row|
+            {
+              'text' => row.fetch('text', ''),
+              'label' => row.fetch('label', 0).to_i
+            }
+          end)
+
+          current_offset += batch_size
+          remaining -= batch_size
         end
+
+        collected
       end
 
       def fetch_rows(split:, limit:, offset:, cache_dir:)
