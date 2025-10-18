@@ -630,6 +630,16 @@ config.optimization_strategy = :adaptive
 config.optimization_strategy = :bayesian
 ```
 
+### Strategy Trade-offs
+
+Choosing the right strategy depends on your trial budget and how deterministic your metric is:
+
+- **Greedy (`:greedy`)** — lowest token spend. Explore each candidate once, then exploit the best so far. Ideal for smoke tests, daily regressions, or when you only have ~3–5 trials. Won’t recover well from noisy metrics because it never revisits candidates.
+- **Adaptive (`:adaptive`)** — balanced default. Uses temperature-based softmax sampling so it continues to explore while scores are noisy, then converges. Use this when you have 6–15 trials and want a “set it and forget it” policy.
+- **Bayesian (`:bayesian`)** — highest quality, highest compute. Trains a Gaussian Process after every update, which adds \(O(n^3)\) modeling cost and makes runs inherently sequential. Only pays off when you have ≥10 trials, reasonably smooth metrics, and care about squeezing out the last few percentage points. Expect 1–2 s extra Ruby time per trial for GP fitting.
+
+Tip: start with `:adaptive`, switch to `:greedy` for quick CI checks, and reserve `:bayesian` for longer runs (nightly, staging) once you’ve confirmed the metric is stable.
+
 ### Candidate Configuration Types
 
 MIPROv2 generates and evaluates four types of candidate configurations:
