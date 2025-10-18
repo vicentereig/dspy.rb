@@ -818,6 +818,19 @@ end
 - Handle per-predictor demo set generation
 - Test with modules containing multiple predictors
 
+#### Predictor Discovery Parity (New Gap)
+- Add Python-parity `DSPy::Module#named_predictors` / `#predictors` helpers so optimizers can traverse nested `DSPy::Predict` instances.
+- Update composite modules (`DSPy::ReAct`, `DSPy::CodeAct`) to expose their internal predictors (thought generator, observation processor, extract step).
+- Refactor `DSPy::ChainOfThought` to maintain a persistent internal predictor (or override `predictors`) so its instruction is discoverable.
+- Add unit tests ensuring MIPROv2 sees the correct predictor count for each composite module and propagates instruction maps accordingly.
+
+### Documentation Updates Needed
+- ✅ Removed SimpleOptimizer references (navigation, guides, optimization index)
+- ✅ Updated optimization overview docs to emphasize MIPROv2 / GEPA
+- ⏳ After predictor discovery lands, document Layer 5 improvements (instruction history, minibatching knobs, cross-predictor combos)
+- ⏳ Author “Optimizing ReAct / CodeAct / ChainOfThought with MIPROv2” section showing configuration tips and limitations
+- ⏳ Verify observability/OpenTelemetry instrumentation still emits expected optimization events after refactors and update docs if new metrics are exposed
+
 #### Phase 4: Enhanced Strategies
 - Implement metric-based filtering for Shuffled strategy
 - Add strategy for curriculum learning (easy to hard)
