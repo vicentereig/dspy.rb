@@ -810,6 +810,64 @@ RSpec.describe DSPy::Teleprompt::MIPROv2 do
     end
   end
 
+  describe 'trial management data tracking' do
+    it 'records trial logs and parameter score summaries during optimization' do
+      mock_lm = double('MockLM', model: 'mock-lm')
+      allow(DSPy).to receive(:current_lm).and_return(mock_lm)
+
+      allow_any_instance_of(DSPy::Propose::GroundedProposer).to receive(:propose_instructions).and_return(
+        DSPy::Propose::GroundedProposer::ProposalResult.new(
+          candidate_instructions: [
+            "Analyze the question and context step by step to provide a comprehensive answer with detailed reasoning",
+            "Examine the provided context carefully and extract key information to formulate a well-reasoned response"
+          ],
+          analysis: {
+            complexity_indicators: { requires_reasoning: true },
+            common_themes: ["question_answering", "analytical_reasoning"]
+          },
+          metadata: { model: "test", generation_timestamp: Time.now.iso8601 }
+        )
+      )
+
+      allow(DSPy::Teleprompt::Utils).to receive(:create_n_fewshot_demo_sets).and_return(
+        {
+          0 => [
+            training_examples.take(2).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) },
+            training_examples.drop(1).take(2).map { |ex| DSPy::FewShotExample.new(input: ex.input_values, output: ex.expected_values) }
+          ]
+        }
+      )
+
+      mipro = DSPy::Teleprompt::MIPROv2.new
+      mipro.configure do |config|
+        config.num_trials = 2
+        config.num_instruction_candidates = 2
+        config.bootstrap_sets = 1
+        config.optimization_strategy = :greedy
+      end
+
+      result = mipro.compile(test_program, trainset: training_examples, valset: validation_examples)
+      trace = result.optimization_trace
+
+      expect(trace[:trial_logs]).to be_a(Hash)
+      expect(trace[:trial_logs]).not_to be_empty
+
+      first_log_entry = trace[:trial_logs].values.first
+      expect(first_log_entry).to include(:candidate_id, :candidate_type, :evaluation_type, :score)
+      expect(first_log_entry[:evaluation_type]).to eq(:full)
+      expect(first_log_entry[:score]).to be_a(Float)
+
+      expect(trace[:param_score_dict]).to be_a(Hash)
+      expect(trace[:param_score_dict]).not_to be_empty
+
+      first_param_scores = trace[:param_score_dict].values.first
+      expect(first_param_scores).to be_an(Array)
+      expect(first_param_scores.first).to include(:score, :evaluation_type)
+
+      expect(trace[:fully_evaled_param_combos]).to be_a(Hash)
+    end
+  end
+
   describe 'early stopping' do
     it 'stops when no improvement for patience trials' do
       mipro = DSPy::Teleprompt::MIPROv2.new
