@@ -57,11 +57,15 @@ module DSPy
       class PredictAdapter
         extend T::Sig
 
+        ReflectionLMType = T.type_alias do
+          T.any(DSPy::ReflectionLM, T.proc.params(arg0: String).returns(String))
+        end
+
         sig do
           params(
             student: DSPy::Module,
             metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped),
-            reflection_lm: T.nilable(T.untyped)
+            reflection_lm: T.nilable(ReflectionLMType)
           ).void
         end
         def initialize(student, metric, reflection_lm: nil)

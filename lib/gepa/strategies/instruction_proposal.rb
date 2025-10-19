@@ -46,7 +46,7 @@ module GEPA
 
       sig { params(output: String).returns(T::Hash[String, String]) }
       def self.output_extractor(output)
-        stripped = output.strip
+        stripped = output.to_s.strip
         return { 'new_instruction' => stripped } if stripped.count('```') < 2
 
         first = stripped.index('```')
@@ -69,11 +69,9 @@ module GEPA
         prompt = prompt_renderer(input_dict)
         raw_output = if lm.respond_to?(:call)
           lm.call(prompt)
-        elsif lm.respond_to?(:raw_chat)
+        else
           response = lm.raw_chat([{ role: 'user', content: prompt }])
           response.respond_to?(:content) ? response.content : response
-        else
-          raise ArgumentError, 'Reflection LM must respond to #call or #raw_chat'
         end
 
         output_extractor(raw_output.to_s)
