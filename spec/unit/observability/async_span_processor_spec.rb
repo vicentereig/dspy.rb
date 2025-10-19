@@ -6,7 +6,7 @@ RSpec.describe DSPy::Observability::AsyncSpanProcessor do
   let(:mock_exporter) { double('exporter') }
   let(:processor) { described_class.new(mock_exporter, export_interval: 0) } # Disable timer for tests
   
-  describe '#export_spans_with_retry_async' do
+  describe '#export_spans_with_retry' do
     it 'logs the number of spans being exported' do
       spans = [double('span1'), double('span2'), double('span3')]
       span_data = [double('span_data1'), double('span_data2'), double('span_data3')]
@@ -30,7 +30,7 @@ RSpec.describe DSPy::Observability::AsyncSpanProcessor do
         export_result: 'SUCCESS'
       )
       
-      processor.send(:export_spans_with_retry_async, spans)
+      processor.send(:export_spans_with_retry, spans)
     end
     
     it 'logs export failures with retry attempts' do
@@ -66,10 +66,9 @@ RSpec.describe DSPy::Observability::AsyncSpanProcessor do
         export_result: 'SUCCESS'
       )
       
-      # Mock async sleep
-      allow(Async::Task).to receive_message_chain(:current, :sleep)
+      allow(processor).to receive(:sleep)
       
-      processor.send(:export_spans_with_retry_async, spans)
+      processor.send(:export_spans_with_retry, spans)
     end
   end
   

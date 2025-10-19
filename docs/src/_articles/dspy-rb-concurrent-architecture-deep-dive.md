@@ -140,12 +140,12 @@ flowchart TB
 - **Pattern matching**: Wildcards support (`llm.*`, `optimization.*`, `*`)
 - **Automatic instrumentation**: OpenTelemetry spans created without code changes
 - **Zero configuration**: Langfuse export via environment variables only
-- **Thread-safe design**: Concurrent access with mutex protection
+- **Thread-safe design**: Queue + single-thread executor protect exports
 - **Error isolation**: Failed listeners don't affect event processing
 
 ### 3. Isolated Telemetry Processing: Battle-Tested Architecture
 
-**Following Industry Standards**: DSPy.rb's `AsyncSpanProcessor` implements the same battle-tested pattern that monitoring agents like New Relic have used successfully for over a decade. This approach provides truly non-blocking telemetry export using isolated background threads and queues.
+**Following Industry Standards**: DSPy.rb's `AsyncSpanProcessor` implements the same battle-tested pattern that monitoring agents like New Relic have used successfully for over a decade. The processor keeps telemetry work off the hot path using a dedicated executor thread and queue.
 
 > **New Relic's Proven Approach**: "The New Relic Ruby agent spawns a background thread within each of your application's processes. These background threads collect data from your processes. The data is calculated into averages and sent to New Relic's servers every 60 seconds." - New Relic Documentation
 
@@ -154,6 +154,11 @@ DSPy.rb adapts this proven architecture for LLM observability:
 ```ruby
 # From lib/dspy/observability/async_span_processor.rb
 class AsyncSpanProcessor
+  def initialize(exporter, ...)
+    @queue = Thread::Queue.new
+    @export_executor = Concurrent::SingleThreadExecutor.new
+  end
+
   def on_finish(span)
     # Non-blocking enqueue with overflow protection
     if @queue.size >= @queue_size
@@ -162,18 +167,24 @@ class AsyncSpanProcessor
     end
     
     @queue.push(span)
-    trigger_export_if_batch_full  # Background export
+    trigger_export_if_batch_full  # Schedule background export
   end
   
   private
   
-  def export_spans_with_retry_async(spans)
+  def export_spans_with_retry(spans)
+    span_data_batch = spans.map(&:to_span_data)
+    retries = 0
+    
     loop do
       result = @exporter.export(span_data_batch)
       return result if result == SUCCESS
       
-      # Async sleep for exponential backoff - never blocks main thread
-      Async::Task.current.sleep(backoff_seconds)
+      backoff_seconds = 0.1 * (2 ** (retries + 1))
+      DSPy.log('observability.export_retry', attempt: retries + 1, backoff_seconds:)
+      
+      # Sleep happens on the executor thread, so producers never block
+      sleep(backoff_seconds)
       retries += 1
     end
   end
@@ -184,20 +195,20 @@ end
 
 | Component | New Relic Agent | DSPy.rb AsyncSpanProcessor |
 |-----------|----------------|----------------------------|
-| Background Thread | ✓ Harvest thread | ✓ Export task thread |
+| Background Thread | ✓ Harvest thread | ✓ Single-thread executor worker |
 | Collection Interval | 60 seconds | ✓ 60 seconds (configurable) |
 | Queue-based Collection | ✓ Event queues | ✓ Thread::Queue with overflow |
 | Batch Export | ✓ Harvest cycles | ✓ Batched span export |
-| Retry Logic | ✓ Network resilience | ✓ Exponential backoff |
-| Zero Main Thread Impact | ✓ Background only | ✓ True async processing |
+| Retry Logic | ✓ Network resilience | ✓ Exponential backoff on worker |
+| Zero Main Thread Impact | ✓ Background only | ✓ Worker-only blocking |
 | Memory Protection | ✓ Sampling limits | ✓ Queue limits with FIFO drop |
 
 **Performance Characteristics**:
 - **<50ms overhead** - matching industry standards for production monitoring
 - **Background batch export** with configurable intervals (60-second default)
 - **Queue-based collection** prevents memory issues under load (New Relic's proven pattern)
-- **True non-blocking operation** - main thread never waits for export
-- **Resilient retry logic** with exponential backoff using async sleep
+- **True non-blocking operation** - main threads never wait for export; only the worker sleeps
+- **Resilient retry logic** with exponential backoff handled on the worker thread
 
 ## Production Trade-offs: Memory Protection vs. Data Completeness
 
@@ -238,10 +249,10 @@ flowchart LR
     LM3 --> COT3["ChainOfThought<br/>Processing"] --> J3["Joke Action"]
     LM4 --> COT4["ChainOfThought<br/>Processing"] --> J4["Joke Action"]
     
-    LM1 -. async telemetry .-> T1["Background Export"]
-    LM2 -. async telemetry .-> T2["Background Export"]
-    LM3 -. async telemetry .-> T3["Background Export"]
-    LM4 -. async telemetry .-> T4["Background Export"]
+    LM1 -. telemetry queue .-> T1["Dedicated Export Worker"]
+    LM2 -. telemetry queue .-> T2["Dedicated Export Worker"]
+    LM3 -. telemetry queue .-> T3["Dedicated Export Worker"]
+    LM4 -. telemetry queue .-> T4["Dedicated Export Worker"]
     
     MD1 == "barrier.wait" ==> AB
     RO2 == "barrier.wait" ==> AB  
@@ -437,4 +448,4 @@ DSPy.rb demonstrates that you don't need to reinvent telemetry architecture—by
 
 ---
 
-*This architectural analysis is based on DSPy.rb v0.25.0+. The concurrent processing and async telemetry features represent the maturation of Ruby's async ecosystem for AI applications.*
+*This architectural analysis is based on DSPy.rb v0.25.0+. The concurrent processing and executor-driven telemetry features represent the maturation of Ruby's async ecosystem for AI applications.*

@@ -90,7 +90,7 @@ DSPy.rb builds on this solid foundation, providing async-aware features througho
 
 - [Concurrent predictions](https://vicentereig.github.io/dspy.rb/core-concepts/predictors/#concurrent-predictions) using `Async::Barrier`
 - Fiber-local context management for clean request isolation
-- Background telemetry processing with automatic retry handling
+- Background telemetry processing via a dedicated export worker with automatic retry handling
 - Non-blocking observability that doesn't slow down your application
 
 ## Implementing Concurrent Processing

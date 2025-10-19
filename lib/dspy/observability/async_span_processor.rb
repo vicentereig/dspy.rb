@@ -1,15 +1,14 @@
 # frozen_string_literal: true
 
-require 'async'
-require 'async/queue'
-require 'async/barrier'
+require 'concurrent-ruby'
+require 'thread'
 require 'opentelemetry/sdk'
 require 'opentelemetry/sdk/trace/export'
 
 module DSPy
   class Observability
-    # AsyncSpanProcessor provides truly non-blocking span export using Async gem.
-    # Spans are queued and exported using async tasks with fiber-based concurrency.
+    # AsyncSpanProcessor provides non-blocking span export using concurrent-ruby.
+    # Spans are queued and exported on a dedicated single-thread executor to avoid blocking clients.
     # Implements the same interface as OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor
     class AsyncSpanProcessor
       # Default configuration values
@@ -33,12 +32,12 @@ module DSPy
         @export_batch_size = export_batch_size
         @shutdown_timeout = shutdown_timeout
         @max_retries = max_retries
+        @export_executor = Concurrent::SingleThreadExecutor.new
 
         # Use thread-safe queue for cross-fiber communication
         @queue = Thread::Queue.new
-        @barrier = Async::Barrier.new
         @shutdown_requested = false
-        @export_task = nil
+        @timer_thread = nil
 
         start_export_task
       end
@@ -85,22 +84,35 @@ module DSPy
 
         begin
           # Export any remaining spans
-          export_remaining_spans
+          result = export_remaining_spans(timeout: timeout, export_all: true)
 
-          # Shutdown exporter
-          @exporter.shutdown(timeout: timeout)
+          future = Concurrent::Promises.future_on(@export_executor) do
+            @exporter.shutdown(timeout: timeout)
+          end
+          future.value!(timeout)
 
-          OpenTelemetry::SDK::Trace::Export::SUCCESS
+          result
         rescue => e
           DSPy.log('observability.shutdown_error', error: e.message, class: e.class.name)
           OpenTelemetry::SDK::Trace::Export::FAILURE
+        ensure
+          begin
+            @timer_thread&.join(timeout)
+            @timer_thread&.kill if @timer_thread&.alive?
+          rescue StandardError
+            # ignore timer shutdown issues
+          end
+          @export_executor.shutdown
+          unless @export_executor.wait_for_termination(timeout)
+            @export_executor.kill
+          end
         end
       end
 
       def force_flush(timeout: nil)
         return OpenTelemetry::SDK::Trace::Export::SUCCESS if @queue.empty?
 
-        export_remaining_spans
+        export_remaining_spans(timeout: timeout, export_all: true)
       end
 
       private
@@ -109,19 +121,15 @@ module DSPy
         return if @export_interval <= 0 # Disable timer for testing
         return if ENV['DSPY_DISABLE_OBSERVABILITY'] == 'true' # Skip in tests
 
-        # Start timer-based export task in background
-        Thread.new do
+        @timer_thread = Thread.new do
           loop do
             break if @shutdown_requested
 
             sleep(@export_interval)
+            break if @shutdown_requested
+            next if @queue.empty?
 
-            # Export queued spans in sync block
-            unless @queue.empty?
-              Sync do
-                export_queued_spans
-              end
-            end
+            schedule_async_export(export_all: true)
           end
         rescue => e
           DSPy.log('observability.export_task_error', error: e.message, class: e.class.name)
@@ -131,39 +139,56 @@ module DSPy
       def trigger_export_if_batch_full
         return if @queue.size < @export_batch_size
         return if ENV['DSPY_DISABLE_OBSERVABILITY'] == 'true' # Skip in tests
-
-        # Trigger immediate export in background
-        Thread.new do
-          Sync do
-            export_queued_spans
-          end
-        rescue => e
-          DSPy.log('observability.batch_export_error', error: e.message)
-        end
+        schedule_async_export(export_all: false)
       end
 
-      def export_remaining_spans
-        spans = []
+      def export_remaining_spans(timeout: nil, export_all: true)
+        return OpenTelemetry::SDK::Trace::Export::SUCCESS if @queue.empty?
 
-        # Drain entire queue
-        until @queue.empty?
-          begin
-            spans << @queue.pop(true) # non-blocking pop
-          rescue ThreadError
-            break
-          end
+        future = Concurrent::Promises.future_on(@export_executor) do
+          export_queued_spans_internal(export_all: export_all)
         end
 
-        return OpenTelemetry::SDK::Trace::Export::SUCCESS if spans.empty?
+        future.value!(timeout || @shutdown_timeout)
+      rescue => e
+        DSPy.log('observability.export_error', error: e.message, class: e.class.name)
+        OpenTelemetry::SDK::Trace::Export::FAILURE
+      end
 
-        export_spans_with_retry(spans)
+      def schedule_async_export(export_all: false)
+        return if @shutdown_requested
+
+        @export_executor.post do
+          export_queued_spans_internal(export_all: export_all)
+        rescue => e
+          DSPy.log('observability.batch_export_error', error: e.message, class: e.class.name)
+        end
       end
 
       def export_queued_spans
+        export_queued_spans_internal(export_all: false)
+      end
+
+      def export_queued_spans_internal(export_all: false)
+        result = OpenTelemetry::SDK::Trace::Export::SUCCESS
+
+        loop do
+          spans = dequeue_spans(export_all ? @queue_size : @export_batch_size)
+          break if spans.empty?
+
+          result = export_spans_with_retry(spans)
+          break if result == OpenTelemetry::SDK::Trace::Export::FAILURE
+
+          break unless export_all || @queue.size >= @export_batch_size
+        end
+
+        result
+      end
+
+      def dequeue_spans(limit)
         spans = []
 
-        # Collect up to batch size
-        @export_batch_size.times do
+        limit.times do
           begin
             spans << @queue.pop(true) # non-blocking pop
           rescue ThreadError
@@ -171,12 +196,7 @@ module DSPy
           end
         end
 
-        return if spans.empty?
-
-        # Export using async I/O
-        Sync do
-          export_spans_with_retry_async(spans)
-        end
+        spans
       end
 
       def export_spans_with_retry(spans)
@@ -225,52 +245,6 @@ module DSPy
         OpenTelemetry::SDK::Trace::Export::FAILURE
       end
 
-      def export_spans_with_retry_async(spans)
-        retries = 0
-
-        # Convert spans to SpanData objects (required by OTLP exporter)
-        span_data_batch = spans.map(&:to_span_data)
-        
-        # Log export attempt
-        DSPy.log('observability.export_attempt',
-                 spans_count: span_data_batch.size,
-                 batch_size: span_data_batch.size)
-
-        loop do
-          # Use current async task for potentially non-blocking export
-          result = @exporter.export(span_data_batch, timeout: @shutdown_timeout)
-
-          case result
-          when OpenTelemetry::SDK::Trace::Export::SUCCESS
-            DSPy.log('observability.export_success',
-                     spans_count: span_data_batch.size,
-                     export_result: 'SUCCESS')
-            return result
-          when OpenTelemetry::SDK::Trace::Export::FAILURE
-            retries += 1
-            if retries <= @max_retries
-              backoff_seconds = 0.1 * (2 ** retries)
-              DSPy.log('observability.export_retry',
-                       attempt: retries,
-                       spans_count: span_data_batch.size,
-                       backoff_seconds: backoff_seconds)
-              # Async sleep for exponential backoff
-              Async::Task.current.sleep(backoff_seconds)
-              next
-            else
-              DSPy.log('observability.export_failed',
-                       spans_count: span_data_batch.size,
-                       retries: retries)
-              return result
-            end
-          else
-            return result
-          end
-        end
-      rescue => e
-        DSPy.log('observability.export_error', error: e.message, class: e.class.name)
-        OpenTelemetry::SDK::Trace::Export::FAILURE
-      end
     end
   end
 end

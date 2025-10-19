@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Observability in Action: Langfuse Tracing"  
-description: "See how DSPy.rb's async telemetry system provides real-time visibility into your LLM workflows without the complexity"
+description: "See how DSPy.rb's executor-driven telemetry keeps real-time visibility without slowing down your LLM workflows"
 date: 2025-09-07
 author: "Vicente Reig"
 category: "Production"
@@ -12,7 +12,7 @@ image: /images/og/observability-in-action-langfuse.png
 
 > You don't need Neo's Matrix X-Ray Vision to understand what's going on in your workflows and agents.
 
-When building production LLM applications, visibility into what's happening under the hood isn't optional—it's essential. DSPy.rb's observability system, enhanced with async telemetry processing, provides that visibility without the typical complexity.
+When building production LLM applications, visibility into what's happening under the hood isn't optional—it's essential. DSPy.rb's observability system, powered by an executor-driven telemetry pipeline, provides that visibility without the typical complexity.
 
 ## The Reality of LLM Observability
 
@@ -58,32 +58,37 @@ This trace detail view shows what happens when processing a single customer requ
 - **Token Usage**: Automatic tracking of prompt and completion tokens
 - **Timing Information**: Precise duration measurements for optimization
 
-## The Async Advantage
+## Serialized Export Reliability
 
-The telemetry system leverages DSPy.rb's async architecture for **non-blocking observability**:
+The telemetry system now routes exports through a dedicated `Concurrent::SingleThreadExecutor`, keeping observability non-blocking while guaranteeing only one OTLP HTTP client is active at a time:
 
 ```ruby
 # From lib/dspy/observability/async_span_processor.rb
 class AsyncSpanProcessor
+  def initialize(exporter, ...)
+    @export_executor = Concurrent::SingleThreadExecutor.new
+    @queue = Thread::Queue.new
+  end
+
   def on_finish(span)
-    @queue.push(span)  # Non-blocking enqueue
+    @queue.push(span)  # Non-blocking enqueue with overflow protection
     trigger_export_if_batch_full
   end
-  
+
   private
-  
-  def export_spans_with_retry_async(spans)
-    Async::Task.current.sleep(backoff_seconds)  # Async retry
+
+  def schedule_async_export(export_all: false)
+    @export_executor.post { export_queued_spans_internal(export_all:) }
   end
 end
 ```
 
-This means:
+This delivers:
 
-1. **Zero performance impact**: Telemetry export happens in background fibers
-2. **Resilient**: Failed exports retry with exponential backoff using `Async::Task.current.sleep`
-3. **Batched**: Spans are collected and exported in batches for efficiency
-4. **Overflow protection**: Queue management prevents memory issues
+1. **Zero performance impact**: Export work runs on the executor thread, never blocking callers.
+2. **Resilience**: Failed exports retry with exponential backoff while the worker thread sleeps between attempts.
+3. **Batched efficiency**: Spans are drained from the queue in batches before being exported.
+4. **Overflow protection**: Queue limits and FIFO dropping prevent memory issues.
 
 ## What You Get For Free
 
@@ -115,7 +120,7 @@ Using the coffee shop agent example, we can see the observability overhead:
 - **Concurrent execution**: ~7.5 seconds (measured)
 - **Telemetry overhead**: <50ms additional (negligible)
 
-The async telemetry design ensures observability doesn't slow down your applications.
+The executor-driven telemetry design ensures observability doesn't slow down your applications.
 
 ## Beyond Basic Monitoring
 
@@ -142,10 +147,10 @@ This enables:
 
 ## The Bottom Line
 
-DSPy.rb's observability isn't an add-on feature—it's architectural. The async telemetry system provides production-grade visibility without the typical complexity or performance costs.
+DSPy.rb's observability isn't an add-on feature—it's architectural. The executor-driven telemetry system provides production-grade visibility without the typical complexity or performance costs.
 
 You get Matrix-level visibility into your LLM workflows, but without needing to be Neo to understand what's happening.
 
 ---
 
-*This feature is available in DSPy.rb v0.25.0+. The async telemetry optimizations are part of the ongoing improvements to DSPy.rb's production readiness.*
+*This feature is available in DSPy.rb v0.25.0+. The concurrency-aware telemetry optimizations are part of the ongoing improvements to DSPy.rb's production readiness.*

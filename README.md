@@ -171,7 +171,7 @@ For LLMs and AI assistants working with DSPy.rb:
 
 ### Production Features
 - **[Storage System](docs/src/production/storage.md)** - Persistence and optimization result storage
-- **[Observability](docs/src/production/observability.md)** - Zero-config Langfuse integration and structured logging
+- **[Observability](docs/src/production/observability.md)** - Zero-config Langfuse integration with a dedicated export worker that never blocks your LLMs
 
 ### Advanced Usage
 - **[Complex Types](docs/src/advanced/complex-types.md)** - Sorbet type integration with automatic coercion for structs, enums, and arrays
