@@ -11,9 +11,11 @@ This example mirrors the MIPROv2 ADE optimizer, but uses `DSPy::Teleprompt::GEPA
 ## Run
 
 ```bash
-bundle exec ruby examples/ade_optimizer_gepa/main.rb --limit 200 --max-metric-calls 600 --minibatch-size 6
+bundle exec ruby examples/ade_optimizer_gepa/main.rb --limit 30 --max-metric-calls 600 --minibatch-size 6
 ```
 
-> **Budget tip:** ensure `--max-metric-calls` exceeds the validation set size (plus a couple of minibatches). The script auto-adjusts upward if the budget is too small.
+> **Notes:**
+> - GEPA starts from the default DSPy prompt; improvements depend on the dataset split and reflection budget.
+> - Ensure `--max-metric-calls` exceeds the validation set size (plus a couple of minibatches). The script auto-adjusts upward if the budget is too small.
 
 Use `--help` to see all CLI options. Results and logs are stored under `examples/ade_optimizer_gepa/results/`.

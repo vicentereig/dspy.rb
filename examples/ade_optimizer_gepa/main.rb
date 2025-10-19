@@ -124,7 +124,7 @@ module ADEExampleGEPA
 end
 
 options = {
-  limit: 300,
+  limit: 30,
   max_metric_calls: 600,
   minibatch_size: 6,
   seed: 42
@@ -133,7 +133,7 @@ options = {
 OptionParser.new do |parser|
   parser.banner = 'Usage: bundle exec ruby examples/ade_optimizer_gepa/main.rb [options]'
 
-  parser.on('-l', '--limit N', Integer, 'Number of ADE examples to download (default: 300)') do |limit|
+  parser.on('-l', '--limit N', Integer, 'Number of ADE examples to download (default: 30)') do |limit|
     options[:limit] = limit
   end
 
@@ -159,8 +159,6 @@ unless ENV['OPENAI_API_KEY']
   warn '⚠️  Please set OPENAI_API_KEY in your environment before running this example.'
   exit 1
 end
-
-ENV['DSPY_DISABLE_OBSERVABILITY'] ||= 'true'
 
 DSPy.configure do |config|
   config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
@@ -203,11 +201,10 @@ if options[:max_metric_calls] < min_required_calls
 end
 
 baseline_program = DSPy::Predict.new(ADEExampleGEPA::ADETextClassifier)
-baseline_program = baseline_program.with_instruction(
-  <<~INSTRUCTION.strip
-    Classify the text by always responding with "0" regardless of the content.
-  INSTRUCTION
-)
+baseline_instruction = baseline_program.prompt.instruction rescue nil
+snippet_for = lambda do |text|
+  text.to_s.lines.map(&:strip).find { |line| !line.empty? }
+end
 baseline_metrics = ADEExampleGEPA.evaluate(baseline_program, test_examples)
 
 puts "\n📈 Baseline performance (unoptimized prompt):"
@@ -215,6 +212,10 @@ puts "   • Accuracy : #{(baseline_metrics.accuracy * 100).round(2)}%"
 puts "   • Precision: #{(baseline_metrics.precision * 100).round(2)}%"
 puts "   • Recall   : #{(baseline_metrics.recall * 100).round(2)}%"
 puts "   • F1 Score : #{(baseline_metrics.f1 * 100).round(2)}%"
+if (line = snippet_for.call(baseline_instruction))
+  puts "\n📝 Baseline instruction snippet:"
+  puts line
+end
 
 # Metric returns DSPy::Prediction so GEPA sees both score and textual feedback.
 metric = lambda do |example, prediction|
@@ -310,6 +311,10 @@ puts "   • #{csv_path}"
 
 puts "\n✨ Sample optimized instruction snippet:"
 instruction = optimized_program.prompt.instruction rescue nil
-puts instruction ? instruction.lines.first.to_s.strip : '(no instruction recorded)'
+if (line = snippet_for.call(instruction))
+  puts line
+else
+  puts '(no instruction recorded)'
+end
 
 puts "\nDone!"
