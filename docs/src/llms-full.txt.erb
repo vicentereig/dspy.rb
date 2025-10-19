@@ -1443,6 +1443,35 @@ puts "Optimized program: #{result.optimized_program}"
 puts "Optimization history: #{result.history.length} trials"
 ```
 
+### GEPA Optimization
+
+Genetic-Pareto reflective prompt evolution that replays traces, collects feedback, and asks a reflection LM to rewrite instructions:
+
+```ruby
+feedback_map = {
+  'self' => ->(predictor_output:, predictor_inputs:, module_inputs:, module_outputs:, captured_trace:) do
+    DSPy::Prediction.new(
+      score: predictor_output[:answer] == module_outputs[:answer] ? 1.0 : 0.2,
+      feedback: "Tie feedback to the original question: #{module_inputs.input_values[:question]}"
+    )
+  end
+}
+
+optimizer = DSPy::Teleprompt::GEPA.new(
+  metric: metric,
+  feedback_map: feedback_map,
+  experiment_tracker: GEPA::Logging::ExperimentTracker.new
+)
+
+program = DSPy::Predict.new(YourSignature)
+result = optimizer.compile(program, trainset: train_examples, valset: val_examples)
+
+puts "GEPA trials: #{result.history.count}"
+puts "Latest reflection: #{result.history.last&.reflection}"
+```
+
+The ADE demo at `examples/ade_optimizer_gepa/main.rb` shows GEPA running with budgets, telemetry, and per-predictor traces.
+
 
 ### Evaluation Framework
 
