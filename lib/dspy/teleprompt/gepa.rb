@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'logger'
+require 'set'
 require 'sorbet-runtime'
 require_relative 'teleprompter'
 require_relative 'utils'
@@ -14,7 +15,9 @@ module DSPy
         max_metric_calls: 32,
         minibatch_size: 2,
         perfect_score: 1.0,
-        skip_perfect_score: true
+        skip_perfect_score: true,
+        use_merge: true,
+        max_merge_invocations: 5
       }.freeze
 
       def self.configure
@@ -73,24 +76,37 @@ module DSPy
           @metric = metric
           @reflection_lm = reflection_lm
 
-          name, = @student.named_predictors.first
-          @predictor_name = name
-          @seed_instruction = extract_instruction(@student)
+          @predictor_entries = resolve_predictors(@student)
+          @predictor_names = @predictor_entries.map(&:first)
         end
 
         sig { returns(T::Hash[String, String]) }
         def seed_candidate
-          { @predictor_name => @seed_instruction }
+          @predictor_entries.each_with_object({}) do |(name, predictor), memo|
+            memo[name] = extract_instruction(predictor)
+          end
         end
 
         sig { params(candidate: T::Hash[String, String]).returns(DSPy::Module) }
         def build_program(candidate)
-          new_instruction = candidate.fetch(@predictor_name)
-          if @student.respond_to?(:with_instruction)
-            @student.with_instruction(new_instruction)
-          else
-            raise ArgumentError, "Student module must respond to #with_instruction"
+          program = clone_module(@student)
+          duplicate_predictors!(program)
+
+          predictor_map = resolve_predictors(program).to_h
+          candidate.each do |name, new_instruction|
+            predictor = predictor_map[name]
+            next unless predictor
+
+            updated = apply_instruction_to_predictor(predictor, new_instruction)
+            if predictor.equal?(program)
+              program = updated
+            elsif !updated.equal?(predictor)
+              replace_reference(program, predictor, updated)
+            end
+            predictor_map[name] = updated
           end
+
+          program
         end
 
         sig do
@@ -110,7 +126,7 @@ module DSPy
               score, feedback = extract_score_and_feedback(result)
 
               {
-                predictor_name: @predictor_name,
+                predictor_name: '__program__',
                 example: example,
                 prediction: prediction,
                 score: score,
@@ -122,7 +138,13 @@ module DSPy
             outputs = trajectories.map { |row| row[:prediction] }
             ::GEPA::Core::EvaluationBatch.new(outputs: outputs, scores: scores, trajectories: trajectories)
           else
-            evaluator = DSPy::Evaluate.new(program, metric: nil, num_threads: nil, max_errors: batch.length * 100, provide_traceback: false)
+            evaluator = DSPy::Evaluate.new(
+              program,
+              metric: nil,
+              num_threads: nil,
+              max_errors: batch.length * 100,
+              provide_traceback: false
+            )
             results = batch.map do |example|
               prediction = program.call(**example.input_values)
               result = @metric.call(example, prediction)
@@ -145,31 +167,26 @@ module DSPy
         def make_reflective_dataset(candidate, eval_batch, components_to_update)
           return {} unless eval_batch.trajectories
 
-          dataset = {}
-          components_to_update.each do |component|
-            rows = Array(eval_batch.trajectories).map do |trajectory|
-              next unless trajectory[:predictor_name] == component
+          base_rows = Array(eval_batch.trajectories).map do |trajectory|
+            example = trajectory[:example]
+            prediction = trajectory[:prediction]
+            inputs = serialize_struct(example.input)
+            expected = serialize_struct(example.expected)
+            actual = serialize_prediction(prediction)
+            diff = build_diff(expected, actual)
 
-              example = trajectory[:example]
-              prediction = trajectory[:prediction]
-              inputs = serialize_struct(example.input)
-              expected = serialize_struct(example.expected)
-              actual = serialize_prediction(prediction)
-
-              diff = build_diff(expected, actual)
-
-              {
-                'Inputs' => inputs,
-                'Expected' => expected,
-                'Generated Outputs' => actual,
-                'Diff' => diff,
-                'Feedback' => trajectory[:feedback] || "Score: #{trajectory[:score]}"
-              }
-            end.compact
-            dataset[component] = rows unless rows.empty?
+            {
+              'Inputs' => inputs,
+              'Expected' => expected,
+              'Generated Outputs' => actual,
+              'Diff' => diff,
+              'Feedback' => trajectory[:feedback] || "Score: #{trajectory[:score]}"
+            }
           end
 
-          dataset
+          components_to_update.each_with_object({}) do |component, memo|
+            memo[component] = base_rows.dup
+          end
         end
 
         sig do
@@ -199,6 +216,96 @@ module DSPy
         end
 
         private
+
+        sig { params(program: DSPy::Module).returns(T::Array[[String, DSPy::Module]]) }
+        def resolve_predictors(program)
+          pairs = program.named_predictors
+          pairs = [['self', program]] if pairs.empty?
+          pairs
+        end
+
+        sig { params(mod: DSPy::Module).returns(DSPy::Module) }
+        def clone_module(mod)
+          safe_clone(mod)
+        end
+
+        sig { params(program: DSPy::Module).void }
+        def duplicate_predictors!(program)
+          resolve_predictors(program).each do |name, predictor|
+            next unless @predictor_names.include?(name)
+            next if predictor.equal?(program)
+            clone = safe_clone(predictor)
+            replace_reference(program, predictor, clone)
+          end
+        end
+
+        sig do
+          params(container: T.untyped, target: T.untyped, replacement: T.untyped, visited: T::Set[Integer]).returns(T.untyped)
+        end
+        def replace_in_object(container, target, replacement, visited)
+          return replacement if container.equal?(target)
+          return container if visited.include?(container.object_id)
+
+          visited.add(container.object_id)
+
+          case container
+          when Array
+            modified = false
+            new_array = container.map do |value|
+              new_value = replace_in_object(value, target, replacement, visited)
+              modified ||= !new_value.equal?(value)
+              new_value
+            end
+            modified ? new_array : container
+          when Hash
+            modified = false
+            new_hash = container.each_with_object({}) do |(key, value), memo|
+              new_value = replace_in_object(value, target, replacement, visited)
+              modified ||= !new_value.equal?(value)
+              memo[key] = new_value
+            end
+            modified ? new_hash : container
+          else
+            container
+          end
+        end
+
+        sig { params(owner: T.untyped, target: T.untyped, replacement: T.untyped).void }
+        def replace_reference(owner, target, replacement)
+          return if owner.equal?(target)
+
+          Array(owner.instance_variables).each do |ivar|
+            value = owner.instance_variable_get(ivar)
+            next if value.nil?
+
+            new_value = replace_in_object(value, target, replacement, ::Set.new)
+            unless new_value.equal?(value)
+              owner.instance_variable_set(ivar, new_value)
+            end
+          end
+        end
+
+        sig { params(predictor: DSPy::Module, instruction: String).returns(DSPy::Module) }
+        def apply_instruction_to_predictor(predictor, instruction)
+          if predictor.respond_to?(:with_instruction)
+            predictor.with_instruction(instruction)
+          elsif predictor.respond_to?(:prompt) && predictor.prompt.respond_to?(:with_instruction)
+            predictor.with_prompt(predictor.prompt.with_instruction(instruction))
+          else
+            duplicate = safe_clone(predictor)
+            signature = DSPy::Teleprompt::Utils.get_signature(duplicate)
+            updated_signature = signature.with_instructions(instruction)
+            DSPy::Teleprompt::Utils.set_signature(duplicate, updated_signature)
+            duplicate
+          end
+        end
+
+        sig { params(object: T.untyped).returns(T.untyped) }
+        def safe_clone(object)
+          object.clone
+        rescue TypeError
+          object.dup
+        end
 
         sig { params(program: DSPy::Module).returns(String) }
         def extract_instruction(program)
@@ -324,6 +431,19 @@ module DSPy
           [batch.outputs, batch.scores]
         end
 
+        merge_proposer = nil
+        if @gepa_config[:use_merge]
+          merge_proposer = ::GEPA::Proposer::MergeProposer.new(
+            logger: logger,
+            valset: typed_valset,
+            evaluator: evaluator,
+            use_merge: true,
+            max_merge_invocations: @gepa_config[:max_merge_invocations],
+            rng: Random.new(0),
+            telemetry: telemetry_context
+          )
+        end
+
         engine = ::GEPA::Core::Engine.new(
           evaluator: evaluator,
           valset: typed_valset,
@@ -334,11 +454,12 @@ module DSPy
           reflective_proposer: reflective,
           logger: logger,
           experiment_tracker: tracker,
-          merge_proposer: nil,
+          merge_proposer: merge_proposer,
           run_dir: nil,
           track_best_outputs: false,
           display_progress_bar: false,
-          telemetry: telemetry_context
+          telemetry: telemetry_context,
+          raise_on_exception: true
         )
 
         state = engine.run
