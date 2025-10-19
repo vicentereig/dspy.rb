@@ -9,7 +9,10 @@ module DSPy
 
     sig { params(model_id: String, options: T::Hash[Symbol, T.untyped]).void }
     def initialize(model_id, **options)
-      @lm = DSPy::LM.new(model_id, structured_outputs: false, schema_format: :json, **options)
+      opts = options.each_with_object({}) do |(key, value), memo|
+        memo[key.to_sym] = value
+      end
+      @lm = DSPy::LM.new(model_id, structured_outputs: false, schema_format: :json, **opts)
     end
 
     sig { params(prompt: String).returns(String) }

@@ -160,6 +160,8 @@ unless ENV['OPENAI_API_KEY']
   exit 1
 end
 
+ENV['DSPY_DISABLE_OBSERVABILITY'] ||= 'true'
+
 DSPy.configure do |config|
   config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
   config.logger = Dry.Logger(:dspy, formatter: :string) do |logger|
