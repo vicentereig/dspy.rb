@@ -12,13 +12,23 @@ ANTHROPIC_API_KEY=your-anthropic-key
 
 ## Examples by Category
 
-### Optimization (`ade_optimizer_miprov2/`)
+### Optimization
+
+#### `ade_optimizer_miprov2/`
 
 End-to-end optimization workflow using MIPROv2:
 
 - **`main.rb`** - ADE (Automatic Data Evaluation) optimizer walkthrough
 - **`data/`** - Sample datasets for optimization trials
 - **`results/`** - Saved optimization outputs and metrics
+
+#### `ade_optimizer_gepa/`
+
+Reflective optimization of the same ADE task using GEPA with per-predictor feedback:
+
+- **`main.rb`** - GEPA optimizer walkthrough
+- **`data/`** - Shared dataset cache directory
+- **`results/`** - Saved GEPA optimization outputs and metrics
 
 ### Multimodal (`multimodal/`)
 
