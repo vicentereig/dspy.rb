@@ -49,6 +49,7 @@ gepa = DSPy::Teleprompt::GEPA.new(metric: metric, feedback_map: feedback_map)
 - `spec/integration/dspy/teleprompt/gepa_smoke_spec.rb` exercises the full reflective optimization loop with telemetry, experiment tracking, and a deterministic reflection LM.
 - Snapshot expectations live in `spec/fixtures/gepa/smoke_snapshot.yml`, giving the integration spec a cassette-like regression target.
 - Regenerate the snapshot with `bundle exec ruby -I lib examples/gepa_snapshot.rb` whenever fixture drift is intentional.
+- For a full workflow, see `examples/ade_optimizer_gepa/`, which optimizes the ADE classifier using GEPA and `feedback_map` hooks.
 
 ## Experiment tracking
 
