@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
+require_relative 'logging/logger'
+require_relative 'logging/experiment_tracker'
+
 module GEPA
   module Logging
-    autoload :Logger, 'gepa/logging/logger'
-    autoload :CompositeLogger, 'gepa/logging/logger'
-    autoload :BufferingLogger, 'gepa/logging/logger'
-    autoload :ExperimentTracker, 'gepa/logging/experiment_tracker'
   end
 end

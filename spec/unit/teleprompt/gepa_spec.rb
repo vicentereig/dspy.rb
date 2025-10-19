@@ -50,6 +50,29 @@ RSpec.describe DSPy::Teleprompt::GEPA do
     end
   end
 
+  class CompositeModule < DSPy::Module
+    extend T::Sig
+
+    sig { params(alpha_instruction: String, beta_instruction: String).void }
+    def initialize(alpha_instruction, beta_instruction)
+      super()
+      @alpha = EchoModule.new(alpha_instruction)
+      @beta = EchoModule.new(beta_instruction)
+    end
+
+    sig { override.returns(T::Array[[String, DSPy::Module]]) }
+    def named_predictors
+      [['alpha', @alpha], ['beta', @beta]]
+    end
+
+    sig { params(input_values: T.untyped).returns(T::Hash[Symbol, String]) }
+    def forward_untyped(**input_values)
+      first = @alpha.forward_untyped(**input_values)
+      second = @beta.forward_untyped(**input_values)
+      { answer: "#{first[:answer]} | #{second[:answer]}" }
+    end
+  end
+
   class FakeReflectionLM
     attr_reader :calls
 
@@ -125,5 +148,22 @@ base reflection upgrade
 
     output = optimized.call(question: 'world')
     expect(output[:answer]).to eq('base reflection upgrade world')
+  end
+
+  it 'supports multi-predictor instruction candidates' do
+    adapter = DSPy::Teleprompt::GEPA::PredictAdapter.new(CompositeModule.new('alpha base', 'beta base'), metric)
+
+    seed = adapter.seed_candidate
+    expect(seed).to eq('alpha' => 'alpha base', 'beta' => 'beta base')
+
+    updated = adapter.build_program('alpha' => 'alpha refined', 'beta' => 'beta refined')
+    predictors = updated.named_predictors.to_h { |name, module_obj| [name, module_obj] }
+
+    expect(predictors['alpha'].instruction).to eq('alpha refined')
+    expect(predictors['beta'].instruction).to eq('beta refined')
+
+    original_predictors = adapter.instance_variable_get(:@student).named_predictors.to_h { |name, module_obj| [name, module_obj] }
+    expect(original_predictors['alpha'].instruction).to eq('alpha base')
+    expect(original_predictors['beta'].instruction).to eq('beta base')
   end
 end

@@ -6,6 +6,7 @@ require_relative 'core/engine'
 require_relative 'core/result'
 
 module GEPA
+  extend T::Sig
   module_function
 
   sig do
@@ -15,6 +16,7 @@ module GEPA
       valset: T::Array[T.untyped],
       adapter: T.untyped,
       reflective_proposer: T.untyped,
+      merge_proposer: T.nilable(T.untyped),
       logger: T.untyped,
       experiment_tracker: T.untyped,
       max_metric_calls: Integer,
@@ -27,6 +29,7 @@ module GEPA
     valset:,
     adapter:,
     reflective_proposer:,
+    merge_proposer: nil,
     logger:,
     experiment_tracker:,
     max_metric_calls:,
@@ -43,16 +46,16 @@ module GEPA
       perfect_score: Float::INFINITY,
       seed: 0,
       reflective_proposer: reflective_proposer,
-      merge_proposer: nil,
+      merge_proposer: merge_proposer,
       logger: logger,
       experiment_tracker: experiment_tracker,
       telemetry: telemetry || GEPA::Telemetry,
       track_best_outputs: false,
-      display_progress_bar: false
+      display_progress_bar: false,
+      raise_on_exception: true
     )
 
     state = engine.run
     GEPA::Core::Result.from_state(state)
   end
 end
-

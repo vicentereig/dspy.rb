@@ -63,7 +63,8 @@ RSpec.describe GEPA::Core::Engine do
       experiment_tracker: experiment_tracker,
       telemetry: telemetry,
       track_best_outputs: false,
-      display_progress_bar: false
+      display_progress_bar: false,
+      raise_on_exception: true
     )
 
     state = engine.run
@@ -73,4 +74,3 @@ RSpec.describe GEPA::Core::Engine do
     expect(call_order.map(&:first)).to include('gepa.engine.run', 'gepa.engine.iteration', 'gepa.engine.full_evaluation')
   end
 end
-
