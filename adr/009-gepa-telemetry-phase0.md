@@ -55,6 +55,7 @@ Add a reusable `GEPA::Telemetry` module that standardizes span names, attributes
 - Later implementation phases can focus on business logic while calling `GEPA::Telemetry` helpers to emit spans.
 - Ensures parity with Python observability before logic lands, reducing risk of missing instrumentation.
 - Introducing telemetry first allows us to write tests that assert span names/attributes even if the optimizer logic is still a stub.
+- Completed phases now include logging shims, experiment tracker, merge proposer, per-predictor trace capture, and `feedback_map`-driven reflective datasets plus smoke tests and documentation.
 
 ## Status by Phase
 
@@ -66,10 +67,10 @@ Add a reusable `GEPA::Telemetry` module that standardizes span names, attributes
 | 3 | Reflective mutation proposer | ✅ Complete |
 | 4 | Engine & API | ✅ Complete |
 | 5 | DSPy teleprompter integration | ✅ Complete |
-| 6 | Logging & experiment tracker shims (Ruby) | ⏳ In progress |
-| 7 | Parity hardening & documentation | ⏳ Pending |
+| 6 | Logging & experiment tracker shims (Ruby) | ✅ Complete |
+| 7 | Parity hardening & documentation | ✅ Complete |
 
 ## Next Steps
 
-- Phase 6: Port `gepa/logging` (Ruby shims only). Provide optional hooks for external trackers without introducing new dependencies. Add unit specs to ensure telemetry toggles behave.
-- Phase 7: Finish parity hardening, add end-to-end smoke spec (via `DSPy::Teleprompt::GEPA`) and update docs/CHANGELOG. Cross-check against Python parity suite where possible.
+- Monitor the in-memory tracker and `feedback_map` usage; future work could add the S3-compatible backend outlined in docs.
+- Consider porting additional Python conveniences (custom instruction proposers, richer failure handling) once we need them.
