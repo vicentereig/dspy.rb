@@ -228,8 +228,7 @@ metric = lambda do |example, prediction|
     "Misclassified: expected #{expected.serialize}, predicted #{predicted.serialize}"
   end
   DSPy::Prediction.new(score: score, feedback: feedback)
-end
-
+# Optional predictor-level feedback. Leave empty to rely solely on the metric above.
 feedback_map = {
   'self' => lambda do |predictor_output:, predictor_inputs:, module_inputs:, module_outputs:, captured_trace:|
     expected = module_inputs.expected_values[:label]

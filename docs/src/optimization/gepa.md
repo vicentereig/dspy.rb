@@ -27,7 +27,7 @@ result = gepa.compile(student_module, trainset: train_examples, valset: validati
 
 ## Predictor-level feedback
 
-- Pass `feedback_map` when constructing the teleprompter to supply per-component feedback hooks:
+- Pass `feedback_map` when constructing the teleprompter to supply per-component feedback hooks (optional—omit it to fall back to whatever your metric returns):
 
 ```ruby
 feedback_map = {
