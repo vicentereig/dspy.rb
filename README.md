@@ -167,6 +167,7 @@ For LLMs and AI assistants working with DSPy.rb:
 - **[Evaluation Framework](docs/src/optimization/evaluation.md)** - Advanced metrics beyond simple accuracy
 - **[Prompt Optimization](docs/src/optimization/prompt-optimization.md)** - Manipulate prompts as objects
 - **[MIPROv2 Optimizer](docs/src/optimization/miprov2.md)** - Advanced Bayesian optimization with Gaussian Processes
+- **[GEPA Optimizer](docs/src/optimization/gepa.md)** *(beta)* - Reflective mutation with optional reflection LMs
 
 ### Production Features
 - **[Storage System](docs/src/production/storage.md)** - Persistence and optimization result storage
