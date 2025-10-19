@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Per-predictor trace capture in the GEPA teleprompter, enabling component-specific reflective datasets.
 
 ### Documentation
-- Updated GEPA guide with reflection LM wiring tips, parity status, ActiveRecord experiment tracking guidance, S3-compatible logging design diagrams, and the new smoke snapshot cassette fixture.
+- Updated GEPA guide with reflection LM wiring tips, parity status, ActiveRecord experiment tracking guidance, S3-compatible logging design diagrams, the new smoke snapshot cassette fixture, and instructions for `examples/gepa_snapshot.rb`.
 
 ## [0.28.2] - 2025-10-13
 
