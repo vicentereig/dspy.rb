@@ -7,14 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- _No changes yet._
+
+## [0.29.0] - 2025-10-19
+
 ### Added
-- GEPA smoke integration spec (`spec/integration/dspy/teleprompt/gepa_smoke_spec.rb`) to exercise telemetry, experiment tracking, and deterministic reflection proposals.
-- Merge proposer implementation (`GEPA::Proposer::MergeProposer`) with engine scheduling logic ported from Python GEPA.
-- Multi-predictor support in the DSPy adapter so each named predictor receives its own instruction candidate.
-- Per-predictor trace capture and `feedback_map`-driven custom feedback in the GEPA teleprompter, enabling component-specific reflective datasets.
+- **GEPA Teleprompter (Phase 0)** brings the Guided Exploration and Program Adaptation workflow to Ruby with parity to the Python reference:
+  - Merge proposer scheduling, reflective mutation strategies, and Pareto utilities now live under `lib/gepa/`.
+  - Multi-predictor instruction handling plus `feedback_map` hooks so modules like ReAct receive component-specific feedback.
+  - Experiment tracking shims, S3-compatible logging adapters, and a deterministic smoke snapshot to validate end-to-end runs.
+  - New runnable example at `examples/ade_optimizer_gepa/main.rb` demonstrating ADE optimization with per-predictor telemetry.
+- **MIPROv2 Optimizer Enhancements** add bootstrap strategies, dataset summary generation, and Layer 3 utilities:
+  - `BootstrapStrategy` T::Enum replaces Python seed magic numbers.
+  - Dataset summary generator signatures and helpers provide data-aware instruction proposal.
+  - Utility APIs (`create_minibatch`, `save_candidate_program`, `get_program_with_highest_avg_score`, etc.) unlock multi-predictor optimization flows.
+
+### Changed
+- **OTLP Export Reliability**: Observability now routes through a `Concurrent::SingleThreadExecutor`, preventing frozen `SSLContext` errors while keeping span queuing non-blocking.
+- **GEPA Engine Traceability**: Teleprompter captures per-predictor traces and instructions, improving Langfuse/OpenTelemetry insight during optimization runs.
 
 ### Documentation
-- Updated GEPA guide with reflection LM wiring tips, parity status, ActiveRecord experiment tracking guidance, S3-compatible logging design diagrams, the new smoke snapshot cassette fixture, and instructions for `examples/gepa_snapshot.rb`.
+- New GEPA guide (`docs/src/optimization/gepa.md`) covering feedback maps, reflection LM wiring, budget reminders, and logging design diagrams.
+- Updated observability articles to describe the executor-driven exporter so telemetry stays out of the way of LLM workloads.
+
 
 ## [0.28.2] - 2025-10-13
 
