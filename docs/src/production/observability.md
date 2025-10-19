@@ -28,7 +28,7 @@ The observability system offers:
 - **OpenTelemetry Integration**: Automatic span creation with semantic conventions  
 - **Langfuse Export**: Zero-config export to Langfuse via OpenTelemetry (requires environment variables)
 - **Type Safety**: Sorbet T::Struct event validation
-- **Thread Safe**: Concurrent access with mutex protection
+- **Non-Blocking Exports**: Dedicated single-thread executor keeps telemetry off hot paths
 - **Zero Breaking Changes**: All existing `DSPy.log()` calls work unchanged
 
 ## Architecture
@@ -49,6 +49,16 @@ class MyTracker < DSPy::Events::BaseSubscriber
   end
 end
 ```
+
+### Dedicated Export Worker
+
+Telemetry export happens on a `Concurrent::SingleThreadExecutor`, so your LLM workflows never compete with OTLP networking. The queue buffers spans as they finish, and the dedicated worker:
+
+- Drains spans in batches based on configurable thresholds
+- Applies exponential backoff on failures without blocking request threads
+- Shuts down cleanly during process exit while flushing remaining spans
+
+This design keeps observability reliable while ensuring DSPy.rb stays out of your LLMs' way.
 
 ## Quick Start
 
