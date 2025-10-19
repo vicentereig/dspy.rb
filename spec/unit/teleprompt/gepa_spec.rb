@@ -156,7 +156,7 @@ base reflection upgrade
     seed = adapter.seed_candidate
     expect(seed).to eq('alpha' => 'alpha base', 'beta' => 'beta base')
 
-    updated = adapter.build_program('alpha' => 'alpha refined', 'beta' => 'beta refined')
+    updated = adapter.build_program({ 'alpha' => 'alpha refined', 'beta' => 'beta refined' })
     predictors = updated.named_predictors.to_h { |name, module_obj| [name, module_obj] }
 
     expect(predictors['alpha'].instruction).to eq('alpha refined')
@@ -165,5 +165,9 @@ base reflection upgrade
     original_predictors = adapter.instance_variable_get(:@student).named_predictors.to_h { |name, module_obj| [name, module_obj] }
     expect(original_predictors['alpha'].instruction).to eq('alpha base')
     expect(original_predictors['beta'].instruction).to eq('beta base')
+
+    eval_batch = adapter.evaluate(trainset, adapter.seed_candidate, capture_traces: true)
+    trace = eval_batch.trajectories.first[:trace]
+    expect(trace.map { |entry| entry[:predictor_name] }).to include('alpha', 'beta')
   end
 end

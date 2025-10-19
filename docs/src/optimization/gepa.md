@@ -23,10 +23,12 @@ result = gepa.compile(student_module, trainset: train_examples, valset: validati
 - Plain-text responses (structured outputs disabled).
 - Returns the updated instruction inside ``` fences (handled automatically by `InstructionProposalSignature`).
 - Pass a callable (e.g. `reflection_lm.method(:call).to_proc`) when using custom stubs so Sorbet accepts the type.
+- Prompts now include per-predictor traces, so reflection models see the component name and its diff instead of a single shared transcript.
 
 ## Testing
 
 - `spec/integration/dspy/teleprompt/gepa_smoke_spec.rb` exercises the full reflective optimization loop with telemetry, experiment tracking, and a deterministic reflection LM.
+- Snapshot expectations live in `spec/fixtures/gepa/smoke_snapshot.yml`, giving the integration spec a cassette-like regression target.
 
 ## Experiment tracking
 
@@ -47,7 +49,36 @@ teleprompter = DSPy::Teleprompt::GEPA.new(metric: metric)
 result = teleprompter.compile(program, trainset:, valset:)
 ```
 
-- Future backends can reuse the same subscriber hook—plan to explore S3-compatible stores (e.g., AWS S3, MinIO, Cloudflare R2) for low-cost, append-only experiment transcripts.
+## S3-compatible logging design
+
+### Requirements
+- Persist experiment logs to an S3-compatible bucket (MinIO, Cloudflare R2, AWS) without blocking the optimization loop.
+- Offer a pluggable local sink (ActiveRecord or JSONL) for quick inspection while offline.
+- Guarantee append-only writes and idempotent uploads so retries do not duplicate events.
+- Defer network interaction to a background worker while keeping the tracker API synchronous.
+
+```mermaid
+flowchart TD
+  GEPAEngine -->|log_metrics| ExperimentTracker
+  ExperimentTracker --> ActiveRecordSink
+  ExperimentTracker --> S3Dispatcher
+  S3Dispatcher -->|PutObject| S3Bucket[(S3-compatible storage)]
+```
+
+```mermaid
+sequenceDiagram
+  participant Engine
+  participant Tracker
+  participant ActiveRecord
+  participant S3Worker
+  participant S3
+
+  Engine->>Tracker: log_metrics(payload)
+  Tracker-->>ActiveRecord: insert(payload)
+  Tracker->>S3Worker: enqueue(payload)
+  S3Worker->>S3: PutObject(payload)
+  S3-->>S3Worker: 200 OK
+```
 
 ## Parity roadmap
 

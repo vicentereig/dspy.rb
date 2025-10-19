@@ -87,8 +87,10 @@ module DSPy
           end
         end
 
-        sig { params(candidate: T::Hash[String, String]).returns(DSPy::Module) }
-        def build_program(candidate)
+        sig do
+          params(candidate: T::Hash[String, String], recorder: T.nilable(T.untyped)).returns(DSPy::Module)
+        end
+        def build_program(candidate, recorder: nil)
           program = clone_module(@student)
           duplicate_predictors!(program)
 
@@ -106,6 +108,7 @@ module DSPy
             predictor_map[name] = updated
           end
 
+          wrap_predictors_for_tracing!(program, recorder: recorder) if recorder
           program
         end
 
@@ -117,20 +120,23 @@ module DSPy
           ).returns(::GEPA::Core::EvaluationBatch)
         end
         def evaluate(batch, candidate, capture_traces: false)
-          program = build_program(candidate)
+          recorder = capture_traces ? TraceRecorder.new : nil
+          program = build_program(candidate, recorder: recorder)
 
           if capture_traces
             trajectories = batch.map do |example|
+              recorder&.start_example
               prediction = program.call(**example.input_values)
               result = @metric.call(example, prediction)
               score, feedback = extract_score_and_feedback(result)
+              trace_entries = recorder ? recorder.finish_example : []
 
               {
-                predictor_name: '__program__',
                 example: example,
                 prediction: prediction,
                 score: score,
-                feedback: feedback
+                feedback: feedback,
+                trace: trace_entries
               }
             end
 
@@ -138,13 +144,7 @@ module DSPy
             outputs = trajectories.map { |row| row[:prediction] }
             ::GEPA::Core::EvaluationBatch.new(outputs: outputs, scores: scores, trajectories: trajectories)
           else
-            evaluator = DSPy::Evaluate.new(
-              program,
-              metric: nil,
-              num_threads: nil,
-              max_errors: batch.length * 100,
-              provide_traceback: false
-            )
+            evaluator = DSPy::Evaluate.new(program, metric: nil, num_threads: nil, max_errors: batch.length * 100, provide_traceback: false)
             results = batch.map do |example|
               prediction = program.call(**example.input_values)
               result = @metric.call(example, prediction)
@@ -167,25 +167,30 @@ module DSPy
         def make_reflective_dataset(candidate, eval_batch, components_to_update)
           return {} unless eval_batch.trajectories
 
-          base_rows = Array(eval_batch.trajectories).map do |trajectory|
-            example = trajectory[:example]
-            prediction = trajectory[:prediction]
-            inputs = serialize_struct(example.input)
-            expected = serialize_struct(example.expected)
-            actual = serialize_prediction(prediction)
-            diff = build_diff(expected, actual)
-
-            {
-              'Inputs' => inputs,
-              'Expected' => expected,
-              'Generated Outputs' => actual,
-              'Diff' => diff,
-              'Feedback' => trajectory[:feedback] || "Score: #{trajectory[:score]}"
-            }
-          end
-
           components_to_update.each_with_object({}) do |component, memo|
-            memo[component] = base_rows.dup
+            rows = eval_batch.trajectories.flat_map do |trajectory|
+              example = trajectory[:example]
+              expected = serialize_struct(example.expected)
+              actual_program_output = serialize_prediction(trajectory[:prediction])
+              diff = build_diff(expected, actual_program_output)
+              feedback = trajectory[:feedback] || "Score: #{trajectory[:score]}"
+
+              Array(trajectory[:trace]).filter_map do |entry|
+                next unless entry[:predictor_name] == component
+
+                inputs = serialize_struct(entry[:inputs])
+                outputs = serialize_prediction(entry[:output])
+
+                {
+                  'Inputs' => inputs,
+                  'Expected' => expected,
+                  'Generated Outputs' => outputs,
+                  'Diff' => diff,
+                  'Feedback' => feedback
+                }
+              end
+            end
+            memo[component] = rows unless rows.empty?
           end
         end
 
@@ -285,6 +290,32 @@ module DSPy
           end
         end
 
+        sig { params(program: DSPy::Module, recorder: T.nilable(T.untyped)).void }
+        def wrap_predictors_for_tracing!(program, recorder: nil)
+          return unless recorder
+
+          resolve_predictors(program).each do |name, predictor|
+            wrap_predictor_for_tracing(program, predictor, name, recorder)
+          end
+        end
+
+        sig { params(program: DSPy::Module, predictor: DSPy::Module, name: String, recorder: T.untyped).void }
+        def wrap_predictor_for_tracing(program, predictor, name, recorder)
+          original_forward = predictor.method(:forward_untyped)
+          recorder_ref = recorder
+          predictor_name = name
+
+          predictor.define_singleton_method(:forward_untyped) do |**input_values|
+            result = original_forward.call(**input_values)
+            recorder_ref.record(
+              predictor_name: predictor_name,
+              inputs: input_values.dup,
+              output: result
+            )
+            result
+          end
+        end
+
         sig { params(predictor: DSPy::Module, instruction: String).returns(DSPy::Module) }
         def apply_instruction_to_predictor(predictor, instruction)
           if predictor.respond_to?(:with_instruction)
@@ -305,6 +336,27 @@ module DSPy
           object.clone
         rescue TypeError
           object.dup
+        end
+
+        class TraceRecorder
+          def initialize
+            @current_trace = nil
+          end
+
+          def start_example
+            @current_trace = []
+          end
+
+          def record(entry)
+            return unless @current_trace
+            @current_trace << entry
+          end
+
+          def finish_example
+            trace = @current_trace || []
+            @current_trace = nil
+            trace
+          end
         end
 
         sig { params(program: DSPy::Module).returns(String) }
