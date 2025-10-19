@@ -50,6 +50,7 @@ gepa = DSPy::Teleprompt::GEPA.new(metric: metric, feedback_map: feedback_map)
 - Snapshot expectations live in `spec/fixtures/gepa/smoke_snapshot.yml`, giving the integration spec a cassette-like regression target.
 - Regenerate the snapshot with `bundle exec ruby -I lib examples/gepa_snapshot.rb` whenever fixture drift is intentional.
 - For a full workflow, see `examples/ade_optimizer_gepa/`, which optimizes the ADE classifier using GEPA and `feedback_map` hooks.
+- Budget reminder: your `max_metric_calls` must at least cover the validation set size. The sample ADE script defaults to 600 and will auto-increase if the budget is too small.
 
 ## Experiment tracking
 
