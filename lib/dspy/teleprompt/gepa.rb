@@ -64,17 +64,29 @@ module DSPy
           T.any(DSPy::ReflectionLM, T.proc.params(arg0: String).returns(String))
         end
 
+        FeedbackFnType = T.type_alias do
+          T.proc.params(
+            predictor_output: T.untyped,
+            predictor_inputs: T::Hash[T.any(String, Symbol), T.untyped],
+            module_inputs: DSPy::Example,
+            module_outputs: T.untyped,
+            captured_trace: T::Array[T::Hash[Symbol, T.untyped]]
+          ).returns(T.untyped)
+        end
+
         sig do
           params(
             student: DSPy::Module,
             metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped),
-            reflection_lm: T.nilable(ReflectionLMType)
+            reflection_lm: T.nilable(ReflectionLMType),
+            feedback_map: T::Hash[String, FeedbackFnType]
           ).void
         end
-        def initialize(student, metric, reflection_lm: nil)
+        def initialize(student, metric, reflection_lm: nil, feedback_map: {})
           @student = student
           @metric = metric
           @reflection_lm = reflection_lm
+          @feedback_map = feedback_map.transform_keys(&:to_s)
 
           @predictor_entries = resolve_predictors(@student)
           @predictor_names = @predictor_entries.map(&:first)
@@ -173,21 +185,47 @@ module DSPy
               expected = serialize_struct(example.expected)
               actual_program_output = serialize_prediction(trajectory[:prediction])
               diff = build_diff(expected, actual_program_output)
-              feedback = trajectory[:feedback] || "Score: #{trajectory[:score]}"
+              default_feedback = trajectory[:feedback] || "Score: #{trajectory[:score]}"
+              default_score = trajectory[:score]
+              full_trace = Array(trajectory[:trace])
 
-              Array(trajectory[:trace]).filter_map do |entry|
+              full_trace.filter_map do |entry|
                 next unless entry[:predictor_name] == component
 
-                inputs = serialize_struct(entry[:inputs])
-                outputs = serialize_prediction(entry[:output])
+                raw_inputs = entry[:inputs] || {}
+                raw_output = entry[:output]
+                inputs = serialize_struct(raw_inputs)
+                outputs = serialize_prediction(raw_output)
 
-                {
+                feedback_text = default_feedback
+                score_value = default_score
+                score_overridden = false
+
+                if (feedback_fn = @feedback_map[component])
+                  feedback_result = feedback_fn.call(
+                    predictor_output: raw_output,
+                    predictor_inputs: raw_inputs,
+                    module_inputs: example,
+                    module_outputs: trajectory[:prediction],
+                    captured_trace: full_trace
+                  )
+                  override_score, override_feedback = extract_score_and_feedback(feedback_result)
+                  feedback_text = override_feedback if override_feedback
+                  unless override_score.nil?
+                    score_value = override_score
+                    score_overridden = true
+                  end
+                end
+
+                row = {
                   'Inputs' => inputs,
                   'Expected' => expected,
                   'Generated Outputs' => outputs,
                   'Diff' => diff,
-                  'Feedback' => feedback
+                  'Feedback' => feedback_text
                 }
+                row['Score'] = score_value if score_overridden
+                row
               end
             end
             memo[component] = rows unless rows.empty?
@@ -427,14 +465,16 @@ module DSPy
         params(
           metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped),
           reflection_lm: T.nilable(T.untyped),
-          adapter_builder: T.nilable(T.proc.params(arg0: DSPy::Module, arg1: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped), reflection_lm: T.nilable(T.untyped)).returns(T.untyped)),
+          feedback_map: T.nilable(T::Hash[String, PredictAdapter::FeedbackFnType]),
+          adapter_builder: T.nilable(T.proc.returns(T.untyped)),
           config: T.nilable(T::Hash[Symbol, T.untyped])
         ).void
       end
-      def initialize(metric:, reflection_lm: nil, adapter_builder: nil, config: nil)
+      def initialize(metric:, reflection_lm: nil, feedback_map: nil, adapter_builder: nil, config: nil)
         super(metric: metric)
         @metric = metric
         @reflection_lm = reflection_lm
+        @feedback_map = (feedback_map || {}).transform_keys(&:to_s)
         @adapter_builder = adapter_builder || method(:build_adapter)
         @gepa_config = self.class.default_config.merge(config || {})
       end
@@ -452,7 +492,12 @@ module DSPy
         typed_trainset = ensure_typed_examples(trainset)
         typed_valset = valset ? ensure_typed_examples(valset) : typed_trainset
 
-        adapter = @adapter_builder.call(program, @metric, reflection_lm: @reflection_lm)
+        adapter = @adapter_builder.call(
+          program,
+          @metric,
+          reflection_lm: @reflection_lm,
+          feedback_map: @feedback_map
+        )
         seed_candidate = adapter.seed_candidate
 
         cand_selector = ::GEPA::Strategies::ParetoCandidateSelector.new
@@ -530,9 +575,16 @@ module DSPy
 
       private
 
-      sig { params(program: DSPy::Module, metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped), reflection_lm: T.nilable(T.untyped)).returns(PredictAdapter) }
-      def build_adapter(program, metric, reflection_lm: nil)
-        PredictAdapter.new(program, metric, reflection_lm: reflection_lm)
+      sig do
+        params(
+          program: DSPy::Module,
+          metric: T.proc.params(arg0: DSPy::Example, arg1: T.untyped).returns(T.untyped),
+          reflection_lm: T.nilable(T.untyped),
+          feedback_map: T::Hash[String, PredictAdapter::FeedbackFnType]
+        ).returns(PredictAdapter)
+      end
+      def build_adapter(program, metric, reflection_lm: nil, feedback_map: {})
+        PredictAdapter.new(program, metric, reflection_lm: reflection_lm, feedback_map: feedback_map)
       end
     end
   end

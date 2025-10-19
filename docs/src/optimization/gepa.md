@@ -25,6 +25,25 @@ result = gepa.compile(student_module, trainset: train_examples, valset: validati
 - Pass a callable (e.g. `reflection_lm.method(:call).to_proc`) when using custom stubs so Sorbet accepts the type.
 - Prompts now include per-predictor traces, so reflection models see the component name and its diff instead of a single shared transcript.
 
+## Predictor-level feedback
+
+- Pass `feedback_map` when constructing the teleprompter to supply per-component feedback hooks:
+
+```ruby
+feedback_map = {
+  'alpha' => lambda do |predictor_output:, predictor_inputs:, module_inputs:, module_outputs:, captured_trace:|
+    DSPy::Prediction.new(
+      score: predictor_output[:answer] == module_inputs.expected_values[:answer] ? 1.0 : 0.0,
+      feedback: "alpha needs to mention #{module_inputs.expected_values[:answer]}"
+    )
+  end
+}
+
+gepa = DSPy::Teleprompt::GEPA.new(metric: metric, feedback_map: feedback_map)
+```
+
+- Each proc receives the component's output, its inputs, the full module example/prediction, and the captured trace so you can craft domain-specific guidance without rewriting the global metric.
+
 ## Testing
 
 - `spec/integration/dspy/teleprompt/gepa_smoke_spec.rb` exercises the full reflective optimization loop with telemetry, experiment tracking, and a deterministic reflection LM.
