@@ -5,6 +5,7 @@ require 'json'
 require_relative '../signature'
 require_relative '../predict'
 require_relative '../type_serializer'
+require_relative '../few_shot_example'
 
 module DSPy
   module Propose
@@ -123,8 +124,7 @@ module DSPy
           upper_lim = [trainset.length, view_data_batch_size].min
           batch_examples = trainset[0...upper_lim]
           predictor = DSPy::Predict.new(DatasetDescriptor)
-          schema_format = predictor.prompt.schema_format
-          examples_repr = format_examples_for_prompt(batch_examples, schema_format)
+          examples_repr = format_examples_for_prompt(batch_examples)
 
           observation = predictor.call(examples: examples_repr)
           observations = observation.observations
@@ -144,9 +144,8 @@ module DSPy
               upper_lim = [trainset.length, b + view_data_batch_size].min
 
               predictor = DSPy::Predict.new(DatasetDescriptorWithPriorObservations)
-              schema_format = predictor.prompt.schema_format
               batch_examples = trainset[b...upper_lim]
-              examples_repr = format_examples_for_prompt(batch_examples, schema_format)
+              examples_repr = format_examples_for_prompt(batch_examples)
 
               output = predictor.call(
                 prior_observations: observations,
@@ -180,79 +179,31 @@ module DSPy
         end
       end
 
-      sig { params(examples: T::Array[DSPy::Example], schema_format: Symbol).returns(String) }
-      def self.format_examples_for_prompt(examples, schema_format)
+      sig { params(examples: T::Array[T.untyped]).returns(String) }
+      def self.format_examples_for_prompt(examples)
         serialized_examples = examples.map do |example|
-          {
-            signature: example.signature_class.name,
-            input: DSPy::TypeSerializer.serialize(example.input),
-            expected: DSPy::TypeSerializer.serialize(example.expected)
-          }
-        end
-
-        case schema_format
-        when :baml
-          serialize_examples_to_baml(serialized_examples)
-        else
-          JSON.pretty_generate(serialized_examples)
-        end
-      end
-
-      sig { params(serialized_examples: T::Array[T::Hash[Symbol, T.untyped]]).returns(String) }
-      def self.serialize_examples_to_baml(serialized_examples)
-        return "[]" if serialized_examples.empty?
-
-        serialized_examples.map do |example|
-          "-\n#{serialize_value_to_baml(example, 1)}"
-        end.join("\n")
-      end
-
-      sig { params(value: T.untyped, indent: Integer).returns(String) }
-      def self.serialize_value_to_baml(value, indent)
-        indent_str = '  ' * indent
-
-        case value
-        when Hash
-          value.map do |key, val|
-            if collection?(val)
-              "#{indent_str}#{key} {\n#{serialize_value_to_baml(val, indent + 1)}\n#{indent_str}}"
-            else
-              "#{indent_str}#{key} #{primitive_to_baml(val)}"
-            end
-          end.join("\n")
-        when Array
-          if value.empty?
-            "#{indent_str}[]"
+          case example
+          when DSPy::Example
+            {
+              signature: example.signature_class.name,
+              input: DSPy::TypeSerializer.serialize(example.input),
+              expected: DSPy::TypeSerializer.serialize(example.expected)
+            }
+          when DSPy::FewShotExample
+            base = {
+              input: example.input,
+              output: example.output
+            }
+            base[:reasoning] = example.reasoning if example.reasoning
+            base
+          when Hash
+            example
           else
-            value.map do |item|
-              if collection?(item)
-                "#{indent_str}-\n#{serialize_value_to_baml(item, indent + 1)}"
-              else
-                "#{indent_str}- #{primitive_to_baml(item)}"
-              end
-            end.join("\n")
+            example.respond_to?(:to_h) ? example.to_h : { value: example }
           end
-        else
-          "#{indent_str}#{primitive_to_baml(value)}"
         end
-      end
 
-      sig { params(value: T.untyped).returns(T::Boolean) }
-      def self.collection?(value)
-        value.is_a?(Hash) || value.is_a?(Array)
-      end
-
-      sig { params(value: T.untyped).returns(String) }
-      def self.primitive_to_baml(value)
-        case value
-        when nil
-          'null'
-        when TrueClass, FalseClass, Numeric
-          value.to_s
-        else
-          escaped = value.to_s.gsub('"', '\"')
-          "\"#{escaped}\""
-        end
+        JSON.pretty_generate(serialized_examples)
       end
     end
   end

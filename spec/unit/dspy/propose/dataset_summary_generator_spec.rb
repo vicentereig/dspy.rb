@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'json'
 require 'dspy/propose/dataset_summary_generator'
 
 RSpec.describe DSPy::Propose::DatasetSummaryGenerator do
@@ -138,23 +139,40 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator do
       )
     end
 
-    it 'serializes examples as pretty JSON when schema format is json' do
-      json_string = described_class.format_examples_for_prompt([example], :json)
+    it 'serializes DSPy::Example payloads to JSON' do
+      json_string = described_class.format_examples_for_prompt([example])
 
       expect(json_string).to include('"signature"')
       expect(json_string).to include('"input"')
       expect(json_string).to include('"expected"')
       expect(json_string).to include('"What is DSPy?"')
+      expect { JSON.parse(json_string) }.not_to raise_error
     end
 
-    it 'serializes examples as compact BAML when schema format is baml' do
-      baml_string = described_class.format_examples_for_prompt([example], :baml)
+    it 'serializes multiple examples to JSON consistently' do
+      serialized = described_class.format_examples_for_prompt([example, example])
 
-      expect(baml_string).to include('-')
-      expect(baml_string).to include('signature')
-      expect(baml_string).to include('input')
-      expect(baml_string).to include('question "What is DSPy?"')
-      expect(baml_string).not_to include('DSPy::Example')
+      expect(serialized).to include('"signature"')
+      expect(serialized).to include('"input"')
+      expect(serialized).to include('"expected"')
+      expect(serialized).to include('"What is DSPy?"')
+      expect(serialized).not_to include("\n-")
+      expect { JSON.parse(serialized) }.not_to raise_error
+    end
+
+    it 'serializes few-shot examples to JSON' do
+      few_shot = DSPy::FewShotExample.new(
+        input: { question: "What is DSPy?" },
+        output: { answer: "A declarative optimization framework." }
+      )
+
+      serialized = described_class.format_examples_for_prompt([few_shot])
+
+      expect(serialized).to include('"input"')
+      expect(serialized).to include('"output"')
+      expect(serialized).to include('"What is DSPy?"')
+      expect(serialized).not_to include("\n-")
+      expect { JSON.parse(serialized) }.not_to raise_error
     end
   end
 end

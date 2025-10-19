@@ -29,6 +29,26 @@ MIPROv2 works by:
 
 The optimizer provides three optimization strategies: greedy (fastest), adaptive (balanced exploration/exploitation), and Bayesian (most sophisticated with GP-based candidate selection).
 
+## ADE Quickstart
+
+The repository ships with a runnable demo at `examples/ade_optimizer_miprov2/main.rb`. It optimizes a binary ADE classifier end-to-end and is the fastest way to see MIPROv2 in action:
+
+```bash
+bundle exec ruby examples/ade_optimizer_miprov2/main.rb \
+  --limit 300 \
+  --trials 6 \
+  --seed 42
+```
+
+The script:
+
+- Downloads a subset of the ADE dataset via `DSPy::Datasets::ADE`.
+- Builds strongly typed `DSPy::Example` instances and splits them into train / val / test.
+- Configures `DSPy::Teleprompt::MIPROv2` with a boolean metric and adaptive strategy.
+- Prints per-trial instruction snippets and writes summary artifacts to `examples/ade_optimizer_miprov2/results/`.
+
+Use this workflow as a reference while adapting the rest of this guide to your own domain.
+
 ## Basic Usage
 
 ### Simple Optimization
@@ -53,8 +73,9 @@ program = DSPy::Predict.new(ClassifyText)
 
 # Create optimizer with custom metric
 metric = proc do |example, prediction|
-  # Return true/false for pass/fail evaluation
-  prediction.sentiment.downcase == example.expected_sentiment.downcase
+  expected = example.expected_values[:sentiment]
+  predicted = prediction.respond_to?(:sentiment) ? prediction.sentiment : prediction[:sentiment]
+  predicted&.downcase == expected&.downcase
 end
 
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
@@ -221,7 +242,8 @@ tools = [MyLookupTool.new] # implements DSPy::Tools::Base
 program = DSPy::ReAct.new(QA, tools:, max_iterations: 1)
 
 metric = proc do |example, prediction|
-  prediction.answer&.downcase&.include?(example.expected[:answer].downcase)
+  expected = example.expected_values[:answer]
+  prediction.answer&.downcase&.include?(expected.downcase)
 end
 
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
@@ -244,22 +266,18 @@ trial_logs   = result.optimization_trace[:trial_logs]
 The integration spec `spec/integration/dspy/mipro_v2_re_act_integration_spec.rb` (recorded with VCR) showcases this flow end-to-end against OpenAI’s `gpt-4o-mini`, confirming per-predictor awareness with real LLM traces. Use the same pattern for CodeAct or chained predictors—MIPROv2 will enumerate each module, assign demos, and tune instructions automatically.
 
 ```ruby
-# MIPROv2 automatically creates multiple candidate sets of few-shot examples
-# Each set contains examples with reasoning traces generated using CoT
-# Bootstrap creates several independent sets for diversity
-
-# You can observe bootstrap progress through events:
-DSPy.events.subscribe('phase_start') do |event_name, attributes|
-  if attributes[:phase] == 1 && attributes[:name] == 'bootstrap'
-    puts "Starting bootstrap phase..."
-  end
+# Observe bootstrap progress through the observability bus. MIPROv2 emits
+# structured logs via `DSPy.log("optimization.phase_start", ...)`, which are
+# surfaces on the event bus automatically.
+DSPy.events.subscribe('optimization.phase_start') do |_, attrs|
+  next unless attrs[:phase] == 1
+  puts "Phase 1 starting: #{attrs[:name]} (#{attrs[:'teleprompter.class']})"
 end
 
-DSPy.events.subscribe('phase_complete') do |event_name, attributes|
-  if attributes[:phase] == 1
-    puts "Bootstrap complete. Success rate: #{attributes[:success_rate]}"
-    puts "Created #{attributes[:candidate_sets]} bootstrap sets"
-  end
+DSPy.events.subscribe('optimization.phase_complete') do |_, attrs|
+  next unless attrs[:phase] == 1
+  puts "Bootstrap finished: #{attrs[:num_predictors]} predictors, " \
+       "#{attrs[:demo_sets_per_predictor]} demo sets per predictor"
 end
 ```
 
@@ -274,11 +292,10 @@ Generate multiple high-quality instruction candidates using the grounded propose
 # - "Determine sentiment by evaluating positive and negative language patterns"
 
 # Monitor instruction generation:
-DSPy.events.subscribe('phase_complete') do |event_name, attributes|
-  if attributes[:phase] == 2
-    puts "Generated #{attributes[:num_candidates]} instruction candidates"
-    puts "Best instruction preview: #{attributes[:best_instruction_preview]}"
-  end
+DSPy.events.subscribe('optimization.phase_complete') do |_, attrs|
+  next unless attrs[:phase] == 2
+  puts "Generated #{attrs[:num_candidates]} instruction candidates"
+  puts "Best instruction preview: #{attrs[:best_instruction_preview]}"
 end
 ```
 
@@ -299,15 +316,15 @@ Intelligently explore candidate configurations using advanced optimization strat
 # - Bayesian: Use Gaussian Processes for intelligent candidate selection
 
 # Monitor optimization progress:
-DSPy.events.subscribe('trial_start') do |event_name, attributes|
-  puts "Trial #{attributes[:trial_number]}: Testing #{attributes[:candidate_id]}"
-  puts "Instruction: #{attributes[:instruction_preview]}"
+DSPy.events.subscribe('optimization.trial_start') do |_, attrs|
+  puts "Trial #{attrs[:trial_number]}: Testing #{attrs[:candidate_id]}"
+  puts "Instruction preview: #{attrs[:instruction_preview]}"
+  puts "Few-shot examples: #{attrs[:num_few_shot]}"
 end
 
-DSPy.events.subscribe('trial_complete') do |event_name, attributes|
-  if attributes[:is_best]
-    puts "New best score: #{attributes[:score]} (Trial #{attributes[:trial_number]})"
-  end
+DSPy.events.subscribe('optimization.trial_complete') do |_, attrs|
+  next unless attrs[:is_best]
+  puts "New best score: #{attrs[:score]} (Trial #{attrs[:trial_number]})"
 end
 ```
 
@@ -329,12 +346,19 @@ optimized_program = result.optimized_program
 
 # Access MIPROv2-specific results
 puts "Evaluated candidates: #{result.evaluated_candidates.size}"
-puts "Bootstrap success rate: #{result.bootstrap_statistics[:success_rate]}"
+bootstrap_stats = result.bootstrap_statistics
+puts "Predictors bootstrapped: #{bootstrap_stats[:num_predictors]}"
+puts "Demo sets per predictor: #{bootstrap_stats[:demo_sets_per_predictor]}"
+puts "Average demos per set: #{bootstrap_stats[:avg_demos_per_set].round(2)}"
 puts "Proposal themes: #{result.proposal_statistics[:common_themes]}"
 
 # Access optimization trace
 if result.optimization_trace[:score_history]
   puts "Score progression: #{result.optimization_trace[:score_history]}"
+end
+if (trial_logs = result.optimization_trace[:trial_logs]) && trial_logs.any?
+  last_trial, payload = trial_logs.max_by { |trial_number, _| trial_number }
+  puts "Instructions from trial #{last_trial}: #{payload[:instructions]}"
 end
 
 # Access detailed evaluation results for best candidate
@@ -363,8 +387,8 @@ if best_candidate
   # Inspect few-shot examples
   best_candidate.few_shot_examples.each_with_index do |example, i|
     puts "Example #{i+1}:"
-    puts "  Input: #{example.input_values}"
-    puts "  Output: #{example.expected_values}"
+    puts "  Input: #{example.input}"
+    puts "  Output: #{example.output}"
   end
 end
 ```
@@ -409,14 +433,17 @@ puts "Registered as version: #{version.version}"
 ### Custom Evaluation Logic
 
 ```ruby
-# Define custom metric with detailed evaluation
+# Define custom metric with detailed evaluation metadata
 custom_metric = proc do |example, prediction|
-  # Return hash with detailed metrics (recommended)
+  expected = example.expected_values[:sentiment]
+  predicted = prediction.respond_to?(:sentiment) ? prediction.sentiment : nil
+  confidence = prediction.respond_to?(:confidence) ? prediction.confidence.to_f : 0.0
+
   {
-    passed: prediction.sentiment.downcase == example.expected_sentiment.downcase,
-    confidence_score: prediction.confidence || 0.0,
-    answer_quality: prediction.sentiment ? 1.0 : 0.0,
-    reasoning_present: !prediction.reasoning.nil?
+    passed: predicted&.downcase == expected&.downcase,
+    predicted: predicted,
+    expected: expected,
+    confidence_score: confidence
   }
 end
 
@@ -424,11 +451,12 @@ optimizer = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric)
 result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
 
 # Access detailed metrics in results
-if result.best_evaluation_result
-  result.best_evaluation_result.results.each do |eval_result|
+if (batch = result.best_evaluation_result)
+  batch.results.each do |eval_result|
     metrics = eval_result.metrics
+    puts "Predicted: #{metrics[:predicted]} (expected: #{metrics[:expected]})"
     puts "Confidence: #{metrics[:confidence_score]}"
-    puts "Has reasoning: #{metrics[:reasoning_present]}"
+    puts "Passed? #{metrics[:passed]}"
   end
 end
 ```
@@ -455,32 +483,23 @@ result = optimizer.compile(
 ### Monitoring Progress
 
 ```ruby
-# Subscribe to optimization events for detailed progress tracking
-DSPy.events.subscribe('miprov2_compile') do |event_name, attributes|
-  puts "Starting MIPROv2 optimization with #{attributes[:num_trials]} trials"
-  puts "Strategy: #{attributes[:optimization_strategy]}"
-  puts "Mode: #{attributes[:mode]}"
-end
-
-DSPy.events.subscribe('phase_start') do |event_name, attributes|
-  phase_names = { 1 => 'Bootstrap', 2 => 'Instruction Proposal', 3 => 'Optimization' }
-  puts "Phase #{attributes[:phase]}: #{phase_names[attributes[:phase]]} starting..."
-end
-
-DSPy.events.subscribe('phase_complete') do |event_name, attributes|
-  case attributes[:phase]
-  when 1
-    puts "Bootstrap complete: #{attributes[:success_rate]} success rate"
-  when 2  
-    puts "Generated #{attributes[:num_candidates]} instruction candidates"
-  when 3
-    puts "Optimization complete: Best score #{attributes[:best_score]}"
+# Subscribe to optimization events for detailed progress tracking. All events
+# are emitted through `DSPy.log("optimization.*", ...)`, so subscribe using the
+# `optimization.` prefix.
+DSPy.events.subscribe('optimization.*') do |event_name, attrs|
+  case event_name
+  when 'optimization.miprov2_compile'
+    puts "MIPROv2 starting with #{attrs[:num_trials]} trials "\
+         "(strategy: #{attrs[:optimization_strategy]})"
+  when 'optimization.phase_start'
+    phase_names = { 1 => 'Bootstrap', 2 => 'Instruction Proposal', 3 => 'Optimization' }
+    puts "Phase #{attrs[:phase]} starting: #{phase_names[attrs[:phase]]}"
+  when 'optimization.phase_complete'
+    puts "Phase #{attrs[:phase]} complete → payload: #{attrs.inspect}"
+  when 'optimization.trial_complete'
+    status = attrs[:is_best] ? ' (new best)' : ''
+    puts "Trial #{attrs[:trial_number]} score: #{attrs[:score]}#{status}"
   end
-end
-
-DSPy.events.subscribe('trial_complete') do |event_name, attributes|
-  status = attributes[:is_best] ? " (NEW BEST!)" : ""
-  puts "Trial #{attributes[:trial_number]}: #{attributes[:score]}#{status}"
 end
 
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric)
