@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.29.0] - 2025-10-19
 
 ### Added
-- **GEPA Teleprompter (Phase 0)** brings the Genetic-Pareto Reflective Prompt Evolution workflow to Ruby with parity to the Python reference:
+- **GEPA Teleprompter** brings the Genetic-Pareto Reflective Prompt Evolution workflow to Ruby with parity to the Python reference:
   - Merge proposer scheduling, reflective mutation strategies, and Pareto utilities now live under `lib/gepa/`.
   - Multi-predictor instruction handling plus `feedback_map` hooks so modules like ReAct receive component-specific feedback.
   - Experiment tracking shims, S3-compatible logging adapters, and a deterministic smoke snapshot to validate end-to-end runs.
