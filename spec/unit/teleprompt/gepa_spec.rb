@@ -116,7 +116,7 @@ base reflection upgrade
     ]
 
     reflection_lm = FakeReflectionLM.new
-    teleprompter = described_class.new(metric: reflection_metric, reflection_lm: reflection_lm)
+    teleprompter = described_class.new(metric: reflection_metric, reflection_lm: reflection_lm.method(:call).to_proc)
 
     result = teleprompter.compile(EchoModule.new('base'), trainset: reflection_trainset, valset: reflection_trainset)
 
