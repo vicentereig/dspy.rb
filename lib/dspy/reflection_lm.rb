@@ -7,11 +7,18 @@ module DSPy
   class ReflectionLM
     extend T::Sig
 
-    sig { params(model_id: String, options: T::Hash[Symbol, T.untyped]).void }
-    def initialize(model_id, **options)
+    sig do
+      params(
+        model_id: String,
+        api_key: T.nilable(String),
+        options: T.untyped
+      ).void
+    end
+    def initialize(model_id, api_key: nil, **options)
       opts = options.each_with_object({}) do |(key, value), memo|
         memo[key.to_sym] = value
       end
+      opts[:api_key] = api_key if api_key
       @lm = DSPy::LM.new(model_id, structured_outputs: false, schema_format: :json, **opts)
     end
 

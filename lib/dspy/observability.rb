@@ -41,6 +41,8 @@ module DSPy
           require 'opentelemetry/sdk'
           require 'opentelemetry/exporter/otlp'
 
+          patch_frozen_ssl_context_for_otlp!
+
           # Generate Basic Auth header
           auth_string = Base64.strict_encode64("#{public_key}:#{secret_key}")
           
@@ -149,6 +151,46 @@ module DSPy
         
         @tracer = nil
         @endpoint = nil
+      end
+
+      private
+
+      def patch_frozen_ssl_context_for_otlp!
+        return unless defined?(OpenTelemetry::Exporter::OTLP::Exporter)
+
+        ssl_context_frozen = begin
+          http = Net::HTTP.new('example.com', 443)
+          http.use_ssl = true
+          http.ssl_context&.frozen?
+        rescue StandardError
+          false
+        end
+
+        return unless ssl_context_frozen
+
+        exporter = OpenTelemetry::Exporter::OTLP::Exporter
+        return if exporter.instance_variable_defined?(:@_dspy_ssl_patch_applied)
+
+        exporter.class_eval do
+          define_method(:http_connection) do |uri, ssl_verify_mode, certificate_file, client_certificate_file, client_key_file|
+            http = Net::HTTP.new(uri.host, uri.port)
+            use_ssl = uri.scheme == 'https'
+            http.use_ssl = use_ssl
+
+            if use_ssl && http.ssl_context&.frozen?
+              http.instance_variable_set(:@ssl_context, OpenSSL::SSL::SSLContext.new)
+            end
+
+            http.verify_mode = ssl_verify_mode
+            http.ca_file = certificate_file unless certificate_file.nil?
+            http.cert = OpenSSL::X509::Certificate.new(File.read(client_certificate_file)) unless client_certificate_file.nil?
+            http.key = OpenSSL::PKey::RSA.new(File.read(client_key_file)) unless client_key_file.nil?
+            http.keep_alive_timeout = KEEP_ALIVE_TIMEOUT
+            http
+          end
+        end
+
+        exporter.instance_variable_set(:@_dspy_ssl_patch_applied, true)
       end
     end
   end
