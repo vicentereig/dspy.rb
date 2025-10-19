@@ -125,7 +125,7 @@ end
 
 options = {
   limit: 300,
-  max_metric_calls: 48,
+  max_metric_calls: 600,
   minibatch_size: 6,
   seed: 42
 }
@@ -137,7 +137,7 @@ OptionParser.new do |parser|
     options[:limit] = limit
   end
 
-  parser.on('--max-metric-calls N', Integer, 'GEPA max metric calls (default: 48)') do |calls|
+  parser.on('--max-metric-calls N', Integer, 'GEPA max metric calls (default: 600)') do |calls|
     options[:max_metric_calls] = calls
   end
 
@@ -194,6 +194,13 @@ puts '📊 Dataset split:'
 puts "   • Train: #{train_examples.size}"
 puts "   • Val  : #{val_examples.size}"
 puts "   • Test : #{test_examples.size}"
+
+min_required_calls = val_examples.size + (options[:minibatch_size] * 2)
+if options[:max_metric_calls] < min_required_calls
+  suggested_calls = [min_required_calls, val_examples.size * 2].max
+  warn "⚠️  Increasing max metric calls from #{options[:max_metric_calls]} to #{suggested_calls} to cover validation evaluation."
+  options[:max_metric_calls] = suggested_calls
+end
 
 baseline_program = DSPy::Predict.new(ADEExampleGEPA::ADETextClassifier)
 baseline_program = baseline_program.with_instruction(
