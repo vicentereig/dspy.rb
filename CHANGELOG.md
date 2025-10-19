@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GEPA smoke integration spec (`spec/integration/dspy/teleprompt/gepa_smoke_spec.rb`) to exercise telemetry, experiment tracking, and deterministic reflection proposals.
 - Merge proposer implementation (`GEPA::Proposer::MergeProposer`) with engine scheduling logic ported from Python GEPA.
 - Multi-predictor support in the DSPy adapter so each named predictor receives its own instruction candidate.
-- Per-predictor trace capture in the GEPA teleprompter, enabling component-specific reflective datasets.
+- Per-predictor trace capture and `feedback_map`-driven custom feedback in the GEPA teleprompter, enabling component-specific reflective datasets.
 
 ### Documentation
 - Updated GEPA guide with reflection LM wiring tips, parity status, ActiveRecord experiment tracking guidance, S3-compatible logging design diagrams, the new smoke snapshot cassette fixture, and instructions for `examples/gepa_snapshot.rb`.

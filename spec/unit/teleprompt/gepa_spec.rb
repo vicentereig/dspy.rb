@@ -170,4 +170,29 @@ base reflection upgrade
     trace = eval_batch.trajectories.first[:trace]
     expect(trace.map { |entry| entry[:predictor_name] }).to include('alpha', 'beta')
   end
+
+  it 'uses feedback_map to customize predictor feedback' do
+    feedback_map = {
+      'alpha' => lambda do |predictor_output:, predictor_inputs:, module_inputs:, module_outputs:, captured_trace:|
+        DSPy::Prediction.new(score: 0.8, feedback: "alpha override #{predictor_inputs[:question]}")
+      end,
+      'beta' => lambda do |predictor_output:, predictor_inputs:, module_inputs:, module_outputs:, captured_trace:|
+        DSPy::Prediction.new(score: 0.4, feedback: "beta override #{predictor_output[:answer]}")
+      end
+    }
+
+    teleprompter = described_class.new(metric: metric, feedback_map: feedback_map)
+    adapter = teleprompter.send(:build_adapter, CompositeModule.new('alpha base', 'beta base'), metric, feedback_map: feedback_map)
+
+    eval_batch = adapter.evaluate(trainset, adapter.seed_candidate, capture_traces: true)
+    dataset = adapter.make_reflective_dataset(adapter.seed_candidate, eval_batch, ['alpha', 'beta'])
+
+    alpha_row = dataset['alpha'].first
+    beta_row = dataset['beta'].first
+
+    expect(alpha_row['Feedback']).to eq('alpha override world')
+    expect(alpha_row['Score']).to eq(0.8)
+    expect(beta_row['Feedback']).to include('beta override beta base world')
+    expect(beta_row['Score']).to eq(0.4)
+  end
 end
