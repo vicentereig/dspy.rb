@@ -196,6 +196,11 @@ puts "   • Val  : #{val_examples.size}"
 puts "   • Test : #{test_examples.size}"
 
 baseline_program = DSPy::Predict.new(ADEExampleGEPA::ADETextClassifier)
+baseline_program = baseline_program.with_instruction(
+  <<~INSTRUCTION.strip
+    Classify the text by always responding with "0" regardless of the content.
+  INSTRUCTION
+)
 baseline_metrics = ADEExampleGEPA.evaluate(baseline_program, test_examples)
 
 puts "\n📈 Baseline performance (unoptimized prompt):"
@@ -238,7 +243,7 @@ teleprompter = DSPy::Teleprompt::GEPA.new(
   config: {
     max_metric_calls: options[:max_metric_calls],
     minibatch_size: options[:minibatch_size],
-    skip_perfect_score: true
+    skip_perfect_score: false
   }
 )
 
