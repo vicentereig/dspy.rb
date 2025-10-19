@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'dspy/teleprompt/gepa'
+require 'yaml'
 
 RSpec.describe 'GEPA teleprompter smoke test', :integration do
   before do
@@ -126,5 +127,23 @@ RSpec.describe 'GEPA teleprompter smoke test', :integration do
     expect(captured_tracker).not_to be_nil
     expect(captured_tracker.events).to include(hash_including(metrics: hash_including(:iteration => 1)))
     expect(captured_tracker.events).to include(hash_including(metrics: hash_including(:new_instruction_self => 'refined instruction')))
+
+    adapter = teleprompter.send(:build_adapter, result.optimized_program, metric)
+    snapshot_eval = adapter.evaluate(trainset, adapter.seed_candidate, capture_traces: true)
+    trace_snapshot = snapshot_eval.trajectories.map do |trajectory|
+      Array(trajectory[:trace]).map do |entry|
+        {
+          'predictor' => entry[:predictor_name],
+          'inputs' => entry[:inputs],
+          'output' => entry[:output]
+        }
+      end
+    end
+
+    expected_snapshot = YAML.load_file(File.expand_path('../../../../spec/fixtures/gepa/smoke_snapshot.yml', __dir__))
+    expect(optimized.instruction).to eq(expected_snapshot['optimized_instruction'])
+    expect(result.metadata[:candidates]).to eq(expected_snapshot['candidates'])
+    expect(result.best_score_value).to eq(expected_snapshot['best_score_value'])
+    expect(trace_snapshot).to eq(expected_snapshot['trace'])
   end
 end

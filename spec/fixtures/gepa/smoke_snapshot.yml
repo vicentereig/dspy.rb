@@ -1,0 +1,10 @@
+---
+optimized_instruction: refined instruction
+candidates: 2
+best_score_value: 1.0
+trace:
+- - predictor: self
+    inputs:
+      :question: world
+    output:
+      :answer: refined instruction world
