@@ -48,7 +48,7 @@ The script:
 - Prints per-trial instruction snippets and writes summary artifacts to `examples/ade_optimizer_miprov2/results/`.
 - Treats malformed model outputs as errors, so precision/recall metrics stay honest.
 
-Use this workflow as a reference while adapting the rest of this guide to your own domain.
+Use this workflow as a reference while adapting the rest of this guide to your own domain. When you omit `--seed`, the script samples a new random seed (and prints it so you can reproduce the run) and reports the total optimization time—handy for comparing preset budgets against your own datasets.
 
 ## Basic Usage
 
