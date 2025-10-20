@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'gepa/version'
 require_relative 'gepa/telemetry'
 require_relative 'gepa/logging'
 require_relative 'gepa/utils/pareto'
