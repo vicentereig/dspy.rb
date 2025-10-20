@@ -2,9 +2,11 @@
 
 require 'digest'
 require 'time'
+require 'json'
 require 'concurrent-ruby'
 require 'sorbet-runtime'
 require 'securerandom'
+require 'set'
 require_relative 'teleprompter'
 require_relative 'utils'
 require_relative '../propose/grounded_proposer'
@@ -546,6 +548,21 @@ module DSPy
       end
       def generate_candidate_configurations(proposal_result, demo_candidates)
         candidates = []
+        seen_signatures = Set.new
+
+        add_candidate = lambda do |instruction:, few_shot_examples:, type:, metadata:, config_id:|
+          signature = candidate_signature(type, instruction, metadata, few_shot_examples)
+          next if seen_signatures.include?(signature)
+
+          seen_signatures << signature
+          candidates << EvaluatedCandidate.new(
+            instruction: instruction,
+            few_shot_examples: few_shot_examples,
+            type: type,
+            metadata: metadata,
+            config_id: config_id
+          )
+        end
 
         predictor_instruction_map = if proposal_result.respond_to?(:predictor_instructions) && proposal_result.predictor_instructions.any?
           proposal_result.predictor_instructions
@@ -557,7 +574,7 @@ module DSPy
         demo_maps = build_demo_maps(demo_candidates)
 
         # Base configuration (no modifications)
-        candidates << EvaluatedCandidate.new(
+        add_candidate.call(
           instruction: "",
           few_shot_examples: [],
           type: CandidateType::Baseline,
@@ -570,7 +587,7 @@ module DSPy
 
         instruction_maps.each_with_index do |instruction_map, combo_idx|
           primary_instruction = instruction_map[0] || instruction_map.values.first || ""
-          candidates << EvaluatedCandidate.new(
+          add_candidate.call(
             instruction: primary_instruction,
             few_shot_examples: [],
             type: CandidateType::InstructionOnly,
@@ -587,7 +604,7 @@ module DSPy
           next if demo_map.empty?
 
           flattened_examples = demo_map.values.flatten
-          candidates << EvaluatedCandidate.new(
+          add_candidate.call(
             instruction: "",
             few_shot_examples: flattened_examples,
             type: CandidateType::FewShotOnly,
@@ -607,7 +624,7 @@ module DSPy
             next if demo_map.empty?
 
             flattened_examples = demo_map.values.flatten
-            candidates << EvaluatedCandidate.new(
+            add_candidate.call(
               instruction: primary_instruction,
               few_shot_examples: flattened_examples,
               type: CandidateType::Combined,
@@ -684,6 +701,55 @@ module DSPy
         demo_map.each_with_object({}) do |(index, demos), memo|
           next if demos.nil?
           memo[index] = demos.map { |demo| demo }
+        end
+      end
+
+      sig do
+        params(
+          type: CandidateType,
+          instruction: String,
+          metadata: T::Hash[Symbol, T.untyped],
+          few_shot_examples: T::Array[T.untyped]
+        ).returns(String)
+      end
+      def candidate_signature(type, instruction, metadata, few_shot_examples)
+        JSON.generate(
+          type: type.serialize,
+          instruction: instruction,
+          instructions_map: normalize_instruction_map(metadata[:instructions_map] || {}),
+          demos_map: normalize_demo_map(metadata[:demos_map] || {}),
+          few_shot_examples: few_shot_examples.map { |example| serialize_few_shot_example(example) }
+        )
+      end
+
+      sig { params(map: T::Hash[Integer, T.untyped]).returns(T::Hash[Integer, String]) }
+      def normalize_instruction_map(map)
+        map.sort_by { |index, _| index }.each_with_object({}) do |(index, value), memo|
+          memo[index] = value.to_s
+        end
+      end
+
+      sig { params(map: T::Hash[Integer, T::Array[T.untyped]]).returns(T::Hash[Integer, T::Array[T.untyped]]) }
+      def normalize_demo_map(map)
+        map.sort_by { |index, _| index }.each_with_object({}) do |(index, demos), memo|
+          memo[index] = Array(demos).map { |demo| serialize_few_shot_example(demo) }
+        end
+      end
+
+      sig { params(example: T.untyped).returns(T.untyped) }
+      def serialize_few_shot_example(example)
+        case example
+        when DSPy::FewShotExample
+          deep_dup(example.to_h)
+        when DSPy::Example
+          {
+            input: deep_dup(example.input_values),
+            expected: deep_dup(example.expected_values)
+          }
+        when Hash
+          deep_dup(example)
+        else
+          example
         end
       end
 
