@@ -9,6 +9,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: DSPy Core
+            gem: dspy
+            command: bundle exec rspec --format documentation
+          - name: DSPy Datasets
+            gem: dspy-datasets
+            command: bundle exec rspec --format documentation spec/unit/dspy/datasets spec/unit/dspy/datasets_spec.rb spec/unit/dspy/datasets/loaders
+          - name: GEPA
+            gem: gepa
+            command: bundle exec rspec --format documentation spec/unit/gepa spec/unit/teleprompt/gepa_spec.rb spec/integration/dspy/teleprompt/gepa_smoke_spec.rb
+
+    name: Run tests (${{ matrix.name }})
 
     steps:
     - uses: actions/checkout@v4
@@ -21,13 +36,22 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ steps.ruby-version.outputs.version }}
-        bundler-cache: true # This will cache your gems
+        bundler-cache: true
+
+    - name: Install system dependencies (Arrow/Parquet)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ca-certificates lsb-release wget build-essential pkg-config gobject-introspection libglib2.0-dev zlib1g-dev liblzma-dev
+        wget https://packages.apache.org/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+        sudo apt-get install -y ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+        sudo apt-get update
+        sudo apt-get install -y libarrow-glib-dev libparquet-glib-dev
 
     - name: Install dependencies
       run: bundle install
 
     - name: Run tests
-      run: bundle exec rspec --format documentation
+      run: ${{ matrix.command }}
       env:
         OPENAI_API_KEY: "test-openai-key-for-vcr"
         ANTHROPIC_API_KEY: "test-anthropic-key-for-vcr"
