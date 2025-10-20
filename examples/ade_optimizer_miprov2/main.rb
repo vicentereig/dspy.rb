@@ -23,7 +23,7 @@ FileUtils.mkdir_p(RESULTS_DIR)
 options = {
   limit: 300,
   trials: 6,
-  seed: 42,
+  seed: nil,
   auto: nil
 }
 
@@ -74,7 +74,8 @@ if options[:auto] && options[:auto] != 'none'
 else
   puts "Trials      : #{options[:trials]}"
 end
-puts "Random Seed : #{options[:seed]}"
+effective_seed = options[:seed] || Random.new_seed
+puts "Random Seed : #{effective_seed}"
 
 rows = DSPy::Datasets::ADE.examples(limit: options[:limit], offset: 0, split: 'train', cache_dir: DATA_DIR)
 
@@ -88,7 +89,7 @@ puts "\n📦 Downloaded #{rows.size} ADE rows from Hugging Face"
 examples = ADEExample.build_examples(rows)
 puts "🧪 Prepared #{examples.size} DSPy examples"
 
-train_examples, val_examples, test_examples = ADEExample.split_examples(examples, train_ratio: 0.6, val_ratio: 0.2, seed: options[:seed])
+train_examples, val_examples, test_examples = ADEExample.split_examples(examples, train_ratio: 0.6, val_ratio: 0.2, seed: effective_seed)
 
 puts '📊 Dataset split:'
 puts "   • Train: #{train_examples.size}"
@@ -132,6 +133,7 @@ run_description =
   end
 
 puts "\n🚀 Running MIPROv2 optimization (#{run_description})..."
+overall_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 result = optimizer.compile(baseline_program, trainset: train_examples, valset: val_examples)
 
 trial_logs = result.optimization_trace[:trial_logs] || {}
@@ -165,6 +167,7 @@ summary = {
   limit: options[:limit],
   trials: optimizer.config.num_trials,
   auto_preset: optimizer.config.auto_preset&.serialize,
+  seed: effective_seed,
   baseline: {
     accuracy: baseline_metrics.accuracy,
     precision: baseline_metrics.precision,
@@ -180,7 +183,8 @@ summary = {
   best_score: result.best_score_value,
   best_instruction: nil,
   total_trials: result.history[:total_trials],
-  optimization_strategy: result.history[:optimization_strategy]
+  optimization_strategy: result.history[:optimization_strategy],
+  duration_seconds: elapsed_seconds
 }
 
 best_instruction_text = result.metadata[:best_instruction].to_s
@@ -217,4 +221,6 @@ puts "   • #{trial_log_path}"
 puts "\n✨ Best instruction snippet:"
 puts best_instruction_text.empty? ? '(no instruction recorded)' : best_instruction_text.lines.first.to_s.strip
 
+elapsed_seconds = Process.clock_gettime(Process::CLOCK_MONOTONIC) - overall_start
+puts "\n⏱️  Optimization completed in #{format('%.2f', elapsed_seconds)}s"
 puts "\nDone!"

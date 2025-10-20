@@ -17,7 +17,7 @@ Outputs (JSON, CSV, trial log JSON) are written under `examples/ade_optimizer_mi
 | `--limit` | Number of ADE examples to download (default: 300) |
 | `--trials` | Manual override for MIPROv2 trial count (default: 6 when `--auto` is omitted) |
 | `--auto` | Use a preset MIPROv2 configuration (`light`, `medium`, `heavy`) |
-| `--seed` | Random seed for dataset splits (default: 42) |
+| `--seed` | Random seed for dataset splits (defaults to a random seed printed at runtime) |
 
 ## What it Does
 
@@ -27,6 +27,6 @@ Outputs (JSON, CSV, trial log JSON) are written under `examples/ade_optimizer_mi
 4. Runs `DSPy::Teleprompt::MIPROv2` with a small configuration to learn better instructions/demos.
 5. Evaluates the optimized program and stores the results (malformed outputs now count toward errors, so 100% precision is no longer assumed).
 
-The data split step keeps both ADE labels present in train/val/test when possible, ensuring validation metrics stay meaningful even with small sample sizes.
+The data split step keeps both ADE labels present in train/val/test when possible, ensuring validation metrics stay meaningful even with small sample sizes. The script prints the seed it used (helpful for reproducing a run) and the total optimization time so you can track throughput across experiments.
 
 The script is designed for storytelling/framing purposes (“how models can write prompts for you”). Feel free to expand it with additional metrics, visualisation, or article-friendly commentary.

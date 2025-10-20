@@ -38,7 +38,7 @@ module ADEExample
     end
   end
 
-  def split_examples(examples, train_ratio:, val_ratio:, seed: 42)
+  def split_examples(examples, train_ratio:, val_ratio:, seed: nil)
     # TODO: locate the equivalent split logic in Python's ../dspy implementation to keep behaviour in sync.
     return [[], [], []] if examples.empty?
 
@@ -46,7 +46,8 @@ module ADEExample
       raise ArgumentError, "train_ratio + val_ratio must be between 0 and 1"
     end
 
-    random = Random.new(seed)
+    seed_value = seed || Random.new_seed
+    random = Random.new(seed_value)
     train, val, test = default_split(examples.shuffle(random: random), train_ratio, val_ratio)
 
     label_groups = examples.group_by { |example| example.expected_values[:label] }
@@ -56,7 +57,7 @@ module ADEExample
         ensure_label_presence!(splits, label)
       end
 
-      random = Random.new(seed)
+      random = Random.new(seed_value)
       train = splits[:train].shuffle(random: random)
       val = splits[:val].shuffle(random: random)
       test = splits[:test].shuffle(random: random)
