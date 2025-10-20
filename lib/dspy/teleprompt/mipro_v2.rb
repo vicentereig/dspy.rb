@@ -46,6 +46,7 @@ module DSPy
       AutoPreset::None => {},
       AutoPreset::Light => {
         candidate_budget: 6,
+        instruction_candidates: 3,
         instruction_candidates_when_fewshot: 3,
         bootstrap_sets: 3,
         max_bootstrapped_examples: 2,
@@ -57,7 +58,8 @@ module DSPy
       },
       AutoPreset::Medium => {
         candidate_budget: 12,
-        instruction_candidates_when_fewshot: 6,
+        instruction_candidates: 5,
+        instruction_candidates_when_fewshot: 5,
         bootstrap_sets: 5,
         max_bootstrapped_examples: 4,
         max_labeled_examples: 16,
@@ -68,7 +70,8 @@ module DSPy
       },
       AutoPreset::Heavy => {
         candidate_budget: 18,
-        instruction_candidates_when_fewshot: 9,
+        instruction_candidates: 8,
+        instruction_candidates_when_fewshot: 8,
         bootstrap_sets: 8,
         max_bootstrapped_examples: 6,
         max_labeled_examples: 24,
@@ -101,7 +104,7 @@ module DSPy
         def self.light(metric: nil, **kwargs)
           optimizer = MIPROv2.new(metric: metric, **kwargs)
           optimizer.configure do |config|
-            config.auto_preset = AutoPreset::Light
+            MIPROv2.apply_auto_defaults(config, AutoPreset::Light)
           end
           optimizer
         end
@@ -115,7 +118,7 @@ module DSPy
         def self.medium(metric: nil, **kwargs)
           optimizer = MIPROv2.new(metric: metric, **kwargs)
           optimizer.configure do |config|
-            config.auto_preset = AutoPreset::Medium
+            MIPROv2.apply_auto_defaults(config, AutoPreset::Medium)
           end
           optimizer
         end
@@ -129,7 +132,7 @@ module DSPy
         def self.heavy(metric: nil, **kwargs)
           optimizer = MIPROv2.new(metric: metric, **kwargs)
           optimizer.configure do |config|
-            config.auto_preset = AutoPreset::Heavy
+            MIPROv2.apply_auto_defaults(config, AutoPreset::Heavy)
           end
           optimizer
         end
@@ -193,6 +196,26 @@ module DSPy
       # Get the default configuration block
       def self.default_config_block
         @default_config_block
+      end
+
+      class << self
+        extend T::Sig
+
+        sig { params(config: T.untyped, preset: AutoPreset).void }
+        def apply_auto_defaults(config, preset)
+          settings = AUTO_PRESET_SETTINGS.fetch(preset) { {} }
+
+          config.auto_preset = preset
+          config.num_trials = settings[:candidate_budget] if settings[:candidate_budget]
+          config.num_instruction_candidates = settings[:instruction_candidates] if settings[:instruction_candidates]
+          config.bootstrap_sets = settings[:bootstrap_sets] if settings[:bootstrap_sets]
+          config.max_bootstrapped_examples = settings[:max_bootstrapped_examples] if settings.key?(:max_bootstrapped_examples)
+          config.max_labeled_examples = settings[:max_labeled_examples] if settings.key?(:max_labeled_examples)
+          config.optimization_strategy = settings[:optimization_strategy] if settings[:optimization_strategy]
+          config.early_stopping_patience = settings[:early_stopping_patience] if settings[:early_stopping_patience]
+          config.minibatch_size = settings[:minibatch_size] if settings.key?(:minibatch_size)
+          config.valset_target_size = settings[:valset_target_size] if settings[:valset_target_size]
+        end
       end
 
 
