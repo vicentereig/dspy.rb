@@ -40,6 +40,8 @@ bundle exec ruby examples/ade_optimizer_miprov2/main.rb \
   --seed 42
 ```
 
+Only the presets defined in `DSPy::Teleprompt::AutoPreset` are accepted by the `--auto` flag: `light`, `medium`, `heavy`, or `none` (to disable auto tuning).
+
 The script:
 
 - Downloads a subset of the ADE dataset via `DSPy::Datasets::ADE`.
@@ -55,47 +57,107 @@ Use this workflow as a reference while adapting the rest of this guide to your o
 ### Simple Optimization
 
 ```ruby
-# Define your signature
+require "sorbet-runtime"
+require "dspy"
+
+# 1. Define your task contract with typed outputs
 class ClassifyText < DSPy::Signature
   description "Classify the sentiment of the given text"
-  
+
+  class SentimentLabel < T::Enum
+    enums do
+      Positive = new("positive")
+      Negative = new("negative")
+      Neutral  = new("neutral")
+    end
+  end
+
   input do
     const :text, String
   end
-  
+
   output do
-    const :sentiment, String
-    const :confidence, Float
+    const :sentiment, SentimentLabel, description: "positive, negative, or neutral"
+    const :confidence, Float, description: "0.0-1.0 confidence estimate"
   end
 end
 
-# Create program to optimize
+# 2. Build typed examples that match the signature contract
+training_examples = [
+  DSPy::Example.new(
+    signature_class: ClassifyText,
+    input:  { text: "I loved the quick shipping." },
+    expected: {
+      sentiment: ClassifyText::SentimentLabel::Positive,
+      confidence: 0.92
+    }
+  ),
+  DSPy::Example.new(
+    signature_class: ClassifyText,
+    input:  { text: "Support never answered the ticket." },
+    expected: {
+      sentiment: ClassifyText::SentimentLabel::Negative,
+      confidence: 0.88
+    }
+  )
+]
+
+validation_examples = [
+  DSPy::Example.new(
+    signature_class: ClassifyText,
+    input:  { text: "Packaging was fine." },
+    expected: {
+      sentiment: ClassifyText::SentimentLabel::Neutral,
+      confidence: 0.75
+    }
+  )
+]
+
+# 3. Create a predictor and metric compatible with DSPy::Teleprompt::MIPROv2
 program = DSPy::Predict.new(ClassifyText)
 
-# Create optimizer with custom metric
 metric = proc do |example, prediction|
   expected = example.expected_values[:sentiment]
-  predicted = prediction.respond_to?(:sentiment) ? prediction.sentiment : prediction[:sentiment]
-  predicted&.downcase == expected&.downcase
+
+  raw_prediction =
+    if prediction.respond_to?(:sentiment)
+      prediction.sentiment
+    elsif prediction.is_a?(Hash)
+      prediction[:sentiment] || prediction["sentiment"]
+    else
+      prediction
+    end
+
+  predicted =
+    case raw_prediction
+    when ClassifyText::SentimentLabel
+      raw_prediction
+    when String
+      begin
+        ClassifyText::SentimentLabel.deserialize(raw_prediction.downcase)
+      rescue ArgumentError
+        nil
+      end
+    else
+      nil
+    end
+
+  predicted == expected
 end
 
+# 4. Optimize
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
-
-# Run optimization
 result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
 
-# Use the optimized predictor
+# 5. Inspect the optimized program
 best_program = result.optimized_program
-final_score = result.best_score_value
-
-puts "Optimization complete!"
-puts "Best score: #{final_score}"
-puts "Best instruction: #{best_program.prompt.instruction}"
+puts "Best score: #{result.best_score_value}"
+puts "Instruction:\n#{best_program.prompt.instruction}"
 ```
 
 ### AutoMode Configuration
 
-MIPROv2 provides preset configurations for different optimization scenarios:
+MIPROv2 provides preset configurations for different optimization scenarios (the same values exposed by `DSPy::Teleprompt::AutoPreset` in `lib/dspy/teleprompt/mipro_v2.rb`):
 
 ```ruby
 # Light optimization - fastest, good for prototyping

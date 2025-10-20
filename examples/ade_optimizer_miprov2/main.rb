@@ -16,6 +16,7 @@ require_relative 'ade_example'
 EXAMPLE_ROOT = File.expand_path(__dir__)
 DATA_DIR = File.join(EXAMPLE_ROOT, 'data')
 RESULTS_DIR = File.join(EXAMPLE_ROOT, 'results')
+AUTO_PRESET_CHOICES = %w[light medium heavy none].freeze
 
 FileUtils.mkdir_p(DATA_DIR)
 FileUtils.mkdir_p(RESULTS_DIR)
@@ -44,30 +45,42 @@ options = {
   auto: nil
 }
 
-OptionParser.new do |parser|
-parser.banner = 'Usage: bundle exec ruby examples/ade_optimizer_miprov2/main.rb [options]'
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: bundle exec ruby examples/ade_optimizer_miprov2/main.rb [options]'
 
-  parser.on('-l', '--limit N', Integer, 'Number of ADE examples to download (default: 300)') do |limit|
+  opts.on('-l', '--limit N', Integer, 'Number of ADE examples to download (default: 300)') do |limit|
     options[:limit] = limit
   end
 
-  parser.on('-t', '--trials N', Integer, 'Number of MIPROv2 trials (default: 6)') do |trials|
+  opts.on('-t', '--trials N', Integer, 'Number of MIPROv2 trials (default: 6)') do |trials|
     options[:trials] = trials
   end
 
-  parser.on('--auto MODE', String, 'Auto preset (:light, :medium, :heavy, :none)') do |mode|
-    options[:auto] = mode.strip.downcase
+  opts.on('--auto MODE', String, "Auto preset (#{AUTO_PRESET_CHOICES.join(', ')})") do |mode|
+    normalized = mode.strip.downcase
+    unless AUTO_PRESET_CHOICES.include?(normalized)
+      raise OptionParser::InvalidArgument, "invalid auto preset '#{mode}'. Must be one of #{AUTO_PRESET_CHOICES.join(', ')}"
+    end
+    options[:auto] = normalized
   end
 
-  parser.on('--seed N', Integer, 'Random seed for dataset splits (default: 42)') do |seed|
+  opts.on('--seed N', Integer, 'Random seed for dataset splits (default: 42)') do |seed|
     options[:seed] = seed
   end
 
-  parser.on('-h', '--help', 'Show this help message') do
-    puts parser
+  opts.on('-h', '--help', 'Show this help message') do
+    puts opts
     exit
   end
-end.parse!
+end
+
+begin
+  parser.parse!
+rescue OptionParser::ParseError => e
+  warn "❌ #{e.message}"
+  warn parser
+  exit 1
+end
 
 options[:auto] = nil if options[:auto] == 'none'
 
@@ -86,8 +99,8 @@ end
 puts '🏥 ADE MIPROv2 Optimization Demo'
 puts '================================'
 puts "Limit       : #{options[:limit]}"
-if options[:auto] && options[:auto] != 'none'
-  puts "Auto Preset : #{options[:auto]}"
+if options[:auto]
+  puts "Auto Preset : #{options[:auto].capitalize}"
 else
   puts "Trials      : #{options[:trials]}"
 end
@@ -130,7 +143,7 @@ end
 
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
 optimizer.configure do |config|
-  if options[:auto] && options[:auto] != 'none'
+  if options[:auto]
     config.auto_preset = DSPy::Teleprompt::AutoPreset.deserialize(options[:auto])
   else
     config.num_trials = options[:trials]
@@ -143,7 +156,7 @@ optimizer.configure do |config|
 end
 
 run_description =
-  if options[:auto] && options[:auto] != 'none'
+  if options[:auto]
     "auto preset #{options[:auto]}"
   else
     "#{options[:trials]} trials"
