@@ -199,7 +199,6 @@ require_relative 'dspy/signature'
 require_relative 'dspy/few_shot_example'
 require_relative 'dspy/prompt'
 require_relative 'dspy/example'
-require_relative 'dspy/datasets'
 require_relative 'dspy/lm'
 require_relative 'dspy/image'
 require_relative 'dspy/prediction'
@@ -218,6 +217,11 @@ require_relative 'dspy/propose/grounded_proposer'
 require_relative 'dspy/teleprompt/mipro_v2'
 require_relative 'dspy/tools'
 require_relative 'dspy/memory'
+
+begin
+  require 'dspy/datasets'
+rescue LoadError
+end
 require_relative 'dspy/storage/program_storage'
 require_relative 'dspy/storage/storage_manager'
 require_relative 'dspy/registry/signature_registry'

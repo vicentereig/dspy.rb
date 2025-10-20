@@ -15,7 +15,15 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.3.0"
 
   # Specify which files should be added to the gem when it is released.
-  spec.files = Dir.glob(%w[lib/**/*.rb README.md LICENSE.txt])
+  spec.files = Dir[
+    "lib/dspy.rb",
+    "lib/dspy/**/*.rb",
+    "README.md",
+    "LICENSE"
+  ].uniq
+
+  spec.files.reject! { |path| path.start_with?("lib/dspy/datasets") }
+  spec.files.reject! { |path| path.start_with?("lib/gepa") || path == "lib/gepa.rb" }
 
   # Uncomment to register executables
   # spec.bindir = "exe"

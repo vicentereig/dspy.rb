@@ -1,6 +1,8 @@
 source 'https://rubygems.org'
 
-gemspec
+gemspec name: "dspy"
+gemspec name: "dspy-datasets"
+gemspec name: "gepa"
 
 group :development, :test do
   gem 'rspec', '~> 3.12'
