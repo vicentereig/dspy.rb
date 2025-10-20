@@ -20,6 +20,23 @@ RESULTS_DIR = File.join(EXAMPLE_ROOT, 'results')
 FileUtils.mkdir_p(DATA_DIR)
 FileUtils.mkdir_p(RESULTS_DIR)
 
+def serialize_few_shot_payload(value)
+  case value
+  when DSPy::FewShotExample
+    value.to_h
+  when Hash
+    value.transform_values { |inner| serialize_few_shot_payload(inner) }
+  when Array
+    value.map { |element| serialize_few_shot_payload(element) }
+  else
+    value
+  end
+end
+
+def serialize_trial_logs(trial_logs)
+  trial_logs.transform_values { |entry| serialize_few_shot_payload(entry) }
+end
+
 options = {
   limit: 300,
   trials: 6,
@@ -162,6 +179,7 @@ puts "   • F1 Score : #{(optimized_metrics.f1 * 100).round(2)}%"
 improvement = (optimized_metrics.accuracy - baseline_metrics.accuracy) * 100
 puts "\n📣 Accuracy improvement: #{improvement.round(2)} percentage points"
 
+elapsed_seconds = Process.clock_gettime(Process::CLOCK_MONOTONIC) - overall_start
 summary = {
   timestamp: Time.now.utc.iso8601,
   limit: options[:limit],
@@ -211,7 +229,8 @@ CSV.open(csv_path, 'w') do |csv|
 end
 
 trial_log_path = File.join(RESULTS_DIR, 'trial_logs.json')
-File.write(trial_log_path, JSON.pretty_generate(result.optimization_trace[:trial_logs]))
+serialized_trial_logs = serialize_trial_logs(trial_logs)
+File.write(trial_log_path, JSON.pretty_generate(serialized_trial_logs))
 
 puts "\n📂 Results saved to:"
 puts "   • #{summary_path}"
@@ -221,6 +240,5 @@ puts "   • #{trial_log_path}"
 puts "\n✨ Best instruction snippet:"
 puts best_instruction_text.empty? ? '(no instruction recorded)' : best_instruction_text.lines.first.to_s.strip
 
-elapsed_seconds = Process.clock_gettime(Process::CLOCK_MONOTONIC) - overall_start
 puts "\n⏱️  Optimization completed in #{format('%.2f', elapsed_seconds)}s"
 puts "\nDone!"
