@@ -16,10 +16,13 @@ require_relative 'ade_example'
 EXAMPLE_ROOT = File.expand_path(__dir__)
 DATA_DIR = File.join(EXAMPLE_ROOT, 'data')
 RESULTS_DIR = File.join(EXAMPLE_ROOT, 'results')
+DATASET_CACHE_DIR = File.join(DATA_DIR, 'ade_parquet')
+DSPY_DATASET_ID = 'ade-benchmark-corpus/ade_corpus_v2'
 AUTO_PRESET_CHOICES = %w[light medium heavy none].freeze
 
 FileUtils.mkdir_p(DATA_DIR)
 FileUtils.mkdir_p(RESULTS_DIR)
+FileUtils.mkdir_p(DATASET_CACHE_DIR)
 
 def serialize_few_shot_payload(value)
   case value
@@ -107,14 +110,15 @@ end
 effective_seed = options[:seed] || Random.new_seed
 puts "Random Seed : #{effective_seed}"
 
-rows = DSPy::Datasets::ADE.examples(limit: options[:limit], offset: 0, split: 'train', cache_dir: DATA_DIR)
+dataset = DSPy::Datasets.fetch(DSPY_DATASET_ID, split: 'train', cache_dir: DATASET_CACHE_DIR)
+rows = dataset.rows(limit: options[:limit])
 
 if rows.empty?
   warn "❌ Failed to download ADE dataset rows. Please check your network connection."
   exit 1
 end
 
-puts "\n📦 Downloaded #{rows.size} ADE rows from Hugging Face"
+puts "\n📦 Downloaded #{rows.size} ADE rows from Hugging Face parquet (split: #{dataset.split})"
 
 examples = ADEExample.build_examples(rows)
 puts "🧪 Prepared #{examples.size} DSPy examples"
