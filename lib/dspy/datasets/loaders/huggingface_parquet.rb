@@ -102,31 +102,50 @@ module DSPy
         end
 
         def http_get(uri)
-          Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
-            request = Net::HTTP::Get.new(uri)
-            http.request(request)
-          end
+          perform_request_with_redirects(uri)
         end
 
         def download_file(url, destination)
-          uri = URI(url)
-          Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
-            request = Net::HTTP::Get.new(uri)
-            http.request(request) do |response|
-              unless response.is_a?(Net::HTTPSuccess)
-                raise DownloadError, "Failed to download parquet file: #{response.code}"
-              end
-
-              File.open(destination, 'wb') do |file|
-                response.read_body do |chunk|
-                  file.write(chunk)
-                end
-              end
-            end
+          fetch_with_redirects(URI(url)) do |response|
+            File.binwrite(destination, response.body)
           end
         rescue => e
           File.delete(destination) if File.exist?(destination)
           raise
+        end
+
+        MAX_REDIRECTS = 5
+
+        def perform_request_with_redirects(uri, limit = MAX_REDIRECTS)
+          raise DownloadError, 'Too many HTTP redirects' if limit <= 0
+
+          Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+            request = Net::HTTP::Get.new(uri)
+            response = http.request(request)
+
+            if response.is_a?(Net::HTTPRedirection)
+              location = response['location']
+              raise DownloadError, 'Redirect without location header' unless location
+
+              new_uri = URI(location)
+              new_uri = uri + location if new_uri.relative?
+              return perform_request_with_redirects(new_uri, limit - 1)
+            end
+
+            response
+          end
+        end
+
+        def fetch_with_redirects(uri, limit = MAX_REDIRECTS, &block)
+          response = perform_request_with_redirects(uri, limit)
+
+          unless response.is_a?(Net::HTTPSuccess)
+            message = response ? "Failed to download parquet file: #{response.code}" : 'Failed to download parquet file'
+            raise DownloadError, message
+          end
+
+          return yield response if block_given?
+          response
         end
       end
     end
