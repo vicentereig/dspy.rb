@@ -111,7 +111,7 @@ end
 - **Prompt Objects** - Manipulate prompts as first-class objects instead of strings
 - **Typed Examples** - Type-safe training data with automatic validation
 - **Evaluation Framework** - Advanced metrics beyond simple accuracy with error-resilient pipelines
-- **MIPROv2 Optimization** - Advanced Bayesian optimization with Gaussian Processes, multiple optimization strategies, and storage persistence
+- **MIPROv2 Optimization** - Advanced Bayesian optimization with Gaussian Processes, multiple optimization strategies, auto-config presets, and storage persistence
 
 **Production Features:**
 - **Reliable JSON Extraction** - Native structured outputs for OpenAI and Gemini, Anthropic tool-based extraction, and automatic strategy selection with fallback

@@ -36,16 +36,17 @@ The repository ships with a runnable demo at `examples/ade_optimizer_miprov2/mai
 ```bash
 bundle exec ruby examples/ade_optimizer_miprov2/main.rb \
   --limit 300 \
-  --trials 6 \
+  --auto light \
   --seed 42
 ```
 
 The script:
 
 - Downloads a subset of the ADE dataset via `DSPy::Datasets::ADE`.
-- Builds strongly typed `DSPy::Example` instances and splits them into train / val / test.
-- Configures `DSPy::Teleprompt::MIPROv2` with a boolean metric and adaptive strategy.
+- Builds strongly typed `DSPy::Example` instances and stratifies them so both ADE labels appear in train / val / test (when the sample allows it).
+- Configures `DSPy::Teleprompt::MIPROv2` using the preset you pass with `--auto` (or falls back to manual `--trials` values).
 - Prints per-trial instruction snippets and writes summary artifacts to `examples/ade_optimizer_miprov2/results/`.
+- Treats malformed model outputs as errors, so precision/recall metrics stay honest.
 
 Use this workflow as a reference while adapting the rest of this guide to your own domain.
 

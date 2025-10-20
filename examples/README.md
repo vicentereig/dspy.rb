@@ -19,6 +19,9 @@ ANTHROPIC_API_KEY=your-anthropic-key
 End-to-end optimization workflow using MIPROv2:
 
 - **`main.rb`** - ADE (Automatic Data Evaluation) optimizer walkthrough
+- Supports preset tuning via `--auto light|medium|heavy` or custom `--trials`
+- Stratified splits keep both ADE labels present in train/val/test
+- Invalid model outputs now count toward precision/recall so metrics reflect reality
 - **`data/`** - Sample datasets for optimization trials
 - **`results/`** - Saved optimization outputs and metrics
 
