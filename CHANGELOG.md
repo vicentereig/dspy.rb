@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _No changes yet._
 
+## [0.29.1] - 2025-10-20
+
+### Added
+- Integration coverage for the ADE optimization example (`spec/integration/examples/ade_optimizer_integration_spec.rb`) guaranteeing malformed model outputs reduce precision below 100%.
+
+### Changed
+- The ADE MIPROv2 CLI now stratifies train/val/test splits and treats malformed predictions as false positives/negatives, eliminating misleading perfect-precision runs.
+- Restored enum-driven MIPROv2 auto presets (`light`, `medium`, `heavy`) and surfaced the `--auto` flag in `examples/ade_optimizer_miprov2/main.rb`.
+- Candidate generation deduplicates repeated instructions so trial logs and optimization history highlight unique prompt variants.
+
+### Documentation
+- Refreshed ADE optimization docs (`examples/`, `docs/src/optimization/miprov2.md`) to describe preset usage, stratified splits, and the new error handling defaults.
+
 ## [0.29.0] - 2025-10-19
 
 ### Added
