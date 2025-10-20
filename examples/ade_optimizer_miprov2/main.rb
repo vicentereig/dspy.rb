@@ -23,7 +23,8 @@ FileUtils.mkdir_p(RESULTS_DIR)
 options = {
   limit: 300,
   trials: 6,
-  seed: 42
+  seed: 42,
+  auto: nil
 }
 
 OptionParser.new do |parser|
@@ -37,6 +38,10 @@ parser.banner = 'Usage: bundle exec ruby examples/ade_optimizer_miprov2/main.rb 
     options[:trials] = trials
   end
 
+  parser.on('--auto MODE', String, 'Auto preset (:light, :medium, :heavy, :none)') do |mode|
+    options[:auto] = mode.strip.downcase
+  end
+
   parser.on('--seed N', Integer, 'Random seed for dataset splits (default: 42)') do |seed|
     options[:seed] = seed
   end
@@ -46,6 +51,8 @@ parser.banner = 'Usage: bundle exec ruby examples/ade_optimizer_miprov2/main.rb 
     exit
   end
 end.parse!
+
+options[:auto] = nil if options[:auto] == 'none'
 
 unless ENV['OPENAI_API_KEY']
   warn '⚠️  Please set OPENAI_API_KEY in your environment before running this example.'
@@ -62,7 +69,11 @@ end
 puts '🏥 ADE MIPROv2 Optimization Demo'
 puts '================================'
 puts "Limit       : #{options[:limit]}"
-puts "Trials      : #{options[:trials]}"
+if options[:auto] && options[:auto] != 'none'
+  puts "Auto Preset : #{options[:auto]}"
+else
+  puts "Trials      : #{options[:trials]}"
+end
 puts "Random Seed : #{options[:seed]}"
 
 rows = DSPy::Datasets::ADE.examples(limit: options[:limit], offset: 0, split: 'train', cache_dir: DATA_DIR)
@@ -101,15 +112,26 @@ end
 
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
 optimizer.configure do |config|
-  config.num_trials = options[:trials]
-  config.num_instruction_candidates = 3
-  config.bootstrap_sets = 2
-  config.max_bootstrapped_examples = 2
-  config.max_labeled_examples = 4
-  config.optimization_strategy = :adaptive
+  if options[:auto] && options[:auto] != 'none'
+    config.auto_preset = DSPy::Teleprompt::AutoPreset.deserialize(options[:auto])
+  else
+    config.num_trials = options[:trials]
+    config.num_instruction_candidates = 3
+    config.bootstrap_sets = 2
+    config.max_bootstrapped_examples = 2
+    config.max_labeled_examples = 4
+    config.optimization_strategy = :adaptive
+  end
 end
 
-puts "\n🚀 Running MIPROv2 optimization (#{options[:trials]} trials)..."
+run_description =
+  if options[:auto] && options[:auto] != 'none'
+    "auto preset #{options[:auto]}"
+  else
+    "#{options[:trials]} trials"
+  end
+
+puts "\n🚀 Running MIPROv2 optimization (#{run_description})..."
 result = optimizer.compile(baseline_program, trainset: train_examples, valset: val_examples)
 
 trial_logs = result.optimization_trace[:trial_logs] || {}
@@ -141,7 +163,8 @@ puts "\n📣 Accuracy improvement: #{improvement.round(2)} percentage points"
 summary = {
   timestamp: Time.now.utc.iso8601,
   limit: options[:limit],
-  trials: options[:trials],
+  trials: optimizer.config.num_trials,
+  auto_preset: optimizer.config.auto_preset&.serialize,
   baseline: {
     accuracy: baseline_metrics.accuracy,
     precision: baseline_metrics.precision,

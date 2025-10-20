@@ -32,6 +32,55 @@ module DSPy
         Bayesian = new("bayesian")
       end
     end
+
+    class AutoPreset < T::Enum
+      enums do
+        None = new("none")
+        Light = new("light")
+        Medium = new("medium")
+        Heavy = new("heavy")
+      end
+    end
+
+    AUTO_PRESET_SETTINGS = {
+      AutoPreset::None => {},
+      AutoPreset::Light => {
+        candidate_budget: 6,
+        instruction_candidates_when_fewshot: 3,
+        bootstrap_sets: 3,
+        max_bootstrapped_examples: 2,
+        max_labeled_examples: 8,
+        optimization_strategy: OptimizationStrategy::Greedy,
+        early_stopping_patience: 2,
+        valset_target_size: 100,
+        minibatch_size: nil
+      },
+      AutoPreset::Medium => {
+        candidate_budget: 12,
+        instruction_candidates_when_fewshot: 6,
+        bootstrap_sets: 5,
+        max_bootstrapped_examples: 4,
+        max_labeled_examples: 16,
+        optimization_strategy: OptimizationStrategy::Adaptive,
+        early_stopping_patience: 3,
+        valset_target_size: 300,
+        minibatch_size: nil
+      },
+      AutoPreset::Heavy => {
+        candidate_budget: 18,
+        instruction_candidates_when_fewshot: 9,
+        bootstrap_sets: 8,
+        max_bootstrapped_examples: 6,
+        max_labeled_examples: 24,
+        optimization_strategy: OptimizationStrategy::Bayesian,
+        early_stopping_patience: 5,
+        valset_target_size: 1000,
+        minibatch_size: nil
+      }
+    }.freeze
+
+    DEFAULT_AUTO_SEED = 42
+
     # MIPROv2: Multi-prompt Instruction Proposal with Retrieval Optimization
     # State-of-the-art prompt optimization combining bootstrap sampling, 
     # instruction generation, and Bayesian optimization
@@ -52,13 +101,7 @@ module DSPy
         def self.light(metric: nil, **kwargs)
           optimizer = MIPROv2.new(metric: metric, **kwargs)
           optimizer.configure do |config|
-            config.num_trials = 6
-            config.num_instruction_candidates = 3
-            config.max_bootstrapped_examples = 2
-            config.max_labeled_examples = 8
-            config.bootstrap_sets = 3
-            config.optimization_strategy = :greedy
-            config.early_stopping_patience = 2
+            config.auto_preset = AutoPreset::Light
           end
           optimizer
         end
@@ -72,13 +115,7 @@ module DSPy
         def self.medium(metric: nil, **kwargs)
           optimizer = MIPROv2.new(metric: metric, **kwargs)
           optimizer.configure do |config|
-            config.num_trials = 12
-            config.num_instruction_candidates = 5
-            config.max_bootstrapped_examples = 4
-            config.max_labeled_examples = 16
-            config.bootstrap_sets = 5
-            config.optimization_strategy = :adaptive
-            config.early_stopping_patience = 3
+            config.auto_preset = AutoPreset::Medium
           end
           optimizer
         end
@@ -92,19 +129,33 @@ module DSPy
         def self.heavy(metric: nil, **kwargs)
           optimizer = MIPROv2.new(metric: metric, **kwargs)
           optimizer.configure do |config|
-            config.num_trials = 18
-            config.num_instruction_candidates = 8
-            config.max_bootstrapped_examples = 6
-            config.max_labeled_examples = 24
-            config.bootstrap_sets = 8
-            config.optimization_strategy = :bayesian
-            config.early_stopping_patience = 5
+            config.auto_preset = AutoPreset::Heavy
           end
           optimizer
         end
       end
 
       # Dry-configurable settings for MIPROv2
+      setting :auto_preset, default: AutoPreset::None, constructor: ->(value) {
+        case value
+        when AutoPreset
+          value
+        when String, Symbol
+          begin
+            AutoPreset.deserialize(value.to_s.downcase)
+          rescue ArgumentError
+            raise ArgumentError, "Invalid auto preset: #{value}. Must be one of :none, :light, :medium, :heavy"
+          end
+        when nil
+          AutoPreset::None
+        else
+          raise ArgumentError, "Invalid auto preset: #{value.inspect}"
+        end
+      }
+      setting :auto_seed, default: DEFAULT_AUTO_SEED, constructor: ->(value) {
+        value.nil? ? DEFAULT_AUTO_SEED : Integer(value)
+      }
+      setting :valset_target_size, default: nil
       setting :num_trials, default: 12
       setting :num_instruction_candidates, default: 5
       setting :bootstrap_sets, default: 5
@@ -296,6 +347,13 @@ module DSPy
           typed_trainset = ensure_typed_examples(trainset)
           typed_valset = valset ? ensure_typed_examples(valset) : nil
 
+          if auto_preset_active?
+            typed_trainset, typed_valset = prepare_datasets_for_auto(typed_trainset, typed_valset)
+            typed_valset = apply_auto_preset!(program, typed_valset)
+          else
+            typed_valset = limit_validation_set(typed_valset, config.valset_target_size)
+          end
+
           # Use validation set if available, otherwise use part of training set
           evaluation_set = typed_valset || typed_trainset.take([typed_trainset.size / 3, 10].max)
 
@@ -346,6 +404,105 @@ module DSPy
       end
 
       private
+
+      sig { returns(T::Boolean) }
+      def auto_preset_active?
+        config.auto_preset != AutoPreset::None
+      end
+
+      sig { params(trainset: T::Array[DSPy::Example], valset: T.nilable(T::Array[DSPy::Example])).returns([T::Array[DSPy::Example], T::Array[DSPy::Example]]) }
+      def prepare_datasets_for_auto(trainset, valset)
+        settings = auto_settings_for(config.auto_preset)
+        target_size = settings[:valset_target_size]
+        config.valset_target_size = target_size
+
+        if valset && valset.any?
+          [trainset, limit_validation_set(valset, target_size)]
+        else
+          raise ArgumentError, "Training set must contain at least 2 examples when auto presets are enabled" if trainset.size < 2
+
+          shuffled = trainset.shuffle(random: Random.new(config.auto_seed))
+          default_val_size = [
+            [(trainset.size * 0.8).ceil, 1].max,
+            trainset.size - 1
+          ].min
+
+          desired_val_size = target_size ? [default_val_size, target_size].min : default_val_size
+          desired_val_size = [[desired_val_size, 1].max, trainset.size - 1].min
+
+          validation_examples = shuffled.take(desired_val_size)
+          training_examples = shuffled.drop(desired_val_size)
+
+          [training_examples, limit_validation_set(validation_examples, target_size)]
+        end
+      end
+
+      sig { params(program: T.untyped, valset: T::Array[DSPy::Example]).returns(T::Array[DSPy::Example]) }
+      def apply_auto_preset!(program, valset)
+        settings = auto_settings_for(config.auto_preset)
+        zeroshot = zero_shot_for_settings?(settings)
+        candidate_budget = settings[:candidate_budget]
+
+        if candidate_budget && candidate_budget.positive?
+          config.num_trials = compute_trials_from_candidate_budget(program, candidate_budget, zeroshot)
+          instruction_candidates = if zeroshot
+            candidate_budget
+          else
+            settings[:instruction_candidates_when_fewshot] || (candidate_budget / 2.0).ceil
+          end
+          config.num_instruction_candidates = [instruction_candidates, 1].max
+        end
+
+        config.bootstrap_sets = settings[:bootstrap_sets] if settings[:bootstrap_sets]
+        config.max_bootstrapped_examples = settings[:max_bootstrapped_examples] if settings.key?(:max_bootstrapped_examples)
+        config.max_labeled_examples = settings[:max_labeled_examples] if settings.key?(:max_labeled_examples)
+        config.optimization_strategy = settings[:optimization_strategy] if settings[:optimization_strategy]
+        config.early_stopping_patience = settings[:early_stopping_patience] if settings[:early_stopping_patience]
+        config.minibatch_size = settings[:minibatch_size] if settings.key?(:minibatch_size)
+
+        config.valset_target_size = settings[:valset_target_size]
+        limit_validation_set(valset, config.valset_target_size)
+      end
+
+      sig { params(valset: T.nilable(T::Array[DSPy::Example]), target_size: T.nilable(Integer)).returns(T.nilable(T::Array[DSPy::Example])) }
+      def limit_validation_set(valset, target_size)
+        return valset unless valset && target_size && target_size.positive?
+        return valset if valset.size <= target_size
+
+        valset.shuffle(random: Random.new(config.auto_seed)).take(target_size)
+      end
+
+      sig { params(program: T.untyped, num_candidates: Integer, zeroshot: T::Boolean).returns(Integer) }
+      def compute_trials_from_candidate_budget(program, num_candidates, zeroshot)
+        predictor_count =
+          if program.respond_to?(:predictors)
+            Array(program.predictors).size
+          else
+            1
+          end
+
+        predictor_count = 1 if predictor_count.zero?
+        variable_count = zeroshot ? predictor_count : predictor_count * 2
+        log_term = Math.log2([num_candidates, 2].max)
+
+        [
+          (2 * variable_count * log_term).ceil,
+          (1.5 * num_candidates).ceil
+        ].max
+      end
+
+      sig { params(settings: T::Hash[Symbol, T.untyped]).returns(T::Boolean) }
+      def zero_shot_for_settings?(settings)
+        settings.fetch(:max_bootstrapped_examples, 0).to_i.zero? &&
+          settings.fetch(:max_labeled_examples, 0).to_i.zero?
+      end
+
+      sig { params(preset: AutoPreset).returns(T::Hash[Symbol, T.untyped]) }
+      def auto_settings_for(preset)
+        AUTO_PRESET_SETTINGS.fetch(preset) do
+          raise ArgumentError, "Unknown auto preset: #{preset.inspect}"
+        end
+      end
 
       # Phase 1: Bootstrap few-shot examples from training data
       # Returns a hash mapping predictor indices to arrays of demo sets
@@ -1478,10 +1635,13 @@ module DSPy
       # Infer auto mode based on configuration
       sig { returns(String) }
       def infer_auto_mode
+        return config.auto_preset.serialize unless config.auto_preset == AutoPreset::None
+
         case config.num_trials
         when 0..6 then "light"
         when 7..12 then "medium"
-        else "heavy"
+        when 13..Float::INFINITY then "heavy"
+        else "manual"
         end
       end
     end
