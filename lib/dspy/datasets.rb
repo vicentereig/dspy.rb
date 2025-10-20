@@ -5,6 +5,7 @@ require_relative 'datasets/errors'
 require_relative 'datasets/dataset'
 require_relative 'datasets/manifest'
 require_relative 'datasets/loaders'
+require_relative 'datasets/hugging_face/api'
 require_relative 'datasets/ade'
 
 module DSPy
