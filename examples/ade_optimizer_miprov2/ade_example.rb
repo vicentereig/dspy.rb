@@ -39,6 +39,7 @@ module ADEExample
   end
 
   def split_examples(examples, train_ratio:, val_ratio:, seed: 42)
+    # TODO: locate the equivalent split logic in Python's ../dspy implementation to keep behaviour in sync.
     return [[], [], []] if examples.empty?
 
     unless (train_ratio + val_ratio).between?(0.0, 1.0)
