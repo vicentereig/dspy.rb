@@ -191,17 +191,37 @@ puts "Minibatch size  : #{options[:minibatch_size]}"
 puts "Random Seed     : #{options[:seed]}"
 
 dataset = DSPy::Datasets.fetch(DSPY_DATASET_ID, split: 'train', cache_dir: DATASET_CACHE_DIR)
-rows = dataset.rows(limit: options[:limit])
+all_rows = dataset.rows  # Load all rows (23,516 total)
 
-if rows.empty?
+if all_rows.empty?
   warn '❌ Failed to download ADE dataset rows. Please check your network connection.'
   exit 1
 end
 
-puts "\n📦 Downloaded #{rows.size} ADE rows from Hugging Face parquet (split: #{dataset.split})"
+# Shuffle before limiting to ensure class balance
+# (Dataset is sorted: first ~6.8k are positive, last ~16.7k are negative)
+shuffled_rows = all_rows.shuffle(random: Random.new(options[:seed]))
+rows = shuffled_rows.first(options[:limit])
+
+puts "\n📦 Downloaded #{all_rows.size} total ADE rows from Hugging Face parquet (split: #{dataset.split})"
+puts "   Using #{rows.size} shuffled examples for optimization"
 
 examples = ADEExampleGEPA.build_examples(rows)
 puts "🧪 Prepared #{examples.size} DSPy examples"
+
+# Validate class balance
+positive_count = examples.count { |ex| ex.expected_values[:label].serialize == "1" }
+negative_count = examples.size - positive_count
+positive_pct = (positive_count.to_f / examples.size * 100).round(2)
+
+if positive_count == 0 || negative_count == 0
+  warn "❌ Dataset is imbalanced: #{positive_count} positive, #{negative_count} negative"
+  warn "   Expected ~29% positive, ~71% negative. Check dataset loading."
+  exit 1
+end
+
+puts "   • Positive (ADE): #{positive_count} (#{positive_pct}%)"
+puts "   • Negative (Not ADE): #{negative_count} (#{(100 - positive_pct).round(2)}%)"
 
 train_examples, val_examples, test_examples = ADEExampleGEPA.split_examples(examples, train_ratio: 0.6, val_ratio: 0.2, seed: options[:seed])
 
