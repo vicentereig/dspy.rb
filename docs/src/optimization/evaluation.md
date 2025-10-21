@@ -33,36 +33,56 @@ The evaluation framework enables:
 ### Simple Evaluation
 
 ```ruby
-# Create an evaluator with a metric
-evaluator = DSPy::Evaluate.new(metric: :exact_match)
-
-# Evaluate a predictor
-result = evaluator.evaluate(
-  examples: test_examples,
-  display_table: true
-) do |example|
-  # Your prediction logic
-  predictor.call(input: example.input)
+# Create an evaluator with a custom metric
+metric = proc do |example, prediction|
+  # Return true if prediction matches expected output
+  prediction.answer == example.expected_values[:answer]
 end
 
-puts "Score: #{result.score}"
-puts "Passed: #{result.passed_count}/#{result.total_count}"
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+
+# Evaluate on test examples
+result = evaluator.evaluate(
+  test_examples,
+  display_table: true,
+  display_progress: true
+)
+
+puts "Pass Rate: #{(result.pass_rate * 100).round(1)}%"
+puts "Passed: #{result.passed_examples}/#{result.total_examples}"
 ```
 
-### Using Different Metrics
+### Built-in Metrics
+
+DSPy.rb provides common metrics in the `DSPy::Metrics` module:
 
 ```ruby
-# Exact match - outputs must match exactly
-evaluator = DSPy::Evaluate.new(metric: :exact_match)
+# Exact match - prediction must exactly match expected value
+metric = DSPy::Metrics.exact_match(
+  field: :answer,           # Field to compare (default: :answer)
+  case_sensitive: true      # Case-sensitive comparison (default: true)
+)
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
 
-# Contains - output must contain expected value
-evaluator = DSPy::Evaluate.new(metric: :contains)
+# Contains - prediction must contain expected substring
+metric = DSPy::Metrics.contains(
+  field: :answer,           # Field to compare (default: :answer)
+  case_sensitive: false     # Case-insensitive by default
+)
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
 
-# Numeric difference - for numeric outputs
-evaluator = DSPy::Evaluate.new(metric: :numeric_difference)
+# Numeric difference - for numeric outputs within tolerance
+metric = DSPy::Metrics.numeric_difference(
+  field: :answer,           # Field to compare (default: :answer)
+  tolerance: 0.01           # Acceptable difference (default: 0.01)
+)
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
 
-# Composite AND - all conditions must pass
-evaluator = DSPy::Evaluate.new(metric: :composite_and)
+# Composite AND - all metrics must pass
+metric1 = DSPy::Metrics.exact_match(field: :answer)
+metric2 = DSPy::Metrics.contains(field: :reasoning)
+metric = DSPy::Metrics.composite_and(metric1, metric2)
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
 ```
 
 ## Custom Metrics
@@ -233,23 +253,16 @@ evaluator = DSPy::Evaluate.new(
 ### Evaluation in Optimization
 
 ```ruby
-# Define evaluation for optimization
-def evaluate_candidate(predictor, dev_examples)
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
-  
-  result = evaluator.evaluate(examples: dev_examples) do |example|
-    predictor.call(question: example.question)
-  end
-  
-  result.score
-end
-
-# Use in optimizer
-program = DSPy::Predict.new(QASignature)
+# Define evaluation metric for optimization
 metric = proc do |example, prediction|
-  evaluate_candidate_prediction(example, prediction)
+  # Custom evaluation logic
+  expected = example.expected_values[:answer].to_s.strip.downcase
+  predicted = prediction.respond_to?(:answer) ? prediction.answer.to_s.strip.downcase : ''
+  !expected.empty? && predicted.include?(expected)
 end
 
+# Create optimizer with metric
+program = DSPy::Predict.new(QASignature)
 optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)
 
 result = optimizer.compile(
@@ -257,6 +270,12 @@ result = optimizer.compile(
   trainset: train_examples,
   valset: dev_examples
 )
+
+# Evaluate optimized program on test set
+evaluator = DSPy::Evaluate.new(result.optimized_program, metric: metric)
+test_result = evaluator.evaluate(test_examples, display_table: true)
+
+puts "Test accuracy: #{(test_result.pass_rate * 100).round(2)}%"
 ```
 
 ## Best Practices
@@ -264,14 +283,20 @@ result = optimizer.compile(
 ### 1. Choose Appropriate Metrics
 
 ```ruby
-# For classification
-evaluator = DSPy::Evaluate.new(metric: :exact_match)
+# For classification tasks
+metric = DSPy::Metrics.exact_match(field: :label, case_sensitive: true)
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
 
 # For text generation with flexibility
-evaluator = DSPy::Evaluate.new(metric: :contains)
+metric = DSPy::Metrics.contains(field: :answer, case_sensitive: false)
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
 
 # For custom domain logic
-evaluator = DSPy::Evaluate.new(metric: domain_specific_metric)
+metric = proc do |example, prediction|
+  # Your domain-specific validation logic
+  prediction.meets_requirements?(example.requirements)
+end
+evaluator = DSPy::Evaluate.new(predictor, metric: metric)
 ```
 
 ### 2. Handle Edge Cases

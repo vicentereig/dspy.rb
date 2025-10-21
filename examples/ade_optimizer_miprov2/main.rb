@@ -159,10 +159,28 @@ puts "   • Precision: #{(baseline_metrics.precision * 100).round(2)}%"
 puts "   • Recall   : #{(baseline_metrics.recall * 100).round(2)}%"
 puts "   • F1 Score : #{(baseline_metrics.f1 * 100).round(2)}%"
 
+# F1-aware metric that prioritizes balanced precision and recall
+# Returns a score that approximates contribution to F1
 metric = proc do |example, prediction|
   expected = example.expected_values[:label]
   predicted = ADEExample.label_from_prediction(prediction)
-  predicted == expected
+
+  is_ade = expected == ADEExample::ADETextClassifier::ADELabel::Related
+  predicted_ade = predicted == ADEExample::ADETextClassifier::ADELabel::Related
+
+  if is_ade && predicted_ade
+    # True positive: contributes to both precision and recall
+    1.0
+  elsif !is_ade && !predicted_ade
+    # True negative: correct but doesn't contribute to F1 for positive class
+    0.5
+  elsif is_ade && !predicted_ade
+    # False negative: severely hurts recall (dangerous in medical screening)
+    0.0
+  else
+    # False positive: hurts precision (less critical than FN)
+    0.2
+  end
 end
 
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
