@@ -77,6 +77,14 @@ RSpec.describe 'ReAct Observability Integration' do
     
     it 'emits tool observation type for tool calls' do
       logged_events = []
+      captured_tracer_attributes = nil
+      tracer_span = instance_double('TracerSpan', set_attribute: nil)
+      tracer = double('Tracer')
+      allow(DSPy::Observability).to receive(:tracer).and_return(tracer)
+      allow(tracer).to receive(:in_span) do |operation, attributes:, kind:, &block|
+        captured_tracer_attributes = attributes if attributes['tool.input'] || attributes[:'tool.input']
+        block&.call(tracer_span)
+      end
       
       # Mock the LM with call tracking
       mock_lm = instance_double(DSPy::LM)
@@ -87,7 +95,7 @@ RSpec.describe 'ReAct Observability Integration' do
         call_count += 1
         case call_count
         when 1
-          { thought: 'I need to use the add tool', action: 'add_numbers', action_input: '{"x": 5, "y": 3}' }
+          { thought: 'I need to use the add tool', action: 'add_numbers', action_input: { "x" => 5, "y" => 3 } }
         when 2
           { interpretation: 'The tool returned 8', next_step: 'finish' }
         else
@@ -122,8 +130,9 @@ RSpec.describe 'ReAct Observability Integration' do
       
       expect(attributes).to include('dspy.module' => 'ReAct')
       expect(attributes).to include('tool.name' => 'add_numbers')
-      expect(attributes).to include('tool.input')
+      expect(attributes['tool.input']).to be_a(String)
       expect(attributes).to include('react.iteration')
+      expect(captured_tracer_attributes['tool.input']).to be_a(String)
     end
   end
 end
