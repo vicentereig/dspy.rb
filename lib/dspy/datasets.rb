@@ -7,6 +7,7 @@ require_relative 'datasets/manifest'
 require_relative 'datasets/loaders'
 require_relative 'datasets/hugging_face/api'
 require_relative 'datasets/ade'
+require_relative 'datasets/hotpot_qa'
 
 module DSPy
   module Datasets
