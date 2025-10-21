@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'tempfile'
 require 'dspy/datasets/ade'
 
-RSpec.describe DSPy::Datasets::ADE do
+RSpec.describe DSPy::Datasets::ADE, :datasets do
   let(:loader) do
     instance_double(
       DSPy::Datasets::Loaders::HuggingFaceParquet,
@@ -20,11 +20,15 @@ RSpec.describe DSPy::Datasets::ADE do
   end
 
   before do
-    allow(loader).to receive(:each_row) do |&block|
-      rows.each(&block)
+    unless DSPy::Datasets::Loaders.const_defined?(:HuggingFaceParquet)
+      stub_const('DSPy::Datasets::Loaders::HuggingFaceParquet', Class.new)
     end
 
-    allow(DSPy::Datasets::Loaders::HuggingFaceParquet).to receive(:new).and_return(loader)
+   allow(loader).to receive(:each_row) do |&block|
+     rows.each(&block)
+   end
+
+    allow(DSPy::Datasets::Loaders).to receive(:build).and_return(loader)
   end
 
   describe '.examples' do
@@ -43,8 +47,8 @@ RSpec.describe DSPy::Datasets::ADE do
   describe '.fetch_rows' do
     it 'passes through cache directory and split options' do
       Dir.mktmpdir do |dir|
-        expect(DSPy::Datasets::Loaders::HuggingFaceParquet)
-          .to receive(:new)
+        expect(DSPy::Datasets::Loaders)
+          .to receive(:build)
           .with(instance_of(DSPy::Datasets::DatasetInfo), split: 'train', cache_dir: dir)
           .and_return(loader)
 
@@ -57,8 +61,8 @@ RSpec.describe DSPy::Datasets::ADE do
   describe '.examples with cache dir' do
     it 'forwards cache directory to dataset fetcher' do
       Dir.mktmpdir do |dir|
-        expect(DSPy::Datasets::Loaders::HuggingFaceParquet)
-          .to receive(:new)
+        expect(DSPy::Datasets::Loaders)
+          .to receive(:build)
           .with(instance_of(DSPy::Datasets::DatasetInfo), split: 'train', cache_dir: dir)
           .and_return(loader)
 

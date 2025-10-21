@@ -1,6 +1,17 @@
 require 'spec_helper'
+
+begin
+  require 'dspy/teleprompt/mipro_v2'
+rescue LoadError => e
+  RSpec.describe 'DSPy::Teleprompt::MIPROv2', :miprov2 do
+    it 'skips when DSPy::Teleprompt::MIPROv2 is unavailable' do
+      skip "DSPy::Teleprompt::MIPROv2 optional dependency missing: #{e.message}"
+    end
+  end
+  return
+end
+
 require 'ostruct'
-require 'dspy/teleprompt/mipro_v2'
 require 'dspy/signature'
 require 'dspy/predict'
 require 'dspy/example'
@@ -86,7 +97,7 @@ class MockMIPROProgram
   end
 end
 
-RSpec.describe DSPy::Teleprompt::MIPROv2 do
+RSpec.describe DSPy::Teleprompt::MIPROv2, :miprov2 do
   let(:test_program) { MockMIPROProgram.new(MIPROv2QA) }
 
   # Helper method to create EvaluatedCandidate with new Data class

@@ -1,11 +1,11 @@
 name: Ruby Tests
-
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ '*' ]
-
+    branches:
+      - '*'
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -13,52 +13,79 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: DSPy Core
-            gem: dspy
-            command: bundle exec rspec --format documentation
-          - name: DSPy Datasets
-            gem: dspy-datasets
-            command: bundle exec rspec --format documentation spec/unit/dspy/datasets spec/unit/dspy/datasets_spec.rb spec/unit/dspy/datasets/loaders
-          - name: GEPA
-            gem: gepa
-            command: bundle exec rspec --format documentation spec/unit/gepa spec/unit/teleprompt/gepa_spec.rb spec/integration/dspy/teleprompt/gepa_smoke_spec.rb
-
+        - name: DSPy Core
+          gem: dspy
+          command: bundle exec rspec --format documentation --pattern 'spec/unit/**/*_spec.rb'
+            --exclude-pattern '**/spec/unit/dspy/datasets/**/*_spec.rb' --exclude-pattern
+            '**/spec/unit/dspy/teleprompt/mipro_v2_*' --exclude-pattern '**/spec/unit/teleprompt/mipro_v2_*'
+            --exclude-pattern '**/spec/unit/optimizers/gaussian_process_spec.rb' --exclude-pattern
+            '**/spec/integration/dspy/datasets/**/*_spec.rb' --exclude-pattern '**/spec/integration/dspy/mipro_*'
+          datasets: '0'
+          miprov2: '0'
+        - name: DSPy Datasets
+          gem: dspy-datasets
+          command: bundle exec rspec --format documentation --pattern 'spec/unit/dspy/datasets/**/*_spec.rb'
+            --pattern 'spec/integration/dspy/datasets/**/*_spec.rb'
+          install_arrow: 'true'
+          datasets: '1'
+          miprov2: '0'
+        - name: GEPA
+          gem: gepa
+          command: bundle exec rspec --format documentation spec/unit/gepa spec/unit/teleprompt/gepa_spec.rb
+            spec/integration/dspy/teleprompt/gepa_smoke_spec.rb
+          datasets: '0'
+          miprov2: '0'
+        - name: DSPy MIPROv2
+          gem: dspy-miprov2
+          command: bundle exec rspec --format documentation --pattern 'spec/unit/optimizers/gaussian_process_spec.rb'
+            --pattern 'spec/unit/dspy/teleprompt/mipro_v2_*' --pattern 'spec/unit/teleprompt/mipro_v2_*'
+            --pattern 'spec/integration/dspy/mipro_v2*_spec.rb'
+          install_openblas: 'true'
+          datasets: '0'
+          miprov2: '1'
     name: Run tests (${{ matrix.name }})
-
     steps:
     - uses: actions/checkout@v4
-
-    - name: Install system dependencies (Arrow/Parquet)
+    - name: Install Arrow dependencies
+      if: ${{ matrix.install_arrow == 'true' }}
       run: |
         sudo apt-get update
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
           ca-certificates lsb-release wget build-essential pkg-config \
           gobject-introspection libgirepository1.0-dev libffi-dev \
           libglib2.0-dev zlib1g-dev liblzma-dev
-        wget https://packages.apache.org/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-        sudo apt-get install -y ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+        wget "https://packages.apache.org/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb"
+        sudo apt-get install -y "./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb"
         sudo apt-get update
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y libarrow-glib-dev libparquet-glib-dev
-
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+          libarrow-glib-dev libparquet-glib-dev
+    - name: Install OpenBLAS/LAPACK
+      if: ${{ matrix.install_openblas == 'true' }}
+      run: |
+        sudo apt-get update
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+          libopenblas-dev liblapacke-dev gfortran
     - name: Read Ruby version from .ruby-version
       id: ruby-version
       run: echo "version=$(cat .ruby-version)" >> $GITHUB_OUTPUT
-
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ steps.ruby-version.outputs.version }}
         bundler-cache: false
-
     - name: Install dependencies
+      env:
+        DSPY_WITH_DATASETS: ${{ matrix.datasets }}
+        DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
       run: bundle install
-
     - name: Run tests
       run: ${{ matrix.command }}
       env:
-        OPENAI_API_KEY: "test-openai-key-for-vcr"
-        ANTHROPIC_API_KEY: "test-anthropic-key-for-vcr"
-        GEMINI_API_KEY: "test-gemini-key-for-vcr"
-        OPENROUTER_API_KEY: "test-openrouter-key-for-vcr"
+        DSPY_WITH_DATASETS: ${{ matrix.datasets }}
+        DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
+        OPENAI_API_KEY: test-openai-key-for-vcr
+        ANTHROPIC_API_KEY: test-anthropic-key-for-vcr
+        GEMINI_API_KEY: test-gemini-key-for-vcr
+        OPENROUTER_API_KEY: test-openrouter-key-for-vcr
         LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
         LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require_relative 'dspy/support/warning_filters'
 require 'sorbet-runtime'
 require 'dry-configurable'
 require 'dry/logger'
@@ -214,7 +215,10 @@ require_relative 'dspy/teleprompt/utils'
 require_relative 'dspy/teleprompt/data_handler'
 require_relative 'dspy/teleprompt/gepa'
 require_relative 'dspy/propose/grounded_proposer'
-require_relative 'dspy/teleprompt/mipro_v2'
+begin
+  require 'dspy/miprov2'
+rescue LoadError
+end
 require_relative 'dspy/tools'
 require_relative 'dspy/memory'
 

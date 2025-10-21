@@ -467,16 +467,18 @@ module DSPy
           reflection_lm: T.nilable(T.untyped),
           feedback_map: T.nilable(T::Hash[String, PredictAdapter::FeedbackFnType]),
           adapter_builder: T.nilable(T.proc.returns(T.untyped)),
-          config: T.nilable(T::Hash[Symbol, T.untyped])
+          config: T.nilable(T::Hash[Symbol, T.untyped]),
+          experiment_tracker: T.nilable(T.untyped)
         ).void
       end
-      def initialize(metric:, reflection_lm: nil, feedback_map: nil, adapter_builder: nil, config: nil)
+      def initialize(metric:, reflection_lm: nil, feedback_map: nil, adapter_builder: nil, config: nil, experiment_tracker: nil)
         super(metric: metric)
         @metric = metric
         @reflection_lm = reflection_lm
         @feedback_map = (feedback_map || {}).transform_keys(&:to_s)
         @adapter_builder = adapter_builder || method(:build_adapter)
         @gepa_config = self.class.default_config.merge(config || {})
+        @experiment_tracker = experiment_tracker
       end
 
       sig do
@@ -507,7 +509,7 @@ module DSPy
         telemetry_context = ::GEPA::Telemetry.build_context
 
         logger = ::GEPA::Logging::BufferingLogger.new
-        tracker = ::GEPA::Logging::ExperimentTracker.new
+        tracker = @experiment_tracker || ::GEPA::Logging::ExperimentTracker.new
 
         reflective = ::GEPA::Proposer::ReflectiveMutationProposer.new(
           logger: logger,

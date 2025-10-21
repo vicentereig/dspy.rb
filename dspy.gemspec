@@ -23,6 +23,10 @@ Gem::Specification.new do |spec|
   ].uniq
 
   spec.files.reject! { |path| path.start_with?("lib/dspy/datasets") }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/miprov2") }
+  spec.files.reject! { |path| path == "lib/dspy/miprov2.rb" }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/teleprompt/mipro_v2") }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/optimizers/gaussian_process") }
   spec.files.reject! { |path| path.start_with?("lib/gepa") || path == "lib/gepa.rb" }
 
   # Uncomment to register executables
@@ -46,9 +50,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "sorbet-runtime", "~> 0.5"
   spec.add_dependency "sorbet-schema", "~> 0.3"
   spec.add_dependency "sorbet-baml", "~> 0.1"
-
-  # Numerical computing for Bayesian optimization (pure Ruby)
-  spec.add_dependency "numo-narray", "~> 0.9"
 
   # Local embeddings
   spec.add_dependency "informers", "~> 1.2"

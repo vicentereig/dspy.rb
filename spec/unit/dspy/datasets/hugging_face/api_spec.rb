@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'dspy/datasets/hugging_face/api'
 
-RSpec.describe DSPy::Datasets::HuggingFace::Client do
+RSpec.describe DSPy::Datasets::HuggingFace::Client, :datasets do
   subject(:client) { described_class.new }
 
   let(:base_url) { DSPy::Datasets::HuggingFace::Client::BASE_URL }

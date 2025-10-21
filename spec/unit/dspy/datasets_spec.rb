@@ -1,6 +1,12 @@
 require 'spec_helper'
 
-RSpec.describe DSPy::Datasets do
+RSpec.describe DSPy::Datasets, :datasets do
+  before do
+    unless DSPy::Datasets::Loaders.const_defined?(:HuggingFaceParquet)
+      stub_const('DSPy::Datasets::Loaders::HuggingFaceParquet', Class.new)
+    end
+  end
+
   describe '.list' do
     it 'returns paginated dataset metadata' do
       result = described_class.list(page: 1, per_page: 1)

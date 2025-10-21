@@ -1,7 +1,18 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'dspy/teleprompt/mipro_v2'
+
+begin
+  require 'dspy/teleprompt/mipro_v2'
+rescue LoadError => e
+  RSpec.describe 'DSPy::Teleprompt::MIPROv2', 'Python-compatible behavior', :miprov2 do
+    it 'skips when DSPy::Teleprompt::MIPROv2 is unavailable' do
+      skip "DSPy::Teleprompt::MIPROv2 optional dependency missing: #{e.message}"
+    end
+  end
+  return
+end
+
 require 'dspy/few_shot_example'
 
 module MIPROv2MultiPredictorSpec
@@ -56,7 +67,7 @@ module MIPROv2MultiPredictorSpec
   end
 end
 
-RSpec.describe DSPy::Teleprompt::MIPROv2, 'Python-compatible behavior' do
+RSpec.describe DSPy::Teleprompt::MIPROv2, 'Python-compatible behavior', :miprov2 do
   let(:optimizer) { described_class.new }
 
   describe 'diversity calculation' do
