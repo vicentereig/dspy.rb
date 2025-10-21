@@ -1,7 +1,15 @@
 source 'https://rubygems.org'
 
 gemspec name: "dspy"
-gemspec name: "dspy-datasets"
+
+if ENV.fetch('DSPY_WITH_DATASETS', '1') == '1'
+  gemspec name: "dspy-datasets"
+end
+
+if ENV.fetch('DSPY_WITH_MIPROV2', '1') == '1'
+  gemspec name: "dspy-miprov2"
+end
+
 gemspec name: "gepa"
 
 group :development, :test do

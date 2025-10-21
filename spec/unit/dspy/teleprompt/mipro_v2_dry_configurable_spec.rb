@@ -1,7 +1,17 @@
 require 'spec_helper'
-require 'dspy/teleprompt/mipro_v2'
 
-RSpec.describe DSPy::Teleprompt::MIPROv2, 'dry-configurable integration' do
+begin
+  require 'dspy/teleprompt/mipro_v2'
+rescue LoadError => e
+  RSpec.describe 'DSPy::Teleprompt::MIPROv2', 'dry-configurable integration', :miprov2 do
+    it 'skips when DSPy::Teleprompt::MIPROv2 is unavailable' do
+      skip "DSPy::Teleprompt::MIPROv2 optional dependency missing: #{e.message}"
+    end
+  end
+  return
+end
+
+RSpec.describe DSPy::Teleprompt::MIPROv2, 'dry-configurable integration', :miprov2 do
   # Reset class-level configuration before each test to prevent state pollution
   before do
     DSPy::Teleprompt::MIPROv2.instance_variable_set(:@default_config_block, nil)
