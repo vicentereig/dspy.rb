@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- _No changes yet._
+### Added
+- **HotPotQA dataset support** - Loader, manifest entries, and a ReAct + MIPROv2 example bring multi-hop QA benchmarking to the Ruby stack.
+- **Hugging Face ingestion pipeline** - Dataset registry, API client, and Parquet loader streamline remote dataset downloads across gems.
+- **Standalone `dspy-miprov2` gem** - Optimizer internals now ship in a dedicated gem with tighter dependency bounds and CI coverage.
+
+### Changed
+- **OpenTelemetry export hardening** - Span attributes are sanitized into JSON-safe strings before emit to avoid exporter crashes.
+- **ADE optimization workflow** - Registry-backed datasets shuffle before limiting, log few-shot payloads, and surface class balance improvements.
+
+### Fixed
+- **Evaluation stability** - Corrected metric return handling, dataset summary prompt serialization, and ReAct cloning regressions uncovered by new datasets.
+- **Hugging Face redirects** - Parquet loader now follows redirect chains, eliminating intermittent download failures in CI.
+
+### Documentation
+- **MIPROv2 and GEPA guides** - Ruby-focused rewrites and new HotPotQA walkthroughs document the expanded dataset tooling and benchmarks.
 
 ## [0.29.1] - 2025-10-20
 
