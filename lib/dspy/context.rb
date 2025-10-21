@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'securerandom'
+require 'json'
 
 module DSPy
   class Context
@@ -47,14 +48,15 @@ module DSPy
         span_id = SecureRandom.uuid
         parent_span_id = current[:span_stack].last
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        
+        sanitized_attributes = sanitize_span_attributes(attributes)
+
         # Prepare attributes with context information
         span_attributes = {
           trace_id: current[:trace_id],
           span_id: span_id,
           parent_span_id: parent_span_id,
           operation: operation,
-          **attributes
+          **sanitized_attributes
         }
         
         # Log span start with proper hierarchy (internal logging only)
@@ -67,7 +69,7 @@ module DSPy
           # Use OpenTelemetry's proper context management for nesting
           if DSPy::Observability.enabled? && DSPy::Observability.tracer
             # Prepare attributes and add trace name for root spans
-            span_attributes = attributes.transform_keys(&:to_s).reject { |k, v| v.nil? }
+            span_attributes = sanitized_attributes.transform_keys(&:to_s).reject { |k, v| v.nil? }
             
             # Set trace name if this is likely a root span (no parent in our stack)
             if current[:span_stack].length == 1  # This will be the first span
@@ -172,6 +174,49 @@ module DSPy
         defined?(Async::Task) && Async::Task.current?
       rescue
         false
+      end
+
+      def sanitize_span_attributes(attributes)
+        attributes.each_with_object({}) do |(key, value), acc|
+          sanitized_value = sanitize_attribute_value(value)
+          acc[key] = sanitized_value
+        end
+      end
+
+      def sanitize_attribute_value(value)
+        case value
+        when nil, String, Integer, Float, TrueClass, FalseClass
+          value
+        when Time
+          value.iso8601(3)
+        when Array
+          begin
+            JSON.generate(value.map { |item| sanitize_attribute_value(item) })
+          rescue StandardError
+            value.map(&:to_s).to_s
+          end
+        when Hash
+          begin
+            sanitized_hash = value.each_with_object({}) do |(k, v), hash|
+              sanitized = sanitize_attribute_value(v)
+              hash[k.to_s] = sanitized unless sanitized.nil?
+            end
+            JSON.generate(sanitized_hash)
+          rescue StandardError
+            value.to_s
+          end
+        else
+          if defined?(T::Struct) && value.is_a?(T::Struct)
+            begin
+              struct_hash = value.to_h.transform_keys(&:to_s).transform_values { |v| sanitize_attribute_value(v) }
+              JSON.generate(struct_hash)
+            rescue StandardError
+              value.to_s
+            end
+          else
+            value.respond_to?(:to_json) ? value.to_json : value.to_s
+          end
+        end
       end
     end
   end
