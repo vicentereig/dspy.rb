@@ -200,19 +200,19 @@ bundle install
 DSPy.rb has rapidly evolved from experimental to production-ready:
 
 ### Foundation
-- ✅ **JSON Parsing Reliability** - Native OpenAI structured outputs, strategy selection, retry logic
-- ✅ **Type-Safe Strategy Configuration** - Provider-optimized automatic strategy selection  
+- ✅ **JSON Parsing Reliability** - Native OpenAI structured outputs with adaptive retry logic and schema-aware fallbacks
+- ✅ **Type-Safe Strategy Configuration** - Provider-optimized strategy selection and enum-backed optimizer presets
 - ✅ **Core Module System** - Predict, ChainOfThought, ReAct, CodeAct with type safety
 - ✅ **Production Observability** - OpenTelemetry, New Relic, and Langfuse integration
-- ✅ **Advanced Optimization** - MIPROv2 with Bayesian optimization, Gaussian Processes, and multiple strategies
+- ✅ **Advanced Optimization** - MIPROv2 with Bayesian optimization, Gaussian Processes, and multi-mode search
 
 ### Recent Advances  
-- ✅ **Enhanced Langfuse Integration (v0.25.0)** - Comprehensive OpenTelemetry span reporting with proper input/output, hierarchical nesting, accurate timing, and observation types
-- ✅ **Comprehensive Multimodal Framework** - Complete image analysis with `DSPy::Image`, type-safe bounding boxes, vision model integration
-- ✅ **Advanced Type System** - `T::Enum` integration, union types for agentic workflows, complex type coercion
-- ✅ **Production-Ready Evaluation** - Multi-factor metrics beyond accuracy, error-resilient evaluation pipelines
-- ✅ **Documentation Ecosystem** - `llms.txt` for AI assistants, ADRs, blog articles, comprehensive examples
-- ✅ **API Maturation** - Simplified idiomatic patterns, better error handling, production-proven designs
+- ✅ **MIPROv2 ADE Integrity (v0.29.1)** - Stratified train/val/test splits, honest precision accounting, and enum-driven `--auto` presets with integration coverage
+- ✅ **Instruction Deduplication (v0.29.1)** - Candidate generation now filters repeated programs so optimization logs highlight unique strategies
+- ✅ **GEPA Teleprompter (v0.29.0)** - Genetic-Pareto reflective prompt evolution with merge proposer scheduling, reflective mutation, and ADE demo parity
+- ✅ **Optimizer Utilities Parity (v0.29.0)** - Bootstrap strategies, dataset summaries, and Layer 3 utilities unlock multi-predictor programs on Ruby
+- ✅ **Observability Hardening (v0.29.0)** - OTLP exporter runs on a single-thread executor preventing frozen SSL contexts without blocking spans
+- ✅ **Documentation Refresh (v0.29.x)** - New GEPA guide plus ADE optimization docs covering presets, stratified splits, and error-handling defaults
 
 ## Roadmap - Production Battle-Testing Toward v1.0
 
