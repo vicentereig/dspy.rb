@@ -157,6 +157,27 @@ module DSPy
       named_predictors.map { |(_, predictor)| predictor }
     end
 
+    sig { returns(DSPy::Prompt) }
+    def prompt
+      @thought_generator.prompt
+    end
+
+    sig { params(instruction: String).returns(ReAct).override }
+    def with_instruction(instruction)
+      clone = self.class.new(@original_signature_class, tools: @tools.values, max_iterations: @max_iterations)
+      thought_generator = clone.instance_variable_get(:@thought_generator)
+      clone.instance_variable_set(:@thought_generator, thought_generator.with_instruction(instruction))
+      clone
+    end
+
+    sig { params(examples: T::Array[DSPy::FewShotExample]).returns(ReAct).override }
+    def with_examples(examples)
+      clone = self.class.new(@original_signature_class, tools: @tools.values, max_iterations: @max_iterations)
+      thought_generator = clone.instance_variable_get(:@thought_generator)
+      clone.instance_variable_set(:@thought_generator, thought_generator.with_examples(examples))
+      clone
+    end
+
     sig { params(kwargs: T.untyped).returns(T.untyped).override }
     def forward(**kwargs)
       # Validate input

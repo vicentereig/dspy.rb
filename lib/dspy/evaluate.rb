@@ -447,7 +447,7 @@ module DSPy
         expected = extract_field(example, field)
         actual = extract_field(prediction, field)
         
-        return false if expected.nil? || actual.nil?
+        next false if expected.nil? || actual.nil?
         
         if case_sensitive
           expected.to_s == actual.to_s
@@ -469,7 +469,7 @@ module DSPy
         expected = extract_field(example, field)
         actual = extract_field(prediction, field)
         
-        return false if expected.nil? || actual.nil?
+        next false if expected.nil? || actual.nil?
         
         if case_sensitive
           actual.to_s.include?(expected.to_s)
@@ -491,7 +491,7 @@ module DSPy
         expected = extract_field(example, field)
         actual = extract_field(prediction, field)
         
-        return { passed: false, error: "Missing values" } if expected.nil? || actual.nil?
+        next { passed: false, error: "Missing values" } if expected.nil? || actual.nil?
         
         begin
           expected_num = Float(expected)
