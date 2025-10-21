@@ -34,7 +34,7 @@ module DSPy
                    "It will be useful to make an educated guess as to the nature of the task this dataset will enable. Don't be afraid to be creative"
 
         input do
-          const :examples, String, description: "Sample data points from the dataset"
+          const :examples, T::Array[T::Hash[String, T.untyped]], description: "Sample data points from the dataset"
         end
 
         output do
@@ -50,7 +50,7 @@ module DSPy
                    "It will be useful to make an educated guess as to the nature of the task this dataset will enable. Don't be afraid to be creative"
 
         input do
-          const :examples, String, description: "Sample data points from the dataset"
+          const :examples, T::Array[T::Hash[String, T.untyped]], description: "Sample data points from the dataset"
           const :prior_observations, String, description: "Some prior observations I made about the data"
         end
 
@@ -124,9 +124,7 @@ module DSPy
           upper_lim = [trainset.length, view_data_batch_size].min
           batch_examples = trainset[0...upper_lim]
           predictor = DSPy::Predict.new(DatasetDescriptor)
-          examples_repr = format_examples_for_prompt(batch_examples)
-
-          observation = predictor.call(examples: examples_repr)
+          observation = predictor.call(examples: format_examples_for_prompt(batch_examples))
           observations = observation.observations
 
           # Iteratively refine observations with additional batches
@@ -145,11 +143,9 @@ module DSPy
 
               predictor = DSPy::Predict.new(DatasetDescriptorWithPriorObservations)
               batch_examples = trainset[b...upper_lim]
-              examples_repr = format_examples_for_prompt(batch_examples)
-
               output = predictor.call(
                 prior_observations: observations,
-                examples: examples_repr
+                examples: format_examples_for_prompt(batch_examples)
               )
 
               # Check if LLM indicates observations are complete
@@ -179,31 +175,45 @@ module DSPy
         end
       end
 
-      sig { params(examples: T::Array[T.untyped]).returns(String) }
+      sig { params(examples: T::Array[T.untyped]).returns(T::Array[T::Hash[String, T.untyped]]) }
       def self.format_examples_for_prompt(examples)
         serialized_examples = examples.map do |example|
           case example
           when DSPy::Example
             {
-              signature: example.signature_class.name,
-              input: DSPy::TypeSerializer.serialize(example.input),
-              expected: DSPy::TypeSerializer.serialize(example.expected)
+              'signature' => example.signature_class.name || example.signature_class.to_s,
+              'input' => stringify_keys(DSPy::TypeSerializer.serialize(example.input)),
+              'expected' => stringify_keys(DSPy::TypeSerializer.serialize(example.expected))
             }
           when DSPy::FewShotExample
             base = {
-              input: example.input,
-              output: example.output
+              'input' => stringify_keys(example.input),
+              'output' => stringify_keys(example.output)
             }
-            base[:reasoning] = example.reasoning if example.reasoning
+            base['reasoning'] = example.reasoning if example.reasoning
             base
           when Hash
-            example
+            stringify_keys(example)
           else
-            example.respond_to?(:to_h) ? example.to_h : { value: example }
+            stringify_keys(example.respond_to?(:to_h) ? example.to_h : { value: example })
           end
         end
 
-        JSON.pretty_generate(serialized_examples)
+        serialized_examples
+      end
+
+      sig { params(value: T.untyped).returns(T.untyped) }
+      def self.stringify_keys(value)
+        case value
+        when Hash
+          value.each_with_object({}) do |(k, v), result|
+            result[k.to_s] = stringify_keys(v)
+          end
+        when Array
+          value.map { |item| stringify_keys(item) }
+        else
+          value
+        end
       end
     end
   end
