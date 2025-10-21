@@ -12,7 +12,7 @@ require 'dspy/datasets'
 
 def evaluate_accuracy(program, examples, metric, threads)
   evaluator = DSPy::Evaluate.new(program, metric: metric, num_threads: threads)
-  result = evaluator.batch(examples)
+  result = evaluator.evaluate(examples, display_progress: false, display_table: false)
   result.pass_rate
 end
 
