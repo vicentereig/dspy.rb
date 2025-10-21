@@ -19,3 +19,39 @@ bundle exec ruby examples/ade_optimizer_gepa/main.rb --limit 30 --max-metric-cal
 > - Ensure `--max-metric-calls` exceeds the validation set size (plus a couple of minibatches). The script auto-adjusts upward if the budget is too small.
 
 Use `--help` to see all CLI options. Results and logs are stored under `examples/ade_optimizer_gepa/results/`.
+
+## Usage Scenarios
+
+- **Comprehensive search** – give GEPA enough budget to explore multiple candidates:
+
+  ```bash
+  bundle exec ruby examples/ade_optimizer_gepa/main.rb \
+    --limit 200 \
+    --seed 123 \
+    --minibatch-size 6 \
+    --max-metric-calls 900
+  ```
+
+  The script also emits richer textual feedback (including sentence snippets) so reflective mutations can reason about errors.
+
+- **Audit the Pareto pool** – log every GEPA event and inspect the search trajectory:
+
+  ```bash
+  bundle exec ruby examples/ade_optimizer_gepa/main.rb \
+    --limit 200 \
+    --max-metric-calls 900 \
+    --track-stats
+  ```
+
+  Events are written to `results/gepa_events.jsonl`. Pipe the file through `jq` or `rg` to see which candidates were mutated or accepted.
+
+- **Quick experimentation** – reduce the minibatch size to iterate faster:
+
+  ```bash
+  bundle exec ruby examples/ade_optimizer_gepa/main.rb \
+    --limit 60 \
+    --minibatch-size 3 \
+    --max-metric-calls 400
+  ```
+
+  Smaller minibatches increase stochasticity but spend fewer metric calls per reflection loop.

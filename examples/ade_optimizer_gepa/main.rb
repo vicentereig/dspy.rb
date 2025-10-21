@@ -9,6 +9,7 @@ require 'csv'
 require 'fileutils'
 require 'securerandom'
 require 'time'
+require 'gepa/logging'
 
 require 'dspy'
 require 'sorbet-runtime'
@@ -124,13 +125,21 @@ module ADEExampleGEPA
 
     numerator.to_f / denominator
   end
+
+  def snippet(text, length: 120)
+    sanitized = text.to_s.strip.gsub(/\s+/, ' ')
+    return sanitized if sanitized.length <= length
+
+    "#{sanitized[0, length]}..."
+  end
 end
 
 options = {
   limit: 30,
   max_metric_calls: 600,
   minibatch_size: 6,
-  seed: 42
+  seed: 42,
+  track_stats_path: nil
 }
 
 OptionParser.new do |parser|
@@ -150,6 +159,10 @@ OptionParser.new do |parser|
 
   parser.on('--seed N', Integer, 'Random seed for dataset splits (default: 42)') do |seed|
     options[:seed] = seed
+  end
+
+  parser.on('--track-stats [PATH]', 'Persist GEPA events to PATH (default: results/gepa_events.jsonl)') do |path|
+    options[:track_stats_path] = path || File.join(RESULTS_DIR, 'gepa_events.jsonl')
   end
 
   parser.on('-h', '--help', 'Show this help message') do
@@ -197,6 +210,21 @@ puts "   • Train: #{train_examples.size}"
 puts "   • Val  : #{val_examples.size}"
 puts "   • Test : #{test_examples.size}"
 
+experiment_tracker = nil
+if options[:track_stats_path]
+  FileUtils.mkdir_p(File.dirname(options[:track_stats_path]))
+  File.write(options[:track_stats_path], '')
+
+  experiment_tracker = GEPA::Logging::ExperimentTracker.new
+  experiment_tracker.with_subscriber do |event|
+    File.open(options[:track_stats_path], 'a') do |io|
+      io.puts(JSON.generate(event))
+    end
+  end
+
+  puts "🛰  Tracking GEPA events at #{options[:track_stats_path]}"
+end
+
 min_required_calls = val_examples.size + (options[:minibatch_size] * 2)
 if options[:max_metric_calls] < min_required_calls
   suggested_calls = [min_required_calls, val_examples.size * 2].max
@@ -226,21 +254,24 @@ metric = lambda do |example, prediction|
   expected = example.expected_values[:label]
   predicted = ADEExampleGEPA.label_from_prediction(prediction)
   score = predicted == expected ? 1.0 : 0.0
+  snippet = ADEExampleGEPA.snippet(example.input_values[:text])
   feedback = if predicted == expected
-    "Correct classification for #{expected.serialize}"
+    "Correct (#{expected.serialize}) for: \"#{snippet}\""
   else
-    "Misclassified: expected #{expected.serialize}, predicted #{predicted.serialize}"
+    "Misclassified (expected #{expected.serialize}, predicted #{predicted.serialize}) for: \"#{snippet}\""
   end
   DSPy::Prediction.new(score: score, feedback: feedback)
+end
 # Optional predictor-level feedback. Leave empty to rely solely on the metric above.
 feedback_map = {
   'self' => lambda do |predictor_output:, predictor_inputs:, module_inputs:, module_outputs:, captured_trace:|
     expected = module_inputs.expected_values[:label]
     predicted = ADEExampleGEPA.label_from_prediction(predictor_output)
     score = predicted == expected ? 1.0 : 0.0
+    snippet = ADEExampleGEPA.snippet(predictor_inputs[:text], length: 80)
     DSPy::Prediction.new(
       score: score,
-      feedback: "Classifier saw '#{predictor_inputs[:text][0..60]}...' => #{predicted.serialize}, expected #{expected.serialize}"
+      feedback: "Classifier saw \"#{snippet}\" → #{predicted.serialize} (expected #{expected.serialize})"
     )
   end
 }
@@ -251,6 +282,7 @@ teleprompter = DSPy::Teleprompt::GEPA.new(
   metric: metric,
   reflection_lm: reflection_lm,
   feedback_map: feedback_map,
+  experiment_tracker: experiment_tracker,
   config: {
     max_metric_calls: options[:max_metric_calls],
     minibatch_size: options[:minibatch_size],
@@ -311,6 +343,7 @@ end
 puts "\n📂 Results saved to:"
 puts "   • #{summary_path}"
 puts "   • #{csv_path}"
+puts "   • #{options[:track_stats_path]}" if options[:track_stats_path]
 
 puts "\n✨ Sample optimized instruction snippet:"
 instruction = optimized_program.prompt.instruction rescue nil
