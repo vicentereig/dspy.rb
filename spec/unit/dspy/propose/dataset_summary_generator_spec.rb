@@ -118,7 +118,7 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator do
 
   describe '.format_examples_for_prompt' do
     let(:signature_class) do
-      Class.new(DSPy::Signature) do
+      stub_const('DatasetSummaryGeneratorSpecSignature', Class.new(DSPy::Signature) do
         description "Simple QA signature"
 
         input do
@@ -128,7 +128,7 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator do
         output do
           const :answer, String
         end
-      end
+      end)
     end
 
     let(:example) do
@@ -139,28 +139,30 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator do
       )
     end
 
-    it 'serializes DSPy::Example payloads to JSON' do
-      json_string = described_class.format_examples_for_prompt([example])
+    it 'serializes DSPy::Example payloads to structured hashes' do
+      serialized = described_class.format_examples_for_prompt([example])
 
-      expect(json_string).to include('"signature"')
-      expect(json_string).to include('"input"')
-      expect(json_string).to include('"expected"')
-      expect(json_string).to include('"What is DSPy?"')
-      expect { JSON.parse(json_string) }.not_to raise_error
+      expect(serialized).to be_an(Array)
+      expect(serialized.size).to eq(1)
+
+      first = serialized.first
+      expect(first).to include('signature', 'input', 'expected')
+      expect(first['signature']).to eq('DatasetSummaryGeneratorSpecSignature')
+      expect(first['input']['question']).to eq('What is DSPy?')
+      expect(first['expected']['answer']).to eq('A declarative optimization framework.')
+      expect { JSON.parse(JSON.generate(serialized)) }.not_to raise_error
     end
 
-    it 'serializes multiple examples to JSON consistently' do
+    it 'serializes multiple examples deterministically' do
       serialized = described_class.format_examples_for_prompt([example, example])
 
-      expect(serialized).to include('"signature"')
-      expect(serialized).to include('"input"')
-      expect(serialized).to include('"expected"')
-      expect(serialized).to include('"What is DSPy?"')
-      expect(serialized).not_to include("\n-")
-      expect { JSON.parse(serialized) }.not_to raise_error
+      expect(serialized).to be_an(Array)
+      expect(serialized.length).to eq(2)
+      expect(serialized.all? { |item| item['signature'] == example.signature_class.name }).to be(true)
+      expect { JSON.parse(JSON.generate(serialized)) }.not_to raise_error
     end
 
-    it 'serializes few-shot examples to JSON' do
+    it 'serializes few-shot examples to hashes' do
       few_shot = DSPy::FewShotExample.new(
         input: { question: "What is DSPy?" },
         output: { answer: "A declarative optimization framework." }
@@ -168,11 +170,33 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator do
 
       serialized = described_class.format_examples_for_prompt([few_shot])
 
-      expect(serialized).to include('"input"')
-      expect(serialized).to include('"output"')
-      expect(serialized).to include('"What is DSPy?"')
-      expect(serialized).not_to include("\n-")
-      expect { JSON.parse(serialized) }.not_to raise_error
+      expect(serialized).to be_an(Array)
+      expect(serialized.first['input']['question']).to eq('What is DSPy?')
+      expect(serialized.first['output']['answer']).to eq('A declarative optimization framework.')
+      expect { JSON.parse(JSON.generate(serialized)) }.not_to raise_error
+    end
+
+    it 'produces input payloads that render without double escaping' do
+      serialized = described_class.format_examples_for_prompt([example])
+
+      prompt_signature = Class.new(DSPy::Signature) do
+        description "Example rendering signature"
+
+        input do
+          const :examples, T::Array[T::Hash[String, T.untyped]]
+        end
+
+        output do
+          const :observations, String
+        end
+      end
+
+      prompt = DSPy::Prompt.from_signature(prompt_signature)
+      user_prompt = prompt.render_user_prompt(examples: serialized)
+
+      expect(user_prompt).to include('"examples": [')
+      expect(user_prompt).to include('"signature"')
+      expect(user_prompt).not_to include('\\"signature\\"')
     end
   end
 end

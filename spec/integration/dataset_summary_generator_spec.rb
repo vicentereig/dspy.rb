@@ -152,10 +152,10 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator, :vcr do
 
   describe 'DatasetDescriptor signature' do
     it 'can describe a dataset', vcr: { cassette_name: 'dataset_summary/dataset_descriptor' } do
-      examples_str = described_class.order_input_keys_in_string(small_trainset.take(2).inspect)
+      examples_payload = described_class.format_examples_for_prompt(small_trainset.take(2))
 
       predictor = DSPy::Predict.new(DSPy::Propose::DatasetSummaryGenerator::DatasetDescriptor)
-      result = predictor.call(examples: examples_str)
+      result = predictor.call(examples: examples_payload)
 
       expect(result).to respond_to(:observations)
       expect(result.observations).to be_a(String)
@@ -166,12 +166,12 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator, :vcr do
 
   describe 'DatasetDescriptorWithPriorObservations signature' do
     it 'can refine observations', vcr: { cassette_name: 'dataset_summary/refine_observations' } do
-      examples_str = described_class.order_input_keys_in_string(small_trainset.drop(1).take(2).inspect)
+      examples_payload = described_class.format_examples_for_prompt(small_trainset.drop(1).take(2))
       prior_observations = "Dataset contains Q&A pairs about scientific topics. Questions are short and direct."
 
       predictor = DSPy::Predict.new(DSPy::Propose::DatasetSummaryGenerator::DatasetDescriptorWithPriorObservations)
       result = predictor.call(
-        examples: examples_str,
+        examples: examples_payload,
         prior_observations: prior_observations
       )
 
@@ -182,7 +182,7 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator, :vcr do
     end
 
     it 'can indicate completion', vcr: { cassette_name: 'dataset_summary/indicate_complete' } do
-      examples_str = described_class.order_input_keys_in_string(small_trainset.take(1).inspect)
+      examples_payload = described_class.format_examples_for_prompt(small_trainset.take(1))
       # Provide very comprehensive prior observations
       prior_observations = "This dataset consists of question-answer pairs focused on natural science phenomena. " \
                           "Questions are concise, averaging 5-7 words. Answers are explanatory and fact-based. " \
@@ -194,7 +194,7 @@ RSpec.describe DSPy::Propose::DatasetSummaryGenerator, :vcr do
 
       predictor = DSPy::Predict.new(DSPy::Propose::DatasetSummaryGenerator::DatasetDescriptorWithPriorObservations)
       result = predictor.call(
-        examples: examples_str,
+        examples: examples_payload,
         prior_observations: prior_observations
       )
 
