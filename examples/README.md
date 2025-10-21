@@ -14,39 +14,29 @@ ANTHROPIC_API_KEY=your-anthropic-key
 
 ### Optimization
 
-#### `ade_optimizer_miprov2/`
+- **`ade_optimizer_miprov2/`** — ADE classifier optimized with MIPROv2. Mirrors the docs walkthrough, uses the `dspy-miprov2` gem, supports `--auto light|medium|heavy`, and writes metrics/trial logs to `results/`.
+- **`hotpotqa_react_miprov2/`** — Multi-hop HotPotQA ReAct agent tuned with MIPROv2. Demonstrates per-predictor instructions, tool usage, and dataset caching for larger pipelines.
+- **`ade_optimizer_gepa/`** — ADE classifier optimized with GEPA. Shows how to wire reflection feedback and interpret Pareto-tracked candidates.
+- **`gepa_snapshot.rb`** — Scripted GEPA run that produces fixture snapshots for specs. Useful when you want deterministic reflection output for testing.
 
-End-to-end optimization workflow using MIPROv2:
+### Agents & Workflow Automation
 
-- **`main.rb`** - ADE (Automatic Data Evaluation) optimizer walkthrough
-- Supports preset tuning via `--auto light|medium|heavy` or custom `--trials`
-- Stratified splits keep both ADE labels present in train/val/test
-- Invalid model outputs now count toward precision/recall so metrics reflect reality
-- **`data/`** - Sample datasets for optimization trials
-- **`results/`** - Saved optimization outputs and metrics
+- **`basic_search_agent.rb`** — ReAct agent that calls a course-search tool and returns typed `Course` structs, highlighting structured outputs.
+- **`react_loop/`** — Calculator/unit conversion/date tools wired into a ReAct loop with observability enabled.
+- **`coffee-shop-agent/`** — Conversational ordering bot with short-term memory. Run `bundle exec ruby coffee-shop-agent/coffee_shop_agent.rb`.
+- **`github-assistant/`** — GitHub-focused helper that chains CLI actions (requires a GitHub token in your environment). See the folder README for setup.
 
-#### `ade_optimizer_gepa/`
+### Observability, Events, and Benchmarks
 
-Reflective optimization of the same ADE task using GEPA with per-predictor feedback:
+- **`event_system_demo.rb`** — End-to-end tour of the DSPy event bus, including type-safe LLM events and custom subscribers for optimization metrics.
+- **`telemetry_benchmark.rb`** — Measures OpenTelemetry span throughput under typical DSPy workloads.
+- **`baml_vs_json_benchmark.rb`** — Compares BAML vs JSON schema prompting across multiple providers, including cost estimates.
+- **`json_modes_benchmark.rb`** — Evaluates OpenAI JSON modes vs enhanced prompting for structured outputs.
 
-- **`main.rb`** - GEPA optimizer walkthrough
-- **`data/`** - Shared dataset cache directory
-- **`results/`** - Saved GEPA optimization outputs and metrics
+### Data, Evaluation, and Multimodal
 
-### Multimodal (`multimodal/`)
-
-Examples for working with images and vision models:
-
-- **`image_analysis.rb`** - Analyze images for objects, colors, and mood
-- **`bounding_box_detection.rb`** - Detect objects and return coordinates
-
-### Agent Examples (`coffee-shop-agent/`)
-
-- **`coffee_shop_agent.rb`** - Interactive coffee ordering chatbot with memory
-
-### Evaluation (`sentiment-evaluation/`)
-
-- **`sentiment_classifier.rb`** - Tweet sentiment classification with evaluation
+- **`sentiment-evaluation/`** — Minimal sentiment classifier with evaluation helpers; great starter for building your own metrics.
+- **`multimodal/`** — Vision-language snippets (`image_analysis.rb`, `bounding_box_detection.rb`) that show how to send images through DSPy LMs.
 
 ## Quick Start
 
