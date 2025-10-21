@@ -52,24 +52,20 @@ module DSPy
 
         def parquet_files
           @parquet_files ||= begin
-            uri = URI("#{BASE_URL}/parquet")
-            params = {
-              dataset: info.loader_options.fetch(:dataset),
-              config: info.loader_options.fetch(:config),
-              split: split
-            }
-            uri.query = URI.encode_www_form(params)
+            datasets = Array(info.loader_options.fetch(:dataset))
+            last_error = nil
 
-            response = http_get(uri)
-            unless response.is_a?(Net::HTTPSuccess)
-              raise DatasetError, "Failed to fetch parquet manifest: #{response.code}"
+            datasets.each do |dataset_name|
+              begin
+                files = fetch_parquet_files(dataset_name)
+                return files unless files.empty?
+                last_error = DatasetError.new("No parquet files available for #{dataset_name} (#{split})")
+              rescue DatasetError => e
+                last_error = e
+              end
             end
 
-            body = JSON.parse(response.body)
-            files = body.fetch('parquet_files', [])
-            raise DatasetError, "No parquet files available for #{info.id} (#{split})" if files.empty?
-
-            files
+            raise(last_error || DatasetError.new("Failed to fetch parquet manifest for #{info.id} (#{split})"))
           end
         end
 
@@ -80,6 +76,24 @@ module DSPy
 
           download_file(file.fetch('url'), path)
           path
+        end
+
+        def fetch_parquet_files(dataset_name)
+          uri = URI("#{BASE_URL}/parquet")
+          params = {
+            dataset: dataset_name,
+            config: info.loader_options.fetch(:config),
+            split: split
+          }
+          uri.query = URI.encode_www_form(params)
+
+          response = http_get(uri)
+          unless response.is_a?(Net::HTTPSuccess)
+            raise DatasetError, "Failed to fetch parquet manifest: #{response.code}"
+          end
+
+          body = JSON.parse(response.body)
+          body.fetch('parquet_files', [])
         end
 
         def cache_dir

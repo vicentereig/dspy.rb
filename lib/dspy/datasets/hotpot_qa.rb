@@ -10,7 +10,7 @@ module DSPy
     # Provides convenience helpers to create train/dev/test splits matching the Python DSPy defaults.
     class HotPotQA
       DATASET_INFO = DatasetInfo.new(
-        id: 'hotpot_qa/fullwiki',
+        id: 'hotpotqa/hotpot_qa/fullwiki',
         name: 'HotPotQA (FullWiki)',
         provider: 'huggingface',
         splits: %w[train validation],
@@ -25,11 +25,11 @@ module DSPy
         },
         loader: :huggingface_parquet,
         loader_options: {
-          dataset: 'hotpot_qa',
+          dataset: ['hotpotqa/hotpot_qa', 'hotpot_qa'],
           config: 'fullwiki'
         },
         metadata: {
-          description: 'HotPotQA FullWiki split filtered to hard examples. Train split is further divided into train/dev (75/25) matching Python DSPy defaults.',
+          description: 'HotPotQA FullWiki split filtered to hard examples. Train split is further divided into train/dev (75/25) matching Python DSPy defaults. Supports dataset rename on Hugging Face.',
           homepage: 'https://huggingface.co/datasets/hotpot_qa',
           approx_row_count: 112_000
         }
