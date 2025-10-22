@@ -30,6 +30,8 @@ conventions and adds Ruby-specific innovations like Sorbet-base Typed system, Re
 
 **What you get?** Ruby LLM applications that actually scale and don't break when you sneeze.
 
+Check the [examples](examples/) and take them for a spin!
+
 ## Your First DSPy Program
 ### Installation
 
@@ -211,28 +213,37 @@ For LLMs and AI assistants working with DSPy.rb:
 - **[Quick Start Guide](docs/src/getting-started/quick-start.md)** - Your first DSPy programs
 - **[Core Concepts](docs/src/getting-started/core-concepts.md)** - Understanding signatures, predictors, and modules
 
-### Core Features
+### Prompt Engineering
 - **[Signatures & Types](docs/src/core-concepts/signatures.md)** - Define typed interfaces for LLM operations
 - **[Predictors](docs/src/core-concepts/predictors.md)** - Predict, ChainOfThought, ReAct, and more
 - **[Modules & Pipelines](docs/src/core-concepts/modules.md)** - Compose complex multi-stage workflows
 - **[Multimodal Support](docs/src/core-concepts/multimodal.md)** - Image analysis with vision-capable models
 - **[Examples & Validation](docs/src/core-concepts/examples.md)** - Type-safe training data
+- **[Rich Types](docs/src/advanced/complex-types.md)** - Sorbet type integration with automatic coercion for structs, enums, and arrays
+- **[Composable Pipelines](docs/src/advanced/pipelines.md)** - Manual module composition patterns
 
-### Optimization
+### Prompt Optimization
 - **[Evaluation Framework](docs/src/optimization/evaluation.md)** - Advanced metrics beyond simple accuracy
 - **[Prompt Optimization](docs/src/optimization/prompt-optimization.md)** - Manipulate prompts as objects
 - **[MIPROv2 Optimizer](docs/src/optimization/miprov2.md)** - Advanced Bayesian optimization with Gaussian Processes
 - **[GEPA Optimizer](docs/src/optimization/gepa.md)** *(beta)* - Reflective mutation with optional reflection LMs
 
-### Production Features
-- **[Storage System](docs/src/production/storage.md)** - Persistence and optimization result storage
-- **[Observability](docs/src/production/observability.md)** - Zero-config Langfuse integration with a dedicated export worker that never blocks your LLMs
-
-### Advanced Usage
-- **[Complex Types](docs/src/advanced/complex-types.md)** - Sorbet type integration with automatic coercion for structs, enums, and arrays
-- **[Manual Pipelines](docs/src/advanced/pipelines.md)** - Manual module composition patterns
+### Context Engineering
+- **[Tools](docs/src/core-concepts/toolsets.md)** - Tool wieldint agents.
+- **[Agentic Memory](docs/src/core-concepts/memory.md)** - Memory Tools & Agentic Loops
 - **[RAG Patterns](docs/src/advanced/rag.md)** - Manual RAG implementation with external services
-- **[Custom Metrics](docs/src/advanced/custom-metrics.md)** - Proc-based evaluation logic
+
+### Production Features
+- **[Observability](docs/src/production/observability.md)** - Zero-config Langfuse integration with a dedicated export worker that never blocks your LLMs
+- **[Storage System](docs/src/production/storage.md)** - Persistence and optimization result storage
+- **[Custom Metrics](docs/src/advanced/custom-metrics.md)** - Proc-based evaluation logic 
+
+
+
+
+
+
+
 
 ## License
 This project is licensed under the MIT License.
