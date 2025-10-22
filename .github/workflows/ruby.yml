@@ -22,6 +22,7 @@ jobs:
             '**/spec/integration/dspy/datasets/**/*_spec.rb' --exclude-pattern '**/spec/integration/dspy/mipro_*'
           datasets: '0'
           miprov2: '0'
+          evals: '0'
         - name: DSPy Datasets
           gem: dspy-datasets
           command: bundle exec rspec --format documentation --pattern 'spec/unit/dspy/datasets/**/*_spec.rb'
@@ -29,12 +30,14 @@ jobs:
           install_arrow: 'true'
           datasets: '1'
           miprov2: '0'
+          evals: '0'
         - name: GEPA
           gem: gepa
           command: bundle exec rspec --format documentation spec/unit/gepa spec/unit/teleprompt/gepa_spec.rb
             spec/integration/dspy/teleprompt/gepa_smoke_spec.rb
           datasets: '0'
           miprov2: '0'
+          evals: '0'
         - name: DSPy MIPROv2
           gem: dspy-miprov2
           command: bundle exec rspec --format documentation --pattern 'spec/unit/optimizers/gaussian_process_spec.rb'
@@ -43,6 +46,13 @@ jobs:
           install_openblas: 'true'
           datasets: '0'
           miprov2: '1'
+          evals: '0'
+        - name: DSPy Evaluations
+          gem: dspy-evals
+          command: bundle exec rspec --format documentation spec/integration/dspy/evaluate_spec.rb spec/integration/evaluation_integration_spec.rb
+          datasets: '0'
+          miprov2: '0'
+          evals: '1'
     name: Run tests (${{ matrix.name }})
     steps:
     - uses: actions/checkout@v4
@@ -77,12 +87,14 @@ jobs:
       env:
         DSPY_WITH_DATASETS: ${{ matrix.datasets }}
         DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
+        DSPY_WITH_EVALS: ${{ matrix.evals }}
       run: bundle install
     - name: Run tests
       run: ${{ matrix.command }}
       env:
         DSPY_WITH_DATASETS: ${{ matrix.datasets }}
         DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
+        DSPY_WITH_EVALS: ${{ matrix.evals }}
         OPENAI_API_KEY: test-openai-key-for-vcr
         ANTHROPIC_API_KEY: test-anthropic-key-for-vcr
         GEMINI_API_KEY: test-gemini-key-for-vcr

@@ -1,5 +1,8 @@
 require 'spec_helper'
 require 'ostruct'
+require 'benchmark'
+require 'concurrent'
+require 'polars'
 require 'dspy/evaluate'
 require 'dspy/signature'
 require 'dspy/predict'
@@ -32,7 +35,7 @@ class QuestionAnswer < DSPy::Signature
 end
 
 # Mock program for testing - doesn't make real API calls
-class MockMathProgram
+class EvaluateMockMathProgram
   attr_accessor :responses
 
   def initialize
@@ -88,7 +91,7 @@ class MockQAProgram
 end
 
 RSpec.describe DSPy::Evaluate do
-  let(:mock_program) { MockMathProgram.new }
+  let(:mock_program) { EvaluateMockMathProgram.new }
   let(:mock_qa_program) { MockQAProgram.new }
 
   # Dummy training sets for testing - with separate input and expected output
@@ -243,7 +246,7 @@ RSpec.describe DSPy::Evaluate do
       result = evaluator_no_metric.call(example)
       
       expect(result.passed).to be(true)
-      expect(result.metrics).to be_empty
+      expect(result.metrics).to include(passed: true, score: 1.0)
     end
 
     it 'includes traceback when enabled' do
@@ -689,6 +692,166 @@ RSpec.describe DSPy::Evaluate do
       end
     end
   end
+
+  describe 'callback hooks' do
+    let(:metric) do
+      proc do |example, prediction|
+        expected = example[:expected][:answer]
+        predicted = prediction&.answer
+        expected == predicted
+      end
+    end
+
+    let(:example) { math_examples.first }
+
+    class CallbackAwareEvaluator < DSPy::Evaluate
+      before_example :record_before_call
+      after_example :record_after_call
+      after_batch :record_after_evaluate
+
+      attr_reader :events
+
+      def initialize(program, **options)
+        super
+        @events = []
+      end
+
+      private
+
+      def record_before_call
+        @events << [:before_call, Thread.current.object_id]
+      end
+
+      def record_after_call
+        @events << [:after_call, Thread.current.object_id]
+      end
+
+      def record_after_evaluate
+        @events << [:after_evaluate, Thread.current.object_id]
+      end
+    end
+
+    let(:evaluator) { CallbackAwareEvaluator.new(mock_program, metric: metric) }
+
+    it 'runs before and after callbacks for #call' do
+      evaluator.call(example)
+
+      expect(evaluator.events.map(&:first)).to eq([:before_call, :after_call])
+    end
+
+    it 'runs evaluate callbacks when evaluating a batch' do
+      evaluator.evaluate([example], display_progress: false, display_table: false)
+
+      expect(evaluator.events.map(&:first)).to include(:after_evaluate)
+    end
+  end
+
+  describe 'parallel execution' do
+    let(:examples) do
+      Array.new(6) do |index|
+        { input: { problem: "sleep_#{index}" }, expected: { answer: "done" } }
+      end
+    end
+
+    let(:thread_ids) { Concurrent::Array.new }
+
+    let(:program) do
+      Class.new do
+        def initialize(thread_ids)
+          @thread_ids = thread_ids
+        end
+
+        def call(problem:)
+          @thread_ids << Thread.current.object_id
+          sleep 0.1
+          OpenStruct.new(problem: problem, answer: "done")
+        end
+      end.new(thread_ids)
+    end
+
+    let(:metric) do
+      proc do |example, prediction|
+        prediction.answer == example[:expected][:answer]
+      end
+    end
+
+    it 'utilizes multiple threads when num_threads > 1' do
+      evaluator = DSPy::Evaluate.new(program, metric: metric, num_threads: 4)
+
+      elapsed = Benchmark.realtime do
+        evaluator.evaluate(examples, display_progress: false, display_table: false)
+      end
+
+      expect(thread_ids.uniq.size).to be > 1
+      expect(elapsed).to be < 0.4
+    end
+  end
+
+  describe 'batch result scoring' do
+    let(:metric) do
+      proc do |example, prediction|
+        prediction.answer == example[:expected][:answer]
+      end
+    end
+
+    let(:passing_examples) do
+      [
+        { input: { problem: "2 + 3" }, expected: { answer: "5" } },
+        { input: { problem: "10 - 4" }, expected: { answer: "6" } },
+        { input: { problem: "3 × 4" }, expected: { answer: "12" } },
+        { input: { problem: "20 - 12" }, expected: { answer: "8" } }
+      ]
+    end
+
+    it 'exposes a percentage score on batch results' do
+      evaluator = DSPy::Evaluate.new(mock_program, metric: metric)
+      result = evaluator.evaluate(passing_examples, display_progress: false, display_table: false)
+
+      expect(result).to respond_to(:score)
+      expect(result.score).to eq(100.0)
+    end
+
+    it 'uses failure_score when predictions raise errors' do
+      failing_program = Class.new do
+        def call(**)
+          raise "boom"
+        end
+      end.new
+
+      evaluator = DSPy::Evaluate.new(failing_program, metric: metric, failure_score: 0.25, provide_traceback: false)
+      result = evaluator.evaluate(passing_examples, display_progress: false, display_table: false)
+
+      expect(result.score).to eq(25.0)
+      expect(result.results.count).to eq(passing_examples.size)
+      expect(result.results.map(&:metrics)).to all(include(:score))
+    end
+  end
+
+  describe 'polars export' do
+    let(:metric) do
+      proc do |example, prediction|
+        prediction.answer == example[:expected][:answer]
+      end
+    end
+
+    let(:examples) do
+      [
+        { input: { problem: "2 + 3" }, expected: { answer: "5" } },
+        { input: { problem: "10 - 4" }, expected: { answer: "6" } }
+      ]
+    end
+
+    it 'converts batch results to a Polars DataFrame' do
+      evaluator = DSPy::Evaluate.new(mock_program, metric: metric)
+      result = evaluator.evaluate(examples, display_progress: false, display_table: false)
+
+      dataframe = result.to_polars
+
+      expect(dataframe).to be_a(Polars::DataFrame)
+      expect(dataframe.shape).to eq([examples.size, dataframe.width])
+      expect(dataframe.columns).to include("passed")
+    end
+  end
 end
 
 RSpec.describe DSPy::Metrics do
@@ -823,4 +986,5 @@ RSpec.describe DSPy::Metrics do
       expect(metric.call(example, obj_prediction)).to be(true)
     end
   end
+
 end
