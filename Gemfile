@@ -6,6 +6,10 @@ if ENV.fetch('DSPY_WITH_DATASETS', '1') == '1'
   gemspec name: "dspy-datasets"
 end
 
+if ENV.fetch('DSPY_WITH_EVALS', '1') == '1'
+  gemspec name: "dspy-evals"
+end
+
 if ENV.fetch('DSPY_WITH_MIPROV2', '1') == '1'
   gemspec name: "dspy-miprov2"
 end

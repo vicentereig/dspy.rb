@@ -18,6 +18,10 @@ PATH
     dspy-datasets (0.29.1)
       dspy (= 0.29.1)
       red-parquet (~> 21.0)
+    dspy-evals (0.29.1)
+      concurrent-ruby (~> 1.3)
+      dspy (= 0.29.1)
+      polars-df (~> 0.15)
     dspy-miprov2 (0.29.1)
       dspy (= 0.29.1)
       numo-narray-alt (~> 0.9)
@@ -161,6 +165,11 @@ GEM
       opentelemetry-api (~> 1.0)
     os (1.1.4)
     pkg-config (1.6.4)
+    polars-df (0.22.0)
+      bigdecimal
+      rb_sys
+    polars-df (0.22.0-arm64-darwin)
+      bigdecimal
     public_suffix (6.0.2)
     rake (13.3.0)
     rake-compiler-dock (1.9.1)
@@ -230,6 +239,7 @@ DEPENDENCIES
   dotenv (~> 2.8)
   dspy!
   dspy-datasets!
+  dspy-evals!
   dspy-miprov2!
   faraday (~> 2.0)
   gepa!

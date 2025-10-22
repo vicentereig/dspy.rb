@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'json'
+require 'polars'
+require 'concurrent'
 require 'sorbet-runtime'
 require_relative 'example'
 
@@ -76,6 +79,9 @@ module DSPy
       sig { returns(Float) }
       attr_reader :pass_rate
 
+      sig { returns(Float) }
+      attr_reader :score
+
       sig do
         params(
           results: T::Array[EvaluationResult],
@@ -88,6 +94,8 @@ module DSPy
         @total_examples = results.length
         @passed_examples = results.count(&:passed)
         @pass_rate = @total_examples > 0 ? @passed_examples.to_f / @total_examples : 0.0
+        score_avg = aggregated_metrics[:score_avg] || @pass_rate
+        @score = (score_avg * 100).round(2)
       end
 
       sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -96,9 +104,46 @@ module DSPy
           total_examples: @total_examples,
           passed_examples: @passed_examples,
           pass_rate: @pass_rate,
+          score: @score,
           aggregated_metrics: @aggregated_metrics,
           results: @results.map(&:to_h)
         }
+      end
+
+      sig { returns(Polars::DataFrame) }
+      def to_polars
+        rows = @results.each_with_index.map do |result, index|
+          {
+            "index" => index,
+            "passed" => result.passed,
+            "score" => result.metrics[:score],
+            "example" => serialize_for_polars(result.example),
+            "prediction" => serialize_for_polars(result.prediction),
+            "metrics" => serialize_for_polars(result.metrics),
+            "trace" => serialize_for_polars(result.trace)
+          }
+        end
+
+        Polars::DataFrame.new(rows)
+      end
+
+      private
+
+      def serialize_for_polars(value)
+        case value
+        when NilClass, TrueClass, FalseClass, Numeric, String
+          value
+        when Hash
+          JSON.generate(value)
+        when Array
+          JSON.generate(value)
+        else
+          if value.respond_to?(:to_h)
+            JSON.generate(value.to_h)
+          else
+            value.to_s
+          end
+        end
       end
     end
 
@@ -117,26 +162,92 @@ module DSPy
     sig { returns(T::Boolean) }
     attr_reader :provide_traceback
 
+    sig { returns(Float) }
+    attr_reader :failure_score
+
+    sig { returns(T.nilable(EvaluationResult)) }
+    attr_reader :last_example_result
+
+    sig { returns(T.nilable(BatchEvaluationResult)) }
+    attr_reader :last_batch_result
+
+    class << self
+      def before_example(callback = nil, &block)
+        register_callback(:example, :before, callback, &block)
+      end
+
+      def after_example(callback = nil, &block)
+        register_callback(:example, :after, callback, &block)
+      end
+
+      def before_batch(callback = nil, &block)
+        register_callback(:batch, :before, callback, &block)
+      end
+
+      def after_batch(callback = nil, &block)
+        register_callback(:batch, :after, callback, &block)
+      end
+
+      alias_method :before, :before_example
+      alias_method :after, :after_example
+
+      def reset_callbacks!
+        @callback_registry = {
+          example: { before: [], after: [] },
+          batch: { before: [], after: [] }
+        }
+      end
+
+      private
+
+      def register_callback(kind, timing, handler = nil, &block)
+        callback = handler || block
+        raise ArgumentError, 'Callback must be provided as a symbol or block' unless callback
+
+        registry = callback_registry
+        registry[kind][timing] << callback
+      end
+
+      def callback_registry
+        @callback_registry ||= {
+          example: { before: [], after: [] },
+          batch: { before: [], after: [] }
+        }
+      end
+
+      def callbacks_for(kind, timing)
+        callback_registry[kind][timing]
+      end
+    end
+
+    reset_callbacks!
+
     sig do
       params(
         program: T.untyped,
         metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean)),
         num_threads: T.nilable(Integer),
         max_errors: T.nilable(Integer),
+        failure_score: T.nilable(Numeric),
         provide_traceback: T::Boolean
       ).void
     end
-    def initialize(program, metric: nil, num_threads: 1, max_errors: 5, provide_traceback: true)
+    def initialize(program, metric: nil, num_threads: 1, max_errors: 5, failure_score: 0.0, provide_traceback: true)
       @program = program
       @metric = metric
       @num_threads = num_threads || 1
       @max_errors = max_errors || 5
       @provide_traceback = provide_traceback
+      @failure_score = failure_score ? failure_score.to_f : 0.0
+      @last_example_result = nil
+      @last_batch_result = nil
     end
 
     # Evaluate program on a single example
     sig { params(example: T.untyped, trace: T.nilable(T.untyped)).returns(EvaluationResult) }
     def call(example, trace: nil)
+      run_example_callbacks(:before, example: example)
+
       DSPy::Context.with_span(
         operation: 'evaluation.example',
         'dspy.module' => 'Evaluator',
@@ -144,59 +255,14 @@ module DSPy
         'evaluation.has_metric' => !@metric.nil?
       ) do
         begin
-          # Extract input from example - support both hash and object formats
-          input_values = extract_input_values(example)
-          
-          # Run prediction
-          prediction = @program.call(**input_values)
-          
-          # Calculate metrics if provided
-          metrics = {}
-          passed = true
-          
-          if @metric
-            begin
-              metric_result = @metric.call(example, prediction)
-              if metric_result.is_a?(Hash)
-                metrics = metric_result
-                passed = metrics[:passed] || metrics['passed'] || true
-              else
-                passed = !!metric_result
-                metrics[:passed] = passed
-              end
-            rescue => e
-              passed = false
-              metrics[:error] = e.message
-              metrics[:passed] = false
-            end
-          end
-          
-          EvaluationResult.new(
-            example: example,
-            prediction: prediction,
-            trace: trace,
-            metrics: metrics,
-            passed: passed
-          )
+          perform_call(example, trace: trace)
         rescue => e
-          # Return failed evaluation result
-          error_metrics = {
-            error: e.message,
-            passed: false
-          }
-          
-          if @provide_traceback
-            error_metrics[:traceback] = e.backtrace&.first(10) || []
-          end
-          
-          EvaluationResult.new(
-            example: example,
-            prediction: nil,
-            trace: trace,
-            metrics: error_metrics,
-            passed: false
-          )
+          build_error_result(example, e, trace: trace)
         end
+      end.then do |result|
+        @last_example_result = result
+        run_example_callbacks(:after, example: example, result: result)
+        result
       end
     end
 
@@ -210,6 +276,8 @@ module DSPy
       ).returns(BatchEvaluationResult)
     end
     def evaluate(devset, display_progress: true, display_table: false, return_outputs: true)
+      run_batch_callbacks(:before, devset: devset)
+
       DSPy::Context.with_span(
         operation: 'evaluation.batch',
         'dspy.module' => 'Evaluator',
@@ -218,56 +286,28 @@ module DSPy
         'evaluation.has_metric' => !@metric.nil?,
         'evaluation.num_threads' => @num_threads
       ) do
-        results = []
-        errors = 0
-        
         if display_progress
           puts "Evaluating #{devset.length} examples..."
         end
-        
-        devset.each_with_index do |example, index|
-          break if errors >= @max_errors
-          
-          begin
-            result = call(example)
-            results << result
-            
-            unless result.passed
-              errors += 1
-            end
-            
-            if display_progress && (index + 1) % 10 == 0
-              puts "Processed #{index + 1}/#{devset.length} examples (#{results.count(&:passed)} passed)"
-            end
-            
-          rescue => e
-            errors += 1
-            puts "Error processing example #{index}: #{e.message}" if display_progress
-            
-            # Create error result
-            error_result = EvaluationResult.new(
-              example: example,
-              prediction: nil,
-              trace: nil,
-              metrics: { error: e.message, passed: false },
-              passed: false
-            )
-            results << error_result
-          end
+
+        results = if parallel_execution?
+          evaluate_in_parallel(devset, display_progress: display_progress)
+        else
+          evaluate_sequential(devset, display_progress: display_progress)
         end
-        
+
         # Aggregate metrics
         aggregated_metrics = aggregate_metrics(results)
-        
+
         batch_result = BatchEvaluationResult.new(
           results: results,
           aggregated_metrics: aggregated_metrics
         )
-        
+
         if display_table
           display_results_table(batch_result)
         end
-        
+
         # Emit batch completion event
         DSPy.log('evaluation.batch_complete', **{
           'evaluation.program_class' => @program.class.name,
@@ -276,16 +316,192 @@ module DSPy
           'evaluation.pass_rate' => batch_result.pass_rate,
           'evaluation.aggregated_metrics' => aggregated_metrics
         })
-        
+
         if display_progress
           puts "Evaluation complete: #{batch_result.passed_examples}/#{batch_result.total_examples} passed (#{(batch_result.pass_rate * 100).round(1)}%)"
         end
-        
+
+        batch_result
+      end.then do |batch_result|
+        @last_batch_result = batch_result
+        run_batch_callbacks(:after, devset: devset, result: batch_result)
         batch_result
       end
     end
 
     private
+
+    # TODO: add Langfuse instrumentation emitting evaluation metrics for dashboards.
+
+    def parallel_execution?
+      (@num_threads || 1) > 1
+    end
+
+    def evaluate_sequential(devset, display_progress:)
+      results = []
+      errors = 0
+      passed_count = 0
+
+      devset.each_with_index do |example, index|
+        break if errors >= @max_errors
+
+        result = safe_call(example)
+        results << result
+
+        if result.passed
+          passed_count += 1
+        else
+          errors += 1
+        end
+
+        if display_progress && (index + 1) % 10 == 0
+          log_progress(index + 1, devset.length, passed_count)
+        end
+      end
+
+      results
+    end
+
+    def evaluate_in_parallel(devset, display_progress:)
+      total = devset.length
+      results = Array.new(total)
+      errors = 0
+      processed = 0
+      passed_count = 0
+
+      executor = Concurrent::ThreadPoolExecutor.new(
+        min_threads: @num_threads,
+        max_threads: @num_threads,
+        max_queue: [total, 1].max,
+        idletime: 60
+      )
+
+      enumerator = devset.each_with_index
+
+      loop do
+        break if errors >= @max_errors
+
+        batch = []
+        @num_threads.times do
+          begin
+            example = enumerator.next
+            batch << { example: example[0], index: example[1] }
+          rescue StopIteration
+            break
+          end
+        end
+
+        break if batch.empty?
+
+        futures = batch.map do |item|
+          Concurrent::Promises.future_on(executor) do
+            [:ok, item[:index], safe_call(item[:example])]
+          rescue => e
+            [:error, item[:index], e]
+          end
+        end
+
+        futures.each do |future|
+          status, index, payload = future.value!
+          example = batch.find { |entry| entry[:index] == index }[:example]
+
+          result = if status == :ok
+            payload
+          else
+            errors += 1
+            puts "Error processing example #{index}: #{payload.message}" if display_progress
+            build_error_result(example, payload)
+          end
+
+          results[index] = result
+          processed += 1
+          if result.passed
+            passed_count += 1
+          else
+            errors += 1 unless status == :error
+          end
+
+          if display_progress && (processed % 10).zero?
+            log_progress(processed, total, passed_count)
+          end
+        end
+      end
+
+      executor.shutdown
+      executor.wait_for_termination
+
+      results.compact
+    end
+
+    def safe_call(example)
+      call(example)
+    rescue => e
+      build_error_result(example, e)
+    end
+
+    def perform_call(example, trace:)
+      # Extract input from example - support both hash and object formats
+      input_values = extract_input_values(example)
+
+      # Run prediction
+      prediction = @program.call(**input_values)
+
+      # Calculate metrics if provided
+      metrics = {}
+      passed = true
+
+      if @metric
+        begin
+          metric_result = @metric.call(example, prediction)
+          if metric_result.is_a?(Hash)
+            metrics = symbolize_keys(metric_result)
+            passed_flag = metrics.key?(:passed) ? metrics[:passed] : metrics['passed']
+            passed = passed_flag.nil? ? true : !!passed_flag
+          else
+            passed = !!metric_result
+            metrics[:passed] = passed
+          end
+        rescue => e
+          passed = false
+          metrics[:error] = e.message
+          metrics[:passed] = false
+          metrics[:score] = @failure_score
+        end
+      end
+
+      metrics[:passed] = passed unless metrics.key?(:passed)
+      metrics[:score] = normalize_score(metrics[:score], passed) if metrics.key?(:score)
+      metrics[:score] ||= passed ? 1.0 : 0.0
+
+      EvaluationResult.new(
+        example: example,
+        prediction: prediction,
+        trace: trace,
+        metrics: metrics,
+        passed: passed
+      )
+    end
+
+    def build_error_result(example, error, trace: nil)
+      metrics = {
+        error: error.message,
+        passed: false,
+        score: @failure_score
+      }
+      metrics[:traceback] = error.backtrace&.first(10) || [] if @provide_traceback
+
+      EvaluationResult.new(
+        example: example,
+        prediction: nil,
+        trace: trace,
+        metrics: metrics,
+        passed: false
+      )
+    end
+
+    def log_progress(processed, total, passed_count)
+      puts "Processed #{processed}/#{total} examples (#{passed_count} passed)"
+    end
 
     # Extract input values from example in various formats
     sig { params(example: T.untyped).returns(T::Hash[Symbol, T.untyped]) }
@@ -376,36 +592,49 @@ module DSPy
     def aggregate_metrics(results)
       return {} if results.empty?
       
-      # Start with basic metrics
+      total = results.length
+      passed = results.count(&:passed)
+
       aggregated = {
-        total_examples: results.length,
-        passed_examples: results.count(&:passed),
+        total_examples: total,
+        passed_examples: passed,
         failed_examples: results.count { |r| !r.passed }
       }
-      
-      # Aggregate numeric metrics
+
+      score_values = results.filter_map do |result|
+        score = result.metrics[:score]
+        score if score.is_a?(Numeric)
+      end
+
+      if score_values.any?
+        aggregated[:score_sum] = score_values.sum
+        aggregated[:score_avg] = score_values.sum.to_f / score_values.length
+        aggregated[:score_min] = score_values.min
+        aggregated[:score_max] = score_values.max
+      else
+        aggregated[:score_avg] = passed.positive? && total.positive? ? passed.to_f / total : 0.0
+      end
+
+      # Aggregate other numeric metrics
       numeric_metrics = {}
       results.each do |result|
         result.metrics.each do |key, value|
-          next if [:error, :traceback, :passed].include?(key)
+          next if [:error, :traceback, :passed, :score].include?(key)
           next unless value.is_a?(Numeric)
-          
+
           numeric_metrics[key] ||= []
           numeric_metrics[key] << value
         end
       end
-      
-      # Calculate averages for numeric metrics
+
       numeric_metrics.each do |key, values|
         aggregated[:"#{key}_avg"] = values.sum.to_f / values.length
         aggregated[:"#{key}_min"] = values.min
         aggregated[:"#{key}_max"] = values.max
       end
-      
-      # Calculate pass rate
-      aggregated[:pass_rate] = aggregated[:total_examples] > 0 ? 
-        aggregated[:passed_examples].to_f / aggregated[:total_examples] : 0.0
-      
+
+      aggregated[:pass_rate] = total.positive? ? passed.to_f / total : 0.0
+
       aggregated
     end
 
@@ -428,6 +657,44 @@ module DSPy
       end
       
       puts "=" * 50
+    end
+
+    def symbolize_keys(hash)
+      hash.each_with_object({}) do |(key, value), memo|
+        memo[key.respond_to?(:to_sym) ? key.to_sym : key] = value
+      end
+    end
+
+    def normalize_score(value, passed)
+      case value
+      when Numeric
+        value.to_f
+      when TrueClass, FalseClass
+        value ? 1.0 : 0.0
+      else
+        passed ? 1.0 : 0.0
+      end
+    end
+
+    def run_example_callbacks(timing, payload)
+      run_callbacks_for(:example, timing, payload)
+    end
+
+    def run_batch_callbacks(timing, payload)
+      run_callbacks_for(:batch, timing, payload)
+    end
+
+    def run_callbacks_for(kind, timing, payload)
+      self.class.send(:callbacks_for, kind, timing).each do |callback|
+        case callback
+        when Symbol
+          method(callback).arity.zero? ? send(callback) : send(callback, payload)
+        when Proc
+          instance_exec(payload, &callback)
+        else
+          raise ArgumentError, "Unsupported callback type: #{callback.class}"
+        end
+      end
     end
   end
 
