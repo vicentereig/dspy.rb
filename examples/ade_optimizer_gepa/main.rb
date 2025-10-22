@@ -13,17 +13,6 @@ require 'gepa/logging'
 
 require 'dspy'
 require 'sorbet-runtime'
-
-EXAMPLE_ROOT = File.expand_path(__dir__)
-DATA_DIR = File.join(EXAMPLE_ROOT, 'data')
-RESULTS_DIR = File.join(EXAMPLE_ROOT, 'results')
-DATASET_CACHE_DIR = File.join(DATA_DIR, 'ade_parquet')
-DSPY_DATASET_ID = 'ade-benchmark-corpus/ade_corpus_v2'
-
-FileUtils.mkdir_p(DATA_DIR)
-FileUtils.mkdir_p(RESULTS_DIR)
-FileUtils.mkdir_p(DATASET_CACHE_DIR)
-
 module ADEExampleGEPA
   class ADETextClassifier < DSPy::Signature
     description 'Determine if a clinical sentence describes an adverse drug event (ADE)'
@@ -134,243 +123,336 @@ module ADEExampleGEPA
   end
 end
 
-options = {
-  limit: 30,
-  max_metric_calls: 600,
-  minibatch_size: 6,
-  seed: 42,
-  track_stats_path: nil
-}
+module ADEGEPAOptimizationDemo
+  EXAMPLE_ROOT = File.expand_path(__dir__)
+  DATA_DIR = File.join(EXAMPLE_ROOT, 'data')
+  RESULTS_DIR = File.join(EXAMPLE_ROOT, 'results')
+  DATASET_CACHE_DIR = File.join(DATA_DIR, 'ade_parquet')
+  DSPY_DATASET_ID = 'ade-benchmark-corpus/ade_corpus_v2'
 
-OptionParser.new do |parser|
-  parser.banner = 'Usage: bundle exec ruby examples/ade_optimizer_gepa/main.rb [options]'
+  Options = Struct.new(
+    :limit,
+    :max_metric_calls,
+    :minibatch_size,
+    :seed,
+    :track_stats_path,
+    keyword_init: true
+  )
 
-  parser.on('-l', '--limit N', Integer, 'Number of ADE examples to download (default: 30)') do |limit|
-    options[:limit] = limit
+  module_function
+
+  def run(argv)
+    FileUtils.mkdir_p(DATA_DIR)
+    FileUtils.mkdir_p(RESULTS_DIR)
+    FileUtils.mkdir_p(DATASET_CACHE_DIR)
+
+    options = parse_options(argv)
+    ensure_openai_key!
+
+    configure_dspy
+
+    puts '🏥 ADE GEPA Optimization Demo'
+    puts '============================='
+    print_run_configuration(options)
+
+    train_examples, val_examples, test_examples = load_dataset(options.limit, options.seed)
+
+    tracker = build_tracker(options.track_stats_path)
+    ensure_metric_budget!(options, val_examples)
+
+    baseline_program = DSPy::Predict.new(ADEExampleGEPA::ADETextClassifier)
+    baseline_metrics = ADEExampleGEPA.evaluate(baseline_program, test_examples)
+    report_baseline(baseline_program, baseline_metrics)
+
+    metric = build_metric
+    feedback_map = build_feedback_map
+    reflection_lm = DSPy::ReflectionLM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+
+    teleprompter = DSPy::Teleprompt::GEPA.new(
+      metric: metric,
+      reflection_lm: reflection_lm,
+      feedback_map: feedback_map,
+      experiment_tracker: tracker,
+      config: {
+        max_metric_calls: options.max_metric_calls,
+        minibatch_size: options.minibatch_size,
+        skip_perfect_score: false
+      }
+    )
+
+    puts "\n🚀 Running GEPA optimization (max metric calls: #{options.max_metric_calls})..."
+    result = teleprompter.compile(baseline_program, trainset: train_examples, valset: val_examples)
+    optimized_program = result.optimized_program
+
+    optimized_metrics = ADEExampleGEPA.evaluate(optimized_program, test_examples)
+    report_optimized(result, optimized_metrics, baseline_metrics)
+
+    summary_path, csv_path = persist_results(
+      options,
+      baseline_metrics,
+      optimized_metrics,
+      result
+    )
+
+    print_result_paths(summary_path, csv_path, options.track_stats_path)
+    print_instruction_snippet(optimized_program)
+
+    puts "\nDone!"
   end
 
-  parser.on('--max-metric-calls N', Integer, 'GEPA max metric calls (default: 600)') do |calls|
-    options[:max_metric_calls] = calls
+  def parse_options(argv)
+    options = Options.new(
+      limit: 30,
+      max_metric_calls: 600,
+      minibatch_size: 6,
+      seed: 42,
+      track_stats_path: nil
+    )
+
+    OptionParser.new do |parser|
+      parser.banner = 'Usage: bundle exec ruby examples/ade_optimizer_gepa/main.rb [options]'
+
+      parser.on('-l', '--limit N', Integer, 'Number of ADE examples to download (default: 30)') do |limit|
+        options.limit = limit
+      end
+
+      parser.on('--max-metric-calls N', Integer, 'GEPA max metric calls (default: 600)') do |calls|
+        options.max_metric_calls = calls
+      end
+
+      parser.on('--minibatch-size N', Integer, 'GEPA minibatch size (default: 6)') do |batch|
+        options.minibatch_size = batch
+      end
+
+      parser.on('--seed N', Integer, 'Random seed for dataset splits (default: 42)') do |seed|
+        options.seed = seed
+      end
+
+      parser.on('--track-stats [PATH]', 'Persist GEPA events to PATH (default: results/gepa_events.jsonl)') do |path|
+        options.track_stats_path = path || File.join(RESULTS_DIR, 'gepa_events.jsonl')
+      end
+
+      parser.on('-h', '--help', 'Show this help message') do
+        puts parser
+        exit
+      end
+    end.parse!(argv)
+
+    options
   end
 
-  parser.on('--minibatch-size N', Integer, 'GEPA minibatch size (default: 6)') do |batch|
-    options[:minibatch_size] = batch
+  def ensure_openai_key!
+    return if ENV['OPENAI_API_KEY']
+
+    warn '⚠️  Please set OPENAI_API_KEY in your environment before running this example.'
+    exit 1
   end
 
-  parser.on('--seed N', Integer, 'Random seed for dataset splits (default: 42)') do |seed|
-    options[:seed] = seed
-  end
-
-  parser.on('--track-stats [PATH]', 'Persist GEPA events to PATH (default: results/gepa_events.jsonl)') do |path|
-    options[:track_stats_path] = path || File.join(RESULTS_DIR, 'gepa_events.jsonl')
-  end
-
-  parser.on('-h', '--help', 'Show this help message') do
-    puts parser
-    exit
-  end
-end.parse!
-
-unless ENV['OPENAI_API_KEY']
-  warn '⚠️  Please set OPENAI_API_KEY in your environment before running this example.'
-  exit 1
-end
-
-DSPy.configure do |config|
-  config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-  config.logger = Dry.Logger(:dspy, formatter: :string) do |logger|
-    logger.add_backend(stream: File.join(EXAMPLE_ROOT, '../../log/dspy_ade_gepa.log'))
-  end
-end
-
-puts '🏥 ADE GEPA Optimization Demo'
-puts '============================='
-puts "Limit           : #{options[:limit]}"
-puts "Max metric calls: #{options[:max_metric_calls]}"
-puts "Minibatch size  : #{options[:minibatch_size]}"
-puts "Random Seed     : #{options[:seed]}"
-
-dataset = DSPy::Datasets.fetch(DSPY_DATASET_ID, split: 'train', cache_dir: DATASET_CACHE_DIR)
-all_rows = dataset.rows  # Load all rows (23,516 total)
-
-if all_rows.empty?
-  warn '❌ Failed to download ADE dataset rows. Please check your network connection.'
-  exit 1
-end
-
-# Shuffle before limiting to ensure class balance
-# (Dataset is sorted: first ~6.8k are positive, last ~16.7k are negative)
-shuffled_rows = all_rows.shuffle(random: Random.new(options[:seed]))
-rows = shuffled_rows.first(options[:limit])
-
-puts "\n📦 Downloaded #{all_rows.size} total ADE rows from Hugging Face parquet (split: #{dataset.split})"
-puts "   Using #{rows.size} shuffled examples for optimization"
-
-examples = ADEExampleGEPA.build_examples(rows)
-puts "🧪 Prepared #{examples.size} DSPy examples"
-
-# Validate class balance
-positive_count = examples.count { |ex| ex.expected_values[:label].serialize == "1" }
-negative_count = examples.size - positive_count
-positive_pct = (positive_count.to_f / examples.size * 100).round(2)
-
-if positive_count == 0 || negative_count == 0
-  warn "❌ Dataset is imbalanced: #{positive_count} positive, #{negative_count} negative"
-  warn "   Expected ~29% positive, ~71% negative. Check dataset loading."
-  exit 1
-end
-
-puts "   • Positive (ADE): #{positive_count} (#{positive_pct}%)"
-puts "   • Negative (Not ADE): #{negative_count} (#{(100 - positive_pct).round(2)}%)"
-
-train_examples, val_examples, test_examples = ADEExampleGEPA.split_examples(examples, train_ratio: 0.6, val_ratio: 0.2, seed: options[:seed])
-
-puts '📊 Dataset split:'
-puts "   • Train: #{train_examples.size}"
-puts "   • Val  : #{val_examples.size}"
-puts "   • Test : #{test_examples.size}"
-
-experiment_tracker = nil
-if options[:track_stats_path]
-  FileUtils.mkdir_p(File.dirname(options[:track_stats_path]))
-  File.write(options[:track_stats_path], '')
-
-  experiment_tracker = GEPA::Logging::ExperimentTracker.new
-  experiment_tracker.with_subscriber do |event|
-    File.open(options[:track_stats_path], 'a') do |io|
-      io.puts(JSON.generate(event))
+  def configure_dspy
+    DSPy.configure do |config|
+      config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      config.logger = Dry.Logger(:dspy, formatter: :string) do |logger|
+        logger.add_backend(stream: File.join(EXAMPLE_ROOT, '../../log/dspy_ade_gepa.log'))
+      end
     end
   end
 
-  puts "🛰  Tracking GEPA events at #{options[:track_stats_path]}"
-end
-
-min_required_calls = val_examples.size + (options[:minibatch_size] * 2)
-if options[:max_metric_calls] < min_required_calls
-  suggested_calls = [min_required_calls, val_examples.size * 2].max
-  warn "⚠️  Increasing max metric calls from #{options[:max_metric_calls]} to #{suggested_calls} to cover validation evaluation."
-  options[:max_metric_calls] = suggested_calls
-end
-
-baseline_program = DSPy::Predict.new(ADEExampleGEPA::ADETextClassifier)
-baseline_instruction = baseline_program.prompt.instruction rescue nil
-snippet_for = lambda do |text|
-  text.to_s.lines.map(&:strip).find { |line| !line.empty? }
-end
-baseline_metrics = ADEExampleGEPA.evaluate(baseline_program, test_examples)
-
-puts "\n📈 Baseline performance (unoptimized prompt):"
-puts "   • Accuracy : #{(baseline_metrics.accuracy * 100).round(2)}%"
-puts "   • Precision: #{(baseline_metrics.precision * 100).round(2)}%"
-puts "   • Recall   : #{(baseline_metrics.recall * 100).round(2)}%"
-puts "   • F1 Score : #{(baseline_metrics.f1 * 100).round(2)}%"
-if (line = snippet_for.call(baseline_instruction))
-  puts "\n📝 Baseline instruction snippet:"
-  puts line
-end
-
-# Metric returns DSPy::Prediction so GEPA sees both score and textual feedback.
-metric = lambda do |example, prediction|
-  expected = example.expected_values[:label]
-  predicted = ADEExampleGEPA.label_from_prediction(prediction)
-  score = predicted == expected ? 1.0 : 0.0
-  snippet = ADEExampleGEPA.snippet(example.input_values[:text])
-  feedback = if predicted == expected
-    "Correct (#{expected.serialize}) for: \"#{snippet}\""
-  else
-    "Misclassified (expected #{expected.serialize}, predicted #{predicted.serialize}) for: \"#{snippet}\""
+  def print_run_configuration(options)
+    puts "Limit           : #{options.limit}"
+    puts "Max metric calls: #{options.max_metric_calls}"
+    puts "Minibatch size  : #{options.minibatch_size}"
+    puts "Random Seed     : #{options.seed}"
   end
-  DSPy::Prediction.new(score: score, feedback: feedback)
-end
-# Optional predictor-level feedback. Leave empty to rely solely on the metric above.
-feedback_map = {
-  'self' => lambda do |predictor_output:, predictor_inputs:, module_inputs:, module_outputs:, captured_trace:|
-    expected = module_inputs.expected_values[:label]
-    predicted = ADEExampleGEPA.label_from_prediction(predictor_output)
-    score = predicted == expected ? 1.0 : 0.0
-    snippet = ADEExampleGEPA.snippet(predictor_inputs[:text], length: 80)
-    DSPy::Prediction.new(
-      score: score,
-      feedback: "Classifier saw \"#{snippet}\" → #{predicted.serialize} (expected #{expected.serialize})"
+
+  def load_dataset(limit, seed)
+    dataset = DSPy::Datasets.fetch(DSPY_DATASET_ID, split: 'train', cache_dir: DATASET_CACHE_DIR)
+    all_rows = dataset.rows
+
+    if all_rows.empty?
+      warn '❌ Failed to download ADE dataset rows. Please check your network connection.'
+      exit 1
+    end
+
+    shuffled_rows = all_rows.shuffle(random: Random.new(seed))
+    rows = shuffled_rows.first(limit)
+
+    puts "\n📦 Downloaded #{all_rows.size} total ADE rows from Hugging Face parquet (split: #{dataset.split})"
+    puts "   Using #{rows.size} shuffled examples for optimization"
+
+    examples = ADEExampleGEPA.build_examples(rows)
+    puts "🧪 Prepared #{examples.size} DSPy examples"
+
+    validate_balance!(examples)
+
+    train_examples, val_examples, test_examples = ADEExampleGEPA.split_examples(
+      examples,
+      train_ratio: 0.6,
+      val_ratio: 0.2,
+      seed: seed
     )
+
+    puts '📊 Dataset split:'
+    puts "   • Train: #{train_examples.size}"
+    puts "   • Val  : #{val_examples.size}"
+    puts "   • Test : #{test_examples.size}"
+
+    [train_examples, val_examples, test_examples]
   end
-}
 
-reflection_lm = DSPy::ReflectionLM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+  def validate_balance!(examples)
+    positive_count = examples.count { |ex| ex.expected_values[:label].serialize == '1' }
+    negative_count = examples.size - positive_count
+    positive_pct = (positive_count.to_f / examples.size * 100).round(2)
 
-teleprompter = DSPy::Teleprompt::GEPA.new(
-  metric: metric,
-  reflection_lm: reflection_lm,
-  feedback_map: feedback_map,
-  experiment_tracker: experiment_tracker,
-  config: {
-    max_metric_calls: options[:max_metric_calls],
-    minibatch_size: options[:minibatch_size],
-    skip_perfect_score: false
-  }
-)
+    if positive_count.zero? || negative_count.zero?
+      warn "❌ Dataset is imbalanced: #{positive_count} positive, #{negative_count} negative"
+      warn '   Expected ~29% positive, ~71% negative. Check dataset loading.'
+      exit 1
+    end
 
-puts "\n🚀 Running GEPA optimization (max metric calls: #{options[:max_metric_calls]})..."
-result = teleprompter.compile(baseline_program, trainset: train_examples, valset: val_examples)
+    puts "   • Positive (ADE): #{positive_count} (#{positive_pct}%)"
+    puts "   • Negative (Not ADE): #{negative_count} (#{(100 - positive_pct).round(2)}%)"
+  end
 
-optimized_program = result.optimized_program
-optimized_metrics = ADEExampleGEPA.evaluate(optimized_program, test_examples)
+  def build_tracker(path)
+    return unless path
 
-puts "\n🏁 Optimized program performance:"
-puts "   • Accuracy : #{(optimized_metrics.accuracy * 100).round(2)}%"
-puts "   • Precision: #{(optimized_metrics.precision * 100).round(2)}%"
-puts "   • Recall   : #{(optimized_metrics.recall * 100).round(2)}%"
-puts "   • F1 Score : #{(optimized_metrics.f1 * 100).round(2)}%"
+    FileUtils.mkdir_p(File.dirname(path))
+    File.write(path, '')
 
-accuracy_improvement = (optimized_metrics.accuracy - baseline_metrics.accuracy) * 100
-puts "\n📣 Accuracy improvement: #{accuracy_improvement.round(2)} percentage points"
-puts "   • Candidates explored: #{result.metadata[:candidates]}"
-puts "   • Best score (val): #{result.best_score_value.round(4)}"
+    experiment_tracker = GEPA::Logging::ExperimentTracker.new
+    experiment_tracker.with_subscriber do |event|
+      File.open(path, 'a') { |io| io.puts(JSON.generate(event)) }
+    end
+    puts "🛰  Tracking GEPA events at #{path}"
+    experiment_tracker
+  end
 
-summary = {
-  timestamp: Time.now.utc.iso8601,
-  limit: options[:limit],
-  max_metric_calls: options[:max_metric_calls],
-  minibatch_size: options[:minibatch_size],
-  baseline: {
-    accuracy: baseline_metrics.accuracy,
-    precision: baseline_metrics.precision,
-    recall: baseline_metrics.recall,
-    f1: baseline_metrics.f1
-  },
-  optimized: {
-    accuracy: optimized_metrics.accuracy,
-    precision: optimized_metrics.precision,
-    recall: optimized_metrics.recall,
-    f1: optimized_metrics.f1
-  },
-  candidates: result.metadata[:candidates],
-  best_score: result.best_score_value
-}
+  def ensure_metric_budget!(options, val_examples)
+    min_required_calls = val_examples.size + (options.minibatch_size * 2)
+    return unless options.max_metric_calls < min_required_calls
 
-summary_path = File.join(RESULTS_DIR, 'gepa_summary.json')
-File.write(summary_path, JSON.pretty_generate(summary))
+    suggested_calls = [min_required_calls, val_examples.size * 2].max
+    warn "⚠️  Increasing max metric calls from #{options.max_metric_calls} to #{suggested_calls} to cover validation evaluation."
+    options.max_metric_calls = suggested_calls
+  end
 
-csv_path = File.join(RESULTS_DIR, 'gepa_metrics.csv')
-CSV.open(csv_path, 'w') do |csv|
-  csv << %w[metric baseline optimized]
-  csv << ['accuracy', baseline_metrics.accuracy, optimized_metrics.accuracy]
-  csv << ['precision', baseline_metrics.precision, optimized_metrics.precision]
-  csv << ['recall', baseline_metrics.recall, optimized_metrics.recall]
-  csv << ['f1', baseline_metrics.f1, optimized_metrics.f1]
+  def report_baseline(program, metrics)
+    baseline_instruction = program.prompt.instruction rescue nil
+    snippet = first_instruction_line(baseline_instruction)
+
+    puts "\n🔎 Baseline evaluation"
+    puts "   • Accuracy : #{(metrics.accuracy * 100).round(2)}%"
+    puts "   • Precision: #{(metrics.precision * 100).round(2)}%"
+    puts "   • Recall   : #{(metrics.recall * 100).round(2)}%"
+    puts "   • F1 Score : #{(metrics.f1 * 100).round(2)}%"
+    if snippet
+      puts "\n📝 Baseline instruction snippet:"
+      puts snippet
+    end
+  end
+
+  def build_metric
+    lambda do |example, prediction|
+      expected = example.expected_values[:label]
+      predicted = ADEExampleGEPA.label_from_prediction(prediction)
+      score = predicted == expected ? 1.0 : 0.0
+      snippet = ADEExampleGEPA.snippet(example.input_values[:text])
+
+      DSPy::Prediction.new(
+        score: score,
+        feedback: if predicted == expected
+          "Correct (#{expected.serialize}) for: \"#{snippet}\""
+        else
+          "Misclassified (expected #{expected.serialize}, predicted #{predicted.serialize}) for: \"#{snippet}\""
+        end
+      )
+    end
+  end
+
+  def build_feedback_map
+    {
+      'self' => lambda do |predictor_output:, predictor_inputs:, module_inputs:, **_|
+        expected = module_inputs.expected_values[:label]
+        predicted = ADEExampleGEPA.label_from_prediction(predictor_output)
+        score = predicted == expected ? 1.0 : 0.0
+        snippet = ADEExampleGEPA.snippet(predictor_inputs[:text], length: 80)
+        DSPy::Prediction.new(
+          score: score,
+          feedback: "Classifier saw \"#{snippet}\" → #{predicted.serialize} (expected #{expected.serialize})"
+        )
+      end
+    }
+  end
+
+  def report_optimized(result, optimized_metrics, baseline_metrics)
+    accuracy_improvement = (optimized_metrics.accuracy - baseline_metrics.accuracy) * 100
+
+    puts "\n🏁 Optimized program performance:"
+    puts "   • Accuracy : #{(optimized_metrics.accuracy * 100).round(2)}%"
+    puts "   • Precision: #{(optimized_metrics.precision * 100).round(2)}%"
+    puts "   • Recall   : #{(optimized_metrics.recall * 100).round(2)}%"
+    puts "   • F1 Score : #{(optimized_metrics.f1 * 100).round(2)}%"
+
+    puts "\n📣 Accuracy improvement: #{accuracy_improvement.round(2)} percentage points"
+    puts "   • Candidates explored: #{result.metadata[:candidates]}"
+    puts "   • Best score (val)   : #{result.best_score_value.round(4)}"
+  end
+
+  def persist_results(options, baseline_metrics, optimized_metrics, result)
+    summary = {
+      timestamp: Time.now.utc.iso8601,
+      limit: options.limit,
+      max_metric_calls: options.max_metric_calls,
+      minibatch_size: options.minibatch_size,
+      baseline: {
+        accuracy: baseline_metrics.accuracy,
+        precision: baseline_metrics.precision,
+        recall: baseline_metrics.recall,
+        f1: baseline_metrics.f1
+      },
+      optimized: {
+        accuracy: optimized_metrics.accuracy,
+        precision: optimized_metrics.precision,
+        recall: optimized_metrics.recall,
+        f1: optimized_metrics.f1
+      },
+      candidates: result.metadata[:candidates],
+      best_score: result.best_score_value
+    }
+
+    summary_path = File.join(RESULTS_DIR, 'gepa_summary.json')
+    File.write(summary_path, JSON.pretty_generate(summary))
+
+    csv_path = File.join(RESULTS_DIR, 'gepa_metrics.csv')
+    CSV.open(csv_path, 'w') do |csv|
+      csv << %w[metric baseline optimized]
+      csv << ['accuracy', baseline_metrics.accuracy, optimized_metrics.accuracy]
+      csv << ['precision', baseline_metrics.precision, optimized_metrics.precision]
+      csv << ['recall', baseline_metrics.recall, optimized_metrics.recall]
+      csv << ['f1', baseline_metrics.f1, optimized_metrics.f1]
+    end
+
+    [summary_path, csv_path]
+  end
+
+  def print_result_paths(summary_path, csv_path, stats_path)
+    puts "\n📂 Results saved to:"
+    puts "   • #{summary_path}"
+    puts "   • #{csv_path}"
+    puts "   • #{stats_path}" if stats_path
+  end
+
+  def print_instruction_snippet(program)
+    instruction = program.prompt.instruction rescue nil
+    snippet = first_instruction_line(instruction)
+    puts "\n✨ Sample optimized instruction snippet:"
+    puts snippet || '(no instruction recorded)'
+  end
+
+  def first_instruction_line(text)
+    text.to_s.lines.map(&:strip).find { |line| !line.empty? }
+  end
 end
 
-puts "\n📂 Results saved to:"
-puts "   • #{summary_path}"
-puts "   • #{csv_path}"
-puts "   • #{options[:track_stats_path]}" if options[:track_stats_path]
-
-puts "\n✨ Sample optimized instruction snippet:"
-instruction = optimized_program.prompt.instruction rescue nil
-if (line = snippet_for.call(instruction))
-  puts line
-else
-  puts '(no instruction recorded)'
-end
-
-puts "\nDone!"
+ADEGEPAOptimizationDemo.run(ARGV)
