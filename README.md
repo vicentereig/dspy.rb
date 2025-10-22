@@ -5,26 +5,57 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/vicentereig/dspy.rb/ruby.yml?branch=main&label=build)](https://github.com/vicentereig/dspy.rb/actions/workflows/ruby.yml)
 [![Documentation](https://img.shields.io/badge/docs-vicentereig.github.io%2Fdspy.rb-blue)](https://vicentereig.github.io/dspy.rb/)
 
+> [!NOTE]
+> The core Prompt Engineering Framework is production-ready with
+> comprehensive documentation. I am focusing now on educational content on systematic Prompt Optimization and Context Engineering.
+> Your feedback is invaluable. if you encounter issues, please open an [issue](https://github.com/vicentereig/dspy.rb/issues). If you have suggestions, open a [new thread](https://github.com/vicentereig/dspy.rb/discussions).  
+> If you want to contribute, feel free to reach out to me to coordinate efforts: hey at vicente.services
+>
+
+
 **Build reliable LLM applications in idiomatic Ruby using composable, type-safe modules.**
 
-The Ruby framework for programming with large language models. DSPy.rb brings structured LLM programming to Ruby developers. Instead of wrestling with prompt strings and parsing responses, you define typed signatures using idiomatic Ruby to compose and decompose AI Worklows and AI Agents.
+The Ruby framework for programming with large language models. DSPy.rb brings structured LLM programming to Ruby developers, programmatic Prompt Engineering and Context Engineering. 
+Instead of wrestling with prompt strings and parsing responses, you define typed signatures using idiomatic Ruby to compose and decompose AI Worklows and AI Agents.
 
 **Prompts are the just Functions.** Traditional prompting is like writing code with string concatenation: it works until it doesn't. DSPy.rb brings you 
 the programming approach pioneered by [dspy.ai](https://dspy.ai/): instead of crafting fragile prompts, you define modular 
 signatures and let the framework handle the messy details.
 
 DSPy.rb is an idiomatic Ruby surgical port of Stanford's [DSPy framework](https://github.com/stanfordnlp/dspy). While implementing 
-the core concepts of signatures, predictors, and optimization from the original Python library, DSPy.rb embraces Ruby 
-conventions and adds Ruby-specific innovations like CodeAct agents and enhanced production instrumentation.
+the core concepts of signatures, predictors, and the main optimization algorithms from the original Python library, DSPy.rb embraces Ruby 
+conventions and adds Ruby-specific innovations like Sorbet-base Typed system, ReAct loops, and production-ready integrations like non-blocking Open Telemetry Instrumentation.
 
-The result? LLM applications that actually scale and don't break when you sneeze.
+**What you get?** Ruby LLM applications that actually scale and don't break when you sneeze.
 
 ## Your First DSPy Program
+### Installation
+
+Add to your Gemfile:
 
 ```ruby
-# Define a signature for sentiment classification
+gem 'dspy'
+```
+
+and
+
+```bash
+bundle install
+```
+### Your First Reliable Predictor
+
+```ruby
+
+# Configure DSPy globablly to use your fave LLM - you can override this on an instance levle. 
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini',
+                      api_key: ENV['OPENAI_API_KEY'],
+                      structured_outputs: true)  # Enable OpenAI's native JSON mode
+end
+
+# Define a signature for sentiment classification - instead of writing a full prompt!
 class Classify < DSPy::Signature
-  description "Classify sentiment of a given sentence."
+  description "Classify sentiment of a given sentence." # sets the goal of the underlying prompt
 
   class Sentiment < T::Enum
     enums do
@@ -33,26 +64,22 @@ class Classify < DSPy::Signature
       Neutral = new('neutral')
     end
   end
-
+  
+  # Structured Inputs: makes sure you are sending only valid prompt inputs to your model
   input do
-    const :sentence, String
+    const :sentence, String, description: 'The sentence to analyze'
   end
 
+  # Structured Outputs: your predictor will validate the output of the model too.
   output do
-    const :sentiment, Sentiment
-    const :confidence, Float
+    const :sentiment, Sentiment, description: 'The sentiment of the sentence'
+    const :confidence, Float, description: 'A number between 0.0 and 1.0'
   end
 end
 
-# Configure DSPy with your LLM
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', 
-                      api_key: ENV['OPENAI_API_KEY'],
-                      structured_outputs: true)  # Enable OpenAI's native JSON mode
-end
-
-# Create the predictor and run inference
+# Wire it to the simplest prompting technique - a Predictn.
 classify = DSPy::Predict.new(Classify)
+# it may raise an error if you mess the inputs or your LLM messes the outputs.
 result = classify.call(sentence: "This book was super fun to read!")
 
 puts result.sentiment    # => #<Sentiment::Positive>  
@@ -99,12 +126,22 @@ end
 
 ## What You Get
 
+**Developer Experience:**
+- LLM provider support using official Ruby clients:
+  - [OpenAI Ruby](https://github.com/openai/openai-ruby) with vision model support
+  - [Anthropic Ruby SDK](https://github.com/anthropics/anthropic-sdk-ruby) with multimodal capabilities
+  - [Google Gemini API](https://ai.google.dev/) with native structured outputs
+  - [Ollama](https://ollama.com/) via OpenAI compatibility layer for local models
+- **Multimodal Support** - Complete image analysis with DSPy::Image, type-safe bounding boxes, vision-capable models
+- Runtime type checking with [Sorbet](https://sorbet.org/) including T::Enum and union types
+- Type-safe tool definitions for ReAct agents
+- Comprehensive instrumentation and observability
+
 **Core Building Blocks:**
 - **Signatures** - Define input/output schemas using Sorbet types with T::Enum and union type support
 - **Predict** - LLM completion with structured data extraction and multimodal support
 - **Chain of Thought** - Step-by-step reasoning for complex problems with automatic prompt optimization
 - **ReAct** - Tool-using agents with type-safe tool definitions and error recovery
-- **CodeAct** - Dynamic code execution agents for programming tasks
 - **Module Composition** - Combine multiple LLM calls into production-ready workflows
 
 **Optimization & Evaluation:**
@@ -122,24 +159,40 @@ end
 - **File-based Storage** - Optimization result persistence with versioning
 - **Structured Logging** - JSON and key=value formats with span tracking
 
-**Developer Experience:**
-- LLM provider support using official Ruby clients:
-  - [OpenAI Ruby](https://github.com/openai/openai-ruby) with vision model support
-  - [Anthropic Ruby SDK](https://github.com/anthropics/anthropic-sdk-ruby) with multimodal capabilities
-  - [Google Gemini API](https://ai.google.dev/) with native structured outputs
-  - [Ollama](https://ollama.com/) via OpenAI compatibility layer for local models
-- **Multimodal Support** - Complete image analysis with DSPy::Image, type-safe bounding boxes, vision-capable models
-- Runtime type checking with [Sorbet](https://sorbet.org/) including T::Enum and union types
-- Type-safe tool definitions for ReAct agents
-- Comprehensive instrumentation and observability
+## Recent Achievements
 
-## Development Status
+DSPy.rb has rapidly evolved from experimental to production-ready:
 
-DSPy.rb is actively developed and approaching stability. The core framework is production-ready with 
-comprehensive documentation, but I'm battle-testing features through the 0.x series before committing 
-to a stable v1.0 API. 
+### Foundation
+- ✅ **JSON Parsing Reliability** - Native OpenAI structured outputs with adaptive retry logic and schema-aware fallbacks
+- ✅ **Type-Safe Strategy Configuration** - Provider-optimized strategy selection and enum-backed optimizer presets
+- ✅ **Core Module System** - Predict, ChainOfThought, ReAct, CodeAct with type safety
+- ✅ **Production Observability** - OpenTelemetry, New Relic, and Langfuse integration
+- ✅ **Advanced Optimization** - MIPROv2 with Bayesian optimization, Gaussian Processes, and multi-mode search
 
-Real-world usage feedback is invaluable - if you encounter issues or have suggestions, please open a GitHub issue!
+### Recent Advances
+- ✅ **MIPROv2 ADE Integrity (v0.29.1)** - Stratified train/val/test splits, honest precision accounting, and enum-driven `--auto` presets with integration coverage
+- ✅ **Instruction Deduplication (v0.29.1)** - Candidate generation now filters repeated programs so optimization logs highlight unique strategies
+- ✅ **GEPA Teleprompter (v0.29.0)** - Genetic-Pareto reflective prompt evolution with merge proposer scheduling, reflective mutation, and ADE demo parity
+- ✅ **Optimizer Utilities Parity (v0.29.0)** - Bootstrap strategies, dataset summaries, and Layer 3 utilities unlock multi-predictor programs on Ruby
+- ✅ **Observability Hardening (v0.29.0)** - OTLP exporter runs on a single-thread executor preventing frozen SSL contexts without blocking spans
+- ✅ **Documentation Refresh (v0.29.x)** - New GEPA guide plus ADE optimization docs covering presets, stratified splits, and error-handling defaults
+
+**Current Focus Areas:**
+
+### Production Readiness
+- 🚧 **Production Patterns** - Real-world usage validation and performance optimization
+- 🚧 **Ruby Ecosystem Integration** - Rails integration, Sidekiq compatibility, deployment patterns
+
+### Community & Adoption
+- 🚧 **Community Examples** - Real-world applications and case studies
+- 🚧 **Contributor Experience** - Making it easier to contribute and extend
+- 🚧 **Performance Benchmarks** - Comparative analysis vs other frameworks
+
+**v1.0 Philosophy:**
+v1.0 will be released after extensive production battle-testing, not after checking off features.
+The API is already stable - v1.0 represents confidence in production reliability backed by real-world validation.
+
 
 ## Documentation
 
@@ -179,69 +232,5 @@ For LLMs and AI assistants working with DSPy.rb:
 - **[RAG Patterns](docs/src/advanced/rag.md)** - Manual RAG implementation with external services
 - **[Custom Metrics](docs/src/advanced/custom-metrics.md)** - Proc-based evaluation logic
 
-## Quick Start
-
-### Installation
-
-Add to your Gemfile:
-
-```ruby
-gem 'dspy'
-```
-
-Then run:
-
-```bash
-bundle install
-```
-
-## Recent Achievements
-
-DSPy.rb has rapidly evolved from experimental to production-ready:
-
-### Foundation
-- ✅ **JSON Parsing Reliability** - Native OpenAI structured outputs with adaptive retry logic and schema-aware fallbacks
-- ✅ **Type-Safe Strategy Configuration** - Provider-optimized strategy selection and enum-backed optimizer presets
-- ✅ **Core Module System** - Predict, ChainOfThought, ReAct, CodeAct with type safety
-- ✅ **Production Observability** - OpenTelemetry, New Relic, and Langfuse integration
-- ✅ **Advanced Optimization** - MIPROv2 with Bayesian optimization, Gaussian Processes, and multi-mode search
-
-### Recent Advances  
-- ✅ **MIPROv2 ADE Integrity (v0.29.1)** - Stratified train/val/test splits, honest precision accounting, and enum-driven `--auto` presets with integration coverage
-- ✅ **Instruction Deduplication (v0.29.1)** - Candidate generation now filters repeated programs so optimization logs highlight unique strategies
-- ✅ **GEPA Teleprompter (v0.29.0)** - Genetic-Pareto reflective prompt evolution with merge proposer scheduling, reflective mutation, and ADE demo parity
-- ✅ **Optimizer Utilities Parity (v0.29.0)** - Bootstrap strategies, dataset summaries, and Layer 3 utilities unlock multi-predictor programs on Ruby
-- ✅ **Observability Hardening (v0.29.0)** - OTLP exporter runs on a single-thread executor preventing frozen SSL contexts without blocking spans
-- ✅ **Documentation Refresh (v0.29.x)** - New GEPA guide plus ADE optimization docs covering presets, stratified splits, and error-handling defaults
-
-## Roadmap - Production Battle-Testing Toward v1.0
-
-DSPy.rb has transitioned from **feature building** to **production validation**. The core framework is
-feature-complete and stable - now I'm focusing on real-world usage patterns, performance optimization, 
-and ecosystem integration.
-
-**Current Focus Areas:**
-
-### Production Readiness
-- 🚧 **Production Patterns** - Real-world usage validation and performance optimization
-- 🚧 **Ruby Ecosystem Integration** - Rails integration, Sidekiq compatibility, deployment patterns
-- 🚧 **Scale Testing** - High-volume usage, memory management, connection pooling
-- 🚧 **Error Recovery** - Robust failure handling patterns for production environments
-
-### Ecosystem Expansion  
-- 🚧 **Model Context Protocol (MCP)** - Integration with MCP ecosystem
-- 🚧 **Additional Provider Support** - Azure OpenAI, local models beyond Ollama
-- 🚧 **Tool Ecosystem** - Expanded tool integrations for ReAct agents
-
-### Community & Adoption
-- 🚧 **Community Examples** - Real-world applications and case studies
-- 🚧 **Contributor Experience** - Making it easier to contribute and extend
-- 🚧 **Performance Benchmarks** - Comparative analysis vs other frameworks
-
-**v1.0 Philosophy:** 
-v1.0 will be released after extensive production battle-testing, not after checking off features. 
-The API is already stable - v1.0 represents confidence in production reliability backed by real-world validation.
-
 ## License
-
 This project is licensed under the MIT License.
