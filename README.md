@@ -9,8 +9,10 @@
 > The core Prompt Engineering Framework is production-ready with
 > comprehensive documentation. I am focusing now on educational content on systematic Prompt Optimization and Context Engineering.
 > Your feedback is invaluable. if you encounter issues, please open an [issue](https://github.com/vicentereig/dspy.rb/issues). If you have suggestions, open a [new thread](https://github.com/vicentereig/dspy.rb/discussions).  
+> 
 > If you want to contribute, feel free to reach out to me to coordinate efforts: hey at vicente.services
 >
+> And, yes, this is 100% a legit project. :) 
 
 
 **Build reliable LLM applications in idiomatic Ruby using composable, type-safe modules.**
