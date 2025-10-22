@@ -41,11 +41,28 @@ def serialize_trial_logs(trial_logs)
   trial_logs.transform_values { |entry| serialize_few_shot_payload(entry) }
 end
 
+def resolve_api_key_for(model_id)
+  provider = model_id.to_s.split('/', 2).first
+  env_var = case provider
+            when 'openai'
+              'OPENAI_API_KEY'
+            when 'anthropic'
+              'ANTHROPIC_API_KEY'
+            when 'gemini'
+              'GEMINI_API_KEY'
+            else
+              provider&.upcase&.gsub(/[^A-Z0-9]/, '_')&.then { |value| "#{value}_API_KEY" }
+            end
+
+  [provider, env_var, env_var ? ENV[env_var] : nil]
+end
+
 options = {
   limit: 300,
   trials: 6,
   seed: nil,
-  auto: nil
+  auto: nil,
+  model: 'openai/gpt-5-2025-08-07'
 }
 
 parser = OptionParser.new do |opts|
@@ -65,6 +82,11 @@ parser = OptionParser.new do |opts|
       raise OptionParser::InvalidArgument, "invalid auto preset '#{mode}'. Must be one of #{AUTO_PRESET_CHOICES.join(', ')}"
     end
     options[:auto] = normalized
+  end
+
+  opts.on('--model ID', String,
+          'Fully-qualified model ID (default: openai/gpt-5-2025-08-07). Examples: openai/gpt-5-2025-08-07, openai/gpt-5-mini-2025-08-07, openai/gpt-5-nano-2025-08-07, anthropic/claude-sonnet-4-5-20250929, gemini/gemini-2.5-pro') do |model_id|
+    options[:model] = model_id.strip
   end
 
   opts.on('--seed N', Integer, 'Random seed for dataset splits (default: 42)') do |seed|
@@ -87,13 +109,26 @@ end
 
 options[:auto] = nil if options[:auto] == 'none'
 
-unless ENV['OPENAI_API_KEY']
-  warn '⚠️  Please set OPENAI_API_KEY in your environment before running this example.'
+unless options[:model].include?('/')
+  warn "⚠️  Invalid model '#{options[:model]}'. Please use the format provider/model (e.g., openai/gpt-4o-mini)."
   exit 1
 end
 
+provider, env_var, api_key = resolve_api_key_for(options[:model])
+
+if api_key.to_s.strip.empty?
+  warn "⚠️  Please set #{env_var || 'the appropriate *_API_KEY variable'} in your environment before running this example (model: #{options[:model]})."
+  exit 1
+end
+
+sanitized_provider = (provider || 'unknown').gsub(/[^A-Za-z0-9._-]/, '_')
+raw_model_identifier = options[:model].split('/', 2).last || options[:model]
+sanitized_model_identifier = raw_model_identifier.gsub(/[^A-Za-z0-9._-]/, '_')
+model_results_dir = File.join(RESULTS_DIR, sanitized_provider, sanitized_model_identifier)
+FileUtils.mkdir_p(model_results_dir)
+
 DSPy.configure do |config|
-  config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+  config.lm = DSPy::LM.new(options[:model], api_key: api_key)
   config.logger = Dry.Logger(:dspy, formatter: :string) do |logger|
     logger.add_backend(stream: File.join(EXAMPLE_ROOT, '../../log/dspy_ade_example.log'))
   end
@@ -107,6 +142,7 @@ if options[:auto]
 else
   puts "Trials      : #{options[:trials]}"
 end
+puts "Model       : #{options[:model]}"
 effective_seed = options[:seed] || Random.new_seed
 puts "Random Seed : #{effective_seed}"
 
@@ -271,10 +307,11 @@ end
 
 summary[:best_instruction] = best_instruction_text
 
-summary_path = File.join(RESULTS_DIR, 'summary.json')
+timestamp_prefix = Time.now.utc.strftime('%Y%m%d%H%M%S')
+summary_path = File.join(model_results_dir, "#{timestamp_prefix}_summary.json")
 File.write(summary_path, JSON.pretty_generate(summary))
 
-csv_path = File.join(RESULTS_DIR, 'metrics.csv')
+csv_path = File.join(model_results_dir, "#{timestamp_prefix}_metrics.csv")
 CSV.open(csv_path, 'w') do |csv|
   csv << %w[metric baseline optimized]
   csv << ['accuracy', baseline_metrics.accuracy, optimized_metrics.accuracy]
@@ -283,7 +320,7 @@ CSV.open(csv_path, 'w') do |csv|
   csv << ['f1', baseline_metrics.f1, optimized_metrics.f1]
 end
 
-trial_log_path = File.join(RESULTS_DIR, 'trial_logs.json')
+trial_log_path = File.join(model_results_dir, "#{timestamp_prefix}_trial_logs.json")
 serialized_trial_logs = serialize_trial_logs(trial_logs)
 File.write(trial_log_path, JSON.pretty_generate(serialized_trial_logs))
 
