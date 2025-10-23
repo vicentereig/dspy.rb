@@ -3,7 +3,7 @@ require 'ostruct'
 require 'benchmark'
 require 'concurrent'
 require 'polars'
-require 'dspy/evaluate'
+require 'dspy/evals'
 require 'dspy/signature'
 require 'dspy/predict'
 
@@ -90,7 +90,7 @@ class MockQAProgram
   end
 end
 
-RSpec.describe DSPy::Evaluate do
+RSpec.describe DSPy::Evals do
   let(:mock_program) { EvaluateMockMathProgram.new }
   let(:mock_qa_program) { MockQAProgram.new }
 
@@ -140,7 +140,7 @@ RSpec.describe DSPy::Evaluate do
 
   describe 'initialization' do
     it 'creates evaluator with program only' do
-      evaluator = DSPy::Evaluate.new(mock_program)
+      evaluator = DSPy::Evals.new(mock_program)
       
       expect(evaluator.program).to eq(mock_program)
       expect(evaluator.metric).to be_nil
@@ -148,14 +148,14 @@ RSpec.describe DSPy::Evaluate do
 
     it 'creates evaluator with program and metric' do
       metric = DSPy::Metrics.exact_match(field: :answer)
-      evaluator = DSPy::Evaluate.new(mock_program, metric: metric)
+      evaluator = DSPy::Evals.new(mock_program, metric: metric)
       
       expect(evaluator.program).to eq(mock_program)
       expect(evaluator.metric).to eq(metric)
     end
 
     it 'sets default parameters' do
-      evaluator = DSPy::Evaluate.new(mock_program)
+      evaluator = DSPy::Evals.new(mock_program)
       
       expect(evaluator.num_threads).to eq(1)
       expect(evaluator.max_errors).to eq(5)
@@ -163,7 +163,7 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'accepts custom parameters' do
-      evaluator = DSPy::Evaluate.new(mock_program, num_threads: 4, max_errors: 10, provide_traceback: false)
+      evaluator = DSPy::Evals.new(mock_program, num_threads: 4, max_errors: 10, provide_traceback: false)
       
       expect(evaluator.num_threads).to eq(4)
       expect(evaluator.max_errors).to eq(10)
@@ -180,7 +180,7 @@ RSpec.describe DSPy::Evaluate do
         expected == actual
       end
     end
-    let(:evaluator) { DSPy::Evaluate.new(mock_program, metric: metric) }
+    let(:evaluator) { DSPy::Evals.new(mock_program, metric: metric) }
 
     it 'evaluates successful example', :aggregate_failures do
       # Use a completely inline mock to avoid any state pollution
@@ -200,12 +200,12 @@ RSpec.describe DSPy::Evaluate do
         expected[:answer] == prediction.answer 
       }
       
-      inline_evaluator = DSPy::Evaluate.new(inline_program, metric: inline_metric)
+      inline_evaluator = DSPy::Evals.new(inline_program, metric: inline_metric)
       
       example = { input: { problem: "2 + 3" }, expected: { answer: "5" } }
       result = inline_evaluator.call(example)
       
-      expect(result).to be_a(DSPy::Evaluate::EvaluationResult)
+      expect(result).to be_a(DSPy::Evals::EvaluationResult)
       expect(result.example).to eq(example)
       expect(result.prediction.answer).to eq("5")
       expect(result.passed).to be(true)
@@ -231,7 +231,7 @@ RSpec.describe DSPy::Evaluate do
         end
       end.new
       
-      error_evaluator = DSPy::Evaluate.new(error_mock, metric: metric)
+      error_evaluator = DSPy::Evals.new(error_mock, metric: metric)
       example = { input: { problem: "error_case" }, expected: { answer: "0" } }
       result = error_evaluator.call(example)
       
@@ -241,7 +241,7 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'works without metric' do
-      evaluator_no_metric = DSPy::Evaluate.new(mock_program)
+      evaluator_no_metric = DSPy::Evals.new(mock_program)
       example = { input: { problem: "2 + 3" }, expected: { answer: "5" } }
       result = evaluator_no_metric.call(example)
       
@@ -260,7 +260,7 @@ RSpec.describe DSPy::Evaluate do
         end
       end.new
       
-      evaluator = DSPy::Evaluate.new(error_mock, provide_traceback: true)
+      evaluator = DSPy::Evals.new(error_mock, provide_traceback: true)
       example = { input: { problem: "error_case" }, expected: { answer: "0" } }
       result = evaluator.call(example)
       
@@ -279,7 +279,7 @@ RSpec.describe DSPy::Evaluate do
         end
       end.new
       
-      evaluator = DSPy::Evaluate.new(error_mock, provide_traceback: false)
+      evaluator = DSPy::Evals.new(error_mock, provide_traceback: false)
       example = { input: { problem: "error_case" }, expected: { answer: "0" } }
       result = evaluator.call(example)
       
@@ -295,7 +295,7 @@ RSpec.describe DSPy::Evaluate do
         expected == actual
       end
     end
-    let(:evaluator) { DSPy::Evaluate.new(mock_program, metric: metric) }
+    let(:evaluator) { DSPy::Evals.new(mock_program, metric: metric) }
 
     it 'evaluates multiple examples successfully' do
       # Create completely isolated instances to avoid ANY state pollution
@@ -325,10 +325,10 @@ RSpec.describe DSPy::Evaluate do
         actual = prediction&.answer
         expected == actual
       end
-      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
+      fresh_evaluator = DSPy::Evals.new(fresh_mock, metric: fresh_metric)
       result = fresh_evaluator.evaluate(math_examples, display_progress: false)
       
-      expect(result).to be_a(DSPy::Evaluate::BatchEvaluationResult)
+      expect(result).to be_a(DSPy::Evals::BatchEvaluationResult)
       expect(result.total_examples).to eq(5)
       expect(result.passed_examples).to eq(5)
       expect(result.pass_rate).to eq(1.0)
@@ -362,7 +362,7 @@ RSpec.describe DSPy::Evaluate do
         actual = prediction&.answer
         expected == actual
       end
-      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
+      fresh_evaluator = DSPy::Evals.new(fresh_mock, metric: fresh_metric)
       result = fresh_evaluator.evaluate(mixed_quality_examples, display_progress: false)
       
       expect(result.total_examples).to eq(5)
@@ -398,7 +398,7 @@ RSpec.describe DSPy::Evaluate do
         actual = prediction&.answer
         expected == actual
       end
-      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
+      fresh_evaluator = DSPy::Evals.new(fresh_mock, metric: fresh_metric)
       result = fresh_evaluator.evaluate(math_examples, display_progress: false)
       
       metrics = result.aggregated_metrics
@@ -420,7 +420,7 @@ RSpec.describe DSPy::Evaluate do
         { problem: "error_case", answer: "0" }   # This should not be processed
       ]
       
-      evaluator_strict = DSPy::Evaluate.new(mock_program, metric: metric, max_errors: 3)
+      evaluator_strict = DSPy::Evals.new(mock_program, metric: metric, max_errors: 3)
       result = evaluator_strict.evaluate(failing_examples, display_progress: false)
       
       # Should stop at 3 errors, but may process more due to non-error failures
@@ -429,7 +429,7 @@ RSpec.describe DSPy::Evaluate do
   end
 
   describe 'input extraction' do
-    let(:evaluator) { DSPy::Evaluate.new(mock_program) }
+    let(:evaluator) { DSPy::Evals.new(mock_program) }
 
     it 'extracts from hash with symbol keys' do
       example = { input: { problem: "2 + 3" }, expected: { answer: "5" } }
@@ -471,7 +471,7 @@ RSpec.describe DSPy::Evaluate do
         expected == actual
       end
     end
-    let(:evaluator) { DSPy::Evaluate.new(mock_program, metric: metric) }
+    let(:evaluator) { DSPy::Evals.new(mock_program, metric: metric) }
 
     it 'serializes evaluation result to hash' do
       # Create completely isolated instances to avoid ANY state pollution
@@ -498,7 +498,7 @@ RSpec.describe DSPy::Evaluate do
         actual = prediction&.answer
         expected == actual
       end
-      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
+      fresh_evaluator = DSPy::Evals.new(fresh_mock, metric: fresh_metric)
       
       example = { input: { problem: "2 + 3" }, expected: { answer: "5" } }
       result = fresh_evaluator.call(example)
@@ -534,7 +534,7 @@ RSpec.describe DSPy::Evaluate do
         actual = prediction&.answer
         expected == actual
       end
-      fresh_evaluator = DSPy::Evaluate.new(fresh_mock, metric: fresh_metric)
+      fresh_evaluator = DSPy::Evals.new(fresh_mock, metric: fresh_metric)
       
       result = fresh_evaluator.evaluate(math_examples.first(2), display_progress: false)
       hash = result.to_h
@@ -548,7 +548,7 @@ RSpec.describe DSPy::Evaluate do
   end
 
   describe 'with DSPy::Example objects' do
-    let(:evaluator) { DSPy::Evaluate.new(mock_program) }
+    let(:evaluator) { DSPy::Evals.new(mock_program) }
     
     it 'works with Example objects' do
       example = DSPy::Example.new(
@@ -575,7 +575,7 @@ RSpec.describe DSPy::Evaluate do
       end
       
       test_mock = isolated_mock_class.new
-      evaluator = DSPy::Evaluate.new(test_mock)
+      evaluator = DSPy::Evals.new(test_mock)
       
       result = evaluator.call(example)
       
@@ -618,7 +618,7 @@ RSpec.describe DSPy::Evaluate do
       test_mock = isolated_mock_class.new
       
       # Use built-in matching for Examples
-      evaluator_with_matching = DSPy::Evaluate.new(test_mock, metric: proc { |example, prediction|
+      evaluator_with_matching = DSPy::Evals.new(test_mock, metric: proc { |example, prediction|
         example.is_a?(DSPy::Example) ? example.matches_prediction?(prediction) : false
       })
       
@@ -654,7 +654,7 @@ RSpec.describe DSPy::Evaluate do
       end
       
       test_mock = isolated_mock_class.new
-      evaluator = DSPy::Evaluate.new(test_mock)
+      evaluator = DSPy::Evals.new(test_mock)
       result = evaluator.call(example)
       
       expect(result.prediction.problem).to eq("9 + 1")
@@ -678,7 +678,7 @@ RSpec.describe DSPy::Evaluate do
 
     it 'evaluates with real LLM predictions', :vcr do
       VCR.use_cassette('evaluate/simple_math_evaluation') do
-        evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+        evaluator = DSPy::Evals.new(predictor, metric: metric)
         simple_examples = [
           { input: { problem: "What is 5 + 3?" }, expected: { answer: "8" } },
           { input: { problem: "What is 10 - 7?" }, expected: { answer: "3" } }
@@ -704,7 +704,7 @@ RSpec.describe DSPy::Evaluate do
 
     let(:example) { math_examples.first }
 
-    class CallbackAwareEvaluator < DSPy::Evaluate
+    class CallbackAwareEvaluator < DSPy::Evals
       before_example :record_before_call
       after_example :record_after_call
       after_batch :record_after_evaluate
@@ -776,7 +776,7 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'utilizes multiple threads when num_threads > 1' do
-      evaluator = DSPy::Evaluate.new(program, metric: metric, num_threads: 4)
+      evaluator = DSPy::Evals.new(program, metric: metric, num_threads: 4)
 
       elapsed = Benchmark.realtime do
         evaluator.evaluate(examples, display_progress: false, display_table: false)
@@ -804,7 +804,7 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'exposes a percentage score on batch results' do
-      evaluator = DSPy::Evaluate.new(mock_program, metric: metric)
+      evaluator = DSPy::Evals.new(mock_program, metric: metric)
       result = evaluator.evaluate(passing_examples, display_progress: false, display_table: false)
 
       expect(result).to respond_to(:score)
@@ -818,7 +818,7 @@ RSpec.describe DSPy::Evaluate do
         end
       end.new
 
-      evaluator = DSPy::Evaluate.new(failing_program, metric: metric, failure_score: 0.25, provide_traceback: false)
+      evaluator = DSPy::Evals.new(failing_program, metric: metric, failure_score: 0.25, provide_traceback: false)
       result = evaluator.evaluate(passing_examples, display_progress: false, display_table: false)
 
       expect(result.score).to eq(25.0)
@@ -842,7 +842,7 @@ RSpec.describe DSPy::Evaluate do
     end
 
     it 'converts batch results to a Polars DataFrame' do
-      evaluator = DSPy::Evaluate.new(mock_program, metric: metric)
+      evaluator = DSPy::Evals.new(mock_program, metric: metric)
       result = evaluator.evaluate(examples, display_progress: false, display_table: false)
 
       dataframe = result.to_polars

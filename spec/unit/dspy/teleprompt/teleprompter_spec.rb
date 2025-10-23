@@ -277,7 +277,7 @@ RSpec.describe DSPy::Teleprompt::Teleprompter do
       
       evaluator = teleprompter.create_evaluator(examples)
       
-      expect(evaluator).to be_a(DSPy::Evaluate)
+      expect(evaluator).to be_a(DSPy::Evals)
       expect(teleprompter.evaluator).to eq(evaluator)
     end
 
@@ -292,7 +292,7 @@ RSpec.describe DSPy::Teleprompt::Teleprompter do
       
       evaluator = teleprompter.create_evaluator(examples)
       
-      expect(evaluator).to be_a(DSPy::Evaluate)
+      expect(evaluator).to be_a(DSPy::Evals)
       expect(evaluator.metric).not_to be_nil
     end
   end
@@ -316,7 +316,7 @@ RSpec.describe DSPy::Teleprompt::Teleprompter do
     it 'evaluates program on examples' do
       result = teleprompter.evaluate_program(mock_program, examples)
       
-      expect(result).to be_a(DSPy::Evaluate::BatchEvaluationResult)
+      expect(result).to be_a(DSPy::Evals::BatchEvaluationResult)
       expect(result.total_examples).to eq(2)
     end
 

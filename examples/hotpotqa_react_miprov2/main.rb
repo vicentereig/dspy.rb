@@ -202,7 +202,7 @@ module HotPotQAReActDemo
   end
 
   def evaluate_accuracy(program, examples, metric, threads)
-    evaluator = DSPy::Evaluate.new(program, metric: metric, num_threads: threads)
+    evaluator = DSPy::Evals.new(program, metric: metric, num_threads: threads)
     result = evaluator.evaluate(examples, display_progress: false, display_table: false)
     result.pass_rate
   end

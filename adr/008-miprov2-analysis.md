@@ -404,7 +404,7 @@ To properly implement MIPROv2 in Ruby, we recommend a bottom-up approach that bu
 ✅ **Primitives** - These should already be in the Ruby codebase:
 - `DSPy::Module` - Base class for DSPy programs
 - `DSPy::Example` - Training example representation
-- `DSPy::Evaluate` - Program evaluation system
+- `DSPy::Evals` - Program evaluation system
 
 **Action:** Verify these exist and match Python behavior.
 

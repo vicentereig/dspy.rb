@@ -159,7 +159,7 @@ end
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
 
 result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
+  evaluator = DSPy::Evals.new(metric: :exact_match)
   evaluator.evaluate(examples: val_examples) do |example|
     predictor.call(text: example.text)
   end.score
@@ -192,7 +192,7 @@ results = instructions.map do |instruction|
   test_predictor.prompt = test_prompt
   
   # Evaluate performance
-  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
   result = evaluator.evaluate(test_examples)
   score = result.pass_rate
   
@@ -218,7 +218,7 @@ base_prompt = prompt.with_instruction("Classify sentiment as positive, negative,
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = test_prompt
   
-  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
   result = evaluator.evaluate(validation_examples)
   score = result.pass_rate
   
@@ -251,7 +251,7 @@ variations.each do |instruction|
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = test_prompt
   
-  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
   result = evaluator.evaluate(test_examples)
   score = result.pass_rate
   
@@ -291,7 +291,7 @@ strategies.each do |strategy, examples|
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = test_prompt
   
-  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
   result = evaluator.evaluate(validation_examples)
   score = result.pass_rate
   
@@ -325,7 +325,7 @@ final_prompt = enhanced_prompt.with_instruction(
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = p
   
-  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
   result = evaluator.evaluate(test_examples)
   score = result.pass_rate
   
@@ -441,7 +441,7 @@ results = prompt_variants.map do |variant|
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = test_prompt
   
-  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
   result = evaluator.evaluate(test_examples)
   score = result.pass_rate
   
@@ -472,7 +472,7 @@ improvements.each_with_index do |improvement, i|
   test_predictor = DSPy::Predict.new(ClassifyText)
   test_predictor.prompt = candidate_prompt
   
-  evaluator = DSPy::Evaluate.new(test_predictor, metric: :exact_match)
+  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
   result = evaluator.evaluate(test_examples)
   score = result.pass_rate
   
@@ -496,7 +496,7 @@ metric = proc { |example, prediction| prediction.sentiment == example.expected_s
 optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)
 
 result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
-  evaluator = DSPy::Evaluate.new(metric: :exact_match)
+  evaluator = DSPy::Evals.new(metric: :exact_match)
   evaluator.evaluate(examples: val_examples) do |example|
     predictor.call(text: example.text)
   end.score

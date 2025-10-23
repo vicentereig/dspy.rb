@@ -292,7 +292,7 @@ end
 
 # Create SDR program and evaluator
 sdr_program = DSPy::Predict.new(AISDRSignature)
-evaluator = DSPy::Evaluate.new(sdr_program, metric: ai_sdr_llm_judge_metric)
+evaluator = DSPy::Evals.new(sdr_program, metric: ai_sdr_llm_judge_metric)
 
 # Test campaigns using structured input
 test_campaigns = [

@@ -272,7 +272,7 @@ module DSPy
         sig { returns(T::Hash[Symbol, T.untyped]) }
         attr_reader :proposal_statistics
 
-        sig { returns(T.nilable(DSPy::Evaluate::BatchEvaluationResult)) }
+        sig { returns(T.nilable(DSPy::Evals::BatchEvaluationResult)) }
         attr_reader :best_evaluation_result
 
         sig do
@@ -287,7 +287,7 @@ module DSPy
             best_score_name: T.nilable(String),
             best_score_value: T.nilable(Float),
             metadata: T::Hash[Symbol, T.untyped],
-            best_evaluation_result: T.nilable(DSPy::Evaluate::BatchEvaluationResult)
+            best_evaluation_result: T.nilable(DSPy::Evals::BatchEvaluationResult)
           ).void
         end
         def initialize(optimized_program:, scores:, history:, evaluated_candidates:, optimization_trace:, bootstrap_statistics:, proposal_statistics:, best_score_name: nil, best_score_value: nil, metadata: {}, best_evaluation_result: nil)
@@ -1131,7 +1131,7 @@ module DSPy
           program: T.untyped,
           candidate: EvaluatedCandidate,
           evaluation_set: T::Array[DSPy::Example]
-        ).returns([Float, T.untyped, DSPy::Evaluate::BatchEvaluationResult])
+        ).returns([Float, T.untyped, DSPy::Evals::BatchEvaluationResult])
       end
       def evaluate_candidate(program, candidate, evaluation_set)
         # Apply candidate configuration to program
@@ -1163,7 +1163,7 @@ module DSPy
         params(
           modified_program: T.untyped,
           evaluation_set: T::Array[DSPy::Example]
-        ).returns(DSPy::Evaluate::BatchEvaluationResult)
+        ).returns(DSPy::Evals::BatchEvaluationResult)
       end
       def evaluate_candidate_concurrently(modified_program, evaluation_set)
         chunk_size = T.must(config.minibatch_size)
@@ -1190,16 +1190,16 @@ module DSPy
       end
 
       sig do
-        params(batch_results: T::Array[DSPy::Evaluate::BatchEvaluationResult]).returns(DSPy::Evaluate::BatchEvaluationResult)
+        params(batch_results: T::Array[DSPy::Evals::BatchEvaluationResult]).returns(DSPy::Evals::BatchEvaluationResult)
       end
       def combine_batch_results(batch_results)
-        return DSPy::Evaluate::BatchEvaluationResult.new(results: [], aggregated_metrics: {}) if batch_results.empty?
+        return DSPy::Evals::BatchEvaluationResult.new(results: [], aggregated_metrics: {}) if batch_results.empty?
 
         combined_results = batch_results.flat_map(&:results)
         total_examples = batch_results.sum(&:total_examples)
         aggregated_metrics = merge_aggregated_metrics(batch_results, total_examples)
 
-        DSPy::Evaluate::BatchEvaluationResult.new(
+        DSPy::Evals::BatchEvaluationResult.new(
           results: combined_results,
           aggregated_metrics: aggregated_metrics
         )
@@ -1207,7 +1207,7 @@ module DSPy
 
       sig do
         params(
-          batch_results: T::Array[DSPy::Evaluate::BatchEvaluationResult],
+          batch_results: T::Array[DSPy::Evals::BatchEvaluationResult],
           total_examples: Integer
         ).returns(T::Hash[Symbol, T.untyped])
       end

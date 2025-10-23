@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
-require_relative '../evaluate'
+require_relative '../evals'
 require_relative '../example'
 
 module DSPy
@@ -125,7 +125,7 @@ module DSPy
       sig { returns(T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped))) }
       attr_reader :metric
 
-      sig { returns(T.nilable(DSPy::Evaluate)) }
+      sig { returns(T.nilable(DSPy::Evals)) }
       attr_reader :evaluator
 
       sig do
@@ -183,12 +183,12 @@ module DSPy
       end
 
       # Create evaluator for given examples and metric
-      sig { params(examples: T::Array[T.untyped]).returns(DSPy::Evaluate) }
+      sig { params(examples: T::Array[T.untyped]).returns(DSPy::Evals) }
       def create_evaluator(examples)
         # Use provided metric or create a default one for DSPy::Example objects
         evaluation_metric = @metric || default_metric_for_examples(examples)
         
-        @evaluator = DSPy::Evaluate.new(
+        @evaluator = DSPy::Evals.new(
           nil, # Program will be set during evaluation
           metric: evaluation_metric,
           num_threads: @config.num_threads,
@@ -202,12 +202,12 @@ module DSPy
           program: T.untyped,
           examples: T::Array[T.untyped],
           metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T.untyped))
-        ).returns(DSPy::Evaluate::BatchEvaluationResult)
+        ).returns(DSPy::Evals::BatchEvaluationResult)
       end
       def evaluate_program(program, examples, metric: nil)
         evaluation_metric = metric || @metric || default_metric_for_examples(examples)
         
-        evaluator = DSPy::Evaluate.new(
+        evaluator = DSPy::Evals.new(
           program,
           metric: evaluation_metric,
           num_threads: @config.num_threads,

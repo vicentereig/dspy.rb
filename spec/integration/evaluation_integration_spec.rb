@@ -50,18 +50,18 @@ RSpec.describe 'Evaluation Integration with Real LM', :vcr do
         expected_answer == actual_answer
       end
 
-      evaluator = DSPy::Evaluate.new(math_program, metric: answer_metric)
+      evaluator = DSPy::Evals.new(math_program, metric: answer_metric)
 
       # Run evaluation
       result = evaluator.evaluate(examples, display_progress: false)
 
       # Verify results
-      expect(result).to be_a(DSPy::Evaluate::BatchEvaluationResult)
+      expect(result).to be_a(DSPy::Evals::BatchEvaluationResult)
       expect(result.total_examples).to eq(2)
       expect(result.pass_rate).to be_between(0.0, 1.0)
       
       # Check individual results
-      expect(result.results).to all(be_a(DSPy::Evaluate::EvaluationResult))
+      expect(result.results).to all(be_a(DSPy::Evals::EvaluationResult))
       result.results.each do |individual|
         expect(individual.prediction).to respond_to(:answer)
         expect(individual.prediction).to respond_to(:reasoning)
@@ -84,7 +84,7 @@ RSpec.describe 'Evaluation Integration with Real LM', :vcr do
         prediction && prediction.respond_to?(:answer) && !prediction.answer.to_s.empty?
       end
 
-      evaluator = DSPy::Evaluate.new(
+      evaluator = DSPy::Evals.new(
         math_program, 
         metric: flexible_metric,
         max_errors: 1  # Allow some errors
@@ -93,7 +93,7 @@ RSpec.describe 'Evaluation Integration with Real LM', :vcr do
       # This should not raise an exception
       expect {
         result = evaluator.evaluate([problematic_example], display_progress: false)
-        expect(result).to be_a(DSPy::Evaluate::BatchEvaluationResult)
+        expect(result).to be_a(DSPy::Evals::BatchEvaluationResult)
       }.not_to raise_error
     end
 
@@ -111,12 +111,12 @@ RSpec.describe 'Evaluation Integration with Real LM', :vcr do
         example.expected_values[:answer] == prediction[:answer]
       end
 
-      evaluator = DSPy::Evaluate.new(math_program, metric: exact_match)
+      evaluator = DSPy::Evals.new(math_program, metric: exact_match)
 
       # Evaluate single example
       result = evaluator.call(example)
 
-      expect(result).to be_a(DSPy::Evaluate::EvaluationResult)
+      expect(result).to be_a(DSPy::Evals::EvaluationResult)
       expect(result.example).to eq(example)
       expect(result.prediction).to respond_to(:answer)
       expect(result.prediction).to respond_to(:reasoning)
@@ -143,10 +143,10 @@ RSpec.describe 'Evaluation Integration with Real LM', :vcr do
         prediction[:reasoning]&.include?('*')
       end
 
-      evaluator = DSPy::Evaluate.new(math_program, metric: contains_metric)
+      evaluator = DSPy::Evals.new(math_program, metric: contains_metric)
       result = evaluator.call(example)
 
-      expect(result).to be_a(DSPy::Evaluate::EvaluationResult)
+      expect(result).to be_a(DSPy::Evals::EvaluationResult)
       expect([true, false]).to include(result.passed)
     end
 
@@ -159,10 +159,10 @@ RSpec.describe 'Evaluation Integration with Real LM', :vcr do
         answer_correct && has_reasoning
       end
 
-      evaluator = DSPy::Evaluate.new(math_program, metric: composite_metric)
+      evaluator = DSPy::Evals.new(math_program, metric: composite_metric)
       result = evaluator.call(example)
 
-      expect(result).to be_a(DSPy::Evaluate::EvaluationResult)
+      expect(result).to be_a(DSPy::Evals::EvaluationResult)
       expect(result.metrics).to include(:passed)
     end
   end

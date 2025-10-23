@@ -148,7 +148,7 @@ RSpec.describe DSPy::Teleprompt::Utils do
         config: config
       )
 
-      expect(result).to be_a(DSPy::Evaluate::BatchEvaluationResult)
+      expect(result).to be_a(DSPy::Evals::BatchEvaluationResult)
       expect(result.total_examples).to eq(2)
     end
 
@@ -161,7 +161,7 @@ RSpec.describe DSPy::Teleprompt::Utils do
         config: config
       )
 
-      expect(result).to be_a(DSPy::Evaluate::BatchEvaluationResult)
+      expect(result).to be_a(DSPy::Evals::BatchEvaluationResult)
       expect(result.total_examples).to eq(1) # Should sample only 1 due to minibatch_size
     end
 
@@ -175,7 +175,7 @@ RSpec.describe DSPy::Teleprompt::Utils do
         metric: custom_metric
       )
 
-      expect(result).to be_a(DSPy::Evaluate::BatchEvaluationResult)
+      expect(result).to be_a(DSPy::Evals::BatchEvaluationResult)
     end
   end
 

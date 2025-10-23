@@ -1483,7 +1483,7 @@ DSPy.rb provides a comprehensive evaluation system for testing and measuring LLM
 # Create evaluator with a predictor and metric
 predictor = DSPy::Predict.new(YourSignature)
 metric = DSPy::Metrics.exact_match(field: :answer)
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 
 # Evaluate against test examples
 result = evaluator.evaluate(test_examples, display_progress: true)
@@ -1529,7 +1529,7 @@ quality_metric = ->(example, prediction) do
   score
 end
 
-evaluator = DSPy::Evaluate.new(predictor, metric: quality_metric)
+evaluator = DSPy::Evals.new(predictor, metric: quality_metric)
 ```
 
 #### Single Example Evaluation
@@ -1565,7 +1565,7 @@ end
 
 ```ruby
 # Configure error handling
-evaluator = DSPy::Evaluate.new(
+evaluator = DSPy::Evals.new(
   predictor,
   metric: metric,
   max_errors: 3,              # Stop after 3 errors

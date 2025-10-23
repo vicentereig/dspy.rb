@@ -107,7 +107,7 @@ classifier = SentimentClassifier.new
 
 # Use exact match for sentiment field
 metric = DSPy::Metrics.exact_match(field: :sentiment)
-evaluator = DSPy::Evaluate.new(classifier, metric: metric)
+evaluator = DSPy::Evals.new(classifier, metric: metric)
 
 result = evaluator.evaluate(test_examples, display_progress: true)
 
@@ -131,7 +131,7 @@ sentiment_accuracy_metric = ->(example, prediction) do
   expected_sentiment == actual_sentiment
 end
 
-custom_evaluator = DSPy::Evaluate.new(classifier, metric: sentiment_accuracy_metric)
+custom_evaluator = DSPy::Evals.new(classifier, metric: sentiment_accuracy_metric)
 custom_result = custom_evaluator.evaluate(test_examples, display_progress: true)
 ```
 
@@ -174,7 +174,7 @@ end
 This metric gives you a comprehensive quality score that considers multiple factors:
 
 ```ruby
-quality_evaluator = DSPy::Evaluate.new(classifier, metric: sentiment_quality_metric)
+quality_evaluator = DSPy::Evals.new(classifier, metric: sentiment_quality_metric)
 quality_result = quality_evaluator.evaluate(test_examples, display_progress: true)
 
 puts "Quality Score: #{(quality_result.pass_rate * 100).round(1)}%"
@@ -210,7 +210,7 @@ This gives you insight into which types of examples your model handles well and 
 Real applications need to handle failures gracefully. The evaluation framework makes this easy:
 
 ```ruby
-error_evaluator = DSPy::Evaluate.new(
+error_evaluator = DSPy::Evals.new(
   classifier, 
   metric: sentiment_accuracy_metric,
   max_errors: 3,           # Stop after 3 errors

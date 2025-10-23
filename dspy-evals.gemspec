@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email = ["hey@vicente.services"]
 
   spec.summary = "Evaluation utilities for DSPy.rb programs."
-  spec.description = "Provides the DSPy::Evaluate runtime, concurrency, callbacks, and export helpers for benchmarking Ruby DSPy programs."
+  spec.description = "Provides the DSPy::Evals runtime, concurrency, callbacks, and export helpers for benchmarking Ruby DSPy programs."
   spec.homepage = "https://github.com/vicentereig/dspy.rb"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
@@ -18,7 +18,6 @@ Gem::Specification.new do |spec|
   spec.files = Dir.glob(%w[
     lib/dspy/evals.rb
     lib/dspy/evals/**/*.rb
-    lib/dspy/evaluate.rb
     README.md
     LICENSE
   ])

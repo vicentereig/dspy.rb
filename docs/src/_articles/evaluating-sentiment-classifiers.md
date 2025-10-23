@@ -100,7 +100,7 @@ classifier = SentimentClassifier.new
 
 # Basic evaluation
 basic_metric = DSPy::Metrics.exact_match(field: :sentiment)
-basic_evaluator = DSPy::Evaluate.new(classifier, metric: basic_metric)
+basic_evaluator = DSPy::Evals.new(classifier, metric: basic_metric)
 
 result = basic_evaluator.evaluate(test_examples, display_progress: true)
 puts "Accuracy: #{(result.score * 100).round(1)}%"
@@ -125,7 +125,7 @@ def sentiment_accuracy_metric
 end
 
 # Use the custom metric
-custom_evaluator = DSPy::Evaluate.new(classifier, metric: sentiment_accuracy_metric)
+custom_evaluator = DSPy::Evals.new(classifier, metric: sentiment_accuracy_metric)
 custom_result = custom_evaluator.evaluate(test_examples, display_progress: true)
 ```
 
@@ -179,7 +179,7 @@ Here's how you'd run all three evaluations:
 
 ```ruby
 # Quality evaluation
-quality_evaluator = DSPy::Evaluate.new(classifier, metric: sentiment_quality_metric)
+quality_evaluator = DSPy::Evals.new(classifier, metric: sentiment_quality_metric)
 quality_result = quality_evaluator.evaluate(test_examples, display_progress: true)
 
 puts "Quality Score: #{(quality_result.score * 100).round(1)}%"
@@ -208,7 +208,7 @@ end
 Real-world data is messy. DSPy.rb's evaluation framework handles errors gracefully:
 
 ```ruby
-error_evaluator = DSPy::Evaluate.new(
+error_evaluator = DSPy::Evals.new(
   classifier, 
   metric: sentiment_accuracy_metric,
   max_errors: 2,          # Stop after 2 errors
