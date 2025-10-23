@@ -24,6 +24,12 @@ Each ADR is a markdown file with a descriptive name. ADRs are numbered sequentia
 | [003](003-ruby-idiomatic-api-design.md) | Ruby-Idiomatic API Design | Accepted | 2025-07-20 | Core design decisions for making DSPy.rb feel naturally Ruby |
 | [004](004-single-field-union-types.md) | Single-Field Union Types with Automatic Type Detection | Proposed | 2025-07-21 | Automatic type detection for union types using class names, eliminating boilerplate |
 | [005](005-multi-method-tool-system.md) | Multi-Method Tool System (Toolsets) | Proposed | 2025-07-21 | Support for exposing multiple methods from a single class as individual tools |
+| [006](006-unified-image-type-vs-provider-specific-types.md) | Unified Image Type vs. Provider-Specific Types | Accepted | 2025-08-02 | Decision on handling multimodal image inputs across different LLM providers |
+| [007](007-observability-event-interception-architecture.md) | Observability Event Interception Architecture | Accepted | 2025-08-12 | Event-based observability system for tracing and monitoring |
+| [008](008-miprov2-analysis.md) | MIPROv2 Python Implementation Analysis | In Progress | 2025-10-13 | Analysis and implementation notes for MIPROv2 optimizer |
+| [009](009-gepa-telemetry-phase0.md) | GEPA Telemetry Phase 0 Plan | Accepted | 2025-10-19 | Initial telemetry system for GEPA optimizer |
+| [010](010-miprov2-packaging.md) | MIPROv2 Packaging | Accepted | 2025-10-21 | Packaging strategy for MIPROv2 gem with native dependencies |
+| [011](011-ci-matrix-bundler-caching.md) | CI Matrix Bundler Caching Strategy | Accepted | 2025-10-23 | Solution for bundler caching conflicts in GitHub Actions matrix builds |
 
 ## Creating a New ADR
 
