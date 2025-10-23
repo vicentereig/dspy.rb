@@ -128,6 +128,24 @@ RSpec.describe DSPy::StructuredOutputsPrompt do
 
       expect(system_prompt).not_to include("Here are some examples")
     end
+
+    it 'handles few-shot examples provided as hashes' do
+      prompt = DSPy::StructuredOutputsPrompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        few_shot_examples: [
+          {
+            input: { query: "What is Ruby?" },
+            output: { answer: "A programming language", confidence: 0.95 },
+            reasoning: "Training example"
+          }
+        ]
+      )
+
+      expect { prompt.render_system_prompt }.not_to raise_error
+      expect(prompt.render_system_prompt).to include("Training example")
+    end
   end
 
   describe '#render_user_prompt' do
