@@ -136,6 +136,7 @@ module ADEGEPAOptimizationDemo
     :minibatch_size,
     :seed,
     :track_stats_path,
+    :model,
     keyword_init: true
   )
 
@@ -147,9 +148,15 @@ module ADEGEPAOptimizationDemo
     FileUtils.mkdir_p(DATASET_CACHE_DIR)
 
     options = parse_options(argv)
-    ensure_openai_key!
+    provider, env_var, api_key = resolve_model_credentials(options.model)
+    check_api_key!(provider, env_var, api_key, options.model)
 
-    configure_dspy
+    run_timestamp = Time.now.utc
+    timestamp_prefix = run_timestamp.strftime('%Y%m%d%H%M%S')
+    run_directory = prepare_run_directory(provider, options.model)
+    options.track_stats_path ||= File.join(run_directory, "#{timestamp_prefix}_gepa_events.jsonl")
+
+    configure_dspy(options.model, api_key)
 
     puts '🏥 ADE GEPA Optimization Demo'
     puts '============================='
@@ -166,7 +173,7 @@ module ADEGEPAOptimizationDemo
 
     metric = build_metric
     feedback_map = build_feedback_map
-    reflection_lm = DSPy::ReflectionLM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+    reflection_lm = DSPy::ReflectionLM.new(options.model, api_key: api_key)
 
     teleprompter = DSPy::Teleprompt::GEPA.new(
       metric: metric,
@@ -188,6 +195,9 @@ module ADEGEPAOptimizationDemo
     report_optimized(result, optimized_metrics, baseline_metrics)
 
     summary_path, csv_path = persist_results(
+      run_directory,
+      timestamp_prefix,
+      run_timestamp,
       options,
       baseline_metrics,
       optimized_metrics,
@@ -206,51 +216,97 @@ module ADEGEPAOptimizationDemo
       max_metric_calls: 600,
       minibatch_size: 6,
       seed: 42,
-      track_stats_path: nil
+      track_stats_path: nil,
+      model: 'openai/gpt-4o-mini'
     )
 
-    OptionParser.new do |parser|
-      parser.banner = 'Usage: bundle exec ruby examples/ade_optimizer_gepa/main.rb [options]'
+    parser = OptionParser.new do |opts|
+      opts.banner = 'Usage: bundle exec ruby examples/ade_optimizer_gepa/main.rb [options]'
 
-      parser.on('-l', '--limit N', Integer, 'Number of ADE examples to download (default: 30)') do |limit|
+      opts.on('-l', '--limit N', Integer, 'Number of ADE examples to download (default: 30)') do |limit|
         options.limit = limit
       end
 
-      parser.on('--max-metric-calls N', Integer, 'GEPA max metric calls (default: 600)') do |calls|
+      opts.on('--max-metric-calls N', Integer, 'GEPA max metric calls (default: 600)') do |calls|
         options.max_metric_calls = calls
       end
 
-      parser.on('--minibatch-size N', Integer, 'GEPA minibatch size (default: 6)') do |batch|
+      opts.on('--minibatch-size N', Integer, 'GEPA minibatch size (default: 6)') do |batch|
         options.minibatch_size = batch
       end
 
-      parser.on('--seed N', Integer, 'Random seed for dataset splits (default: 42)') do |seed|
+      opts.on('--seed N', Integer, 'Random seed for dataset splits (default: 42)') do |seed|
         options.seed = seed
       end
 
-      parser.on('--track-stats [PATH]', 'Persist GEPA events to PATH (default: results/gepa_events.jsonl)') do |path|
+      opts.on('--track-stats [PATH]', 'Persist GEPA events to PATH (default: results/gepa_events.jsonl)') do |path|
         options.track_stats_path = path || File.join(RESULTS_DIR, 'gepa_events.jsonl')
       end
 
-      parser.on('-h', '--help', 'Show this help message') do
-        puts parser
+      opts.on('--model ID', String,
+              'Fully-qualified model ID (default: openai/gpt-4o-mini)') do |model_id|
+        options.model = model_id.strip
+      end
+
+      opts.on('-h', '--help', 'Show this help message') do
+        puts opts
         exit
       end
-    end.parse!(argv)
+    end
 
+    parser.parse!(argv)
+
+    ensure_model_format!(options.model)
     options
-  end
-
-  def ensure_openai_key!
-    return if ENV['OPENAI_API_KEY']
-
-    warn '⚠️  Please set OPENAI_API_KEY in your environment before running this example.'
+  rescue OptionParser::ParseError => e
+    $stderr.puts "❌ #{e.message}"
+    $stderr.puts parser
     exit 1
   end
 
-  def configure_dspy
+  def ensure_model_format!(model)
+    return if model.include?('/')
+
+    $stderr.puts "⚠️  Invalid model '#{model}'. Please use the format provider/model (e.g., openai/gpt-4o-mini)."
+    exit 1
+  end
+
+  def resolve_model_credentials(model_id)
+    provider = model_id.to_s.split('/', 2).first
+    env_var =
+      case provider
+      when 'openai' then 'OPENAI_API_KEY'
+      when 'anthropic' then 'ANTHROPIC_API_KEY'
+      when 'gemini' then 'GEMINI_API_KEY'
+      else
+        provider&.upcase&.gsub(/[^A-Z0-9]/, '_')&.then { |value| "#{value}_API_KEY" }
+      end
+    [provider, env_var, env_var ? ENV[env_var] : nil]
+  end
+
+  def check_api_key!(provider, env_var, api_key, model)
+    return unless api_key.to_s.strip.empty?
+
+    $stderr.puts "⚠️  Please set #{env_var || 'the appropriate *_API_KEY variable'} in your environment before running this example (model: #{model})."
+    exit 1
+  end
+
+  def prepare_run_directory(provider, model_id)
+    sanitized_provider = sanitize_identifier(provider || 'unknown')
+    raw_model_identifier = model_id.to_s.split('/', 2).last || model_id
+    sanitized_model_identifier = sanitize_identifier(raw_model_identifier)
+    directory = File.join(RESULTS_DIR, sanitized_provider, sanitized_model_identifier)
+    FileUtils.mkdir_p(directory)
+    directory
+  end
+
+  def sanitize_identifier(value)
+    value.to_s.gsub(/[^A-Za-z0-9._-]/, '_')
+  end
+
+  def configure_dspy(model_id, api_key)
     DSPy.configure do |config|
-      config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+      config.lm = DSPy::LM.new(model_id, api_key: api_key)
       config.logger = Dry.Logger(:dspy, formatter: :string) do |logger|
         logger.add_backend(stream: File.join(EXAMPLE_ROOT, '../../log/dspy_ade_gepa.log'))
       end
@@ -261,7 +317,9 @@ module ADEGEPAOptimizationDemo
     puts "Limit           : #{options.limit}"
     puts "Max metric calls: #{options.max_metric_calls}"
     puts "Minibatch size  : #{options.minibatch_size}"
+    puts "Model           : #{options.model}"
     puts "Random Seed     : #{options.seed}"
+    puts "Track stats     : #{options.track_stats_path}" if options.track_stats_path
   end
 
   def load_dataset(limit, seed)
@@ -399,12 +457,17 @@ module ADEGEPAOptimizationDemo
     puts "   • Best score (val)   : #{result.best_score_value.round(4)}"
   end
 
-  def persist_results(options, baseline_metrics, optimized_metrics, result)
+  def persist_results(run_directory, timestamp_prefix, run_timestamp, options, baseline_metrics, optimized_metrics, result)
+    FileUtils.mkdir_p(run_directory)
+
     summary = {
-      timestamp: Time.now.utc.iso8601,
+      timestamp: run_timestamp.iso8601,
+      model: options.model,
       limit: options.limit,
       max_metric_calls: options.max_metric_calls,
       minibatch_size: options.minibatch_size,
+      seed: options.seed,
+      track_stats_path: options.track_stats_path,
       baseline: {
         accuracy: baseline_metrics.accuracy,
         precision: baseline_metrics.precision,
@@ -421,10 +484,10 @@ module ADEGEPAOptimizationDemo
       best_score: result.best_score_value
     }
 
-    summary_path = File.join(RESULTS_DIR, 'gepa_summary.json')
+    summary_path = File.join(run_directory, "#{timestamp_prefix}_summary.json")
     File.write(summary_path, JSON.pretty_generate(summary))
 
-    csv_path = File.join(RESULTS_DIR, 'gepa_metrics.csv')
+    csv_path = File.join(run_directory, "#{timestamp_prefix}_metrics.csv")
     CSV.open(csv_path, 'w') do |csv|
       csv << %w[metric baseline optimized]
       csv << ['accuracy', baseline_metrics.accuracy, optimized_metrics.accuracy]
@@ -455,4 +518,4 @@ module ADEGEPAOptimizationDemo
   end
 end
 
-ADEGEPAOptimizationDemo.run(ARGV)
+ADEGEPAOptimizationDemo.run(ARGV) unless ENV['DSPY_EXAMPLE_SKIP_AUTO_RUN']
