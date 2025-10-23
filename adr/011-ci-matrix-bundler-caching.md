@@ -68,86 +68,126 @@ Multiple strategies were attempted:
 
 ## Decision
 
-**Use the `cache-version` parameter to create separate caches per gem configuration.**
+**Use manual caching with `actions/cache` instead of ruby/setup-ruby's bundler-cache.**
 
-The `cache-version` parameter is specifically designed for cases where gems with C extensions depend on system libraries or environment-specific configurations. Each unique cache-version creates a separate cache entry.
+After discovering that ruby/setup-ruby's `bundler-cache: true` ALWAYS uses `--deployment` mode (frozen), which is fundamentally incompatible with dynamic Gemfiles, we implemented manual caching that allows bundler to run without frozen mode.
+
+### Why cache-version Failed
+
+Initial attempt used `cache-version` parameter with `bundler-cache: true`. While this created separate caches per configuration (confirmed by cache key: `...v-d0-m0-e1...`), **the error persisted because frozen mode still enforced Gemfile = Gemfile.lock**.
+
+The issue is NOT cache sharing - it's that:
+1. ruby/setup-ruby with `bundler-cache: true` runs `bundle config --local deployment true`
+2. Deployment mode = frozen mode = lockfile must exactly match Gemfile
+3. Our Gemfile is dynamic (conditional gemspecs based on env vars)
+4. Our Gemfile.lock is static (contains all gems)
+5. **= Bundler refuses to work**
 
 ### Implementation
 
 ```yaml
+- name: Cache gems
+  uses: actions/cache@v4
+  with:
+    path: vendor/bundle
+    key: gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-${{ hashFiles('**/Gemfile.lock') }}
+    restore-keys: |
+      gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-
+
 - name: Set up Ruby
   uses: ruby/setup-ruby@v1
   with:
     ruby-version: ${{ steps.ruby-version.outputs.version }}
-    bundler-cache: true
-    cache-version: "d${{ matrix.datasets }}-m${{ matrix.miprov2 }}-e${{ matrix.evals }}"
+    bundler-cache: false  # MUST be false to avoid frozen mode
+
+- name: Install dependencies
   env:
     DSPY_WITH_DATASETS: ${{ matrix.datasets }}
     DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
     DSPY_WITH_EVALS: ${{ matrix.evals }}
-    BUNDLE_WITH: development:test
+  run: |
+    bundle config set --local path vendor/bundle
+    bundle install --jobs 4
 ```
 
 ### Cache Distribution
 
-- **d0-m0-e1**: DSPy Core, GEPA, DSPy Evaluations (shared, ~240MB)
-- **d1-m0-e1**: DSPy Datasets (unique, needs Arrow, ~240MB)
-- **d0-m1-e1**: DSPy MIPROv2 (unique, needs OpenBLAS, ~240MB)
+- **gems-Linux-0-0-1**: DSPy Core, GEPA, DSPy Evaluations (shared, ~240MB)
+- **gems-Linux-1-0-1**: DSPy Datasets (unique, needs Arrow, ~240MB)
+- **gems-Linux-0-1-1**: DSPy MIPROv2 (unique, needs OpenBLAS, ~240MB)
 
-Total: 3 separate caches instead of 1 shared or 5 individual.
+Total: 3 separate caches. Cache key includes matrix variables so each configuration gets appropriate gems.
 
 ## Consequences
 
 ### Positive
 
-- ✅ **Resolves frozen mode errors**: Each configuration gets a consistent cache
-- ✅ **Fast CI builds**: After first run, bundler uses cached gems
+- ✅ **Resolves frozen mode errors**: Bundler runs without --deployment flag
+- ✅ **Fast CI builds**: After first run, uses cached gems (~30-60s vs 3-5min)
+- ✅ **Correct behavior**: Bundler can adapt to dynamic Gemfile
 - ✅ **Efficient cache usage**: Jobs with identical configs share caches
-- ✅ **No code changes**: Only workflow modification needed
-- ✅ **Self-healing**: Can bump cache-version to force rebuild if needed
-- ✅ **Official solution**: Uses documented ruby/setup-ruby feature
+- ✅ **Standard practices**: No weird workarounds or non-standard lockfile management
+- ✅ **Transparent**: Cache key clearly shows what configuration is cached
 
 ### Negative
 
+- ⚠️ **Manual cache management**: More verbose than bundler-cache: true
 - ⚠️ **Multiple caches**: Uses ~720MB total instead of ~240MB
-- ⚠️ **First run overhead**: Each unique configuration builds cache on first run
-- ⚠️ **Cache management**: GitHub Actions has 10GB limit (plenty of room)
+- ⚠️ **First run overhead**: Each unique configuration builds cache on first run (~5min)
 
 ### Neutral
 
-- Changes cache invalidation behavior - must update cache-version if system dependencies change
 - Jobs with identical gem configurations benefit from shared cache (Core, GEPA, Evaluations)
+- Cache invalidation via Gemfile.lock hash changes
 
 ## Alternatives Considered
 
-### 1. Install All System Dependencies Everywhere
+### 1. cache-version Parameter (TRIED - FAILED)
+- Use `cache-version: "d${{ matrix.datasets }}-m${{ matrix.miprov2 }}-e${{ matrix.evals }}"`
+- Create separate caches per configuration
+- **Result**: Created separate caches but frozen mode still failed
+- **Why it failed**: ruby/setup-ruby's bundler-cache always uses --deployment, incompatible with dynamic Gemfile
+- **Evidence**: Cache key showed `v-d0-m0-e1` but error persisted: "You have deleted from the Gemfile"
+
+### 2. Install All System Dependencies Everywhere
 - Set all matrix jobs to `datasets: '1'`, `miprov2: '1'`
 - Install Arrow and OpenBLAS in every job
 - **Rejected**: Wasteful, adds 2-3 minutes to each job
 
-### 2. Disable Bundler Cache Completely
-- Set `bundler-cache: false`
-- Accept slow CI builds
-- **Rejected**: Used as working baseline but too slow
+### 3. Disable Bundler Cache Completely
+- Set `bundler-cache: false`, run `bundle install` without caching
+- **Considered**: Works (proven in commit d62c2db) but too slow (~3-5min per job)
+- **Status**: Used as fallback if manual caching fails
 
-### 3. Multiple Gemfiles with Separate Lockfiles
+### 4. Multiple Gemfiles with Separate Lockfiles
 - Create Gemfile.datasets, Gemfile.miprov2, etc.
 - Use BUNDLE_GEMFILE environment variable
-- **Rejected**: Major refactor, complex to maintain
-
-### 4. Manual Cache Management
-- Use actions/cache directly with custom keys
-- **Rejected**: More complex, error-prone, reinventing the wheel
+- **Rejected**: Major refactor, non-standard, complex to maintain
 
 ## References
 
 - [ruby/setup-ruby documentation](https://github.com/ruby/setup-ruby)
 - [GitHub Actions cache documentation](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows)
-- Issue thread: Multiple failed CI attempts from commits f5a8faf through 92e097b
+- [actions/cache documentation](https://github.com/actions/cache)
+- Issue thread: Multiple failed CI attempts from commits f5a8faf through e430187
 - Working baseline: Commit d62c2db (bundler-cache: false)
+- Failed cache-version attempt: Run https://github.com/vicentereig/dspy.rb/actions/runs/18749633544
 
 ## Notes
 
-The cache-version parameter was explicitly designed for this use case: "In rare scenarios where you need to ignore the cache contents and rebuild all gems anew (such as when using gems with C extensions whose functionality depends on system libraries), you can use the cache-version option."
+### Discovery Process
 
-This solution aligns with the official recommendation and leverages the built-in cache management of ruby/setup-ruby rather than implementing a custom solution.
+1. **Initial hypothesis**: ruby/setup-ruby's bundler-cache shares cache across matrix jobs
+2. **First fix attempt (cache-version)**: Create separate caches per configuration
+3. **Discovery**: Cache separation worked (key showed `v-d0-m0-e1`) but error persisted
+4. **Root cause found**: ruby/setup-ruby ALWAYS uses `--deployment` mode with bundler-cache
+5. **Final solution**: Manual caching without frozen mode
+
+### Why Manual Caching is Necessary
+
+The cache-version parameter works as documented - it DOES create separate caches. However, it doesn't solve the fundamental incompatibility between:
+- Bundler's frozen mode (--deployment)
+- Dynamic Gemfile (conditional gemspecs based on environment variables)
+- Static Gemfile.lock (contains all possible gems)
+
+Manual caching with actions/cache allows us to avoid frozen mode entirely, letting bundler adapt the lockfile to match the dynamic Gemfile at runtime.

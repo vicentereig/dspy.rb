@@ -78,17 +78,26 @@ jobs:
     - name: Read Ruby version from .ruby-version
       id: ruby-version
       run: echo "version=$(cat .ruby-version)" >> $GITHUB_OUTPUT
+    - name: Cache gems
+      uses: actions/cache@v4
+      with:
+        path: vendor/bundle
+        key: gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ steps.ruby-version.outputs.version }}
-        bundler-cache: true
-        cache-version: "d${{ matrix.datasets }}-m${{ matrix.miprov2 }}-e${{ matrix.evals }}"
+        bundler-cache: false
+    - name: Install dependencies
       env:
         DSPY_WITH_DATASETS: ${{ matrix.datasets }}
         DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
         DSPY_WITH_EVALS: ${{ matrix.evals }}
-        BUNDLE_WITH: development:test
+      run: |
+        bundle config set --local path vendor/bundle
+        bundle install --jobs 4
     - name: Run tests
       run: ${{ matrix.command }}
       env:
