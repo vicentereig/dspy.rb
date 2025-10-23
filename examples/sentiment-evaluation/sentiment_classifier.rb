@@ -156,7 +156,7 @@ def main
   puts "-" * 30
 
   basic_metric = DSPy::Metrics.exact_match(field: :sentiment)
-  basic_evaluator = DSPy::Evaluate.new(classifier, metric: basic_metric)
+  basic_evaluator = DSPy::Evals.new(classifier, metric: basic_metric)
 
   basic_result = basic_evaluator.evaluate(test_examples.first(3), display_progress: true)
   
@@ -167,7 +167,7 @@ def main
   puts "\n2️⃣ Custom Sentiment Accuracy"
   puts "-" * 30
 
-  custom_evaluator = DSPy::Evaluate.new(classifier, metric: sentiment_accuracy_metric)
+  custom_evaluator = DSPy::Evals.new(classifier, metric: sentiment_accuracy_metric)
   custom_result = custom_evaluator.evaluate(test_examples.first(4), display_progress: true)
 
   puts "Custom Accuracy: #{(custom_result.score * 100).round(1)}%"
@@ -177,7 +177,7 @@ def main
   puts "\n3️⃣ Advanced Quality Assessment"
   puts "-" * 30
 
-  quality_evaluator = DSPy::Evaluate.new(classifier, metric: sentiment_quality_metric)
+  quality_evaluator = DSPy::Evals.new(classifier, metric: sentiment_quality_metric)
   quality_result = quality_evaluator.evaluate(test_examples, display_progress: true)
 
   puts "Quality Score: #{(quality_result.score * 100).round(1)}%"
@@ -214,7 +214,7 @@ def main
     { input: { tweet: "Normal tweet about weather" }, expected: { sentiment: "neutral", confidence: 0.7 } }
   ]
 
-  error_evaluator = DSPy::Evaluate.new(
+  error_evaluator = DSPy::Evals.new(
     classifier, 
     metric: sentiment_accuracy_metric,
     max_errors: 2,

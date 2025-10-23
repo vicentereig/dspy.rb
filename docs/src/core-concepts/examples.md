@@ -271,9 +271,9 @@ examples = [
   )
 ]
 
-# Use with DSPy::Evaluate
+# Use with DSPy::Evals
 predictor = DSPy::Predict.new(ClassifyText)
-evaluator = DSPy::Evaluate.new(metric: :exact_match)
+evaluator = DSPy::Evals.new(metric: :exact_match)
 
 results = evaluator.evaluate(examples: examples) do |example|
   predictor.call(example.input_values)

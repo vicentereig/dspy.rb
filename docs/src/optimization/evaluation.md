@@ -39,7 +39,7 @@ metric = proc do |example, prediction|
   prediction.answer == example.expected_values[:answer]
 end
 
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 
 # Evaluate on test examples
 result = evaluator.evaluate(
@@ -62,28 +62,55 @@ metric = DSPy::Metrics.exact_match(
   field: :answer,           # Field to compare (default: :answer)
   case_sensitive: true      # Case-sensitive comparison (default: true)
 )
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 
 # Contains - prediction must contain expected substring
 metric = DSPy::Metrics.contains(
   field: :answer,           # Field to compare (default: :answer)
   case_sensitive: false     # Case-insensitive by default
 )
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 
 # Numeric difference - for numeric outputs within tolerance
 metric = DSPy::Metrics.numeric_difference(
   field: :answer,           # Field to compare (default: :answer)
   tolerance: 0.01           # Acceptable difference (default: 0.01)
 )
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 
 # Composite AND - all metrics must pass
 metric1 = DSPy::Metrics.exact_match(field: :answer)
 metric2 = DSPy::Metrics.contains(field: :reasoning)
 metric = DSPy::Metrics.composite_and(metric1, metric2)
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 ```
+
+## Observability Hooks
+
+`DSPy::Evals` exposes callback hooks so you can plug in logging, telemetry, or Langfuse reporting without editing the evaluator. Callbacks receive a payload describing the current run, and they fire exactly where you register them.
+
+```ruby
+# Log each example before it is scored
+DSPy::Evals.before_example do |payload|
+  example = payload[:example]
+  DSPy.logger.info("Evaluating example #{example.id}") if example.respond_to?(:id)
+end
+
+# Send aggregate metrics to Langfuse when a batch completes
+DSPy::Evals.after_batch do |payload|
+  result = payload[:result]
+  Langfuse.event(
+    name: 'eval.batch',
+    metadata: {
+      total: result.total_examples,
+      passed: result.passed_examples,
+      score: result.score
+    }
+  )
+end
+```
+
+Callbacks mirror the Python API: use `before_example` / `after_example` for single predictions and `before_batch` / `after_batch` for full evaluations. Because the evaluator manages callback execution, you can interleave telemetry with custom spans or multithreaded runs without wrapping the methods yourself.
 
 ## Custom Metrics
 
@@ -96,7 +123,7 @@ accuracy_metric = ->(example, prediction) do
   prediction.label.downcase == example.expected_label.downcase
 end
 
-evaluator = DSPy::Evaluate.new(metric: accuracy_metric)
+evaluator = DSPy::Evals.new(metric: accuracy_metric)
 ```
 
 ### Complex Custom Metrics
@@ -126,7 +153,7 @@ quality_metric = ->(example, prediction) do
   score >= 0.7  # Pass threshold
 end
 
-evaluator = DSPy::Evaluate.new(metric: quality_metric)
+evaluator = DSPy::Evals.new(metric: quality_metric)
 ```
 
 ## Evaluation Results
@@ -239,7 +266,7 @@ The evaluator supports concurrent evaluation:
 
 ```ruby
 # Initialize with thread count
-evaluator = DSPy::Evaluate.new(
+evaluator = DSPy::Evals.new(
   metric: :exact_match,
   num_threads: 4  # Process 4 examples concurrently
 )
@@ -272,7 +299,7 @@ result = optimizer.compile(
 )
 
 # Evaluate optimized program on test set
-evaluator = DSPy::Evaluate.new(result.optimized_program, metric: metric)
+evaluator = DSPy::Evals.new(result.optimized_program, metric: metric)
 test_result = evaluator.evaluate(test_examples, display_table: true)
 
 puts "Test accuracy: #{(test_result.pass_rate * 100).round(2)}%"
@@ -285,18 +312,18 @@ puts "Test accuracy: #{(test_result.pass_rate * 100).round(2)}%"
 ```ruby
 # For classification tasks
 metric = DSPy::Metrics.exact_match(field: :label, case_sensitive: true)
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 
 # For text generation with flexibility
 metric = DSPy::Metrics.contains(field: :answer, case_sensitive: false)
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 
 # For custom domain logic
 metric = proc do |example, prediction|
   # Your domain-specific validation logic
   prediction.meets_requirements?(example.requirements)
 end
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 ```
 
 ### 2. Handle Edge Cases

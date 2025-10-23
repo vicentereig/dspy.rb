@@ -175,7 +175,7 @@ examples = [
 ]
 
 # Use examples for evaluation
-evaluator = DSPy::Evaluate.new
+evaluator = DSPy::Evals.new
 
 # Define metric
 exact_match = ->(example, prediction, trace) {

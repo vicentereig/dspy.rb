@@ -309,14 +309,14 @@ RSpec.describe DSPy::Teleprompt::MIPROv2, :miprov2 do
     context 'with best_evaluation_result' do
       let(:mock_evaluation_result) do
         mock_results = [
-          DSPy::Evaluate::EvaluationResult.new(
+          DSPy::Evals::EvaluationResult.new(
             example: training_examples.first,
             prediction: OpenStruct.new(answer: "Test answer", confidence: 0.9),
             trace: nil,
             metrics: { passed: true, confidence_score: 0.9, answer_length: 11 },
             passed: true
           ),
-          DSPy::Evaluate::EvaluationResult.new(
+          DSPy::Evals::EvaluationResult.new(
             example: training_examples.last,
             prediction: OpenStruct.new(answer: "Another answer", confidence: 0.7),
             trace: nil,
@@ -325,7 +325,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2, :miprov2 do
           )
         ]
         
-        DSPy::Evaluate::BatchEvaluationResult.new(
+        DSPy::Evals::BatchEvaluationResult.new(
           results: mock_results,
           aggregated_metrics: { avg_confidence: 0.8, avg_length: 12.5 }
         )

@@ -40,7 +40,7 @@ end
 
 # Use with evaluator
 program = DSPy::Predict.new(YourSignature)
-evaluator = DSPy::Evaluate.new(program, metric: accuracy_metric)
+evaluator = DSPy::Evals.new(program, metric: accuracy_metric)
 
 result = evaluator.evaluate(test_examples)
 
@@ -67,7 +67,7 @@ end
 
 # Use in evaluation
 program = DSPy::Predict.new(YourSignature)
-evaluator = DSPy::Evaluate.new(program, metric: weighted_accuracy)
+evaluator = DSPy::Evals.new(program, metric: weighted_accuracy)
 ```
 
 ### Confidence-Aware Metric
@@ -138,7 +138,7 @@ end
 
 # Use in evaluation
 program = DSPy::Predict.new(YourSignature)
-evaluator = DSPy::Evaluate.new(program, metric: customer_service_metric)
+evaluator = DSPy::Evals.new(program, metric: customer_service_metric)
 ```
 
 ### Medical Information Accuracy Metric
@@ -360,7 +360,7 @@ metrics = {
 program = DSPy::Predict.new(YourSignature)
 results = {}
 metrics.each do |metric_name, metric_proc|
-  evaluator = DSPy::Evaluate.new(program, metric: metric_proc)
+  evaluator = DSPy::Evals.new(program, metric: metric_proc)
   result = evaluator.evaluate(test_examples)
   results[metric_name] = result.pass_rate
 end
@@ -389,7 +389,7 @@ def detailed_evaluation(predictor, test_examples)
   end
   
   program = DSPy::Predict.new(YourSignature)
-  evaluator = DSPy::Evaluate.new(program, metric: detailed_metric)
+  evaluator = DSPy::Evals.new(program, metric: detailed_metric)
   evaluation_result = evaluator.evaluate(test_examples)
   
   # Extract detailed results

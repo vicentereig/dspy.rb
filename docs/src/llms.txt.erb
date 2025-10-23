@@ -194,7 +194,7 @@ Comprehensive testing and measurement framework:
 ```ruby
 # Basic evaluation with built-in metrics
 metric = DSPy::Metrics.exact_match(field: :answer, case_sensitive: false)
-evaluator = DSPy::Evaluate.new(predictor, metric: metric)
+evaluator = DSPy::Evals.new(predictor, metric: metric)
 
 # Type-safe examples using DSPy::Example
 test_examples = [
@@ -224,7 +224,7 @@ quality_metric = ->(example, prediction) do
 end
 
 # Error-resilient batch evaluation
-evaluator = DSPy::Evaluate.new(
+evaluator = DSPy::Evals.new(
   predictor,
   metric: quality_metric,
   max_errors: 3,              # Stop after 3 errors

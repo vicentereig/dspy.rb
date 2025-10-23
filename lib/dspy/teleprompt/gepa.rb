@@ -156,7 +156,7 @@ module DSPy
             outputs = trajectories.map { |row| row[:prediction] }
             ::GEPA::Core::EvaluationBatch.new(outputs: outputs, scores: scores, trajectories: trajectories)
           else
-            evaluator = DSPy::Evaluate.new(program, metric: nil, num_threads: nil, max_errors: batch.length * 100, provide_traceback: false)
+            evaluator = DSPy::Evals.new(program, metric: nil, num_threads: nil, max_errors: batch.length * 100, provide_traceback: false)
             results = batch.map do |example|
               prediction = program.call(**example.input_values)
               result = @metric.call(example, prediction)

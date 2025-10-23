@@ -2,7 +2,7 @@
 
 require 'sorbet-runtime'
 require 'fileutils'
-require_relative '../evaluate'
+require_relative '../evals'
 require_relative '../example'
 require_relative 'data_handler'
 
@@ -459,7 +459,7 @@ module DSPy
           examples: T::Array[T.untyped],
           config: BootstrapConfig,
           metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean))
-        ).returns(DSPy::Evaluate::BatchEvaluationResult)
+        ).returns(DSPy::Evals::BatchEvaluationResult)
       end
       def self.eval_candidate_program(program, examples, config: BootstrapConfig.new, metric: nil)
         # Use minibatch evaluation for large datasets
@@ -477,7 +477,7 @@ module DSPy
           examples: T::Array[T.untyped],
           config: BootstrapConfig,
           metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean))
-        ).returns(DSPy::Evaluate::BatchEvaluationResult)
+        ).returns(DSPy::Evals::BatchEvaluationResult)
       end
       def self.eval_candidate_program_minibatch(program, examples, config, metric)
         DSPy::Context.with_span(
@@ -502,11 +502,11 @@ module DSPy
           examples: T::Array[T.untyped],
           config: BootstrapConfig,
           metric: T.nilable(T.proc.params(arg0: T.untyped, arg1: T.untyped).returns(T::Boolean))
-        ).returns(DSPy::Evaluate::BatchEvaluationResult)
+        ).returns(DSPy::Evals::BatchEvaluationResult)
       end
       def self.eval_candidate_program_full(program, examples, config, metric)
         # Create evaluator with proper configuration
-        evaluator = DSPy::Evaluate.new(
+        evaluator = DSPy::Evals.new(
           program,
           metric: metric || default_metric_for_examples(examples),
           num_threads: config.num_threads,
