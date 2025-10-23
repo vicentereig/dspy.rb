@@ -240,6 +240,7 @@ module DSPy
         end
       end.then do |result|
         @last_example_result = result
+        emit_example_observation(example, result)
         run_callbacks(:after, :call, example: example, result: result)
         result
       end
@@ -303,14 +304,13 @@ module DSPy
         batch_result
       end.then do |batch_result|
         @last_batch_result = batch_result
+        emit_batch_observation(devset, batch_result)
         run_callbacks(:after, :evaluate, devset: devset, result: batch_result)
         batch_result
       end
     end
 
     private
-
-    # TODO: add Langfuse instrumentation emitting evaluation metrics for dashboards.
 
     def parallel_execution?
       (@num_threads || 1) > 1
@@ -636,6 +636,43 @@ module DSPy
       end
       
       puts "=" * 50
+    end
+
+    def emit_example_observation(example, result)
+      DSPy.event('evals.example.complete', {
+        program: @program.class.name,
+        example_id: extract_example_id(example),
+        passed: result.passed,
+        score: result.metrics[:score],
+        error: result.metrics[:error]
+      })
+    rescue => e
+      DSPy.log('evals.example.observation_error', error: e.message)
+    end
+
+    def emit_batch_observation(devset, batch_result)
+      DSPy.event('evals.batch.complete', {
+        program: @program.class.name,
+        dataset_size: devset.length,
+        total_examples: batch_result.total_examples,
+        passed_examples: batch_result.passed_examples,
+        pass_rate: batch_result.pass_rate,
+        score: batch_result.score
+      })
+    rescue => e
+      DSPy.log('evals.batch.observation_error', error: e.message)
+    end
+
+    def extract_example_id(example)
+      if example.respond_to?(:id)
+        example.id
+      elsif example.is_a?(Hash)
+        example[:id] || example['id']
+      else
+        nil
+      end
+    rescue
+      nil
     end
 
     def symbolize_keys(hash)

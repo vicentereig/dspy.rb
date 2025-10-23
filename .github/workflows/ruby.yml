@@ -83,12 +83,12 @@ jobs:
       with:
         ruby-version: ${{ steps.ruby-version.outputs.version }}
         bundler-cache: true
-    - name: Install dependencies
+        cache-version: "d${{ matrix.datasets }}-m${{ matrix.miprov2 }}-e${{ matrix.evals }}"
       env:
         DSPY_WITH_DATASETS: ${{ matrix.datasets }}
         DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
         DSPY_WITH_EVALS: ${{ matrix.evals }}
-      run: bundle install
+        BUNDLE_WITH: development:test
     - name: Run tests
       run: ${{ matrix.command }}
       env:

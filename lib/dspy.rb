@@ -31,6 +31,10 @@ module DSPy
     @logger ||= create_logger
   end
 
+  # Writes structured output to the configured logger. Use this for human-readable
+  # logs only—listeners and telemetry exporters are not triggered by `DSPy.log`.
+  # Prefer `DSPy.event` whenever you want consumers (or Langfuse/OpenTelemetry)
+  # to react to what happened.
   def self.log(event_name, **attributes)
     # Return nil early if logger is not configured (backward compatibility)
     return nil unless logger
@@ -42,6 +46,10 @@ module DSPy
     nil
   end
 
+  # Emits a structured event that flows through DSPy's event bus, fires any
+  # subscribed listeners, and creates OpenTelemetry spans when observability
+  # is enabled. Use this for anything that should be tracked, instrumented,
+  # or forwarded to Langfuse.
   def self.event(event_name_or_object, attributes = {})
     # Handle typed event objects
     if event_name_or_object.respond_to?(:name) && event_name_or_object.respond_to?(:to_attributes)
