@@ -9,6 +9,7 @@ require 'securerandom'
 require 'set'
 require_relative 'teleprompter'
 require_relative 'utils'
+require_relative 'instruction_updates'
 require_relative '../propose/grounded_proposer'
 require_relative '../optimizers/gaussian_process'
 
@@ -950,15 +951,6 @@ module DSPy
         end
       end
 
-      sig { params(predictor: T.untyped, examples: T::Array[DSPy::FewShotExample]).void }
-      def assign_predictor_examples(predictor, examples)
-        predictor.demos = examples if predictor.respond_to?(:demos=)
-        return unless predictor.respond_to?(:prompt)
-
-        cloned_examples = examples.map { |ex| ex }
-        predictor.prompt.instance_variable_set(:@few_shot_examples, cloned_examples.freeze)
-      end
-
       # Initialize optimization state for candidate selection
       sig { params(candidates: T::Array[EvaluatedCandidate]).returns(T::Hash[Symbol, T.untyped]) }
       def initialize_optimization_state(candidates)
@@ -1251,28 +1243,35 @@ module DSPy
           modified_program = modified_program.clone
           modified_program.predictors.each_with_index do |predictor, idx|
             if instructions_map.key?(idx)
-              signature = Utils.get_signature(predictor)
-              updated_signature = signature.with_instructions(instructions_map[idx])
-              Utils.set_signature(predictor, updated_signature)
+              modified_program, predictor = InstructionUpdates.apply_instruction(
+                modified_program,
+                predictor,
+                instructions_map[idx]
+              )
             end
 
             if demos_map.key?(idx)
               normalized_examples = normalize_few_shot_examples(demos_map[idx])
-              assign_predictor_examples(predictor, normalized_examples)
+              modified_program, predictor = InstructionUpdates.apply_examples(
+                modified_program,
+                predictor,
+                normalized_examples
+              )
             end
           end
         end
 
         # Apply instruction if provided (top-level programs still respect with_instruction)
-        if !candidate.instruction.empty? && modified_program.respond_to?(:with_instruction)
+        if !candidate.instruction.empty?
+          InstructionUpdates.ensure_instruction_capability!(modified_program)
           modified_program = modified_program.with_instruction(candidate.instruction)
         end
 
         should_apply_global_examples = candidate.few_shot_examples.any? &&
-          modified_program.respond_to?(:with_examples) &&
           (demos_map.empty? || !modified_program.respond_to?(:predictors))
 
         if should_apply_global_examples
+          InstructionUpdates.ensure_examples_capability!(modified_program)
           normalized_few_shot = normalize_few_shot_examples(candidate.few_shot_examples)
           modified_program = modified_program.with_examples(normalized_few_shot)
         end

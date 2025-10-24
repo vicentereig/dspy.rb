@@ -6,6 +6,7 @@ require_relative 'prompt'
 require_relative 'utils/serialization'
 require_relative 'mixins/struct_builder'
 require_relative 'mixins/type_coercion'
+require_relative 'mixins/instruction_updatable'
 require_relative 'error_formatter'
 
 module DSPy
@@ -46,6 +47,7 @@ module DSPy
     extend T::Sig
     include Mixins::StructBuilder
     include Mixins::TypeCoercion
+    include Mixins::InstructionUpdatable
 
     sig { returns(T.class_of(Signature)) }
     attr_reader :signature_class
@@ -120,6 +122,7 @@ module DSPy
       # Create a new instance with the same signature but updated prompt
       instance = self.class.new(@signature_class)
       instance.instance_variable_set(:@prompt, new_prompt)
+      instance.instance_variable_set(:@demos, @demos&.map { |demo| demo })
       instance
     end
 
@@ -130,12 +133,17 @@ module DSPy
 
     sig { params(examples: T::Array[FewShotExample]).returns(Predict) }
     def with_examples(examples)
-      with_prompt(@prompt.with_examples(examples))
+      instance = with_prompt(@prompt.with_examples(examples))
+      instance.demos = examples.map { |example| example }
+      instance
     end
 
     sig { params(examples: T::Array[FewShotExample]).returns(Predict) }
     def add_examples(examples)
-      with_prompt(@prompt.add_examples(examples))
+      instance = with_prompt(@prompt.add_examples(examples))
+      combined = instance.prompt.few_shot_examples
+      instance.demos = combined.map { |example| example }
+      instance
     end
 
     sig { override.returns(T::Array[[String, DSPy::Module]]) }
