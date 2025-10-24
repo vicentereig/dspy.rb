@@ -38,10 +38,6 @@ RSpec.describe DSPy::ObservationType do
       expect(DSPy::ObservationType.for_module_class(DSPy::ChainOfThought)).to eq(DSPy::ObservationType::Chain)
     end
 
-    it 'returns Agent for CodeAct modules' do
-      expect(DSPy::ObservationType.for_module_class(DSPy::CodeAct)).to eq(DSPy::ObservationType::Agent)
-    end
-
     it 'returns Span for Predict modules' do
       expect(DSPy::ObservationType.for_module_class(DSPy::Predict)).to eq(DSPy::ObservationType::Span)
     end

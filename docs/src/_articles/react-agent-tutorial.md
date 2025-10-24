@@ -635,35 +635,7 @@ puts "Final answer: #{result.answer}"
 
 ## ReAct vs CodeAct: A Practical Comparison
 
-Here's the same task implemented with both approaches:
-
-```ruby
-# Task: Analyze sales data and create a report
-
-# ReAct approach - using predefined tools
-sales_tool = SalesDataTool.new
-stats_tool = StatisticsTool.new
-report_tool = ReportGeneratorTool.new
-
-react_agent = DSPy::ReAct.new(
-  SalesAnalysis,
-  tools: [sales_tool, stats_tool, report_tool]
-)
-
-# CodeAct approach - generates and executes Ruby code dynamically
-codeact_agent = DSPy::CodeAct.new(SalesAnalysisSignature)
-
-# CodeAct generates Ruby code like:
-# sales_data = fetch_sales_data(start_date: "2024-01-01")
-# average_sale = sales_data.sum / sales_data.count
-# puts "Average sale: #{average_sale}"
-
-# When to use ReAct vs CodeAct:
-# - ReAct: When you have predefined tools and structured workflows
-# - CodeAct: When you need dynamic computation and data analysis
-# - ReAct: Better for production systems with controlled environments  
-# - CodeAct: Better for exploratory data analysis and rapid prototyping
-```
+CodeAct now lives in the `dspy-code_act` gem. The detailed comparison, including executable examples, has moved to that gem's README so the DSPy core tutorial can stay focused on ReAct. Install `dspy-code_act` if you need Think-Code-Observe agents and consult [`lib/dspy/code_act/README.md`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md) for up-to-date guidance.
 
 ## Next Steps
 

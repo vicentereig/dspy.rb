@@ -28,7 +28,7 @@ Group related tools in a single class for agent integration. Toolsets provide ag
 ### [Predictors](./predictors/)
 Connect your modules to language models with different strategies like chain-of-thought reasoning or tool use.
 
-### [CodeAct](./codeact/)
+### [CodeAct](./codeact/) _(requires the `dspy-code_act` gem)_
 Enable AI agents to dynamically write and execute Ruby code for creative problem-solving.
 
 ### [Multimodal](./multimodal/)
@@ -46,7 +46,7 @@ We recommend reading through these concepts in order:
 3. Learn about [Memory](./memory/) for stateful agents
 4. Explore [Toolsets](./toolsets/) for agent capabilities
 5. Study [Predictors](./predictors/) for different reasoning strategies
-6. Learn about [CodeAct](./codeact/) for dynamic code generation
+6. Learn about [CodeAct](./codeact/) for dynamic code generation (install the `dspy-code_act` gem)
 7. Explore [Multimodal](./multimodal/) for text and image workflows
 8. Study [Examples](./examples/) to see everything in action
 

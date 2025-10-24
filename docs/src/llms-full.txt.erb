@@ -44,7 +44,7 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 - **Automatic JSON Extraction**: Provider-optimized strategies
 - **Composable Modules**: Chain, compose, and reuse
 - **Multimodal Support**: Text and image inputs with vision models (structured signatures and raw chat)
-- **Agent Systems**: ReAct, CodeAct, and custom agents
+- **Agent Systems**: ReAct (core), CodeAct (`dspy-code_act`), and custom agents
 - **Memory & State**: Persistent memory for stateful applications
 - **Observability**: Automatic APM integration, token tracking, performance monitoring
 
@@ -196,7 +196,7 @@ Built-in predictors for different reasoning patterns:
 - **Predict** - Basic LLM calls
 - **ChainOfThought** - Step-by-step reasoning
 - **ReAct** - Tool-using agents
-- **CodeAct** - Dynamic code generation
+- **CodeAct** - Dynamic code generation (install the `dspy-code_act` gem)
 
 ### 4. Optimization
 
@@ -452,18 +452,7 @@ result = agent.call(query: "Calculate compound interest...")
 
 ### CodeAct
 
-Dynamic code generation agent:
-
-```ruby
-agent = DSPy::CodeAct.new(
-  DataAnalysisSignature,
-  max_iterations: 8
-)
-
-result = agent.call(task: "Analyze this CSV data...")
-puts result.solution  # Final answer
-puts result.history   # Execution steps
-```
+CodeAct now ships in the `dspy-code_act` gem. See [`lib/dspy/code_act/README.md`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md) for examples, safety recommendations, and advanced usage patterns.
 
 ## Rich Types
 
@@ -887,27 +876,7 @@ end
 
 ### CodeAct Agent
 
-Code generation and execution:
-
-```ruby
-class DataAnalyst < DSPy::Module
-  def initialize
-    super
-    @agent = DSPy::CodeAct.new(
-      AnalysisSignature,
-      max_iterations: 8
-    )
-  end
-  
-  def forward(task:)
-    result = @agent.call(task: task)
-    {
-      solution: result.solution,
-      code_executed: result.history.map { |h| h[:ruby_code] }
-    }
-  end
-end
-```
+Install `dspy-code_act` to build Think-Code-Observe agents. The gem ships with a full agent walkthrough in its README.
 
 ### Custom Agents
 
@@ -918,6 +887,7 @@ class CustomAgent < DSPy::Module
   def initialize
     super
     @planner = DSPy::ChainOfThought.new(PlanningSignature)
+    # Requires the dspy-code_act gem for Think-Code-Observe execution
     @executor = DSPy::CodeAct.new(ExecutionSignature)
     @validator = DSPy::Predict.new(ValidationSignature)
   end
@@ -1862,7 +1832,7 @@ end
 - Returns result with tool call history
 
 #### DSPy::CodeAct
-- `new(signature, max_iterations: 8)`
+- `new(signature, max_iterations: 8)` (requires the `dspy-code_act` gem)
 - Returns solution and execution history
 
 ### Configuration
@@ -2037,6 +2007,7 @@ class DataPipeline < DSPy::Module
     super
 
     @cleaner = DSPy::Predict.new(DataCleaning)
+    # Optional: install dspy-code_act to enable dynamic analysis
     @analyzer = DSPy::CodeAct.new(DataAnalysis)
     @visualizer = DSPy::ChainOfThought.new(DataVisualization)
     @reporter = DSPy::ChainOfThought.new(ReportGeneration)

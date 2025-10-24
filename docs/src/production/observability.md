@@ -133,7 +133,7 @@ observation_type = DSPy::ObservationType.for_module_class(module_class)
 
 # Available observation types:
 DSPy::ObservationType::Generation  # Direct LLM calls
-DSPy::ObservationType::Agent      # ReAct, CodeAct agents
+DSPy::ObservationType::Agent      # ReAct (core) and CodeAct (dspy-code_act) agents
 DSPy::ObservationType::Tool       # Tool invocations  
 DSPy::ObservationType::Chain      # ChainOfThought reasoning
 DSPy::ObservationType::Retriever  # Memory/document search
@@ -160,7 +160,7 @@ lm.raw_chat([
 ```
 
 **Agent** (`agent`):
-- Multi-step reasoning agents (ReAct, CodeAct)
+- Multi-step reasoning agents (ReAct core, CodeAct via dspy-code_act)
 - Iterative decision-making processes
 - Tool-using autonomous agents
 
@@ -273,7 +273,7 @@ DSPy.event('react.iteration_complete', {
   observation: 'Found relevant results'
 })
 
-# CodeAct code execution (lib/dspy/code_act.rb:358)
+# CodeAct code execution (see dspy-code_act gem)
 DSPy.event('codeact.iteration_complete', {
   iteration: 1,
   code_executed: 'puts "Hello World"',
@@ -421,7 +421,7 @@ class ModulePerformanceTracker < DSPy::Events::BaseSubscriber
 end
 
 tracker = ModulePerformanceTracker.new
-# Tracks ChainOfThought, ReAct, CodeAct performance
+# Tracks ChainOfThought, ReAct, CodeAct performance (CodeAct requires dspy-code_act)
 ```
 
 ## Integration with External Systems

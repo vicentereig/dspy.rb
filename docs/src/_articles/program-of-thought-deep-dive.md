@@ -14,6 +14,8 @@ image: /images/og/program-of-thought-deep-dive.png
 
 Program of Thought (PoT) separates reasoning from computation: LLMs generate Python code, external interpreters execute it. Result? 12% better accuracy on math problems vs Chain of Thought. Trade-off: security risks from code execution. Use PoT for numerical tasks, CodeAct for iterative problem-solving, ChainOfThought for safe general reasoning.
 
+> Heads up: CodeAct now lives in the optional `dspy-code_act` gem. Install it alongside `dspy` to access Think-Code-Observe agents and the updated README docs.
+
 ---
 
 Here's something that's been bugging me about AI reasoning: we've gotten really good at making language models think step-by-step (thanks, Chain of Thought!), but they're still terrible at math. Like, embarrassingly bad. Ask GPT-4 to calculate `479,001,600 / 129` and watch it confidently give you the wrong answer.

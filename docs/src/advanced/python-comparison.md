@@ -31,7 +31,7 @@ This document provides a comprehensive comparison between the original DSPy Pyth
 - **Retry** - Adds retry logic with feedback
 
 ### Ruby-Specific Modules (Not in Python)
-- **CodeAct** - Think-Code-Observe pattern for Ruby code generation and execution (Ruby innovation)
+- **CodeAct** - Think-Code-Observe pattern for Ruby code generation and execution (available via the `dspy-code_act` gem)
 
 ## Optimization Techniques
 
@@ -118,7 +118,7 @@ This document provides a comprehensive comparison between the original DSPy Pyth
 
 1. **ProgramOfThought Module**
    - Critical for code generation tasks
-   - Complements existing CodeAct module
+   - Complements the optional `dspy-code_act` module
    - Should support multiple languages
 
 2. **MultiChainComparison Module**

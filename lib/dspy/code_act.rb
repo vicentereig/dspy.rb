@@ -2,12 +2,13 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
-require_relative 'predict'
-require_relative 'signature'
+require 'dspy' unless defined?(DSPy)
+require 'dspy/predict'
+require 'dspy/signature'
 require 'json'
 require 'stringio'
-require_relative 'mixins/struct_builder'
-require_relative 'type_serializer'
+require 'dspy/mixins/struct_builder'
+require 'dspy/type_serializer'
 
 module DSPy
   # Define a simple struct for CodeAct history entries with proper type annotations
@@ -473,5 +474,13 @@ module DSPy
       example[:execution_context] = { result: 4 }
       example
     end
+  end
+end
+
+require_relative 'code_act/version'
+
+module DSPy
+  class CodeAct
+    VERSION = DSPy::CodeActVersion::VERSION unless const_defined?(:VERSION)
   end
 end

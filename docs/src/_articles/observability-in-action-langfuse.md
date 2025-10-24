@@ -103,7 +103,7 @@ With this setup, every DSPy module automatically provides:
 ### Module Execution Flow
 - ChainOfThought reasoning steps
 - ReAct iteration patterns
-- CodeAct code execution results  
+- CodeAct code execution results (requires the `dspy-code_act` gem)  
 - Custom module performance
 
 ### Concurrent Processing Insights
