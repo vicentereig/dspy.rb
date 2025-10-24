@@ -1108,6 +1108,40 @@ class DocumentAnalyzer < DSPy::Module
 end
 ```
 
+## Instruction Update Contract
+
+Teleprompters such as GEPA and MIPROv2 expect predictors to expose immutable update hooks so optimizers can safely swap instructions and few-shot examples. When you build a custom module that participates in optimization:
+
+- Implement `with_instruction(new_instruction)` and return a new instance configured with the provided instruction.
+- Implement `with_examples(few_shot_examples)` when your module supports few-shot updates, also returning a new instance.
+
+You can include `DSPy::Mixins::InstructionUpdatable` to signal this capability and surface helpful default errors during development:
+
+```ruby
+class SentimentPredictor < DSPy::Module
+  include DSPy::Mixins::InstructionUpdatable
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(SentimentSignature)
+  end
+
+  def with_instruction(instruction)
+    clone = self.class.new
+    clone.instance_variable_set(:@predictor, @predictor.with_instruction(instruction))
+    clone
+  end
+
+  def with_examples(examples)
+    clone = self.class.new
+    clone.instance_variable_set(:@predictor, @predictor.with_examples(examples))
+    clone
+  end
+end
+```
+
+If a module omits these hooks, teleprompters now raise `DSPy::InstructionUpdateError` instead of mutating instance variables directly, making incompatibilities immediately visible.
+
 ## Basic Optimization Support
 
 Modules can work with the optimization framework through their underlying predictors:

@@ -73,6 +73,41 @@ RSpec.describe DSPy::Teleprompt::GEPA do
     end
   end
 
+  class LegacyPrompt
+    attr_reader :instruction
+
+    def initialize(instruction)
+      @instruction = instruction
+    end
+
+    def with_instruction(new_instruction)
+      LegacyPrompt.new(new_instruction)
+    end
+  end
+
+  class LegacyPredictor < DSPy::Module
+    extend T::Sig
+
+    sig { params(prompt: LegacyPrompt).void }
+    def initialize(prompt)
+      super()
+      @prompt = prompt
+    end
+
+    sig { returns(LegacyPrompt) }
+    attr_reader :prompt
+
+    sig { override.returns(T::Array[[String, DSPy::Module]]) }
+    def named_predictors
+      [['legacy', self]]
+    end
+
+    sig { params(input_values: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, String]) }
+    def forward_untyped(**input_values)
+      { answer: "#{@prompt.instruction} #{input_values[:question]}" }
+    end
+  end
+
   class FakeReflectionLM
     attr_reader :calls
 
@@ -194,5 +229,16 @@ base reflection upgrade
     expect(alpha_row['Score']).to eq(0.8)
     expect(beta_row['Feedback']).to include('beta override beta base world')
     expect(beta_row['Score']).to eq(0.4)
+  end
+
+  it 'raises a helpful error when predictor lacks with_instruction capability' do
+    adapter = DSPy::Teleprompt::GEPA::PredictAdapter.new(
+      LegacyPredictor.new(LegacyPrompt.new('base')),
+      metric
+    )
+
+    expect {
+      adapter.build_program({ 'legacy' => 'new instruction' })
+    }.to raise_error(DSPy::InstructionUpdateError, /LegacyPredictor/)
   end
 end

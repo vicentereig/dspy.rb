@@ -97,6 +97,48 @@ class MockMIPROProgram
   end
 end
 
+class LegacyPrompt
+  attr_reader :instruction
+
+  def initialize(instruction)
+    @instruction = instruction
+  end
+
+  def with_instruction(new_instruction)
+    LegacyPrompt.new(new_instruction)
+  end
+end
+
+class LegacyPredictorWithoutInstruction
+  attr_reader :prompt
+
+  def initialize(instruction)
+    @prompt = LegacyPrompt.new(instruction)
+  end
+
+  def dup
+    self.class.new(@prompt.instruction)
+  end
+end
+
+class LegacyCompositeProgram
+  attr_reader :predictors
+
+  def initialize(instruction = "legacy base")
+    @predictors = [LegacyPredictorWithoutInstruction.new(instruction)]
+  end
+
+  def predictors
+    @predictors
+  end
+
+  def clone
+    copy = super
+    copy.instance_variable_set(:@predictors, @predictors.map(&:dup))
+    copy
+  end
+end
+
 RSpec.describe DSPy::Teleprompt::MIPROv2, :miprov2 do
   let(:test_program) { MockMIPROProgram.new(MIPROv2QA) }
 
@@ -415,6 +457,19 @@ RSpec.describe DSPy::Teleprompt::MIPROv2, :miprov2 do
       mipro = DSPy::Teleprompt::MIPROv2.new(metric: custom_metric)
 
       expect(mipro.metric).to eq(custom_metric)
+    end
+  end
+
+  describe '#apply_candidate_configuration' do
+    it 'raises a helpful error when nested predictor lacks with_instruction capability' do
+      mipro = described_class.new
+      candidate = create_test_evaluated_candidate(
+        metadata: { instructions_map: { 0 => 'updated legacy instruction' } }
+      )
+
+      expect {
+        mipro.send(:apply_candidate_configuration, LegacyCompositeProgram.new, candidate)
+      }.to raise_error(DSPy::InstructionUpdateError, /LegacyPredictorWithoutInstruction/)
     end
   end
 

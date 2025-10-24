@@ -5,6 +5,7 @@ require 'set'
 require 'sorbet-runtime'
 require_relative 'teleprompter'
 require_relative 'utils'
+require_relative 'instruction_updates'
 require_relative '../../gepa'
 
 module DSPy
@@ -111,12 +112,8 @@ module DSPy
             predictor = predictor_map[name]
             next unless predictor
 
-            updated = apply_instruction_to_predictor(predictor, new_instruction)
-            if predictor.equal?(program)
-              program = updated
-            elsif !updated.equal?(predictor)
-              replace_reference(program, predictor, updated)
-            end
+            program, updated = InstructionUpdates.apply_instruction(program, predictor, new_instruction)
+
             predictor_map[name] = updated
           end
 
@@ -278,53 +275,7 @@ module DSPy
             next unless @predictor_names.include?(name)
             next if predictor.equal?(program)
             clone = safe_clone(predictor)
-            replace_reference(program, predictor, clone)
-          end
-        end
-
-        sig do
-          params(container: T.untyped, target: T.untyped, replacement: T.untyped, visited: T::Set[Integer]).returns(T.untyped)
-        end
-        def replace_in_object(container, target, replacement, visited)
-          return replacement if container.equal?(target)
-          return container if visited.include?(container.object_id)
-
-          visited.add(container.object_id)
-
-          case container
-          when Array
-            modified = false
-            new_array = container.map do |value|
-              new_value = replace_in_object(value, target, replacement, visited)
-              modified ||= !new_value.equal?(value)
-              new_value
-            end
-            modified ? new_array : container
-          when Hash
-            modified = false
-            new_hash = container.each_with_object({}) do |(key, value), memo|
-              new_value = replace_in_object(value, target, replacement, visited)
-              modified ||= !new_value.equal?(value)
-              memo[key] = new_value
-            end
-            modified ? new_hash : container
-          else
-            container
-          end
-        end
-
-        sig { params(owner: T.untyped, target: T.untyped, replacement: T.untyped).void }
-        def replace_reference(owner, target, replacement)
-          return if owner.equal?(target)
-
-          Array(owner.instance_variables).each do |ivar|
-            value = owner.instance_variable_get(ivar)
-            next if value.nil?
-
-            new_value = replace_in_object(value, target, replacement, ::Set.new)
-            unless new_value.equal?(value)
-              owner.instance_variable_set(ivar, new_value)
-            end
+            InstructionUpdates.replace_reference(program, predictor, clone)
           end
         end
 
@@ -354,20 +305,7 @@ module DSPy
           end
         end
 
-        sig { params(predictor: DSPy::Module, instruction: String).returns(DSPy::Module) }
-        def apply_instruction_to_predictor(predictor, instruction)
-          if predictor.respond_to?(:with_instruction)
-            predictor.with_instruction(instruction)
-          elsif predictor.respond_to?(:prompt) && predictor.prompt.respond_to?(:with_instruction)
-            predictor.with_prompt(predictor.prompt.with_instruction(instruction))
-          else
-            duplicate = safe_clone(predictor)
-            signature = DSPy::Teleprompt::Utils.get_signature(duplicate)
-            updated_signature = signature.with_instructions(instruction)
-            DSPy::Teleprompt::Utils.set_signature(duplicate, updated_signature)
-            duplicate
-          end
-        end
+        # instruction update helpers handled by InstructionUpdates
 
         sig { params(object: T.untyped).returns(T.untyped) }
         def safe_clone(object)

@@ -39,6 +39,19 @@ module MIPROv2MultiPredictorSpec
       duplicated.prompt.few_shot_examples = @prompt.few_shot_examples.map { |demo| demo }
       duplicated
     end
+
+    def with_instruction(instruction)
+      duplicated = clone
+      duplicated.prompt.instruction = instruction
+      duplicated
+    end
+
+    def with_examples(examples)
+      duplicated = clone
+      duplicated.demos = examples.map { |demo| demo }
+      duplicated.prompt.few_shot_examples = examples.map { |demo| demo }
+      duplicated
+    end
   end
 
   class Program

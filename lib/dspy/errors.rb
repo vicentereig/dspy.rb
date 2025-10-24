@@ -28,4 +28,22 @@ module DSPy
       MESSAGE
     end
   end
+
+  class InstructionUpdateError < Error
+    def self.missing_instruction_capability(module_class)
+      new(<<~MESSAGE)
+        #{module_class} must implement `with_instruction(new_instruction)` to support DSPy teleprompters.
+
+        Update the module to return a new instance with the provided instruction, or opt out of teleprompter optimizers.
+      MESSAGE
+    end
+
+    def self.missing_examples_capability(module_class)
+      new(<<~MESSAGE)
+        #{module_class} must implement `with_examples(few_shot_examples)` to support DSPy teleprompters.
+
+        Update the module to return a new instance with the provided examples, or opt out of example optimization flows.
+      MESSAGE
+    end
+  end
 end
