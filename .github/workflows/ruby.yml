@@ -20,9 +20,18 @@ jobs:
             '**/spec/unit/dspy/teleprompt/mipro_v2_*' --exclude-pattern '**/spec/unit/teleprompt/mipro_v2_*'
             --exclude-pattern '**/spec/unit/optimizers/gaussian_process_spec.rb' --exclude-pattern
             '**/spec/integration/dspy/datasets/**/*_spec.rb' --exclude-pattern '**/spec/integration/dspy/mipro_*'
+            --exclude-pattern '**/spec/unit/dspy/code_act/**/*_spec.rb' --exclude-pattern '**/spec/integration/dspy/code_act*_spec.rb'
           datasets: '0'
           miprov2: '0'
           evals: '1'
+          code_act: '0'
+        - name: DSPy CodeAct
+          gem: dspy-code_act
+          command: bundle exec rspec --format documentation spec/unit/dspy/code_act spec/integration/dspy/code_act_spec.rb
+          datasets: '0'
+          miprov2: '0'
+          evals: '1'
+          code_act: '1'
         - name: DSPy Datasets
           gem: dspy-datasets
           command: bundle exec rspec --format documentation --pattern 'spec/unit/dspy/datasets/**/*_spec.rb'
@@ -31,6 +40,7 @@ jobs:
           datasets: '1'
           miprov2: '0'
           evals: '1'
+          code_act: '0'
         - name: GEPA
           gem: gepa
           command: bundle exec rspec --format documentation spec/unit/gepa spec/unit/teleprompt/gepa_spec.rb
@@ -38,6 +48,7 @@ jobs:
           datasets: '0'
           miprov2: '0'
           evals: '1'
+          code_act: '0'
         - name: DSPy MIPROv2
           gem: dspy-miprov2
           command: bundle exec rspec --format documentation --pattern 'spec/unit/optimizers/gaussian_process_spec.rb'
@@ -47,12 +58,14 @@ jobs:
           datasets: '0'
           miprov2: '1'
           evals: '1'
+          code_act: '0'
         - name: DSPy Evaluations
           gem: dspy-evals
           command: bundle exec rspec --format documentation spec/integration/dspy/evaluate_spec.rb spec/integration/evaluation_integration_spec.rb
           datasets: '0'
           miprov2: '0'
           evals: '1'
+          code_act: '0'
     name: Run tests (${{ matrix.name }})
     steps:
     - uses: actions/checkout@v4
@@ -82,9 +95,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: vendor/bundle
-        key: gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-${{ hashFiles('**/Gemfile.lock') }}
+        key: gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-${{ matrix.code_act }}-${{ hashFiles('**/Gemfile.lock') }}
         restore-keys: |
-          gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-
+          gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-${{ matrix.code_act }}-
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -95,6 +108,7 @@ jobs:
         DSPY_WITH_DATASETS: ${{ matrix.datasets }}
         DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
         DSPY_WITH_EVALS: ${{ matrix.evals }}
+        DSPY_WITH_CODE_ACT: ${{ matrix.code_act }}
       run: |
         bundle config set --local path vendor/bundle
         bundle install --jobs 4
@@ -104,6 +118,7 @@ jobs:
         DSPY_WITH_DATASETS: ${{ matrix.datasets }}
         DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
         DSPY_WITH_EVALS: ${{ matrix.evals }}
+        DSPY_WITH_CODE_ACT: ${{ matrix.code_act }}
         OPENAI_API_KEY: test-openai-key-for-vcr
         ANTHROPIC_API_KEY: test-anthropic-key-for-vcr
         GEMINI_API_KEY: test-gemini-key-for-vcr

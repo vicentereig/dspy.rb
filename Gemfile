@@ -2,6 +2,10 @@ source 'https://rubygems.org'
 
 gemspec name: "dspy"
 
+if ENV.fetch('DSPY_WITH_CODE_ACT', '0') == '1'
+  gemspec name: "dspy-code_act"
+end
+
 if ENV.fetch('DSPY_WITH_DATASETS', '1') == '1'
   gemspec name: "dspy-datasets"
 end

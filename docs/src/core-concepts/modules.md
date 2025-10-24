@@ -932,60 +932,13 @@ For advanced memory patterns, see the [Memory Systems documentation](../../advan
 
 ### Module Using CodeAct for Dynamic Programming
 
-```ruby
-class DataAnalysisSignature < DSPy::Signature
-  description "Analyze data using Ruby code execution"
-  
-  input do
-    const :dataset_description, String
-    const :analysis_task, String
-  end
-  
-  output do
-    const :analysis_result, String
-  end
-end
-
-class DataAnalyst < DSPy::Module
-  def initialize
-    super
-    
-    @predictor = DSPy::CodeAct.new(DataAnalysisSignature, max_iterations: 8)
-  end
-
-  def forward(dataset_description:, analysis_task:)
-    # Combine inputs for the code execution agent
-    task = "Dataset: #{dataset_description}\nTask: #{analysis_task}"
-    
-    result = @predictor.call(task: task)
-    
-    # CodeAct provides additional execution context
-    {
-      analysis_result: result.solution,
-      execution_steps: result.history.length,
-      code_executed: result.history.map { |h| h[:ruby_code] }.compact
-    }
-  end
-end
-
-# Usage
-analyst = DataAnalyst.new
-result = analyst.call(
-  dataset_description: "Array of sales data: [100, 150, 200, 300, 250]",
-  analysis_task: "Calculate the average and identify the highest sale"
-)
-
-puts result[:analysis_result]
-# => "Average: 200, Highest: 300"
-puts result[:execution_steps]
-# => 3
-```
+CodeAct is available via the `dspy-code_act` gem. The complete Think-Code-Observe module example now lives in [`lib/dspy/code_act/README.md`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md), alongside guidance on safety, observability, and advanced usage.
 
 ## Extensibility
 
 ### Creating Custom Modules
 
-You can create custom modules to implement your own agent systems or inference frameworks, similar to how `DSPy::ReAct` or `DSPy::CodeAct` are built. Custom modules are ideal for:
+You can create custom modules to implement your own agent systems or inference frameworks, similar to how `DSPy::ReAct` (core) or `DSPy::CodeAct` (optional gem) are built. Custom modules are ideal for:
 - Building specialized agent architectures
 - Implementing custom inference patterns
 - Creating domain-specific processing pipelines
@@ -1175,4 +1128,3 @@ training_examples = [
 # Basic evaluation
 result = classifier.call(text: "Test input")
 ```
-

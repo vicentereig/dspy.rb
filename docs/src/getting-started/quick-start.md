@@ -276,7 +276,7 @@ Predictors execute signatures:
 - `DSPy::Predict` - Basic LLM completion
 - `DSPy::ChainOfThought` - Step-by-step reasoning
 - `DSPy::ReAct` - Tool-using agents
-- `DSPy::CodeAct` - Dynamic code execution agents
+- `DSPy::CodeAct` - Dynamic code execution agents (install the `dspy-code_act` gem)
 
 ### Modules
 

@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'dspy/module'
 require 'dspy/predict'
 require 'dspy/re_act'
-require 'dspy/code_act'
 require 'dspy/chain_of_thought'
 require 'dspy/teleprompt/utils'
 require 'dspy/tools/base'
@@ -56,18 +55,6 @@ RSpec.describe 'Predictor discovery parity' do
       expect(names).to match_array(%w[thought_generator observation_processor])
       expect(predictors.map(&:class)).to all(eq(DSPy::Predict).or(eq(DSPy::ChainOfThought)))
       expect(predictors.size).to eq(2)
-    end
-  end
-
-  describe DSPy::CodeAct do
-    it 'exposes code and observation predictors' do
-      code_act = DSPy::CodeAct.new(PredictorDiscoverySignature, max_iterations: 1)
-
-      names = code_act.named_predictors.map(&:first)
-      predictors = code_act.predictors
-
-      expect(names).to match_array(%w[code_generator observation_processor])
-      expect(predictors.map(&:class)).to all(eq(DSPy::Predict))
     end
   end
 

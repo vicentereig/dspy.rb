@@ -22,6 +22,8 @@ Gem::Specification.new do |spec|
     "LICENSE"
   ].uniq
 
+  spec.files.reject! { |path| path.start_with?("lib/dspy/code_act") }
+  spec.files.reject! { |path| path == "lib/dspy/code_act.rb" }
   spec.files.reject! { |path| path.start_with?("lib/dspy/datasets") }
   spec.files.reject! { |path| path.start_with?("lib/dspy/miprov2") }
   spec.files.reject! { |path| path == "lib/dspy/miprov2.rb" }

@@ -216,13 +216,16 @@ require_relative 'dspy/events/subscribers'
 require_relative 'dspy/events/subscriber_mixin'
 require_relative 'dspy/chain_of_thought'
 require_relative 'dspy/re_act'
-require_relative 'dspy/code_act'
 require_relative 'dspy/evals'
 require_relative 'dspy/teleprompt/teleprompter'
 require_relative 'dspy/teleprompt/utils'
 require_relative 'dspy/teleprompt/data_handler'
 require_relative 'dspy/teleprompt/gepa'
 require_relative 'dspy/propose/grounded_proposer'
+begin
+  require 'dspy/code_act'
+rescue LoadError
+end
 begin
   require 'dspy/miprov2'
 rescue LoadError

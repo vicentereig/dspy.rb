@@ -75,7 +75,7 @@ DSPy.rb follows a modular architecture with clear separation of concerns:
 
 ```
 lib/dspy/
-├── agents/       # Multi-step agent implementations (ReAct, CodeAct)
+├── agents/       # Multi-step agent implementations (ReAct core, CodeAct in dspy-code_act)
 ├── lm/           # Language model abstractions and adapters
 ├── memory/       # Memory management and persistence
 ├── teleprompt/   # Optimization and fine-tuning

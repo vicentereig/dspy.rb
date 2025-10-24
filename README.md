@@ -170,7 +170,7 @@ DSPy.rb has rapidly evolved from experimental to production-ready:
 ### Foundation
 - ✅ **JSON Parsing Reliability** - Native OpenAI structured outputs with adaptive retry logic and schema-aware fallbacks
 - ✅ **Type-Safe Strategy Configuration** - Provider-optimized strategy selection and enum-backed optimizer presets
-- ✅ **Core Module System** - Predict, ChainOfThought, ReAct, CodeAct with type safety
+- ✅ **Core Module System** - Predict, ChainOfThought, ReAct with type safety (add `dspy-code_act` for Think-Code-Observe agents)
 - ✅ **Production Observability** - OpenTelemetry, New Relic, and Langfuse integration
 - ✅ **Advanced Optimization** - MIPROv2 with Bayesian optimization, Gaussian Processes, and multi-mode search
 
