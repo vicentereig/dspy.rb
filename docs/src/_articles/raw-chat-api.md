@@ -53,11 +53,10 @@ Unlike bypassing DSPy entirely, `raw_chat` emits all standard log events with sp
 
 ```ruby
 # These events are emitted for raw_chat:
-# - dspy.lm.request (with signature_class: 'RawPrompt')
-# - dspy.lm.tokens (with accurate token counts)
-# 
+# - lm.tokens (with accurate token counts)
+#
 # NOT emitted:
-# - dspy.lm.response.parsed (since there's no JSON parsing)
+# - parser-specific events (since there's no JSON parsing)
 ```
 
 ### 2. Message Builder DSL

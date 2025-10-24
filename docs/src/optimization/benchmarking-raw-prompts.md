@@ -84,7 +84,7 @@ modular_result = changelog_generator.forward(commits: commit_data)
 
 # Extract token usage
 modular_tokens = captured_events
-  .select { |e| e.id == 'dspy.lm.tokens' }
+  .select { |e| e.id == 'lm.tokens' }
   .last
   .payload
 
@@ -168,7 +168,7 @@ def benchmark_approaches(commits_data)
   modular_result = generator.forward(commits: commits_data)
   
   modular_time = Time.now - start_time
-  modular_tokens = events.find { |e| e.id == 'dspy.lm.tokens' }&.payload
+  modular_tokens = events.find { |e| e.id == 'lm.tokens' }&.payload
   
   results[:modular] = {
     time: modular_time,

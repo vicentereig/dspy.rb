@@ -97,6 +97,29 @@ RSpec.describe 'DSPy Event System' do
     end
   end
 
+  describe 'Internal event handling' do
+    before do
+      allow(DSPy::Observability).to receive(:enabled?).and_return(true)
+    end
+
+    it 'does not create spans for lm.tokens events' do
+      expect(DSPy::Observability).not_to receive(:start_span)
+
+      DSPy.event('lm.tokens', total_tokens: 42)
+    end
+
+    it 'creates spans for non-internal events' do
+      mock_span = double('span', finish: nil)
+      expect(DSPy::Observability).to receive(:start_span).with(
+        'llm.generate',
+        hash_including('gen_ai.request.model' => 'test-model')
+      ).and_return(mock_span)
+      expect(DSPy::Observability).to receive(:finish_span).with(mock_span)
+
+      DSPy.event('llm.generate', 'gen_ai.request.model' => 'test-model')
+    end
+  end
+
   describe 'Event Listener System' do
     describe '.events' do
       after do

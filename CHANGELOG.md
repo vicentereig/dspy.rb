@@ -846,7 +846,7 @@ response.usage.to_h  # if you need hash format
 - **Raw Chat API for Benchmarking and Migration** (#47) - Enable running legacy prompts through DSPy's instrumentation pipeline
   - New `DSPy::LM#raw_chat` method for executing raw prompts without structured output features
   - Support for both array format and DSL format with `MessageBuilder`
-  - Full instrumentation support - emits `dspy.lm.request` and `dspy.lm.tokens` events
+  - Full instrumentation support - emits `lm.tokens` events for token usage
   - Enables fair benchmarking between monolithic prompts and modular DSPy implementations
   - Facilitates gradual migration from legacy prompt systems
   - Streaming support via block parameter

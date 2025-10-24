@@ -117,7 +117,8 @@ module DSPy
     'observability.error',
     'observability.span_error',
     'observability.span_finish_error',
-    'event.span_creation_error'
+    'event.span_creation_error',
+    'lm.tokens'
   ].freeze
 
   def self.create_event_span(event_name, attributes)
