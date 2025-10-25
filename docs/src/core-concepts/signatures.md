@@ -421,6 +421,8 @@ gem 'sorbet-baml'
 
 The gem is automatically included as a dependency of `dspy-rb`.
 
+> Need the converter outside of DSPy.rb? Install `gem 'dspy-schema', '~> 0.1'` and `require 'dspy/schema'` to reuse `DSPy::TypeSystem::SorbetJsonSchema` in other Ruby projects (see ADR-012).
+
 ## Usage with Predictors
 
 ```ruby
