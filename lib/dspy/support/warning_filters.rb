@@ -6,11 +6,11 @@ module DSPy
       RUBY2_KEYWORDS_MESSAGE = 'Skipping set of ruby2_keywords flag for forward'
 
       module WarningSilencer
-        def warn(message = nil, *args)
+        def warn(message = nil, category: nil, **kwargs)
           msg = message.to_s
           return if msg.include?(RUBY2_KEYWORDS_MESSAGE)
 
-          super
+          super(message, category: category, **kwargs)
         end
       end
 
