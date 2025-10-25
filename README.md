@@ -47,6 +47,50 @@ and
 bundle install
 ```
 
+### Your First Reliable Predictor
+
+```ruby
+
+# Configure DSPy globablly to use your fave LLM - you can override this on an instance levle. 
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini',
+                      api_key: ENV['OPENAI_API_KEY'],
+                      structured_outputs: true)  # Enable OpenAI's native JSON mode
+end
+
+# Define a signature for sentiment classification - instead of writing a full prompt!
+class Classify < DSPy::Signature
+  description "Classify sentiment of a given sentence." # sets the goal of the underlying prompt
+
+  class Sentiment < T::Enum
+    enums do
+      Positive = new('positive')
+      Negative = new('negative')
+      Neutral = new('neutral')
+    end
+  end
+  
+  # Structured Inputs: makes sure you are sending only valid prompt inputs to your model
+  input do
+    const :sentence, String, description: 'The sentence to analyze'
+  end
+
+  # Structured Outputs: your predictor will validate the output of the model too.
+  output do
+    const :sentiment, Sentiment, description: 'The sentiment of the sentence'
+    const :confidence, Float, description: 'A number between 0.0 and 1.0'
+  end
+end
+
+# Wire it to the simplest prompting technique - a Predictn.
+classify = DSPy::Predict.new(Classify)
+# it may raise an error if you mess the inputs or your LLM messes the outputs.
+result = classify.call(sentence: "This book was super fun to read!")
+
+puts result.sentiment    # => #<Sentiment::Positive>  
+puts result.confidence   # => 0.85
+```
+
 ### Sibling Gems
 
 DSPy.rb ships multiple gems from this monorepo so you can opt into features with heavier dependency trees (e.g., datasets pull in Polars/Arrow, MIPROv2 requires `numo-*` BLAS bindings) only when you need them. Add these alongside `dspy`:
