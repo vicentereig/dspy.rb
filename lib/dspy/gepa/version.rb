@@ -5,6 +5,6 @@ require_relative '../version'
 
 module DSPy
   module GEPA
-    VERSION = DSPy::VERSION
+    VERSION = '1.0.0'
   end
 end

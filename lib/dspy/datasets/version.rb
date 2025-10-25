@@ -2,6 +2,6 @@
 
 module DSPy
   module Datasets
-    VERSION = DSPy::VERSION
+    VERSION = '1.0.0'
   end
 end
