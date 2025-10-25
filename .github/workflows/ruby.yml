@@ -115,8 +115,6 @@ jobs:
           gepa: '0'
           o11y: '1'
           o11y_langfuse: '1'
-          o11y: '1'
-          o11y_langfuse: '1'
     name: Run tests (${{ matrix.name }})
     steps:
     - uses: actions/checkout@v4
