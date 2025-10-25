@@ -22,7 +22,15 @@ DSPy.rb takes a different approach: **observability is built into the architectu
 
 ## Zero-Config Langfuse Integration
 
-The observability system integrates seamlessly with Langfuse—no configuration files, no custom instrumentation, just environment variables:
+First, add the sibling gems so observability stays optional:
+
+```ruby
+gem 'dspy'
+gem 'dspy-o11y'
+gem 'dspy-o11y-langfuse'
+```
+
+Then provide your Langfuse credentials—no config files, no custom instrumentation, just environment variables:
 
 ```bash
 export LANGFUSE_PUBLIC_KEY=pk-lf-your-public-key  

@@ -22,6 +22,14 @@ if ENV.fetch('DSPY_WITH_MIPROV2', '1') == '1'
   gemspec name: "dspy-miprov2"
 end
 
+if ENV.fetch('DSPY_WITH_O11Y', '1') == '1'
+  gemspec name: "dspy-o11y"
+end
+
+if ENV.fetch('DSPY_WITH_O11Y_LANGFUSE', '1') == '1'
+  gemspec name: "dspy-o11y-langfuse"
+end
+
 if ENV.fetch('DSPY_WITH_GEPA', '1') == '1'
   gemspec name: "dspy-gepa"
   gemspec name: "gepa"

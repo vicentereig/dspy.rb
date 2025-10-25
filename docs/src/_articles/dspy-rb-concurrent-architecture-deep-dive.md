@@ -23,6 +23,8 @@ The DSPy.rb architecture demonstrates that Ruby, combined with thoughtful async 
 - **Zero-configuration observability** with automatic Langfuse export
 - **Production-ready resilience** with async retry handling
 
+> Install the optional `dspy-o11y` and `dspy-o11y-langfuse` gems (or set `DSPY_WITH_O11Y=1 DSPY_WITH_O11Y_LANGFUSE=1` inside this repo) to enable the observability stack described here.
+
 ## Ruby's Modern Async Approach: No Syntax Sugar Required
 
 Ruby's modern approach to concurrency through the `async` gem is unique because it doesn't add syntax sugar to your code. Unlike JavaScript's `async/await` or Python's explicit async syntax, Ruby methods remain "colorless"—you don't need special keywords to make them work asynchronously.

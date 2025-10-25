@@ -31,6 +31,18 @@ The observability system offers:
 - **Non-Blocking Exports**: Dedicated single-thread executor keeps telemetry off hot paths
 - **Zero Breaking Changes**: All existing `DSPy.log()` calls work unchanged
 
+## Installation
+
+Add the observability gems alongside `dspy`:
+
+```ruby
+gem 'dspy'
+gem 'dspy-o11y'           # core spans + helpers
+gem 'dspy-o11y-langfuse'  # Langfuse/OpenTelemetry adapter (optional)
+```
+
+When hacking inside this monorepo, run `DSPY_WITH_O11Y=1 DSPY_WITH_O11Y_LANGFUSE=1 bundle install` to pull in the sibling gems.
+
 ## Architecture
 
 The event system is built around three core components:

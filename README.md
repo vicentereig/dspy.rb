@@ -60,8 +60,10 @@ DSPy.rb ships multiple gems from this monorepo so you only install what you need
 | `dspy-miprov2` | Bayesian optimization + Gaussian Process backend for the MIPROv2 teleprompter. |
 | `dspy-gepa` | `DSPy::Teleprompt::GEPA`, reflection loops, experiment tracking, and telemetry adapters built on top of the GEPA core gem. |
 | `gepa` | GEPA optimizer core (Pareto engine, telemetry, reflective proposer) shared by `dspy-gepa`. |
+| `dspy-o11y` | Core observability APIs: `DSPy::Observability`, async span processor, and observation type helpers. |
+| `dspy-o11y-langfuse` | Auto-configures DSPy observability to stream spans to Langfuse via OpenTelemetry. |
 
-Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally (for example `DSPY_WITH_GEPA=1` to pull in the teleprompter).
+Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally (for example `DSPY_WITH_GEPA=1` or `DSPY_WITH_O11Y_LANGFUSE=1`).
 ### Your First Reliable Predictor
 
 ```ruby
