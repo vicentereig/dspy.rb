@@ -22,6 +22,17 @@ GEPA stands for **Genetic-Pareto Reflective Prompt Evolution**. In practice, it 
 
 The walkthrough below uses `examples/ade_optimizer_gepa/` as a template. It highlights the small set of hooks you need to provide and explains the runtime knobs in plain language so you can plug the optimizer into your own project with confidence.
 
+## Installation
+
+Add the optional gem so Bundler pulls in the teleprompter plus its GEPA core dependency:
+
+```ruby
+gem 'dspy'
+gem 'dspy-gepa'
+```
+
+If you're working inside the DSPy.rb monorepo, set `DSPY_WITH_GEPA=1 bundle install` so the local gemspecs are included. The `dspy-gepa` gem depends on the `gepa` core optimizer gem automatically.
+
 ## Overview
 
 GEPA runs in iterative loops:
@@ -45,6 +56,7 @@ bundle exec ruby examples/ade_optimizer_gepa/main.rb \
 ```
 
 - Uses `DSPy::Teleprompt::GEPA` with a reflective OpenAI LM.
+- Requires the optional `dspy-gepa` gem (see installation notes above).
 - Downloads a small ADE dataset, splits into train/val/test, and logs results under `examples/ade_optimizer_gepa/results/`.
 - Auto-adjusts `max_metric_calls` to cover validation if your budget is too low.
 

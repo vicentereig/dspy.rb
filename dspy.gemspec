@@ -29,6 +29,8 @@ Gem::Specification.new do |spec|
   spec.files.reject! { |path| path == "lib/dspy/miprov2.rb" }
   spec.files.reject! { |path| path.start_with?("lib/dspy/teleprompt/mipro_v2") }
   spec.files.reject! { |path| path.start_with?("lib/dspy/optimizers/gaussian_process") }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/gepa") }
+  spec.files.reject! { |path| path == "lib/dspy/gepa.rb" }
   spec.files.reject! { |path| path.start_with?("lib/gepa") || path == "lib/gepa.rb" }
 
   # Uncomment to register executables

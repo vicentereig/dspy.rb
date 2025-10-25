@@ -23,6 +23,9 @@ PATH
       concurrent-ruby (~> 1.3)
       dspy (= 0.29.1)
       polars-df (~> 0.15)
+    dspy-gepa (0.29.1)
+      dspy (= 0.29.1)
+      gepa (= 0.29.1)
     dspy-miprov2 (0.29.1)
       dspy (= 0.29.1)
       numo-narray-alt (~> 0.9)
@@ -243,6 +246,7 @@ DEPENDENCIES
   dspy!
   dspy-datasets!
   dspy-evals!
+  dspy-gepa!
   dspy-miprov2!
   dspy-schema!
   faraday (~> 2.0)

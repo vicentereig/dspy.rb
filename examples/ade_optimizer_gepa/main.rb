@@ -12,6 +12,7 @@ require 'time'
 require 'gepa/logging'
 
 require 'dspy'
+require 'dspy/teleprompt/gepa'
 require 'sorbet-runtime'
 module ADEExampleGEPA
   class ADETextClassifier < DSPy::Signature

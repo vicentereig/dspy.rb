@@ -221,8 +221,11 @@ require_relative 'dspy/evals'
 require_relative 'dspy/teleprompt/teleprompter'
 require_relative 'dspy/teleprompt/utils'
 require_relative 'dspy/teleprompt/data_handler'
-require_relative 'dspy/teleprompt/gepa'
 require_relative 'dspy/propose/grounded_proposer'
+begin
+  require 'dspy/gepa'
+rescue LoadError
+end
 begin
   require 'dspy/code_act'
 rescue LoadError

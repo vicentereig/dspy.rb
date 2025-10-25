@@ -1417,6 +1417,8 @@ puts "Optimization history: #{result.history.length} trials"
 
 Genetic-Pareto reflective prompt evolution that replays traces, collects feedback, and asks a reflection LM to rewrite instructions:
 
+> Install the `dspy-gepa` gem (and set `DSPY_WITH_GEPA=1` when developing inside the monorepo) to load `DSPy::Teleprompt::GEPA`.
+
 ```ruby
 feedback_map = {
   'self' => ->(predictor_output:, predictor_inputs:, module_inputs:, module_outputs:, captured_trace:) do

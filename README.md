@@ -58,9 +58,10 @@ DSPy.rb ships multiple gems from this monorepo so you only install what you need
 | `dspy-datasets` | Dataset helpers plus Parquet/Polars tooling for richer evaluation corpora. |
 | `dspy-evals` | High-throughput evaluation harness with metrics, callbacks, and regression fixtures. |
 | `dspy-miprov2` | Bayesian optimization + Gaussian Process backend for the MIPROv2 teleprompter. |
-| `gepa` | GEPA optimizer core (Pareto engine, telemetry, reflective proposer) shared with `dspy-gepa`. |
+| `dspy-gepa` | `DSPy::Teleprompt::GEPA`, reflection loops, experiment tracking, and telemetry adapters built on top of the GEPA core gem. |
+| `gepa` | GEPA optimizer core (Pareto engine, telemetry, reflective proposer) shared by `dspy-gepa`. |
 
-Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally.
+Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally (for example `DSPY_WITH_GEPA=1` to pull in the teleprompter).
 ### Your First Reliable Predictor
 
 ```ruby
