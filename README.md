@@ -47,9 +47,9 @@ and
 bundle install
 ```
 
-### Optional Sibling Gems
+### Sibling Gems
 
-DSPy.rb ships multiple gems from this monorepo so you only install what you need. Add these alongside `dspy`:
+DSPy.rb ships multiple gems from this monorepo so you can opt into features with heavier dependency trees (e.g., datasets pull in Polars/Arrow, MIPROv2 requires `numo-*` BLAS bindings) only when you need them. Add these alongside `dspy`:
 
 | Gem | Description | Status |
 | --- | --- | --- |
