@@ -46,6 +46,21 @@ and
 ```bash
 bundle install
 ```
+
+### Optional Sibling Gems
+
+DSPy.rb ships multiple gems from this monorepo so you only install what you need. Add these alongside `dspy`:
+
+| Gem | Description |
+| --- | --- |
+| `dspy-schema` | Exposes `DSPy::TypeSystem::SorbetJsonSchema` so other projects (e.g., exa-ruby) can convert Sorbet types to JSON Schema without pulling the full DSPy stack. |
+| `dspy-code_act` | Think-Code-Observe agents that can synthesize and execute Ruby code safely. |
+| `dspy-datasets` | Dataset helpers plus Parquet/Polars tooling for richer evaluation corpora. |
+| `dspy-evals` | High-throughput evaluation harness with metrics, callbacks, and regression fixtures. |
+| `dspy-miprov2` | Bayesian optimization + Gaussian Process backend for the MIPROv2 teleprompter. |
+| `gepa` | GEPA optimizer core (Pareto engine, telemetry, reflective proposer) shared with `dspy-gepa`. |
+
+Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally.
 ### Your First Reliable Predictor
 
 ```ruby

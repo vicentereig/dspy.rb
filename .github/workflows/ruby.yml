@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # TODO: explore ways to test the matrix across several Ruby versions instead of a single .ruby-version pin.
     strategy:
       fail-fast: false
       matrix:
@@ -25,6 +26,7 @@ jobs:
           miprov2: '0'
           evals: '1'
           code_act: '0'
+          schema: '1'
         - name: DSPy CodeAct
           gem: dspy-code_act
           command: bundle exec rspec --format documentation spec/unit/dspy/code_act spec/integration/dspy/code_act_spec.rb
@@ -32,6 +34,7 @@ jobs:
           miprov2: '0'
           evals: '1'
           code_act: '1'
+          schema: '1'
         - name: DSPy Datasets
           gem: dspy-datasets
           command: bundle exec rspec --format documentation --pattern 'spec/unit/dspy/datasets/**/*_spec.rb'
@@ -41,6 +44,7 @@ jobs:
           miprov2: '0'
           evals: '1'
           code_act: '0'
+          schema: '1'
         - name: GEPA
           gem: gepa
           command: bundle exec rspec --format documentation spec/unit/gepa spec/unit/teleprompt/gepa_spec.rb
@@ -49,6 +53,7 @@ jobs:
           miprov2: '0'
           evals: '1'
           code_act: '0'
+          schema: '1'
         - name: DSPy MIPROv2
           gem: dspy-miprov2
           command: bundle exec rspec --format documentation --pattern 'spec/unit/optimizers/gaussian_process_spec.rb'
@@ -59,6 +64,7 @@ jobs:
           miprov2: '1'
           evals: '1'
           code_act: '0'
+          schema: '1'
         - name: DSPy Evaluations
           gem: dspy-evals
           command: bundle exec rspec --format documentation spec/integration/dspy/evaluate_spec.rb spec/integration/evaluation_integration_spec.rb
@@ -66,6 +72,15 @@ jobs:
           miprov2: '0'
           evals: '1'
           code_act: '0'
+          schema: '1'
+        - name: DSPy Schema
+          gem: dspy-schema
+          command: bundle exec ruby -Ilib -e "require 'sorbet-runtime'; require 'dspy/schema'; schema = DSPy::TypeSystem::SorbetJsonSchema.type_to_json_schema(T.nilable(String)); unless schema[:type].is_a?(Array) && schema[:type].include?('null'); abort('nilable schema missing null type'); end"
+          datasets: '0'
+          miprov2: '0'
+          evals: '0'
+          code_act: '0'
+          schema: '1'
     name: Run tests (${{ matrix.name }})
     steps:
     - uses: actions/checkout@v4
@@ -95,9 +110,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: vendor/bundle
-        key: gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-${{ matrix.code_act }}-${{ hashFiles('**/Gemfile.lock') }}
+        key: gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-${{ matrix.code_act }}-${{ matrix.schema }}-${{ hashFiles('**/Gemfile.lock') }}
         restore-keys: |
-          gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-${{ matrix.code_act }}-
+          gems-${{ runner.os }}-${{ matrix.datasets }}-${{ matrix.miprov2 }}-${{ matrix.evals }}-${{ matrix.code_act }}-${{ matrix.schema }}-
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -109,6 +124,7 @@ jobs:
         DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
         DSPY_WITH_EVALS: ${{ matrix.evals }}
         DSPY_WITH_CODE_ACT: ${{ matrix.code_act }}
+        DSPY_WITH_SCHEMA: ${{ matrix.schema }}
       run: |
         bundle config set --local path vendor/bundle
         bundle install --jobs 4
@@ -119,6 +135,7 @@ jobs:
         DSPY_WITH_MIPROV2: ${{ matrix.miprov2 }}
         DSPY_WITH_EVALS: ${{ matrix.evals }}
         DSPY_WITH_CODE_ACT: ${{ matrix.code_act }}
+        DSPY_WITH_SCHEMA: ${{ matrix.schema }}
         OPENAI_API_KEY: test-openai-key-for-vcr
         ANTHROPIC_API_KEY: test-anthropic-key-for-vcr
         GEMINI_API_KEY: test-gemini-key-for-vcr
