@@ -98,12 +98,12 @@ DSPy.rb ships multiple gems from this monorepo so you can opt into features with
 | Gem | Description | Status |
 | --- | --- | --- |
 | `dspy-schema` | Exposes `DSPy::TypeSystem::SorbetJsonSchema` for downstream reuse. (Still required by the core `dspy` gem; extraction lets other projects depend on it directly.) | **Stable** (v1.0.0) |
-| `dspy-code_act` | Think-Code-Observe agents that synthesize and execute Ruby safely. (Add the gem or set `DSPY_WITH_CODE_ACT=1` before requiring `dspy/code_act`.) | Preview (0.x) |
-| `dspy-datasets` | Dataset helpers plus Parquet/Polars tooling for richer evaluation corpora. (Toggle via `DSPY_WITH_DATASETS`.) | Preview (0.x) |
-| `dspy-evals` | High-throughput evaluation harness with metrics, callbacks, and regression fixtures. (Toggle via `DSPY_WITH_EVALS`.) | Preview (0.x) |
-| `dspy-miprov2` | Bayesian optimization + Gaussian Process backend for the MIPROv2 teleprompter. (Install or export `DSPY_WITH_MIPROV2=1` before requiring the teleprompter.) | Preview (0.x) |
-| `dspy-gepa` | `DSPy::Teleprompt::GEPA`, reflection loops, experiment tracking, telemetry adapters. (Install or set `DSPY_WITH_GEPA=1`.) | Preview (mirrors `dspy` version) |
-| `gepa` | GEPA optimizer core (Pareto engine, telemetry, reflective proposer). | Preview (mirrors `dspy` version) |
+| `dspy-code_act` | Think-Code-Observe agents that synthesize and execute Ruby safely. (Add the gem or set `DSPY_WITH_CODE_ACT=1` before requiring `dspy/code_act`.) | **Stable** (v1.0.0) |
+| `dspy-datasets` | Dataset helpers plus Parquet/Polars tooling for richer evaluation corpora. (Toggle via `DSPY_WITH_DATASETS`.) | **Stable** (v1.0.0) |
+| `dspy-evals` | High-throughput evaluation harness with metrics, callbacks, and regression fixtures. (Toggle via `DSPY_WITH_EVALS`.) | **Stable** (v1.0.0) |
+| `dspy-miprov2` | Bayesian optimization + Gaussian Process backend for the MIPROv2 teleprompter. (Install or export `DSPY_WITH_MIPROV2=1` before requiring the teleprompter.) | **Stable** (v1.0.0) |
+| `dspy-gepa` | `DSPy::Teleprompt::GEPA`, reflection loops, experiment tracking, telemetry adapters. (Install or set `DSPY_WITH_GEPA=1`.) | **Stable** (v1.0.0) |
+| `gepa` | GEPA optimizer core (Pareto engine, telemetry, reflective proposer). | **Stable** (v1.0.0) |
 | `dspy-o11y` | Core observability APIs: `DSPy::Observability`, async span processor, observation types. (Install or set `DSPY_WITH_O11Y=1`.) | **Stable** (v1.0.0) |
 | `dspy-o11y-langfuse` | Auto-configures DSPy observability to stream spans to Langfuse via OTLP. (Install or set `DSPY_WITH_O11Y_LANGFUSE=1`.) | **Stable** (v1.0.0) |
 
