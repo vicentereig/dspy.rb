@@ -28,6 +28,8 @@ PATH
       numo-tiny_linalg (~> 0.4)
     gepa (0.29.1)
       dspy (= 0.29.1)
+    dspy-schema (0.1.0)
+      sorbet-runtime (>= 0.5.0)
 
 GEM
   remote: https://rubygems.org/
@@ -241,6 +243,7 @@ DEPENDENCIES
   dspy-datasets!
   dspy-evals!
   dspy-miprov2!
+  dspy-schema!
   faraday (~> 2.0)
   gepa!
   newrelic_rpm (~> 9.21)
