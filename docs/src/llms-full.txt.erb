@@ -1579,7 +1579,14 @@ puts "Optimization completed #{result.history.length} trials"
 
 **Configuration Requirements:**
 
-Langfuse integration requires these environment variables:
+Add the optional gems:
+```ruby
+gem 'dspy'
+gem 'dspy-o11y'
+gem 'dspy-o11y-langfuse'
+```
+
+Langfuse integration also requires these environment variables:
 ```bash
 export LANGFUSE_PUBLIC_KEY=pk_your_public_key
 export LANGFUSE_SECRET_KEY=sk_your_secret_key

@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'dspy/code_act'
-require 'dspy/observability/observation_type'
+require 'dspy/o11y'
 
 RSpec.describe 'CodeAct observability integration' do
   it 'maps CodeAct modules to Agent observation type' do

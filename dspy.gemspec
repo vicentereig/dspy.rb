@@ -31,6 +31,8 @@ Gem::Specification.new do |spec|
   spec.files.reject! { |path| path.start_with?("lib/dspy/optimizers/gaussian_process") }
   spec.files.reject! { |path| path.start_with?("lib/dspy/gepa") }
   spec.files.reject! { |path| path == "lib/dspy/gepa.rb" }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/o11y") }
+  spec.files.reject! { |path| path == "lib/dspy/o11y.rb" }
   spec.files.reject! { |path| path.start_with?("lib/gepa") || path == "lib/gepa.rb" }
 
   # Uncomment to register executables
@@ -58,10 +60,6 @@ Gem::Specification.new do |spec|
 
   # Local embeddings
   spec.add_dependency "informers", "~> 1.2"
-
-  # Optional OpenTelemetry integration for Langfuse
-  spec.add_dependency "opentelemetry-sdk", "~> 1.8"
-  spec.add_dependency "opentelemetry-exporter-otlp", "~> 0.30"
 
   # Development dependencies are already specified in the Gemfile
 end

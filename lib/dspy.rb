@@ -9,7 +9,6 @@ require_relative 'dspy/version'
 require_relative 'dspy/errors'
 require_relative 'dspy/type_serializer'
 require_relative 'dspy/observability'
-require_relative 'dspy/observability/observation_type'
 require_relative 'dspy/context'
 require_relative 'dspy/events'
 require_relative 'dspy/events/types'
@@ -222,6 +221,10 @@ require_relative 'dspy/teleprompt/teleprompter'
 require_relative 'dspy/teleprompt/utils'
 require_relative 'dspy/teleprompt/data_handler'
 require_relative 'dspy/propose/grounded_proposer'
+begin
+  require 'dspy/o11y/langfuse'
+rescue LoadError
+end
 begin
   require 'dspy/gepa'
 rescue LoadError

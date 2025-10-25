@@ -53,7 +53,7 @@ RSpec.describe DSPy::Observability do
         ENV.delete('DSPY_DISABLE_OBSERVABILITY')
         ENV['LANGFUSE_PUBLIC_KEY'] = 'pk-lf-test'
         ENV['LANGFUSE_SECRET_KEY'] = 'sk-lf-test'
-        allow(described_class).to receive(:require).and_raise(LoadError)
+        allow(described_class).to receive(:require_dependency).and_raise(LoadError)
       end
 
       after do

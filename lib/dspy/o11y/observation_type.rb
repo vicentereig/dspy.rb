@@ -36,7 +36,7 @@ module DSPy
     end
 
     # Get the appropriate observation type for a DSPy module class
-    sig { params(module_class: T.class_of(DSPy::Module)).returns(ObservationType) }
+    sig { params(module_class: T.untyped).returns(ObservationType) }
     def self.for_module_class(module_class)
       case module_class.name
       when /ReAct/, /CodeAct/
