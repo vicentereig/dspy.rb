@@ -1,15 +1,4 @@
----
-layout: docs
-name: Dependency Tree
-description: Understand how the DSPy.rb core gem relates to its sibling packages and optional dependencies.
-breadcrumb:
-- name: Core Concepts
-  url: "/core-concepts/"
-- name: Dependency Tree
-  url: "/core-concepts/dependency-tree/"
-date: 2025-10-25 00:00:00 +0000
----
-# Dependency Tree
+# ADR 013: DSPy Dependency Tree
 
 DSPy.rb now ships as a lightweight core plus a set of sibling gems. Each sibling packages an optional feature set behind an environment toggle so you only install what you need.
 

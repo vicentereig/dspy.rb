@@ -63,7 +63,7 @@ DSPy.rb ships multiple gems from this monorepo so you only install what you need
 | `dspy-o11y` | Core observability APIs: `DSPy::Observability`, async span processor, observation types. | **Stable** (v1.0.0) |
 | `dspy-o11y-langfuse` | Auto-configures DSPy observability to stream spans to Langfuse via OTLP. | **Stable** (v1.0.0) |
 
-Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally (for example `DSPY_WITH_GEPA=1` or `DSPY_WITH_O11Y_LANGFUSE=1`). Refer to `docs/core-concepts/dependency-tree.md` for the full dependency map and roadmap.
+Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally (for example `DSPY_WITH_GEPA=1` or `DSPY_WITH_O11Y_LANGFUSE=1`). Refer to `adr/013-dependency-tree.md` for the full dependency map and roadmap.
 ### Your First Reliable Predictor
 
 ```ruby
