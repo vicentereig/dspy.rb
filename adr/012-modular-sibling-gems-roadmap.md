@@ -1,7 +1,7 @@
 # ADR 012: Modular Sibling Gems Roadmap
 
 ## Status
-Proposed
+In Progress (schema, GEPA, and observability extractions complete)
 
 ## Context
 - DSPy.rb currently bundles GEPA, MIPROv2, JSON-schema conversion, and Langfuse observability directly inside the core gem.
@@ -10,7 +10,13 @@ Proposed
 - This ADR records the goal of breaking DSPy.rb into sibling gems and the plan for executing the work incrementally.
 
 ## Decision
-Adopt a phased roadmap that extracts tightly scoped, opt-in gems while keeping backwards-compatible shims in the main repo:
+Adopt a phased roadmap that extracts tightly scoped, opt-in gems while keeping backwards-compatible shims in the main repo. Work completed so far:
+
+- **dspy-schema (v1.0.0)** – Sorbet→JSON Schema helpers now live in a stable sibling gem and can be reused by `exa-ruby`.
+- **dspy-gepa** – `DSPy::Teleprompt::GEPA` plus telemetry helpers moved behind the `DSPY_WITH_GEPA` toggle, depending on the shared `gepa` core gem.
+- **dspy-o11y (v1.0.0)** and **dspy-o11y-langfuse (v1.0.0)** – Observability core + Langfuse exporter extracted, with shims in `lib/dspy/observability.rb`.
+
+Upcoming phases remain the same:
 
 1. **dspy-gepa**
    - Move `DSPy::Teleprompt::GEPA`, its `PredictAdapter`, experiment tracker, telemetry helpers (ADR-009), and specs into a new gem that depends on both `dspy` (shared teleprompter/runtime interfaces) and `gepa` (optimizer core).
@@ -28,9 +34,9 @@ Adopt a phased roadmap that extracts tightly scoped, opt-in gems while keeping b
    - Document reuse guidance for `exa-ruby` in `docs/` once packaged.
 
 4. **dspy-o11y & adapters**
-   - Create a core observability gem (`dspy-o11y`) that provides `DSPy::Observability`, `AsyncSpanProcessor`, `ObservationType`, and the span/context hooks.
+   - ✅ Create a core observability gem (`dspy-o11y`) that provides `DSPy::Observability`, `AsyncSpanProcessor`, `ObservationType`, and the span/context hooks.
    - Build adapter gems that register exporters:
-     - `dspy-o11y-langfuse` (extract current OTLP/Langfuse logic, env var config, and specs).
+     - ✅ `dspy-o11y-langfuse` (extract current OTLP/Langfuse logic, env var config, and specs).
      - `dspy-o11y-newrelic` (future) to integrate `newrelic_rpm`.
    - Core DSPy should run even when no adapter is installed (no-op spans).
 
@@ -51,5 +57,6 @@ Adopt a phased roadmap that extracts tightly scoped, opt-in gems while keeping b
 ## Next Steps
 1. Review existing gemspecs (ADR-010) and ensure they can be reused as templates for the new packages.
 2. Draft compatibility shims inside `lib/dspy/teleprompt` and `lib/dspy/type_system` before moving files, so short-lived PRs do not break main.
-3. Update the `Gemfile`, `README`, and docs once each gem extraction lands.
-4. Extend the GitHub Actions pipeline (building on ADR-011) with additional jobs that toggle `DSPY_WITH_*` flags and install new gems (`dspy-gepa`, `dspy-json-schema`, `dspy-o11y-*`) to verify lazy loading behavior across combinations.
+3. Update the `Gemfile`, `README`, and docs once each gem extraction lands. (Ongoing.)
+4. Extend the GitHub Actions pipeline (building on ADR-011) with additional jobs that toggle `DSPY_WITH_*` flags and install new gems (`dspy-gepa`, `dspy-json-schema`, `dspy-o11y-*`) to verify lazy loading behavior across combinations. ✅
+5. Plan the next dependency split for LLM providers (`openai`, `anthropic`, `gemini-ai`) so each adapter can become an optional sibling gem; keep them bundled in `dspy` until that follow-up ADR ships.
