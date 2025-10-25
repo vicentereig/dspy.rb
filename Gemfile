@@ -22,7 +22,10 @@ if ENV.fetch('DSPY_WITH_MIPROV2', '1') == '1'
   gemspec name: "dspy-miprov2"
 end
 
-gemspec name: "gepa"
+if ENV.fetch('DSPY_WITH_GEPA', '1') == '1'
+  gemspec name: "dspy-gepa"
+  gemspec name: "gepa"
+end
 
 group :development, :test do
   gem 'rspec', '~> 3.12'

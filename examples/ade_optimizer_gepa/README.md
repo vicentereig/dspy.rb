@@ -7,6 +7,7 @@ This example mirrors the MIPROv2 ADE optimizer, but uses `DSPy::Teleprompt::GEPA
 - Ruby 3.3 via `rbenv`
 - Bundler dependencies installed (`bundle install`)
 - `OPENAI_API_KEY` set in the environment (used for both student and reflection LMs)
+- `dspy-gepa` present in your Gemfile (set `DSPY_WITH_GEPA=1` inside this monorepo before running `bundle install`)
 
 ## Run
 

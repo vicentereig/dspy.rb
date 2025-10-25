@@ -2,7 +2,7 @@
 
 require 'yaml'
 require 'fileutils'
-require_relative '../lib/dspy/teleprompt/gepa'
+require 'dspy/teleprompt/gepa'
 
 module Examples
   module GEPA

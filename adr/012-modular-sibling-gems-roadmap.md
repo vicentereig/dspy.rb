@@ -13,13 +13,14 @@ Proposed
 Adopt a phased roadmap that extracts tightly scoped, opt-in gems while keeping backwards-compatible shims in the main repo:
 
 1. **dspy-gepa**
-   - Move `DSPy::Teleprompt::GEPA`, its `PredictAdapter`, experiment tracker, telemetry helpers (ADR-009), and specs into a new gem that depends on both `dspy` and `gepa`.
+   - Move `DSPy::Teleprompt::GEPA`, its `PredictAdapter`, experiment tracker, telemetry helpers (ADR-009), and specs into a new gem that depends on both `dspy` (shared teleprompter/runtime interfaces) and `gepa` (optimizer core).
    - Introduce `DSPY_WITH_GEPA` gating in the `Gemfile` identical to `DSPY_WITH_MIPROV2`.
    - Keep a thin shim under `lib/dspy/teleprompt/gepa.rb` that raises a helpful error if the gem is missing.
 
-2. **dspy-miprov2 layout cleanup**
-   - Relocate the teleprompter, auto modes, and Gaussian Process backend under `lib/dspy/mipro_v2/` inside the existing optional gem.
-   - Leave shared bootstrapping helpers (InstructionUpdates, Utils, DataHandler) in the core gem because GEPA and future optimizers rely on them.
+2. **dspy-miprov2 & dspy-gepa layout cleanup**
+   - For MIPROv2, relocate the teleprompter, auto modes, and Gaussian Process backend under `lib/dspy/mipro_v2/` inside the existing optional gem.
+   - For GEPA, mirror the structure under `lib/dspy/gepa/` so its runtime components, adapters, and observers live alongside the new gemspec rather than inside the core tree.
+   - Leave shared bootstrapping helpers (InstructionUpdates, Utils, DataHandler) in the core gem because both optimizers and future modules rely on them.
 
 3. **dspy-json-schema**
    - Extract `DSPy::TypeSystem::SorbetJsonSchema` into an independent gem with only `sorbet-runtime` dependency.
