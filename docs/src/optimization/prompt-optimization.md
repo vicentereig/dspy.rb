@@ -146,6 +146,8 @@ custom_predictor.prompt = optimized_prompt
 
 ### Using MIPROv2 for Prompt Optimization
 
+> ⚠️ **Install note** — MIPROv2 lives in the optional `dspy-miprov2` gem. Add `gem 'dspy-miprov2'` next to `gem 'dspy'` (or set `DSPY_WITH_MIPROV2=1` when developing inside this repo) before requiring the teleprompter.
+
 ```ruby
 # Create program to optimize
 program = DSPy::Predict.new(ClassifyText)
