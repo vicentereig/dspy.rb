@@ -2,6 +2,6 @@
 
 module DSPy
   module CodeActVersion
-    VERSION = DSPy::VERSION
+    VERSION = '1.0.0'
   end
 end

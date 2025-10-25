@@ -2,6 +2,6 @@
 
 module DSPy
   class Evals
-    VERSION = DSPy::VERSION
+    VERSION = '1.0.0'
   end
 end
