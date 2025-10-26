@@ -259,15 +259,34 @@ module DSPy
     # Executes method with around callbacks
     def execute_with_around_callbacks(method_name, original_method, *args, **kwargs, &block)
       callbacks = self.class.send(:callbacks_for, method_name)[:around]
+      args_copy = args.dup
+      kwargs_copy = kwargs.dup
 
       # Build callback chain from innermost (original method) to outermost
       chain = callbacks.reverse.inject(
         -> { original_method.bind(self).call(*args, **kwargs, &block) }
       ) do |inner, callback|
         if callback.is_a?(Proc)
-          -> { instance_exec(-> { inner.call }, &callback) }
+          -> do
+            next_proc = -> { inner.call }
+            proc_arity = callback.arity
+            expects_extra = proc_arity.abs > 1
+
+            if expects_extra
+              instance_exec(next_proc, args_copy, kwargs_copy, &callback)
+            else
+              instance_exec(next_proc, &callback)
+            end
+          end
         else
-          -> { send(callback) { inner.call } }
+          -> do
+            method_obj = method(callback)
+            if method_obj.arity.zero?
+              send(callback) { inner.call }
+            else
+              send(callback, args_copy, kwargs_copy) { inner.call }
+            end
+          end
         end
       end
 

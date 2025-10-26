@@ -75,6 +75,10 @@ module DSPy
       create_event_span(event_name, attributes)
     end
 
+    attributes = attributes.dup
+    module_metadata = DSPy::Context.module_context_attributes
+    attributes.merge!(module_metadata) unless module_metadata.empty?
+
     # Perform the actual logging (original DSPy.log behavior)
     # emit_log(event_name, attributes)
 
@@ -100,6 +104,8 @@ module DSPy
     # Merge context automatically (but don't include span_stack)
     context = Context.current.dup
     context.delete(:span_stack)
+    context.delete(:otel_span_stack)
+    context.delete(:module_stack)
     attributes = context.merge(attributes)
     attributes[:event] = event_name
 
