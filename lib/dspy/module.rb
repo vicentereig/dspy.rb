@@ -13,7 +13,14 @@ module DSPy
     include Dry::Configurable
     include DSPy::Callbacks
 
-    DEFAULT_MODULE_SUBSCRIPTION_SCOPE = :descendants
+    class SubcriptionScope < T::Enum
+      enums do
+        Descendants = new('descendants')
+        SelfOnly    = new('self')
+      end
+    end
+
+    DEFAULT_MODULE_SUBSCRIPTION_SCOPE = SubcriptionScope::Descendants
 
     module ForwardOverrideHooks
       def method_added(method_name)
@@ -45,8 +52,8 @@ module DSPy
       end
 
       def subscribe(pattern, handler = nil, scope: DEFAULT_MODULE_SUBSCRIPTION_SCOPE, &block)
+        scope = normalize_scope(scope)
         raise ArgumentError, 'Provide a handler method or block' if handler.nil? && block.nil?
-        validate_subscription_scope!(scope)
 
         module_subscription_specs << {
           pattern: pattern,
@@ -63,9 +70,20 @@ module DSPy
       private
 
       def validate_subscription_scope!(scope)
-        return if [:descendants, :self].include?(scope)
+        T.must(scope)
+      end
 
-        raise ArgumentError, "Unsupported subscription scope: #{scope.inspect}"
+      def normalize_scope(scope)
+        return scope if scope.is_a?(SubcriptionScope)
+
+        case scope
+        when :descendants
+          SubcriptionScope::Descendants
+        when :self
+          SubcriptionScope::SelfOnly
+        else
+          raise ArgumentError, "Unsupported subscription scope: #{scope.inspect}"
+        end
       end
     end
 
@@ -277,7 +295,7 @@ module DSPy
       return false unless metadata
 
       case scope
-      when :self
+      when SubcriptionScope::SelfOnly
         metadata[:leaf_id] == module_scope_id
       else
         metadata[:path_ids].include?(module_scope_id)

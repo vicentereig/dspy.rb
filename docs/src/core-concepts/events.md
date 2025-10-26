@@ -82,8 +82,9 @@ Every `DSPy::Module` can now declare listeners that automatically scope to its i
 
 ```ruby
 class DeepSearch < DSPy::Module
-  subscribe 'llm.tokens', :meter_tokens            # descendants
-  subscribe 'search.result', :self_only, scope: :self
+  subscribe 'llm.tokens', :meter_tokens # defaults to descendants
+  subscribe 'search.result', :self_only,
+             scope: DSPy::Module::ModuleSubscriptionScope::SelfOnly
 
   def meter_tokens(_event, attrs)
     @token_count += attrs.fetch(:total_tokens, 0)

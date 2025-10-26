@@ -45,7 +45,7 @@ RSpec.describe 'Module-scoped listeners' do
   end
 
   class SelfScopedModule < DSPy::Module
-    subscribe 'module_scoped.test', :record_event, scope: :self
+    subscribe 'module_scoped.test', :record_event, scope: DSPy::Module::SubcriptionScope::SelfOnly
 
     attr_reader :recorded, :child
 
