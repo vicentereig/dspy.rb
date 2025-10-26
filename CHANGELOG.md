@@ -23,6 +23,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - **MIPROv2 and GEPA guides** - Ruby-focused rewrites and new HotPotQA walkthroughs document the expanded dataset tooling and benchmarks.
 
+## [0.30.1] - 2025-10-26
+
+### Added
+- **Module-scoped listeners** – `DSPy::Module.subscribe` now registers per-instance subscriptions with `SubcriptionScope` enums (`Descendants` default, `SelfOnly` optional) so DeepSearch/DeepResearch agents can meter tokens or capture search results without touching the global bus.
+- **Module context metadata** – Every `DSPy.event` payload now includes `module_path`, `module_root`, `module_leaf`, and `module_scope.ancestry_token` built from a thread-safe module stack, enabling Langfuse/LF-CLI filtering by agent component.
+
+### Changed
+- **Forward instrumentation** – All modules (including overrides that skip `super`) run inside `instrument_forward_call`, guaranteeing Langfuse/OpenTelemetry spans even for bespoke agents and keeping the module stack consistent.
+
+### Fixed
+- **Span nesting regressions** – Predict/ChainOfThought specs regained the expected span hierarchy (`outer.operation → DSPy::Predict.forward → llm.generate`) after the new instrumentation landed.
+
+### Documentation
+- Added a dedicated [Event System](docs/src/core-concepts/events.md) guide that answers “how do I listen globally?” with `DSPy.events.subscribe('*')`, documents the new module-scoped DSL, and links from the Core Concepts index.
+
 ## [0.29.1] - 2025-10-20
 
 ### Added
