@@ -9,11 +9,11 @@ breadcrumb:
   url: "/core-concepts/events/"
 nav:
   prev:
-    name: Predictors
-    url: "/core-concepts/predictors/"
-  next:
     name: Modules
     url: "/core-concepts/modules/"
+  next:
+    name: Memory
+    url: "/core-concepts/memory/"
 date: 2025-10-26 00:00:00 +0000
 last_modified_at: 2025-10-26 00:00:00 +0000
 ---
