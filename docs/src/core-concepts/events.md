@@ -2,6 +2,7 @@
 layout: docs
 name: Event System
 description: Emit, observe, and react to runtime telemetry in DSPy.rb
+nav_order: 3
 breadcrumb:
 - name: Core Concepts
   url: "/core-concepts/"

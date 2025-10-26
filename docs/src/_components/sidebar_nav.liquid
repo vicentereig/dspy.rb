@@ -1,0 +1,71 @@
+{% comment %}
+  Sidebar Navigation Component
+
+  Generates navigation links for a documentation section by reading page files
+  from the filesystem and ordering them based on frontmatter nav_order or nav.next chain.
+
+  Usage:
+    {% render "sidebar_nav", section: "core-concepts", menu_id: "core-concepts-menu" %}
+
+  Parameters:
+    - section: The directory name (e.g., "core-concepts", "getting-started")
+    - menu_id: Unique ID for the menu element
+{% endcomment %}
+
+{% comment %} Get all pages and filter to this section {% endcomment %}
+{% assign section_path = section %}
+{% assign all_pages = site.pages | where_exp: "page", "page.url contains section_path" %}
+
+{% comment %} Find the index page for this section {% endcomment %}
+{% assign index_url_pattern = section_path | append: "/index.md" | prepend: "/" %}
+{% assign index_page = all_pages | where_exp: "p", "p.url contains '/index.md' and p.url contains section_path" | first %}
+
+{% comment %} Build ordered page list by following nav.next chain {% endcomment %}
+{% assign ordered_pages = "" | split: "" %}
+{% if index_page %}
+  {% assign current_page = index_page %}
+  {% assign max_iterations = 20 %}
+  {% assign iteration_count = 0 %}
+
+  {% for i in (1..max_iterations) %}
+    {% if current_page.nav.next and current_page.nav.next.url %}
+      {% assign next_url = current_page.nav.next.url %}
+      {% assign next_page = all_pages | where_exp: "p", "p.url contains next_url" | first %}
+
+      {% if next_page %}
+        {% assign ordered_pages = ordered_pages | push: next_page %}
+        {% assign current_page = next_page %}
+      {% else %}
+        {% break %}
+      {% endif %}
+    {% else %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% comment %} Fallback: if chain is empty, sort by nav_order or filename {% endcomment %}
+{% if ordered_pages.size == 0 %}
+  {% comment %} Filter out index page and try to sort by nav_order {% endcomment %}
+  {% assign pages_with_order = all_pages | where_exp: "p", "p.url contains '.md' and p.url != index_page.url and p.nav_order" %}
+  {% assign pages_without_order = all_pages | where_exp: "p", "p.url contains '.md' and p.url != index_page.url and p.nav_order == nil" %}
+
+  {% if pages_with_order.size > 0 %}
+    {% assign ordered_pages = pages_with_order | sort: "nav_order" %}
+    {% assign ordered_pages = ordered_pages | concat: pages_without_order %}
+  {% else %}
+    {% assign ordered_pages = pages_without_order %}
+  {% endif %}
+{% endif %}
+
+{% comment %} Render navigation links {% endcomment %}
+{% for doc_page in ordered_pages %}
+  {% assign page_title = doc_page.name | default: doc_page.title %}
+  {% assign page_url = doc_page.url | replace: ".md", "/" | relative_url %}
+  <li>
+    <a href="{{ page_url }}"
+       class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700 hover:bg-gray-50">
+      {{ page_title }}
+    </a>
+  </li>
+{% endfor %}

@@ -1,9 +1,10 @@
 ---
-layout: post
+layout: blog
 title: "CodeAct: Dynamic Code Generation"
 description: "CodeAct now ships as a standalone gem with dedicated README docs."
 date: 2025-07-11 00:00:00 +0000
 last_modified_at: 2025-10-07 00:00:00 +0000
+category: Article
 ---
 # CodeAct article moved
 
