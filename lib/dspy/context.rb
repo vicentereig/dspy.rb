@@ -33,7 +33,8 @@ module DSPy
         context = {
           trace_id: SecureRandom.uuid,
           span_stack: [],
-          otel_span_stack: []
+          otel_span_stack: [],
+          module_stack: []
         }
         
         # Set in both Thread and Fiber storage
@@ -158,6 +159,48 @@ module DSPy
           end
         end
       end
+
+      def with_module(module_instance, label: nil)
+        stack = module_stack
+        entry = build_module_entry(module_instance, label)
+        stack.push(entry)
+        yield
+      ensure
+        if stack.last.equal?(entry)
+          stack.pop
+        else
+          stack.delete(entry)
+        end
+      end
+
+      def module_stack
+        current[:module_stack] ||= []
+      end
+
+      def module_context_attributes
+        stack = module_stack
+        return {} if stack.empty?
+
+        path = stack.map do |entry|
+          {
+            id: entry[:id],
+            class: entry[:class],
+            label: entry[:label]
+          }
+        end
+
+        ancestry_token = path.map { |node| node[:id] }.join('>')
+
+        {
+          module_path: path,
+          module_root: path.first,
+          module_leaf: path.last,
+          module_scope: {
+            ancestry_token: ancestry_token,
+            depth: path.length
+          }
+        }
+      end
       
       def clear!
         # Clear both the thread-specific key and the legacy key
@@ -217,6 +260,14 @@ module DSPy
             value.respond_to?(:to_json) ? value.to_json : value.to_s
           end
         end
+      end
+
+      def build_module_entry(module_instance, explicit_label)
+        {
+          id: (module_instance.respond_to?(:module_scope_id) ? module_instance.module_scope_id : SecureRandom.uuid),
+          class: module_instance.class.name,
+          label: explicit_label || (module_instance.respond_to?(:module_scope_label) ? module_instance.module_scope_label : nil)
+        }
       end
     end
   end
