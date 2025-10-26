@@ -78,28 +78,57 @@ Call `subscriber.unsubscribe` when you are done.
 
 ## Module-Scoped Subscribers
 
-Every `DSPy::Module` can now declare listeners that automatically scope to its instance (and optionally children):
+Every `DSPy::Module` can now declare listeners that automatically scope to its instance (and, by default, **all descendants** invoked inside it). Here is a grounded multi-module agent:
 
 ```ruby
-class DeepSearch < DSPy::Module
-  subscribe 'llm.tokens', :meter_tokens # defaults to descendants
-  subscribe 'search.result', :self_only,
-             scope: DSPy::Module::ModuleSubscriptionScope::SelfOnly
+class OutlineSignature < DSPy::Signature
+  description "Identify report sections"
+  input  { const :question, String }
+  output { const :sections, T::Array[String] }
+end
 
-  def meter_tokens(_event, attrs)
-    @token_count += attrs.fetch(:total_tokens, 0)
+class SectionWriterSignature < DSPy::Signature
+  description "Write a section paragraph"
+  input do
+    const :question, String
+    const :section_title, String
+  end
+  output { const :paragraph, String }
+end
+
+class ResearchReport < DSPy::Module
+  subscribe 'llm.tokens', :track_tokens # default scope: descendants
+
+  def initialize
+    super
+    @outliner = DSPy::Predict.new(OutlineSignature)
+    @section_writer = DSPy::Predict.new(SectionWriterSignature)
+    @token_count = 0
   end
 
-  def self_only(_event, attrs)
-    # Only fires when DeepSearch itself emitted the event
-    puts "Search result: #{attrs[:url]}"
+  def forward(question:)
+    outline = @outliner.call(question: question)
+    outline.sections.map do |section_title|
+      draft = @section_writer.call(
+        question: question,
+        section_title: section_title
+      )
+
+      { title: section_title, body: draft.paragraph }
+    end
+  end
+
+  def track_tokens(_event, attrs)
+    @token_count += attrs.fetch(:total_tokens, 0)
   end
 end
 ```
 
-Details:
+Because the `subscribe` call does not specify a scope, it listens to events emitted by the `ResearchReport` module **and** both nested `Predict` instances. You only need to opt into `scope: DSPy::Module::SubcriptionScope::SelfOnly` when you truly want to ignore descendants (for example, to log only the parent module's own `search.result` events).
 
-- `scope: :descendants` (default) fires for the module plus any nested modules invoked within it. `scope: :self` restricts delivery to events emitted by the module instance itself.
+Additional details:
+
+- `DSPy::Module::SubcriptionScope::Descendants` is the default and covers the module plus nested modules. `SubcriptionScope::SelfOnly` restricts delivery to the module instance itself.
 - Instance methods `registered_module_subscriptions` and `unsubscribe_module_events` allow inspection and teardown (useful in long-running services or tests).
 - DSPy merges module metadata into every event (`module_path`, `module_leaf`, `module_scope.ancestry_token`, etc.). Listeners can filter manually by inspecting those keys.
 
