@@ -9,8 +9,8 @@ breadcrumb:
   url: "/core-concepts/predictors/"
 nav:
   prev:
-    name: Modules
-    url: "/core-concepts/modules/"
+    name: Toolsets
+    url: "/core-concepts/toolsets/"
   next:
     name: Examples
     url: "/core-concepts/examples/"

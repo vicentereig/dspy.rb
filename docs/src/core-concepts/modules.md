@@ -12,8 +12,8 @@ nav:
     name: Signatures
     url: "/core-concepts/signatures/"
   next:
-    name: Predictors
-    url: "/core-concepts/predictors/"
+    name: Event System
+    url: "/core-concepts/events/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-25 00:00:00 +0000
 ---

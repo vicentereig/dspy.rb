@@ -9,8 +9,8 @@ breadcrumb:
   url: "/core-concepts/memory/"
 nav:
   prev:
-    name: Modules
-    url: "/core-concepts/modules/"
+    name: Event System
+    url: "/core-concepts/events/"
   next:
     name: Toolsets
     url: "/core-concepts/toolsets/"
