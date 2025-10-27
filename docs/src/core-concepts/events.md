@@ -10,8 +10,8 @@ breadcrumb:
   url: "/core-concepts/events/"
 nav:
   prev:
-    name: Modules
-    url: "/core-concepts/modules/"
+    name: Module Runtime Context
+    url: "/core-concepts/module-runtime-context/"
   next:
     name: Memory
     url: "/core-concepts/memory/"

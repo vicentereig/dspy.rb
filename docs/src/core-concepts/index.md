@@ -19,6 +19,9 @@ Define what your LLM operations should do - the inputs and outputs. Think of the
 ### [Modules](./modules/)
 Implement how to achieve what signatures define. Modules are composable units that can be combined to build complex workflows.
 
+### [Module Runtime Context](./module-runtime-context/)
+Keep module behavior predictable with fiber-local language model overrides, lifecycle callbacks, and reusable runtime patterns.
+
 ### [Event System](./events/)
 Emit structured telemetry with `DSPy.event`, add global listeners, and scope subscriptions directly to the modules that care.
 
@@ -46,12 +49,13 @@ We recommend reading through these concepts in order:
 
 1. Start with [Signatures](./signatures/) to understand input/output contracts
 2. Move to [Modules](./modules/) to learn how to build workflows
-3. Understand the [Event System](./events/) so you can observe and hook into runtime behavior
-4. Learn about [Memory](./memory/) for stateful agents
-5. Explore [Toolsets](./toolsets/) for agent capabilities
-6. Study [Predictors](./predictors/) for different reasoning strategies
-7. Learn about [CodeAct](./codeact/) for dynamic code generation (install the `dspy-code_act` gem)
-8. Explore [Multimodal](./multimodal/) for text and image workflows
-9. Study [Examples](./examples/) to see everything in action
+3. Dive into [Module Runtime Context](./module-runtime-context/) to wire models, callbacks, and runtime safeguards
+4. Understand the [Event System](./events/) so you can observe and hook into runtime behavior
+5. Learn about [Memory](./memory/) for stateful agents
+6. Explore [Toolsets](./toolsets/) for agent capabilities
+7. Study [Predictors](./predictors/) for different reasoning strategies
+8. Learn about [CodeAct](./codeact/) for dynamic code generation (install the `dspy-code_act` gem)
+9. Explore [Multimodal](./multimodal/) for text and image workflows
+10. Study [Examples](./examples/) to see everything in action
 
 Each concept builds on the previous ones, creating a comprehensive framework for LLM development.
