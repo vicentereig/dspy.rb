@@ -387,7 +387,7 @@ RSpec.describe DSPy::Teleprompt::Utils do
             broken_prediction,
             BootstrapMath
           )
-        }.to raise_error(NoMethodError, /undefined method `to_h'/)
+        }.to raise_error(NoMethodError, /undefined method.*to_h/)
       end
     end
 
