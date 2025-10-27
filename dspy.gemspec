@@ -33,6 +33,10 @@ Gem::Specification.new do |spec|
   spec.files.reject! { |path| path == "lib/dspy/gepa.rb" }
   spec.files.reject! { |path| path.start_with?("lib/dspy/o11y") }
   spec.files.reject! { |path| path == "lib/dspy/o11y.rb" }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/deep_search") }
+  spec.files.reject! { |path| path == "lib/dspy/deep_search.rb" }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/deep_research") }
+  spec.files.reject! { |path| path == "lib/dspy/deep_research.rb" }
   spec.files.reject! { |path| path.start_with?("lib/gepa") || path == "lib/gepa.rb" }
 
   # Uncomment to register executables
