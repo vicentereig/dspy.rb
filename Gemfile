@@ -46,3 +46,5 @@ end
 
 gem "newrelic_rpm", "~> 9.21"
 gem "csv", "~> 3.2"
+
+gem "exa-ai-ruby", "~> 1.1"

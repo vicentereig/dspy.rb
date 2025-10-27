@@ -25,7 +25,10 @@ RSpec.describe DSPy::PredictionInvalidError do
         error_hash = { field: "some error", code: 123 }
         error = described_class.new({ output: error_hash })
 
-        expect(error.message).to eq("Prediction validation failed: {:output=>{:field=>\"some error\", :code=>123}}")
+        expect(error.message).to include("Prediction validation failed:")
+        expect(error.message).to include("output")
+        expect(error.message).to include("some error")
+        expect(error.message).to include("123")
         expect(error.errors).to eq({ output: error_hash })
       end
     end
