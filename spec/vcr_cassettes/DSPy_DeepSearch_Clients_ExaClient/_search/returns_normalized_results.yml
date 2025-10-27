@@ -1,0 +1,97 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.exa.ai/search
+    body:
+      encoding: UTF-8
+      string: '{"numResults":2,"useAutoprompt":true,"summary":true,"query":"Jina DeepSearch
+        architecture"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Host:
+      - api.exa.ai
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      X-Api-Key:
+      - "<EXA_API_KEY>"
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '91'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 27 Oct 2025 18:39:36 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Nel:
+      - '{"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}'
+      Content-Security-Policy:
+      - frame-ancestors 'self'
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Cross-Origin-Resource-Policy:
+      - same-origin
+      Origin-Agent-Cluster:
+      - "?1"
+      Referrer-Policy:
+      - no-referrer
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Dns-Prefetch-Control:
+      - 'off'
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - DENY
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Xss-Protection:
+      - '0'
+      Vary:
+      - Origin
+      Access-Control-Allow-Credentials:
+      - 'true'
+      X-Ratelimit-Limit:
+      - '9007199254740991'
+      X-Ratelimit-Remaining:
+      - '9007199254740990'
+      X-Ratelimit-Reset:
+      - '1761590377'
+      Etag:
+      - W/"29f-/9SybQOGyd1xmHnXw2TD0L8otk0"
+      Report-To:
+      - '{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=iCglBD7ByhueCMSPDOwJqwlgEtMDAZc3QCq1O34%2Bdk26kt2kSM0k9zZ4qcaDsW6kJ3YMDqVMenriMVepfYzz90UaKAYyEnM%3D"}]}'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 995451295b29038d-MAD
+    body:
+      encoding: ASCII-8BIT
+      string: '{"requestId":"35948059d7dfea4e918e24e787a88583","autopromptString":"Jina
+        DeepSearch architecture","resolvedSearchType":"neural","results":[{"id":"https://skywork.ai/skypage/en/jina-web-search-ai-engineer/1980206257552007168","title":"Jina
+        Web Search MCP Server: An AI Engineer''s Deep Dive","url":"https://skywork.ai/skypage/en/jina-web-search-ai-engineer/1980206257552007168","publishedDate":"2025-10-23T18:39:36.789Z","author":null},{"id":"https://jina.ai/deepsearch/","title":"DeepSearch
+        - Jina AI","url":"https://jina.ai/deepsearch/","publishedDate":"2025-03-13T00:00:00.000Z","author":null}],"searchTime":906.5,"costDollars":{"total":0.005,"search":{"neural":0.005}}}'
+  recorded_at: Mon, 27 Oct 2025 18:39:36 GMT
+recorded_with: VCR 6.3.1
