@@ -106,8 +106,8 @@ DSPy.rb ships multiple gems from this monorepo so you can opt into features with
 | `gepa` | GEPA optimizer core (Pareto engine, telemetry, reflective proposer). | **Stable** (v1.0.0) |
 | `dspy-o11y` | Core observability APIs: `DSPy::Observability`, async span processor, observation types. (Install or set `DSPY_WITH_O11Y=1`.) | **Stable** (v1.0.0) |
 | `dspy-o11y-langfuse` | Auto-configures DSPy observability to stream spans to Langfuse via OTLP. (Install or set `DSPY_WITH_O11Y_LANGFUSE=1`.) | **Stable** (v1.0.0) |
-| `dspy-deep_search` | Production DeepSearch loop with Exa-backed search/read, token budgeting, and instrumentation (Issue #163). | **Beta** (v1.0.0) |
-| `dspy-deep_research` | Planner/QA orchestration atop DeepSearch plus the memory supervisor used by the CLI example. | **Beta** (v1.0.0) |
+| `dspy-deep_search` | Production DeepSearch loop with Exa-backed search/read, token budgeting, and instrumentation (Issue #163). | **Stable** (v1.0.0) |
+| `dspy-deep_research` | Planner/QA orchestration atop DeepSearch plus the memory supervisor used by the CLI example. | **Stable** (v1.0.0) |
 
 Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally (for example `DSPY_WITH_GEPA=1` or `DSPY_WITH_O11Y_LANGFUSE=1`). Refer to `adr/013-dependency-tree.md` for the full dependency map and roadmap.
 ### Your First Reliable Predictor
