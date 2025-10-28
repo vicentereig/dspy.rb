@@ -101,6 +101,8 @@ module DSPy
       def process_question(question)
         query = @seed_predictor.call(question: question).query
         loop do
+          emit_loop_started(question, query)
+
           urls = fetch_search_urls(query)
           break if urls.empty?
 
@@ -108,6 +110,8 @@ module DSPy
           collect_notes
 
           decision = @reason_predictor.call(question: question, insights: @notes)
+          emit_reason_decision(question, decision)
+
           case decision.decision
           when DSPy::DeepSearch::Signatures::ReasonStep::Decision::Answer
             answer_text = decision.draft_answer || synthesize_answer
@@ -144,11 +148,32 @@ module DSPy
 
       sig { params(url: String).void }
       def fetch_and_extract(url)
+        DSPy.event(
+          "deep_search.fetch.started",
+          url: url
+        )
+
+        notes_before = @notes.length
+        citations_before = @citations.length
+
         contents = @search_client.contents(urls: [url])
         record_notes(url, contents)
         reader_notes = @reader_predictor.call(url: url).notes
         @notes.concat(Array(reader_notes))
+
+        DSPy.event(
+          "deep_search.fetch.completed",
+          url: url,
+          notes_added: @notes.length - notes_before,
+          citations_added: @citations.length - citations_before,
+          token_budget_remaining: token_budget_remaining
+        )
       rescue DSPy::DeepSearch::Clients::ExaClient::ApiError => e
+        DSPy.event(
+          "deep_search.fetch.failed",
+          url: url,
+          error: e.message
+        )
         DSPy.logger&.warn("DeepSearch fetch failed", url: url, error: e.message)
       end
 
@@ -247,6 +272,45 @@ module DSPy
         predictor
       end
 
+      sig { params(question: String, query: String).void }
+      def emit_loop_started(question, query)
+        DSPy.event(
+          "deep_search.loop.started",
+          question: question,
+          query: query,
+          token_budget_remaining: token_budget_remaining
+        )
+      end
+
+      sig { params(question: String, decision: T.untyped).void }
+      def emit_reason_decision(question, decision)
+        decision_enum = decision.respond_to?(:decision) ? decision.decision : nil
+        serialized_decision =
+          if decision_enum.respond_to?(:serialize)
+            decision_enum.serialize
+          elsif decision_enum.respond_to?(:to_s)
+            decision_enum.to_s
+          else
+            nil
+          end
+
+        DSPy.event(
+          "deep_search.reason.decision",
+          question: question,
+          decision: serialized_decision,
+          notes_count: @notes.length,
+          citations_count: @citations.length,
+          refined_query: decision.respond_to?(:refined_query) ? decision.refined_query : nil,
+          draft_answer: decision.respond_to?(:draft_answer) ? decision.draft_answer : nil,
+          token_budget_remaining: token_budget_remaining
+        )
+      end
+
+      sig { returns(Integer) }
+      def token_budget_remaining
+        remaining = @token_budget_limit - @token_budget.total_tokens
+        remaining.negative? ? 0 : remaining
+      end
     end
   end
 end

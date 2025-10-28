@@ -113,6 +113,8 @@ module DSPy
                   "Section #{section_spec.identifier} exceeded max attempts (#{attempts}/#{@max_section_attempts})"
           end
 
+          emit_section_started(section_spec, attempts)
+
           deep_search_module = build_deep_search(section_spec)
           deep_result = deep_search_module.call(question: section_spec.prompt)
 
@@ -157,6 +159,8 @@ module DSPy
                     "QA requested more evidence for #{section_spec.title} but no follow-up prompt provided"
             end
 
+            emit_section_retry(section_spec, attempts, follow_up_prompt)
+
             follow_up = @section_queue.enqueue_follow_up(section_spec, prompt: follow_up_prompt)
             DSPy.event(
               "deep_research.section.requeued",
@@ -185,11 +189,13 @@ module DSPy
           end
         )
 
-        Result.new(
+        result = Result.new(
           report: assembled.report,
           sections: @accepted_sections.dup,
           citations: merged_citations(Array(assembled.citations))
         )
+        ensure_report_ready(assembled, brief)
+        result
       end
 
       private
@@ -307,6 +313,38 @@ module DSPy
       sig { params(section: SectionSpec).returns(String) }
       def normalize_identifier(section)
         section.parent_identifier || section.identifier.split("-retry-").first
+      end
+
+      sig { params(section: SectionSpec, attempt: Integer).void }
+      def emit_section_started(section, attempt)
+        DSPy.event(
+          "deep_research.section.started",
+          identifier: section.identifier,
+          title: section.title,
+          prompt: section.prompt,
+          attempt: attempt
+        )
+      end
+
+      sig { params(section: SectionSpec, attempt: Integer, follow_up_prompt: String).void }
+      def emit_section_retry(section, attempt, follow_up_prompt)
+        DSPy.event(
+          "deep_research.section.qa_retry",
+          identifier: section.identifier,
+          title: section.title,
+          attempt: attempt,
+          follow_up_prompt: follow_up_prompt
+        )
+      end
+
+      sig { params(assembled: T.untyped, brief: String).void }
+      def ensure_report_ready(assembled, brief)
+        DSPy.event(
+          "deep_research.report.ready",
+          brief: brief,
+          section_count: @accepted_sections.length,
+          citation_count: assembled.citations&.length || 0
+        )
       end
     end
   end
