@@ -23,6 +23,7 @@ RSpec.describe "Deep Research CLI", type: :aruba do
 
     expect(output).to include("Dry-run report for Explain the test harness")
     expect(output).to include("Recent Memory (1/5)")
+    expect(output).to include("Status: Completed")
   end
 
   def strip_ansi(text)
