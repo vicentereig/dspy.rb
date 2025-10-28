@@ -128,6 +128,24 @@ RSpec.describe DSPy::DeepSearch::Module do
     expect(client.search_calls.map { |call| call[:query] }).to include("initial DeepSearch intent", "refined query")
   end
 
+  it "emits instrumentation events throughout the loop" do
+    events = []
+    allow(DSPy).to receive(:event) do |name, attrs|
+      events << [name, attrs]
+    end
+
+    module_instance.call(question: "DeepSearch intent")
+
+    event_names = events.map(&:first)
+    expect(event_names).to include("deep_search.loop.started", "deep_search.fetch.started", "deep_search.fetch.completed", "deep_search.reason.decision")
+
+    loop_event = events.find { |(name, _)| name == "deep_search.loop.started" }
+    expect(loop_event[1]).to include(query: "initial DeepSearch intent")
+
+    reason_decisions = events.select { |(name, _)| name == "deep_search.reason.decision" }.map { |(_, attrs)| attrs[:decision] }
+    expect(reason_decisions).to include(DSPy::DeepSearch::Signatures::ReasonStep::Decision::Answer.serialize)
+  end
+
   it "raises when token budget is exceeded" do
     allow(token_budget).to receive(:track!).and_raise(DSPy::DeepSearch::TokenBudget::Exceeded)
 

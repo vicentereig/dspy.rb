@@ -172,4 +172,29 @@ RSpec.describe DSPy::DeepResearch::Module do
       expect(predictor.example_calls).to include(examples)
     end
   end
+
+  it "emits instrumentation events across the section lifecycle" do
+    events = []
+    allow(DSPy).to receive(:event) do |name, attrs|
+      events << [name, attrs]
+    end
+
+    module_instance.call(brief: "Tell me about the topic")
+
+    event_names = events.map(&:first)
+    expect(event_names).to include(
+      "deep_research.section.started",
+      "deep_research.section.qa_retry",
+      "deep_research.report.ready"
+    )
+
+    started = events.find { |name, _| name == "deep_research.section.started" }
+    expect(started[1]).to include(identifier: "sec-1", attempt: 0)
+
+    qa_retry = events.find { |name, _| name == "deep_research.section.qa_retry" }
+    expect(qa_retry[1]).to include(identifier: "sec-1", follow_up_prompt: "Clarify the origin timeline")
+
+    report_ready = events.find { |name, _| name == "deep_research.report.ready" }
+    expect(report_ready[1]).to include(section_count: 2)
+  end
 end
