@@ -8,6 +8,15 @@ module DSPy
       class BuildOutline < DSPy::Signature
         description "Generate an outline of sections to investigate for the research brief"
 
+        class Mode < T::Enum
+          enums do
+            Light = new("light")
+            Medium = new("medium")
+            Hard = new("hard")
+            Ultra = new("ultra")
+          end
+        end
+
         class SectionSpec < T::Struct
           const :identifier, String
           const :title, String
@@ -19,6 +28,7 @@ module DSPy
 
         input do
           const :brief, String, description: "Research brief or question to investigate"
+          const :mode, Mode, description: "Desired research intensity mode", default: Mode::Medium
         end
 
         output do

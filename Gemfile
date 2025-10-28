@@ -52,3 +52,4 @@ gem "csv", "~> 3.2"
 gem "exa-ai-ruby", "~> 1.1"
 
 gem "lf-cli", "~> 1.0"
+gem "reline", "~> 0.5"

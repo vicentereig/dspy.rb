@@ -18,7 +18,7 @@ Dotenv.load(File.expand_path('../../.env', __dir__))
 
 module Examples
   module DeepResearchCLI
-    DEFAULT_MODEL = ENV.fetch('DEEP_RESEARCH_MODEL', 'openai/gpt-4o-mini')
+    DEFAULT_MODEL = ENV.fetch('DEEP_RESEARCH_MODEL', 'openai/gpt-4.1')
     MEMORY_LIMIT  = 5
 
     class StatusBoard < DSPy::Events::BaseSubscriber
@@ -82,7 +82,7 @@ module Examples
           update_status("Memory updated (#{size}/#{limit})")
         end
 
-        add_subscription('llm.tokens') do |_, attrs|
+        add_subscription('lm.tokens') do |_, attrs|
           next unless relevant_module?(attrs)
 
           @input_tokens += value_for(attrs, :input_tokens).to_i

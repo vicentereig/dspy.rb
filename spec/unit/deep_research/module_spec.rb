@@ -197,4 +197,91 @@ RSpec.describe DSPy::DeepResearch::Module do
     report_ready = events.find { |name, _| name == "deep_research.report.ready" }
     expect(report_ready[1]).to include(section_count: 2)
   end
+
+  it "accepts a partial section when DeepSearch exhausts its budget and QA asks for more evidence" do
+    partial_outline = [
+      DSPy::DeepResearch::Signatures::BuildOutline::SectionSpec.new(
+        identifier: "sec-partial",
+        title: "Budget Limited Section",
+        prompt: "Summarize budget limited insights",
+        token_budget: 1_000
+      )
+    ]
+
+    partial_planner = StubPredictor.new(OpenStruct.new(sections: partial_outline))
+
+    partial_deep_search = -> do
+      Class.new(DSPy::Module) do
+        def forward_untyped(question:)
+          DSPy::DeepSearch::Module::Result.new(
+            answer: "Partial answer for #{question}",
+            notes: ["First insight"],
+            citations: ["https://partial.example.com"],
+            budget_exhausted: true,
+            warning: "Token budget exhausted while gathering evidence"
+          )
+        end
+      end.new
+    end
+
+    partial_synthesizer = StubPredictor.new do |section:, answer:, **|
+      OpenStruct.new(draft: "#{section.title}: #{answer}", citations: ["https://partial.example.com"])
+    end
+
+    qa_for_partial = StubPredictor.new([
+      OpenStruct.new(
+        status: DSPy::DeepResearch::Signatures::QAReview::Status::NeedsMoreEvidence,
+        follow_up_prompt: "Gather more details"
+      )
+    ])
+
+    module_instance = described_class.new(
+      planner: partial_planner,
+      deep_search_factory: -> { partial_deep_search.call },
+      synthesizer: partial_synthesizer,
+      qa_reviewer: qa_for_partial,
+      reporter: reporter,
+      max_section_attempts: 1
+    )
+
+    result = module_instance.call(brief: "Token constrained topic")
+    section = result.sections.first
+
+    expect(result.sections.length).to eq(1)
+    expect(section.status).to eq(DSPy::DeepResearch::Module::SectionResult::Status::InsufficientEvidence)
+    expect(section.warnings).not_to be_empty
+    expect(section.citations).to include("https://partial.example.com")
+    expect(qa_for_partial.called_with.length).to eq(1)
+  end
+
+  it "limits outline processing according to the selected research mode" do
+    outline_with_three = outline_sections + [
+      DSPy::DeepResearch::Signatures::BuildOutline::SectionSpec.new(
+        identifier: "sec-3",
+        title: "Outlook",
+        prompt: "Predict future outlook",
+        token_budget: 1_500
+      )
+    ]
+
+    limited_planner = StubPredictor.new(OpenStruct.new(sections: outline_with_three))
+
+    module_instance = described_class.new(
+      planner: limited_planner,
+      deep_search_factory: deep_search_builder,
+      synthesizer: synthesizer,
+      qa_reviewer: qa_reviewer,
+      reporter: reporter,
+      max_section_attempts: 2
+    )
+
+    result = module_instance.call(
+      brief: "Tell me about the topic",
+      mode: DSPy::DeepResearch::Module::ResearchMode::Light
+    )
+
+    expect(limited_planner.called_with.first[:mode]).to eq(DSPy::DeepResearch::Module::ResearchMode::Light)
+    expect(result.sections.length).to eq(1)
+    expect(result.sections.first.title).to eq("Origins")
+  end
 end

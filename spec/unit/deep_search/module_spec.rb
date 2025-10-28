@@ -146,11 +146,19 @@ RSpec.describe DSPy::DeepSearch::Module do
     expect(reason_decisions).to include(DSPy::DeepSearch::Signatures::ReasonStep::Decision::Answer.serialize)
   end
 
-  it "raises when token budget is exceeded" do
-    allow(token_budget).to receive(:track!).and_raise(DSPy::DeepSearch::TokenBudget::Exceeded)
+  it "returns a partial result with budget exhaustion metadata when the token budget is exceeded" do
+    calls = 0
+    allow(token_budget).to receive(:track!) do |prompt_tokens:, completion_tokens:|
+      calls += 1
+      raise DSPy::DeepSearch::TokenBudget::Exceeded, "Token budget exceeded: 9000/9000" if calls >= 2
+    end
 
-    expect { module_instance.call(question: "DeepSearch intent") }
-      .to raise_error(DSPy::DeepSearch::Module::TokenBudgetExceeded)
+    result = module_instance.call(question: "DeepSearch intent")
+
+    expect(result.budget_exhausted).to be(true)
+    expect(result.notes).not_to be_empty
+    expect(result.citations).not_to be_empty
+    expect(result.answer).to include("Summary for https://example.com/1")
   end
 
   it "exposes predictors for optimizers" do

@@ -1,5 +1,12 @@
 # Disable observability completely in tests to prevent OpenTelemetry/WebMock conflicts
 ENV['DSPY_DISABLE_OBSERVABILITY'] = 'true'
+ENV['DSPY_DEEP_SEARCH_SEED_MODEL'] ||= 'openai/gpt-4.1-mini'
+ENV['DSPY_DEEP_SEARCH_READER_MODEL'] ||= 'openai/gpt-4.1'
+ENV['DSPY_DEEP_SEARCH_REASON_MODEL'] ||= 'openai/o4-mini'
+ENV['DSPY_DEEP_RESEARCH_PLANNER_MODEL'] ||= 'openai/o4-mini'
+ENV['DSPY_DEEP_RESEARCH_QA_MODEL'] ||= 'openai/o4-mini'
+ENV['DSPY_DEEP_RESEARCH_SYNTH_MODEL'] ||= 'openai/gpt-4.1'
+ENV['DSPY_DEEP_RESEARCH_REPORTER_MODEL'] ||= 'openai/gpt-4.1'
 
 require 'byebug'
 require 'dotenv/load'

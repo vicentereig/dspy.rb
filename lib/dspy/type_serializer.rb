@@ -17,6 +17,7 @@ module DSPy
       when Hash
         value.transform_values { |v| serialize(v) }
       else
+        return serialize(value.serialize) if value.respond_to?(:serialize)
         value
       end
     end

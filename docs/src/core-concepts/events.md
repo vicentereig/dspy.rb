@@ -98,7 +98,7 @@ class SectionWriterSignature < DSPy::Signature
 end
 
 class ResearchReport < DSPy::Module
-  subscribe 'llm.tokens', :track_tokens # default scope: descendants
+  subscribe 'lm.tokens', :track_tokens # default scope: descendants
 
   def initialize
     super

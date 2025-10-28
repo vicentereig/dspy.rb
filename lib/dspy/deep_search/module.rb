@@ -9,13 +9,37 @@ module DSPy
         const :answer, String
         const :notes, T::Array[String]
         const :citations, T::Array[String]
+        const :budget_exhausted, T::Boolean, default: false
+        const :warning, T.nilable(String), default: nil
       end
 
       class TokenBudgetExceeded < DSPy::Error; end
 
       DEFAULT_SEARCH_RESULTS = 5
 
-      subscribe 'llm.tokens', :meter_tokens
+      MODEL_ENV_KEYS = {
+        seed: 'DSPY_DEEP_SEARCH_SEED_MODEL',
+        reader: 'DSPY_DEEP_SEARCH_READER_MODEL',
+        reason: 'DSPY_DEEP_SEARCH_REASON_MODEL'
+      }.freeze
+
+      MODEL_PRIORITY = {
+        seed: [
+          'gemini/gemini-2.5-flash-lite',
+          'anthropic/claude-haiku-4-5'
+        ],
+        reader: [
+          'anthropic/claude-sonnet-4-5',
+          'openai/gpt-4.1'
+        ],
+        reason: [
+          'gemini/gemini-2.5-pro',
+          'openai/o4-mini',
+          'anthropic/claude-4.1-opus'
+        ]
+      }.freeze
+
+      subscribe 'lm.tokens', :meter_tokens
 
       sig do
         params(
@@ -45,6 +69,8 @@ module DSPy
         @reason_predictor = reason_predictor
         @search_client = search_client
         @gap_queue = DSPy::DeepSearch::GapQueue.new
+
+        configure_default_predictor_models
       end
 
       def forward_untyped(**input_values)
@@ -56,7 +82,7 @@ module DSPy
         reset_state!
         process_question(question)
       rescue DSPy::DeepSearch::TokenBudget::Exceeded => e
-        raise TokenBudgetExceeded, e.message
+        build_budget_exhausted_result(question, e)
       end
 
       sig { override.returns(T::Array[[String, DSPy::Module]]) }
@@ -80,7 +106,8 @@ module DSPy
           seed_predictor: apply_instruction(@seed_predictor, instruction),
           search_predictor: apply_instruction(@search_predictor, instruction),
           reader_predictor: apply_instruction(@reader_predictor, instruction),
-          reason_predictor: apply_instruction(@reason_predictor, instruction)
+          reason_predictor: apply_instruction(@reason_predictor, instruction),
+          token_budget_limit: @token_budget_limit
         )
       end
 
@@ -91,7 +118,18 @@ module DSPy
           seed_predictor: apply_examples(@seed_predictor, examples_copy),
           search_predictor: apply_examples(@search_predictor, examples_copy),
           reader_predictor: apply_examples(@reader_predictor, examples_copy),
-          reason_predictor: apply_examples(@reason_predictor, examples_copy)
+          reason_predictor: apply_examples(@reason_predictor, examples_copy),
+          token_budget_limit: @token_budget_limit
+        )
+      end
+      sig { params(limit: Integer).returns(Module) }
+      def with_token_budget(limit)
+        clone_with(
+          seed_predictor: @seed_predictor,
+          search_predictor: @search_predictor,
+          reader_predictor: @reader_predictor,
+          reason_predictor: @reason_predictor,
+          token_budget_limit: limit
         )
       end
 
@@ -125,7 +163,7 @@ module DSPy
           end
         end
 
-        Result.new(answer: synthesize_answer, notes: @notes, citations: @citations)
+        Result.new(answer: synthesize_answer, notes: @notes.dup, citations: @citations.dup)
       end
 
       sig { params(url: String).void }
@@ -244,12 +282,13 @@ module DSPy
           seed_predictor: T.untyped,
           search_predictor: T.nilable(T.untyped),
           reader_predictor: T.untyped,
-          reason_predictor: T.untyped
+          reason_predictor: T.untyped,
+          token_budget_limit: Integer
         ).returns(Module)
       end
-      def clone_with(seed_predictor:, search_predictor:, reader_predictor:, reason_predictor:)
+      def clone_with(seed_predictor:, search_predictor:, reader_predictor:, reason_predictor:, token_budget_limit: @token_budget_limit)
         self.class.new(
-          token_budget: DSPy::DeepSearch::TokenBudget.new(limit: @token_budget_limit),
+          token_budget: DSPy::DeepSearch::TokenBudget.new(limit: token_budget_limit),
           seed_predictor: seed_predictor,
           search_predictor: search_predictor,
           reader_predictor: reader_predictor,
@@ -310,6 +349,117 @@ module DSPy
       def token_budget_remaining
         remaining = @token_budget_limit - @token_budget.total_tokens
         remaining.negative? ? 0 : remaining
+      end
+
+      def configure_default_predictor_models
+        @lm_cache = {}
+        assign_model(@seed_predictor, :seed)
+        assign_model(@reader_predictor, :reader)
+        assign_model(@reason_predictor, :reason)
+      end
+
+      def env_model(role)
+        key = MODEL_ENV_KEYS[role]
+        value = key ? ENV[key] : nil
+        return nil if value.nil?
+
+        trimmed = value.strip
+        trimmed.empty? ? nil : trimmed
+      end
+
+      def assign_model(predictor, role)
+        return unless predictor
+        return if predictor.respond_to?(:config) && predictor.config.lm
+
+        candidates = []
+        env_override = env_model(role)
+        candidates << env_override if env_override
+        candidates.concat(Array(MODEL_PRIORITY[role]))
+
+        candidates.each do |model_id|
+          next unless model_id
+          lm = build_lm(model_id)
+          next unless lm
+
+          begin
+            predictor.configure { |config| config.lm = lm }
+            return
+          rescue StandardError => e
+            DSPy.logger&.warn(
+              "DeepSearch predictor LM assignment error",
+              role: role,
+              model: model_id,
+              error: e.message
+            )
+          end
+        end
+
+        DSPy.logger&.warn(
+          "DeepSearch predictor LM assignment skipped (no viable model)",
+          role: role
+        )
+      end
+
+      def build_lm(model_id)
+        @lm_cache ||= {}
+        return @lm_cache[model_id] if @lm_cache.key?(model_id)
+
+        provider = model_id.split('/', 2).first
+        api_key = api_key_for(provider)
+        unless api_key && !api_key.strip.empty?
+          DSPy.logger&.warn(
+            "DeepSearch skipped LM assignment due to missing API key",
+            model: model_id,
+            provider: provider
+          )
+          return nil
+        end
+
+        @lm_cache[model_id] = DSPy::LM.new(model_id, api_key: api_key)
+      rescue StandardError => e
+        DSPy.logger&.warn(
+          "DeepSearch failed to initialize LM",
+          model: model_id,
+          error: e.message
+        )
+        nil
+      end
+
+      def api_key_for(provider)
+        case provider
+        when 'openai'
+          ENV['OPENAI_API_KEY']
+        when 'anthropic'
+          ENV['ANTHROPIC_API_KEY']
+        when 'gemini'
+          ENV['GEMINI_API_KEY']
+        when 'google'
+          ENV['GEMINI_API_KEY'] || ENV['GOOGLE_API_KEY']
+        else
+          nil
+        end
+      end
+
+      sig { params(question: String, error: DSPy::DeepSearch::TokenBudget::Exceeded).returns(Result) }
+      def build_budget_exhausted_result(question, error)
+        warning = error.message
+        DSPy.event(
+          "deep_search.budget.exhausted",
+          question: question,
+          notes_count: @notes.length,
+          citations_count: @citations.length,
+          token_budget_limit: @token_budget_limit,
+          total_tokens: @token_budget.total_tokens,
+          warning: warning
+        )
+
+        Result.new(
+          answer: synthesize_answer,
+          notes: @notes.dup,
+          citations: @citations.dup,
+          budget_exhausted: true,
+          warning: warning
+        )
       end
     end
   end
