@@ -31,70 +31,78 @@ module Examples
         @status = "Starting"
         @input_tokens = 0
         @output_tokens = 0
+        @start_time = Time.now
       end
 
       attr_reader :input_tokens, :output_tokens, :status
 
       def subscribe
         add_subscription('deep_research.section.started') do |_, attrs|
-          update_status("Section #{truncate(attrs[:title])} (attempt #{attrs[:attempt]})")
+          update_status("Section #{truncate(value_for(attrs, :title))} (attempt #{value_for(attrs, :attempt)})")
         end
 
         add_subscription('deep_research.section.qa_retry') do |_, attrs|
-          update_status("Retrying #{truncate(attrs[:title])}")
+          update_status("Retrying #{truncate(value_for(attrs, :title))}")
         end
 
         add_subscription('deep_research.section.approved') do |_, attrs|
-          update_status("Approved #{truncate(attrs[:title])}")
+          update_status("Approved #{truncate(value_for(attrs, :title))}")
         end
 
         add_subscription('deep_research.report.ready') do |_, attrs|
-          update_status("Report ready (#{attrs[:section_count]} sections)")
+          update_status("Report ready (#{value_for(attrs, :section_count)} sections)")
         end
 
         add_subscription('deep_search.loop.started') do |_, attrs|
-          update_status("Searching #{truncate(attrs[:query])}")
+          update_status("Searching #{truncate(value_for(attrs, :query))}")
         end
 
         add_subscription('deep_search.fetch.started') do |_, attrs|
-          update_status("Fetching #{host_for(attrs[:url])}")
+          update_status("Fetching #{host_for(value_for(attrs, :url))}")
         end
 
         add_subscription('deep_search.fetch.completed') do |_, attrs|
-          update_status("Fetched (notes +#{attrs[:notes_added]})")
+          update_status("Fetched (notes +#{value_for(attrs, :notes_added)})")
         end
 
         add_subscription('deep_search.fetch.failed') do |_, attrs|
-          update_status("Fetch failed #{host_for(attrs[:url])}")
+          update_status("Fetch failed #{host_for(value_for(attrs, :url))}")
         end
 
         add_subscription('deep_search.reason.decision') do |_, attrs|
-          next unless attrs[:decision]
+          decision = value_for(attrs, :decision)
+          next unless decision
 
-          update_status("Decision: #{attrs[:decision]}")
+          update_status("Decision: #{decision}")
         end
 
         add_subscription('deep_research.memory.updated') do |_, attrs|
-          update_status("Memory updated (#{attrs[:size]}/#{attrs[:memory_limit]})")
+          size = value_for(attrs, :size)
+          limit = value_for(attrs, :memory_limit)
+          update_status("Memory updated (#{size}/#{limit})")
         end
 
         add_subscription('llm.tokens') do |_, attrs|
           next unless relevant_module?(attrs)
 
-          @input_tokens += attrs[:input_tokens].to_i
-          @output_tokens += attrs[:output_tokens].to_i
+          @input_tokens += value_for(attrs, :input_tokens).to_i
+          @output_tokens += value_for(attrs, :output_tokens).to_i
           refresh
         end
       end
 
-      private
-
       def relevant_module?(attrs)
-        root = attrs[:module_root] || {}
-        klass = root[:class]
+        root = value_for(attrs, :module_root) || {}
+        klass = value_for(root, :class)
         return false unless klass
 
-        klass.include?('DeepSearch') || klass.include?('DeepResearch')
+        klass.to_s.include?('DeepSearch') || klass.to_s.include?('DeepResearch')
+      end
+
+      def value_for(hash, key)
+        return nil unless hash
+
+        hash[key] || hash[key.to_s]
       end
 
       def update_status(text)
@@ -103,8 +111,22 @@ module Examples
       end
 
       def refresh
-        @updater.call("Status: #{@status} | In: #{@input_tokens} Out: #{@output_tokens}")
+        @updater.call(label)
       end
+
+      def label
+        "Status: #{@status} | In: #{@input_tokens} Out: #{@output_tokens} | Elapsed: #{formatted_elapsed}"
+      end
+
+      def elapsed_string
+        formatted_elapsed
+      end
+
+      def mark_completed
+        update_status("Completed")
+      end
+
+      private
 
       def truncate(text, length = 40)
         str = text.to_s
@@ -117,6 +139,19 @@ module Examples
         URI(url).host || truncate(url, 30)
       rescue URI::InvalidURIError
         truncate(url, 30)
+      end
+
+      def formatted_elapsed
+        seconds = (Time.now - @start_time).to_i
+        hrs = seconds / 3600
+        mins = (seconds % 3600) / 60
+        secs = seconds % 60
+
+        parts = []
+        parts << "#{hrs}h" if hrs.positive?
+        parts << "#{mins}m" if mins.positive? || hrs.positive?
+        parts << "#{secs}s"
+        parts.join(' ')
       end
     end
 
@@ -299,14 +334,13 @@ module Examples
 
     def run_research(agent, brief)
       result = nil
-      CLI::UI::Spinner.spin("Status: Initializing | In: 0 Out: 0") do |spinner|
+      CLI::UI::Spinner.spin("Status: Initializing | In: 0 Out: 0 | Elapsed: 0s") do |spinner|
         status_board = StatusBoard.new(->(label) { spinner.update_title(label) })
         begin
+          spinner.update_title(status_board.label)
           status_board.subscribe
           result = agent.call(brief: brief)
-          spinner.update_title(
-            "Status: Completed | In: #{status_board.input_tokens} Out: #{status_board.output_tokens}"
-          )
+          status_board.mark_completed
         ensure
           status_board.unsubscribe
         end
