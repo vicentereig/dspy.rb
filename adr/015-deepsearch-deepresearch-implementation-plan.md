@@ -47,7 +47,7 @@ We will tackle the work bottom-up, establishing guardrails with unit specs befor
 2. ✅ Planner signature spec outputs deterministic TOC/section goals (stub LLM).
 3. ✅ Section queue orchestration spec ensures DeepSearch runs per section and requeues when QA flags gaps.
 4. ✅ Implement coherence reviewer / QA module and error types (`EvidenceDeficitError`, `QueueStarvationError`, `SynthesisCoherenceError`).
-5. ☐ Extend DeepResearch integration to cover multi-attempt QA feedback with tokenizer accounting (Phase 5 dependency).
+5. ✅ Extend DeepResearch integration to cover multi-attempt QA feedback with tokenizer accounting (Phase 5 dependency).
 
 ### Phase 5: End-to-end integration
 
