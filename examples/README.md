@@ -25,6 +25,7 @@ ANTHROPIC_API_KEY=your-anthropic-key
 - **`react_loop/`** — Calculator/unit conversion/date tools wired into a ReAct loop with observability enabled.
 - **`coffee-shop-agent/`** — Conversational ordering bot with short-term memory. Run `bundle exec ruby coffee-shop-agent/coffee_shop_agent.rb`.
 - **`github-assistant/`** — GitHub-focused helper that chains CLI actions (requires a GitHub token in your environment). See the folder README for setup.
+- **`deep_research_cli/`** — Terminal chat experience for DeepSearch + DeepResearch with Shopify `CLI::UI`, live token/status metrics, and the memory supervisor from `DSPy::DeepResearchWithMemory`. See the example README for setup and tests.
 
 ### Observability, Events, and Benchmarks
 
