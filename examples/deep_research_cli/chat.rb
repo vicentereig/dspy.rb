@@ -126,6 +126,10 @@ module Examples
         update_status("Completed")
       end
 
+      def mark_error(message)
+        update_status(message)
+      end
+
       private
 
       def truncate(text, length = 40)
@@ -334,6 +338,9 @@ module Examples
 
     def run_research(agent, brief)
       result = nil
+      error = nil
+      status_board = nil
+
       CLI::UI::Spinner.spin("Status: Initializing | In: 0 Out: 0 | Elapsed: 0s") do |spinner|
         status_board = StatusBoard.new(->(label) { spinner.update_title(label) })
         begin
@@ -341,12 +348,20 @@ module Examples
           status_board.subscribe
           result = agent.call(brief: brief)
           status_board.mark_completed
+        rescue DSPy::DeepSearch::Module::TokenBudgetExceeded => e
+          error = e
+          status_board.mark_error("Budget exceeded")
         ensure
-          status_board.unsubscribe
+          status_board.unsubscribe if status_board
         end
       end
 
-      render_result(result, agent, brief)
+      if result
+        render_result(result, agent, brief)
+      else
+        CLI::UI.puts(CLI::UI.fmt("{{red:Token budget exceeded before an answer was synthesized. Displaying collected memory for reference.}}"))
+        render_memory(agent)
+      end
     end
 
     def truncate_text(text, limit = 80)
