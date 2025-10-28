@@ -42,6 +42,8 @@ group :development, :test do
   gem 'webmock', '~> 3.18'
   gem "byebug", "~> 11.1"
   gem 'faraday', '~> 2.0'
+  gem 'cli-ui', '~> 2.6'
+  gem 'aruba', '~> 2.3'
 end
 
 gem "newrelic_rpm", "~> 9.21"
