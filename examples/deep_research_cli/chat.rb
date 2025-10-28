@@ -7,7 +7,6 @@ require 'uri'
 
 require 'dspy'
 require 'cli/ui'
-require 'cli/ui/truncater'
 require 'dotenv'
 
 require 'dspy/deep_research'
@@ -22,48 +21,96 @@ module Examples
     DEFAULT_MODEL = ENV.fetch('DEEP_RESEARCH_MODEL', 'openai/gpt-4o-mini')
     MEMORY_LIMIT  = 5
 
-    class SpinnerSubscriber < DSPy::Events::BaseSubscriber
-      def initialize(spinner)
+    class StatusBoard < DSPy::Events::BaseSubscriber
+      extend T::Sig
+
+      sig { params(updater: T.proc.params(arg0: String).void).void }
+      def initialize(updater)
         super()
-        @spinner = spinner
+        @updater = updater
+        @status = "Starting"
+        @input_tokens = 0
+        @output_tokens = 0
       end
 
+      attr_reader :input_tokens, :output_tokens, :status
+
       def subscribe
+        add_subscription('deep_research.section.started') do |_, attrs|
+          update_status("Section #{truncate(attrs[:title])} (attempt #{attrs[:attempt]})")
+        end
+
+        add_subscription('deep_research.section.qa_retry') do |_, attrs|
+          update_status("Retrying #{truncate(attrs[:title])}")
+        end
+
+        add_subscription('deep_research.section.approved') do |_, attrs|
+          update_status("Approved #{truncate(attrs[:title])}")
+        end
+
+        add_subscription('deep_research.report.ready') do |_, attrs|
+          update_status("Report ready (#{attrs[:section_count]} sections)")
+        end
+
         add_subscription('deep_search.loop.started') do |_, attrs|
-          update("Searching: #{truncate(attrs[:query])}")
+          update_status("Searching #{truncate(attrs[:query])}")
         end
 
         add_subscription('deep_search.fetch.started') do |_, attrs|
-          update("Fetching: #{host_for(attrs[:url])}")
+          update_status("Fetching #{host_for(attrs[:url])}")
+        end
+
+        add_subscription('deep_search.fetch.completed') do |_, attrs|
+          update_status("Fetched (notes +#{attrs[:notes_added]})")
+        end
+
+        add_subscription('deep_search.fetch.failed') do |_, attrs|
+          update_status("Fetch failed #{host_for(attrs[:url])}")
         end
 
         add_subscription('deep_search.reason.decision') do |_, attrs|
           next unless attrs[:decision]
 
-          update("Decision: #{attrs[:decision]}")
+          update_status("Decision: #{attrs[:decision]}")
         end
 
-        add_subscription('deep_research.section.started') do |_, attrs|
-          update("Section: #{truncate(attrs[:title])}")
+        add_subscription('deep_research.memory.updated') do |_, attrs|
+          update_status("Memory updated (#{attrs[:size]}/#{attrs[:memory_limit]})")
         end
 
-        add_subscription('deep_research.section.qa_retry') do |_, attrs|
-          update("Retry #{attrs[:attempt]}: #{truncate(attrs[:follow_up_prompt])}")
-        end
+        add_subscription('llm.tokens') do |_, attrs|
+          next unless relevant_module?(attrs)
 
-        add_subscription('deep_research.report.ready') do |_, attrs|
-          update("Synthesizing report (#{attrs[:section_count]} sections)")
+          @input_tokens += attrs[:input_tokens].to_i
+          @output_tokens += attrs[:output_tokens].to_i
+          refresh
         end
       end
 
       private
 
-      def update(text)
-        @spinner.update_title(text)
+      def relevant_module?(attrs)
+        root = attrs[:module_root] || {}
+        klass = root[:class]
+        return false unless klass
+
+        klass.include?('DeepSearch') || klass.include?('DeepResearch')
+      end
+
+      def update_status(text)
+        @status = text
+        refresh
+      end
+
+      def refresh
+        @updater.call("Status: #{@status} | In: #{@input_tokens} Out: #{@output_tokens}")
       end
 
       def truncate(text, length = 40)
-        CLI::UI::Truncater.truncate(text.to_s, length)
+        str = text.to_s
+        return str if str.length <= length
+
+        str[0, length - 1] + "…"
       end
 
       def host_for(url)
@@ -252,13 +299,16 @@ module Examples
 
     def run_research(agent, brief)
       result = nil
-      CLI::UI::SpinGroup.new do |spin_group|
-        spin_group.add('Starting DeepResearch') do |spinner|
-          subscriber = SpinnerSubscriber.new(spinner)
-          subscriber.subscribe
+      CLI::UI::Spinner.spin("Status: Initializing | In: 0 Out: 0") do |spinner|
+        status_board = StatusBoard.new(->(label) { spinner.update_title(label) })
+        begin
+          status_board.subscribe
           result = agent.call(brief: brief)
-          spinner.update_title('Report ready')
-          subscriber.unsubscribe
+          spinner.update_title(
+            "Status: Completed | In: #{status_board.input_tokens} Out: #{status_board.output_tokens}"
+          )
+        ensure
+          status_board.unsubscribe
         end
       end
 
