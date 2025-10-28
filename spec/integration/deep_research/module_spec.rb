@@ -169,4 +169,129 @@ RSpec.describe DSPy::DeepResearch::Module do
     expect(result.sections.first.draft).to include("Fragmentary insight")
     expect(result.report).to include("Fragmentary insight")
   end
+
+  it "retries sections when QA requests more evidence and accounts for additional tokens" do
+    outline_planner = Class.new do
+      def call(brief:, mode: DSPy::DeepResearch::Module::ResearchMode::Light)
+        sections = [
+          DSPy::DeepResearch::Signatures::BuildOutline::SectionSpec.new(
+            identifier: "sec-overview",
+            title: "Overview",
+            prompt: "#{brief} overview",
+            token_budget: 4_000
+          )
+        ]
+        OpenStruct.new(sections: sections)
+      end
+    end.new
+
+    deep_search_responses = [
+      {
+        answer: "Initial findings about the system.",
+        notes: ["Base insight about architecture"],
+        citations: ["https://example.com/base"],
+        tokens: { in: 3_200, out: 180 }
+      },
+      {
+        answer: "Updated findings covering deployment considerations.",
+        notes: ["Base insight about architecture", "Deployment pipeline details"],
+        citations: ["https://example.com/base", "https://example.com/deployment"],
+        tokens: { in: 2_800, out: 220 }
+      }
+    ]
+
+    deep_search_factory = lambda do
+      queue = deep_search_responses
+
+      Class.new(DSPy::Module) do
+        define_method(:initialize) do |queue|
+          super()
+          @queue = queue
+        end
+
+        define_method(:forward_untyped) do |question:|
+          data = @queue.shift || @queue.last || {}
+          tokens = data.fetch(:tokens, {})
+          DSPy.event(
+            "lm.tokens",
+            input_tokens: tokens.fetch(:in, 0),
+            output_tokens: tokens.fetch(:out, 0)
+          )
+
+          DSPy::DeepSearch::Module::Result.new(
+            answer: data.fetch(:answer, ""),
+            notes: data.fetch(:notes, []),
+            citations: data.fetch(:citations, []),
+            budget_exhausted: data.fetch(:budget_exhausted, false),
+            warning: data[:warning]
+          )
+        end
+      end.new(queue)
+    end
+
+    qa_reviewer = Class.new do
+      def call(brief:, section:, draft:, notes:, citations:, attempt:)
+        case attempt
+        when 1
+          OpenStruct.new(
+            status: DSPy::DeepResearch::Signatures::QAReview::Status::NeedsMoreEvidence,
+            follow_up_prompt: "#{section.prompt} with deployment details"
+          )
+        else
+          status = if notes.any? { |note| note.include?("Deployment") }
+            DSPy::DeepResearch::Signatures::QAReview::Status::Approved
+          else
+            DSPy::DeepResearch::Signatures::QAReview::Status::NeedsMoreEvidence
+          end
+
+          follow_up = status == DSPy::DeepResearch::Signatures::QAReview::Status::NeedsMoreEvidence ? "#{section.prompt} add specifics" : nil
+
+          OpenStruct.new(
+            status: status,
+            follow_up_prompt: follow_up
+          )
+        end
+      end
+    end.new
+
+    token_events = []
+    subscription = DSPy.events.subscribe("lm.tokens") do |_event, attrs|
+      token_events << attrs
+    end
+
+    begin
+      retrying_instance = described_class.new(
+        planner: outline_planner,
+        deep_search_factory: deep_search_factory,
+        synthesizer: synthesizer,
+        qa_reviewer: qa_reviewer,
+        reporter: reporter,
+        max_section_attempts: 3
+      )
+
+      result = retrying_instance.call(
+        brief: "DSPy.rb architecture",
+        mode: DSPy::DeepResearch::Module::ResearchMode::Light
+      )
+
+      expect(result.sections.length).to eq(1)
+      section = result.sections.first
+      expect(section.attempt).to eq(2)
+      expect(section.status).to eq(DSPy::DeepResearch::Module::SectionResult::Status::Complete)
+      expect(section.draft).to include("Deployment")
+      expect(result.report).to include("Deployment")
+      expect(result.budget_exhausted).to be(false)
+
+      counted_events = token_events.count do |attrs|
+        attrs[:input_tokens].to_i.positive? || attrs[:output_tokens].to_i.positive?
+      end
+      expect(counted_events).to eq(2)
+      total_input = token_events.sum { |attrs| attrs[:input_tokens].to_i }
+      total_output = token_events.sum { |attrs| attrs[:output_tokens].to_i }
+      expect(total_input).to eq(6_000)
+      expect(total_output).to eq(400)
+    ensure
+      DSPy.events.unsubscribe(subscription)
+    end
+  end
 end
