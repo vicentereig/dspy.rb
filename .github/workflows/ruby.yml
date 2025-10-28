@@ -202,5 +202,6 @@ jobs:
         ANTHROPIC_API_KEY: test-anthropic-key-for-vcr
         GEMINI_API_KEY: test-gemini-key-for-vcr
         OPENROUTER_API_KEY: test-openrouter-key-for-vcr
+        EXA_API_KEY: test-exa-key-for-vcr
         LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
         LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
