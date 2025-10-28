@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "DeepSearch primitives for DSPy"
   spec.description   = "DeepSearch loop utilities and modules for DSPy agents."
-  spec.homepage      = "https://github.com/vicentereig/dspy.rb"
+  spec.homepage      = "https://vicentereig.github.io/dspy.rb/"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 3.1"
 
@@ -24,10 +24,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = spec.homepage
-  spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
+  spec.metadata["source_code_uri"] = "https://github.com/vicentereig/dspy.rb"
+  spec.metadata["changelog_uri"] = "https://github.com/vicentereig/dspy.rb/blob/main/CHANGELOG.md"
 
-  spec.add_dependency "dspy", ">= 0.27.0"
-  spec.add_dependency "exa-ai-ruby", ">= 1.0.0"
-  spec.add_dependency "sorbet-runtime", ">= 0.5"
+  spec.add_dependency "dspy", "~> 0.30", ">= 0.30.1"
+  spec.add_dependency "exa-ai-ruby", "~> 1.0", ">= 1.0.0"
+  spec.add_dependency "sorbet-runtime", "~> 0.5"
 end
