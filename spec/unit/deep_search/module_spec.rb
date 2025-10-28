@@ -153,6 +153,13 @@ RSpec.describe DSPy::DeepSearch::Module do
       raise DSPy::DeepSearch::TokenBudget::Exceeded, "Token budget exceeded: 9000/9000" if calls >= 2
     end
 
+    allow(DSPy).to receive(:event).and_wrap_original do |orig, name, attrs|
+      orig.call(name, attrs)
+      if name == "deep_search.fetch.completed"
+        module_instance.send(:meter_tokens, "lm.tokens", input_tokens: 0, output_tokens: 5_000)
+      end
+    end
+
     result = module_instance.call(question: "DeepSearch intent")
 
     expect(result.budget_exhausted).to be(true)

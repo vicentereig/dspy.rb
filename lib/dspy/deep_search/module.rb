@@ -218,9 +218,6 @@ module DSPy
       sig { params(url: String, contents: T::Array[DSPy::DeepSearch::Clients::ExaClient::Content]).void }
       def record_notes(url, contents)
         contents.each do |content|
-          token_count = Array(content.highlights).join(" ").split.size + (content.summary.to_s.split.size)
-          @token_budget.track!(prompt_tokens: 0, completion_tokens: token_count)
-
           if content.summary
             @notes << content.summary
           end
