@@ -5,6 +5,8 @@ require 'dry-configurable'
 require 'securerandom'
 require_relative 'context'
 require_relative 'callbacks'
+require_relative 'type_serializer'
+require 'json'
 
 module DSPy
   class Module
@@ -209,17 +211,15 @@ module DSPy
         {}
       end
 
-      payload.to_json
+      serialized = DSPy::TypeSerializer.serialize(payload)
+      JSON.generate(serialized)
     rescue StandardError
       payload.to_s
     end
 
     def serialize_module_output(result)
-      if result.respond_to?(:to_h)
-        result.to_h.to_json
-      else
-        result.to_json
-      end
+      serialized = DSPy::TypeSerializer.serialize(result)
+      JSON.generate(serialized)
     rescue StandardError
       result.to_s
     end

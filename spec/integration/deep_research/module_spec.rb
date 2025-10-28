@@ -51,7 +51,7 @@ RSpec.describe DSPy::DeepResearch::Module do
 
   let(:planner) do
     Class.new do
-      def call(brief:)
+      def call(brief:, mode: DSPy::DeepResearch::Module::ResearchMode::Medium)
         sections = [
           DSPy::DeepResearch::Signatures::BuildOutline::SectionSpec.new(
             identifier: "sec-overview",
@@ -66,6 +66,18 @@ RSpec.describe DSPy::DeepResearch::Module do
             token_budget: 4_000
           )
         ]
+
+        case mode
+        when DSPy::DeepResearch::Module::ResearchMode::Light
+          sections = sections.first(1)
+        when DSPy::DeepResearch::Module::ResearchMode::Hard, DSPy::DeepResearch::Module::ResearchMode::Ultra
+          sections << DSPy::DeepResearch::Signatures::BuildOutline::SectionSpec.new(
+            identifier: "sec-future",
+            title: "Future Work",
+            prompt: "#{brief} future work",
+            token_budget: 4_000
+          )
+        end
 
         OpenStruct.new(sections: sections)
       end
@@ -121,5 +133,40 @@ RSpec.describe DSPy::DeepResearch::Module do
     expect(result.sections.first.citations).not_to be_empty
     expect(result.citations).not_to be_empty
     expect(result.report).to include("Overview:", "Architecture:")
+  end
+
+  it "produces a partial report when DeepSearch exhausts the token budget" do
+    partial_factory = lambda do
+      Class.new(DSPy::Module) do
+        def forward_untyped(question:)
+          DSPy::DeepSearch::Module::Result.new(
+            answer: "Partial answer for #{question}",
+            notes: ["Fragmentary insight for #{question}"],
+            citations: ["https://partial.example.com/#{question.tr(' ', '-')}"],
+            budget_exhausted: true,
+            warning: "Token budget exhausted"
+          )
+        end
+      end.new
+    end
+
+    partial_instance = described_class.new(
+      planner: planner,
+      deep_search_factory: partial_factory,
+      synthesizer: synthesizer,
+      qa_reviewer: qa_reviewer,
+      reporter: reporter,
+      max_section_attempts: 1
+    )
+
+    result = partial_instance.call(
+      brief: "Token constrained topic",
+      mode: DSPy::DeepResearch::Module::ResearchMode::Light
+    )
+
+    expect(result.sections.length).to eq(1)
+    expect(result.sections.first.status).to eq(DSPy::DeepResearch::Module::SectionResult::Status::Partial)
+    expect(result.sections.first.draft).to include("Fragmentary insight")
+    expect(result.report).to include("Fragmentary insight")
   end
 end
