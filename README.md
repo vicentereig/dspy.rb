@@ -4,6 +4,7 @@
 [![Total Downloads](https://img.shields.io/gem/dt/dspy)](https://rubygems.org/gems/dspy)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/vicentereig/dspy.rb/ruby.yml?branch=main&label=build)](https://github.com/vicentereig/dspy.rb/actions/workflows/ruby.yml)
 [![Documentation](https://img.shields.io/badge/docs-vicentereig.github.io%2Fdspy.rb-blue)](https://vicentereig.github.io/dspy.rb/)
+[![Discord](https://img.shields.io/discord/1161519468141355160?label=discord&logo=discord&logoColor=white)](https://discord.com/channels/1161519468141355160/1432754154547445763)
 
 > [!NOTE]
 > The core Prompt Engineering Framework is production-ready with
