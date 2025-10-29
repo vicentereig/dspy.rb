@@ -13,11 +13,8 @@ require_relative 'lm/adapter_factory'
 # Load instrumentation
 
 # Load adapters
-require_relative 'lm/adapters/openai_adapter'
 require_relative 'lm/adapters/anthropic_adapter'
-require_relative 'lm/adapters/ollama_adapter'
 require_relative 'lm/adapters/gemini_adapter'
-require_relative 'lm/adapters/openrouter_adapter'
 
 # Load strategy system
 require_relative 'lm/chat_strategy'
@@ -209,8 +206,18 @@ module DSPy
       adapter_class_name = adapter.class.name
 
       if adapter_class_name.include?('OpenAIAdapter') || adapter_class_name.include?('OllamaAdapter')
+        begin
+          require "dspy/openai"
+        rescue LoadError
+          msg = <<~MSG
+            Install the openai gem to enable support for this adapter.
+            Add `gem 'dspy-openai'` to your Gemfile and run `bundle install`.
+          MSG
+          raise DSPy::LM::MissingAdapterError, msg
+        end
+
         adapter.instance_variable_get(:@structured_outputs_enabled) &&
-          DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?(adapter.model)
+          DSPy::OpenAI::LM::SchemaConverter.supports_structured_outputs?(adapter.model)
       elsif adapter_class_name.include?('GeminiAdapter')
         adapter.instance_variable_get(:@structured_outputs_enabled) &&
           DSPy::LM::Adapters::Gemini::SchemaConverter.supports_structured_outputs?(adapter.model)

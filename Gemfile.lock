@@ -10,7 +10,6 @@ PATH
       dspy-schema (~> 1.0.0)
       gemini-ai (~> 4.3)
       informers (~> 1.2)
-      openai (~> 0.34)
       sorbet-baml (~> 0.1)
       sorbet-runtime (~> 0.5)
       sorbet-schema (~> 0.3)
@@ -36,6 +35,9 @@ PATH
       dspy-o11y (= 1.0.0)
       opentelemetry-exporter-otlp (~> 0.30)
       opentelemetry-sdk (~> 1.8)
+    dspy-openai (1.0.0)
+      dspy (= 0.30.1)
+      openai (~> 0.34)
     dspy-schema (1.0.0)
       sorbet-runtime (>= 0.5.0)
     gepa (1.0.0)
@@ -115,7 +117,7 @@ GEM
     ethon (0.17.0)
       ffi (>= 1.15.0)
     event_stream_parser (1.0.0)
-    exa-ai-ruby (1.1.1)
+    exa-ai-ruby (1.1.2)
       connection_pool (~> 2.4)
       dspy-schema (~> 1.0)
       pastel (~> 0.8)
@@ -352,6 +354,7 @@ DEPENDENCIES
   dspy-miprov2!
   dspy-o11y!
   dspy-o11y-langfuse!
+  dspy-openai!
   dspy-schema!
   exa-ai-ruby (~> 1.1)
   faraday (~> 2.0)
