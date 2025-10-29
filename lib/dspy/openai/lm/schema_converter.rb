@@ -15,7 +15,12 @@ module DSPy
           "gpt-4o-2024-08-06",
           "gpt-4o",
           "gpt-4-turbo",
-          "gpt-4-turbo-2024-04-09"
+          "gpt-4-turbo-2024-04-09",
+          "gpt-5",
+          "gpt-5-pro",
+          "gpt-5-mini",
+          "gpt-5-nano",
+          "gpt-5-2025-08-07"
         ].freeze, T::Array[String])
 
         sig { params(signature_class: T.class_of(DSPy::Signature), name: T.nilable(String), strict: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
