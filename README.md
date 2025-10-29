@@ -4,7 +4,7 @@
 [![Total Downloads](https://img.shields.io/gem/dt/dspy)](https://rubygems.org/gems/dspy)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/vicentereig/dspy.rb/ruby.yml?branch=main&label=build)](https://github.com/vicentereig/dspy.rb/actions/workflows/ruby.yml)
 [![Documentation](https://img.shields.io/badge/docs-vicentereig.github.io%2Fdspy.rb-blue)](https://vicentereig.github.io/dspy.rb/)
-[![Discord](https://img.shields.io/discord/1161519468141355160?label=discord&logo=discord&logoColor=white)](https://discord.com/channels/1161519468141355160/1432754154547445763)
+[![Discord](https://img.shields.io/discord/1161519468141355160?label=discord&logo=discord&logoColor=white)](https://discord.gg/zWBhrMqn)
 
 > [!NOTE]
 > The core Prompt Engineering Framework is production-ready with
@@ -18,18 +18,13 @@
 
 **Build reliable LLM applications in idiomatic Ruby using composable, type-safe modules.**
 
-The Ruby framework for programming with large language models. DSPy.rb brings structured LLM programming to Ruby developers, programmatic Prompt Engineering and Context Engineering. 
-Instead of wrestling with prompt strings and parsing responses, you define typed signatures using idiomatic Ruby to compose and decompose AI Worklows and AI Agents.
+DSPy.rb is the Ruby-first surgical port of Stanford's [DSPy framework](https://github.com/stanfordnlp/dspy). It delivers structured LLM programming, prompt engineering, and context engineering in the language we love. Instead of wrestling with brittle prompt strings, you define typed signatures in idiomatic Ruby and compose workflows and agents that actually behave.
 
-**Prompts are the just Functions.** Traditional prompting is like writing code with string concatenation: it works until it doesn't. DSPy.rb brings you 
-the programming approach pioneered by [dspy.ai](https://dspy.ai/): instead of crafting fragile prompts, you define modular 
-signatures and let the framework handle the messy details.
+**Prompts are just functions.** Traditional prompting is like writing code with string concatenation: it works until it doesn't. DSPy.rb brings you the programming approach pioneered by [dspy.ai](https://dspy.ai/): define modular signatures and let the framework deal with the messy bits.
 
-DSPy.rb is an idiomatic Ruby surgical port of Stanford's [DSPy framework](https://github.com/stanfordnlp/dspy). While implementing 
-the core concepts of signatures, predictors, and the main optimization algorithms from the original Python library, DSPy.rb embraces Ruby 
-conventions and adds Ruby-specific innovations like Sorbet-base Typed system, ReAct loops, and production-ready integrations like non-blocking Open Telemetry Instrumentation.
+While we implement the same signatures, predictors, and optimization algorithms as the original library, DSPy.rb leans hard into Ruby conventions with Sorbet-based typing, ReAct loops, and production-ready integrations like non-blocking OpenTelemetry instrumentation.
 
-**What you get?** Ruby LLM applications that actually scale and don't break when you sneeze.
+**What you get?** Ruby LLM applications that scale and don't break when you sneeze.
 
 Check the [examples](examples/) and take them for a spin!
 
@@ -51,8 +46,9 @@ bundle install
 ### Your First Reliable Predictor
 
 ```ruby
+require 'dspy'
 
-# Configure DSPy globablly to use your fave LLM - you can override this on an instance levle. 
+# Configure DSPy globally to use your fave LLM (you can override per predictor).
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('openai/gpt-4o-mini',
                       api_key: ENV['OPENAI_API_KEY'],
@@ -83,13 +79,19 @@ class Classify < DSPy::Signature
   end
 end
 
-# Wire it to the simplest prompting technique - a Predictn.
+# Wire it to the simplest prompting technique: a prediction loop.
 classify = DSPy::Predict.new(Classify)
 # it may raise an error if you mess the inputs or your LLM messes the outputs.
 result = classify.call(sentence: "This book was super fun to read!")
 
 puts result.sentiment    # => #<Sentiment::Positive>  
 puts result.confidence   # => 0.85
+```
+
+Save this as `examples/first_predictor.rb` and run it with:
+
+```bash
+bundle exec ruby examples/first_predictor.rb
 ```
 
 ### Sibling Gems
@@ -111,50 +113,6 @@ DSPy.rb ships multiple gems from this monorepo so you can opt into features with
 | `dspy-deep_research` | Planner/QA orchestration atop DeepSearch plus the memory supervisor used by the CLI example. | **Stable** (v1.0.0) |
 
 Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally (for example `DSPY_WITH_GEPA=1` or `DSPY_WITH_O11Y_LANGFUSE=1`). Refer to `adr/013-dependency-tree.md` for the full dependency map and roadmap.
-### Your First Reliable Predictor
-
-```ruby
-
-# Configure DSPy globablly to use your fave LLM - you can override this on an instance levle. 
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini',
-                      api_key: ENV['OPENAI_API_KEY'],
-                      structured_outputs: true)  # Enable OpenAI's native JSON mode
-end
-
-# Define a signature for sentiment classification - instead of writing a full prompt!
-class Classify < DSPy::Signature
-  description "Classify sentiment of a given sentence." # sets the goal of the underlying prompt
-
-  class Sentiment < T::Enum
-    enums do
-      Positive = new('positive')
-      Negative = new('negative')
-      Neutral = new('neutral')
-    end
-  end
-  
-  # Structured Inputs: makes sure you are sending only valid prompt inputs to your model
-  input do
-    const :sentence, String, description: 'The sentence to analyze'
-  end
-
-  # Structured Outputs: your predictor will validate the output of the model too.
-  output do
-    const :sentiment, Sentiment, description: 'The sentiment of the sentence'
-    const :confidence, Float, description: 'A number between 0.0 and 1.0'
-  end
-end
-
-# Wire it to the simplest prompting technique - a Predictn.
-classify = DSPy::Predict.new(Classify)
-# it may raise an error if you mess the inputs or your LLM messes the outputs.
-result = classify.call(sentence: "This book was super fun to read!")
-
-puts result.sentiment    # => #<Sentiment::Positive>  
-puts result.confidence   # => 0.85
-```
-
 ### Access to 200+ Models Across 5 Providers
 
 DSPy.rb provides unified access to major LLM providers with provider-specific optimizations:
@@ -195,7 +153,10 @@ end
 
 ## What You Get
 
-**Developer Experience:**
+**Developer Experience:** Official clients, multimodal coverage, and observability baked in.
+<details>
+<summary>Expand for everything included</summary>
+
 - LLM provider support using official Ruby clients:
   - [OpenAI Ruby](https://github.com/openai/openai-ruby) with vision model support
   - [Anthropic Ruby SDK](https://github.com/anthropics/anthropic-sdk-ruby) with multimodal capabilities
@@ -205,21 +166,33 @@ end
 - Runtime type checking with [Sorbet](https://sorbet.org/) including T::Enum and union types
 - Type-safe tool definitions for ReAct agents
 - Comprehensive instrumentation and observability
+</details>
 
-**Core Building Blocks:**
+**Core Building Blocks:** Predictors, agents, and pipelines wired through type-safe signatures.
+<details>
+<summary>Expand for everything included</summary>
+
 - **Signatures** - Define input/output schemas using Sorbet types with T::Enum and union type support
 - **Predict** - LLM completion with structured data extraction and multimodal support
 - **Chain of Thought** - Step-by-step reasoning for complex problems with automatic prompt optimization
 - **ReAct** - Tool-using agents with type-safe tool definitions and error recovery
 - **Module Composition** - Combine multiple LLM calls into production-ready workflows
+</details>
 
-**Optimization & Evaluation:**
+**Optimization & Evaluation:** Treat prompt optimization like a real ML workflow.
+<details>
+<summary>Expand for everything included</summary>
+
 - **Prompt Objects** - Manipulate prompts as first-class objects instead of strings
 - **Typed Examples** - Type-safe training data with automatic validation
 - **Evaluation Framework** - Advanced metrics beyond simple accuracy with error-resilient pipelines
 - **MIPROv2 Optimization** - Advanced Bayesian optimization with Gaussian Processes, multiple optimization strategies, auto-config presets, and storage persistence
+</details>
 
-**Production Features:**
+**Production Features:** Hardened behaviors for teams shipping actual products.
+<details>
+<summary>Expand for everything included</summary>
+
 - **Reliable JSON Extraction** - Native structured outputs for OpenAI and Gemini, Anthropic tool-based extraction, and automatic strategy selection with fallback
 - **Type-Safe Configuration** - Strategy enums with automatic provider optimization (Strict/Compatible modes)
 - **Smart Retry Logic** - Progressive fallback with exponential backoff for handling transient failures
@@ -227,10 +200,13 @@ end
 - **Performance Caching** - Schema and capability caching for faster repeated operations
 - **File-based Storage** - Optimization result persistence with versioning
 - **Structured Logging** - JSON and key=value formats with span tracking
+</details>
 
 ## Recent Achievements
 
-DSPy.rb has rapidly evolved from experimental to production-ready:
+DSPy.rb has gone from experimental to production-ready in three fast releases.
+<details>
+<summary>Expand for the full changelog highlights</summary>
 
 ### Foundation
 - ✅ **JSON Parsing Reliability** - Native OpenAI structured outputs with adaptive retry logic and schema-aware fallbacks
@@ -246,8 +222,11 @@ DSPy.rb has rapidly evolved from experimental to production-ready:
 - ✅ **Optimizer Utilities Parity (v0.29.0)** - Bootstrap strategies, dataset summaries, and Layer 3 utilities unlock multi-predictor programs on Ruby
 - ✅ **Observability Hardening (v0.29.0)** - OTLP exporter runs on a single-thread executor preventing frozen SSL contexts without blocking spans
 - ✅ **Documentation Refresh (v0.29.x)** - New GEPA guide plus ADE optimization docs covering presets, stratified splits, and error-handling defaults
+</details>
 
-**Current Focus Areas:**
+**Current Focus Areas:** Closing the loop on production patterns and community adoption ahead of v1.0.
+<details>
+<summary>Expand for the roadmap</summary>
 
 ### Production Readiness
 - 🚧 **Production Patterns** - Real-world usage validation and performance optimization
@@ -257,10 +236,9 @@ DSPy.rb has rapidly evolved from experimental to production-ready:
 - 🚧 **Community Examples** - Real-world applications and case studies
 - 🚧 **Contributor Experience** - Making it easier to contribute and extend
 - 🚧 **Performance Benchmarks** - Comparative analysis vs other frameworks
+</details>
 
-**v1.0 Philosophy:**
-v1.0 will be released after extensive production battle-testing, not after checking off features.
-The API is already stable - v1.0 represents confidence in production reliability backed by real-world validation.
+**v1.0 Philosophy:** v1.0 lands after battle-testing, not checkbox bingo. The API is already stable; the milestone marks production confidence.
 
 
 ## Documentation
