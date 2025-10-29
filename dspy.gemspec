@@ -38,6 +38,8 @@ Gem::Specification.new do |spec|
   spec.files.reject! { |path| path.start_with?("lib/dspy/deep_research") }
   spec.files.reject! { |path| path == "lib/dspy/deep_research.rb" }
   spec.files.reject! { |path| path.start_with?("lib/gepa") || path == "lib/gepa.rb" }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/openai") }
+  spec.files.reject! { |path| path == "lib/dspy/openai.rb" }
 
   # Uncomment to register executables
   # spec.bindir = "exe"
@@ -52,7 +54,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "concurrent-ruby", "~> 1.3"
 
   # Official LM provider clients
-  spec.add_dependency "openai", "~> 0.34"
   spec.add_dependency "anthropic", "~> 1.12"
   spec.add_dependency "gemini-ai", "~> 4.3"
 

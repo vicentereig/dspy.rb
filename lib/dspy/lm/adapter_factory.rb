@@ -6,11 +6,11 @@ module DSPy
     class AdapterFactory
       # Maps provider prefixes to adapter classes
       ADAPTER_MAP = {
-        'openai' => 'OpenAIAdapter',
-        'anthropic' => 'AnthropicAdapter',
-        'ollama' => 'OllamaAdapter',
-        'gemini' => 'GeminiAdapter',
-        'openrouter' => 'OpenrouterAdapter'
+        'openai' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenAIAdapter', gem_name: 'dspy-openai' },
+        'anthropic' => 'DSPy::LM::AnthropicAdapter',
+        'ollama' => { class_name: 'DSPy::OpenAI::LM::Adapters::OllamaAdapter', gem_name: 'dspy-openai' },
+        'gemini' => 'DSPy::LM::GeminiAdapter',
+        'openrouter' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenRouterAdapter', gem_name: 'dspy-openai' }
       }.freeze
 
       PROVIDERS_WITH_EXTRA_OPTIONS = %w[openai anthropic ollama gemini openrouter].freeze
@@ -55,11 +55,12 @@ module DSPy
           end
 
           begin
-            Object.const_get("DSPy::LM::#{adapter_class_name}")
+            Object.const_get(adapter_class_name)
           rescue NameError
-            raise UnsupportedProviderError, 
-                  "Adapter not found: DSPy::LM::#{adapter_class_name}. " \
-                  "Make sure the corresponding gem is installed."
+            gem_name = ADAPTER_MAP[provider][:gem_name]
+            raise UnsupportedProviderError,
+                  "Adapter not found: #{adapter_class_name}. " \
+                  "Make sure the corresponding #{gem_name} gem is installed."
           end
         end
       end

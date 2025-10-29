@@ -14,6 +14,7 @@ require 'vcr'
 require 'webmock/rspec'
 
 require 'dspy'
+require 'dspy/openai'
 
 require 'newrelic_rpm'
 

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'dspy/lm/adapters/openai/schema_converter'
+require 'dspy/openai/lm/adapters/openai/schema_converter'
 
-RSpec.describe DSPy::LM::Adapters::OpenAI::SchemaConverter do
+RSpec.describe DSPy::OpenAI::LM::SchemaConverter do
   describe '.to_openai_format' do
     let(:signature_class) do
       Class.new(DSPy::Signature) do
