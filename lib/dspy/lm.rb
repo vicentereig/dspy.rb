@@ -14,7 +14,6 @@ require_relative 'lm/adapter_factory'
 
 # Load adapters
 require_relative 'lm/adapters/anthropic_adapter'
-require_relative 'lm/adapters/gemini_adapter'
 
 # Load strategy system
 require_relative 'lm/chat_strategy'
@@ -219,8 +218,18 @@ module DSPy
         adapter.instance_variable_get(:@structured_outputs_enabled) &&
           DSPy::OpenAI::LM::SchemaConverter.supports_structured_outputs?(adapter.model)
       elsif adapter_class_name.include?('GeminiAdapter')
+        begin
+          require "dspy/gemini"
+        rescue LoadError
+          msg = <<~MSG
+            Install the gem to enable Gemini support.
+            Add `gem 'dspy-gemini'` to your Gemfile and run `bundle install`.
+          MSG
+          raise DSPy::LM::MissingAdapterError, msg
+        end
+
         adapter.instance_variable_get(:@structured_outputs_enabled) &&
-          DSPy::LM::Adapters::Gemini::SchemaConverter.supports_structured_outputs?(adapter.model)
+          DSPy::Gemini::LM::SchemaConverter.supports_structured_outputs?(adapter.model)
       elsif adapter_class_name.include?('AnthropicAdapter')
         structured_outputs_enabled = adapter.instance_variable_get(:@structured_outputs_enabled)
         structured_outputs_enabled.nil? ? true : structured_outputs_enabled

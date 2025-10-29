@@ -8,7 +8,6 @@ PATH
       dry-configurable (~> 1.0)
       dry-logger (~> 1.0)
       dspy-schema (~> 1.0.0)
-      gemini-ai (~> 4.3)
       informers (~> 1.2)
       sorbet-baml (~> 0.1)
       sorbet-runtime (~> 0.5)
@@ -20,6 +19,9 @@ PATH
       concurrent-ruby (~> 1.3)
       dspy (= 0.30.1)
       polars-df (~> 0.15)
+    dspy-gemini (1.0.0)
+      dspy (= 0.30.1)
+      gemini-ai (~> 4.3)
     dspy-gepa (1.0.0)
       dspy (= 0.30.1)
       gepa (= 1.0.0)
@@ -350,6 +352,7 @@ DEPENDENCIES
   dspy!
   dspy-datasets!
   dspy-evals!
+  dspy-gemini!
   dspy-gepa!
   dspy-miprov2!
   dspy-o11y!

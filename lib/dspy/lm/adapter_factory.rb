@@ -9,7 +9,7 @@ module DSPy
         'openai' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenAIAdapter', gem_name: 'dspy-openai' },
         'anthropic' => 'DSPy::LM::AnthropicAdapter',
         'ollama' => { class_name: 'DSPy::OpenAI::LM::Adapters::OllamaAdapter', gem_name: 'dspy-openai' },
-        'gemini' => 'DSPy::LM::GeminiAdapter',
+        'gemini' => { class_name: 'DSPy::Gemini::LM::Adapters::GeminiAdapter', gem_name: 'dspy-gemini' },
         'openrouter' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenRouterAdapter', gem_name: 'dspy-openai' }
       }.freeze
 

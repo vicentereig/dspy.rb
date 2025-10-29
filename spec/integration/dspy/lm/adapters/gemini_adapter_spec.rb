@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DSPy::LM::GeminiAdapter do
+RSpec.describe DSPy::Gemini::LM::Adapters::GeminiAdapter do
   let(:adapter) { described_class.new(model: 'gemini-2.5-flash', api_key: 'test-key') }
   let(:mock_client) { double('Gemini Client') }
 

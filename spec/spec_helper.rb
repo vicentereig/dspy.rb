@@ -15,6 +15,7 @@ require 'webmock/rspec'
 
 require 'dspy'
 require 'dspy/openai'
+require 'dspy/gemini'
 
 require 'newrelic_rpm'
 

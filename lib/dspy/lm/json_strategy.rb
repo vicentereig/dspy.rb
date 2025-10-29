@@ -2,8 +2,6 @@
 
 require "sorbet-runtime"
 
-require_relative "adapters/gemini/schema_converter"
-
 module DSPy
   class LM
     # JSON extraction strategy with provider-specific handling
@@ -116,9 +114,18 @@ module DSPy
       # Gemini preparation
       sig { params(request_params: T::Hash[Symbol, T.untyped]).void }
       def prepare_gemini_request(request_params)
+        begin
+          require "dspy/gemini"
+        rescue LoadError
+          msg = <<~MSG
+            Gemini adapter is optional; structured output helpers will be unavailable until the gem is installed.
+            Add `gem 'dspy-gemini'` to your Gemfile and run `bundle install`.
+          MSG
+          raise DSPy::LM::MissingAdapterError, msg
+        end
+
         # Check if structured outputs are supported
-        if adapter.instance_variable_get(:@structured_outputs_enabled) &&
-           DSPy::LM::Adapters::Gemini::SchemaConverter.supports_structured_outputs?(adapter.model)
+        if adapter.instance_variable_get(:@structured_outputs_enabled) && DSPy::Gemini::LM::SchemaConverter.supports_structured_outputs?(adapter.model)
           schema = DSPy::LM::Adapters::Gemini::SchemaConverter.to_gemini_format(signature_class)
 
           request_params[:generation_config] = {
