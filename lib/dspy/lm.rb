@@ -12,9 +12,6 @@ require_relative 'lm/adapter_factory'
 
 # Load instrumentation
 
-# Load adapters
-require_relative 'lm/adapters/anthropic_adapter'
-
 # Load strategy system
 require_relative 'lm/chat_strategy'
 require_relative 'lm/json_strategy'
@@ -231,6 +228,16 @@ module DSPy
         adapter.instance_variable_get(:@structured_outputs_enabled) &&
           DSPy::Gemini::LM::SchemaConverter.supports_structured_outputs?(adapter.model)
       elsif adapter_class_name.include?('AnthropicAdapter')
+        begin
+          require "dspy/anthropic"
+        rescue LoadError
+          msg = <<~MSG
+            Install the gem to enable Claude support.
+            Add `gem 'dspy-anthropic'` to your Gemfile and run `bundle install`.
+          MSG
+          raise DSPy::LM::MissingAdapterError, msg
+        end
+
         structured_outputs_enabled = adapter.instance_variable_get(:@structured_outputs_enabled)
         structured_outputs_enabled.nil? ? true : structured_outputs_enabled
       else

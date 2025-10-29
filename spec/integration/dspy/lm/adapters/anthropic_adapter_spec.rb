@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DSPy::LM::AnthropicAdapter do
+RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
   let(:adapter) { described_class.new(model: 'claude-3-sonnet', api_key: 'test-key') }
   let(:mock_client) { instance_double(Anthropic::Client) }
   let(:mock_messages) { double('Anthropic::Messages') }
