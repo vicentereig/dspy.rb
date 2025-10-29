@@ -7,7 +7,7 @@ module DSPy
       # Maps provider prefixes to adapter classes
       ADAPTER_MAP = {
         'openai' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenAIAdapter', gem_name: 'dspy-openai' },
-        'anthropic' => 'DSPy::LM::AnthropicAdapter',
+        'anthropic' => { class_name: 'DSPy::Anthropic::LM::Adapters::AnthropicAdapter', gem_name: 'dspy-anthropic' },
         'ollama' => { class_name: 'DSPy::OpenAI::LM::Adapters::OllamaAdapter', gem_name: 'dspy-openai' },
         'gemini' => { class_name: 'DSPy::Gemini::LM::Adapters::GeminiAdapter', gem_name: 'dspy-gemini' },
         'openrouter' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenRouterAdapter', gem_name: 'dspy-openai' }
@@ -46,21 +46,28 @@ module DSPy
         end
 
         def get_adapter_class(provider)
-          adapter_class_name = ADAPTER_MAP[provider]
-          
-          unless adapter_class_name
+          adapter_info = ADAPTER_MAP[provider]
+
+          unless adapter_info
             available_providers = ADAPTER_MAP.keys.join(', ')
             raise UnsupportedProviderError, 
                   "Unsupported provider: #{provider}. Available: #{available_providers}"
           end
 
+          adapter_class_name = adapter_info[:class_name]
+          gem_name = adapter_info[:gem_name]
+          require_path = adapter_info.fetch(:require_path, gem_name.tr('-', '/'))
+
           begin
             Object.const_get(adapter_class_name)
           rescue NameError
-            gem_name = ADAPTER_MAP[provider][:gem_name]
-            raise UnsupportedProviderError,
-                  "Adapter not found: #{adapter_class_name}. " \
-                  "Make sure the corresponding #{gem_name} gem is installed."
+            begin
+              require require_path
+            rescue LoadError
+              raise UnsupportedProviderError,
+                "Adapter not found: #{adapter_class_name}. " \
+                "Install the #{gem_name} gem and try again."
+            end
           end
         end
       end

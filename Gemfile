@@ -10,6 +10,10 @@ if ENV.fetch('DSPY_WITH_GEMINI', '1') == '1'
   gemspec name: "dspy-gemini"
 end
 
+if ENV.fetch('DSPY_WITH_ANTHROPIC', '1') == '1'
+  gemspec name: "dspy-anthropic"
+end
+
 if ENV.fetch('DSPY_WITH_SCHEMA', '1') == '1'
   gemspec name: "dspy-schema"
 end
