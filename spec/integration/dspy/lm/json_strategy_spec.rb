@@ -146,7 +146,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   describe 'with Gemini adapter' do
     let(:gemini_adapter) do
       adapter = double('GeminiAdapter')
-      allow(adapter).to receive(:class).and_return(DSPy::LM::GeminiAdapter)
+      allow(adapter).to receive(:class).and_return(DSPy::Gemini::LM::Adapters::GeminiAdapter)
       allow(adapter).to receive(:model).and_return('gemini-2.0-flash-001')
       adapter
     end
@@ -158,10 +158,10 @@ RSpec.describe DSPy::LM::JSONStrategy do
 
       # Mock instance variable access
       allow(gemini_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(true)
-      allow(DSPy::LM::Adapters::Gemini::SchemaConverter).to receive(:supports_structured_outputs?)
+      allow(DSPy::Gemini::LM::SchemaConverter).to receive(:supports_structured_outputs?)
         .with('gemini-2.0-flash-001')
         .and_return(true)
-      allow(DSPy::LM::Adapters::Gemini::SchemaConverter).to receive(:to_gemini_format)
+      allow(DSPy::Gemini::LM::SchemaConverter).to receive(:to_gemini_format)
         .with(signature_class)
         .and_return({ type: 'object', properties: {} })
 
