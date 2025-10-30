@@ -7,14 +7,14 @@ RSpec.describe DSPy::LM::AdapterFactory do
     it 'creates OpenAI adapter for openai/ prefixed model' do
       adapter = described_class.create('openai/gpt-4', api_key: 'test-key')
       
-      expect(adapter).to be_a(DSPy::LM::OpenAIAdapter)
+      expect(adapter).to be_a(DSPy::OpenAI::LM::Adapters::OpenAIAdapter)
       expect(adapter.model).to eq('gpt-4')
     end
 
     it 'creates OpenAI adapter for OpenRouter models' do
       adapter = described_class.create('openrouter/x-ai/grok-4-fast:free', api_key: 'test-key')
 
-      expect(adapter).to be_a(DSPy::LM::OpenAIAdapter)
+      expect(adapter).to be_a(DSPy::OpenAI::LM::Adapters::OpenAIAdapter)
       expect(adapter.model).to eq('x-ai/grok-4-fast:free')
     end
 
@@ -43,7 +43,7 @@ RSpec.describe DSPy::LM::AdapterFactory do
     end
 
     it 'passes model and api_key to adapter' do
-      expect(DSPy::LM::OpenAIAdapter).to receive(:new)
+      expect(DSPy::OpenAI::LM::Adapters::OpenAIAdapter).to receive(:new)
         .with(model: 'gpt-4', api_key: 'test-key')
         .and_call_original
       

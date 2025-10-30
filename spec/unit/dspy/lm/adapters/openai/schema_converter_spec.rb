@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'dspy/openai/lm/adapters/openai/schema_converter'
+require 'dspy/openai/lm/schema_converter'
 
 RSpec.describe DSPy::OpenAI::LM::SchemaConverter do
   describe '.to_openai_format' do

@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email = ["hey@vicente.services"]
 
   spec.summary = "OpenAI and OpenRouter adapters for DSPy.rb."
-  spec.description = "Provides the DSPy::LM::OpenAIAdapter plus the Ollama and OpenRouter adapters so OpenAI-compatible providers can be added to DSPy.rb projects independently of the core gem."
+  spec.description = "Provides the OpenAI plus the Ollama and OpenRouter adapters so OpenAI-compatible providers can be added to DSPy.rb projects independently of the core gem."
   spec.homepage = "https://github.com/vicentereig/dspy.rb"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"

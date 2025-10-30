@@ -52,7 +52,7 @@ module DSPy
               request_params[:response_format] = response_format
             elsif @structured_outputs_enabled && signature && supports_structured_outputs?
               # Legacy behavior for backward compatibility
-              response_format = DSPy::LM::Adapters::OpenAI::SchemaConverter.to_openai_format(signature)
+              response_format = DSPy::OpenAI::LM::SchemaConverter.to_openai_format(signature)
               request_params[:response_format] = response_format
             end
 

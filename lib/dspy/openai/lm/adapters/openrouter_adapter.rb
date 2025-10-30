@@ -6,7 +6,7 @@ module DSPy
   module OpenAI
     module LM
       module Adapters
-        class OpenrouterAdapter < OpenAIAdapter
+        class OpenRouterAdapter < OpenAIAdapter
           BASE_URL = 'https://openrouter.ai/api/v1'
 
           def initialize(model:, api_key: nil, structured_outputs: true, http_referrer: nil, x_title: nil)

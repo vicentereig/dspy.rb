@@ -82,7 +82,7 @@ module DSPy
 
         # Check if structured outputs are supported
         if adapter.instance_variable_get(:@structured_outputs_enabled) && DSPy::OpenAI::LM::SchemaConverter.supports_structured_outputs?(adapter.model)
-          response_format = DSPy::LM::Adapters::OpenAI::SchemaConverter.to_openai_format(signature_class)
+          response_format = DSPy::OpenAI::LM::SchemaConverter.to_openai_format(signature_class)
           request_params[:response_format] = response_format
         end
       end
