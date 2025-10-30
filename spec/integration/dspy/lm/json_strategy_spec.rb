@@ -49,7 +49,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   describe 'with Anthropic adapter' do
     let(:anthropic_adapter) do
       adapter = double('AnthropicAdapter')
-      allow(adapter).to receive(:class).and_return(DSPy::LM::AnthropicAdapter)
+      allow(adapter).to receive(:class).and_return(DSPy::Anthropic::LM::Adapters::AnthropicAdapter)
       allow(adapter).to receive(:model).and_return('claude-3-5-sonnet-20241022')
       adapter
     end

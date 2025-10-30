@@ -26,7 +26,7 @@ RSpec.describe DSPy::LM::AdapterFactory do
     it 'creates Anthropic adapter for anthropic/ prefixed model' do
       adapter = described_class.create('anthropic/claude-3-sonnet', api_key: 'test-key')
       
-      expect(adapter).to be_a(DSPy::LM::AnthropicAdapter)
+      expect(adapter).to be_a(DSPy::Anthropic::LM::Adapters::AnthropicAdapter)
       expect(adapter.model).to eq('claude-3-sonnet')
     end
 
