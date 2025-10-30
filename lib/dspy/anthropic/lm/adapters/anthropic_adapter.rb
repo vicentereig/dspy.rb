@@ -4,6 +4,9 @@ require 'anthropic'
 require 'dspy/lm/vision_models'
 require 'dspy/lm/adapter'
 
+require 'dspy/anthropic/guardrails'
+DSPy::Anthropic::Guardrails.ensure_anthropic_installed!
+
 module DSPy
   module Anthropic
     module LM
