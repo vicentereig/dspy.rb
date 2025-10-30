@@ -9,7 +9,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   describe 'with OpenAI adapter' do
     let(:openai_adapter) do
       adapter = double('OpenAIAdapter')
-      allow(adapter).to receive(:class).and_return(DSPy::LM::OpenAIAdapter)
+      allow(adapter).to receive(:class).and_return(DSPy::OpenAI::LM::Adapters::OpenAIAdapter)
       allow(adapter).to receive(:model).and_return('gpt-4o-2024-08-06')
       adapter
     end
@@ -21,10 +21,10 @@ RSpec.describe DSPy::LM::JSONStrategy do
 
       # Mock instance variable access
       allow(openai_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(true)
-      allow(DSPy::LM::Adapters::OpenAI::SchemaConverter).to receive(:supports_structured_outputs?)
+      allow(DSPy::OpenAI::LM::SchemaConverter).to receive(:supports_structured_outputs?)
         .with('gpt-4o-2024-08-06')
         .and_return(true)
-      allow(DSPy::LM::Adapters::OpenAI::SchemaConverter).to receive(:to_openai_format)
+      allow(DSPy::OpenAI::LM::SchemaConverter).to receive(:to_openai_format)
         .with(signature_class)
         .and_return({ type: 'json_schema', json_schema: { name: 'response', strict: true, schema: {} } })
 
@@ -183,7 +183,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   end
 
   describe '#name' do
-    let(:adapter) { instance_double(DSPy::LM::OpenAIAdapter) }
+    let(:adapter) { instance_double(DSPy::OpenAI::LM::Adapters::OpenAIAdapter) }
     let(:strategy) { described_class.new(adapter, signature_class) }
 
     it 'returns strategy name' do
@@ -192,7 +192,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   end
 
   describe 'fail-fast behavior' do
-    let(:adapter) { instance_double(DSPy::LM::OpenAIAdapter) }
+    let(:adapter) { instance_double(DSPy::OpenAI::LM::Adapters::OpenAIAdapter) }
     let(:strategy) { described_class.new(adapter, signature_class) }
 
     it 'raises error on JSON parsing failure (no fallback)' do
