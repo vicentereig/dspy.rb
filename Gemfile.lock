@@ -41,7 +41,7 @@ PATH
       opentelemetry-sdk (~> 1.8)
     dspy-openai (1.0.0)
       dspy (= 0.30.1)
-      openai (~> 0.34)
+      openai (= 0.17)
     dspy-schema (1.0.0)
       sorbet-runtime (>= 0.5.0)
     gepa (1.0.0)
@@ -220,7 +220,7 @@ GEM
       ffi
     onnxruntime (0.10.1-arm64-darwin)
       ffi
-    openai (0.34.1)
+    openai (0.17.0)
       connection_pool
     opentelemetry-api (1.7.0)
     opentelemetry-common (0.22.0)
