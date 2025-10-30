@@ -15,6 +15,18 @@ module DSPy
 
       PROVIDERS_WITH_EXTRA_OPTIONS = %w[openai anthropic ollama gemini openrouter].freeze
 
+      class AdapterData < Data.define(:class_name, :gem_name)
+        def self.from_prefix(provider_prefix)
+          if ADAPTER_MAP.key?(provider_prefix)
+            new(**ADAPTER_MAP[provider_prefix])
+          end
+        end
+
+        def require_path
+          gem_name.tr('-', '/')
+        end
+      end
+
       class << self
         # Creates an adapter instance based on model_id
         # @param model_id [String] Full model identifier (e.g., "openai/gpt-4")
@@ -46,29 +58,32 @@ module DSPy
         end
 
         def get_adapter_class(provider)
-          adapter_info = ADAPTER_MAP[provider]
+          ensure_adapter_supported!(provider)
+          ensure_adapter_loaded!(provider)
 
-          unless adapter_info
+          Object.const_get(adapter_data(provider).class_name)
+        end
+
+        def adapter_data(provider)
+          AdapterData.from_prefix(provider)
+        end
+
+        def ensure_adapter_supported!(provider)
+          if adapter_data(provider).nil?
             available_providers = ADAPTER_MAP.keys.join(', ')
-            raise UnsupportedProviderError, 
-                  "Unsupported provider: #{provider}. Available: #{available_providers}"
+            raise UnsupportedProviderError, "Unsupported provider: #{provider}. Available: #{available_providers}"
           end
+        end
 
-          adapter_class_name = adapter_info[:class_name]
-          gem_name = adapter_info[:gem_name]
-          require_path = adapter_info.fetch(:require_path, gem_name.tr('-', '/'))
-
-          begin
-            Object.const_get(adapter_class_name)
-          rescue NameError
-            begin
-              require require_path
-            rescue LoadError
-              raise UnsupportedProviderError,
-                "Adapter not found: #{adapter_class_name}. " \
-                "Install the #{gem_name} gem and try again."
-            end
-          end
+        def ensure_adapter_loaded!(provider)
+          adapter_data = adapter_data(provider)
+          require adapter_data.require_path
+          msg = <<~ERROR
+            Adapter not found: #{adapter_data.class_name}.
+            Install the #{adapter_data.gem_name} gem and try again.
+          ERROR
+        rescue LoadError
+          raise MissingAdapterError, msg
         end
       end
     end
