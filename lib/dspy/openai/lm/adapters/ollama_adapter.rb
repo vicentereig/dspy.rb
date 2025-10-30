@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'openai'
+require 'dspy/openai/lm/adapters/openai_adapter'
 
 module DSPy
   module OpenAI

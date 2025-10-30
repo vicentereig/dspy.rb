@@ -5,6 +5,9 @@ require_relative '../schema_converter'
 require 'dspy/lm/vision_models'
 require 'dspy/lm/adapter'
 
+require 'dspy/openai/guardrails'
+DSPy::OpenAI::Guardrails.ensure_openai_installed!
+
 module DSPy
   module OpenAI
     module LM
