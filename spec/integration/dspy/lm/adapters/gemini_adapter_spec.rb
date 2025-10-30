@@ -128,7 +128,7 @@ RSpec.describe DSPy::Gemini::LM::Adapters::GeminiAdapter do
       expect(result.usage.input_tokens).to eq(10)
       expect(result.usage.output_tokens).to eq(5)
       expect(result.usage.total_tokens).to eq(15)
-      expect(result.metadata).to be_a(DSPy::LM::GeminiResponseMetadata)
+      expect(result.metadata).to be_a(DSPy::Gemini::LM::Adapters::GeminiAdapter)
       expect(result.metadata.provider).to eq('gemini')
       expect(result.metadata.model).to eq('gemini-2.5-flash')
       expect(result.metadata.finish_reason).to eq('STOP')
@@ -174,7 +174,7 @@ RSpec.describe DSPy::Gemini::LM::Adapters::GeminiAdapter do
       result = adapter.chat(messages: messages, &test_block)
       
       expect(block_called).to be true
-      expect(result.metadata).to be_a(DSPy::LM::GeminiResponseMetadata)
+      expect(result.metadata).to be_a(DSPy::Gemini::LM::Adapters::GeminiAdapter)
       expect(result.metadata.provider).to eq('gemini')
       expect(result.metadata.streaming).to be true
     end

@@ -126,7 +126,7 @@ module DSPy
 
         # Check if structured outputs are supported
         if adapter.instance_variable_get(:@structured_outputs_enabled) && DSPy::Gemini::LM::SchemaConverter.supports_structured_outputs?(adapter.model)
-          schema = DSPy::LM::Adapters::Gemini::SchemaConverter.to_gemini_format(signature_class)
+          schema = DSPy::Gemini::LM::SchemaConverter.to_gemini_format(signature_class)
 
           request_params[:generation_config] = {
             response_mime_type: "application/json",
