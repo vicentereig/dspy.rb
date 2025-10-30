@@ -5,6 +5,9 @@ require 'json'
 require 'dspy/lm/vision_models'
 require 'dspy/lm/adapter'
 
+require 'dspy/gemini/guardrails'
+DSPy::Gemini::Guardrails.ensure_gemini_installed!
+
 module DSPy
   module Gemini
     module LM
