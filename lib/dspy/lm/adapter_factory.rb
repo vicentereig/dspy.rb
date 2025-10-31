@@ -6,14 +6,26 @@ module DSPy
     class AdapterFactory
       # Maps provider prefixes to adapter classes
       ADAPTER_MAP = {
-        'openai' => 'OpenAIAdapter',
-        'anthropic' => 'AnthropicAdapter',
-        'ollama' => 'OllamaAdapter',
-        'gemini' => 'GeminiAdapter',
-        'openrouter' => 'OpenrouterAdapter'
+        'openai' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenAIAdapter', gem_name: 'dspy-openai' },
+        'anthropic' => { class_name: 'DSPy::Anthropic::LM::Adapters::AnthropicAdapter', gem_name: 'dspy-anthropic' },
+        'ollama' => { class_name: 'DSPy::OpenAI::LM::Adapters::OllamaAdapter', gem_name: 'dspy-openai' },
+        'gemini' => { class_name: 'DSPy::Gemini::LM::Adapters::GeminiAdapter', gem_name: 'dspy-gemini' },
+        'openrouter' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenRouterAdapter', gem_name: 'dspy-openai' }
       }.freeze
 
       PROVIDERS_WITH_EXTRA_OPTIONS = %w[openai anthropic ollama gemini openrouter].freeze
+
+      class AdapterData < Data.define(:class_name, :gem_name)
+        def self.from_prefix(provider_prefix)
+          if ADAPTER_MAP.key?(provider_prefix)
+            new(**ADAPTER_MAP[provider_prefix])
+          end
+        end
+
+        def require_path
+          gem_name.tr('-', '/')
+        end
+      end
 
       class << self
         # Creates an adapter instance based on model_id
@@ -46,21 +58,32 @@ module DSPy
         end
 
         def get_adapter_class(provider)
-          adapter_class_name = ADAPTER_MAP[provider]
-          
-          unless adapter_class_name
-            available_providers = ADAPTER_MAP.keys.join(', ')
-            raise UnsupportedProviderError, 
-                  "Unsupported provider: #{provider}. Available: #{available_providers}"
-          end
+          ensure_adapter_supported!(provider)
+          ensure_adapter_loaded!(provider)
 
-          begin
-            Object.const_get("DSPy::LM::#{adapter_class_name}")
-          rescue NameError
-            raise UnsupportedProviderError, 
-                  "Adapter not found: DSPy::LM::#{adapter_class_name}. " \
-                  "Make sure the corresponding gem is installed."
+          Object.const_get(adapter_data(provider).class_name)
+        end
+
+        def adapter_data(provider)
+          AdapterData.from_prefix(provider)
+        end
+
+        def ensure_adapter_supported!(provider)
+          if adapter_data(provider).nil?
+            available_providers = ADAPTER_MAP.keys.join(', ')
+            raise UnsupportedProviderError, "Unsupported provider: #{provider}. Available: #{available_providers}"
           end
+        end
+
+        def ensure_adapter_loaded!(provider)
+          adapter_data = adapter_data(provider)
+          require adapter_data.require_path
+          msg = <<~ERROR
+            Adapter not found: #{adapter_data.class_name}.
+            Install the #{adapter_data.gem_name} gem and try again.
+          ERROR
+        rescue LoadError
+          raise MissingAdapterError, msg
         end
       end
     end

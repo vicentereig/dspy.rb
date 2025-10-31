@@ -157,7 +157,7 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
       ]
       
       supported_models.each do |model|
-        expect(DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?(model)).to eq(true)
+        expect(DSPy::OpenAI::LM::SchemaConverter.supports_structured_outputs?(model)).to eq(true)
       end
     end
     
@@ -169,7 +169,7 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
       ]
       
       unsupported_models.each do |model|
-        expect(DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?(model)).to eq(false)
+        expect(DSPy::OpenAI::LM::SchemaConverter.supports_structured_outputs?(model)).to eq(false)
       end
     end
   end
@@ -224,7 +224,7 @@ RSpec.describe "OpenAI Structured Outputs Integration" do
       end
       
       schema = problematic_signature.output_json_schema
-      issues = DSPy::LM::Adapters::OpenAI::SchemaConverter.validate_compatibility(schema)
+      issues = DSPy::OpenAI::LM::SchemaConverter.validate_compatibility(schema)
       
       # The hash type should work fine in our implementation
       expect(issues).to be_empty

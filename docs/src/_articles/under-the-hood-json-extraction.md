@@ -97,7 +97,7 @@ Like OpenAI, this guarantees valid JSON output. The schema converter transforms 
 # From gemini_structured_output_strategy.rb
 def prepare_request(messages, request_params)
   # Convert signature to Gemini schema format
-  schema = DSPy::LM::Adapters::Gemini::SchemaConverter.to_gemini_format(signature_class)
+  schema = DSPy::Gemini::LM::SchemaConverter.to_gemini_format(signature_class)
   
   # Add generation_config for structured output
   request_params[:generation_config] = {

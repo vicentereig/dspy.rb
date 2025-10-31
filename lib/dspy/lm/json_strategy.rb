@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "sorbet-runtime"
-require_relative "adapters/openai/schema_converter"
-require_relative "adapters/gemini/schema_converter"
 
 module DSPy
   class LM
@@ -72,10 +70,19 @@ module DSPy
       # OpenAI/Ollama preparation
       sig { params(request_params: T::Hash[Symbol, T.untyped]).void }
       def prepare_openai_request(request_params)
+        begin
+          require "dspy/openai"
+        rescue LoadError
+          msg = <<~MSG
+            OpenAI adapter is optional; structured output helpers will be unavailable until the gem is installed.
+            Add `gem 'dspy-openai'` to your Gemfile and run `bundle install`.
+          MSG
+          raise DSPy::LM::MissingAdapterError, msg
+        end
+
         # Check if structured outputs are supported
-        if adapter.instance_variable_get(:@structured_outputs_enabled) &&
-           DSPy::LM::Adapters::OpenAI::SchemaConverter.supports_structured_outputs?(adapter.model)
-          response_format = DSPy::LM::Adapters::OpenAI::SchemaConverter.to_openai_format(signature_class)
+        if adapter.instance_variable_get(:@structured_outputs_enabled) && DSPy::OpenAI::LM::SchemaConverter.supports_structured_outputs?(adapter.model)
+          response_format = DSPy::OpenAI::LM::SchemaConverter.to_openai_format(signature_class)
           request_params[:response_format] = response_format
         end
       end
@@ -107,10 +114,19 @@ module DSPy
       # Gemini preparation
       sig { params(request_params: T::Hash[Symbol, T.untyped]).void }
       def prepare_gemini_request(request_params)
+        begin
+          require "dspy/gemini"
+        rescue LoadError
+          msg = <<~MSG
+            Gemini adapter is optional; structured output helpers will be unavailable until the gem is installed.
+            Add `gem 'dspy-gemini'` to your Gemfile and run `bundle install`.
+          MSG
+          raise DSPy::LM::MissingAdapterError, msg
+        end
+
         # Check if structured outputs are supported
-        if adapter.instance_variable_get(:@structured_outputs_enabled) &&
-           DSPy::LM::Adapters::Gemini::SchemaConverter.supports_structured_outputs?(adapter.model)
-          schema = DSPy::LM::Adapters::Gemini::SchemaConverter.to_gemini_format(signature_class)
+        if adapter.instance_variable_get(:@structured_outputs_enabled) && DSPy::Gemini::LM::SchemaConverter.supports_structured_outputs?(adapter.model)
+          schema = DSPy::Gemini::LM::SchemaConverter.to_gemini_format(signature_class)
 
           request_params[:generation_config] = {
             response_mime_type: "application/json",

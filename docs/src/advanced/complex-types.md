@@ -1007,7 +1007,7 @@ end
 Check schema depth warnings:
 ```ruby
 schema = YourSignature.output_json_schema
-issues = DSPy::LM::Adapters::OpenAI::SchemaConverter.validate_compatibility(schema)
+issues = DSPy::OpenAI::LM::SchemaConverter.validate_compatibility(schema)
 puts issues  # Shows depth and complexity warnings
 ```
 

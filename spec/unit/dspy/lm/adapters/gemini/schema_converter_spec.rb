@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'dspy/lm/adapters/gemini/schema_converter'
+require 'dspy/gemini/lm/schema_converter'
 
-RSpec.describe DSPy::LM::Adapters::Gemini::SchemaConverter do
+RSpec.describe DSPy::Gemini::LM::SchemaConverter do
   describe '.to_gemini_format' do
     let(:signature_class) do
       Class.new(DSPy::Signature) do

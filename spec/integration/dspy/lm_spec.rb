@@ -16,13 +16,13 @@ RSpec.describe DSPy::LM do
     it 'creates OpenAI adapter for openai/ prefixed models' do
       lm = described_class.new('openai/gpt-4', api_key: 'test-key')
       
-      expect(lm.instance_variable_get('@adapter')).to be_a(DSPy::LM::OpenAIAdapter)
+      expect(lm.instance_variable_get('@adapter')).to be_a(DSPy::OpenAI::LM::Adapters::OpenAIAdapter)
     end
 
     it 'creates Anthropic adapter for anthropic/ prefixed models' do
       lm = described_class.new('anthropic/claude-3-sonnet', api_key: 'test-key')
       
-      expect(lm.instance_variable_get('@adapter')).to be_a(DSPy::LM::AnthropicAdapter)
+      expect(lm.instance_variable_get('@adapter')).to be_a(DSPy::Anthropic::LM::Adapters::AnthropicAdapter)
     end
 
     it 'raises error for legacy model format without provider' do

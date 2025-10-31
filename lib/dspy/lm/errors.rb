@@ -6,6 +6,9 @@ module DSPy
     class AdapterError < Error; end
     class UnsupportedProviderError < Error; end
     class ConfigurationError < Error; end
+    class MissingAdapterError < Error; end
+    class UnsupportedVersionError < Error; end
+    class MissingOfficialSDKError < Error; end
     
     # Raised when API key is missing or invalid
     class MissingAPIKeyError < Error

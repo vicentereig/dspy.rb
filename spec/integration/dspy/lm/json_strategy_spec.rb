@@ -9,7 +9,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   describe 'with OpenAI adapter' do
     let(:openai_adapter) do
       adapter = double('OpenAIAdapter')
-      allow(adapter).to receive(:class).and_return(DSPy::LM::OpenAIAdapter)
+      allow(adapter).to receive(:class).and_return(DSPy::OpenAI::LM::Adapters::OpenAIAdapter)
       allow(adapter).to receive(:model).and_return('gpt-4o-2024-08-06')
       adapter
     end
@@ -21,10 +21,10 @@ RSpec.describe DSPy::LM::JSONStrategy do
 
       # Mock instance variable access
       allow(openai_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(true)
-      allow(DSPy::LM::Adapters::OpenAI::SchemaConverter).to receive(:supports_structured_outputs?)
+      allow(DSPy::OpenAI::LM::SchemaConverter).to receive(:supports_structured_outputs?)
         .with('gpt-4o-2024-08-06')
         .and_return(true)
-      allow(DSPy::LM::Adapters::OpenAI::SchemaConverter).to receive(:to_openai_format)
+      allow(DSPy::OpenAI::LM::SchemaConverter).to receive(:to_openai_format)
         .with(signature_class)
         .and_return({ type: 'json_schema', json_schema: { name: 'response', strict: true, schema: {} } })
 
@@ -49,7 +49,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   describe 'with Anthropic adapter' do
     let(:anthropic_adapter) do
       adapter = double('AnthropicAdapter')
-      allow(adapter).to receive(:class).and_return(DSPy::LM::AnthropicAdapter)
+      allow(adapter).to receive(:class).and_return(DSPy::Anthropic::LM::Adapters::AnthropicAdapter)
       allow(adapter).to receive(:model).and_return('claude-3-5-sonnet-20241022')
       adapter
     end
@@ -146,7 +146,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   describe 'with Gemini adapter' do
     let(:gemini_adapter) do
       adapter = double('GeminiAdapter')
-      allow(adapter).to receive(:class).and_return(DSPy::LM::GeminiAdapter)
+      allow(adapter).to receive(:class).and_return(DSPy::Gemini::LM::Adapters::GeminiAdapter)
       allow(adapter).to receive(:model).and_return('gemini-2.0-flash-001')
       adapter
     end
@@ -158,10 +158,10 @@ RSpec.describe DSPy::LM::JSONStrategy do
 
       # Mock instance variable access
       allow(gemini_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(true)
-      allow(DSPy::LM::Adapters::Gemini::SchemaConverter).to receive(:supports_structured_outputs?)
+      allow(DSPy::Gemini::LM::SchemaConverter).to receive(:supports_structured_outputs?)
         .with('gemini-2.0-flash-001')
         .and_return(true)
-      allow(DSPy::LM::Adapters::Gemini::SchemaConverter).to receive(:to_gemini_format)
+      allow(DSPy::Gemini::LM::SchemaConverter).to receive(:to_gemini_format)
         .with(signature_class)
         .and_return({ type: 'object', properties: {} })
 
@@ -183,7 +183,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   end
 
   describe '#name' do
-    let(:adapter) { instance_double(DSPy::LM::OpenAIAdapter) }
+    let(:adapter) { instance_double(DSPy::OpenAI::LM::Adapters::OpenAIAdapter) }
     let(:strategy) { described_class.new(adapter, signature_class) }
 
     it 'returns strategy name' do
@@ -192,7 +192,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
   end
 
   describe 'fail-fast behavior' do
-    let(:adapter) { instance_double(DSPy::LM::OpenAIAdapter) }
+    let(:adapter) { instance_double(DSPy::OpenAI::LM::Adapters::OpenAIAdapter) }
     let(:strategy) { described_class.new(adapter, signature_class) }
 
     it 'raises error on JSON parsing failure (no fallback)' do

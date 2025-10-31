@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DSPy::LM::OpenAIAdapter do
+RSpec.describe DSPy::OpenAI::LM::Adapters::OpenAIAdapter do
   let(:model) { 'gpt-4' }
   let(:api_key) { 'test-api-key' }
   let(:mock_client) { double('OpenAI::Client') }

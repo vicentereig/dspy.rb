@@ -38,6 +38,12 @@ Gem::Specification.new do |spec|
   spec.files.reject! { |path| path.start_with?("lib/dspy/deep_research") }
   spec.files.reject! { |path| path == "lib/dspy/deep_research.rb" }
   spec.files.reject! { |path| path.start_with?("lib/gepa") || path == "lib/gepa.rb" }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/openai") }
+  spec.files.reject! { |path| path == "lib/dspy/openai.rb" }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/gemini") }
+  spec.files.reject! { |path| path == "lib/dspy/gemini.rb" }
+  spec.files.reject! { |path| path.start_with?("lib/dspy/anthropic") }
+  spec.files.reject! { |path| path == "lib/dspy/anthropic.rb" }
 
   # Uncomment to register executables
   # spec.bindir = "exe"
@@ -50,11 +56,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-logger", "~> 1.0"
   spec.add_dependency "async", "~> 2.29"
   spec.add_dependency "concurrent-ruby", "~> 1.3"
-
-  # Official LM provider clients
-  spec.add_dependency "openai", "~> 0.34"
-  spec.add_dependency "anthropic", "~> 1.12"
-  spec.add_dependency "gemini-ai", "~> 4.3"
 
   # Sorbet integration dependencies
   spec.add_dependency "sorbet-runtime", "~> 0.5"
