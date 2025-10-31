@@ -58,7 +58,7 @@ RSpec.describe DSPy::LM::AdapterFactory do
         x_title: 'MyApp'
       )
 
-      expect(adapter).to be_a(DSPy::LM::OpenrouterAdapter)
+      expect(adapter).to be_a(DSPy::OpenAI::LM::Adapters::OpenRouterAdapter)
       expect(adapter.model).to eq('x-ai/grok-4-fast:free')
 
       request_params = adapter.send(:default_request_params)
