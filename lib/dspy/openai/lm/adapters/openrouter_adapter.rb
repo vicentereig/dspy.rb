@@ -22,7 +22,7 @@ module DSPy
             validate_configuration!
 
             # Create client with custom base URL
-            @client = OpenAI::Client.new(
+            @client = ::OpenAI::Client.new(
               api_key: @api_key,
               base_url: BASE_URL
             )
