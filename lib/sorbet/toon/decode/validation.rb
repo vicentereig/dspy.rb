@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../constants'
+require_relative '../errors'
 
 module Sorbet
   module Toon
@@ -45,7 +46,8 @@ module Sorbet
 
           return if blanks_in_range.empty?
 
-          raise RuntimeError, "Line #{blanks_in_range.first.line_number}: Blank lines inside #{context} are not allowed in strict mode"
+          raise Sorbet::Toon::DecodeError,
+                "Line #{blanks_in_range.first.line_number}: Blank lines inside #{context} are not allowed in strict mode"
         end
 
         def data_row?(content, delimiter)

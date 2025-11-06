@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../constants'
+require_relative '../errors'
 require_relative '../shared/string_utils'
 require_relative '../shared/literal_utils'
 require_relative 'scanner'
@@ -15,7 +16,7 @@ module Sorbet
 
         def decode_value_from_lines(cursor, **options)
           first = cursor.peek
-          raise ReferenceError, 'No content to decode' unless first
+          raise Sorbet::Toon::DecodeError, 'No content to decode' unless first
 
           if Parser.array_header_after_hyphen?(first.content)
             header_info = Parser.parse_array_header_line(first.content, Constants::DEFAULT_DELIMITER)
@@ -149,6 +150,12 @@ module Sorbet
             break if line.content.start_with?(Constants::LIST_ITEM_PREFIX)
 
             values = Parser.parse_delimited_values(line.content, header[:delimiter])
+            Validation.assert_expected_count(
+              values.length,
+              header[:fields].length,
+              'tabular row values',
+              strict: options[:strict]
+            )
             primitives = Parser.map_row_values_to_primitives(values)
             rows << primitives
             cursor.advance
@@ -166,12 +173,12 @@ module Sorbet
 
         def decode_list_item(cursor, base_depth, options)
           line = cursor.next
-          raise ReferenceError, 'Expected list item' unless line
+          raise Sorbet::Toon::DecodeError, 'Expected list item' unless line
 
           return {} if line.content == Constants::LIST_ITEM_MARKER
 
           unless line.content.start_with?(Constants::LIST_ITEM_PREFIX)
-            raise SyntaxError, "Expected list item to start with \"#{Constants::LIST_ITEM_PREFIX}\""
+            raise Sorbet::Toon::DecodeError, "Expected list item to start with \"#{Constants::LIST_ITEM_PREFIX}\""
           end
 
           after_hyphen = line.content[Constants::LIST_ITEM_PREFIX.length..] || ''
