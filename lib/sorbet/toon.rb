@@ -11,6 +11,7 @@ require_relative 'toon/config'
 require_relative 'toon/encoder'
 require_relative 'toon/decoder'
 require_relative 'toon/reconstructor'
+require_relative 'toon/signature_formatter'
 require_relative 'toon/struct_extensions'
 require_relative 'toon/enum_extensions'
 

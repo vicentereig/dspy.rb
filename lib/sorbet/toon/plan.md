@@ -29,8 +29,8 @@ Enable DSPy.rb to express `DSPy::Signature` contracts in TOON format—both for 
 - ✅ **Surface API foundation:** Normalizer + encode/decode wrappers/config landed, along with struct/enum mixins, signature-aware reconstruction, and opt-in extensions (`Sorbet::Toon.enable_extensions!`).
 - 🆕 **Normalizer & specs landed:** `lib/sorbet/toon/normalizer.rb` plus `spec/sorbet/toon/normalizer_spec.rb` cover Sorbet struct/enum flattening, optional field elision, `_type` toggling, and NaN/Infinity handling.
 - ⚙️ **Top-level encode/decode wrappers + config:** `lib/sorbet/toon/{config,encoder,decoder,reconstructor}.rb` expose `Sorbet::Toon.encode/decode`, global configuration, and struct rehydration (`spec/sorbet/toon/{encoder,decoder,signature_reconstruction}_spec.rb`).
-- 📦 **Gem skeleton started:** `sorbet-toon.gemspec`, `lib/sorbet/toon/version.rb`, and a living README (`lib/sorbet/toon/README.md`) unblock packaging/documentation work.
-- 🧱 **DSPy wiring outstanding:** Gem scaffold + README exist, but adapter integration and llms-full narrative docs are still TODO.
+- ✍️ **Signature formatter + DSPy adapter:** `lib/sorbet/toon/signature_formatter.rb` and `lib/dspy/schema/sorbet_toon_adapter.rb` now power `schema_format: :toon` guidance plus `data_format: :toon` prompts/decoding in `DSPy::Prompt` and `DSPy::LM`.
+- 📦 **Gem skeleton + README:** `sorbet-toon.gemspec`, `lib/sorbet/toon/version.rb`, and an llms-full README (`lib/sorbet/toon/README.md`) unblock packaging/documentation work.
 - ⚠️ **Dev friction:** `bundle exec rspec` currently fails unless the environment installs Bundler `2.6.5` (`gem install bundler:2.6.5`), so call this out in setup docs.
 
 ---
@@ -134,7 +134,7 @@ Deliverable: `Sorbet::Toon::Normalizer.normalize(value, signature: nil, role: :o
 
 ### 4. Encoder
 
-_Status: Shared encoder wrapper + config plus struct/enum mixins now live; future work is ergonomics (signature formatter, logging, DSPy hooks)._
+_Status: Shared encoder wrapper + config plus struct/enum mixins now live; future work is ergonomics (prompt helpers, logging, DSPy hooks)._
 
 Relies on in-repo TypeScript port (`Sorbet::Toon::Codec.encode`).
 
@@ -149,7 +149,7 @@ Relies on in-repo TypeScript port (`Sorbet::Toon::Codec.encode`).
 
 ### 5. Decoder & Reconstruction
 
-_Status: Wrapper exposes `Sorbet::Toon.decode`, including strict defaults, overrides, and Sorbet signature reconstruction via the new `Reconstructor`._
+_Status: Wrapper exposes `Sorbet::Toon.decode`, including strict defaults, overrides, Sorbet signature reconstruction via `Reconstructor`, and DSPy adapter parsing._
 
 - `Sorbet::Toon.decode(toon_string, signature: nil, role: :output)`:
   1. Call codec decoder → plain Ruby structure.
@@ -162,26 +162,10 @@ _Status: Wrapper exposes `Sorbet::Toon.decode`, including strict defaults, overr
 - Provide inverse convenience: `MyStruct.from_toon(string)` when extensions enabled.
 
 ### 6. Signature Formatter
-
-- `Sorbet::Toon::SignatureFormatter.render_input(signature, values)`:
-  - Accept either hash or struct instance.
-  - Ensure keys exist, apply ordering, call normalizer.
-  - Return normalized hash ready for encoding (no actual encode here).
-- `render_output` for output values.
-- Provide metadata for DSPy prompts (e.g., field order, optional flags) to keep doc generation consistent.
+_Status: Implemented November 6 — `lib/sorbet/toon/signature_formatter.rb` describes fields, optionality, and tabular hints for prompt rendering._
 
 ### 7. DSPy Integration Adapter
-
-File: `lib/dspy/schema/sorbet_toon_adapter.rb`
-
-- API shape:
-  - `DSPy::Schema::SorbetToonAdapter.render_input(signature, values)` → TOON string.
-  - `render_output_schema(signature)` – optional pre-rendered schema snippet (maybe BAML remains separate).
-  - `parse_output(signature, toon_string)` → Sorbet struct (utilizes decoder).
-- Update `DSPy::Prompt` (later task) to check `data_format: :toon` and delegate to adapter.
-- Ensure compatibility warnings:
-  - If `DSPy::LM` uses structured outputs (tool schemas), fallback to JSON (documented in README).
-  - ReAct/tool invocation still expects JSON; specify limitations clearly.
+_Status: `lib/dspy/schema/sorbet_toon_adapter.rb` now renders/decodes TOON inputs/outputs, `DSPy::Prompt` supports `data_format: :toon`, and `DSPy::LM` parses TOON responses (non-structured-output path only)._
 
 ### 8. Documentation
 
@@ -206,7 +190,7 @@ File: `lib/dspy/schema/sorbet_toon_adapter.rb`
 
 ### 9. Testing Strategy
 
-_Status: Codec fixtures + spec landed; normalizer + encode/decode + reconstruction/mixin specs added; adapter/integration coverage still outstanding._
+_Status: Codec fixtures + spec landed; normalizer + encode/decode + reconstruction/mixin specs added; TOON-specific prompt/adapter integration specs added; DSPy e2e tests still expanding._
 
 1. **Unit tests (RSpec)**:
    - `spec/sorbet/toon/codec_spec.rb` – parity with upstream encode/decode fixtures.
@@ -266,19 +250,19 @@ Use `[ ]` → `[x]` as tasks complete.
 - [x] Implement normalizer.
 - [x] Implement encoder + mixins.
 - [x] Implement decoder + reconstruction.
-- [ ] Signature formatter utilities.
-- [ ] DSPy adapter stub (`lib/dspy/schema/sorbet_toon_adapter.rb`).
+- [x] Signature formatter utilities.
+- [x] DSPy adapter stub (`lib/dspy/schema/sorbet_toon_adapter.rb`).
 - [ ] Unit/integration tests.
-- [ ] Documentation (README, llms-full.txt).
+- [x] Documentation (README, llms-full.txt).
 - [ ] Release 0.1.0 & integrate into DSPy.
 
 ---
 
 ## Immediate Next Steps
 
-1. **Signature formatter + DSPy adapter:** Implement prompt-ready ordering/metadata helpers and wire `data_format: :toon` through `lib/dspy/schema` + `DSPy::Prompt`.
-2. **Docs polish:** Expand `lib/sorbet/toon/README.md` into the llms-full narrative (examples, troubleshooting, upgrade guide) and document Bundler/env setup.
-3. **Integration tests:** Mirror the BAML integration suite for TOON (round-tripping signatures through adapters + LM prompts) before release prep.
+1. **DSPy docs & UX polish:** Update DSPy guides/config templates to call out `data_format: :toon`, limitations (structured outputs/tool calls), and troubleshooting guidance.
+2. **Predict/LM end-to-end specs:** Add higher-level tests (Predict → Prompt → LM mock → adapter) to ensure TOON formatting stays stable across demos/ReAct/MIPRO flows.
+3. **Error reporting & logging:** Surface clearer `Sorbet::Toon` errors inside DSPy (e.g., code-fence mismatch, tabular column mismatches) and add optional logging hooks before the v0.1.0 release.
 
 ---
 

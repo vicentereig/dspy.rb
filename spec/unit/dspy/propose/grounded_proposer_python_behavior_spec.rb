@@ -30,7 +30,7 @@ RSpec.describe DSPy::Propose::GroundedProposer, 'Python-compatible behavior' do
 
     before do
       # Mock current_lm for metadata collection
-      mock_lm = double('LM', model: 'gpt-4o-mini')
+      mock_lm = double('LM', model: 'gpt-4o-mini', schema_format: :json, data_format: :json)
       allow(DSPy).to receive(:current_lm).and_return(mock_lm)
 
       # Mock LLM to return long instruction

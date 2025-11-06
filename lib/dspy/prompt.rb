@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require 'json'
 require 'sorbet-runtime'
+require 'sorbet/toon'
+
 require_relative 'few_shot_example'
+require_relative 'schema/sorbet_toon_adapter'
 
 module DSPy
   class Prompt
@@ -33,6 +37,15 @@ module DSPy
       DSPy.config.lm&.schema_format || @schema_format || :json
     end
 
+    sig { returns(Symbol) }
+    def data_format
+      return @data_format if @data_format && @data_format != :json
+
+      lm = DSPy.config.lm
+      lm_format = lm&.respond_to?(:data_format) ? lm.data_format : nil
+      lm_format || @data_format || :json
+    end
+
     sig { returns(T.nilable(T.class_of(Signature))) }
     attr_reader :signature_class
 
@@ -44,10 +57,11 @@ module DSPy
         few_shot_examples: T::Array[FewShotExample],
         signature_class_name: T.nilable(String),
         schema_format: Symbol,
-        signature_class: T.nilable(T.class_of(Signature))
+        signature_class: T.nilable(T.class_of(Signature)),
+        data_format: Symbol
       ).void
     end
-    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil, schema_format: :json, signature_class: nil)
+    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil, schema_format: :json, signature_class: nil, data_format: :json)
       @instruction = instruction
       @few_shot_examples = few_shot_examples.freeze
       @input_schema = input_schema.freeze
@@ -55,6 +69,7 @@ module DSPy
       @signature_class_name = signature_class_name
       @schema_format = schema_format
       @signature_class = signature_class
+      @data_format = data_format
     end
 
     # Immutable update methods for optimization
@@ -67,7 +82,8 @@ module DSPy
         few_shot_examples: @few_shot_examples,
         signature_class_name: @signature_class_name,
         schema_format: @schema_format,
-        signature_class: @signature_class
+        signature_class: @signature_class,
+        data_format: @data_format
       )
     end
 
@@ -80,7 +96,8 @@ module DSPy
         few_shot_examples: new_examples,
         signature_class_name: @signature_class_name,
         schema_format: @schema_format,
-        signature_class: @signature_class
+        signature_class: @signature_class,
+        data_format: @data_format
       )
     end
 
@@ -106,7 +123,13 @@ module DSPy
         sections << "```baml"
         sections << render_baml_schema(@output_schema, :output)
         sections << "```"
-      else  # :json (default)
+      when :toon
+        sections << "Your input schema fields (TOON order) are:"
+        sections << Sorbet::Toon::SignatureFormatter.describe_signature(@signature_class, :input)
+        sections << ""
+        sections << "Your output schema fields (TOON order) are:"
+        sections << Sorbet::Toon::SignatureFormatter.describe_signature(@signature_class, :output)
+      else
         sections << "Your input schema fields are:"
         sections << "```json"
         sections << JSON.pretty_generate(@input_schema)
@@ -117,11 +140,10 @@ module DSPy
         sections << JSON.pretty_generate(@output_schema)
         sections << "```"
       end
-      
+
       sections << ""
       sections << "All interactions will be structured in the following way, with the appropriate values filled in."
-      
-      # Add few-shot examples if present
+
       if @few_shot_examples.any?
         sections << ""
         sections << "Here are some examples:"
@@ -133,36 +155,59 @@ module DSPy
         end
       end
 
-      sections << "## Input values"
-      sections << "```json"
-      sections << "{input_values}"
-      sections << "```"
-      
-      sections << "## Output values"
-      sections << "Respond exclusively with the output schema fields in the json block below."
-      sections << "```json"
-      sections << "{output_values}"
-      sections << "```"
-      
+      if data_format == :toon && @signature_class
+        sections << "## Input values"
+        sections << "```toon"
+        sections << "{input_values}"
+        sections << "```"
+        sections << ""
+        sections << "## Output values"
+        sections << "Respond exclusively with a ```toon``` block containing only the output fields defined above, in the same order."
+        sections << "```toon"
+        sections << "{output_values}"
+        sections << "```"
+      else
+        sections << "## Input values"
+        sections << "```json"
+        sections << "{input_values}"
+        sections << "```"
+
+        sections << "## Output values"
+        sections << "Respond exclusively with the output schema fields in the json block below."
+        sections << "```json"
+        sections << "{output_values}"
+        sections << "```"
+      end
+
       sections << ""
       sections << "In adhering to this structure, your objective is: #{@instruction}"
-      
+
       sections.join("\n")
     end
 
     sig { params(input_values: T::Hash[Symbol, T.untyped]).returns(String) }
     def render_user_prompt(input_values)
       sections = []
-      
-      sections << "## Input Values"
-      sections << "```json"
-      sections << JSON.pretty_generate(serialize_for_json(input_values))
-      sections << "```"
-      
-      sections << ""
-      sections << "Respond with the corresponding output schema fields wrapped in a ```json ``` block,"
-      sections << "starting with the heading `## Output values`."
-      
+
+      if data_format == :toon && @signature_class
+        toon_payload = DSPy::Schema::SorbetToonAdapter.render_input(@signature_class, input_values)
+
+        sections << "## Input Values"
+        sections << "```toon"
+        sections << toon_payload
+        sections << "```"
+        sections << ""
+        sections << "Respond with the corresponding output schema fields encoded as TOON inside a ```toon``` block starting with the heading `## Output values`."
+      else
+        sections << "## Input Values"
+        sections << "```json"
+        sections << JSON.pretty_generate(serialize_for_json(input_values))
+        sections << "```"
+        sections << ""
+        sections << "Respond with the corresponding output schema fields wrapped in a ```json ``` block,"
+        sections << "starting with the heading `## Output values`."
+      end
+
       sections.join("\n")
     end
 
@@ -184,7 +229,8 @@ module DSPy
         input_schema: @input_schema,
         output_schema: @output_schema,
         signature_class_name: @signature_class_name,
-        schema_format: @schema_format
+        schema_format: @schema_format,
+        data_format: @data_format
       }
     end
 
@@ -198,13 +244,24 @@ module DSPy
         output_schema: hash[:output_schema] || {},
         few_shot_examples: examples,
         signature_class_name: hash[:signature_class_name],
-        schema_format: hash[:schema_format] || :json
+        schema_format: hash[:schema_format] || :json,
+        data_format: hash[:data_format] || :json
       )
     end
 
     # Create prompt from signature class
-    sig { params(signature_class: T.class_of(Signature), schema_format: Symbol).returns(Prompt) }
-    def self.from_signature(signature_class, schema_format: :json)
+    sig do
+      params(
+        signature_class: T.class_of(Signature),
+        schema_format: T.nilable(Symbol),
+        data_format: T.nilable(Symbol)
+      ).returns(Prompt)
+    end
+    def self.from_signature(signature_class, schema_format: nil, data_format: nil)
+      lm = DSPy.config.lm
+      schema_format ||= lm&.schema_format || :json
+      data_format ||= (lm&.respond_to?(:data_format) ? lm.data_format : nil) || :json
+
       new(
         instruction: signature_class.description || "Complete this task.",
         input_schema: signature_class.input_json_schema,
@@ -212,7 +269,8 @@ module DSPy
         few_shot_examples: [],
         signature_class_name: signature_class.name,
         schema_format: schema_format,
-        signature_class: signature_class
+        signature_class: signature_class,
+        data_format: data_format
       )
     end
 

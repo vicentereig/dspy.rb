@@ -42,9 +42,9 @@ RSpec.describe DSPy do
   end
 
   describe 'fiber-local LM context' do
-    let(:mock_lm1) { double('LM1', model: 'model1') }
-    let(:mock_lm2) { double('LM2', model: 'model2') }
-    let(:mock_global_lm) { double('GlobalLM', model: 'global') }
+    let(:mock_lm1) { double('LM1', model: 'model1', schema_format: :json, data_format: :json) }
+    let(:mock_lm2) { double('LM2', model: 'model2', schema_format: :json, data_format: :json) }
+    let(:mock_global_lm) { double('GlobalLM', model: 'global', schema_format: :json, data_format: :json) }
 
     before do
       # Clear any existing fiber-local context
