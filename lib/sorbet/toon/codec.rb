@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-# frozen_string_literal: true
 
+require_relative 'errors'
 require_relative 'constants'
 require_relative 'encode/normalize'
 require_relative 'encode/encoders'

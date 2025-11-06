@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../constants'
+require_relative '../errors'
 require_relative '../shared/string_utils'
 require_relative '../shared/validation'
 require_relative '../shared/literal_utils'
@@ -108,7 +109,7 @@ module Sorbet
             i += 1
           end
 
-          values << current.strip unless current.empty? && values.empty?
+          values << current.strip if !current.empty? || !values.empty?
           values
         end
 
@@ -118,11 +119,11 @@ module Sorbet
 
         def parse_primitive_token(token)
           trimmed = token.strip
-          return nil if trimmed.empty?
+          return '' if trimmed.empty?
 
           if trimmed.start_with?(Constants::DOUBLE_QUOTE)
             if trimmed.length < 2 || trimmed[-1] != Constants::DOUBLE_QUOTE
-              raise SyntaxError, "Unterminated string literal: #{trimmed}"
+              raise Sorbet::Toon::DecodeError, "Unterminated string literal: #{trimmed}"
             end
             inner = trimmed[1...-1]
             return Shared::StringUtils.unescape_string(inner)
@@ -148,17 +149,17 @@ module Sorbet
         def parse_key_token(content, start_index)
           if content[start_index] == Constants::DOUBLE_QUOTE
             closing = Shared::StringUtils.find_closing_quote(content, start_index)
-            raise SyntaxError, 'Unterminated quoted key' if closing == -1
+            raise Sorbet::Toon::DecodeError, 'Unterminated quoted key' if closing == -1
 
             key = Shared::StringUtils.unescape_string(content[(start_index + 1)...closing])
             rest_index = closing + 1
             colon_index = Shared::StringUtils.find_unquoted_char(content, Constants::COLON, rest_index)
-            raise SyntaxError, 'Key must be followed by colon' if colon_index == -1
+            raise Sorbet::Toon::DecodeError, 'Key must be followed by colon' if colon_index == -1
             return { key: key, end: colon_index + 1 }
           end
 
           colon_index = Shared::StringUtils.find_unquoted_char(content, Constants::COLON, start_index)
-          raise SyntaxError, 'Key must be followed by colon' if colon_index == -1
+          raise Sorbet::Toon::DecodeError, 'Key must be followed by colon' if colon_index == -1
 
           key = content[start_index...colon_index].strip
           { key: key, end: colon_index + 1 }
@@ -199,7 +200,7 @@ module Sorbet
 
           if raw_key.start_with?(Constants::DOUBLE_QUOTE)
             closing = Shared::StringUtils.find_closing_quote(raw_key, 0)
-            raise SyntaxError, 'Unterminated quoted key' if closing == -1
+            raise Sorbet::Toon::DecodeError, 'Unterminated quoted key' if closing == -1
 
             return Shared::StringUtils.unescape_string(raw_key[1...closing])
           end
@@ -216,6 +217,7 @@ module Sorbet
           return nil unless brace_end && brace_end < colon_index
 
           fields_content = content[(brace_start + 1)...brace_end]
+          ensure_matching_field_delimiter!(fields_content, delimiter)
           parse_delimited_values(fields_content, delimiter).map do |field|
             field.strip!
             if field.start_with?(Constants::DOUBLE_QUOTE)
@@ -236,6 +238,29 @@ module Sorbet
         def object_first_field_after_hyphen?(content)
           Shared::StringUtils.find_unquoted_char(content, Constants::COLON) != -1
         end
+
+        def ensure_matching_field_delimiter!(content, delimiter)
+          other_delimiters = Constants::DELIMITERS.values.reject { |value| value == delimiter }
+          other_delimiters.each do |other|
+            next if Shared::StringUtils.find_unquoted_char(content, other).negative?
+
+            raise Sorbet::Toon::DecodeError,
+                  "Field delimiter mismatch: expected #{describe_delimiter(delimiter)} but found #{describe_delimiter(other)}"
+          end
+        end
+        private_class_method :ensure_matching_field_delimiter!
+
+        def describe_delimiter(delimiter)
+          case delimiter
+          when Constants::TAB
+            'tab (\\t)'
+          when Constants::PIPE
+            'pipe (|)'
+          else
+            'comma (,)'
+          end
+        end
+        private_class_method :describe_delimiter
       end
     end
   end

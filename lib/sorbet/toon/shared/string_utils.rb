@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../constants'
+require_relative '../errors'
 
 module Sorbet
   module Toon
@@ -23,7 +24,7 @@ module Sorbet
           while i < value.length
             char = value[i]
             if char == Constants::BACKSLASH
-              raise SyntaxError, 'Invalid escape sequence: backslash at end of string' if i + 1 >= value.length
+              raise Sorbet::Toon::DecodeError, 'Invalid escape sequence: backslash at end of string' if i + 1 >= value.length
 
               next_char = value[i + 1]
               case next_char
@@ -38,7 +39,7 @@ module Sorbet
               when Constants::DOUBLE_QUOTE
                 result << Constants::DOUBLE_QUOTE
               else
-                raise SyntaxError, "Invalid escape sequence: \\#{next_char}"
+                raise Sorbet::Toon::DecodeError, "Invalid escape sequence: \\#{next_char}"
               end
               i += 2
               next
