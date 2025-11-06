@@ -52,3 +52,5 @@ module Sorbet
     end
   end
 end
+
+Sorbet::Toon.enable_extensions!

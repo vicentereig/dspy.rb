@@ -11,8 +11,9 @@ PATH
       sorbet-baml (~> 0.1)
       sorbet-runtime (~> 0.5)
       sorbet-schema (~> 0.3)
+      sorbet-toon (~> 0.1)
     dspy-anthropic (1.0.0)
-      anthropic (~> 1.12)
+      anthropic
       dspy (= 0.30.1)
     dspy-datasets (1.0.0)
       dspy (= 0.30.1)
@@ -23,7 +24,7 @@ PATH
       polars-df (~> 0.15)
     dspy-gemini (1.0.0)
       dspy (= 0.30.1)
-      gemini-ai (~> 4.3)
+      gemini-ai
     dspy-gepa (1.0.0)
       dspy (= 0.30.1)
       gepa (= 1.0.0)
@@ -41,11 +42,13 @@ PATH
       opentelemetry-sdk (~> 1.8)
     dspy-openai (1.0.0)
       dspy (= 0.30.1)
-      openai (~> 0.17)
+      openai
     dspy-schema (1.0.0)
       sorbet-runtime (>= 0.5.0)
     gepa (1.0.0)
       dspy (= 0.30.1)
+    sorbet-toon (0.1.0)
+      sorbet-runtime (~> 0.5)
 
 GEM
   remote: https://rubygems.org/
@@ -369,6 +372,7 @@ DEPENDENCIES
   newrelic_rpm (~> 9.21)
   reline (~> 0.5)
   rspec (~> 3.12)
+  sorbet-toon!
   vcr (~> 6.2)
   webmock (~> 3.18)
 
