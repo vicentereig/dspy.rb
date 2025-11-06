@@ -26,10 +26,11 @@ Enable DSPy.rb to express `DSPy::Signature` contracts in TOON format—both for 
 
 - ✅ **Codec core landed:** `lib/sorbet/toon/codec.rb`, `constants.rb`, `encode/*`, `decode/*`, and `shared/*` now mirror the upstream TypeScript implementation and pass fixture-based expectations.
 - ✅ **Fixture suite imported:** `spec/fixtures/sorbet_toon/{encode,decode}/*.json` plus `spec/sorbet/toon/codec_spec.rb` exercise the Ruby port (requires Bundler `2.6.5` locally before `bundle exec rspec` will run).
-- ⏳ **Surface API in progress:** Normalizer + encode/decode wrappers/config now exist, but struct/enum mixins and signature-aware reconstruction are still pending.
+- ✅ **Surface API foundation:** Normalizer + encode/decode wrappers/config landed, along with struct/enum mixins, signature-aware reconstruction, and opt-in extensions (`Sorbet::Toon.enable_extensions!`).
 - 🆕 **Normalizer & specs landed:** `lib/sorbet/toon/normalizer.rb` plus `spec/sorbet/toon/normalizer_spec.rb` cover Sorbet struct/enum flattening, optional field elision, `_type` toggling, and NaN/Infinity handling.
-- ⚙️ **Top-level encode/decode wrappers + config added:** `lib/sorbet/toon/{config,encoder,decoder}.rb` expose `Sorbet::Toon.encode/decode`, global configuration, and rspec coverage (`spec/sorbet/toon/{encoder,decoder}_spec.rb`); mixins and signature-based reconstruction remain TODO.
-- 🧱 **Packaging/docs outstanding:** No `sorbet-toon.gemspec`, README, or DSPy adapter wiring exists yet; work-to-date lives inside DSPy without release packaging.
+- ⚙️ **Top-level encode/decode wrappers + config:** `lib/sorbet/toon/{config,encoder,decoder,reconstructor}.rb` expose `Sorbet::Toon.encode/decode`, global configuration, and struct rehydration (`spec/sorbet/toon/{encoder,decoder,signature_reconstruction}_spec.rb`).
+- 📦 **Gem skeleton started:** `sorbet-toon.gemspec`, `lib/sorbet/toon/version.rb`, and a living README (`lib/sorbet/toon/README.md`) unblock packaging/documentation work.
+- 🧱 **DSPy wiring outstanding:** Gem scaffold + README exist, but adapter integration and llms-full narrative docs are still TODO.
 - ⚠️ **Dev friction:** `bundle exec rspec` currently fails unless the environment installs Bundler `2.6.5` (`gem install bundler:2.6.5`), so call this out in setup docs.
 
 ---
@@ -133,7 +134,7 @@ Deliverable: `Sorbet::Toon::Normalizer.normalize(value, signature: nil, role: :o
 
 ### 4. Encoder
 
-_Status: Shared encoder wrapper + config landed November 6; struct/enum mixins still outstanding._
+_Status: Shared encoder wrapper + config plus struct/enum mixins now live; future work is ergonomics (signature formatter, logging, DSPy hooks)._
 
 Relies on in-repo TypeScript port (`Sorbet::Toon::Codec.encode`).
 
@@ -148,7 +149,7 @@ Relies on in-repo TypeScript port (`Sorbet::Toon::Codec.encode`).
 
 ### 5. Decoder & Reconstruction
 
-_Status: Wrapper now exposes `Sorbet::Toon.decode` (strict defaults + overrides); Sorbet signature reconstruction remains future work._
+_Status: Wrapper exposes `Sorbet::Toon.decode`, including strict defaults, overrides, and Sorbet signature reconstruction via the new `Reconstructor`._
 
 - `Sorbet::Toon.decode(toon_string, signature: nil, role: :output)`:
   1. Call codec decoder → plain Ruby structure.
@@ -205,7 +206,7 @@ File: `lib/dspy/schema/sorbet_toon_adapter.rb`
 
 ### 9. Testing Strategy
 
-_Status: Codec fixtures + spec landed; normalizer + encode/decode wrapper specs added; adapter/struct reconstruction coverage still outstanding._
+_Status: Codec fixtures + spec landed; normalizer + encode/decode + reconstruction/mixin specs added; adapter/integration coverage still outstanding._
 
 1. **Unit tests (RSpec)**:
    - `spec/sorbet/toon/codec_spec.rb` – parity with upstream encode/decode fixtures.
@@ -260,11 +261,11 @@ _Status: Codec fixtures + spec landed; normalizer + encode/decode wrapper specs 
 
 Use `[ ]` → `[x]` as tasks complete.
 
-- [ ] Scaffold gem + gemspec.
+- [x] Scaffold gem + gemspec.
 - [x] Port TOON encoder/decoder (Ruby).
 - [x] Implement normalizer.
-- [ ] Implement encoder + mixins.
-- [ ] Implement decoder + reconstruction.
+- [x] Implement encoder + mixins.
+- [x] Implement decoder + reconstruction.
 - [ ] Signature formatter utilities.
 - [ ] DSPy adapter stub (`lib/dspy/schema/sorbet_toon_adapter.rb`).
 - [ ] Unit/integration tests.
@@ -275,9 +276,9 @@ Use `[ ]` → `[x]` as tasks complete.
 
 ## Immediate Next Steps
 
-1. **Finish surface API polish:** Add struct/enum mixins + signature-aware decode reconstruction so `Sorbet::Toon.decode(..., signature: ...)` rehydrates Sorbet structs.
-2. **Gem skeleton + versioning:** Introduce `sorbet-toon.gemspec`, version file, and Bundler notes to unblock packaging/testing and document the Bundler `2.6.5` requirement encountered locally.
-3. **Broaden specs:** Extend coverage for mixins + reconstruction and prep future DSPy adapter specs before wiring into `DSPy::LM`.
+1. **Signature formatter + DSPy adapter:** Implement prompt-ready ordering/metadata helpers and wire `data_format: :toon` through `lib/dspy/schema` + `DSPy::Prompt`.
+2. **Docs polish:** Expand `lib/sorbet/toon/README.md` into the llms-full narrative (examples, troubleshooting, upgrade guide) and document Bundler/env setup.
+3. **Integration tests:** Mirror the BAML integration suite for TOON (round-tripping signatures through adapters + LM prompts) before release prep.
 
 ---
 
