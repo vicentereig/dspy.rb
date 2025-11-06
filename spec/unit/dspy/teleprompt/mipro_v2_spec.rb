@@ -940,7 +940,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2, :miprov2 do
 
   describe 'trial management data tracking' do
     it 'records trial logs and parameter score summaries during optimization' do
-      mock_lm = double('MockLM', model: 'mock-lm')
+      mock_lm = double('MockLM', model: 'mock-lm', schema_format: :json, data_format: :json)
       allow(DSPy).to receive(:current_lm).and_return(mock_lm)
 
       proposal_result = DSPy::Propose::GroundedProposer::ProposalResult.new(

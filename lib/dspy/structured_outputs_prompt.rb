@@ -17,10 +17,11 @@ module DSPy
         few_shot_examples: T::Array[T.untyped],
         signature_class_name: T.nilable(String),
         schema_format: Symbol,
-        signature_class: T.nilable(T.class_of(Signature))
+        signature_class: T.nilable(T.class_of(Signature)),
+        data_format: Symbol
       ).void
     end
-    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil, schema_format: :json, signature_class: nil)
+    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil, schema_format: :json, signature_class: nil, data_format: :json)
       normalized_examples = few_shot_examples.map do |example|
         case example
         when FewShotExample
@@ -39,7 +40,8 @@ module DSPy
         few_shot_examples: normalized_examples,
         signature_class_name: signature_class_name,
         schema_format: schema_format,
-        signature_class: signature_class
+        signature_class: signature_class,
+        data_format: data_format
       )
     end
 

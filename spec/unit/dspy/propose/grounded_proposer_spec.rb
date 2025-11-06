@@ -259,7 +259,7 @@ RSpec.describe DSPy::Propose::GroundedProposer do
   describe '#propose_instructions' do
     before do
       # Mock current_lm for metadata collection
-      mock_lm = double('LM', model: 'gpt-4o-mini')
+      mock_lm = double('LM', model: 'gpt-4o-mini', schema_format: :json, data_format: :json)
       allow(DSPy).to receive(:current_lm).and_return(mock_lm)
 
       # Mock the LLM calls for instruction generation
@@ -353,7 +353,7 @@ RSpec.describe DSPy::Propose::GroundedProposer do
 
   describe '#propose_instructions_for_program' do
     before do
-      allow(DSPy).to receive(:current_lm).and_return(double('LM', model: 'gpt-4o-mini'))
+      allow(DSPy).to receive(:current_lm).and_return(double('LM', model: 'gpt-4o-mini', schema_format: :json, data_format: :json))
       allow_any_instance_of(DSPy::Predict).to receive(:call).and_return(
         OpenStruct.new(instruction: "Analyze the data carefully before responding.")
       )

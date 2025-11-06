@@ -20,16 +20,18 @@ require_relative 'lm/json_strategy'
 require_relative 'lm/message'
 require_relative 'lm/message_builder'
 require_relative 'structured_outputs_prompt'
+require_relative 'schema/sorbet_toon_adapter'
 
 module DSPy
   class LM
     extend T::Sig
-    attr_reader :model_id, :api_key, :model, :provider, :adapter, :schema_format
+    attr_reader :model_id, :api_key, :model, :provider, :adapter, :schema_format, :data_format
 
-    def initialize(model_id, api_key: nil, schema_format: :json, **options)
+    def initialize(model_id, api_key: nil, schema_format: :json, data_format: :json, **options)
       @model_id = model_id
       @api_key = api_key
       @schema_format = schema_format
+      @data_format = data_format
 
       # Parse provider and model from model_id
       @provider, @model = parse_model_id(model_id)
@@ -246,25 +248,43 @@ module DSPy
     end
 
     def parse_response(response, input_values, signature_class)
-      # Try to parse the response as JSON
+      if data_format == :toon
+        payload = DSPy::Schema::SorbetToonAdapter.parse_output(signature_class, response.content.to_s)
+        return normalize_output_payload(payload)
+      end
+
       content = response.content
 
       begin
-        json_payload = JSON.parse(content)
-
-        # For Sorbet signatures, just return the parsed JSON
-        # The Predict will handle validation
-        json_payload
+        JSON.parse(content)
       rescue JSON::ParserError => e
-        # Enhanced error message with debugging information
         error_details = {
           original_content: response.content,
           provider: provider,
           model: model
         }
-        
+
         DSPy.logger.debug("JSON parsing failed: #{error_details}")
         raise "Failed to parse LLM response as JSON: #{e.message}. Original content length: #{response.content&.length || 0} chars"
+      end
+    end
+
+    def normalize_output_payload(payload)
+      case payload
+      when T::Struct
+        payload.class.props.each_with_object({}) do |(name, _), memo|
+          memo[name.to_s] = normalize_output_payload(payload.send(name))
+        end
+      when Hash
+        payload.each_with_object({}) do |(key, value), memo|
+          memo[key.to_s] = normalize_output_payload(value)
+        end
+      when Array
+        payload.map { |item| normalize_output_payload(item) }
+      when Set
+        payload.map { |item| normalize_output_payload(item) }
+      else
+        payload
       end
     end
 

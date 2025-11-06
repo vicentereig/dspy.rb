@@ -39,6 +39,8 @@ RSpec.describe 'ReAct Observability Integration' do
       
       # Mock the LM to return a finish action
       mock_lm = instance_double(DSPy::LM)
+      allow(mock_lm).to receive(:schema_format).and_return(:json)
+      allow(mock_lm).to receive(:data_format).and_return(:json)
       allow(DSPy).to receive(:current_lm).and_return(mock_lm)
       allow(mock_lm).to receive(:chat).and_return(
         { thought: 'I can answer directly', action: 'finish', action_input: '8' }
@@ -88,6 +90,8 @@ RSpec.describe 'ReAct Observability Integration' do
       
       # Mock the LM with call tracking
       mock_lm = instance_double(DSPy::LM)
+      allow(mock_lm).to receive(:schema_format).and_return(:json)
+      allow(mock_lm).to receive(:data_format).and_return(:json)
       allow(DSPy).to receive(:current_lm).and_return(mock_lm)
       
       call_count = 0
