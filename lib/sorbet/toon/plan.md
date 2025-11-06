@@ -26,7 +26,7 @@ Enable DSPy.rb to express `DSPy::Signature` contracts in TOON format—both for 
 
 - ✅ **Codec core landed:** `lib/sorbet/toon/codec.rb`, `constants.rb`, `encode/*`, `decode/*`, and `shared/*` now mirror the upstream TypeScript implementation and pass fixture-based expectations.
 - ✅ **Fixture suite imported:** `spec/fixtures/sorbet_toon/{encode,decode}/*.json` plus `spec/sorbet/toon/codec_spec.rb` exercise the Ruby port (requires Bundler `2.6.5` locally before `bundle exec rspec` will run).
-- ✅ **Surface API foundation:** Normalizer + encode/decode wrappers/config landed, along with struct/enum mixins, signature-aware reconstruction, and opt-in extensions (`Sorbet::Toon.enable_extensions!`).
+- ✅ **Surface API foundation:** Normalizer + encode/decode wrappers/config landed, along with auto-enabled struct/enum mixins, signature-aware reconstruction, and DSPy extensions.
 - 🆕 **Normalizer & specs landed:** `lib/sorbet/toon/normalizer.rb` plus `spec/sorbet/toon/normalizer_spec.rb` cover Sorbet struct/enum flattening, optional field elision, `_type` toggling, and NaN/Infinity handling.
 - ⚙️ **Top-level encode/decode wrappers + config:** `lib/sorbet/toon/{config,encoder,decoder,reconstructor}.rb` expose `Sorbet::Toon.encode/decode`, global configuration, and struct rehydration (`spec/sorbet/toon/{encoder,decoder,signature_reconstruction}_spec.rb`).
 - ✍️ **Signature formatter + DSPy adapter:** `lib/sorbet/toon/signature_formatter.rb` and `lib/dspy/schema/sorbet_toon_adapter.rb` now power `schema_format: :toon` guidance plus `data_format: :toon` prompts/decoding in `DSPy::Prompt` and `DSPy::LM`.
@@ -145,7 +145,7 @@ Relies on in-repo TypeScript port (`Sorbet::Toon::Codec.encode`).
 - Provide convenience mixins:
   - `Sorbet::Toon::StructExtensions#to_toon(options = {})`.
   - `Sorbet::Toon::EnumExtensions#to_toon`.
-  - These should be opt-in via `Sorbet::Toon.enable_extensions!` to avoid polluting all structs automatically.
+  - `Sorbet::Toon.enable_extensions!` now runs on require so structs/enums always gain helpers.
 
 ### 5. Decoder & Reconstruction
 

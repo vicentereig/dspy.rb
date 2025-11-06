@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gemspec name: "dspy"
+gemspec name: "sorbet-toon"
 
 if ENV.fetch('DSPY_WITH_OPENAI', '1') == '1'
   gemspec name: "dspy-openai"

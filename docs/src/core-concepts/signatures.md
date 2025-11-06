@@ -424,9 +424,6 @@ gem 'sorbet-baml'
 [TOON](https://github.com/toon-format/toon) is a table-oriented text format that keeps schemas readable while also shrinking the *actual* prompt values you send to the model. DSPy.rb exposes it via the new `sorbet-toon` integration.
 
 ```ruby
-require 'sorbet/toon'           # ships inside dspy.rb
-Sorbet::Toon.enable_extensions! # optional: adds #to_toon/.from_toon helpers
-
 DSPy.configure do |c|
   c.lm = DSPy::LM.new(
     'openai/gpt-4o-mini',
@@ -436,6 +433,8 @@ DSPy.configure do |c|
   )
 end
 ```
+
+*(DSPy already requires `sorbet/toon` internally and auto-enables the struct/enum helpers. Require it yourself only if you need to call `Sorbet::Toon.encode` directly outside of DSPy.)*
 
 **Schema vs. data format:**  
 `schema_format: :toon` swaps the JSON/BAML block in the system prompt with a TOON-oriented field summary (ordered props, optional markers, tabular hints).  

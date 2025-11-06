@@ -61,8 +61,6 @@ DSPy.configure do |c|
   # c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], schema_format: :baml)
 
   # Optional: Use TOON schema + data format for fully TOON prompts (v0.31 alpha)
-  # require 'sorbet/toon'
-  # Sorbet::Toon.enable_extensions!
   # c.lm = DSPy::LM.new(
   #   'openai/gpt-4o-mini',
   #   api_key: ENV['OPENAI_API_KEY'],

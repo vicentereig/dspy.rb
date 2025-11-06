@@ -23,9 +23,8 @@ require 'sorbet/toon'
 Optional convenience:
 
 ```ruby
-Sorbet::Toon.enable_extensions!
-# T::Struct classes gain #to_toon / .from_toon
-# T::Enum classes gain #to_toon / .from_toon
+# Extensions are enabled automatically when sorbet/toon is required.
+# Structs already have #to_toon / .from_toon and enums gain helpers.
 ```
 
 ---
@@ -69,10 +68,8 @@ rehydrated.sources.last.notes  # => "top pick"
 ### Mixins (optional)
 
 ```ruby
-Sorbet::Toon.enable_extensions!
-
 toon_blob = payload.to_toon(include_type_metadata: true)
-# => struct instances gain #to_toon
+# => struct instances gain #to_toon automatically
 
 decoded = Source.from_toon(%(- name: Ada\n  url: https://example.com))
 # => class methods .from_toon / enums too

@@ -61,6 +61,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "sorbet-runtime", "~> 0.5"
   spec.add_dependency "sorbet-schema", "~> 0.3"
   spec.add_dependency "sorbet-baml", "~> 0.1"
+  spec.add_dependency "sorbet-toon", "~> 0.1"
   spec.add_dependency "dspy-schema", "~> 1.0.0"
 
   # Local embeddings
