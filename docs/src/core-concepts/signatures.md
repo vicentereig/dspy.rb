@@ -419,6 +419,42 @@ BAML format requires the `sorbet-baml` gem:
 gem 'sorbet-baml'
 ```
 
+### TOON Schema + Data Format (New in v0.31.0-alpha)
+
+[TOON](https://github.com/toon-format/toon) is a table-oriented text format that keeps schemas readable while also shrinking the *actual* prompt values you send to the model. DSPy.rb exposes it via the new `sorbet-toon` integration.
+
+```ruby
+require 'sorbet/toon'           # ships inside dspy.rb
+Sorbet::Toon.enable_extensions! # optional: adds #to_toon/.from_toon helpers
+
+DSPy.configure do |c|
+  c.lm = DSPy::LM.new(
+    'openai/gpt-4o-mini',
+    api_key: ENV['OPENAI_API_KEY'],
+    schema_format: :toon,  # how DSPy describes the signature
+    data_format:   :toon   # how inputs/outputs are rendered in prompts
+  )
+end
+```
+
+**Schema vs. data format:**  
+`schema_format: :toon` swaps the JSON/BAML block in the system prompt with a TOON-oriented field summary (ordered props, optional markers, tabular hints).  
+`data_format: :toon` tells DSPy to render the actual input values and required output template inside ```toon``` fences, and to parse the model’s reply back into hashes/structs.
+
+**Supported scenarios (v0.31.0-alpha):**
+
+- Enhanced prompting (`structured_outputs: false`).
+- Any signature built from Sorbet structs/enums/arrays/hashes.
+- ReAct / Chain-of-Thought flows that expect text responses.
+
+**Limitations to call out in your prompts/docs:**
+
+- Structured Outputs mode (OpenAI `response_format`, Anthropic tool schemas, Gemini JSON) still requires JSON; keep `data_format: :json` when `structured_outputs: true`.
+- Tool invocation payloads (ReAct tools, function calling) remain JSON/Hash-based.
+- LLM must echo the ```toon``` fence exactly; DSPy validates indentation/columns and will raise `Sorbet::Toon::DecodeError` for malformed replies. Encourage the model with “Respond exclusively with a ```toon``` block”.
+
+TOON uses the same signature metadata as BAML/JSON, so no additional schema definitions are needed—just flip the formats as shown above.
+
 The gem is automatically included as a dependency of `dspy-rb`.
 
 > Need the converter outside of DSPy.rb? Install `gem 'dspy-schema', '~> 1.0'` and `require 'dspy/schema'` to reuse `DSPy::TypeSystem::SorbetJsonSchema` in other Ruby projects (see ADR-012).
