@@ -260,9 +260,8 @@ Use `[ ]` → `[x]` as tasks complete.
 
 ## Immediate Next Steps
 
-1. **DSPy docs & UX polish:** Update DSPy guides/config templates to call out `data_format: :toon`, limitations (structured outputs/tool calls), and troubleshooting guidance.
-2. **Predict/LM end-to-end specs:** Add higher-level tests (Predict → Prompt → LM mock → adapter) to ensure TOON formatting stays stable across demos/ReAct/MIPRO flows.
-3. **Error reporting & logging:** Surface clearer `Sorbet::Toon` errors inside DSPy (e.g., code-fence mismatch, tabular column mismatches) and add optional logging hooks before the v0.1.0 release.
+1. **Predict/LM end-to-end specs:** Add higher-level tests (Predict → Prompt → LM mock → adapter) to ensure TOON formatting stays stable across demos/ReAct/MIPRO flows.
+2. **Error reporting & logging:** Surface clearer `Sorbet::Toon` errors inside DSPy (e.g., code-fence mismatch, tabular column mismatches) and add optional logging hooks before the v0.1.0 release.
 
 ---
 
