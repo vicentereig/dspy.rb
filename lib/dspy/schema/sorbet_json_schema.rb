@@ -254,10 +254,13 @@ module DSPy
                                        "DSPy uses _type for automatic type detection in union types."
         end
 
+        struct_name = struct_class.name || "Struct#{format('%x', struct_class.object_id)}"
+        simple_name = struct_name.split('::').last || struct_name
+
         # Add automatic _type field for type detection
         properties[:_type] = {
           type: "string",
-          const: struct_class.name.split('::').last  # Use the simple class name
+          const: simple_name  # Use the simple class name
         }
         required << "_type"
 
@@ -280,7 +283,7 @@ module DSPy
           type: "object",
           properties: properties,
           required: required,
-          description: "#{struct_class.name} struct"
+          description: "#{struct_name} struct"
         }
       end
 

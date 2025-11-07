@@ -98,13 +98,14 @@ module DSPy
       @tools = T.let({}, T::Hash[String, T.untyped])
       tools.each { |tool| @tools[tool.name.downcase] = tool }
       @max_iterations = max_iterations
+      @data_format = T.let(DSPy.config.lm&.data_format || :json, Symbol)
 
       # Create dynamic ActionEnum class with tool names + finish
       @action_enum_class = create_action_enum_class
 
       # Create dynamic signature classes that include the original input fields
-      thought_signature = create_thought_signature(signature_class)
-      observation_signature = create_observation_signature(signature_class)
+      thought_signature = create_thought_signature(signature_class, @data_format)
+      observation_signature = create_observation_signature(signature_class, @data_format)
 
       # Create thought generator using Predict to preserve field descriptions
       @thought_generator = T.let(DSPy::Predict.new(thought_signature), DSPy::Predict)
@@ -216,6 +217,28 @@ module DSPy
       end
     end
 
+    sig { params(input_struct: T.untyped).returns(T.untyped) }
+    def format_input_context(input_struct)
+      return input_struct if toon_data_format?
+
+      DSPy::TypeSerializer.serialize(input_struct).to_json
+    end
+
+    sig { params(history: T::Array[HistoryEntry]).returns(T.untyped) }
+    def format_history(history)
+      toon_data_format? ? history : serialize_history_for_llm(history)
+    end
+
+    sig { params(observation: T.untyped).returns(T.untyped) }
+    def format_observation(observation)
+      toon_data_format? ? observation : serialize_for_llm(observation)
+    end
+
+    sig { returns(T::Boolean) }
+    def toon_data_format?
+      @data_format == :toon
+    end
+
     # Creates a dynamic ActionEnum class with tool names and "finish"
     sig { returns(T.class_of(T::Enum)) }
     def create_action_enum_class
@@ -241,9 +264,14 @@ module DSPy
     end
 
     # Creates a dynamic Thought signature that includes the original input fields
-    sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(DSPy::Signature)) }
-    def create_thought_signature(signature_class)
+    sig { params(signature_class: T.class_of(DSPy::Signature), data_format: Symbol).returns(T.class_of(DSPy::Signature)) }
+    def create_thought_signature(signature_class, data_format)
       action_enum_class = @action_enum_class
+      input_context_type = if data_format == :toon
+        signature_class.input_struct_class || String
+      else
+        String
+      end
       # Create new class that inherits from DSPy::Signature
       Class.new(DSPy::Signature) do
         # Set description
@@ -251,8 +279,8 @@ module DSPy
 
         # Define input fields
         input do
-          const :input_context, String,
-            description: "Serialized representation of all input fields"
+          const :input_context, input_context_type,
+            description: data_format == :toon ? "All original input fields with their typed values" : "Serialized representation of all input fields"
           const :history, T::Array[HistoryEntry],
             description: "Previous thoughts and actions, including observations from tools."
           const :available_tools, T::Array[AvailableTool],
@@ -272,8 +300,13 @@ module DSPy
     end
 
     # Creates a dynamic observation signature that includes the original input fields
-    sig { params(signature_class: T.class_of(DSPy::Signature)).returns(T.class_of(DSPy::Signature)) }
-    def create_observation_signature(signature_class)
+    sig { params(signature_class: T.class_of(DSPy::Signature), data_format: Symbol).returns(T.class_of(DSPy::Signature)) }
+    def create_observation_signature(signature_class, data_format)
+      input_context_type = if data_format == :toon
+        signature_class.input_struct_class || String
+      else
+        String
+      end
       # Create new class that inherits from DSPy::Signature
       Class.new(DSPy::Signature) do
         # Set description
@@ -281,8 +314,8 @@ module DSPy
 
         # Define input fields
         input do
-          const :input_context, String,
-            description: "Serialized representation of all input fields"
+          const :input_context, input_context_type,
+            description: data_format == :toon ? "All original input fields with their typed values" : "Serialized representation of all input fields"
           const :history, T::Array[HistoryEntry],
             description: "Previous thoughts, actions, and observations."
           const :observation, T.untyped,
@@ -358,8 +391,8 @@ module DSPy
       ) do
         # Generate thought and action
         thought_obj = @thought_generator.forward(
-          input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
-          history: serialize_history_for_llm(history),
+          input_context: format_input_context(input_struct),
+          history: format_history(history),
           available_tools: available_tools_desc
         )
 
@@ -617,9 +650,9 @@ module DSPy
     sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], observation: T.untyped, available_tools_desc: T::Array[AvailableTool], iteration: Integer).returns(T::Hash[Symbol, T.untyped]) }
     def process_observation_and_decide_next_step(input_struct, history, observation, available_tools_desc, iteration)
       observation_result = @observation_processor.forward(
-        input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
-        history: serialize_history_for_llm(history),
-        observation: serialize_for_llm(observation)
+        input_context: format_input_context(input_struct),
+        history: format_history(history),
+        observation: format_observation(observation)
       )
 
       return { should_finish: false } unless observation_result.next_step == NextStep::Finish
@@ -634,8 +667,8 @@ module DSPy
     sig { params(input_struct: T.untyped, history: T::Array[HistoryEntry], available_tools_desc: T::Array[AvailableTool], observation_result: T.untyped, iteration: Integer).returns(T.untyped) }
     def generate_forced_final_answer(input_struct, history, available_tools_desc, observation_result, iteration)
       final_thought = @thought_generator.forward(
-        input_context: DSPy::TypeSerializer.serialize(input_struct).to_json,
-        history: serialize_history_for_llm(history),
+        input_context: format_input_context(input_struct),
+        history: format_history(history),
         available_tools: available_tools_desc
       )
 
