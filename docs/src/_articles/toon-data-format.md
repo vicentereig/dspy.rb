@@ -77,14 +77,22 @@ _Source: `examples/baml_vs_json_benchmark.rb`, offline run `schema_data_benchmar
 
 ## What you need to do
 
-1. Update to the latest DSPy.rb (Sorbet::Toon is already a dependency).
+1. Update to the latest DSPy.rb (Sorbet::Toon rides along as a dependency).
 2. Flip `schema_format: :baml` and `data_format: :toon` in your `DSPy.configure` block or per-LM overrides.
-3. Optionally run the benchmark yourself:
+3. When you want to inspect the raw numbers, peek at [`examples/baml_vs_json_benchmark.rb`](https://github.com/vicentereig/dspy.rb/blob/feature/sorbet-toon-codec/examples/baml_vs_json_benchmark.rb); it ships with the repo so you can repeat the comparison in your own environment.
 
-```bash
-BAML_BENCHMARK_LIVE=0 bundle exec ruby examples/baml_vs_json_benchmark.rb
+Here’s the only code change most apps need:
+
+```diff
+ DSPy.configure do |c|
+-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
++  c.lm = DSPy::LM.new(
++    'openai/gpt-4o-mini',
++    api_key: ENV['OPENAI_API_KEY'],
++    schema_format: :baml,
++    data_format: :toon
++  )
+ end
 ```
 
-You’ll get the same `.json/.csv/.txt` files we used in this post, so you can drop the numbers straight into decks or PRDs.
-
-No new APIs, no migration slog—just leaner prompts that unlock more iterations per dollar. Give TOON a try and keep your Enhanced Prompting requests lean.
+No new APIs, no migration slog—just leaner prompts that unlock more iterations per dollar. Flip the formats, keep your prompts declarative, and ship TOON-powered Enhanced Prompting everywhere.
