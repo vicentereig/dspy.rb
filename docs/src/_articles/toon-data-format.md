@@ -64,6 +64,12 @@ That’s it. [Predictors](https://vicentereig.github.io/dspy.rb/getting-started/
 
 _Source: `examples/baml_vs_json_benchmark.rb`, live run `baml_benchmark_20251107_172759.json`._
 
+That reduction isn’t just abstract token math:
+
+- **Schema savings:** ~9,490 tokens disappear every time you render the signature guidance. That’s ~75% of the system prompt cost.
+- **Payload savings:** TOON trims another ~2,420 tokens per request by avoiding repeated JSON keys.
+- **Latency/cost:** When a model follows TOON, per-call cost falls 10‑20% and latency drops 15‑25% (e.g., `gpt-4o` BAML+TOON runs averaged 4.7 s vs 20 s for JSON+JSON in the benchmark). The same pattern held for Anthropic and Gemini models.
+
 ### What the model feels
 
 - **Clear guidance, compact tables:** BAML renders the signature schema in a TypeScript-like form instead of a 200-line JSON Schema blob. Models latch onto the important parts faster.
