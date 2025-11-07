@@ -155,17 +155,38 @@ module DSPy
         end
       end
 
-      if data_format == :toon && @signature_class
+      if toon_data_format_enabled?
+        sections << "## TOON data format instructions"
+        sections << "All input and output payloads must use Token-Oriented Object Notation (TOON). Do not return JSON, YAML, or prose."
+        sections << ""
         sections << "## Input values"
+        sections << "Copy the TOON block below and replace the placeholder values with the correct inputs."
         sections << "```toon"
         sections << "{input_values}"
         sections << "```"
+
+        if (example_input = example_toon_payload(:input))
+          sections << ""
+          sections << "### Example TOON input"
+          sections << "```toon"
+          sections << example_input
+          sections << "```"
+        end
+
         sections << ""
         sections << "## Output values"
-        sections << "Respond exclusively with a ```toon``` block containing only the output fields defined above, in the same order."
+        sections << "Respond exclusively with a ```toon``` block that lists the output fields in the exact order shown in the schema."
         sections << "```toon"
         sections << "{output_values}"
         sections << "```"
+
+        if (example_output = example_toon_payload(:output))
+          sections << ""
+          sections << "### Example TOON output"
+          sections << "```toon"
+          sections << example_output
+          sections << "```"
+        end
       else
         sections << "## Input values"
         sections << "```json"
@@ -189,15 +210,16 @@ module DSPy
     def render_user_prompt(input_values)
       sections = []
 
-      if data_format == :toon && @signature_class
+      if toon_data_format_enabled?
         toon_payload = DSPy::Schema::SorbetToonAdapter.render_input(@signature_class, input_values)
 
         sections << "## Input Values"
+        sections << "Use the TOON block below as-is; do not convert it to JSON."
         sections << "```toon"
         sections << toon_payload
         sections << "```"
         sections << ""
-        sections << "Respond with the corresponding output schema fields encoded as TOON inside a ```toon``` block starting with the heading `## Output values`."
+        sections << "Respond with the corresponding output schema fields encoded as TOON inside a ```toon``` block starting with the heading `## Output values`. Do not include any JSON."
       else
         sections << "## Input Values"
         sections << "```json"
@@ -392,6 +414,97 @@ module DSPy
       end
       
       result
+    end
+
+    def toon_data_format_enabled?
+      data_format == :toon && @signature_class
+    end
+
+    SAMPLE_DEPTH_LIMIT = 3
+    private_constant :SAMPLE_DEPTH_LIMIT
+
+    def example_toon_payload(role)
+      return nil unless toon_data_format_enabled?
+
+      sample_values = case role
+                      when :input
+                        sample_struct_values(@signature_class.input_struct_class)
+                      when :output
+                        sample_struct_values(@signature_class.output_struct_class)
+                      else
+                        {}
+                      end
+
+      return nil if sample_values.empty?
+
+      case role
+      when :input
+        DSPy::Schema::SorbetToonAdapter.render_input(@signature_class, sample_values)
+      when :output
+        DSPy::Schema::SorbetToonAdapter.render_expected_output(@signature_class, sample_values)
+      end
+    rescue StandardError
+      nil
+    end
+
+    def sample_struct_values(struct_class, depth = 0)
+      return {} unless struct_class&.respond_to?(:props)
+      struct_class.props.each_with_object({}) do |(name, prop_info), memo|
+        memo[name] = sample_value_for_type(prop_info[:type], name, depth)
+      end
+    end
+
+    def sample_value_for_type(prop_type, field_name, depth)
+      return sample_string(field_name) if prop_type.nil? || depth > SAMPLE_DEPTH_LIMIT
+
+      case prop_type
+      when T::Types::Simple
+        sample_value_for_type(prop_type.raw_type, field_name, depth + 1)
+      when T::Types::Union
+        preferred = prop_type.types.find { |type| !nil_type?(type) } || prop_type.types.first
+        sample_value_for_type(preferred, field_name, depth + 1)
+      when T::Types::TypedArray
+        [sample_value_for_type(prop_type.type, field_name, depth + 1)]
+      when T::Types::TypedHash
+        key_sample = sample_value_for_type(prop_type.keys, "#{field_name}_key", depth + 1)
+        value_sample = sample_value_for_type(prop_type.values, "#{field_name}_value", depth + 1)
+        { key_sample.to_s => value_sample }
+      when Class
+        sample_for_class_type(prop_type, field_name, depth)
+      else
+        sample_string(field_name)
+      end
+    end
+
+    def sample_for_class_type(prop_type, field_name, depth)
+      if prop_type <= String
+        sample_string(field_name)
+      elsif prop_type <= Integer
+        1
+      elsif prop_type <= Float
+        1.0
+      elsif prop_type <= Numeric
+        1
+      elsif prop_type <= TrueClass || prop_type <= FalseClass
+        true
+      elsif prop_type <= T::Enum
+        enum_value = prop_type.values.first
+        enum_value ? enum_value.serialize : sample_string(field_name)
+      elsif prop_type <= T::Struct
+        sample_struct_values(prop_type, depth + 1)
+      else
+        sample_string(field_name)
+      end
+    end
+
+    def nil_type?(type)
+      (type.respond_to?(:raw_type) && type.raw_type == NilClass) || type == NilClass
+    end
+
+    def sample_string(field_name)
+      base = field_name.to_s.gsub(/[^a-z0-9]+/i, '_').gsub(/_{2,}/, '_').sub(/^_+|_+$/, '')
+      base = 'value' if base.empty?
+      "example_#{base}"
     end
   end
 end

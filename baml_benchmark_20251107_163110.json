@@ -1,0 +1,404 @@
+{
+  "mode": "lm",
+  "prompt_combinations": [
+    {
+      "key": "json_schema__json_data",
+      "schema_key": "json_schema",
+      "data_key": "json_data",
+      "schema_label": "JSON Schema",
+      "data_label": "JSON Data",
+      "schema_format": "json",
+      "data_format": "json"
+    },
+    {
+      "key": "json_schema__toon_data",
+      "schema_key": "json_schema",
+      "data_key": "toon_data",
+      "schema_label": "JSON Schema",
+      "data_label": "TOON Data",
+      "schema_format": "json",
+      "data_format": "toon"
+    },
+    {
+      "key": "baml_schema__json_data",
+      "schema_key": "baml_schema",
+      "data_key": "json_data",
+      "schema_label": "BAML Schema",
+      "data_label": "JSON Data",
+      "schema_format": "baml",
+      "data_format": "json"
+    },
+    {
+      "key": "baml_schema__toon_data",
+      "schema_key": "baml_schema",
+      "data_key": "toon_data",
+      "schema_label": "BAML Schema",
+      "data_label": "TOON Data",
+      "schema_format": "baml",
+      "data_format": "toon"
+    }
+  ],
+  "models": {
+    "gpt-4o": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 17.73015800002031,
+        "cost": 0.00402,
+        "tokens": {
+          "input": 684,
+          "output": 231
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Prediction validation failed:\n\nType Mismatch in 'subtasks'\n\nExpected: T::Array[String]\nReceived: String (plain Ruby string)\n\nThe LLM returned a String, but your signature requires T::Array[String].\n\nSuggestions:\n• Check your signature definition for the 'subtasks' field\n• Verify the LLM prompt asks for the correct data type\n• Consider if your prompt needs clearer type instructions\n• Check if the LLM model supports structured output for complex types\n\nSample data received: \"[\""
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 8.807274999970105,
+        "cost": 0.004135,
+        "tokens": {
+          "input": 266,
+          "output": 347
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      }
+    },
+    "gpt-4o-mini": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 5.4260110000032,
+        "cost": 0.0002448,
+        "tokens": {
+          "input": 684,
+          "output": 237
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 6.0426409999490716,
+        "cost": 0.0001815,
+        "tokens": {
+          "input": 266,
+          "output": 236
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      }
+    },
+    "gpt-5": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 38.751390999997966,
+        "cost": 0.02505375,
+        "tokens": {
+          "input": 683,
+          "output": 2420
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 39.48180199996568,
+        "cost": 0.029751250000000003,
+        "tokens": {
+          "input": 265,
+          "output": 2942
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      }
+    },
+    "gpt-5-mini": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 26.32676799996989,
+        "cost": 0.00384275,
+        "tokens": {
+          "input": 683,
+          "output": 1836
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 20.1879079999635,
+        "cost": 0.00278425,
+        "tokens": {
+          "input": 265,
+          "output": 1359
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      }
+    },
+    "claude-sonnet-4-5-20250929": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 13.392738999973517,
+        "cost": 0.011637,
+        "tokens": {
+          "input": 829,
+          "output": 610
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 10.873489999969024,
+        "cost": 0.009417,
+        "tokens": {
+          "input": 339,
+          "output": 560
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      }
+    },
+    "claude-opus-4-1-20250805": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 12.896444000012707,
+        "cost": 0.051135,
+        "tokens": {
+          "input": 829,
+          "output": 516
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 12.586031000013463,
+        "cost": 0.04401,
+        "tokens": {
+          "input": 339,
+          "output": 519
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      }
+    },
+    "gemini-2.5-pro": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 15.009949000028428,
+        "cost": 0.0030800000000000003,
+        "tokens": {
+          "input": 780,
+          "output": 421
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 15.807822000002488,
+        "cost": 0.00292625,
+        "tokens": {
+          "input": 285,
+          "output": 514
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Prediction validation failed:\n\nType Mismatch in 'subtasks'\n\nExpected: T::Array[String]\nReceived: String (plain Ruby string)\n\nThe LLM returned a String, but your signature requires T::Array[String].\n\nSuggestions:\n• Check your signature definition for the 'subtasks' field\n• Verify the LLM prompt asks for the correct data type\n• Consider if your prompt needs clearer type instructions\n• Check if the LLM model supports structured output for complex types\n\nSample data received: \"[\""
+      }
+    },
+    "gemini-2.5-flash": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 8.054830999986734,
+        "cost": 0.000207,
+        "tokens": {
+          "input": 780,
+          "output": 495
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Prediction validation failed:\n\nType Mismatch in 'subtasks'\n\nExpected: T::Array[String]\nReceived: String (plain Ruby string)\n\nThe LLM returned a String, but your signature requires T::Array[String].\n\nSuggestions:\n• Check your signature definition for the 'subtasks' field\n• Verify the LLM prompt asks for the correct data type\n• Consider if your prompt needs clearer type instructions\n• Check if the LLM model supports structured output for complex types\n\nSample data received: \"[\""
+      },
+      "baml_schema__json_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Prediction validation failed:\n\nType Mismatch in 'dependencies'\n\nExpected: T::Array[String]\nReceived: Array (plain Ruby array)\n\nThe LLM returned a plain Ruby array with hash elements, but your signature requires an array of String struct objects.\n\nSuggestions:\n• Check your signature uses proper T::Array[String] typing\n• Verify the LLM response format matches your expected structure\n• Ensure your struct definitions are correct and accessible\n• Consider if your prompt needs clearer type instructions\n• Check if the LLM model supports structured output for complex types\n\nSample data received: [[], [\"Establish clear definitions\"], [\"Conduct a comprehensive literature review\"], [\"Conduct a comp..."
+      },
+      "baml_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Prediction validation failed:\n\nType Mismatch in 'subtasks'\n\nExpected: T::Array[String]\nReceived: String (plain Ruby string)\n\nThe LLM returned a String, but your signature requires T::Array[String].\n\nSuggestions:\n• Check your signature definition for the 'subtasks' field\n• Verify the LLM prompt asks for the correct data type\n• Consider if your prompt needs clearer type instructions\n• Check if the LLM model supports structured output for complex types\n\nSample data received: \"[\""
+      }
+    }
+  },
+  "summary": {
+    "total_tests": 32,
+    "successful_tests": 15,
+    "failed_tests": 17,
+    "total_cost": 0.19242555,
+    "total_response_time": 251.37525999982608,
+    "schema_token_savings": 2800,
+    "data_token_savings": 0
+  },
+  "schema_sizes": {
+    "json_chars": 1953,
+    "baml_chars": 351,
+    "savings_pct": 82.0,
+    "json_input": "{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\": \"The main research topic to investigate\"\n    },\n    \"context\": {\n      \"type\": \"string\",\n      \"description\": \"Any additional context or constraints\"\n    },\n    \"complexity_level\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"basic\",\n        \"intermediate\",\n        \"advanced\"\n      ],\n      \"description\": \"Desired complexity level for task decomposition\"\n    }\n  },\n  \"required\": [\n    \"topic\",\n    \"context\",\n    \"complexity_level\"\n  ]\n}",
+    "json_output": "{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"subtasks\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Autonomously defined research subtasks with clear objectives\"\n    },\n    \"task_types\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Type classification for each task (analysis, synthesis, investigation, etc.)\"\n    },\n    \"priority_order\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"integer\"\n      },\n      \"description\": \"Strategic priority rankings (1-5 scale) for each subtask\"\n    },\n    \"estimated_effort\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"integer\"\n      },\n      \"description\": \"Effort estimates in hours for each subtask\"\n    },\n    \"dependencies\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Task dependency relationships for optimal sequencing\"\n    },\n    \"agent_requirements\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Suggested agent types/skills needed for each task\"\n    }\n  },\n  \"required\": [\n    \"subtasks\",\n    \"task_types\",\n    \"priority_order\",\n    \"estimated_effort\",\n    \"dependencies\",\n    \"agent_requirements\"\n  ]\n}",
+    "baml_input": "enum ComplexityLevel {\n  \"basic\"\n  \"intermediate\"\n  \"advanced\"\n}\n\nclass #<Class:0x000000011c16ebb8> {\n  topic string\n  context string\n  complexity_level ComplexityLevel\n}",
+    "baml_output": "class #<Class:0x000000011c169898> {\n  subtasks string[]\n  task_types string[]\n  priority_order int[]\n  estimated_effort int[]\n  dependencies string[]\n  agent_requirements string[]\n}"
+  },
+  "data_sizes": {
+    "json_chars": 221,
+    "toon_chars": 167,
+    "savings_pct": 24.4,
+    "json_payload": "{\n  \"_type\": \"AnonymousStruct\",\n  \"topic\": \"Sustainable technology adoption in developing countries\",\n  \"context\": \"Focus on practical implementation challenges and success stories\",\n  \"complexity_level\": \"intermediate\"\n}",
+    "toon_payload": "topic: Sustainable technology adoption in developing countries\ncontext: Focus on practical implementation challenges and success stories\ncomplexity_level: intermediate"
+  }
+}

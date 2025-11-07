@@ -30,6 +30,27 @@ class ComplexityLevel < T::Enum
   end
 end
 
+class TaskType < T::Enum
+  enums do
+    Analysis = new('analysis')
+    Synthesis = new('synthesis')
+    Investigation = new('investigation')
+    Planning = new('planning')
+    Delivery = new('delivery')
+  end
+end
+
+class Task < T::Struct
+  const :name, String
+  const :objective, String
+  const :success_metric, String
+end
+
+class EstimatedEffortWithReasoning < T::Struct
+  const :hours, Integer
+  const :rationale, String
+end
+
 class TaskDecomposition < DSPy::Signature
   description "Autonomously analyze a research topic and define optimal subtasks with strategic prioritization"
 
@@ -40,11 +61,11 @@ class TaskDecomposition < DSPy::Signature
   end
 
   output do
-    const :subtasks, T::Array[String], description: "Autonomously defined research subtasks with clear objectives"
-    const :task_types, T::Array[String], description: "Type classification for each task (analysis, synthesis, investigation, etc.)"
+    const :subtasks, T::Array[Task], description: "Autonomously defined research tasks with objectives and success metrics"
+    const :task_types, T::Array[TaskType], description: "Type classification for each task (analysis, synthesis, investigation, etc.)"
     const :priority_order, T::Array[Integer], description: "Strategic priority rankings (1-5 scale) for each subtask"
-    const :estimated_effort, T::Array[Integer], description: "Effort estimates in hours for each subtask"
-    const :dependencies, T::Array[String], description: "Task dependency relationships for optimal sequencing"
+    const :estimated_effort, T::Array[EstimatedEffortWithReasoning], description: "Effort estimates in hours with supporting rationale"
+    const :dependencies, T::Array[Task], description: "Task dependency relationships captured as structured tasks"
     const :agent_requirements, T::Array[String], description: "Suggested agent types/skills needed for each task"
   end
 end
@@ -239,12 +260,24 @@ class BAMLvsJSONBenchmark
 
   def calculate_data_sizes
     input_struct = TaskDecomposition.input_struct_class.new(**benchmark_input_values)
-    json_payload = JSON.pretty_generate(DSPy::TypeSerializer.serialize(input_struct))
-    toon_payload = Sorbet::Toon.encode(
+    output_values = sample_output_values
+    output_struct = TaskDecomposition.output_struct_class.new(**output_values)
+
+    json_input = JSON.pretty_generate(DSPy::TypeSerializer.serialize(input_struct))
+    json_output = JSON.pretty_generate(DSPy::TypeSerializer.serialize(output_struct))
+    json_payload = "#{json_input}\n\n#{json_output}"
+
+    toon_input = Sorbet::Toon.encode(
       benchmark_input_values,
       signature: TaskDecomposition,
       role: :input
     )
+    toon_output = Sorbet::Toon.encode(
+      output_values,
+      signature: TaskDecomposition,
+      role: :output
+    )
+    toon_payload = "#{toon_input}\n\n#{toon_output}"
 
     json_chars = json_payload.length
     toon_chars = toon_payload.length
@@ -406,11 +439,22 @@ class BAMLvsJSONBenchmark
 
   def validate_result(result)
     raise "Missing subtasks" unless result.subtasks
-    raise "Subtasks not an array" unless result.subtasks.is_a?(Array)
+    raise "Subtasks must be Task structs" unless result.subtasks.all? { |task| task.is_a?(Task) }
+
     raise "Missing task_types" unless result.task_types
+    raise "Task types must be TaskType enums" unless result.task_types.all? { |type| type.is_a?(TaskType) }
+
     raise "Missing priority_order" unless result.priority_order
+    raise "Priority order must be integers" unless result.priority_order.all? { |value| value.is_a?(Integer) }
+
     raise "Missing estimated_effort" unless result.estimated_effort
+    unless result.estimated_effort.all? { |entry| entry.is_a?(EstimatedEffortWithReasoning) }
+      raise "Estimated effort entries must include rationale"
+    end
+
     raise "Missing dependencies" unless result.dependencies
+    raise "Dependencies must be Task structs" unless result.dependencies.all? { |task| task.is_a?(Task) }
+
     raise "Missing agent_requirements" unless result.agent_requirements
   end
 
@@ -424,6 +468,56 @@ class BAMLvsJSONBenchmark
       topic: "Sustainable technology adoption in developing countries",
       context: "Focus on practical implementation challenges and success stories",
       complexity_level: ComplexityLevel::Intermediate
+    }
+  end
+
+  def sample_output_values
+    {
+      subtasks: [
+        Task.new(
+          name: "Scope research agenda",
+          objective: "Define target regions, technologies, and evaluation criteria",
+          success_metric: "Scope brief approved by stakeholders"
+        ),
+        Task.new(
+          name: "Map stakeholders",
+          objective: "Identify implementers, funders, regulators, and community partners",
+          success_metric: "Stakeholder registry with owner + influence score"
+        ),
+        Task.new(
+          name: "Extract success patterns",
+          objective: "Synthesize lessons from high-performing deployments",
+          success_metric: "Playbook of 5+ actionable patterns"
+        )
+      ],
+      task_types: [
+        TaskType::Planning,
+        TaskType::Investigation,
+        TaskType::Synthesis
+      ],
+      priority_order: [1, 2, 3],
+      estimated_effort: [
+        EstimatedEffortWithReasoning.new(hours: 6, rationale: "Desk research plus expert interviews"),
+        EstimatedEffortWithReasoning.new(hours: 8, rationale: "Field calls across three regions"),
+        EstimatedEffortWithReasoning.new(hours: 5, rationale: "Collaborative synthesis workshop")
+      ],
+      dependencies: [
+        Task.new(
+          name: "Collect baseline data",
+          objective: "Gather socioeconomic and infrastructure data per region",
+          success_metric: "Baseline dataset with data quality checks"
+        ),
+        Task.new(
+          name: "Secure stakeholder buy-in",
+          objective: "Validate scope with regulators and communities",
+          success_metric: "Sign-offs from key representatives"
+        )
+      ],
+      agent_requirements: [
+        "Energy systems researcher",
+        "Field program manager",
+        "Policy liaison"
+      ]
     }
   end
 

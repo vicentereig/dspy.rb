@@ -37,7 +37,8 @@ module DSPy
         Sorbet::Toon.decode(
           payload,
           signature: signature_class,
-          role: :output
+          role: :output,
+          strict: false
         )
       rescue Sorbet::Toon::DecodeError => e
         log_decode_error(payload, e)

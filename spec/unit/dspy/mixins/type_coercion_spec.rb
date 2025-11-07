@@ -176,6 +176,17 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         expect(result).to eq([1, 2, 3])
       end
 
+      it 'coerces scalars into strings when required' do
+        string_type = T::Utils.coerce(String)
+        expect(instance.test_coerce(123, string_type)).to eq("123")
+      end
+
+      it 'coerces array elements into strings when required' do
+        array_type = T::Array[String]
+        result = instance.test_coerce([1, :symbol, 3.5], array_type)
+        expect(result).to eq(["1", "symbol", "3.5"])
+      end
+
       it 'still handles regular structs correctly' do
         struct_type = TestStructs::AnswerAction
         hash_value = { content: "Answer", confidence: 0.9 }

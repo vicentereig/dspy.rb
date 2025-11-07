@@ -1,0 +1,109 @@
+Model,Format Combination,Success,Response Time (ms),Cost ($),Input Tokens,Output Tokens,Total Tokens,Error
+gpt-4o,JSON Schema + JSON Data,Yes,17730,0.00402,684,231,915,""
+gpt-4o,JSON Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,"Prediction validation failed:
+
+Type Mismatch in 'subtasks'
+
+Expected: T::Array[String]
+Received: String (plain Ruby string)
+
+The LLM returned a String, but your signature requires T::Array[String].
+
+Suggestions:
+• Check your signature definition for the 'subtasks' field
+• Verify the LLM prompt asks for the correct data type
+• Consider if your prompt needs clearer type instructions
+• Check if the LLM model supports structured output for complex types
+
+Sample data received: ""["""
+gpt-4o,BAML Schema + JSON Data,Yes,8807,0.004135,266,347,613,""
+gpt-4o,BAML Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+gpt-4o-mini,JSON Schema + JSON Data,Yes,5426,0.000245,684,237,921,""
+gpt-4o-mini,JSON Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+gpt-4o-mini,BAML Schema + JSON Data,Yes,6043,0.000182,266,236,502,""
+gpt-4o-mini,BAML Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+gpt-5,JSON Schema + JSON Data,Yes,38751,0.025054,683,2420,3103,""
+gpt-5,JSON Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+gpt-5,BAML Schema + JSON Data,Yes,39482,0.029751,265,2942,3207,""
+gpt-5,BAML Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+gpt-5-mini,JSON Schema + JSON Data,Yes,26327,0.003843,683,1836,2519,""
+gpt-5-mini,JSON Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+gpt-5-mini,BAML Schema + JSON Data,Yes,20188,0.002784,265,1359,1624,""
+gpt-5-mini,BAML Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+claude-sonnet-4-5-20250929,JSON Schema + JSON Data,Yes,13393,0.011637,829,610,1439,""
+claude-sonnet-4-5-20250929,JSON Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+claude-sonnet-4-5-20250929,BAML Schema + JSON Data,Yes,10873,0.009417,339,560,899,""
+claude-sonnet-4-5-20250929,BAML Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+claude-opus-4-1-20250805,JSON Schema + JSON Data,Yes,12896,0.051135,829,516,1345,""
+claude-opus-4-1-20250805,JSON Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+claude-opus-4-1-20250805,BAML Schema + JSON Data,Yes,12586,0.04401,339,519,858,""
+claude-opus-4-1-20250805,BAML Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+gemini-2.5-pro,JSON Schema + JSON Data,Yes,15010,0.00308,780,421,1201,""
+gemini-2.5-pro,JSON Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt.
+gemini-2.5-pro,BAML Schema + JSON Data,Yes,15808,0.002926,285,514,799,""
+gemini-2.5-pro,BAML Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,"Prediction validation failed:
+
+Type Mismatch in 'subtasks'
+
+Expected: T::Array[String]
+Received: String (plain Ruby string)
+
+The LLM returned a String, but your signature requires T::Array[String].
+
+Suggestions:
+• Check your signature definition for the 'subtasks' field
+• Verify the LLM prompt asks for the correct data type
+• Consider if your prompt needs clearer type instructions
+• Check if the LLM model supports structured output for complex types
+
+Sample data received: ""["""
+gemini-2.5-flash,JSON Schema + JSON Data,Yes,8055,0.000207,780,495,1275,""
+gemini-2.5-flash,JSON Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,"Prediction validation failed:
+
+Type Mismatch in 'subtasks'
+
+Expected: T::Array[String]
+Received: String (plain Ruby string)
+
+The LLM returned a String, but your signature requires T::Array[String].
+
+Suggestions:
+• Check your signature definition for the 'subtasks' field
+• Verify the LLM prompt asks for the correct data type
+• Consider if your prompt needs clearer type instructions
+• Check if the LLM model supports structured output for complex types
+
+Sample data received: ""["""
+gemini-2.5-flash,BAML Schema + JSON Data,No,N/A,N/A,N/A,N/A,N/A,"Prediction validation failed:
+
+Type Mismatch in 'dependencies'
+
+Expected: T::Array[String]
+Received: Array (plain Ruby array)
+
+The LLM returned a plain Ruby array with hash elements, but your signature requires an array of String struct objects.
+
+Suggestions:
+• Check your signature uses proper T::Array[String] typing
+• Verify the LLM response format matches your expected structure
+• Ensure your struct definitions are correct and accessible
+• Consider if your prompt needs clearer type instructions
+• Check if the LLM model supports structured output for complex types
+
+Sample data received: [[], [""Establish clear definitions""], [""Conduct a comprehensive literature review""], [""Conduct a comp..."
+gemini-2.5-flash,BAML Schema + TOON Data,No,N/A,N/A,N/A,N/A,N/A,"Prediction validation failed:
+
+Type Mismatch in 'subtasks'
+
+Expected: T::Array[String]
+Received: String (plain Ruby string)
+
+The LLM returned a String, but your signature requires T::Array[String].
+
+Suggestions:
+• Check your signature definition for the 'subtasks' field
+• Verify the LLM prompt asks for the correct data type
+• Consider if your prompt needs clearer type instructions
+• Check if the LLM model supports structured output for complex types
+
+Sample data received: ""["""

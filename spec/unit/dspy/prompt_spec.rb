@@ -220,10 +220,27 @@ RSpec.describe DSPy::Prompt do
         input_schema: input_schema,
         output_schema: output_schema
       )
-      
+
       system_prompt = prompt.render_system_prompt
-      
+
       expect(system_prompt).not_to include("Here are some examples")
+    end
+
+    it 'renders TOON guidance when data_format is :toon' do
+      prompt = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        data_format: :toon,
+        signature_class: MathQA
+      )
+
+      system_prompt = prompt.render_system_prompt
+
+      expect(system_prompt).to include('Token-Oriented Object Notation (TOON)')
+      expect(system_prompt).to include('```toon')
+      expect(system_prompt).to include('Example TOON output')
+      expect(system_prompt).not_to include('Respond exclusively with the output schema fields in the json block below.')
     end
   end
 
@@ -234,12 +251,30 @@ RSpec.describe DSPy::Prompt do
         input_schema: input_schema,
         output_schema: output_schema
       )
-      
+
       input_values = { question: "What is 5 + 3?" }
       user_prompt = prompt.render_user_prompt(input_values)
-      
+
       expect(user_prompt).to include("What is 5 + 3?")
       expect(user_prompt).to include("## Input Values")
+    end
+
+    it 'renders input as TOON when data_format is :toon' do
+      prompt = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        data_format: :toon,
+        signature_class: MathQA
+      )
+
+      input_values = { question: "What is 5 + 3?" }
+      user_prompt = prompt.render_user_prompt(input_values)
+
+      expect(user_prompt).to include("```toon")
+      expect(user_prompt).to include("question:")
+      expect(user_prompt).not_to include("```json")
+      expect(user_prompt).to include("Respond with the corresponding output schema fields encoded as TOON")
     end
   end
 

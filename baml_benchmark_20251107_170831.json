@@ -1,0 +1,404 @@
+{
+  "mode": "lm",
+  "prompt_combinations": [
+    {
+      "key": "json_schema__json_data",
+      "schema_key": "json_schema",
+      "data_key": "json_data",
+      "schema_label": "JSON Schema",
+      "data_label": "JSON Data",
+      "schema_format": "json",
+      "data_format": "json"
+    },
+    {
+      "key": "json_schema__toon_data",
+      "schema_key": "json_schema",
+      "data_key": "toon_data",
+      "schema_label": "JSON Schema",
+      "data_label": "TOON Data",
+      "schema_format": "json",
+      "data_format": "toon"
+    },
+    {
+      "key": "baml_schema__json_data",
+      "schema_key": "baml_schema",
+      "data_key": "json_data",
+      "schema_label": "BAML Schema",
+      "data_label": "JSON Data",
+      "schema_format": "baml",
+      "data_format": "json"
+    },
+    {
+      "key": "baml_schema__toon_data",
+      "schema_key": "baml_schema",
+      "data_key": "toon_data",
+      "schema_label": "BAML Schema",
+      "data_label": "TOON Data",
+      "schema_format": "baml",
+      "data_format": "toon"
+    }
+  ],
+  "models": {
+    "gpt-4o": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 6.046410000009928,
+        "cost": 0.00434,
+        "tokens": {
+          "input": 684,
+          "output": 263
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": true,
+        "response_time": 6.494007000001147,
+        "cost": 0.005235,
+        "tokens": {
+          "input": 846,
+          "output": 312
+        },
+        "error": null
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 8.56715700001223,
+        "cost": 0.003555,
+        "tokens": {
+          "input": 266,
+          "output": 289
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": true,
+        "response_time": 4.732285000034608,
+        "cost": 0.0038599999999999997,
+        "tokens": {
+          "input": 428,
+          "output": 279
+        },
+        "error": null
+      }
+    },
+    "gpt-4o-mini": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 6.265721999981906,
+        "cost": 0.0002454,
+        "tokens": {
+          "input": 684,
+          "output": 238
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": true,
+        "response_time": 7.667604999965988,
+        "cost": 0.0002871,
+        "tokens": {
+          "input": 846,
+          "output": 267
+        },
+        "error": null
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 5.047740000009071,
+        "cost": 0.00018209999999999998,
+        "tokens": {
+          "input": 266,
+          "output": 237
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": true,
+        "response_time": 4.750035000033677,
+        "cost": 0.0002004,
+        "tokens": {
+          "input": 428,
+          "output": 227
+        },
+        "error": null
+      }
+    },
+    "gpt-5": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 47.56230900000082,
+        "cost": 0.02939375,
+        "tokens": {
+          "input": 683,
+          "output": 2854
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 34.632380999973975,
+        "cost": 0.01992125,
+        "tokens": {
+          "input": 265,
+          "output": 1959
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": true,
+        "response_time": 37.83748399995966,
+        "cost": 0.02699375,
+        "tokens": {
+          "input": 427,
+          "output": 2646
+        },
+        "error": null
+      }
+    },
+    "gpt-5-mini": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 23.805284000001848,
+        "cost": 0.00302275,
+        "tokens": {
+          "input": 683,
+          "output": 1426
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 25.029104999965057,
+        "cost": 0.00334025,
+        "tokens": {
+          "input": 265,
+          "output": 1637
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": false,
+        "response_time": 0.0,
+        "cost": 0.0,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "error": "Failed to parse TOON response: Key must be followed by colon. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
+      }
+    },
+    "claude-sonnet-4-5-20250929": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 12.751110000011977,
+        "cost": 0.011637,
+        "tokens": {
+          "input": 829,
+          "output": 610
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": true,
+        "response_time": 11.938793000008445,
+        "cost": 0.013518,
+        "tokens": {
+          "input": 1016,
+          "output": 698
+        },
+        "error": null
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 11.268141000007745,
+        "cost": 0.009417,
+        "tokens": {
+          "input": 339,
+          "output": 560
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": true,
+        "response_time": 10.33391800004756,
+        "cost": 0.009977999999999999,
+        "tokens": {
+          "input": 526,
+          "output": 560
+        },
+        "error": null
+      }
+    },
+    "claude-opus-4-1-20250805": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 11.647851999965496,
+        "cost": 0.049485,
+        "tokens": {
+          "input": 829,
+          "output": 494
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": true,
+        "response_time": 13.04643099999521,
+        "cost": 0.052739999999999995,
+        "tokens": {
+          "input": 1016,
+          "output": 500
+        },
+        "error": null
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 11.6580959999701,
+        "cost": 0.04401,
+        "tokens": {
+          "input": 339,
+          "output": 519
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": true,
+        "response_time": 13.619267000001855,
+        "cost": 0.051765,
+        "tokens": {
+          "input": 526,
+          "output": 585
+        },
+        "error": null
+      }
+    },
+    "gemini-2.5-pro": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 18.701400999969337,
+        "cost": 0.0031450000000000002,
+        "tokens": {
+          "input": 780,
+          "output": 434
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": true,
+        "response_time": 23.974565999989863,
+        "cost": 0.0043075,
+        "tokens": {
+          "input": 950,
+          "output": 624
+        },
+        "error": null
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 16.974540999974124,
+        "cost": 0.0026562499999999998,
+        "tokens": {
+          "input": 285,
+          "output": 460
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": true,
+        "response_time": 17.56975500000408,
+        "cost": 0.00414375,
+        "tokens": {
+          "input": 455,
+          "output": 715
+        },
+        "error": null
+      }
+    },
+    "gemini-2.5-flash": {
+      "json_schema__json_data": {
+        "success": true,
+        "response_time": 8.69287600001553,
+        "cost": 0.000234,
+        "tokens": {
+          "input": 780,
+          "output": 585
+        },
+        "error": null
+      },
+      "json_schema__toon_data": {
+        "success": true,
+        "response_time": 7.434943999978714,
+        "cost": 0.00018734999999999997,
+        "tokens": {
+          "input": 950,
+          "output": 387
+        },
+        "error": null
+      },
+      "baml_schema__json_data": {
+        "success": true,
+        "response_time": 8.994025000021793,
+        "cost": 0.00014587499999999998,
+        "tokens": {
+          "input": 285,
+          "output": 415
+        },
+        "error": null
+      },
+      "baml_schema__toon_data": {
+        "success": true,
+        "response_time": 14.655300000042189,
+        "cost": 0.000251025,
+        "tokens": {
+          "input": 455,
+          "output": 723
+        },
+        "error": null
+      }
+    }
+  },
+  "summary": {
+    "total_tests": 32,
+    "successful_tests": 29,
+    "failed_tests": 3,
+    "total_cost": 0.35819750000000006,
+    "total_response_time": 431.69853999995394,
+    "schema_token_savings": 6000,
+    "data_token_savings": 169
+  },
+  "schema_sizes": {
+    "json_chars": 1953,
+    "baml_chars": 351,
+    "savings_pct": 82.0,
+    "json_input": "{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\": \"The main research topic to investigate\"\n    },\n    \"context\": {\n      \"type\": \"string\",\n      \"description\": \"Any additional context or constraints\"\n    },\n    \"complexity_level\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"basic\",\n        \"intermediate\",\n        \"advanced\"\n      ],\n      \"description\": \"Desired complexity level for task decomposition\"\n    }\n  },\n  \"required\": [\n    \"topic\",\n    \"context\",\n    \"complexity_level\"\n  ]\n}",
+    "json_output": "{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"subtasks\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Autonomously defined research subtasks with clear objectives\"\n    },\n    \"task_types\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Type classification for each task (analysis, synthesis, investigation, etc.)\"\n    },\n    \"priority_order\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"integer\"\n      },\n      \"description\": \"Strategic priority rankings (1-5 scale) for each subtask\"\n    },\n    \"estimated_effort\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"integer\"\n      },\n      \"description\": \"Effort estimates in hours for each subtask\"\n    },\n    \"dependencies\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Task dependency relationships for optimal sequencing\"\n    },\n    \"agent_requirements\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"Suggested agent types/skills needed for each task\"\n    }\n  },\n  \"required\": [\n    \"subtasks\",\n    \"task_types\",\n    \"priority_order\",\n    \"estimated_effort\",\n    \"dependencies\",\n    \"agent_requirements\"\n  ]\n}",
+    "baml_input": "enum ComplexityLevel {\n  \"basic\"\n  \"intermediate\"\n  \"advanced\"\n}\n\nclass #<Class:0x0000000120e57b28> {\n  topic string\n  context string\n  complexity_level ComplexityLevel\n}",
+    "baml_output": "class #<Class:0x0000000120e54888> {\n  subtasks string[]\n  task_types string[]\n  priority_order int[]\n  estimated_effort int[]\n  dependencies string[]\n  agent_requirements string[]\n}"
+  },
+  "data_sizes": {
+    "json_chars": 221,
+    "toon_chars": 167,
+    "savings_pct": 24.4,
+    "json_payload": "{\n  \"_type\": \"AnonymousStruct\",\n  \"topic\": \"Sustainable technology adoption in developing countries\",\n  \"context\": \"Focus on practical implementation challenges and success stories\",\n  \"complexity_level\": \"intermediate\"\n}",
+    "toon_payload": "topic: Sustainable technology adoption in developing countries\ncontext: Focus on practical implementation challenges and success stories\ncomplexity_level: intermediate"
+  }
+}

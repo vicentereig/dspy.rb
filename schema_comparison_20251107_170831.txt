@@ -1,0 +1,134 @@
+Schema & Data Format Comparison
+===============================
+
+JSON Schema (Input + Output): 1953 chars
+BAML Schema (Input + Output): 351 chars
+Schema Token Savings: 82.0%
+
+JSON Data Payload (sample request): 221 chars
+TOON Data Payload (sample request): 167 chars
+Data Token Savings: 24.4%
+
+JSON Input Schema:
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "properties": {
+    "topic": {
+      "type": "string",
+      "description": "The main research topic to investigate"
+    },
+    "context": {
+      "type": "string",
+      "description": "Any additional context or constraints"
+    },
+    "complexity_level": {
+      "type": "string",
+      "enum": [
+        "basic",
+        "intermediate",
+        "advanced"
+      ],
+      "description": "Desired complexity level for task decomposition"
+    }
+  },
+  "required": [
+    "topic",
+    "context",
+    "complexity_level"
+  ]
+}
+
+JSON Output Schema:
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "properties": {
+    "subtasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Autonomously defined research subtasks with clear objectives"
+    },
+    "task_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Type classification for each task (analysis, synthesis, investigation, etc.)"
+    },
+    "priority_order": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "description": "Strategic priority rankings (1-5 scale) for each subtask"
+    },
+    "estimated_effort": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "description": "Effort estimates in hours for each subtask"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Task dependency relationships for optimal sequencing"
+    },
+    "agent_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Suggested agent types/skills needed for each task"
+    }
+  },
+  "required": [
+    "subtasks",
+    "task_types",
+    "priority_order",
+    "estimated_effort",
+    "dependencies",
+    "agent_requirements"
+  ]
+}
+
+BAML Input Schema:
+enum ComplexityLevel {
+  "basic"
+  "intermediate"
+  "advanced"
+}
+
+class #<Class:0x0000000120e57b28> {
+  topic string
+  context string
+  complexity_level ComplexityLevel
+}
+
+BAML Output Schema:
+class #<Class:0x0000000120e54888> {
+  subtasks string[]
+  task_types string[]
+  priority_order int[]
+  estimated_effort int[]
+  dependencies string[]
+  agent_requirements string[]
+}
+
+JSON Data Payload:
+{
+  "_type": "AnonymousStruct",
+  "topic": "Sustainable technology adoption in developing countries",
+  "context": "Focus on practical implementation challenges and success stories",
+  "complexity_level": "intermediate"
+}
+
+TOON Data Payload:
+topic: Sustainable technology adoption in developing countries
+context: Focus on practical implementation challenges and success stories
+complexity_level: intermediate

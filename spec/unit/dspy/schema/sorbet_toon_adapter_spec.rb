@@ -17,6 +17,18 @@ RSpec.describe DSPy::Schema::SorbetToonAdapter do
     end
   end
 
+  class AdapterArraySignature < DSPy::Signature
+    description 'Adapter test signature with arrays'
+
+    input do
+      const :query, String
+    end
+
+    output do
+      const :steps, T::Array[String]
+    end
+  end
+
   describe '.parse_output' do
     it 'raises AdapterError with helpful message when decode fails' do
       logger = double('Logger', warn: nil)
@@ -28,6 +40,18 @@ RSpec.describe DSPy::Schema::SorbetToonAdapter do
       expect do
         described_class.parse_output(AdapterTestSignature, invalid_payload)
       end.to raise_error(DSPy::LM::AdapterError, /Failed to parse TOON/)
+    end
+
+    it 'tolerates mismatched inline array counts in non-strict mode' do
+      payload = <<~TOON
+        ```toon
+        steps[2]: "Draft outline"
+        ```
+      TOON
+
+      parsed = described_class.parse_output(AdapterArraySignature, payload)
+
+      expect(parsed.steps).to eq(["Draft outline"])
     end
   end
 end

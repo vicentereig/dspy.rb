@@ -36,6 +36,8 @@ module DSPy
           coerce_array_value(value, prop_type)
         when ->(type) { hash_type?(type) }
           coerce_hash_value(value, prop_type)
+        when ->(type) { type == String || simple_type_match?(type, String) }
+          value.to_s
         when ->(type) { enum_type?(type) }
           coerce_enum_value(value, prop_type)
         when ->(type) { type == Float || simple_type_match?(type, Float) }

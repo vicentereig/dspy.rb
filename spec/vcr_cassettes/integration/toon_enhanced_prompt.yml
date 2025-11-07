@@ -1,0 +1,155 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```baml\nclass EnhancedToonSignatureInput {\n  topic
+        string\n  context string\n}\n```\nYour output schema fields are:\n```baml\nclass
+        EnhancedToonSignatureOutput {\n  subtasks string[]\n  task_types string[]\n  priority_order
+        int[]\n  estimates int[]\n}\n```\n\nAll interactions will be structured in
+        the following way, with the appropriate values filled in.\n## TOON data format
+        instructions\nAll input and output payloads must use Token-Oriented Object
+        Notation (TOON). Do not return JSON, YAML, or prose.\n\n## Input values\nCopy
+        the TOON block below and replace the placeholder values with the correct inputs.\n```toon\n{input_values}\n```\n\n###
+        Example TOON input\n```toon\ntopic: example_topic\ncontext: example_context\n```\n\n##
+        Output values\nRespond exclusively with a ```toon``` block that lists the
+        output fields in the exact order shown in the schema.\n```toon\n{output_values}\n```\n\n###
+        Example TOON output\n```toon\nsubtasks[1]: example_subtasks\ntask_types[1]:
+        example_task_types\npriority_order[1]: 1\nestimates[1]: 1\n```\n\nIn adhering
+        to this structure, your objective is: Break down topics using TOON-enhanced
+        prompting"},{"role":"user","content":"## Input Values\nUse the TOON block
+        below as-is; do not convert it to JSON.\n```toon\ntopic: Sustainable technology
+        adoption\ncontext: Focus on community microgrids\n```\n\nRespond with the
+        corresponding output schema fields encoded as TOON inside a ```toon``` block
+        starting with the heading `## Output values`. Do not include any JSON."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.17.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1625'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 07 Nov 2025 15:55:04 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2069'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2240'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199632'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 110ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 99ae0338294ecbbf-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CZJ5ijN8CVUuj3xFUmTvAqQFQTGxh",
+          "object": "chat.completion",
+          "created": 1762530902,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```toon\nsubtasks[1]: Research existing community microgrid projects\nsubtasks[2]: Identify best practices for sustainable technology implementation\nsubtasks[3]: Engage community stakeholders for feedback\ntask_types[1]: Data analysis\ntask_types[2]: Field survey\ntask_types[3]: Stakeholder engagement\npriority_order[1]: 1\npriority_order[2]: 2\npriority_order[3]: 3\nestimates[1]: 10\nestimates[2]: 15\nestimates[3]: 5\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 351,
+            "completion_tokens": 117,
+            "total_tokens": 468,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_560af6e559"
+        }
+  recorded_at: Fri, 07 Nov 2025 15:55:04 GMT
+recorded_with: VCR 6.3.1
