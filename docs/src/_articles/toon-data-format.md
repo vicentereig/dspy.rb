@@ -77,13 +77,21 @@ _Source: `examples/baml_vs_json_benchmark.rb`, offline run `schema_data_benchmar
 2. **[ReAct loops](/blog/articles/react-agent-tutorial/)** – every turn now shares tools, histories, and observations as TOON. Long multi-tool dialogues stop reprinting JSON hashes.
 3. **[Tool ecosystems](https://vicentereig.github.io/dspy.rb/core-concepts/toolsets/)** – TOON preserves typing (thanks to `Sorbet::Toon.decode`), so tool outputs round-trip back into Sorbet structs with zero DTO glue.
 
-## What you need to do
+## FAQ
 
-1. Update to the latest DSPy.rb (Sorbet::Toon rides along as a dependency).
-2. Flip `schema_format: :baml` and `data_format: :toon` in your `DSPy.configure` block or per-LM overrides.
-3. When you want to inspect the raw numbers, peek at [`examples/baml_vs_json_benchmark.rb`](https://github.com/vicentereig/dspy.rb/blob/feature/sorbet-toon-codec/examples/baml_vs_json_benchmark.rb); it ships with the repo so you can repeat the comparison in your own environment.
+**Do I need to use BAML and TOON together?**
+: No. They’re independent toggles. Use `schema_format: :baml` when you want compact schema guidance, `data_format: :toon` when you want lean payloads. You can enable either one (or both) per LM.
 
-Here’s the only code change most apps need:
+**Where’s the benchmarking code?**
+: In [`examples/baml_vs_json_benchmark.rb`](https://github.com/vicentereig/dspy.rb/blob/feature/sorbet-toon-codec/examples/baml_vs_json_benchmark.rb). It ships with the repo and emits the same `.json/.csv/.txt` artifacts referenced here.
+
+**Does this rely on function calling or structured outputs?**
+: No. Everything stays in Enhanced Prompting—you still write plain `Predict`, `ChainOfThought`, or `ReAct` code and parse completions the same way.
+
+**Will TOON break my ReAct tools or custom modules?**
+: No. ReAct, toolsets, and other DSPy modules already understand `data_format: :toon`; they simply serialize histories, tools, and responses using Sorbet::Toon instead of JSON.
+
+**What’s the migration diff?**
 
 ```diff
  DSPy.configure do |c|
@@ -97,4 +105,4 @@ Here’s the only code change most apps need:
  end
 ```
 
-No new APIs, no migration slog—just leaner prompts that unlock more iterations per dollar. Flip the formats, keep your prompts declarative, and ship TOON-powered Enhanced Prompting everywhere.
+Flip the formats, keep your prompts declarative, and run TOON wherever Enhanced Prompting makes sense.
