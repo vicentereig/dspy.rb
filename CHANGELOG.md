@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.31.1] - 2025-11-07
+
 ### Documentation
 - **TOON benchmark refresh** – Updated the TOON launch article with the richer TaskDecomposition signature results (~9.5k schema tokens and ~2.4k data tokens saved per call) plus observed latency/cost improvements, so teams know what to expect when flipping `schema_format: :baml` / `data_format: :toon` on complex payloads.
 
