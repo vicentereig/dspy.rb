@@ -3,6 +3,8 @@
 require 'sorbet-runtime'
 require 'sorbet/toon'
 
+require_relative '../lm/errors'
+
 module DSPy
   module Schema
     module SorbetToonAdapter
@@ -37,6 +39,10 @@ module DSPy
           signature: signature_class,
           role: :output
         )
+      rescue Sorbet::Toon::DecodeError => e
+        log_decode_error(payload, e)
+        raise DSPy::LM::AdapterError,
+              "Failed to parse TOON response: #{e.message}. Ensure the model replies with a ```toon``` block using the schema described in the system prompt."
       end
 
       sig { params(text: T.nilable(String)).returns(String) }
@@ -47,6 +53,20 @@ module DSPy
         return match[1].strip if match
 
         text.strip
+      end
+
+      sig { params(payload: String, error: StandardError).void }
+      def log_decode_error(payload, error)
+        logger = DSPy.logger if DSPy.respond_to?(:logger)
+        return unless logger.respond_to?(:warn)
+
+        preview = payload.to_s.lines.first(5).join
+        logger.warn(
+          event: 'toon.decode_error',
+          error: error.message,
+          preview: preview,
+          length: payload.to_s.length
+        )
       end
 
       sig { params(signature_class: T.nilable(T.class_of(DSPy::Signature)), role: Symbol).returns(String) }
