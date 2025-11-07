@@ -112,6 +112,28 @@ module DSPy
     def render_system_prompt
       sections = []
 
+      if schema_format == :json && toon_data_format_enabled?
+        sections << "## TOON format requirements (read first)"
+        sections << "All inputs and outputs must be expressed using Token-Oriented Object Notation (TOON). Never emit JSON, YAML, markdown tables, or prose."
+        sections << ""
+
+        if (example_input = example_toon_payload(:input))
+          sections << "### Example TOON input"
+          sections << "```toon"
+          sections << example_input
+          sections << "```"
+          sections << ""
+        end
+
+        if (example_output = example_toon_payload(:output))
+          sections << "### Example TOON output"
+          sections << "```toon"
+          sections << example_output
+          sections << "```"
+          sections << ""
+        end
+      end
+
       case schema_format
       when :baml
         sections << "Your input schema fields are:"
@@ -165,28 +187,12 @@ module DSPy
         sections << "{input_values}"
         sections << "```"
 
-        if (example_input = example_toon_payload(:input))
-          sections << ""
-          sections << "### Example TOON input"
-          sections << "```toon"
-          sections << example_input
-          sections << "```"
-        end
-
         sections << ""
         sections << "## Output values"
         sections << "Respond exclusively with a ```toon``` block that lists the output fields in the exact order shown in the schema."
         sections << "```toon"
         sections << "{output_values}"
         sections << "```"
-
-        if (example_output = example_toon_payload(:output))
-          sections << ""
-          sections << "### Example TOON output"
-          sections << "```toon"
-          sections << example_output
-          sections << "```"
-        end
       else
         sections << "## Input values"
         sections << "```json"
