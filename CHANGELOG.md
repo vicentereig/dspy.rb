@@ -7,26 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.31.1] - 2025-11-07
-
 ### Documentation
 - **TOON benchmark refresh** – Updated the TOON launch article with the richer TaskDecomposition signature results (~9.5k schema tokens and ~2.4k data tokens saved per call) plus observed latency/cost improvements, so teams know what to expect when flipping `schema_format: :baml` / `data_format: :toon` on complex payloads.
-
-### Added
-- **HotPotQA dataset support** - Loader, manifest entries, and a ReAct + MIPROv2 example bring multi-hop QA benchmarking to the Ruby stack.
-- **Hugging Face ingestion pipeline** - Dataset registry, API client, and Parquet loader streamline remote dataset downloads across gems.
-- **Standalone `dspy-miprov2` gem** - Optimizer internals now ship in a dedicated gem with tighter dependency bounds and CI coverage.
-
-### Changed
-- **OpenTelemetry export hardening** - Span attributes are sanitized into JSON-safe strings before emit to avoid exporter crashes.
-- **ADE optimization workflow** - Registry-backed datasets shuffle before limiting, log few-shot payloads, and surface class balance improvements.
-
-### Fixed
-- **Evaluation stability** - Corrected metric return handling, dataset summary prompt serialization, and ReAct cloning regressions uncovered by new datasets.
-- **Hugging Face redirects** - Parquet loader now follows redirect chains, eliminating intermittent download failures in CI.
-
-### Documentation
-- **MIPROv2 and GEPA guides** - Ruby-focused rewrites and new HotPotQA walkthroughs document the expanded dataset tooling and benchmarks.
 
 ## [0.31.0] - 2025-11-07
 
@@ -59,6 +41,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 - Added a dedicated [Event System](docs/src/core-concepts/events.md) guide that answers “how do I listen globally?” with `DSPy.events.subscribe('*')`, documents the new module-scoped DSL, and links from the Core Concepts index.
+
+## [0.30.0] - 2025-10-21
+
+### Added
+- **HotPotQA dataset support** - Loader, manifest entries, and a ReAct + MIPROv2 example bring multi-hop QA benchmarking to the Ruby stack.
+- **Hugging Face ingestion pipeline** - Dataset registry, API client, and Parquet loader streamline remote dataset downloads across gems.
+- **Standalone `dspy-miprov2` gem** - Optimizer internals now ship in a dedicated gem with tighter dependency bounds and CI coverage.
+
+### Changed
+- **OpenTelemetry export hardening** - Span attributes are sanitized into JSON-safe strings before emit to avoid exporter crashes.
+- **ADE optimization workflow** - Registry-backed datasets shuffle before limiting, log few-shot payloads, and surface class balance improvements.
+
+### Fixed
+- **Evaluation stability** - Corrected metric return handling, dataset summary prompt serialization, and ReAct cloning regressions uncovered by new datasets.
+- **Hugging Face redirects** - Parquet loader now follows redirect chains, eliminating intermittent download failures in CI.
+
+### Documentation
+- **MIPROv2 and GEPA guides** - Ruby-focused rewrites and new HotPotQA walkthroughs document the expanded dataset tooling and benchmarks.
 
 ## [0.29.1] - 2025-10-20
 
