@@ -38,7 +38,7 @@ The remaining cost has always been **tokens**: JSON Schema is verbose and JSON p
 ## TL;DR
 
 - **Schema guidance:** switch `schema_format: :baml` and drop 1,953 → 351 characters (≈ 82% smaller). Same signature, same Enhanced Prompting flow.
-- **Data blocks:** switch `data_format: :toon` (powered by the new `sorbet-toon` gem) and keep your inputs/outputs, ReAct histories, and tool payloads structured without JSON overhead.
+- **Data blocks:** switch `data_format: :toon` (Token-Oriented Object Notation, powered by the new `sorbet-toon` gem) and keep your inputs/outputs, ReAct histories, and tool payloads structured without JSON overhead. TOON itself lives at [github.com/toon-format/toon](https://github.com/toon-format/toon).
 - **Net effect:** the rich `TaskDecomposition` signature now sends **303 tokens** instead of **699** in Enhanced Prompting. That’s a **≈ 57% reduction** per call without touching your model, few-shot examples, or tool code.
 
 ```ruby
@@ -67,7 +67,7 @@ _Source: `examples/baml_vs_json_benchmark.rb`, offline run `schema_data_benchmar
 ### What the model feels
 
 - **Clear guidance, compact tables:** BAML renders the signature schema in a TypeScript-like form instead of a 200-line JSON Schema blob. Models latch onto the important parts faster.
-- **Structured payloads without braces:** Sorbet::Toon turns your input struct into a TOON block. Arrays of structs become literal tables, so histories, toolsets, time-series data, and complex outputs stop repeating field names. JSON adds padding every time you send a list; TOON stays slim.
+- **Structured payloads without braces:** Sorbet::Toon turns your input struct into a Token-Oriented Object Notation (TOON) block. Arrays of structs become literal tables, so histories, toolsets, time-series data, and complex outputs stop repeating field names. JSON adds padding every time you send a list; TOON stays slim.
 - **Enhanced Prompting by default:** You keep the exact same predictor APIs—no function calls or json schema extraction tricks. Swapping formats only changes how we render the prompt, not how you write or parse completions.
 
 ### Where the savings show up
