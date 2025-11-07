@@ -6,9 +6,8 @@ description: "DSPy.rb now pairs BAML schemas with Sorbet::Toon payloads. The com
 author: "Vicente Reig Rincon de Arellano"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/toon-data-format/"
 image: /images/og/toon-data-format.png
+reading_time: "4 min read"
 ---
-
-_Reading time: ~4 minutes_
 
 **[DSPy Signatures](https://vicentereig.github.io/dspy.rb/getting-started/core-concepts/#signatures-as-the-contract)** anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. JSON Schema and JSON payloads, however, bloat requests—especially when you’re shipping time-series data or long lists of structs that repeat every key. Starting today you can flip two symbols and keep Enhanced Prompting lean. Here’s the exact signature we used for the benchmark:
 
