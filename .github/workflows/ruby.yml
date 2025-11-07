@@ -131,7 +131,7 @@ jobs:
           command: bundle exec rspec --format documentation spec/sorbet/toon
           datasets: '0'
           miprov2: '0'
-          evals: '0'
+          evals: '1'
           code_act: '0'
           schema: '1'
           gepa: '0'

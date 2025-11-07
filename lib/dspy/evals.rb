@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'json'
-require 'polars'
 require 'concurrent'
 require 'sorbet-runtime'
 require_relative 'example'
@@ -111,8 +110,14 @@ module DSPy
         }
       end
 
-      sig { returns(Polars::DataFrame) }
+      if defined?(Polars::DataFrame)
+        sig { returns(Polars::DataFrame) }
+      else
+        sig { returns(T.untyped) }
+      end
       def to_polars
+        ensure_polars!
+
         rows = @results.each_with_index.map do |result, index|
           {
             "index" => index,
@@ -129,6 +134,20 @@ module DSPy
       end
 
       private
+
+      POLARS_MISSING_ERROR = <<~MSG
+        Polars is required to export evaluation results. Add `gem 'polars'`
+        (or enable the `dspy-datasets` gem / `DSPY_WITH_DATASETS=1`) before
+        calling `DSPy::Evals::BatchEvaluationResult#to_polars`.
+      MSG
+
+      def ensure_polars!
+        return if defined?(Polars::DataFrame)
+
+        require 'polars'
+      rescue LoadError => e
+        raise LoadError, "#{POLARS_MISSING_ERROR}\n\n#{e.message}"
+      end
 
       def serialize_for_polars(value)
         case value
