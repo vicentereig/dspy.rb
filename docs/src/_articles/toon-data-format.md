@@ -51,7 +51,7 @@ DSPy.configure do |c|
 end
 ```
 
-That’s it. Predictors, ChainOfThought, ReAct, and every DSPy module keep the same API; prompts just get cheaper.
+That’s it. [Predictors](https://vicentereig.github.io/dspy.rb/getting-started/core-concepts/#predictors-basic-llm-operations), [ChainOfThought](https://vicentereig.github.io/dspy.rb/core-concepts/modules/#chain-of-thought), [ReAct](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/), and every [DSPy module](https://vicentereig.github.io/dspy.rb/core-concepts/modules/) keep the same API; prompts just get cheaper.
 
 ## Why TOON + BAML matters
 
