@@ -75,7 +75,7 @@ _Source: `examples/baml_vs_json_benchmark.rb`, offline run `schema_data_benchmar
 
 1. **[Prediction prompts](/getting-started/core-concepts/#predictors-basic-llm-operations)** – any signature-backed `Predict` now emits TOON payloads, so even single-call apps get the 57% token cut.
 2. **[ReAct loops](/blog/articles/react-agent-tutorial/)** – every turn now shares tools, histories, and observations as TOON. Long multi-tool dialogues stop reprinting JSON hashes.
-3. **[Tool ecosystems](https://vicentereig.github.io/dspy.rb/core-concepts/toolsets/)** – TOON preserves typing (thanks to `Sorbet::Toon.decode`), so tool outputs round-trip back into Sorbet structs with zero DTO glue.
+3. **[Tool ecosystems](https://vicentereig.github.io/dspy.rb/core-concepts/toolsets/)** – TOON preserves typing (thanks to `Sorbet::Toon.decode`), so tool outputs round-trip back into Sorbet structs without manual serialization glue.
 
 ## FAQ
 
