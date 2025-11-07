@@ -88,6 +88,9 @@ _Source: `examples/baml_vs_json_benchmark.rb`, offline run `schema_data_benchmar
 **Does this rely on function calling or structured outputs?**
 : No. Everything stays in Enhanced Prompting—you still write plain `Predict`, `ChainOfThought`, or `ReAct` code and parse completions the same way.
 
+**Can I combine TOON with provider-native structured outputs?**
+: Not today. Provider structured outputs still expect JSON. TOON is purpose-built for Enhanced Prompting, so use it when you’re controlling the prompt yourself.
+
 **Will TOON break my ReAct tools or custom modules?**
 : No. ReAct, toolsets, and other DSPy modules already understand `data_format: :toon`; they simply serialize histories, tools, and responses using Sorbet::Toon instead of JSON.
 
