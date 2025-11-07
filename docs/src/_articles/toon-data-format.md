@@ -2,14 +2,14 @@
 layout: blog
 title: "Cut Prompt Tokens in Half with BAML + TOON"
 date: 2025-11-07
-description: "DSPy.rb now pairs BAML schemas with Sorbet::Toon payloads. The combo keeps Enhanced Prompting simple while saving ~400 tokens per request."
+ description: "DSPy.rb now pairs BAML schemas with Sorbet::Toon payloads. The combo keeps Enhanced Prompting simple while saving ~9000 schema tokens and ~2400 data tokens per request."
 author: "Vicente Reig Rincon de Arellano"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/toon-data-format/"
 image: /images/og/toon-data-format.png
 reading_time: "4 min read"
 ---
 
-**[DSPy Signatures](https://vicentereig.github.io/dspy.rb/getting-started/core-concepts/#signatures-as-the-contract)** anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. JSON Schema and JSON payloads, however, bloat requests—especially when you’re shipping time-series data or long lists of structs that repeat every key. Starting today you can flip two symbols and keep Enhanced Prompting lean. Here’s the exact signature we used for the benchmark:
+**[DSPy Signatures](https://vicentereig.github.io/dspy.rb/getting-started/core-concepts/#signatures-as-the-contract)** anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. JSON Schema and JSON payloads, however, bloat requests—especially when you’re shipping time-series data or long lists of structs that repeat every key. Starting today you can flip two symbols and keep Enhanced Prompting lean. Here’s the latest signature we used for the benchmark (now with nested structs and enums):
 
 ```ruby
 class TaskDecomposition < DSPy::Signature
@@ -23,23 +23,23 @@ class TaskDecomposition < DSPy::Signature
   end
 
   output do
-    const :subtasks, T::Array[String], description: "Autonomously defined research subtasks"
-    const :task_types, T::Array[String], description: "Type classification for each task"
+    const :subtasks, T::Array[Task], description: "Autonomously defined research subtasks"
+    const :task_types, T::Array[TaskType], description: "Type classification for each task"
     const :priority_order, T::Array[Integer], description: "Priority rankings (1-5 scale)"
-    const :estimated_effort, T::Array[Integer], description: "Effort estimates in hours"
-    const :dependencies, T::Array[String], description: "Task dependency relationships"
+    const :estimated_effort, T::Array[EstimatedEffortWithReasoning], description: "Effort estimates in hours with rationale"
+    const :dependencies, T::Array[Task], description: "Task dependency relationships"
     const :agent_requirements, T::Array[String], description: "Suggested agent skills"
   end
 end
 ```
 
-The remaining cost has always been **tokens**: JSON Schema is verbose and JSON payloads repeat every key. Starting today, you can flip two symbols and trim Enhanced Prompting back down to size.
+The remaining cost has always been **tokens**: JSON Schema is verbose and JSON payloads repeat every key. Starting today, you can flip two symbols and trim Enhanced Prompting back down to size—even for signatures that emit nested structs, enums, and rationales.
 
 ## TL;DR
 
-- **Schema guidance:** switch `schema_format: :baml` and drop 1,953 → 351 characters (≈ 82% smaller). Same signature, same Enhanced Prompting flow.
+- **Schema guidance:** switch `schema_format: :baml` and drop **3,528 → 608 characters** (≈ 83% smaller) even with nested structs/enums.
 - **Data blocks:** switch `data_format: :toon` (Token-Oriented Object Notation, powered by the new `sorbet-toon` gem) and keep your inputs/outputs, ReAct histories, and tool payloads structured without JSON overhead. TOON itself lives at [github.com/toon-format/toon](https://github.com/toon-format/toon).
-- **Net effect:** the rich `TaskDecomposition` signature now sends **303 tokens** instead of **699** in Enhanced Prompting. That’s a **≈ 57% reduction** per call without touching your model, few-shot examples, or tool code.
+- **Net effect:** the enhanced `TaskDecomposition` signature now ships **≈ 9,490 fewer schema tokens** and **≈ 2,420 fewer data tokens** per Enhanced Prompting call. That still cuts prompts roughly in half, even though the tasks now carry objectives, success metrics, and reasoning.
 
 ```ruby
 DSPy.configure do |c|
@@ -58,11 +58,11 @@ That’s it. [Predictors](https://vicentereig.github.io/dspy.rb/getting-started/
 
 | Scenario | JSON Schema + JSON Data | BAML Schema + TOON Data |
 |----------|------------------------|-------------------------|
-| Signature guidance size | 1,953 chars | 351 chars |
-| Sample input payload | 221 chars | 167 chars |
-| Total prompt tokens (Enhanced Prompting) | 699 | **303** |
+| Signature guidance size | 3,528 chars | 608 chars |
+| Sample input + output payload | 2,063 chars | 1,180 chars |
+| Total prompt tokens (Enhanced Prompting) | ~13,500 | **~6,300** |
 
-_Source: `examples/baml_vs_json_benchmark.rb`, offline run `schema_data_benchmark_20251107_013851.json`._
+_Source: `examples/baml_vs_json_benchmark.rb`, live run `baml_benchmark_20251107_172759.json`._
 
 ### What the model feels
 
