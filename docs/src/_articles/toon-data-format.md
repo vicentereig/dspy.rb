@@ -8,7 +8,7 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/toon-data-fo
 image: /images/og/toon-data-format.png
 ---
 
-Designers love DSPy signatures because they keep prompts declarative: you describe the types and the framework handles the rendering. The cost has always been **tokens**. JSON Schema is verbose. JSON payloads repeat every key. Starting today, you can flip two symbols and make Enhanced Prompting lean again.
+DSPy Signatures anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. The remaining cost has always been **tokens**: JSON Schema is verbose and JSON payloads repeat every key. Starting today, you can flip two symbols and trim Enhanced Prompting back down to size.
 
 ## TL;DR
 
