@@ -10,9 +10,14 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'TOON encode/decode pipeline for Sorbet signatures.'
   spec.description = 'Ruby port of the TOON encoder/decoder used inside DSPy.rb. Provides Sorbet-aware normalization, reconstruction, and prompt-ready helpers so signatures can round-trip through TOON without hand-written serializers.'
-  spec.homepage = 'https://github.com/vicentereig/dspy.rb'
+  readme_url = 'https://github.com/vicentereig/dspy.rb/blob/main/lib/sorbet/toon/README.md'
+  spec.homepage = readme_url
+  spec.metadata = (spec.metadata || {}).merge(
+    'homepage_uri' => readme_url,
+    'documentation_uri' => readme_url
+  )
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.3.0'
+  spec.required_ruby_version = '>= 3.1'
 
   spec.files = Dir[
     'lib/sorbet/toon.rb',

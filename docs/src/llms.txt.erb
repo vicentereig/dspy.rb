@@ -189,6 +189,24 @@ puts result.sentiment  # => "positive"
 puts result.score      # => 0.92
 ```
 
+## Provider Adapter Gems
+
+Add the adapter gems that match the providers you call so DSPy can load the right SDKs without bloating your bundle:
+
+```ruby
+# Gemfile
+gem 'dspy'
+gem 'dspy-openai'    # OpenAI, OpenRouter, Ollama
+gem 'dspy-anthropic' # Claude
+gem 'dspy-gemini'    # Gemini
+```
+
+Each adapter gem already pulls in the official SDK (`openai`, `anthropic`, `gemini-ai`), so you don’t need to add those manually. DSPy auto-loads the adapters when the gem is present—no extra `require` needed. Adapter documentation lives alongside the code:
+
+- [OpenAI / OpenRouter / Ollama adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/openai/README.md)
+- [Anthropic adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/anthropic/README.md)
+- [Gemini adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/gemini/README.md)
+
 ## Evaluation & Metrics
 
 Comprehensive testing and measurement framework:

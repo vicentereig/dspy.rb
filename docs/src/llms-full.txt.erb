@@ -89,6 +89,24 @@ Then run:
 bundle install
 ```
 
+### Provider Adapter Gems
+
+Add the adapter gems that match the providers you call so DSPy only pulls the SDKs you actually use:
+
+```ruby
+# Gemfile
+gem 'dspy'
+gem 'dspy-openai'    # OpenAI, OpenRouter, Ollama
+gem 'dspy-anthropic' # Claude
+gem 'dspy-gemini'    # Gemini
+```
+
+Each adapter gem already depends on the official SDK (`openai`, `anthropic`, `gemini-ai`), so you don’t need to add those manually. DSPy auto-loads adapters when the gem is present—no extra `require` needed. See the adapter READMEs for details:
+
+- [OpenAI / OpenRouter / Ollama adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/openai/README.md)
+- [Anthropic adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/anthropic/README.md)
+- [Gemini adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/gemini/README.md)
+
 ### Basic Configuration
 
 ```ruby

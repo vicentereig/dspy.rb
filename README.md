@@ -101,6 +101,9 @@ DSPy.rb ships multiple gems from this monorepo so you can opt into features with
 | Gem | Description | Status |
 | --- | --- | --- |
 | `dspy-schema` | Exposes `DSPy::TypeSystem::SorbetJsonSchema` for downstream reuse. (Still required by the core `dspy` gem; extraction lets other projects depend on it directly.) | **Stable** (v1.0.0) |
+| `dspy-openai` | Packages the OpenAI/OpenRouter/Ollama adapters plus the official SDK guardrails. Install whenever you call `openai/*`, `openrouter/*`, or `ollama/*`. [Adapter README](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/openai/README.md) | **Stable** (v1.0.0) |
+| `dspy-anthropic` | Claude adapters, streaming, and structured-output helpers behind the official `anthropic` SDK. [Adapter README](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/anthropic/README.md) | **Stable** (v1.0.0) |
+| `dspy-gemini` | Gemini adapters with multimodal + tool-call support via `gemini-ai`. [Adapter README](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/gemini/README.md) | **Stable** (v1.0.0) |
 | `dspy-code_act` | Think-Code-Observe agents that synthesize and execute Ruby safely. (Add the gem or set `DSPY_WITH_CODE_ACT=1` before requiring `dspy/code_act`.) | **Stable** (v1.0.0) |
 | `dspy-datasets` | Dataset helpers plus Parquet/Polars tooling for richer evaluation corpora. (Toggle via `DSPY_WITH_DATASETS`.) | **Stable** (v1.0.0) |
 | `dspy-evals` | High-throughput evaluation harness with metrics, callbacks, and regression fixtures. (Toggle via `DSPY_WITH_EVALS`.) | **Stable** (v1.0.0) |
@@ -111,6 +114,9 @@ DSPy.rb ships multiple gems from this monorepo so you can opt into features with
 | `dspy-o11y-langfuse` | Auto-configures DSPy observability to stream spans to Langfuse via OTLP. (Install or set `DSPY_WITH_O11Y_LANGFUSE=1`.) | **Stable** (v1.0.0) |
 | `dspy-deep_search` | Production DeepSearch loop with Exa-backed search/read, token budgeting, and instrumentation (Issue #163). | **Stable** (v1.0.0) |
 | `dspy-deep_research` | Planner/QA orchestration atop DeepSearch plus the memory supervisor used by the CLI example. | **Stable** (v1.0.0) |
+| `sorbet-toon` | Token-Oriented Object Notation (TOON) codec, prompt formatter, and Sorbet mixins for BAML/TOON Enhanced Prompting. [Sorbet::Toon README](https://github.com/vicentereig/dspy.rb/blob/main/lib/sorbet/toon/README.md) | **Alpha** (v0.1.0) |
+
+**Provider adapters:** Add `dspy-openai`, `dspy-anthropic`, and/or `dspy-gemini` next to `dspy` in your Gemfile depending on which `DSPy::LM` providers you call. Each gem already depends on the official SDK (`openai`, `anthropic`, `gemini-ai`), and DSPy auto-loads the adapters when the gem is present—no extra `require` needed.
 
 Set the matching `DSPY_WITH_*` environment variables (see `Gemfile`) to include or exclude each sibling gem when running Bundler locally (for example `DSPY_WITH_GEPA=1` or `DSPY_WITH_O11Y_LANGFUSE=1`). Refer to `adr/013-dependency-tree.md` for the full dependency map and roadmap.
 ### Access to 200+ Models Across 5 Providers

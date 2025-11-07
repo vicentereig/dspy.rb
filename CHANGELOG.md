@@ -23,6 +23,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - **MIPROv2 and GEPA guides** - Ruby-focused rewrites and new HotPotQA walkthroughs document the expanded dataset tooling and benchmarks.
 
+## [0.31.0] - 2025-11-07
+
+### Added
+- **Token-Oriented Object Notation (TOON) support** – DSPy signatures now emit BAML schemas and TOON payloads by flipping `schema_format: :baml` / `data_format: :toon`. New formatter/adapter stack powers prompt rendering, codec normalize/encode helpers, and Sorbet-aware reconstruction.
+- **ReAct / tool payload serialization** – ReAct loops, toolsets, and histories stream as TOON tables so iterative guidance, observations, and tool arguments shed JSON padding without changing module APIs.
+
+### Changed
+- **Benchmark harness** – `examples/baml_vs_json_benchmark.rb` includes Enhanced Prompting benchmarks for every schema (BAML vs JSON Schema) and data (TOON vs JSON) combination, producing `.json/.csv/.txt` artifacts in `examples/` for decks and docs.
+- **CI coverage** – GitHub Actions gained a dedicated “Sorbet::Toon Specs” job that mirrors the DSPy Core environment, ensuring the codec, formatter, and adapter suites stay green across future dependency changes.
+
+### Fixed
+- **Optional Polars dependency** – `DSPy::Evals::BatchEvaluationResult#to_polars` now lazy-loads Polars, so Sorbet::Toon specs and other lightweight bundles stop erroring when `dspy-datasets` isn’t enabled.
+
+### Documentation
+- **TOON launch article** – `docs/src/_articles/toon-data-format.md` highlights the token savings of pairing BAML schemas with TOON payloads, links to Prediction/ReAct/TaskDecomposition docs, and adds an FAQ + benchmark summary.
+- **README/manual cross-links** – The sibling gem table now calls out Sorbet::Toon, adapters, and benchmark guidance, and the new article links directly to `lib/sorbet/toon/README.md` plus the public TOON repo.
+
 ## [0.30.1] - 2025-10-26
 
 ### Added

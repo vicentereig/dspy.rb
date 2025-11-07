@@ -49,6 +49,24 @@ DSPy.rb requires Ruby 3.3+ and automatically installs these dependencies:
 
 You don't need to add these to your Gemfile—they're installed automatically when you install dspy.
 
+## Provider Adapter Gems
+
+Provider SDKs now ship as side-loaded gems so you only install what you need. Add the adapter(s) that match the `DSPy::LM` providers you call:
+
+```ruby
+# Gemfile
+gem 'dspy'          # core framework
+gem 'dspy-openai'   # OpenAI, OpenRouter, or Ollama adapters
+gem 'dspy-anthropic' # Claude adapters
+gem 'dspy-gemini'   # Gemini adapters
+```
+
+Each adapter gem already depends on the official SDK (`openai`, `anthropic`, `gemini-ai`), so you don't need to add those manually. DSPy auto-loads the adapters when the gem is present—no extra `require` needed. Read the adapter guides for the specifics:
+
+- [OpenAI / OpenRouter / Ollama adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/openai/README.md)
+- [Anthropic adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/anthropic/README.md)
+- [Gemini adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/gemini/README.md)
+
 ## Observability
 
 DSPy.rb uses structured logging for observability. The logs can be parsed and sent to any monitoring platform you prefer.
