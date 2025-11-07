@@ -260,8 +260,8 @@ Use `[ ]` → `[x]` as tasks complete.
 
 ## Immediate Next Steps
 
-1. **Predict/LM end-to-end specs:** Add higher-level tests (Predict → Prompt → LM mock → adapter) to ensure TOON formatting stays stable across demos/ReAct/MIPRO flows.
-2. **Error reporting & logging:** Surface clearer `Sorbet::Toon` errors inside DSPy (e.g., code-fence mismatch, tabular column mismatches) and add optional logging hooks before the v0.1.0 release.
+1. **Deepen integration coverage:** Extend TOON e2e specs to multi-iteration/tool scenarios (ReAct with real tools, observation processor) and backfill remaining fixture-driven cases.
+2. **Release prep:** Wire up `rake release`, changelog updates, and the v0.1.0 checklist (bundle exec rspec/srb/rubocop) before publishing `sorbet-toon`.
 
 ---
 
