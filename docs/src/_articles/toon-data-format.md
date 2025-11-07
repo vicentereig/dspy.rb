@@ -63,4 +63,4 @@ BAML_BENCHMARK_LIVE=0 bundle exec ruby examples/baml_vs_json_benchmark.rb
 
 You’ll get the same `.json/.csv/.txt` files we used in this post, so you can drop the numbers straight into decks or PRDs.
 
-No new APIs, no migration slog—just leaner prompts that unlock more iterations per dollar. Give TOON a try and watch your Enhanced Prompting requests breathe again.
+No new APIs, no migration slog—just leaner prompts that unlock more iterations per dollar. Give TOON a try and keep your Enhanced Prompting requests lean.
