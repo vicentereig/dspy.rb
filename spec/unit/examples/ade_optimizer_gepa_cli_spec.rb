@@ -29,10 +29,17 @@ RSpec.describe 'ADE GEPA CLI' do
     end
   end
 
-  it 'validates model format for --model option' do
+  it 'accepts fully-qualified model ids without exiting' do
+    options = ADEGEPAOptimizationDemo.parse_options(['--model', 'openai/gpt-4o-mini'])
+    expect(options.model).to eq('openai/gpt-4o-mini')
+  end
+
+  it 'rejects providerless model ids' do
     expect do
-      ADEGEPAOptimizationDemo.parse_options(['--model', 'gpt4'])
-    end.to raise_error(SystemExit)
+      expect do
+        ADEGEPAOptimizationDemo.parse_options(['--model', 'gpt4'])
+      end.to raise_error(SystemExit)
+    end.to output(/Invalid model 'gpt4'/).to_stderr
   end
 
   describe '#persist_results' do
