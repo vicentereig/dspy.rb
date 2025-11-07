@@ -8,7 +8,31 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/toon-data-fo
 image: /images/og/toon-data-format.png
 ---
 
-DSPy Signatures anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. The remaining cost has always been **tokens**: JSON Schema is verbose and JSON payloads repeat every key. Starting today, you can flip two symbols and trim Enhanced Prompting back down to size.
+DSPy Signatures anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. Here’s the exact signature we used for the benchmark:
+
+```ruby
+class TaskDecomposition < DSPy::Signature
+  description "Autonomously analyze a research topic and define optimal subtasks with strategic prioritization"
+
+  input do
+    const :topic, String, description: "The main research topic to investigate"
+    const :context, String, description: "Any additional context or constraints"
+    const :complexity_level, ComplexityLevel,
+      description: "Desired complexity level for task decomposition"
+  end
+
+  output do
+    const :subtasks, T::Array[String], description: "Autonomously defined research subtasks"
+    const :task_types, T::Array[String], description: "Type classification for each task"
+    const :priority_order, T::Array[Integer], description: "Priority rankings (1-5 scale)"
+    const :estimated_effort, T::Array[Integer], description: "Effort estimates in hours"
+    const :dependencies, T::Array[String], description: "Task dependency relationships"
+    const :agent_requirements, T::Array[String], description: "Suggested agent skills"
+  end
+end
+```
+
+The remaining cost has always been **tokens**: JSON Schema is verbose and JSON payloads repeat every key. Starting today, you can flip two symbols and trim Enhanced Prompting back down to size.
 
 ## TL;DR
 
