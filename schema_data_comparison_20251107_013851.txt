@@ -1,0 +1,12 @@
+Prompt Token Estimates (Enhanced Prompting)
+==========================================
+
+Baseline (JSON Schema + JSON Data): 699 tokens
+
+- JSON Schema + JSON Data                  : 699 tokens (Δ +0)
+- JSON Schema + TOON Data                  : 705 tokens (Δ +6)
+- BAML Schema + JSON Data                  : 297 tokens (Δ -402)
+- BAML Schema + TOON Data                  : 303 tokens (Δ -396)
+
+Schema Savings: 82.0%
+Data Savings: 24.4%
