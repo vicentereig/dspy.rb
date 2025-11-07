@@ -5,12 +5,18 @@ require 'benchmark'
 require 'json'
 require 'csv'
 require 'dotenv'
+require 'fileutils'
+
+require 'sorbet/toon'
 
 # Load environment variables from .env file
 Dotenv.load(File.expand_path('../.env', __dir__))
 
 require_relative '../lib/dspy'
 require 'sorbet_baml'
+
+# Ensure logger directory exists for local runs
+FileUtils.mkdir_p(File.expand_path('../log', __dir__)) unless File.exist?(File.expand_path('../log', __dir__))
 
 # Configure observability
 DSPy::Observability.configure!
@@ -43,6 +49,30 @@ class TaskDecomposition < DSPy::Signature
   end
 end
 
+SCHEMA_OPTIONS = [
+  { key: :json_schema, label: 'JSON Schema', format: :json },
+  { key: :baml_schema, label: 'BAML Schema', format: :baml }
+].freeze
+
+DATA_OPTIONS = [
+  { key: :json_data, label: 'JSON Data', format: :json },
+  { key: :toon_data, label: 'TOON Data', format: :toon }
+].freeze
+
+FORMAT_COMBINATIONS = SCHEMA_OPTIONS.flat_map do |schema|
+  DATA_OPTIONS.map do |data|
+    {
+      key: "#{schema[:key]}__#{data[:key]}",
+      schema_key: schema[:key],
+      data_key: data[:key],
+      schema_label: schema[:label],
+      data_label: data[:label],
+      schema_format: schema[:format],
+      data_format: data[:format]
+    }
+  end
+end.freeze
+
 class BAMLvsJSONBenchmark
   # Models to test with Enhanced Prompting (January 2025)
   OPENAI_MODELS = %w[
@@ -74,7 +104,16 @@ class BAMLvsJSONBenchmark
   }.freeze
 
   def initialize
+    @live_run = ENV['BAML_BENCHMARK_LIVE'] != '0'
+    @models_to_test = gather_models
+    if @models_to_test.empty?
+      warn "⚠️  No provider API keys detected. Falling back to prompt analysis mode."
+      @live_run = false
+    end
+
     @results = {
+      mode: @live_run ? 'lm' : 'prompt_analysis',
+      prompt_combinations: FORMAT_COMBINATIONS,
       models: {},
       summary: {
         total_tests: 0,
@@ -82,31 +121,49 @@ class BAMLvsJSONBenchmark
         failed_tests: 0,
         total_cost: 0.0,
         total_response_time: 0.0,
-        total_tokens_saved: 0
+        schema_token_savings: 0,
+        data_token_savings: 0
       },
-      schema_sizes: calculate_schema_sizes
+      schema_sizes: calculate_schema_sizes,
+      data_sizes: calculate_data_sizes
     }
 
     puts "BAML vs JSON Schema Format Benchmark"
     puts "===================================="
-    puts "Comparing JSON Schema vs BAML in Enhanced Prompting Mode"
-    puts "Testing #{ALL_MODELS.length} models"
-    puts "OpenAI: #{OPENAI_MODELS.length}, Anthropic: #{ANTHROPIC_MODELS.length}, Google: #{GOOGLE_MODELS.length}"
+    puts "Comparing Schema Formats (JSON vs BAML) and Data Formats (JSON vs TOON)"
+    puts "Mode: #{@live_run ? 'Live LM Run' : 'Prompt Analysis'}"
+    puts "Testing #{@models_to_test.length} models"
+    puts "  OpenAI: #{OPENAI_MODELS.length} (#{ENV['OPENAI_API_KEY'] ? 'enabled' : 'missing key'})"
+    puts "  Anthropic: #{ANTHROPIC_MODELS.length} (#{ENV['ANTHROPIC_API_KEY'] ? 'enabled' : 'missing key'})"
+    puts "  Google: #{GOOGLE_MODELS.length} (#{ENV['GEMINI_API_KEY'] ? 'enabled' : 'missing key'})"
     puts
     puts "Schema Size Comparison:"
     puts "  JSON Schema: #{@results[:schema_sizes][:json_chars]} chars"
     puts "  BAML Schema: #{@results[:schema_sizes][:baml_chars]} chars"
     puts "  Token Savings: #{@results[:schema_sizes][:savings_pct]}%"
     puts
+    puts "Data Payload Comparison (single request):"
+    puts "  JSON Data: #{@results[:data_sizes][:json_chars]} chars"
+    puts "  TOON Data: #{@results[:data_sizes][:toon_chars]} chars"
+    puts "  Token Savings: #{@results[:data_sizes][:savings_pct]}%"
+    puts
   end
 
   def run_benchmark
-    puts "🚀 Starting benchmark..."
+    if @live_run
+      run_live_benchmark
+    else
+      run_prompt_analysis
+    end
+  end
+
+  def run_live_benchmark
+    puts "🚀 Starting live benchmark..."
     puts
 
     start_time = Time.now
 
-    ALL_MODELS.each do |model|
+    @models_to_test.each do |model|
       test_model(model)
     end
 
@@ -115,6 +172,39 @@ class BAMLvsJSONBenchmark
 
     print_summary(total_duration)
     export_results
+  end
+
+  def run_prompt_analysis
+    puts "🧪 Starting prompt analysis (no external API calls)..."
+    puts
+
+    input_values = benchmark_input_values
+
+    @results[:prompt_analysis] = FORMAT_COMBINATIONS.map do |combo|
+      prompt = DSPy::Prompt.from_signature(
+        TaskDecomposition,
+        schema_format: combo[:schema_format],
+        data_format: combo[:data_format]
+      )
+
+      system_prompt = prompt.render_system_prompt
+      user_prompt = prompt.render_user_prompt(input_values)
+      total_chars = system_prompt.length + user_prompt.length
+
+      {
+        key: combo[:key],
+        schema_format: combo[:schema_format],
+        data_format: combo[:data_format],
+        schema_label: combo[:schema_label],
+        data_label: combo[:data_label],
+        system_chars: system_prompt.length,
+        user_chars: user_prompt.length,
+        total_chars: total_chars,
+        estimated_tokens: (total_chars / 4.0).round
+      }
+    end
+
+    export_prompt_analysis_results
   end
 
   private
@@ -147,25 +237,47 @@ class BAMLvsJSONBenchmark
     }
   end
 
+  def calculate_data_sizes
+    input_struct = TaskDecomposition.input_struct_class.new(**benchmark_input_values)
+    json_payload = JSON.pretty_generate(DSPy::TypeSerializer.serialize(input_struct))
+    toon_payload = Sorbet::Toon.encode(
+      benchmark_input_values,
+      signature: TaskDecomposition,
+      role: :input
+    )
+
+    json_chars = json_payload.length
+    toon_chars = toon_payload.length
+    savings = ((1 - toon_chars.to_f / json_chars) * 100).round(1)
+
+    {
+      json_chars: json_chars,
+      toon_chars: toon_chars,
+      savings_pct: savings,
+      json_payload: json_payload,
+      toon_payload: toon_payload
+    }
+  end
+
   def test_model(model)
     puts "\nTesting: #{model}"
     puts "-" * 60
 
-    @results[:models][model] = {
-      json_format: {},
-      baml_format: {}
-    }
+    @results[:models][model] = {}
 
-    # Test both schema formats in Enhanced Prompting mode
-    test_format(model, :json_format)
-    test_format(model, :baml_format)
+    FORMAT_COMBINATIONS.each do |combo|
+      test_format(model, combo)
+    end
   end
 
-  def test_format(model, format_name)
-    schema_format = format_name == :json_format ? :json : :baml
-    puts "  #{format_name.to_s.gsub('_', ' ').capitalize}..."
+  def test_format(model, combo)
+    schema_format = combo[:schema_format]
+    data_format = combo[:data_format]
+    combo_key = combo[:key]
+    label = "#{combo[:schema_label]} + #{combo[:data_label]}"
+    puts "  #{label}..."
 
-    result_key = @results[:models][model][format_name]
+    result_key = (@results[:models][model][combo_key] ||= {})
     result_key.merge!(
       success: false,
       response_time: 0.0,
@@ -176,7 +288,7 @@ class BAMLvsJSONBenchmark
 
     begin
       # Configure LM with Enhanced Prompting and specified schema format
-      lm = create_lm_for_model(model, schema_format: schema_format)
+      lm = create_lm_for_model(model, schema_format: schema_format, data_format: data_format)
       DSPy.configure { |config| config.lm = lm }
 
       # Track usage with event subscription
@@ -194,9 +306,12 @@ class BAMLvsJSONBenchmark
       response_time = Benchmark.realtime do
         predictor = DSPy::Predict.new(TaskDecomposition)
 
-        # Verify the predictor is using the correct schema format
         unless predictor.prompt.schema_format == schema_format
           raise "Predictor schema_format mismatch: expected #{schema_format}, got #{predictor.prompt.schema_format}"
+        end
+
+        unless predictor.prompt.data_format == data_format
+          raise "Predictor data_format mismatch: expected #{data_format}, got #{predictor.prompt.data_format}"
         end
 
         result = predictor.call(
@@ -225,13 +340,14 @@ class BAMLvsJSONBenchmark
         0.0
       end
 
-      # Calculate token savings if using BAML
       if schema_format == :baml
-        # Approximate input token savings based on schema size difference
-        schema_savings = @results[:schema_sizes][:json_chars] - @results[:schema_sizes][:baml_chars]
-        # Rough estimate: 1 token ≈ 4 chars
-        estimated_tokens_saved = schema_savings / 4
-        @results[:summary][:total_tokens_saved] += estimated_tokens_saved
+        estimated_tokens_saved = (@results[:schema_sizes][:json_chars] - @results[:schema_sizes][:baml_chars]) / 4
+        @results[:summary][:schema_token_savings] += estimated_tokens_saved
+      end
+
+      if data_format == :toon
+        estimated_data_tokens_saved = (@results[:data_sizes][:json_chars] - @results[:data_sizes][:toon_chars]) / 4
+        @results[:summary][:data_token_savings] += estimated_data_tokens_saved
       end
 
       result_key.merge!(
@@ -256,7 +372,7 @@ class BAMLvsJSONBenchmark
     end
   end
 
-  def create_lm_for_model(model, schema_format: :json)
+  def create_lm_for_model(model, schema_format: :json, data_format: :json)
     # Always use Enhanced Prompting (structured_outputs: false) for this benchmark
     case model
     when /^gpt-/
@@ -264,21 +380,24 @@ class BAMLvsJSONBenchmark
         "openai/#{model}",
         api_key: ENV['OPENAI_API_KEY'],
         structured_outputs: false,  # Force Enhanced Prompting
-        schema_format: schema_format
+        schema_format: schema_format,
+        data_format: data_format
       )
     when /^claude-/
       DSPy::LM.new(
         "anthropic/#{model}",
         api_key: ENV['ANTHROPIC_API_KEY'],
         structured_outputs: false,  # Force Enhanced Prompting
-        schema_format: schema_format
+        schema_format: schema_format,
+        data_format: data_format
       )
     when /^gemini-/
       DSPy::LM.new(
         "gemini/#{model}",
         api_key: ENV['GEMINI_API_KEY'],
         structured_outputs: false,  # Force Enhanced Prompting
-        schema_format: schema_format
+        schema_format: schema_format,
+        data_format: data_format
       )
     else
       raise ArgumentError, "Unknown model provider: #{model}"
@@ -293,6 +412,27 @@ class BAMLvsJSONBenchmark
     raise "Missing estimated_effort" unless result.estimated_effort
     raise "Missing dependencies" unless result.dependencies
     raise "Missing agent_requirements" unless result.agent_requirements
+  end
+
+  def combo_label(combo_key)
+    combo = FORMAT_COMBINATIONS.find { |c| c[:key] == combo_key.to_s }
+    combo ? "#{combo[:schema_label]} + #{combo[:data_label]}" : combo_key.to_s
+  end
+
+  def benchmark_input_values
+    {
+      topic: "Sustainable technology adoption in developing countries",
+      context: "Focus on practical implementation challenges and success stories",
+      complexity_level: ComplexityLevel::Intermediate
+    }
+  end
+
+  def gather_models
+    models = []
+    models.concat(OPENAI_MODELS) if ENV['OPENAI_API_KEY']
+    models.concat(ANTHROPIC_MODELS) if ENV['ANTHROPIC_API_KEY']
+    models.concat(GOOGLE_MODELS) if ENV['GEMINI_API_KEY']
+    models
   end
 
   def print_summary(duration)
@@ -315,10 +455,14 @@ class BAMLvsJSONBenchmark
     puts "  Total cost: $#{summary[:total_cost].round(4)}"
     puts "  Total duration: #{duration.round(1)}s"
 
-    if summary[:total_tokens_saved] > 0
-      puts "\n💰 Token Savings (BAML vs JSON):"
-      puts "  Total tokens saved: ~#{summary[:total_tokens_saved]}"
-      puts "  Schema size reduction: #{@results[:schema_sizes][:savings_pct]}%"
+    if summary[:schema_token_savings] > 0 || summary[:data_token_savings] > 0
+      puts "\n💰 Token Savings Estimates:"
+      if summary[:schema_token_savings] > 0
+        puts "  Schema (BAML vs JSON): ~#{summary[:schema_token_savings]} tokens saved per run"
+      end
+      if summary[:data_token_savings] > 0
+        puts "  Data (TOON vs JSON): ~#{summary[:data_token_savings]} tokens saved per run"
+      end
     end
 
     puts "\nPer-Model Comparison:"
@@ -331,7 +475,7 @@ class BAMLvsJSONBenchmark
         time = data[:success] ? "#{(data[:response_time] * 1000).round(0)}ms" : "N/A"
         cost = data[:success] ? "$#{data[:cost].round(6)}" : "N/A"
         tokens = data[:success] ? "#{data[:tokens][:input]}→#{data[:tokens][:output]}" : "N/A"
-        format_display = format_name.to_s.gsub('_format', '').upcase
+        format_display = combo_label(format_name)
 
         puts "  #{model.ljust(30)} #{format_display.ljust(15)} #{status.ljust(8)} #{time.ljust(10)} #{cost.ljust(12)} #{tokens}"
 
@@ -357,14 +501,14 @@ class BAMLvsJSONBenchmark
     csv_filename = "baml_benchmark_#{timestamp}.csv"
     CSV.open(csv_filename, 'w') do |csv|
       # Header
-      csv << ['Model', 'Format', 'Success', 'Response Time (ms)', 'Cost ($)', 'Input Tokens', 'Output Tokens', 'Total Tokens', 'Error']
+      csv << ['Model', 'Format Combination', 'Success', 'Response Time (ms)', 'Cost ($)', 'Input Tokens', 'Output Tokens', 'Total Tokens', 'Error']
 
       # Data rows
       @results[:models].each do |model, formats|
         formats.each do |format_name, data|
           csv << [
             model,
-            format_name.to_s.gsub('_format', '').upcase,
+            combo_label(format_name),
             data[:success] ? 'Yes' : 'No',
             data[:success] ? (data[:response_time] * 1000).round(0) : 'N/A',
             data[:success] ? data[:cost].round(6) : 'N/A',
@@ -381,12 +525,16 @@ class BAMLvsJSONBenchmark
     # Export schema comparison
     schema_filename = "schema_comparison_#{timestamp}.txt"
     File.write(schema_filename, <<~COMPARISON)
-      Schema Format Comparison
-      ========================
+      Schema & Data Format Comparison
+      ===============================
 
       JSON Schema (Input + Output): #{@results[:schema_sizes][:json_chars]} chars
       BAML Schema (Input + Output): #{@results[:schema_sizes][:baml_chars]} chars
-      Token Savings: #{@results[:schema_sizes][:savings_pct]}%
+      Schema Token Savings: #{@results[:schema_sizes][:savings_pct]}%
+
+      JSON Data Payload (sample request): #{@results[:data_sizes][:json_chars]} chars
+      TOON Data Payload (sample request): #{@results[:data_sizes][:toon_chars]} chars
+      Data Token Savings: #{@results[:data_sizes][:savings_pct]}%
 
       JSON Input Schema:
       #{@results[:schema_sizes][:json_input]}
@@ -399,8 +547,56 @@ class BAMLvsJSONBenchmark
 
       BAML Output Schema:
       #{@results[:schema_sizes][:baml_output]}
+
+      JSON Data Payload:
+      #{@results[:data_sizes][:json_payload]}
+
+      TOON Data Payload:
+      #{@results[:data_sizes][:toon_payload]}
     COMPARISON
-    puts "📊 Schema comparison exported to: #{schema_filename}"
+    puts "📄 Schema/data comparison exported to: #{schema_filename}"
+  end
+
+  def export_prompt_analysis_results
+    timestamp = Time.now.strftime("%Y%m%d_%H%M%S")
+    json_filename = "schema_data_benchmark_#{timestamp}.json"
+    File.write(json_filename, JSON.pretty_generate(@results))
+    puts "📊 Prompt analysis JSON exported to: #{json_filename}"
+
+    csv_filename = "schema_data_benchmark_#{timestamp}.csv"
+    CSV.open(csv_filename, 'w') do |csv|
+      csv << ['Schema Format', 'Data Format', 'System Characters', 'User Characters', 'Total Characters', 'Estimated Tokens']
+      @results[:prompt_analysis].each do |entry|
+        csv << [
+          entry[:schema_label],
+          entry[:data_label],
+          entry[:system_chars],
+          entry[:user_chars],
+          entry[:total_chars],
+          entry[:estimated_tokens]
+        ]
+      end
+    end
+    puts "📊 Prompt analysis CSV exported to: #{csv_filename}"
+
+    comparison_filename = "schema_data_comparison_#{timestamp}.txt"
+    baseline = @results[:prompt_analysis].find { |entry| entry[:schema_format] == :json && entry[:data_format] == :json }
+    File.write(comparison_filename, <<~TEXT)
+      Prompt Token Estimates (Enhanced Prompting)
+      ==========================================
+
+      Baseline (JSON Schema + JSON Data): #{baseline ? baseline[:estimated_tokens] : 'N/A'} tokens
+
+      #{@results[:prompt_analysis].map do |entry|
+        delta = baseline ? entry[:estimated_tokens] - baseline[:estimated_tokens] : 0
+        label = "#{entry[:schema_label]} + #{entry[:data_label]}"
+        "- #{label.ljust(40)} : #{entry[:estimated_tokens]} tokens (Δ #{delta >= 0 ? '+' : ''}#{delta})"
+      end.join("\n")}
+
+      Schema Savings: #{@results[:schema_sizes][:savings_pct]}%
+      Data Savings: #{@results[:data_sizes][:savings_pct]}%
+    TEXT
+    puts "📄 Prompt comparison exported to: #{comparison_filename}"
   end
 end
 

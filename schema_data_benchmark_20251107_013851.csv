@@ -1,0 +1,5 @@
+Schema Format,Data Format,System Characters,User Characters,Total Characters,Estimated Tokens
+JSON Schema,JSON Data,2447,350,2797,699
+JSON Schema,TOON Data,2485,336,2821,705
+BAML Schema,JSON Data,836,350,1186,297
+BAML Schema,TOON Data,874,336,1210,303
