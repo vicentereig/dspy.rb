@@ -8,7 +8,7 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/toon-data-fo
 image: /images/og/toon-data-format.png
 ---
 
-DSPy Signatures anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. Here’s the exact signature we used for the benchmark:
+**[DSPy Signatures](https://vicentereig.github.io/dspy.rb/getting-started/core-concepts/#signatures-as-the-contract)** anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. Here’s the exact signature we used for the benchmark:
 
 ```ruby
 class TaskDecomposition < DSPy::Signature
