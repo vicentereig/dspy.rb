@@ -43,7 +43,7 @@ _Source: `examples/baml_vs_json_benchmark.rb`, offline run `schema_data_benchmar
 
 - **Clear guidance, compact tables:** BAML renders the same signature as a readable table (+ enums) instead of a 200-line JSON Schema blob. Models latch onto the important parts faster.
 - **Structured payloads without braces:** Sorbet::Toon turns your input struct into a TOON block. Arrays of structs become literal tables, so histories, toolsets, and complex outputs stop repeating field names.
-- **Still Enhanced Prompting:** No function calls, no streaming constraints, no change to completion parsing. Everything flows through the existing `DSPy::Prompt` infrastructure.
+- **Enhanced Prompting by default:** You keep the exact same predictor APIs—no function calls or json schema extraction tricks. Swapping formats only changes how we render the prompt, not how you write or parse completions.
 
 ### Where the savings show up
 
