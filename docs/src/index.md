@@ -12,8 +12,8 @@ last_modified_at: 2025-09-01 00:00:00 +0000
     </div>
   </div>
   <div class="text-center">
-    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Build LLM apps like you build software</h1>
-    <p class="mt-6 text-lg leading-8 text-gray-600">Tired of copy-pasting prompts and hoping they work? DSPy.rb lets you write modular, type-safe Ruby code that handles the LLM stuff for you. Test it, optimize it, ship it.</p>
+    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Turn messy prompts into repeatable reasoning systems</h1>
+    <p class="mt-6 text-lg leading-8 text-gray-600">Tired of copy-pastying prompts and hoping they work? DSPy.rb lets you write modular, testable, type-safe, instrumentable Ruby code tha thandles the  LLM stuff for you. Test it, optimize it, ship it. Repeat.</p>
     <div class="mt-10 flex items-center justify-center gap-x-6">
       <a href="{{ '/getting-started/' | relative_url }}" class="rounded-md bg-dspy-ruby px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-ruby">Get started</a>
       <a href="{{ '/llms-full.txt' | relative_url }}" target="_blank" class="inline-flex items-center py-2.5 text-sm font-semibold text-gray-900 hover:text-dspy-ruby">llms-full.txt <span aria-hidden="true" class="ml-2">→</span></a>
@@ -26,7 +26,7 @@ last_modified_at: 2025-09-01 00:00:00 +0000
     <p class="text-sm text-gray-500 mb-8">DSPy.rb is a Ruby port of Stanford's <a href="https://dspy.ai" class="underline">DSPy framework</a>, adapted to Ruby idioms and enhanced with production-ready features.</p>
     
     <h2 class="text-2xl font-bold text-gray-900 mb-6">Why programmatic prompts?</h2>
-    <p class="text-lg text-gray-600 mb-12">Because prompt engineering is a nightmare. You tweak words, cross your fingers, and deploy. When it breaks in production (and it will), you're back to square one. DSPy.rb fixes this by letting you define what you want, not how to ask for it.</p>
+    <p class="text-lg text-gray-600 mb-12">Because prompt engineering without a system is a nightmare. DSPy.rb fixes this by letting you define what you want, not how to ask for it.</p>
     
     <h3 class="text-xl font-semibold text-gray-900 mb-6">See it in action</h3>
     
