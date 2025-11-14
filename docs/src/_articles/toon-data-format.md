@@ -2,7 +2,7 @@
 layout: blog
 title: "Cut Prompt Tokens in Half with BAML + TOON"
 date: 2025-11-07
- description: "DSPy.rb now pairs BAML schemas with Sorbet::Toon payloads. The combo keeps Enhanced Prompting simple while saving ~9000 schema tokens and ~2400 data tokens per request."
+description: "DSPy.rb now pairs BAML schemas with Sorbet::Toon payloads. The combo keeps Enhanced Prompting simple while saving ~9000 schema tokens and ~2400 data tokens per request."
 author: "Vicente Reig Rincon de Arellano"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/toon-data-format/"
 image: /images/og/toon-data-format.png
