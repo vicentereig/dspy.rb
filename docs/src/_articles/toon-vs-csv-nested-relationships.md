@@ -9,28 +9,28 @@ image: /images/og/toon-data-format.png
 reading_time: "3 min read"
 ---
 
-CSV is phenomenal for spreadsheets and OLAP imports, but it breaks down the moment you try to express nested relationships in an LLM prompt. Token-Oriented Object Notation (TOON) keeps the structural cues that Sorbet signatures describe—arrays of structs, nested arrays, enums—without reprinting every JSON key. The new regression spec in `spec/sorbet/toon/books_serialization_spec.rb` captures a concrete example: a catalog of books, each with its own list of authors.
+CSV is phenomenal for spreadsheets and OLAP imports, but it breaks down the moment you try to express nested relationships in an LLM prompt. Token-Oriented Object Notation (TOON) keeps the structural cues that Sorbet signatures describe—arrays of structs, nested arrays, enums—without reprinting every JSON key. The new unit spec in [`spec/sorbet/toon/books_serialization_spec.rb`](https://github.com/vicentereig/dspy.rb/blob/main/spec/sorbet/toon/books_serialization_spec.rb) captures a concrete example: a catalog of books, each with its own list of authors.
 
-## The Sorbet signature
+## Rich types, zero prompt glue
+
+DSPy.rb leans on Sorbet runtime types so you can model prompts like regular functions—define input parameters and return values, and let the serializers do the dirty work. Here’s a classic “book has many authors” relationship straight out of the spec:
 
 ```ruby
-  class Author < T::Struct
-    prop :name, String
-    prop :notable_work, String
-  end
+class Author < T::Struct
+  prop :name, String
+  prop :notable_work, String
+end
 
-  class Book < T::Struct
-    prop :title, String
-    prop :published_year, Integer
-    prop :authors, T::Array[Author]
-  end
+class Book < T::Struct
+  prop :title, String
+  prop :published_year, Integer
+  prop :authors, T::Array[Author]
+end
 ```
-
-Two structs, one pointing to an array of the other. CSV has no native way to represent “an array of structs inside another struct” without inventing index columns or carrying a foreign-key matrix across multiple sheets.
 
 ## The TOON payload (as recorded in the spec)
 
-```toon
+```text
 catalog[2]:
   - title: Distributed Systems
     published_year: 2014
@@ -48,22 +48,6 @@ Why this matters:
 - **Row grouping stays explicit.** `authors[2]{name,notable_work}` tells the model it is about to read a two-row table, not a comma-delimited blob.
 - **Type hints survive.** Because we rendered the payload via `Sorbet::Toon.encode`, both arrays know their element type (authors vs. books) without repeating keys.
 - **Decoder fidelity.** `Sorbet::Toon.decode` rebuilds the same nested hash/struct graph, so `Predict` can return `Book` objects without any CSV parsing heuristics.
-
-## What a CSV attempt would look like
-
-```csv
-book_title,book_published_year,author_name,author_notable_work
-Distributed Systems,2014,Leslie Lamport,Paxos
-Distributed Systems,2014,Nancy Lynch,FLP result
-Programming Languages,2003,Benjamin Pierce,TAPL
-```
-
-Four silent problems immediately appear when you ship this to an LLM:
-
-1. **No boundaries.** The model has to guess where one book ends and the next begins. That works for trivial cases but collapses once you introduce optional fields or mixed-length arrays.
-2. **Duplicate scalar data.** Each author row repeats `book_title`/`book_published_year`, inflating token counts and encouraging hallucinated merges.
-3. **Lost typing.** CSV doesn’t encode “this column is an array”; it’s just another string. Post-processing code has to rebuild the structure manually.
-4. **Ambiguous ordering.** If you sort the rows differently, the LLM has zero cues to keep authors grouped with their book.
 
 ## Takeaways
 
