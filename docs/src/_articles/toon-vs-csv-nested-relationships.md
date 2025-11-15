@@ -5,7 +5,7 @@ date: 2025-11-15
 description: "Token-Oriented Object Notation keeps your nested Sorbet structs intact—something flat CSV rows simply can’t do when you prompt large language models."
 author: "Vicente Reig Rincon de Arellano"
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/toon-vs-csv-nested-relationships/"
-image: /images/og/toon-data-format.png
+image: /images/og/toon-vs-csv-nested-relationships.png
 reading_time: "3 min read"
 ---
 
