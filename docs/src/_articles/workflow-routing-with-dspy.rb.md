@@ -163,6 +163,51 @@ The full walkthrough lives in [`examples/workflow_router.rb`](https://github.com
 
 Because everything is just Ruby, swapping a handler for DSPy’s evaluation modules, attaching tracing subscribers, or injecting feature flags takes minutes.
 
+## Observability and tracing benefits
+
+Everything is traceable once you enable `DSPY_WITH_O11Y=1 DSPY_WITH_O11Y_LANGFUSE=1` and stream spans to Langfuse (the optional `dspy-o11y-langfuse` gem wires the OTLP exporter for you). The router automatically opens a parent span per request, every signature call becomes its own child observation, and the exact LM/model snapshot + token counts are attached without hand-written instrumentation. The open-source [langfuse-cli](https://github.com/vicentereig/lf-cli) lets us pull those spans straight from the terminal and reshape them into the tree below.
+
+On November 16, 2025 we captured three production-like runs via `rbenv exec bundle exec lf traces get <TRACE_ID> -f json`. You can grab the same data with a simple `lf traces get <TRACE_ID> -f json` and even feed it directly into your coding agent; the CLI exposes per-module token and latency data, so you can defend the cost/perf trade-offs baked into the router:
+
+- General requests consistently land on `claude-haiku-4-5-20251001`, consuming ~2k tokens total in 4.37 s, so we can reserve inexpensive Haiku throughput for FAQs without sacrificing responsiveness.
+- Technical incidents prove the router only upgrades to `claude-sonnet-4-5-20250929` when it pays off: the classifier stays cheap (957 tokens / 1.92 s) while the chain-of-thought span spends 1,292 tokens over 12.39 s, giving finance a precise view of when premium capacity is burned.
+- Billing escalations still close on Haiku (≈2.1k tokens, 6.56 s end-to-end), which means accounting can keep refunds on the lightweight tier and only forecast Sonnet usage for deeply technical hops.
+
+Those traces form a tree you can paste into docs, incidents, or dashboards to explain exactly what ran for each customer request:
+
+```text
+Trace abd69193932e86eeb0de30a3ccd72c9e — SupportRouter.forward (category: general; model: anthropic/claude-haiku-4-5-20251001)
+  message: What limits apply to the new analytics workspace beta?
+└── SupportRouter.forward [4.37s]
+    ├── DSPy::Predict.forward [1.71s]
+    │   └── llm.generate (RouteSupportTicket) → claude-haiku-4-5-20251001 [1.71s]
+    └── DSPy::Predict.forward [2.65s]
+        └── llm.generate (SupportPlaybooks::GeneralEnablement) → claude-haiku-4-5-20251001 [2.65s]
+
+
+Trace fc3cde8c24b24e0d7737603983e45888 — SupportRouter.forward (category: technical; model: anthropic/claude-sonnet-4-5-20250929)
+  message: Device sensors stopped reporting since last night's deployment. Can you help me roll back?
+└── SupportRouter.forward [14.31s]
+    ├── DSPy::Predict.forward [1.92s]
+    │   └── llm.generate (RouteSupportTicket) → claude-haiku-4-5-20251001 [1.92s]
+    └── DSPy::ChainOfThought.forward [12.39s]
+        ├── DSPy::Predict.forward [12.39s]
+        │   └── llm.generate (SupportPlaybooks::Technical) → claude-sonnet-4-5-20250929 [12.39s]
+        ├── chain_of_thought.reasoning_complete (SupportPlaybooks::Technical)
+        └── chain_of_thought.reasoning_metrics (SupportPlaybooks::Technical)
+
+
+Trace 20318579a66522710637f10d33be8bee — SupportRouter.forward (category: billing; model: anthropic/claude-haiku-4-5-20251001)
+  message: My account was charged twice for September and the invoice shows an unfamiliar add-on.
+└── SupportRouter.forward [6.56s]
+    ├── DSPy::Predict.forward [2.69s]
+    │   └── llm.generate (RouteSupportTicket) → claude-haiku-4-5-20251001 [2.68s]
+    └── DSPy::Predict.forward [3.86s]
+        └── llm.generate (SupportPlaybooks::Billing) → claude-haiku-4-5-20251001 [3.86s]
+```
+
+Because the ASCII tree mirrors the Langfuse hierarchy, anyone on-call can immediately see which DSPy module ran, which LM handled each step, and how long every span lasted—no spelunking through logs or guessing at prompt text required.
+
 ## Run it locally
 
 ```bash
