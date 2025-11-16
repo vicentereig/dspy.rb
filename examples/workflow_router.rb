@@ -150,11 +150,7 @@ DSPy::Observability.configure!
 
 # Give users a quick hint when the script is run directly
 if $PROGRAM_NAME == __FILE__ && $stdout.tty?
-  if observability_enabled && DSPy::Observability.respond_to?(:endpoint) && DSPy::Observability.endpoint
-    puts "📡 Langfuse tracing enabled → #{DSPy::Observability.endpoint}"
-  elsif ENV['LANGFUSE_PUBLIC_KEY'] && ENV['LANGFUSE_SECRET_KEY']
-    warn "⚠️ Langfuse credentials detected but observability failed to initialize."
-  else
+  if !ENV['LANGFUSE_PUBLIC_KEY'] && !ENV['LANGFUSE_SECRET_KEY']
     warn "ℹ️ Set LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY to stream traces to Langfuse."
   end
 end
@@ -236,4 +232,5 @@ if $PROGRAM_NAME == __FILE__
   )
 
   run_router_demo(router)
+  DSPy::Observability.flush!
 end
