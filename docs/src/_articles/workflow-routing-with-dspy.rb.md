@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Build a Workflow Router in Ruby"
-description: "Route every ticket to the right Language Model, only escalate to heavy LLMs when needed, and never touch a handwritten prompt along the way."
+description: "Route every ticket to the right Language Model, only escalate to heavy LLMs when needed, keep every hop observable, and never touch a handwritten prompt along the way."
 date: 2025-11-16
 author: "Vicente Reig"
 category: "Workflow"
@@ -165,13 +165,11 @@ Because everything is just Ruby, swapping a handler for DSPy’s evaluation modu
 
 ## Observability and tracing benefits
 
-Everything is traceable once you enable `DSPY_WITH_O11Y=1 DSPY_WITH_O11Y_LANGFUSE=1` and stream spans to Langfuse (the optional `dspy-o11y-langfuse` gem wires the OTLP exporter for you). The router automatically opens a parent span per request, every signature call becomes its own child observation, and the exact LM/model snapshot + token counts are attached without hand-written instrumentation. The open-source [langfuse-cli](https://github.com/vicentereig/lf-cli) lets us pull those spans straight from the terminal and reshape them into the tree below.
+`lf traces get <TRACE_ID> -f json` (via the open-source [langfuse-cli](https://github.com/vicentereig/lf-cli)) drops classifier + specialist spans straight into my editor, so we can reason about cost/perf without spelunking dashboards. The November 16, 2025 traces surfaced three fast signals:
 
-On November 16, 2025 we captured three production-like runs via `rbenv exec bundle exec lf traces get <TRACE_ID> -f json`. You can grab the same data with a simple `lf traces get <TRACE_ID> -f json` and even feed it directly into your coding agent; the CLI exposes per-module token and latency data, so you can defend the cost/perf trade-offs baked into the router:
-
-- General requests consistently land on `claude-haiku-4-5-20251001`, consuming ~2k tokens total in 4.37 s, so we can reserve inexpensive Haiku throughput for FAQs without sacrificing responsiveness.
-- Technical incidents prove the router only upgrades to `claude-sonnet-4-5-20250929` when it pays off: the classifier stays cheap (957 tokens / 1.92 s) while the chain-of-thought span spends 1,292 tokens over 12.39 s, giving finance a precise view of when premium capacity is burned.
-- Billing escalations still close on Haiku (≈2.1k tokens, 6.56 s end-to-end), which means accounting can keep refunds on the lightweight tier and only forecast Sonnet usage for deeply technical hops.
+- General requests: everything stays on `claude-haiku-4-5-20251001`, ~2k tokens, 4.37 s total—cheap tiers cover FAQs.
+- Technical incidents: Haiku routes (957 tokens / 1.92 s) before escalating to `claude-sonnet-4-5-20250929` for the 1,292 token / 12.39 s chain-of-thought hop—expensive capacity only burns when it’s justified.
+- Billing escalations: still close on Haiku (≈2.1k tokens, 6.56 s end-to-end), so refunds stay on the lightweight tier.
 
 Those traces form a tree you can paste into docs, incidents, or dashboards to explain exactly what ran for each customer request:
 
@@ -206,29 +204,11 @@ Trace 20318579a66522710637f10d33be8bee — SupportRouter.forward (category: bill
         └── llm.generate (SupportPlaybooks::Billing) → claude-haiku-4-5-20251001 [3.86s]
 ```
 
-Because the ASCII tree mirrors the Langfuse hierarchy, anyone on-call can immediately see which DSPy module ran, which LM handled each step, and how long every span lasted—no spelunking through logs or guessing at prompt text required.
-
 ## Run it locally
 
 ```bash
 echo "ANTHROPIC_API_KEY=sk-ant-..." >> .env
 bundle install
-bundle exec ruby examples/workflow_router.rb
-```
-
-Optional observability setup (streams spans + tokens to Langfuse via OTLP):
-
-```bash
-echo "LANGFUSE_PUBLIC_KEY=lf_public_..." >> .env
-echo "LANGFUSE_SECRET_KEY=lf_secret_..." >> .env
-echo "LANGFUSE_HOST=https://cloud.langfuse.com" >> .env  # or your self-hosted URL
-```
-
-Override models at runtime if you’d like:
-
-```bash
-DSPY_ROUTER_CLASSIFIER_MODEL="anthropic/claude-4.5-haiku" \
-DSPY_ROUTER_COMPLEX_MODEL="anthropic/claude-4.5-sonnet" \
 bundle exec ruby examples/workflow_router.rb
 ```
 
