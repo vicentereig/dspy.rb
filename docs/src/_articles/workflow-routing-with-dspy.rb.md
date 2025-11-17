@@ -46,7 +46,7 @@ of specialized predictors that stay focused and easy to optimize.
 
 ## Why a workflow before you build an agent?
 
-Workflows keep LLMs and tools on predefined code paths—you still need to tune prompts, choose models, and explicitly wire every branch—so you retain deterministic control while you validate the solution. Once you've validated routing and specialized handlers, you can [upgrade specific branches to autonomous ReAct agents](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) without rewriting the classifier.
+Workflows[^1] keep LLMs and tools on predefined code paths—you still need to tune prompts, choose models, and explicitly wire every branch—so you retain deterministic control while you validate the solution. Once you've validated routing and specialized handlers, you can [upgrade specific branches to autonomous ReAct agents](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) without rewriting the classifier.
 
 ## Architecture at a glance
 
@@ -238,4 +238,6 @@ Notice how every branch produces traceable metadata: we know which LM responded,
 - Attach [`DSPy::Callbacks`](https://vicentereig.github.io/dspy.rb/core-concepts/module-runtime-context/#lifecycle-callbacks) subscribers so each routed request emits spans/metrics to Langfuse, Honeycomb, or Datadog; DSPy.rb modules support Rails-style lifecycle callbacks that wrap `forward`, letting you keep logging, metrics, context management, and memory operations out of business logic.
 - Promote a branch to a [ReAct agent](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) later without rewriting the classifier—`SupportRouter` just needs a handler that responds to `call`.
 
-Routing is a “minimum viable orchestration” pattern: fast to build, cheap to run, and powerful enough to keep your prompts specialized. Grab the example, swap in your own categories, and start measuring the gains before you reach for a full-blown agent.
+Routing is a "minimum viable orchestration" pattern: fast to build, cheap to run, and powerful enough to keep your prompts specialized. Grab the example, swap in your own categories, and start measuring the gains before you reach for a full-blown agent.
+
+[^1]: For a comprehensive guide on when to use workflows vs. agents, see Anthropic's [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents).
