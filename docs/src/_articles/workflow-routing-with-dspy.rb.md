@@ -46,7 +46,7 @@ of specialized predictors that stay focused and easy to optimize.
 
 ## Why a workflow before you build an agent?
 
-Workflows keep LLMs and tools on predefined code paths—you still need to tune prompts, choose models, and explicitly wire every branch—so you retain deterministic control while you validate the solution.
+Workflows keep LLMs and tools on predefined code paths—you still need to tune prompts, choose models, and explicitly wire every branch—so you retain deterministic control while you validate the solution. Once you've validated routing and specialized handlers, you can [upgrade specific branches to autonomous ReAct agents](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) without rewriting the classifier.
 
 ## Architecture at a glance
 
@@ -93,7 +93,7 @@ Breaking down the router into components, we can delegate their predictions to s
    ```  
    Instead of writing prompts, you adjust the signature description and let DSPy compile the right instructions for each specialized LLM call.
 3. **Router module** – plain Ruby orchestrator that wires classifier + handlers, ensures every branch returns the same struct, and records the exact model that ran.
-## Touring the Router Wrokflow
+## Touring the Router Workflow
 
 The full walkthrough lives in [`examples/workflow_router.rb`](https://github.com/vicentereig/dspy.rb/blob/main/examples/workflow_router.rb). Notice that every interaction goes through a `DSPy::Signature`, so we never drop into raw prompt strings—inputs/outputs are typed once and automatically compiled into prompts behind the scenes. Key pieces:
 
@@ -220,7 +220,7 @@ Sample output (truncated):
 📨  INC-8721 via email
     Input: My account was charged twice for September and the invoice shows an unfamiliar add-on.
     → Routed to billing (92.4% confident)
-    → Follow-up model: openai/gpt-4o-mini
+    → Follow-up model: anthropic/claude-haiku-4-5-20251001
     Summary: Refund the duplicate charge and confirm whether the add-on was provisioned.
     Next steps:
       1. Verify September invoices in Stripe...
