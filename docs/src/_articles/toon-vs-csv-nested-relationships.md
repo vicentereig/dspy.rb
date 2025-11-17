@@ -9,7 +9,7 @@ image: /images/og/toon-vs-csv-nested-relationships.png
 reading_time: "3 min read"
 ---
 
-CSV is phenomenal for spreadsheets and OLAP imports, but it breaks down the moment you try to express nested relationships in an LLM prompt. Token-Oriented Object Notation (TOON) keeps the structural cues that Sorbet signatures describe—arrays of structs, nested arrays, enums—without reprinting every JSON key. The new unit spec in [`spec/sorbet/toon/books_serialization_spec.rb`](https://github.com/vicentereig/dspy.rb/blob/main/spec/sorbet/toon/books_serialization_spec.rb) captures a concrete example: a catalog of books, each with its own list of authors.
+CSV is phenomenal for spreadsheets and OLAP imports, but it breaks down the moment you try to express nested relationships in an LLM prompt. Token-Oriented Object Notation (TOON)[^1] keeps the structural cues that Sorbet signatures describe—arrays of structs, nested arrays, enums—without reprinting every JSON key. The new unit spec in [`spec/sorbet/toon/books_serialization_spec.rb`](https://github.com/vicentereig/dspy.rb/blob/main/spec/sorbet/toon/books_serialization_spec.rb) captures a concrete example: a catalog of books, each with its own list of authors.
 
 ## Rich types, zero prompt glue
 
@@ -76,7 +76,7 @@ class SummarizeBookCatalog < DSPy::Signature
 end
 ```
 
-Wire up Gemini with BAML+TOON rendering:
+Wire up Gemini with BAML[^2]+TOON rendering:
 
 ```ruby
 DSPy.configure do |c|
@@ -101,4 +101,11 @@ puts catalog_summary.highlights
 catalog_summary.featured_authors.each { |author| puts author.name }
 ```
 
-Because TOON preserves the nested structure, Gemini receives a compact table for each book’s authors and DSPy hands you typed structs on the way back. No CSV gymnastics, no extra parsing layer—just signatures, Sorbet types, and TOON keeping everything coherent.
+Because TOON preserves the nested structure, Gemini receives a compact table for each book's authors and DSPy hands you typed structs on the way back. No CSV gymnastics, no extra parsing layer—just signatures, Sorbet types, and TOON keeping everything coherent.
+
+## Related Resources
+
+- [Toolsets Documentation](https://vicentereig.github.io/dspy.rb/core-concepts/toolsets/) - Learn how to build tools that work with TOON-formatted data
+
+[^1]: For a comprehensive introduction to TOON and how it pairs with BAML to cut prompt tokens in half, see [Cut Prompt Tokens in Half with BAML + TOON](https://vicentereig.github.io/dspy.rb/blog/articles/toon-data-format/).
+[^2]: BAML (BoundaryML Schema Language) provides TypeScript-like schema syntax that's 83-85% more compact than JSON Schema. Learn more in [Rich Signatures, Lean Schemas](https://vicentereig.github.io/dspy.rb/blog/articles/baml-schema-format/).
