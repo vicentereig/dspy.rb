@@ -19,25 +19,17 @@ For the impatient, jump straight to the sample script in [`examples/workflow_rou
 
 ```mermaid
 flowchart LR
-    Incoming["Support ticket\n(message)"]
-    subgraph RouterBox["SupportRouter (DSPy::Module)"]
-        direction TB
-        Classifier["RouteSupportTicket\nDSPy::Predict"]
-        Router["Handler dispatch\n+ RoutedTicket build"]
-    end
+    In((Input))
+    Router["LLM Call Router\nRouteSupportTicket\nDSPy::Predict"]
+    Billing["LLM Call 1\nBilling Handler\nDSPy::Predict"]
+    General["LLM Call 2\nGeneral Handler\nDSPy::Predict"]
+    Technical["LLM Call 3\nTechnical Handler\nDSPy::ChainOfThought"]
+    Out((Output))
 
-    Billing["DSPy::Predict.new(SupportPlaybooks::Billing)"]
-    General["DSPy::Predict.new(SupportPlaybooks::GeneralEnablement)"]
-    Technical["DSPy::ChainOfThought.new(SupportPlaybooks::Technical)"]
-
-    Result["RoutedTicket\ncategory • confidence • model_id\nsummary • steps • tags"]
-
-    style RouterBox stroke-dasharray: 5 5
-
-    Incoming --> Classifier --> Router
-    Router -->|billing| Billing --> Result
-    Router -->|general| General --> Result
-    Router -->|technical| Technical --> Result
+    In --> Router
+    Router -.->|billing| Billing -.-> Out
+    Router -.->|general| General -.-> Out
+    Router -.->|technical| Technical -.-> Out
 ```
 
 Rather than letting one mega prompt struggle to cover every
