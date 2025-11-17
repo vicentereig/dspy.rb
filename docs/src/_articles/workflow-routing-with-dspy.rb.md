@@ -30,6 +30,13 @@ flowchart LR
     Router -.->|billing| Billing -.-> Out
     Router -.->|general| General -.-> Out
     Router -.->|technical| Technical -.-> Out
+
+    style In fill:#ffe4e1,stroke:#d4a5a5,stroke-width:2px
+    style Out fill:#ffe4e1,stroke:#d4a5a5,stroke-width:2px
+    style Router fill:#e8f5e9,stroke:#81c784,stroke-width:2px
+    style Billing fill:#e8f5e9,stroke:#81c784,stroke-width:2px
+    style General fill:#e8f5e9,stroke:#81c784,stroke-width:2px
+    style Technical fill:#e8f5e9,stroke:#81c784,stroke-width:2px
 ```
 
 Rather than letting one mega prompt struggle to cover every
