@@ -6,7 +6,7 @@ date: 2025-11-16
 author: "Vicente Reig"
 category: "Workflow"
 reading_time: "4 min read"
-image: /images/workflow-routing.webp
+image: /images/og/workflow-routing-with-dspy.rb.png
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/workflow-routing-with-dspy.rb/"
 ---
 
