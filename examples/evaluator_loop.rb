@@ -211,7 +211,7 @@ module EvaluatorLoop
 
   class LinkedInSlopLoop < DSPy::Module
     extend T::Sig
-    DEFAULT_TOKEN_BUDGET = 3_600
+    DEFAULT_TOKEN_BUDGET = 10_000
 
     subscribe 'lm.tokens', :handle_lm_tokens, scope: DSPy::Module::SubcriptionScope::Descendants
 
