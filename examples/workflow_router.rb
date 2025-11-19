@@ -107,7 +107,7 @@ class SupportRouter < DSPy::Module
   end
 
   sig { override.params(input_values: T.untyped).returns(T.untyped) }
-  def forward_untyped(**input_values)
+  def forward(**input_values)
     classification = @classifier.call(**input_values)
     handler = @handlers.fetch(classification.category, @handlers[@fallback_category])
     raise ArgumentError, "Missing handler for #{classification.category.serialize}" unless handler

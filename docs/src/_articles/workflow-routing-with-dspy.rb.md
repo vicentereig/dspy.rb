@@ -144,10 +144,6 @@ The full walkthrough lives in [`examples/workflow_router.rb`](https://github.com
 4. **SupportRouter centralizes dispatch + telemetry context**
    ```ruby
    class SupportRouter < DSPy::Module
-     def initialize
-       super()
-     end
-
      def classifier
        @classifier ||= DSPy::Predict.new(RouteSupportTicket)
      end
@@ -155,29 +151,30 @@ The full walkthrough lives in [`examples/workflow_router.rb`](https://github.com
      def handlers
        @handlers ||= {
          TicketCategory::Billing => DSPy::Predict.new(SupportPlaybooks::Billing).tap.configure do |config|
-           config.lm = DSPy::LM.new(LIGHTWEIGHT_MODEL, api_key: ENV['ANTHROPIC_API_KEY'])
+           config.lm = DSPy::LM.new('anthropic/claude-haiku-4-5-20251001', api_key: ENV['ANTHROPIC_API_KEY'])
          end,
          TicketCategory::Technical => DSPy::ChainOfThought.new(SupportPlaybooks::Technical).tap.configure do |config|
-           config.lm = DSPy::LM.new(HEAVY_MODEL, api_key: ENV['ANTHROPIC_API_KEY'])
+           config.lm = DSPy::LM.new('anthropic/claude-sonnet-4-5-20250929', api_key: ENV['ANTHROPIC_API_KEY'])
          end,
          TicketCategory::General => DSPy::Predict.new(SupportPlaybooks::GeneralEnablement).tap.configure do |config|
-           config.lm = DSPy::LM.new(LIGHTWEIGHT_MODEL, api_key: ENV['ANTHROPIC_API_KEY'])
+           config.lm = DSPy::LM.new('anthropic/claude-haiku-4-5-20251001', api_key: ENV['ANTHROPIC_API_KEY'])
          end
        }
      end
 
-     def forward_untyped(**input_values)
+     def forward(**input_values)
        classification = classifier.call(**input_values)
        handler = handlers.fetch(classification.category, handlers[TicketCategory::General])
-       specialized = handler.call(**input_values)
+       classified_issue = handler.call(**input_values)
+   
        RoutedTicket.new(
          category: classification.category,
          model_id: handler.lm&.model_id || DSPy.config.lm&.model_id,
          confidence: classification.confidence,
          reason: classification.reason,
-         resolution_summary: specialized.resolution_summary,
-         recommended_steps: specialized.recommended_steps,
-         tags: specialized.tags
+         resolution_summary: classified_issue.resolution_summary,
+         recommended_steps: classified_issue.recommended_steps,
+         tags: classified_issue.tags
        )
      end
    end
