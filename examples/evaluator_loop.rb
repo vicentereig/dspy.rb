@@ -317,6 +317,48 @@ module EvaluatorLoop
 end
 
 module EvaluatorLoop
+  module Metrics
+    extend T::Sig
+
+    APPROVAL_WEIGHT = 0.6
+    SPEED_WEIGHT = 0.2
+    BUDGET_WEIGHT = 0.2
+    PASS_THRESHOLD = 0.75
+
+    sig { params(result: T.nilable(LoopResult)).returns(Float) }
+    def self.loop_efficiency_score(result)
+      return 0.0 unless result
+
+      quality = result.decision == EvaluationDecision::Approved ? 1.0 : 0.0
+      speed = result.attempts.positive? ? 1.0 / result.attempts : 0.0
+
+      budget_term = if result.token_budget_limit.positive?
+                      1.0 - (result.token_budget_used.to_f / result.token_budget_limit)
+                    else
+                      0.0
+                    end
+
+      budget_term = [[budget_term, 0.0].max, 1.0].min
+
+      score = (APPROVAL_WEIGHT * quality) +
+              (SPEED_WEIGHT * speed) +
+              (BUDGET_WEIGHT * budget_term)
+
+      [[score, 0.0].max, 1.0].min
+    end
+
+    sig { returns(T.proc.params(arg0: T.untyped, arg1: T.nilable(LoopResult)).returns(T::Hash[Symbol, T.untyped])) }
+    def self.loop_efficiency_metric
+      lambda do |_example, result|
+        score = loop_efficiency_score(result)
+        {
+          score: score,
+          passed: score >= PASS_THRESHOLD
+        }
+      end
+    end
+  end
+
   module Demo
     module_function
 
@@ -337,7 +379,7 @@ module EvaluatorLoop
 
       evaluator = DSPy::Evals.new(
         build_loop_module,
-        metric: method(:approved_metric)
+        metric: Metrics.loop_efficiency_metric
       )
 
       results = evaluator.evaluate(eval_examples, display_progress: true)
@@ -372,10 +414,6 @@ module EvaluatorLoop
         )
       end
       predictor
-    end
-
-    def approved_metric(_example, result)
-      result&.decision == EvaluationDecision::Approved
     end
 
     def eval_examples
