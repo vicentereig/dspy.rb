@@ -12,12 +12,10 @@
 - Derive the default ~3.6k-token budget from the recorded two-iteration cassette (~1.7k tokens/2 attempts ≈ 860 tokens per iteration => 4 attempts headroom).
 - Show pseudo-code for the `TokenBudgetTracker`, the callback wiring, and how we surface `budget_exhausted` in `LoopResult`.
 
-## 3. Tracking E2E Quality with DSPy::Evals
-- Walk through the `DSPy::Evals.new(loop_module, metric: approved?)` snippet that ships in `examples/evaluator_loop.rb` so readers can replay canned prompts.
-- Show how the composite metric penalizes extra attempts + budget burn so we can rank different model pairs against the same base prompts.
-- Describe the future eval suite: final-output evals, generator/evaluator regression suites, and score delta gates.
-- Discuss how eval fixtures reuse the same persona/topic seeds so we can compare rubric versions apples-to-apples.
-- Mention CI hooks (e.g., fail PR if average evaluator score drops >0.02).
+## 3. Tracking E2E Quality (Future DSPy::Evals)
+- Outline how we’ll eventually attach DSPy::Evals to the loop (composite efficiency metric, multi-model comparisons).
+- Discuss replaying canned prompts to compare generator/evaluator pairs without rerunning the whole workflow manually.
+- Describe the future eval suite: final-output evals, generator/evaluator regression suites, and score delta gates once we hook into Langfuse.
 
 ## 4. Observability (“o11y”) Dumps
 - Include Langfuse screenshots or JSON dumps showing generator/evaluator spans + recommendation payloads per attempt.
