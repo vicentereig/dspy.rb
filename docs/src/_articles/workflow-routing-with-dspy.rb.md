@@ -141,24 +141,48 @@ The full walkthrough lives in [`examples/workflow_router.rb`](https://github.com
    ```  
    Each handler pins its own LM (`LIGHTWEIGHT_MODEL` vs `HEAVY_MODEL`), so moving billing/general flows to a cheaper Haiku snapshot or moving technical flows to Sonnet is just an env tweak, not a code change.
 
-4. **SupportRouter centralizes dispatch + telemetry context**  
+4. **SupportRouter centralizes dispatch + telemetry context**
    ```ruby
    class SupportRouter < DSPy::Module
+     def initialize
+       super()
+     end
+
+     def classifier
+       @classifier ||= DSPy::Predict.new(RouteSupportTicket)
+     end
+
+     def handlers
+       @handlers ||= {
+         TicketCategory::Billing => DSPy::Predict.new(SupportPlaybooks::Billing).tap.configure do |config|
+           config.lm = DSPy::LM.new(LIGHTWEIGHT_MODEL, api_key: ENV['ANTHROPIC_API_KEY'])
+         end,
+         TicketCategory::Technical => DSPy::ChainOfThought.new(SupportPlaybooks::Technical).tap.configure do |config|
+           config.lm = DSPy::LM.new(HEAVY_MODEL, api_key: ENV['ANTHROPIC_API_KEY'])
+         end,
+         TicketCategory::General => DSPy::Predict.new(SupportPlaybooks::GeneralEnablement).tap.configure do |config|
+           config.lm = DSPy::LM.new(LIGHTWEIGHT_MODEL, api_key: ENV['ANTHROPIC_API_KEY'])
+         end
+       }
+     end
+
      def forward_untyped(**input_values)
-       classification = @classifier.call(**input_values)
-       handler = @handlers.fetch(classification.category, @handlers[@fallback_category])
+       classification = classifier.call(**input_values)
+       handler = handlers.fetch(classification.category, handlers[TicketCategory::General])
        specialized = handler.call(**input_values)
-       RoutedTicket.new(category: classification.category,
-                        model_id: handler.lm&.model_id || DSPy.config.lm&.model_id,
-                        confidence: classification.confidence,
-                        reason: classification.reason,
-                        resolution_summary: specialized.resolution_summary,
-                        recommended_steps: specialized.recommended_steps,
-                        tags: specialized.tags)
+       RoutedTicket.new(
+         category: classification.category,
+         model_id: handler.lm&.model_id || DSPy.config.lm&.model_id,
+         confidence: classification.confidence,
+         reason: classification.reason,
+         resolution_summary: specialized.resolution_summary,
+         recommended_steps: specialized.recommended_steps,
+         tags: specialized.tags
+       )
      end
    end
-   ```  
-   Because it subclasses `DSPy::Module`, the router names the root span for every request; Langfuse/Honeycomb/Datadog see a single parent trace, and the `RoutedTicket` struct captures which LM actually answered so no span is orphaned.
+   ```
+   The lazy initialization pattern keeps all routing logic self-contained: the `classifier` and `handlers` methods show exactly which predictors handle each category and which models power them. Because it subclasses `DSPy::Module`, the router names the root span for every request; Langfuse/Honeycomb/Datadog see a single parent trace, and the `RoutedTicket` struct captures which LM actually answered so no span is orphaned.
 
 Because everything is just Ruby, swapping a handler for DSPy’s evaluation modules, attaching tracing subscribers, or injecting feature flags takes minutes.
 
