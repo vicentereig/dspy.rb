@@ -153,6 +153,7 @@ module EvaluatorLoop
     const :post, String
     const :decision, EvaluationDecision
     const :feedback, String
+    const :recommendations, T::Array[Recommendation]
   end
 
   class LoopResult < T::Struct
@@ -213,6 +214,7 @@ module EvaluatorLoop
   class LinkedInSlopLoop < DSPy::Module
     extend T::Sig
     DEFAULT_TOKEN_BUDGET = 10_000
+    SELF_SCORE_THRESHOLD = 0.9
 
     subscribe 'lm.tokens', :handle_lm_tokens, scope: DSPy::Module::SubcriptionScope::Descendants
 
@@ -268,14 +270,29 @@ module EvaluatorLoop
           attempt_number: attempt_number,
           post: draft.post,
           decision: evaluation.decision,
-          feedback: evaluation.feedback
+          feedback: evaluation.feedback,
+          recommendations: evaluation.recommendations || []
         )
 
         final_post = draft.post
         final_decision = evaluation.decision
         recommendations = evaluation.recommendations
 
-        break if evaluation.decision == EvaluationDecision::Approved || tracker.exhausted?
+        if final_decision == EvaluationDecision::Approved && draft.self_score < SELF_SCORE_THRESHOLD
+          recommendations = recommendations.dup
+          recommendations << Recommendation.new(
+            message: format(
+              "Self-score %.1f is below required %.1f. Refine the post before approval.",
+              draft.self_score,
+              SELF_SCORE_THRESHOLD
+            ),
+            source_attempt: attempt_number,
+            severity: 'warn'
+          )
+          final_decision = EvaluationDecision::NeedsRevision
+        end
+
+        break if final_decision == EvaluationDecision::Approved || tracker.exhausted?
       end
 
       LoopResult.new(
@@ -324,7 +341,7 @@ module EvaluatorLoop
     APPROVAL_WEIGHT = 0.6
     SPEED_WEIGHT = 0.2
     BUDGET_WEIGHT = 0.2
-    PASS_THRESHOLD = 0.9
+    PASS_THRESHOLD = 0.75
 
     sig { params(result: T.nilable(LoopResult)).returns(Float) }
     def self.loop_efficiency_score(result)
@@ -338,7 +355,6 @@ module EvaluatorLoop
                     else
                       0.0
                     end
-
       budget_term = [[budget_term, 0.0].max, 1.0].min
 
       score = (APPROVAL_WEIGHT * quality) +
@@ -584,14 +600,28 @@ module EvaluatorLoop
     end
 
     def print_recommendations(history)
-      return if history.empty?
+      entries = history.flat_map do |attempt|
+        attempt_notes = []
+        unless attempt.feedback.to_s.strip.empty?
+          attempt_notes << "Attempt #{attempt.attempt_number}: #{attempt.feedback}"
+        end
+
+        attempt.recommendations.each do |rec|
+          attempt_notes << format(
+            "Attempt %d [%s]: %s",
+            attempt.attempt_number,
+            rec.severity || 'info',
+            rec.message
+          )
+        end
+
+        attempt_notes
+      end.compact
+
+      return if entries.empty?
 
       puts "\nEvaluator recommendations:"
-      history.each do |attempt|
-        next if attempt.feedback.to_s.strip.empty?
-
-        puts "- Attempt #{attempt.attempt_number}: #{attempt.feedback}"
-      end
+      entries.each { |line| puts "- #{line}" }
     end
   end
 end

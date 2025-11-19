@@ -79,7 +79,7 @@ http_interactions:
       string: '{"id":"msg_gen_attempt2","type":"message","role":"assistant","model":"claude-3-5-haiku-20241022","content":[{"type":"text","text":"{\"post\":\"Last quarter
         we ditched whiteboard riddles, mentored candidates for a day, and onboarding
         time dropped 32%. If you try this, drop your favorite mentoring ritual below
-        so we can steal it.\",\"hooks\":[\"Fewer riddles, more ride-alongs\"],\"self_score\":0.88}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":320,"output_tokens":118}}'
+        so we can steal it.\",\"hooks\":[\"Fewer riddles, more ride-alongs\"],\"self_score\":0.92}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":320,"output_tokens":118}}'
   recorded_at: Wed, 19 Nov 2025 21:10:02 GMT
 - request:
     method: post
