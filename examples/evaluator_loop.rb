@@ -10,6 +10,7 @@
 # iteration budget.
 
 require 'dotenv'
+require 'optparse'
 
 Dotenv.load(File.expand_path('../.env', __dir__))
 
@@ -362,31 +363,72 @@ module EvaluatorLoop
   module Demo
     module_function
 
-    def run!
+    CLI_TAKE_OPTIONS = {
+      'contrarian' => SlopTopicTake::Contrarian,
+      'supportive' => SlopTopicTake::Supportive,
+      'lessons' => SlopTopicTake::LessonsLearned,
+      'lessons_learned' => SlopTopicTake::LessonsLearned
+    }.freeze
+
+    CLI_VIBE_OPTIONS = {
+      'muted' => VibeDial::Muted,
+      'balanced' => VibeDial::Balanced,
+      'maximal' => VibeDial::Maximal,
+      'max' => VibeDial::Maximal
+    }.freeze
+
+    CLI_STRUCTURE_OPTIONS = {
+      'story' => StructureTemplate::StoryLessonCta,
+      'story_lesson_cta' => StructureTemplate::StoryLessonCta,
+      'listicle' => StructureTemplate::Listicle,
+      'question' => StructureTemplate::QuestionHook,
+      'question_hook' => StructureTemplate::QuestionHook
+    }.freeze
+
+    def run!(inputs: default_inputs, token_budget_limit: nil, evaluate: true)
       ensure_api_key!('ANTHROPIC_API_KEY')
 
-      loop_module = build_loop_module
+      loop_module = build_loop_module(token_budget_limit: token_budget_limit)
 
-      result = loop_module.call(**default_inputs)
+      result = loop_module.call(**inputs)
 
       puts "Final decision: #{result.decision.serialize} after #{result.attempts} attempt(s)"
       puts "Post:\n#{result.final_post}"
       puts "Budget: #{result.token_budget_used}/#{result.token_budget_limit} tokens (exhausted? #{result.budget_exhausted})"
 
-      eval_result = run_evals!(silent: true)
-      puts "Loop efficiency score: #{(eval_result.score * 100).round(2)} (#{eval_result.passed_examples}/#{eval_result.total_examples} passed)"
+      if evaluate
+        eval_result = run_evals!(silent: true, loop_module: loop_module, inputs: inputs)
+        puts "Loop efficiency score: #{(eval_result.score * 100).round(2)} (#{eval_result.passed_examples}/#{eval_result.total_examples} passed)"
+      end
+
+      result
     end
 
-    def run_evals!(silent: false)
+    def run_from_cli!(argv)
+      options = parse_cli_options(argv)
+      inputs = apply_overrides(default_inputs, options)
+
+      run!(
+        inputs: inputs,
+        token_budget_limit: options[:token_budget_limit],
+        evaluate: options[:run_evals]
+      )
+    end
+
+    def run_evals!(silent: false, loop_module: nil, inputs: nil)
       ensure_api_key!('ANTHROPIC_API_KEY')
 
+      loop_module ||= build_loop_module
+
       evaluator = DSPy::Evals.new(
-        build_loop_module,
+        loop_module,
         metric: Metrics.loop_efficiency_metric
       )
 
+      scenarios = eval_examples(inputs || default_inputs)
+
       results = evaluator.evaluate(
-        eval_examples,
+        scenarios,
         display_progress: !silent
       )
 
@@ -397,11 +439,11 @@ module EvaluatorLoop
       results
     end
 
-    def build_loop_module
+    def build_loop_module(token_budget_limit: nil)
       generator = build_predictor(GenerateLinkedInArticle, GENERATOR_MODEL)
       evaluator = build_predictor(EvaluateLinkedInArticle, EVALUATOR_MODEL)
 
-      token_budget_limit = Integer(
+      limit = token_budget_limit || Integer(
         ENV.fetch(
           'DSPY_SLOP_TOKEN_BUDGET',
           LinkedInSlopLoop::DEFAULT_TOKEN_BUDGET.to_s
@@ -411,7 +453,7 @@ module EvaluatorLoop
       LinkedInSlopLoop.new(
         generator: generator,
         evaluator: evaluator,
-        token_budget_limit: token_budget_limit
+        token_budget_limit: limit
       )
     end
 
@@ -424,10 +466,10 @@ module EvaluatorLoop
       end
     end
 
-    def eval_examples
+    def eval_examples(inputs)
       [
         {
-          input: default_inputs,
+          input: inputs,
           expected: { decision: 'approved' }
         }
       ]
@@ -447,9 +489,102 @@ module EvaluatorLoop
         structure_template: StructureTemplate::StoryLessonCta
       }
     end
+
+    def parse_cli_options(argv)
+      options = {
+        topic_phrase: nil,
+        topic_take: nil,
+        structure_template: nil,
+        vibe_overrides: {},
+        token_budget_limit: nil,
+        run_evals: true
+      }
+
+      parser = OptionParser.new do |opts|
+        opts.banner = "Usage: bundle exec ruby examples/evaluator_loop.rb [options]"
+        opts.separator ""
+        opts.separator "Input overrides:"
+
+        opts.on("--topic PHRASE", "Override topic seed phrase") do |value|
+          options[:topic_phrase] = value
+        end
+
+        opts.on("--take TAKE", "Topic take (#{CLI_TAKE_OPTIONS.keys.join(', ')})") do |value|
+          options[:topic_take] = fetch_enum(value, CLI_TAKE_OPTIONS, 'take')
+        end
+
+        opts.on("--structure TEMPLATE", "Structure template (#{CLI_STRUCTURE_OPTIONS.keys.join(', ')})") do |value|
+          options[:structure_template] = fetch_enum(value, CLI_STRUCTURE_OPTIONS, 'structure')
+        end
+
+        add_vibe_option(opts, :cringe, options)
+        add_vibe_option(opts, :hustle, options)
+        add_vibe_option(opts, :vulnerability, options)
+
+        opts.separator ""
+        opts.separator "Runtime controls:"
+
+        opts.on("--token-budget TOKENS", Integer, "Override token budget limit") do |value|
+          options[:token_budget_limit] = value
+        end
+
+        opts.on("--skip-evals", "Skip DSPy::Evals run") do
+          options[:run_evals] = false
+        end
+
+        opts.on("-h", "--help", "Show this help") do
+          puts opts
+          exit 0
+        end
+      end
+
+      parser.parse!(argv)
+      options
+    end
+
+    def add_vibe_option(opts, key, options)
+      opts.on("--#{key} LEVEL", "Set #{key} vibe (#{CLI_VIBE_OPTIONS.keys.join(', ')})") do |value|
+        options[:vibe_overrides][key] = fetch_enum(value, CLI_VIBE_OPTIONS, key.to_s)
+      end
+    end
+
+    def fetch_enum(raw_value, mapping, field)
+      enum = mapping[raw_value.to_s.downcase]
+      raise OptionParser::InvalidArgument, "Unknown #{field}: #{raw_value}" unless enum
+
+      enum
+    end
+
+    def apply_overrides(inputs, options)
+      updated = inputs.dup
+
+      if options[:topic_phrase] || options[:topic_take]
+        seed = updated[:topic_seed]
+        updated[:topic_seed] = TopicSeed.new(
+          phrase: options[:topic_phrase] || seed.phrase,
+          take: options[:topic_take] || seed.take
+        )
+      end
+
+      if options[:structure_template]
+        updated[:structure_template] = options[:structure_template]
+      end
+
+      unless options[:vibe_overrides].empty?
+        vibes = updated[:vibe_toggles]
+        updated[:vibe_toggles] = VibeToggles.new(
+          cringe: options[:vibe_overrides].fetch(:cringe, vibes.cringe),
+          hustle: options[:vibe_overrides].fetch(:hustle, vibes.hustle),
+          vulnerability: options[:vibe_overrides].fetch(:vulnerability, vibes.vulnerability)
+        )
+      end
+
+      updated
+    end
   end
 end
 
 if $PROGRAM_NAME == __FILE__
-  EvaluatorLoop::Demo.run!
+  EvaluatorLoop::Demo.run_from_cli!(ARGV)
+  DSPy::Observability.flush!
 end
