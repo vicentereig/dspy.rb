@@ -372,9 +372,12 @@ module EvaluatorLoop
       puts "Final decision: #{result.decision.serialize} after #{result.attempts} attempt(s)"
       puts "Post:\n#{result.final_post}"
       puts "Budget: #{result.token_budget_used}/#{result.token_budget_limit} tokens (exhausted? #{result.budget_exhausted})"
+
+      eval_result = run_evals!(silent: true)
+      puts "Loop efficiency score: #{(eval_result.score * 100).round(2)} (#{eval_result.passed_examples}/#{eval_result.total_examples} passed)"
     end
 
-    def run_evals!
+    def run_evals!(silent: false)
       ensure_api_key!('ANTHROPIC_API_KEY')
 
       evaluator = DSPy::Evals.new(
@@ -382,9 +385,16 @@ module EvaluatorLoop
         metric: Metrics.loop_efficiency_metric
       )
 
-      results = evaluator.evaluate(eval_examples, display_progress: true)
+      results = evaluator.evaluate(
+        eval_examples,
+        display_progress: !silent
+      )
 
-      puts "DSPy::Evals score: #{results.score.round(2)} (#{results.passed_examples}/#{results.total_examples} passed)"
+      unless silent
+        puts "DSPy::Evals score: #{(results.score * 100).round(2)} (#{results.passed_examples}/#{results.total_examples} passed)"
+      end
+
+      results
     end
 
     def build_loop_module
