@@ -406,14 +406,12 @@ module EvaluatorLoop
     end
 
     def build_predictor(signature_class, model_id)
-      predictor = DSPy::Predict.new(signature_class)
-      predictor.configure do |config|
+      DSPy::Predict.new(signature_class).configure do |config|
         config.lm = DSPy::LM.new(
           model_id,
           api_key: ENV['ANTHROPIC_API_KEY']
         )
       end
-      predictor
     end
 
     def eval_examples

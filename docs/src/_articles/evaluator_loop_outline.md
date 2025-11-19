@@ -1,7 +1,9 @@
 # Evaluator Loop Workflow Series – Outline
 
 ## 1. Evaluator Loops & Self-Improving Workflows
-- Define evaluator-optimizer pattern vs. single-shot “LLM as judge.”
+- Define evaluator-optimizer pattern 
+  - add a call-out stating how this is different from “LLM as a judge.” 
+- When to use it? 
 - Walk LinkedIn slop loop lifecycle: generator emits draft + metadata, evaluator returns rubric score + recommendations, loop feeds deltas back until approval.
 - Introduce “budget instead of max iterations” concept so readers know we cap cost, not arbitrary attempt count.
 
