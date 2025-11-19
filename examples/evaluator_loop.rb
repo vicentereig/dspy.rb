@@ -14,6 +14,7 @@ require 'dotenv'
 Dotenv.load(File.expand_path('../.env', __dir__))
 
 require_relative '../lib/dspy'
+require 'dspy/evals'
 
 def ensure_api_key!(env_key)
   return if ENV[env_key]
@@ -322,57 +323,83 @@ module EvaluatorLoop
     def run!
       ensure_api_key!('ANTHROPIC_API_KEY')
 
-      generator = DSPy::Predict.new(GenerateLinkedInArticle)
-      generator.configure do |config|
-        config.lm = DSPy::LM.new(
-          GENERATOR_MODEL,
-          api_key: ENV['ANTHROPIC_API_KEY']
-        )
-      end
+      loop_module = build_loop_module
 
-      evaluator = DSPy::Predict.new(EvaluateLinkedInArticle)
-      evaluator.configure do |config|
-        config.lm = DSPy::LM.new(
-          EVALUATOR_MODEL,
-          api_key: ENV['ANTHROPIC_API_KEY']
-        )
-      end
-
-      token_budget_limit = Integer(
-        ENV.fetch(
-          'DSPY_SLOP_TOKEN_BUDGET',
-          EvaluatorLoop::LinkedInSlopLoop::DEFAULT_TOKEN_BUDGET.to_s
-        )
-      )
-
-      loop_module = LinkedInSlopLoop.new(
-        generator: generator,
-        evaluator: evaluator,
-        token_budget_limit: token_budget_limit
-      )
-
-      topic_seed = TopicSeed.new(
-        phrase: 'AI infra leadership offsite',
-        take: SlopTopicTake::LessonsLearned
-      )
-
-      vibe_toggles = VibeToggles.new(
-        cringe: VibeDial::Balanced,
-        hustle: VibeDial::Maximal,
-        vulnerability: VibeDial::Balanced
-      )
-
-      structure_template = StructureTemplate::StoryLessonCta
-
-      result = loop_module.call(
-        topic_seed: topic_seed,
-        vibe_toggles: vibe_toggles,
-        structure_template: structure_template
-      )
+      result = loop_module.call(**default_inputs)
 
       puts "Final decision: #{result.decision.serialize} after #{result.attempts} attempt(s)"
       puts "Post:\n#{result.final_post}"
       puts "Budget: #{result.token_budget_used}/#{result.token_budget_limit} tokens (exhausted? #{result.budget_exhausted})"
+    end
+
+    def run_evals!
+      ensure_api_key!('ANTHROPIC_API_KEY')
+
+      evaluator = DSPy::Evals.new(
+        build_loop_module,
+        metric: method(:approved_metric)
+      )
+
+      results = evaluator.evaluate(eval_examples, display_progress: true)
+
+      puts "DSPy::Evals score: #{results.score.round(2)} (#{results.passed_examples}/#{results.total_examples} passed)"
+    end
+
+    def build_loop_module
+      generator = build_predictor(GenerateLinkedInArticle, GENERATOR_MODEL)
+      evaluator = build_predictor(EvaluateLinkedInArticle, EVALUATOR_MODEL)
+
+      token_budget_limit = Integer(
+        ENV.fetch(
+          'DSPY_SLOP_TOKEN_BUDGET',
+          LinkedInSlopLoop::DEFAULT_TOKEN_BUDGET.to_s
+        )
+      )
+
+      LinkedInSlopLoop.new(
+        generator: generator,
+        evaluator: evaluator,
+        token_budget_limit: token_budget_limit
+      )
+    end
+
+    def build_predictor(signature_class, model_id)
+      predictor = DSPy::Predict.new(signature_class)
+      predictor.configure do |config|
+        config.lm = DSPy::LM.new(
+          model_id,
+          api_key: ENV['ANTHROPIC_API_KEY']
+        )
+      end
+      predictor
+    end
+
+    def approved_metric(_example, result)
+      result&.decision == EvaluationDecision::Approved
+    end
+
+    def eval_examples
+      [
+        {
+          input: default_inputs,
+          expected: { decision: 'approved' }
+        }
+      ]
+    end
+
+    def default_inputs
+      {
+        topic_seed: TopicSeed.new(
+          phrase: 'AI infra leadership offsite',
+          take: SlopTopicTake::LessonsLearned
+        ),
+        vibe_toggles: VibeToggles.new(
+          cringe: VibeDial::Balanced,
+          hustle: VibeDial::Maximal,
+          vulnerability: VibeDial::Balanced
+        ),
+        structure_template: StructureTemplate::StoryLessonCta
+      }
     end
   end
 end
