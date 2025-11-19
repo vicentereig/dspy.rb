@@ -44,11 +44,7 @@ RSpec.describe 'Evaluator loop evals' do
     )
   end
 
-  let(:metric) do
-    ->(example, result) do
-      result&.decision == EvaluatorLoop::EvaluationDecision::Approved
-    end
-  end
+  let(:metric) { EvaluatorLoop::Metrics.loop_efficiency_metric }
 
   it 'evaluates the loop end-to-end with DSPy::Evals', vcr: { cassette_name: 'examples/evaluator_loop/two_iterations' } do
     evaluator = DSPy::Evals.new(
@@ -67,7 +63,7 @@ RSpec.describe 'Evaluator loop evals' do
       }
     ])
 
-    expect(results.score).to eq(100.0)
+    expect(results.score).to be_within(0.1).of(86.5)
     expect(results.total_examples).to eq(1)
   end
 end
