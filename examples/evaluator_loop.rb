@@ -324,7 +324,7 @@ module EvaluatorLoop
     APPROVAL_WEIGHT = 0.6
     SPEED_WEIGHT = 0.2
     BUDGET_WEIGHT = 0.2
-    PASS_THRESHOLD = 0.75
+    PASS_THRESHOLD = 0.9
 
     sig { params(result: T.nilable(LoopResult)).returns(Float) }
     def self.loop_efficiency_score(result)
@@ -395,6 +395,7 @@ module EvaluatorLoop
       puts "Final decision: #{result.decision.serialize} after #{result.attempts} attempt(s)"
       puts "Post:\n#{result.final_post}"
       puts "Budget: #{result.token_budget_used}/#{result.token_budget_limit} tokens (exhausted? #{result.budget_exhausted})"
+      print_recommendations(result.history)
 
       if evaluate
         eval_result = run_evals!(silent: true, loop_module: loop_module, inputs: inputs)
@@ -580,6 +581,17 @@ module EvaluatorLoop
       end
 
       updated
+    end
+
+    def print_recommendations(history)
+      return if history.empty?
+
+      puts "\nEvaluator recommendations:"
+      history.each do |attempt|
+        next if attempt.feedback.to_s.strip.empty?
+
+        puts "- Attempt #{attempt.attempt_number}: #{attempt.feedback}"
+      end
     end
   end
 end
