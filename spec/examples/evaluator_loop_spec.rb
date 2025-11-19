@@ -79,4 +79,48 @@ RSpec.describe EvaluatorLoop::LinkedInSlopLoop do
     expect(result.token_budget_used).to be > 0
     expect(result.token_budget_limit).to eq(800)
   end
+
+  it 'requires evaluator-provided self_score to exceed the threshold before final approval' do
+    generator = DSPy::Predict.new(EvaluatorLoop::GenerateLinkedInArticle)
+    evaluator = DSPy::Predict.new(EvaluatorLoop::EvaluateLinkedInArticle)
+
+    first_draft = Struct.new(:post, :hooks).new('first draft', ['hook'])
+    second_draft = Struct.new(:post, :hooks).new('second draft', ['hook'])
+
+    allow(generator).to receive(:call).and_return(first_draft, second_draft)
+
+    evaluation_struct = Struct.new(:decision, :feedback, :recommendations, :self_score)
+    allow(evaluator).to receive(:call).and_return(
+      evaluation_struct.new(
+        EvaluatorLoop::EvaluationDecision::Approved,
+        'good bones, but score low',
+        [],
+        0.72
+      ),
+      evaluation_struct.new(
+        EvaluatorLoop::EvaluationDecision::Approved,
+        'ship it',
+        [],
+        0.95
+      )
+    )
+
+    loop_module = described_class.new(
+      generator: generator,
+      evaluator: evaluator,
+      token_budget_limit: described_class::DEFAULT_TOKEN_BUDGET
+    )
+
+    result = loop_module.call(
+      topic_seed: topic_seed,
+      vibe_toggles: vibe_toggles,
+      structure_template: structure_template
+    )
+
+    expect(result.decision).to eq(EvaluatorLoop::EvaluationDecision::Approved)
+    expect(result.attempts).to eq(2)
+    expect(result.history.last.self_score).to be >= EvaluatorLoop::LinkedInSlopLoop::SELF_SCORE_THRESHOLD
+    expect(generator).to have_received(:call).twice
+    expect(evaluator).to have_received(:call).twice
+  end
 end

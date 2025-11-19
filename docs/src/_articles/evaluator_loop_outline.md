@@ -10,7 +10,7 @@
 ## 2. DSPy Hook Magic: Slop on a Budget
 - Detail how DSPy module-level callbacks + event subscriptions let us observe `lm.tokens` inside the workflow.
 - Derive the default ~3.6k-token budget from the recorded two-iteration cassette (~1.7k tokens/2 attempts ≈ 860 tokens per iteration => 4 attempts headroom).
-- Show pseudo-code for the `TokenBudgetTracker`, the callback wiring, and how we surface `budget_exhausted` in `LoopResult`.
+- Show pseudo-code for the `TokenBudgetTracker`, the callback wiring, and how we surface `budget_exhausted` in the `RevisedDraft` summary struct.
 
 ## 3. Tracking E2E Quality (Future DSPy::Evals)
 - Outline how we’ll eventually attach DSPy::Evals to the loop (composite efficiency metric, multi-model comparisons).
