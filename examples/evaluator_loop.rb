@@ -15,7 +15,6 @@ require 'optparse'
 Dotenv.load(File.expand_path('../.env', __dir__))
 
 require_relative '../lib/dspy'
-require 'dspy/evals'
 
 def ensure_api_key!(env_key)
   return if ENV[env_key]
@@ -401,7 +400,7 @@ module EvaluatorLoop
       'question_hook' => StructureTemplate::QuestionHook
     }.freeze
 
-    def run!(inputs: default_inputs, token_budget_limit: nil, evaluate: true)
+    def run!(inputs: default_inputs, token_budget_limit: nil)
       ensure_api_key!('ANTHROPIC_API_KEY')
 
       loop_module = build_loop_module(token_budget_limit: token_budget_limit)
@@ -413,11 +412,6 @@ module EvaluatorLoop
       puts "Budget: #{result.token_budget_used}/#{result.token_budget_limit} tokens (exhausted? #{result.budget_exhausted})"
       print_recommendations(result.history)
 
-      if evaluate
-        eval_result = run_evals!(silent: true, loop_module: loop_module, inputs: inputs)
-        puts "Loop efficiency score: #{eval_result.score.round(2)} (#{eval_result.passed_examples}/#{eval_result.total_examples} passed)"
-      end
-
       result
     end
 
@@ -427,33 +421,8 @@ module EvaluatorLoop
 
       run!(
         inputs: inputs,
-        token_budget_limit: options[:token_budget_limit],
-        evaluate: options[:run_evals]
+        token_budget_limit: options[:token_budget_limit]
       )
-    end
-
-    def run_evals!(silent: false, loop_module: nil, inputs: nil)
-      ensure_api_key!('ANTHROPIC_API_KEY')
-
-      loop_module ||= build_loop_module
-
-      evaluator = DSPy::Evals.new(
-        loop_module,
-        metric: Metrics.loop_efficiency_metric
-      )
-
-      scenarios = eval_examples(inputs || default_inputs)
-
-      results = evaluator.evaluate(
-        scenarios,
-        display_progress: !silent
-      )
-
-      unless silent
-        puts "DSPy::Evals score: #{results.score.round(2)} (#{results.passed_examples}/#{results.total_examples} passed)"
-      end
-
-      results
     end
 
     def build_loop_module(token_budget_limit: nil)
@@ -483,15 +452,6 @@ module EvaluatorLoop
       end
     end
 
-    def eval_examples(inputs)
-      [
-        {
-          input: inputs,
-          expected: { decision: 'approved' }
-        }
-      ]
-    end
-
     def default_inputs
       {
         topic_seed: TopicSeed.new(
@@ -513,8 +473,7 @@ module EvaluatorLoop
         topic_take: nil,
         structure_template: nil,
         vibe_overrides: {},
-        token_budget_limit: nil,
-        run_evals: true
+        token_budget_limit: nil
       }
 
       parser = OptionParser.new do |opts|
@@ -543,10 +502,6 @@ module EvaluatorLoop
 
         opts.on("--token-budget TOKENS", Integer, "Override token budget limit") do |value|
           options[:token_budget_limit] = value
-        end
-
-        opts.on("--skip-evals", "Skip DSPy::Evals run") do
-          options[:run_evals] = false
         end
 
         opts.on("-h", "--help", "Show this help") do
