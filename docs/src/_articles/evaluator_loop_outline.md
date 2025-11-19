@@ -11,7 +11,8 @@
 - Show pseudo-code for the `TokenBudgetTracker`, the callback wiring, and how we surface `budget_exhausted` in `LoopResult`.
 
 ## 3. Tracking E2E Quality with DSPy::Evals
-- Outline the future eval suite: final-output evals, generator/evaluator regression suites, and score delta gates.
+- Walk through the `DSPy::Evals.new(loop_module, metric: approved?)` snippet that ships in `examples/evaluator_loop.rb` so readers can replay canned prompts.
+- Describe the future eval suite: final-output evals, generator/evaluator regression suites, and score delta gates.
 - Discuss how eval fixtures reuse the same persona/topic seeds so we can compare rubric versions apples-to-apples.
 - Mention CI hooks (e.g., fail PR if average evaluator score drops >0.02).
 
