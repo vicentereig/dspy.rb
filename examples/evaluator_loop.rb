@@ -109,57 +109,78 @@ module EvaluatorLoop
     description "Draft a LinkedIn-style slop post that embraces a persona's preferences."
 
     input do
-      const :topic_seed, TopicSeed
-      const :vibe_toggles, VibeToggles
-      const :structure_template, StructureTemplate
-      const :hashtag_band, HashtagBand, default: HashtagBand.new
-      const :length_cap, LengthCap, default: LengthCap.new
-      const :recommendations, T::Array[Recommendation], default: []
+      const :topic_seed, TopicSeed,
+        description: "Noun-phrase or event plus the requested take slider."
+      const :vibe_toggles, VibeToggles,
+        description: "Tone sliders for cringe, hustle, and vulnerability."
+      const :structure_template, StructureTemplate,
+        description: "High-level outline the draft should follow."
+      const :hashtag_band, HashtagBand, default: HashtagBand.new,
+        description: "Minimum/maximum hashtags plus whether to append brand tags."
+      const :length_cap, LengthCap, default: LengthCap.new,
+        description: "Preferred LinkedIn length mode plus optional token/character caps."
+      const :recommendations, T::Array[Recommendation], default: [],
+        description: "Prior evaluator notes the generator should incorporate."
     end
 
     output do
-      const :post, String
-      const :hooks, T::Array[String]
-      const :self_score, Float
+      const :post, String,
+        description: "LinkedIn-ready copy that reflects the requested toggles."
+      const :hooks, T::Array[String],
+        description: "Short hook options that help the evaluator judge intent."
     end
   end
 
   class EvaluateLinkedInArticle < DSPy::Signature
-    description "Score a generated post and provide actionable feedback."
+    description "Score a generated post against the requested criteria and provide actionable feedback."
 
     input do
-      const :post, String
-      const :topic_seed, TopicSeed
-      const :vibe_toggles, VibeToggles
-      const :structure_template, StructureTemplate
-      const :hashtag_band, HashtagBand
-      const :length_cap, LengthCap
-      const :recommendations, T::Array[Recommendation]
-      const :hooks, T::Array[String]
-      const :self_score, Float
-      const :attempt, Integer
+      const :post, String,
+        description: "Latest LinkedIn draft from the generator."
+      const :topic_seed, TopicSeed,
+        description: "Target topic phrase and take that should anchor the post."
+      const :vibe_toggles, VibeToggles,
+        description: "Cringe/hustle/vulnerability slider values to enforce."
+      const :structure_template, StructureTemplate,
+        description: "Expected outline (story → lesson → CTA, listicle, etc.)."
+      const :hashtag_band, HashtagBand,
+        description: "Allowed hashtag range and auto-brand toggle."
+      const :length_cap, LengthCap,
+        description: "Requested length mode or explicit token/character caps."
+      const :recommendations, T::Array[Recommendation],
+        description: "History of edits already suggested to the generator."
+      const :hooks, T::Array[String],
+        description: "Hooks supplied by the generator for additional context."
+      const :attempt, Integer,
+        description: "1-indexed attempt counter for observability."
     end
 
     output do
-      const :decision, EvaluationDecision
-      const :feedback, String
-      const :recommendations, T::Array[Recommendation]
+      const :decision, EvaluationDecision,
+        description: "Whether this draft is approved or needs another revision."
+      const :feedback, String,
+        description: "Narrative explanation of the rubric score."
+      const :recommendations, T::Array[Recommendation],
+        description: "Structured edits the generator should apply next."
+      const :self_score, Float,
+        description: "Quality score between 0.0 and 1.0 inclusive."
     end
   end
 
-  class LoopAttempt < T::Struct
+  class Revision < T::Struct
     const :attempt_number, Integer
     const :post, String
     const :decision, EvaluationDecision
     const :feedback, String
     const :recommendations, T::Array[Recommendation]
+    const :self_score, Float
   end
 
-  class LoopResult < T::Struct
+  class RevisedDraft < T::Struct
     const :final_post, String
     const :decision, EvaluationDecision
     const :attempts, Integer
-    const :history, T::Array[LoopAttempt]
+    const :history, T::Array[Revision]
     const :token_budget_used, Integer
     const :token_budget_limit, Integer
     const :budget_exhausted, T::Boolean
@@ -215,7 +236,7 @@ module EvaluatorLoop
     DEFAULT_TOKEN_BUDGET = 10_000
     SELF_SCORE_THRESHOLD = 0.9
 
-    subscribe 'lm.tokens', :handle_lm_tokens, scope: DSPy::Module::SubcriptionScope::Descendants
+    subscribe 'lm.tokens', :count_tokens, scope: DSPy::Module::SubcriptionScope::Descendants
 
     sig do
       params(
@@ -255,7 +276,6 @@ module EvaluatorLoop
         evaluation = @evaluator.call(
           post: draft.post,
           hooks: draft.hooks,
-          self_score: draft.self_score,
           topic_seed: input_values[:topic_seed],
           vibe_toggles: input_values[:vibe_toggles],
           structure_template: input_values[:structure_template],
@@ -265,25 +285,29 @@ module EvaluatorLoop
           attempt: attempt_number
         )
 
-        history << LoopAttempt.new(
+        evaluation_recommendations = evaluation.recommendations || []
+
+        history << Revision.new(
           attempt_number: attempt_number,
           post: draft.post,
           decision: evaluation.decision,
           feedback: evaluation.feedback,
-          recommendations: evaluation.recommendations || []
+          recommendations: evaluation_recommendations,
+          self_score: evaluation.self_score
         )
 
         final_post = draft.post
         final_decision = evaluation.decision
-        recommendations = evaluation.recommendations
+        recommendations = evaluation_recommendations
 
-        if final_decision == EvaluationDecision::Approved && draft.self_score < SELF_SCORE_THRESHOLD
+        if final_decision == EvaluationDecision::Approved && evaluation.self_score < SELF_SCORE_THRESHOLD
           recommendations = recommendations.dup
           recommendations << Recommendation.new(
             message: format(
-              "Self-score %.1f is below required %.1f. Refine the post before approval.",
-              draft.self_score,
-              SELF_SCORE_THRESHOLD
+              "Self-score %<normalized>.2f%<raw_label>s is below required %<threshold>.1f. Refine the post before approval.",
+              normalized: evaluation.self_score,
+              raw_label: raw_score_label(evaluation.self_score),
+              threshold: SELF_SCORE_THRESHOLD
             ),
             source_attempt: attempt_number,
             severity: 'warn'
@@ -294,7 +318,7 @@ module EvaluatorLoop
         break if final_decision == EvaluationDecision::Approved || tracker.exhausted?
       end
 
-      LoopResult.new(
+      RevisedDraft.new(
         final_post: final_post,
         decision: final_decision,
         attempts: history.size,
@@ -309,8 +333,22 @@ module EvaluatorLoop
 
     private
 
+    sig { params(raw_score: T.nilable(Float)).returns(Float) }
+    def clamp_self_score(raw_score)
+      return 0.0 if raw_score.nil? || raw_score.nan?
+
+      [[raw_score, 0.0].max, 1.0].min
+    end
+
+    sig { params(raw_score: T.nilable(Float)).returns(String) }
+    def raw_score_label(raw_score, normalized_score)
+      return '' if raw_score.nil?
+
+      format(' (raw %.2f)', raw_score)
+    end
+
     sig { params(_event_name: String, attributes: T::Hash[T.untyped, T.untyped]).void }
-    def handle_lm_tokens(_event_name, attributes)
+    def count_tokens(_event_name, attributes)
       tracker = @active_budget_tracker
       return unless tracker
 
@@ -334,47 +372,6 @@ module EvaluatorLoop
 end
 
 module EvaluatorLoop
-  module Metrics
-    extend T::Sig
-
-    APPROVAL_WEIGHT = 0.6
-    SPEED_WEIGHT = 0.2
-    BUDGET_WEIGHT = 0.2
-    PASS_THRESHOLD = 0.75
-
-    sig { params(result: T.nilable(LoopResult)).returns(Float) }
-    def self.loop_efficiency_score(result)
-      return 0.0 unless result
-
-      quality = result.decision == EvaluationDecision::Approved ? 1.0 : 0.0
-      speed = result.attempts.positive? ? 1.0 / result.attempts : 0.0
-
-      budget_term = if result.token_budget_limit.positive?
-                      1.0 - (result.token_budget_used.to_f / result.token_budget_limit)
-                    else
-                      0.0
-                    end
-      budget_term = [[budget_term, 0.0].max, 1.0].min
-
-      score = (APPROVAL_WEIGHT * quality) +
-              (SPEED_WEIGHT * speed) +
-              (BUDGET_WEIGHT * budget_term)
-
-      [[score, 0.0].max, 1.0].min
-    end
-
-    sig { returns(T.proc.params(arg0: T.untyped, arg1: T.nilable(LoopResult)).returns(T::Hash[Symbol, T.untyped])) }
-    def self.loop_efficiency_metric
-      lambda do |_example, result|
-        score = loop_efficiency_score(result)
-        {
-          score: score,
-          passed: score >= PASS_THRESHOLD
-        }
-      end
-    end
-  end
-
   module Demo
     module_function
 

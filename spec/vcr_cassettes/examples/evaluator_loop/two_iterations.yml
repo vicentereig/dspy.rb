@@ -24,7 +24,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"id":"msg_gen_attempt1","type":"message","role":"assistant","model":"claude-3-5-haiku-20241022","content":[{"type":"text","text":"{\"post\":\"Today I realized AI
         hiring needs fewer ninja checklists and more mentoring stories.\",\"hooks\":[\"You
-        won''t hire great teams by copying FAANG\"],\"self_score\":0.41}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":300,"output_tokens":120}}'
+        won''t hire great teams by copying FAANG\"]}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":300,"output_tokens":120}}'
   recorded_at: Wed, 19 Nov 2025 21:10:00 GMT
 - request:
     method: post
@@ -52,7 +52,7 @@ http_interactions:
         a CTA inviting peers to share their best mentoring ritual and include at least
         one concrete metric.\",\"recommendations\":[{\"message\":\"Add a CTA encouraging
         comments\",\"source_attempt\":1,\"severity\":\"warn\"},{\"message\":\"Reference
-        one hiring metric\",\"source_attempt\":1,\"severity\":\"info\"}]}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":360,"output_tokens":110}}'
+        one hiring metric\",\"source_attempt\":1,\"severity\":\"info\"}],\"self_score\":0.48}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":360,"output_tokens":110}}'
   recorded_at: Wed, 19 Nov 2025 21:10:01 GMT
 - request:
     method: post
@@ -79,7 +79,7 @@ http_interactions:
       string: '{"id":"msg_gen_attempt2","type":"message","role":"assistant","model":"claude-3-5-haiku-20241022","content":[{"type":"text","text":"{\"post\":\"Last quarter
         we ditched whiteboard riddles, mentored candidates for a day, and onboarding
         time dropped 32%. If you try this, drop your favorite mentoring ritual below
-        so we can steal it.\",\"hooks\":[\"Fewer riddles, more ride-alongs\"],\"self_score\":0.92}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":320,"output_tokens":118}}'
+        so we can steal it.\",\"hooks\":[\"Fewer riddles, more ride-alongs\"]}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":320,"output_tokens":118}}'
   recorded_at: Wed, 19 Nov 2025 21:10:02 GMT
 - request:
     method: post
@@ -104,6 +104,6 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"id":"msg_eval_attempt2","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"{\"decision\":\"approved\",\"feedback\":\"CTA
-        and metric hit the rubric. Ship it.\",\"recommendations\":[]}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":310,"output_tokens":90}}'
+        and metric hit the rubric. Ship it.\",\"recommendations\":[],\"self_score\":0.95}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":310,"output_tokens":90}}'
   recorded_at: Wed, 19 Nov 2025 21:10:03 GMT
 recorded_with: VCR 6.3.1
