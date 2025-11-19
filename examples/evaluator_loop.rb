@@ -398,7 +398,7 @@ module EvaluatorLoop
 
       if evaluate
         eval_result = run_evals!(silent: true, loop_module: loop_module, inputs: inputs)
-        puts "Loop efficiency score: #{(eval_result.score * 100).round(2)} (#{eval_result.passed_examples}/#{eval_result.total_examples} passed)"
+        puts "Loop efficiency score: #{eval_result.score.round(2)} (#{eval_result.passed_examples}/#{eval_result.total_examples} passed)"
       end
 
       result
@@ -433,7 +433,7 @@ module EvaluatorLoop
       )
 
       unless silent
-        puts "DSPy::Evals score: #{(results.score * 100).round(2)} (#{results.passed_examples}/#{results.total_examples} passed)"
+        puts "DSPy::Evals score: #{results.score.round(2)} (#{results.passed_examples}/#{results.total_examples} passed)"
       end
 
       results
