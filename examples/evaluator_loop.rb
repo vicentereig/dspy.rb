@@ -106,47 +106,47 @@ module EvaluatorLoop
   end
 
   class GenerateLinkedInArticle < DSPy::Signature
-    description "Draft a LinkedIn-style slop post that embraces a persona's preferences."
+    description "Draft a concise sales pitch that embraces a persona's preferences."
 
     input do
       const :topic_seed, TopicSeed,
-        description: "Noun-phrase or event plus the requested take slider."
+        description: "Noun-phrase or event plus the requested take slider for the pitch."
       const :vibe_toggles, VibeToggles,
-        description: "Tone sliders for cringe, hustle, and vulnerability."
+        description: "Tone sliders for cringe, hustle, and vulnerability to shape the pitch."
       const :structure_template, StructureTemplate,
-        description: "High-level outline the draft should follow."
+        description: "High-level outline the pitch should follow."
       const :hashtag_band, HashtagBand, default: HashtagBand.new,
         description: "Minimum/maximum hashtags plus whether to append brand tags."
       const :length_cap, LengthCap, default: LengthCap.new,
-        description: "Preferred LinkedIn length mode plus optional token/character caps."
+        description: "Preferred length mode plus optional token/character caps for the pitch."
       const :recommendations, T::Array[Recommendation], default: [],
         description: "Prior evaluator notes the generator should incorporate."
     end
 
     output do
       const :post, String,
-        description: "LinkedIn-ready copy that reflects the requested toggles."
+        description: "Sales-ready copy that reflects the requested toggles."
       const :hooks, T::Array[String],
         description: "Short hook options that help the evaluator judge intent."
     end
   end
 
   class EvaluateLinkedInArticle < DSPy::Signature
-    description "Score a generated post against the requested criteria and provide actionable feedback."
+    description "Score a generated sales pitch against the requested criteria and provide actionable feedback."
 
     input do
       const :post, String,
-        description: "Latest LinkedIn draft from the generator."
+        description: "Latest pitch draft from the generator."
       const :topic_seed, TopicSeed,
         description: "Target topic phrase and take that should anchor the post."
       const :vibe_toggles, VibeToggles,
         description: "Cringe/hustle/vulnerability slider values to enforce."
       const :structure_template, StructureTemplate,
-        description: "Expected outline (story → lesson → CTA, listicle, etc.)."
+        description: "Expected outline (story → lesson → CTA, listicle, etc.) for the pitch."
       const :hashtag_band, HashtagBand,
-        description: "Allowed hashtag range and auto-brand toggle."
+        description: "Allowed hashtag range and auto-brand toggle (for social pitches)."
       const :length_cap, LengthCap,
-        description: "Requested length mode or explicit token/character caps."
+        description: "Requested length mode or explicit token/character caps for the pitch."
       const :recommendations, T::Array[Recommendation],
         description: "History of edits already suggested to the generator."
       const :hooks, T::Array[String],
@@ -163,7 +163,7 @@ module EvaluatorLoop
       const :recommendations, T::Array[Recommendation],
         description: "Structured edits the generator should apply next."
       const :self_score, Float,
-        description: "Quality score between 0.0 and 1.0 inclusive."
+        description: "Pitch quality score between 0.0 and 1.0 inclusive."
     end
   end
 
