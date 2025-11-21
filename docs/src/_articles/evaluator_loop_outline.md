@@ -1,12 +1,15 @@
 # Evaluator Loop Workflow Series – Outline
 
 ## 1. Evaluator Loops & Self-Improving Workflows
-- Define evaluator-optimizer pattern; call out how this differs from “LLM as a judge.”
-- When to use it?
-- Walk the AI SDR requirements loop: generator drafts outbound copy, evaluator returns decision + coverage + recommendations, loop applies deltas until approval. As Anthropic frames it, “one LLM call generates a response while another provides evaluation and feedback in a loop.”[^1]
-- Ground when-to-use guidance with Anthropic’s criteria: “This workflow is particularly effective when we have clear evaluation criteria, and when iterative refinement provides measurable value. The two signs of good fit are, first, that LLM responses can be demonstrably improved when a human articulates their feedback; and second, that the LLM can provide such feedback. This is analogous to the iterative writing process a human writer might go through when producing a polished document.”[^1]
-- Emphasize “budget instead of max iterations” (token budget gates the loop).
-- Examples where evaluator-optimizer shines (per Anthropic): literary translation with iterative nuance fixes, and complex search tasks where the evaluator decides if more retrieval passes are warranted.[^1]
+Evaluator–optimizer is a two-model handshake: the generator proposes, the evaluator scores and prescribes fixes, and the loop applies those deltas until the evaluator is satisfied. Unlike “LLM as judge,” the evaluator here is wired for actionable guidance, not a one-shot verdict.[^1]
+
+When to reach for it? Anthropic’s litmus test fits neatly: (1) you have clear criteria, and (2) iterative feedback measurably improves the draft because the evaluator can articulate concrete edits.[^1] Think of it as the LLM equivalent of a writer cycling through edits on a Google Doc.
+
+Our running example is the AI SDR requirements loop: the generator drafts outbound copy; the evaluator returns a decision, weighted requirement coverage, and next-step recommendations; the loop iterates within a token budget until approval. That same pattern generalizes to other domains:
+- Literary translation that needs nuance passes the translator missed on the first cut.[^1]
+- Complex search/research where an evaluator decides whether another retrieval + synthesis round is warranted.[^1]
+
+Budget, not iterations, is the guardrail. We cap total tokens (default 9k) rather than hard-coding attempt counts, so the loop stays cost-aware while allowing as many useful passes as the budget permits.
 
 ## 2. DSPy.rb Hooks and Conventions: Quality on a Budget
 - Show how module-level subscriptions (`lm.tokens`) drive live token accounting.
