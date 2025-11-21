@@ -54,8 +54,7 @@ end
 
 ```ruby
 class SalesPitchWriterLoop < DSPy::Module
-  subscribe 'lm.tokens', :count_tokens,
-             scope: DSPy::Module::SubcriptionScope::Descendants
+  subscribe 'lm.tokens', :count_tokens
 
   def forward(**input_values)
     tracker = TokenBudgetTracker.new(limit: token_budget_limit)
