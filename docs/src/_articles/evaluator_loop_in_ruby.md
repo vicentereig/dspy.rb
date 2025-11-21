@@ -113,17 +113,15 @@ end
 Full loop logic lives in `EvaluatorLoop::SalesPitchWriterLoop` in `examples/evaluator_loop.rb`.
 
 ## 2. DSPy.rb Hooks and Conventions: Quality on a Budget
-We subscribe to `lm.tokens` to track prompt/completion usage and emit a `sdr_loop.budget` event each turn. Budget is capped by tokens (10k in this run) instead of hard iteration counts—exactly how `SalesPitchWriterLoop` is wired.
-
-Latest Langfuse trace (Nov 21, 2025 — generator on Anthropic Haiku, evaluator on Anthropic Sonnet CoT):
+Latest Langfuse run (Nov 21, 2025 — generator: Anthropic Haiku, evaluator: Anthropic Sonnet CoT):
 
 ```
 └─ EvaluatorLoop::SalesPitchWriterLoop.forward (ed89899bac229240)
    └─ EvaluatorLoop::SalesPitchWriterLoop.forward (ee155baa7ea3c707)
       └─ EvaluatorLoop::SalesPitchWriterLoop.forward (25d6c7cb5ce67556)
-         ├─ DSPy::Predict.forward (886c35a6382591b6)          # generator (Haiku)
+         ├─ DSPy::Predict.forward (886c35a6382591b6)          # generator
          │  └─ llm.generate (a19c643a7a7ebad2)
-         └─ DSPy::ChainOfThought.forward (a4ae3f51d105e27e)   # evaluator (Sonnet, CoT)
+         └─ DSPy::ChainOfThought.forward (a4ae3f51d105e27e)   # evaluator
             ├─ DSPy::Predict.forward (2c09e511ef4112e3)
             │  └─ llm.generate (1693f7a4893de528)
             ├─ chain_of_thought.reasoning_complete (2f6cf25f6e671e4e)
@@ -133,9 +131,9 @@ Latest Langfuse trace (Nov 21, 2025 — generator on Anthropic Haiku, evaluator 
 Run stats:
 - Attempts: 1 (approved)
 - Token budget: 5,926 / 10,000 used (not exhausted)
-- Total cost (Langfuse): ~$0.0258
+- Langfuse total cost: ~$0.0258
 
-The tree makes it easy to see which model handled each step, how many hops burned budget, and whether the evaluator demanded another pass.
+This view shows which model handled each step and how much budget the loop consumed.
 
 
 [^1]: Anthropic, “Building effective agents,” Workflow: Evaluator-optimizer, Dec 19 2024. citeturn0search0
