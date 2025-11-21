@@ -231,7 +231,7 @@ module EvaluatorLoop
     end
   end
 
-  class LinkedInSlopLoop < DSPy::Module
+  class SalesPitchWriterLoop < DSPy::Module
     extend T::Sig
     DEFAULT_TOKEN_BUDGET = 10_000
     SELF_SCORE_THRESHOLD = 0.9
@@ -427,13 +427,10 @@ module EvaluatorLoop
       evaluator = build_predictor(EvaluateLinkedInArticle, EVALUATOR_MODEL)
 
       limit = token_budget_limit || Integer(
-        ENV.fetch(
-          'DSPY_SLOP_TOKEN_BUDGET',
-          LinkedInSlopLoop::DEFAULT_TOKEN_BUDGET.to_s
-        )
+        ENV.fetch('DSPY_SLOP_TOKEN_BUDGET', SalesPitchWriterLoop::DEFAULT_TOKEN_BUDGET.to_s)
       )
 
-      LinkedInSlopLoop.new(
+      SalesPitchWriterLoop.new(
         generator: generator,
         evaluator: evaluator,
         token_budget_limit: limit
