@@ -15,33 +15,61 @@ These Signatures turn our LLM invocations into functions (abridged, from [`examp
 
 ```ruby
 class GenerateSdrPost < DSPy::Signature
-  input  :persona, ProspectPersona
-  input  :offer_package, OfferPackage
-  input  :requirements, T::Array[Requirement]
-  input  :tone, TonePreset, default: TonePreset::Consultative
-  input  :channel, Channel, default: Channel::LinkedIn
-  input  :narrative_goal, NarrativeGoal, default: NarrativeGoal::ProblemAgitation
-  input  :recommendations, T::Array[Recommendation], default: []
-  output :post, String
-  output :talking_points, T::Array[String]
+  description 'Draft an outbound-ready SDR post anchored to explicit requirements.'
+
+  input do
+    const :persona, ProspectPersona,
+      description: 'Buying persona context the copy must reference.'
+    const :offer_package, OfferPackage,
+      description: 'What the SDR is promoting, including CTA + proof.'
+    const :requirements, T::Array[Requirement],
+      description: 'Explicit checklist of statements the copy must cover.'
+    const :tone, TonePreset, default: TonePreset::Consultative,
+      description: 'Macro tone slider for the SDR voice.'
+    const :channel, Channel, default: Channel::LinkedIn,
+      description: 'Target posting channel so the format stays aligned.'
+    const :narrative_goal, NarrativeGoal, default: NarrativeGoal::ProblemAgitation,
+      description: 'Primary narrative arc (agitate a pain, drop benchmark, etc.).'
+    const :recommendations, T::Array[Recommendation], default: [],
+      description: 'Evaluator notes from previous attempts.'
+  end
+
+  output do
+    const :post, String,
+      description: 'Outbound-ready copy that addresses persona, offer, and requirements.'
+    const :talking_points, T::Array[String],
+      description: 'Bullet list the evaluator can reference when judging coverage.'
+  end
 end
 
 class EvaluateSdrPost < DSPy::Signature
-  input  :post, String
-  input  :persona, ProspectPersona
-  input  :offer_package, OfferPackage
-  input  :requirements, T::Array[Requirement]
-  input  :tone, TonePreset
-  input  :channel, Channel
-  input  :narrative_goal, NarrativeGoal
-  input  :recommendations, T::Array[Recommendation]
-  input  :talking_points, T::Array[String]
-  input  :attempt, Integer
-  output :decision, EvaluationDecision
-  output :feedback, String
-  output :recommendations, T::Array[Recommendation]
-  output :requirement_assessments, T::Array[RequirementAssessment]
-  output :compliance_score, Float
+  description 'Score the SDR post, returning requirement coverage and refinement advice.'
+
+  input do
+    const :post, String, description: 'Latest draft from the generator.'
+    const :persona, ProspectPersona, description: 'Target persona metadata.'
+    const :offer_package, OfferPackage, description: 'Product/value props to reinforce.'
+    const :requirements, T::Array[Requirement], description: 'Checklist the evaluator enforces.'
+    const :tone, TonePreset, description: 'Requested tone slider.'
+    const :channel, Channel, description: 'Channel-specific guidance (format, hashtags, etc.).'
+    const :narrative_goal, NarrativeGoal, description: 'Narrative arc the copy should follow.'
+    const :recommendations, T::Array[Recommendation], description: 'Already-issued edits.'
+    const :talking_points, T::Array[String], description: 'Context surfaced by the generator.'
+    const :attempt, Integer, description: '1-indexed attempt number for tracing.'
+  end
+
+  output do
+    const :decision, EvaluationDecision,
+      description: 'Whether this draft can ship as-is or needs another pass.'
+    const :feedback, String,
+      description: 'Narrative explanation of the score + rationale.'
+    const :recommendations, T::Array[Recommendation],
+      description: 'Actionable deltas the generator should apply next.'
+    const :requirement_assessments, T::Array[RequirementAssessment],
+      description: 'Per-requirement coverage grading with optional notes.'
+    const :compliance_score, Float,
+      description: 'Evaluator self-score for quality/confidence in the draft.'
+  end
 end
 ```
 Full definitions live in [`examples/evaluator_loop.rb`](https://github.com/vicentereig/dspy.rb/blob/feature/evaluator-loop-blog/examples/evaluator_loop.rb) (kept in sync with this article).
