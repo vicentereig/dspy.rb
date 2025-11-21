@@ -1,6 +1,8 @@
 # Evaluator Loop Workflow Series – Outline
 
-## 1. Evaluator Loops & Self-Improving Workflows
+Great outputs rarely ship on the first LLM pass. The win comes from a tight loop: propose, critique, refine—without torching budget. This series shows how DSPy.rb wires that loop for AI SDRs (and beyond) so teams ship requirement-backed copy instead of vibe-only drafts.
+
+## Evaluator Loops & Self-Improving Workflows
 Evaluator–optimizer is a two-model handshake: the generator proposes, the evaluator scores and prescribes fixes, and the loop applies those deltas until the evaluator is satisfied. Unlike “LLM as judge,” the evaluator here is wired for actionable guidance, not a one-shot verdict.[^1]
 
 When to reach for it? Anthropic’s litmus test fits neatly: (1) you have clear criteria, and (2) iterative feedback measurably improves the draft because the evaluator can articulate concrete edits.[^1] Think of it as the LLM equivalent of a writer cycling through edits on a Google Doc.
