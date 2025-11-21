@@ -71,23 +71,43 @@ Full definitions live in [`examples/evaluator_loop.rb`](https://github.com/vicen
 
 Budget, not iterations, is the guardrail—unlike DSPy::ReAct-style loops that often cap turns. We cap total tokens (default 9k) so the loop stays cost-aware while allowing as many useful passes as the budget permits.[^2]
 
-Loop driver (abridged): the module runs `GenerateLinkedInArticle` with a light Anthropic Haiku model, then calls `EvaluateLinkedInArticle` via Chain-of-Thought on a heavier Anthropic Sonnet model, repeating while budget remains and the evaluator still wants changes.
+Evaluation loop driver: the module runs `GenerateLinkedInArticle` with a light Anthropic Haiku model, then calls `EvaluateLinkedInArticle` 
+via Chain-of-Thought on a heavier Anthropic Sonnet model, repeating while budget remains and the evaluator still wants changes.
 
 ```ruby
 class SalesPitchWriterLoop < DSPy::Module
-  while tracker.remaining.positive?
-    draft = generator.call(**input_values.merge(recommendations: recommendations))
-    evaluation = evaluator.call(post: draft.post,
-                                topic_seed: input_values[:topic_seed],
-                                vibe_toggles: input_values[:vibe_toggles],
-                                structure_template: input_values[:structure_template],
-                                hashtag_band: hashtag_band,
-                                length_cap: length_cap,
-                                recommendations: recommendations,
-                                hooks: draft.hooks,
-                                attempt: attempt_number)
-    recommendations = evaluation.recommendations || []
-    break if evaluation.decision == EvaluationDecision::Approved
+  subscribe 'lm.tokens', :count_tokens
+  
+  def forward(**input_values)
+    while tracker.remaining.positive?
+      draft = generator.call(**input_values.merge(recommendations: recommendations))
+      evaluation = evaluator.call(post: draft.post,
+                                  topic_seed: input_values[:topic_seed],
+                                  vibe_toggles: input_values[:vibe_toggles],
+                                  structure_template: input_values[:structure_template],
+                                  hashtag_band: hashtag_band,
+                                  length_cap: length_cap,
+                                  recommendations: recommendations,
+                                  hooks: draft.hooks,
+                                  attempt: attempt_number)
+      recommendations = evaluation.recommendations || []
+      break if evaluation.decision == EvaluationDecision::Approved
+    end
+  end
+
+  def count_tokens(_event_name, attributes)
+    tracker = @active_budget_tracker
+    return unless tracker
+
+    prompt = attributes[:input_tokens] 
+    completion = attributes[:output_tokens] 
+    total = attributes[:total_tokens] 
+
+    tracker.track(
+      prompt_tokens: prompt&.to_i,
+      completion_tokens: completion&.to_i,
+      total_tokens: total&.to_i
+    )
   end
 end
 ```
@@ -95,19 +115,42 @@ end
 Full loop logic lives in `EvaluatorLoop::SalesPitchWriterLoop` in `examples/evaluator_loop.rb`.
 
 ## 2. DSPy.rb Hooks and Conventions: Quality on a Budget
-- Show how module-level subscriptions (`lm.tokens`) drive live token accounting.
-- Derive the default 9k-token budget from recorded attempts (≈2.2k tokens/iteration ⇒ 4 attempts headroom).
-- Pseudo-code: `TokenBudgetTracker`, subscription wiring, and the `RevisedPost` summary (coverage, attempts, budget flags).
+We subscribe to `lm.tokens` to track prompt/completion usage and emit a `sdr_loop.budget` event each turn. Budget is capped (default 9k) instead of iteration count—exactly how `SalesPitchWriterLoop` is wired.
 
-## 3. Tracking E2E Quality (Future DSPy::Evals)
-- Plan: attach DSPy::Evals for composite efficiency metrics and regression gates.
-- Replay canned prompts to compare generator/evaluator pairs without full reruns.
-- Gate changes with score deltas once Langfuse wiring is in place.
+To inspect a run in Langfuse, export your Langfuse keys and pull the latest traces:
 
-## 4. Observability (“o11y”) Dumps
-- Include Langfuse span examples showing generator/evaluator attempts and recommendation payloads.
-- Highlight `token_budget.remaining` attributes to visualize burn-down.
-- Troubleshooting story: retries stalled when tone sliders were absent—fixed after inspecting span payloads.
+```
+LANGFUSE_PUBLIC_KEY=... LANGFUSE_SECRET_KEY=... \
+rbenv exec bundle exec lf traces list --limit 1 --format json
+```
+
+Then expand the trace to an ASCII tree (replace TRACE_ID with the id from above):
+
+```
+rbenv exec bundle exec lf traces get TRACE_ID --format json | jq -r '
+  .spans[] | [.parentId, .id, .name] | @tsv' | ruby -e '
+    spans = STDIN.read.lines.map { |l| p,i,n = l.chomp.split(/\t/); [p,i,n] }
+    def print_tree(spans, parent=nil, indent=\"\")
+      spans.select { |p,_,_| p==parent }.each_with_index do |(_,id,name), idx|
+        branch = (idx == spans.count { |pp,_,_| pp==parent } - 1) ? \"└─\" : \"├─\"
+        puts \"#{indent}#{branch} #{name} (#{id})\"
+        print_tree(spans, id, indent + (branch == \"└─\" ? \"   \" : \"│  \"))
+      end
+    end
+    print_tree(spans)'
+```
+
+You’ll see something like:
+
+```
+└─ SalesPitchWriterLoop.call (trace-root)
+   ├─ GenerateLinkedInArticle (draft)
+   ├─ EvaluateLinkedInArticle (cot-evaluator)
+   └─ sdr_loop.budget (budget=1.7k/9k)
+```
+
+This makes it obvious how many attempts burned budget and where the evaluator asked for revisions.
+
 
 [^1]: Anthropic, “Building effective agents,” Workflow: Evaluator-optimizer, Dec 19 2024. citeturn0search0
 [^2]: “Building Your First ReAct Agent in Ruby,” DSPy.rb blog, July 2025. citeturn0search2
