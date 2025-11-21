@@ -73,4 +73,6 @@ Outcome: 1 attempt; 5,926 / 10,000 tokens; Langfuse cost ≈ $0.0258.
 ## 5. Run It
 `rbenv exec bundle exec ruby examples/evaluator_loop.rb` (needs `ANTHROPIC_API_KEY` in `.env`). Tune budget with `DSPY_SLOP_TOKEN_BUDGET`; swap models via `DSPY_SLOP_GENERATOR_MODEL` and `DSPY_SLOP_EVALUATOR_MODEL`.
 
+We covered why evaluator loops beat single-shot prompts, how Signatures turn LLM calls into tidy functions, how the SalesPitchWriter pairs a cheap draft with a CoT critic under a token guardrail, and what the Langfuse trace tells you at a glance. Swap in your own structs and rubrics, keep the loop, and ship requirement-backed outputs with less guesswork.
+
 [^1]: Anthropic, “Building effective agents,” Workflow: Evaluator-optimizer, Dec 19 2024. https://www.anthropic.com/engineering/building-effective-agents#workflow-evaluator-optimizer
