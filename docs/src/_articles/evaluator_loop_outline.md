@@ -11,7 +11,7 @@ Our running example is the AI SDR requirements loop: the generator drafts outbou
 - Literary translation that needs nuance passes the translator missed on the first cut.[^1]
 - Complex search/research where an evaluator decides whether another retrieval + synthesis round is warranted.[^1]
 
-Budget, not iterations, is the guardrail. We cap total tokens (default 9k) rather than hard-coding attempt counts, so the loop stays cost-aware while allowing as many useful passes as the budget permits.
+Budget, not iterations, is the guardrail—unlike DSPy::ReAct-style loops that often cap turns. We cap total tokens (default 9k) so the loop stays cost-aware while allowing as many useful passes as the budget permits.[^2]
 
 ## 2. DSPy.rb Hooks and Conventions: Quality on a Budget
 - Show how module-level subscriptions (`lm.tokens`) drive live token accounting.
@@ -29,3 +29,4 @@ Budget, not iterations, is the guardrail. We cap total tokens (default 9k) rathe
 - Troubleshooting story: retries stalled when tone sliders were absent—fixed after inspecting span payloads.
 
 [^1]: Anthropic, “Building effective agents,” Workflow: Evaluator-optimizer, Dec 19 2024. citeturn0search0
+[^2]: “Building Your First ReAct Agent in Ruby,” DSPy.rb blog, July 2025. citeturn0search2
