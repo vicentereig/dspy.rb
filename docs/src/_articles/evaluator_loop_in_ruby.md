@@ -10,7 +10,7 @@ image: /images/og/evaluator-loop-in-ruby.png
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluator_loop_in_ruby/"
 ---
 
-Outbound copy rarely ships on the first LLM pass. DSPy.rb keeps the loop—propose, critique, refine—without burning budget.
+Outbound copy rarely ships on the first LLM pass. [DSPy.rb](https://github.com/vicentereig/dspy.rb) keeps the loop—propose, critique, refine—without burning budget.
 
 ## Why Evaluator Loops?
 Evaluator–optimizer is a two-model handshake: generator drafts, evaluator grades and prescribes fixes, loop repeats until the rubric is met. Anthropic says it shines when “LLM responses can be demonstrably improved when a human articulates their feedback.”[^1]
