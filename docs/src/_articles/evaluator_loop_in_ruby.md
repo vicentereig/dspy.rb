@@ -58,7 +58,19 @@ class SalesPitchWriterLoop < DSPy::Module
 
   def forward(**input_values)
     tracker = TokenBudgetTracker.new(limit: token_budget_limit)
-    @active_budget_tracker = tracker
+    
+    generator =  DSPy::Predict.new(signature_class).configure do |config|
+      config.lm = DSPy::LM.new(
+        'anthropic/claude-haiku-4-5-20251001',
+        api_key: ENV['ANTHROPIC_API_KEY']
+      )
+    end
+    evaluator =  DSPy::ChainOfThought.new(signature_class).configure do |config|
+      config.lm = DSPy::LM.new(
+        'anthropic/claude-sonnet-4-5-20250929',
+        api_key: ENV['ANTHROPIC_API_KEY']
+      )
+    end
     recommendations = []
 
     while tracker.remaining.positive?
@@ -67,8 +79,6 @@ class SalesPitchWriterLoop < DSPy::Module
       recommendations = eval.recommendations || []
       break if eval.decision == EvaluationDecision::Approved
     end
-  ensure
-    @active_budget_tracker = nil
   end
 end
 ```
