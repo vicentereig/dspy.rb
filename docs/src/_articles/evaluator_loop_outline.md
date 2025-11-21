@@ -6,7 +6,7 @@
 - Walk the AI SDR requirements loop: generator drafts outbound copy, evaluator returns decision + coverage + recommendations, loop applies deltas until approval.
 - Emphasize “budget instead of max iterations” (token budget gates the loop).
 
-## 2. DSPy Hook Magic: Requirements on a Budget
+## 2. DSPy.rb Hooks and Conventions: Quality on a Budget
 - Show how module-level subscriptions (`lm.tokens`) drive live token accounting.
 - Derive the default 9k-token budget from recorded attempts (≈2.2k tokens/iteration ⇒ 4 attempts headroom).
 - Pseudo-code: `TokenBudgetTracker`, subscription wiring, and the `RevisedPost` summary (coverage, attempts, budget flags).
