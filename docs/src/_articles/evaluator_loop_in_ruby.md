@@ -10,8 +10,6 @@ image: /images/og/evaluator-loop-in-ruby.png
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluator_loop_in_ruby/"
 ---
 
-# Evaluator Loop Workflow Series – Outline
-
 Great outputs rarely ship on the first LLM pass. The win comes from a tight loop: propose, critique, refine—without setting your budget on fire. This series shows how DSPy.rb wires that loop for sales pitches (and other workflows) so teams ship requirement-backed copy instead of vibe-only drafts.
 
 ## Evaluator Loops & Self-Improving Workflows
@@ -123,13 +121,13 @@ Latest Langfuse trace (Nov 21, 2025 — generator on Anthropic Haiku, evaluator 
 └─ EvaluatorLoop::SalesPitchWriterLoop.forward (ed89899bac229240)
    └─ EvaluatorLoop::SalesPitchWriterLoop.forward (ee155baa7ea3c707)
       └─ EvaluatorLoop::SalesPitchWriterLoop.forward (25d6c7cb5ce67556)
-         ├─ DSPy::ChainOfThought.forward (a4ae3f51d105e27e)   # evaluator
-         │  ├─ DSPy::Predict.forward (2c09e511ef4112e3)
-         │  │  └─ llm.generate (1693f7a4893de528)
-         │  ├─ chain_of_thought.reasoning_complete (2f6cf25f6e671e4e)
-         │  └─ chain_of_thought.reasoning_metrics (7bb07c8d57d3041b)
-         └─ DSPy::Predict.forward (886c35a6382591b6)          # generator
-            └─ llm.generate (a19c643a7a7ebad2)
+         ├─ DSPy::Predict.forward (886c35a6382591b6)          # generator (Haiku)
+         │  └─ llm.generate (a19c643a7a7ebad2)
+         └─ DSPy::ChainOfThought.forward (a4ae3f51d105e27e)   # evaluator (Sonnet, CoT)
+            ├─ DSPy::Predict.forward (2c09e511ef4112e3)
+            │  └─ llm.generate (1693f7a4893de528)
+            ├─ chain_of_thought.reasoning_complete (2f6cf25f6e671e4e)
+            └─ chain_of_thought.reasoning_metrics (7bb07c8d57d3041b)
 ```
 
 Run stats:
