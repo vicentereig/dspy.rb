@@ -6,7 +6,7 @@ date: 2025-11-21
 author: "Vicente Reig"
 category: "Workflow"
 reading_time: "4 min read"
-image: /images/og/llm-as-judge-ai-sdr-evaluation.png
+image: /images/og/evaluator_loop_in_ruby.png
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluator_loop_in_ruby/"
 ---
 
