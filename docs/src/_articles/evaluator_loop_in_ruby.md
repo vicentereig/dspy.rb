@@ -53,7 +53,7 @@ end
 `SalesPitchWriterLoop` pairs a lightweight Anthropic Haiku generator with an Anthropic Sonnet evaluator (Chain-of-Thought). Budget, not iterations, is the guardrail—unlike [DSPy::ReAct](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) loops that cap turns. Evaluator probes: “Did we quantify pain cost?” “Is the CTA a single action?” Returned fixes: “Add a % proof metric,” “Retune tone to consultative.”
 
 ## O11y at a Glance
-Latest Langfuse trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
+DSPy.rb ships observability out of the box: every `lm.tokens` event flows into Langfuse, so you don’t need X‑ray vision to see whether budget burned on the draft or the critique. Peek at the latest trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
 
 ```
 └─ SalesPitchWriterLoop.forward (ed89899bac229240)
@@ -68,7 +68,7 @@ Latest Langfuse trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
             └─ chain_of_thought.reasoning_metrics (7bb07c8d57d3041b)
 ```
 
-Outcome: 1 attempt; 5,926 / 10,000 tokens; Langfuse cost ≈ $0.0258.
+Outcome: 1 attempt; 5,926 / 10,000 tokens; Langfuse cost ≈ $0.0258. Generator and evaluator hops are labeled, so you can confirm the cheap model carried drafting while the expensive model handled critique. Prefer shell? `lf-cli` points at the same Langfuse project and gives you the tree from your coding terminal.
 
 ## Run It
 `rbenv exec bundle exec ruby examples/evaluator_loop.rb` (needs `ANTHROPIC_API_KEY` in `.env`). Tune budget with `DSPY_SLOP_TOKEN_BUDGET`; swap models via `DSPY_SLOP_GENERATOR_MODEL` and `DSPY_SLOP_EVALUATOR_MODEL`.
