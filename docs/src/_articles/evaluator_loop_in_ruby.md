@@ -52,6 +52,28 @@ end
 ## Loop Mechanics: draft → critique within a guardrail
 `SalesPitchWriterLoop` pairs a lightweight Anthropic Haiku generator with an Anthropic Sonnet evaluator (Chain-of-Thought). Budget, not iterations, is the guardrail—unlike [DSPy::ReAct](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) loops that cap turns. Evaluator probes: “Did we quantify pain cost?” “Is the CTA a single action?” Returned fixes: “Add a % proof metric,” “Retune tone to consultative.”
 
+```ruby
+class SalesPitchWriterLoop < DSPy::Module
+  subscribe 'lm.tokens', :count_tokens,
+             scope: DSPy::Module::SubcriptionScope::Descendants
+
+  def forward(**input_values)
+    tracker = TokenBudgetTracker.new(limit: token_budget_limit)
+    @active_budget_tracker = tracker
+    recommendations = []
+
+    while tracker.remaining.positive?
+      draft = generator.call(**input_values.merge(recommendations: recommendations))
+      eval  = evaluator.call(post: draft.post, hooks: draft.hooks, **input_values)
+      recommendations = eval.recommendations || []
+      break if eval.decision == EvaluationDecision::Approved
+    end
+  ensure
+    @active_budget_tracker = nil
+  end
+end
+```
+
 ## O11y at a Glance
 DSPy.rb ships observability out of the box: every `lm.tokens` event flows into Langfuse, so you don’t need X‑ray vision to see whether budget burned on the draft or the critique. Peek at the latest trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
 
