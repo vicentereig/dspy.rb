@@ -15,6 +15,25 @@ Outbound copy rarely ships on the first LLM pass. DSPy.rb keeps the loop—propo
 ## 1. Why Evaluator Loops?
 Evaluator–optimizer is a two-model handshake: generator drafts, evaluator grades and prescribes fixes, loop repeats until the rubric is met. Anthropic says it shines when “LLM responses can be demonstrably improved when a human articulates their feedback.”[^1]
 
+```mermaid
+flowchart LR
+    In((Requirements\n+ Persona + Offer))
+    Gen["LLM Call 1\nGenerator (Haiku)\nDSPy::Predict"]
+    Eval["LLM Call 2\nEvaluator (Sonnet CoT)\nDSPy::ChainOfThought"]
+    Budget["Token Guardrail\n10k-cap Tracker"]
+    Out((Approved Post))
+
+    In --> Gen --> Eval --> Out
+    Eval -.feedback/recs.-> Gen
+    Eval --> Budget --> Out
+
+    style In fill:#ffe4e1,stroke:#d4a5a5,stroke-width:2px
+    style Out fill:#ffe4e1,stroke:#d4a5a5,stroke-width:2px
+    style Gen fill:#e8f5e9,stroke:#81c784,stroke-width:2px
+    style Eval fill:#e8f5e9,stroke:#81c784,stroke-width:2px
+    style Budget fill:#e8f5e9,stroke:#81c784,stroke-width:2px
+```
+
 ## 2. Signatures as Functions
 [Our running example](https://github.com/vicentereig/dspy.rb/blob/feature/evaluator-loop-blog/examples/evaluator_loop.rb) turns LLMs into callable functions:
 
