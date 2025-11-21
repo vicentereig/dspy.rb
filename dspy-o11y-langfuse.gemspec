@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "dspy-o11y", "= #{DSPy::O11y::VERSION}"
+  spec.add_dependency "dspy-o11y", ">= 0.30"
   spec.add_dependency "opentelemetry-sdk", "~> 1.8"
   spec.add_dependency "opentelemetry-exporter-otlp", "~> 0.30"
 
