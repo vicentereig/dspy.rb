@@ -341,7 +341,7 @@ module EvaluatorLoop
     end
 
     sig { params(raw_score: T.nilable(Float)).returns(String) }
-    def raw_score_label(raw_score, normalized_score)
+    def raw_score_label(raw_score)
       return '' if raw_score.nil?
 
       format(' (raw %.2f)', raw_score)
@@ -424,7 +424,7 @@ module EvaluatorLoop
 
     def build_loop_module(token_budget_limit: nil)
       generator = build_predictor(GenerateLinkedInArticle, GENERATOR_MODEL)
-      evaluator = build_predictor(EvaluateLinkedInArticle, EVALUATOR_MODEL)
+      evaluator = build_chain_of_thought(EvaluateLinkedInArticle, EVALUATOR_MODEL)
 
       limit = token_budget_limit || Integer(
         ENV.fetch('DSPY_SLOP_TOKEN_BUDGET', SalesPitchWriterLoop::DEFAULT_TOKEN_BUDGET.to_s)
@@ -439,6 +439,15 @@ module EvaluatorLoop
 
     def build_predictor(signature_class, model_id)
       DSPy::Predict.new(signature_class).configure do |config|
+        config.lm = DSPy::LM.new(
+          model_id,
+          api_key: ENV['ANTHROPIC_API_KEY']
+        )
+      end
+    end
+
+    def build_chain_of_thought(signature_class, model_id)
+      DSPy::ChainOfThought.new(signature_class).configure do |config|
         config.lm = DSPy::LM.new(
           model_id,
           api_key: ENV['ANTHROPIC_API_KEY']
