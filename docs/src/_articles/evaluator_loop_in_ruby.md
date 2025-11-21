@@ -12,7 +12,7 @@ canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluator_lo
 
 Outbound copy rarely ships on the first LLM pass. DSPy.rb keeps the loop—propose, critique, refine—without burning budget.
 
-## 1. Why Evaluator Loops?
+## Why Evaluator Loops?
 Evaluator–optimizer is a two-model handshake: generator drafts, evaluator grades and prescribes fixes, loop repeats until the rubric is met. Anthropic says it shines when “LLM responses can be demonstrably improved when a human articulates their feedback.”[^1]
 
 ```mermaid
@@ -34,7 +34,7 @@ flowchart LR
     style Budget fill:#e8f5e9,stroke:#81c784,stroke-width:2px
 ```
 
-## 2. Signatures as Functions
+## Signatures as Functions
 [Our running example](https://github.com/vicentereig/dspy.rb/blob/main/examples/evaluator_loop.rb) turns LLMs into callable functions:
 
 ```ruby
@@ -49,10 +49,10 @@ class EvaluateLinkedInArticle < DSPy::Signature
 end
 ```
 
-## 3. Loop Mechanics: draft → critique within a guardrail
+## Loop Mechanics: draft → critique within a guardrail
 `SalesPitchWriterLoop` pairs a lightweight Anthropic Haiku generator with an Anthropic Sonnet evaluator (Chain-of-Thought). Budget, not iterations, is the guardrail—unlike [DSPy::ReAct](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) loops that cap turns. Evaluator probes: “Did we quantify pain cost?” “Is the CTA a single action?” Returned fixes: “Add a % proof metric,” “Retune tone to consultative.”
 
-## 4. O11y at a Glance
+## O11y at a Glance
 Latest Langfuse trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
 
 ```
@@ -70,7 +70,7 @@ Latest Langfuse trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
 
 Outcome: 1 attempt; 5,926 / 10,000 tokens; Langfuse cost ≈ $0.0258.
 
-## 5. Run It
+## Run It
 `rbenv exec bundle exec ruby examples/evaluator_loop.rb` (needs `ANTHROPIC_API_KEY` in `.env`). Tune budget with `DSPY_SLOP_TOKEN_BUDGET`; swap models via `DSPY_SLOP_GENERATOR_MODEL` and `DSPY_SLOP_EVALUATOR_MODEL`.
 
 We covered why evaluator loops beat single-shot prompts, how Signatures turn LLM calls into tidy functions, how the SalesPitchWriter pairs a cheap draft with a CoT critic under a token guardrail, and what the Langfuse trace tells you at a glance. Swap in your own structs and rubrics, keep the loop, and ship requirement-backed outputs with less guesswork.
