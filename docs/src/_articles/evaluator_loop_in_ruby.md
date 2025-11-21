@@ -70,13 +70,7 @@ Latest Langfuse trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
 
 Outcome: 1 attempt; 5,926 / 10,000 tokens; Langfuse cost ≈ $0.0258.
 
-## 5. Quality Gates, not Vibes
-Approval = evaluator OK + self-score ≥ 0.9; else blocking recommendations (e.g., “Add a proof metric before shipping”). Coverage lives in `recommendations`, not prompt spaghetti.
-
-## 6. Adapt It Anywhere
-Swap the structs, keep the loop: drop in your own checklist while preserving the evaluator as rubric engine.
-
-## 7. Run It
+## 5. Run It
 `rbenv exec bundle exec ruby examples/evaluator_loop.rb` (needs `ANTHROPIC_API_KEY` in `.env`). Tune budget with `DSPY_SLOP_TOKEN_BUDGET`; swap models via `DSPY_SLOP_GENERATOR_MODEL` and `DSPY_SLOP_EVALUATOR_MODEL`.
 
 [^1]: Anthropic, “Building effective agents,” Workflow: Evaluator-optimizer, Dec 19 2024. https://www.anthropic.com/engineering/building-effective-agents#workflow-evaluator-optimizer
