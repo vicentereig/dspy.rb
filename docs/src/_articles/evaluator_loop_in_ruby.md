@@ -89,7 +89,7 @@ end
             └─ chain_of_thought.reasoning_metrics (7bb07c8d57d3041b)
 ```
 
-Outcome: 1 attempt; 5,926 / 10,000 tokens; Langfuse cost ≈ $0.0258. Generator and evaluator hops are labeled, so you can confirm the cheap model carried drafting while the expensive model handled critique. Prefer shell? `lf-cli` points at the same Langfuse project and gives you the tree from your coding terminal.
+Outcome: 1 attempt; 5,926 / 10,000 tokens; Langfuse cost ≈ $0.0258. Generator and evaluator hops are labeled, so you can confirm the cheap model carried drafting while the expensive model handled critique. Prefer shell? [`lf-cli`](https://github.com/vicentereig/lf-cli) points at the same Langfuse project and gives you the tree from your coding terminal.
 
 ## Run It
 `rbenv exec bundle exec ruby examples/evaluator_loop.rb` (needs `ANTHROPIC_API_KEY` in `.env`). Tune budget with `DSPY_SLOP_TOKEN_BUDGET`; swap models via `DSPY_SLOP_GENERATOR_MODEL` and `DSPY_SLOP_EVALUATOR_MODEL`.
