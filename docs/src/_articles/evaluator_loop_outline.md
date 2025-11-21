@@ -11,6 +11,40 @@ Our running example is the AI SDR requirements loop: the generator drafts outbou
 - Literary translation that needs nuance passes the translator missed on the first cut.[^1]
 - Complex search/research where an evaluator decides whether another retrieval + synthesis round is warranted.[^1]
 
+Example signatures (abridged):
+
+```ruby
+class GenerateSdrPost < DSPy::Signature
+  input  :persona, ProspectPersona
+  input  :offer_package, OfferPackage
+  input  :requirements, T::Array[Requirement]
+  input  :tone, TonePreset, default: TonePreset::Consultative
+  input  :channel, Channel, default: Channel::LinkedIn
+  input  :narrative_goal, NarrativeGoal, default: NarrativeGoal::ProblemAgitation
+  input  :recommendations, T::Array[Recommendation], default: []
+  output :post, String
+  output :talking_points, T::Array[String]
+end
+
+class EvaluateSdrPost < DSPy::Signature
+  input  :post, String
+  input  :persona, ProspectPersona
+  input  :offer_package, OfferPackage
+  input  :requirements, T::Array[Requirement]
+  input  :tone, TonePreset
+  input  :channel, Channel
+  input  :narrative_goal, NarrativeGoal
+  input  :recommendations, T::Array[Recommendation]
+  input  :talking_points, T::Array[String]
+  input  :attempt, Integer
+  output :decision, EvaluationDecision
+  output :feedback, String
+  output :recommendations, T::Array[Recommendation]
+  output :requirement_assessments, T::Array[RequirementAssessment]
+  output :compliance_score, Float
+end
+```
+
 Budget, not iterations, is the guardrail—unlike DSPy::ReAct-style loops that often cap turns. We cap total tokens (default 9k) so the loop stays cost-aware while allowing as many useful passes as the budget permits.[^2]
 
 ## 2. DSPy.rb Hooks and Conventions: Quality on a Budget
