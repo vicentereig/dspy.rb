@@ -115,41 +115,29 @@ end
 Full loop logic lives in `EvaluatorLoop::SalesPitchWriterLoop` in `examples/evaluator_loop.rb`.
 
 ## 2. DSPy.rb Hooks and Conventions: Quality on a Budget
-We subscribe to `lm.tokens` to track prompt/completion usage and emit a `sdr_loop.budget` event each turn. Budget is capped (default 9k) instead of iteration count—exactly how `SalesPitchWriterLoop` is wired.
+We subscribe to `lm.tokens` to track prompt/completion usage and emit a `sdr_loop.budget` event each turn. Budget is capped by tokens (10k in this run) instead of hard iteration counts—exactly how `SalesPitchWriterLoop` is wired.
 
-To inspect a run in Langfuse, export your Langfuse keys and pull the latest traces:
-
-```
-LANGFUSE_PUBLIC_KEY=... LANGFUSE_SECRET_KEY=... \
-rbenv exec bundle exec lf traces list --limit 1 --format json
-```
-
-Then expand the trace to an ASCII tree (replace TRACE_ID with the id from above):
+Latest Langfuse trace (Nov 21, 2025 — generator on Anthropic Haiku, evaluator on Anthropic Sonnet CoT):
 
 ```
-rbenv exec bundle exec lf traces get TRACE_ID --format json | jq -r '
-  .spans[] | [.parentId, .id, .name] | @tsv' | ruby -e '
-    spans = STDIN.read.lines.map { |l| p,i,n = l.chomp.split(/\t/); [p,i,n] }
-    def print_tree(spans, parent=nil, indent=\"\")
-      spans.select { |p,_,_| p==parent }.each_with_index do |(_,id,name), idx|
-        branch = (idx == spans.count { |pp,_,_| pp==parent } - 1) ? \"└─\" : \"├─\"
-        puts \"#{indent}#{branch} #{name} (#{id})\"
-        print_tree(spans, id, indent + (branch == \"└─\" ? \"   \" : \"│  \"))
-      end
-    end
-    print_tree(spans)'
+└─ EvaluatorLoop::SalesPitchWriterLoop.forward (ed89899bac229240)
+   └─ EvaluatorLoop::SalesPitchWriterLoop.forward (ee155baa7ea3c707)
+      └─ EvaluatorLoop::SalesPitchWriterLoop.forward (25d6c7cb5ce67556)
+         ├─ DSPy::ChainOfThought.forward (a4ae3f51d105e27e)   # evaluator
+         │  ├─ DSPy::Predict.forward (2c09e511ef4112e3)
+         │  │  └─ llm.generate (1693f7a4893de528)
+         │  ├─ chain_of_thought.reasoning_complete (2f6cf25f6e671e4e)
+         │  └─ chain_of_thought.reasoning_metrics (7bb07c8d57d3041b)
+         └─ DSPy::Predict.forward (886c35a6382591b6)          # generator
+            └─ llm.generate (a19c643a7a7ebad2)
 ```
 
-You’ll see something like:
+Run stats:
+- Attempts: 1 (approved)
+- Token budget: 5,926 / 10,000 used (not exhausted)
+- Total cost (Langfuse): ~$0.0258
 
-```
-└─ SalesPitchWriterLoop.call (trace-root)
-   ├─ GenerateLinkedInArticle (draft)
-   ├─ EvaluateLinkedInArticle (cot-evaluator)
-   └─ sdr_loop.budget (budget=1.7k/9k)
-```
-
-This makes it obvious how many attempts burned budget and where the evaluator asked for revisions.
+The tree makes it easy to see which model handled each step, how many hops burned budget, and whether the evaluator demanded another pass.
 
 
 [^1]: Anthropic, “Building effective agents,” Workflow: Evaluator-optimizer, Dec 19 2024. citeturn0search0
