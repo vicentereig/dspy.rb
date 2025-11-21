@@ -11,7 +11,7 @@ Evaluator–optimizer is a two-model handshake: the generator proposes, the eval
 - Literary translation that needs nuance passes the translator missed on the first cut.[^1]
 - Complex search/research where an evaluator decides whether another retrieval + synthesis round is warranted.[^1]
 
-Example signatures (abridged):
+Example signatures (abridged, lifted from `examples/evaluator_loop.rb`):
 
 ```ruby
 class GenerateSdrPost < DSPy::Signature
@@ -44,6 +44,7 @@ class EvaluateSdrPost < DSPy::Signature
   output :compliance_score, Float
 end
 ```
+Full definitions live in `examples/evaluator_loop.rb` in the repo (kept in sync with this article).
 
 Budget, not iterations, is the guardrail—unlike DSPy::ReAct-style loops that often cap turns. We cap total tokens (default 9k) so the loop stays cost-aware while allowing as many useful passes as the budget permits.[^2]
 
