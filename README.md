@@ -13,8 +13,6 @@
 > 
 > If you want to contribute, feel free to reach out to me to coordinate efforts: hey at vicente.services
 >
-> And, yes, this is 100% a legit project. :) 
-
 
 **Build reliable LLM applications in idiomatic Ruby using composable, type-safe modules.**
 
