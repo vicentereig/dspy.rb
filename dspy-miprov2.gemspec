@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "dspy", "= #{DSPy::VERSION}"
+  spec.add_dependency "dspy", ">= 0.30"
   spec.add_dependency "numo-narray-alt", "~> 0.9"
   spec.add_dependency "numo-tiny_linalg", "~> 0.4"
 

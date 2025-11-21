@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "dspy", "= #{DSPy::VERSION}"
+  spec.add_dependency "dspy", ">= 0.30"
   spec.add_dependency "concurrent-ruby", "~> 1.3"
   spec.add_dependency "opentelemetry-sdk", "~> 1.8"
 
