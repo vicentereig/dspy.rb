@@ -48,6 +48,24 @@ Full definitions live in `examples/evaluator_loop.rb` in the repo (kept in sync 
 
 Budget, not iterations, is the guardrail—unlike DSPy::ReAct-style loops that often cap turns. We cap total tokens (default 9k) so the loop stays cost-aware while allowing as many useful passes as the budget permits.[^2]
 
+Loop driver (abridged): the module runs `GenerateSdrPost`, then calls `EvaluateSdrPost`, and repeats while budget remains and the evaluator still wants changes.
+
+```ruby
+while tracker.remaining.positive?
+  draft = generator.call(**input_values.merge(requirements: requirements,
+                                              recommendations: recommendations))
+  evaluation = evaluator.call(post: draft.post,
+                              requirements: requirements,
+                              recommendations: recommendations,
+                              talking_points: draft.talking_points,
+                              attempt: attempt_number)
+  recommendations = evaluation.recommendations || []
+  break if evaluation.decision == EvaluationDecision::Approved
+end
+```
+
+Full loop logic lives in `EvaluatorLoop::SdrPostLoop` in `examples/evaluator_loop.rb`.
+
 ## 2. DSPy.rb Hooks and Conventions: Quality on a Budget
 - Show how module-level subscriptions (`lm.tokens`) drive live token accounting.
 - Derive the default 9k-token budget from recorded attempts (≈2.2k tokens/iteration ⇒ 4 attempts headroom).
