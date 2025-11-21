@@ -3,8 +3,10 @@
 ## 1. Evaluator Loops & Self-Improving Workflows
 - Define evaluator-optimizer pattern; call out how this differs from “LLM as a judge.”
 - When to use it?
-- Walk the AI SDR requirements loop: generator drafts outbound copy, evaluator returns decision + coverage + recommendations, loop applies deltas until approval.
+- Walk the AI SDR requirements loop: generator drafts outbound copy, evaluator returns decision + coverage + recommendations, loop applies deltas until approval. As Anthropic frames it, “one LLM call generates a response while another provides evaluation and feedback in a loop.”[^1]
+- Ground when-to-use guidance with Anthropic’s criteria: “This workflow is particularly effective when we have clear evaluation criteria, and when iterative refinement provides measurable value. The two signs of good fit are, first, that LLM responses can be demonstrably improved when a human articulates their feedback; and second, that the LLM can provide such feedback. This is analogous to the iterative writing process a human writer might go through when producing a polished document.”[^1]
 - Emphasize “budget instead of max iterations” (token budget gates the loop).
+- Examples where evaluator-optimizer shines (per Anthropic): literary translation with iterative nuance fixes, and complex search tasks where the evaluator decides if more retrieval passes are warranted.[^1]
 
 ## 2. DSPy.rb Hooks and Conventions: Quality on a Budget
 - Show how module-level subscriptions (`lm.tokens`) drive live token accounting.
@@ -20,3 +22,5 @@
 - Include Langfuse span examples showing generator/evaluator attempts and recommendation payloads.
 - Highlight `token_budget.remaining` attributes to visualize burn-down.
 - Troubleshooting story: retries stalled when tone sliders were absent—fixed after inspecting span payloads.
+
+[^1]: Anthropic, “Building effective agents,” Workflow: Evaluator-optimizer, Dec 19 2024. citeturn0search0
