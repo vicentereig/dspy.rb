@@ -11,7 +11,7 @@ Evaluator–optimizer is a two-model handshake: the generator proposes, the eval
 - Literary translation that needs nuance passes the translator missed on the first cut.[^1]
 - Complex search/research where an evaluator decides whether another retrieval + synthesis round is warranted.[^1]
 
-Example signatures (abridged, from [`examples/evaluator_loop.rb`](https://github.com/vicentereig/dspy.rb/blob/feature/evaluator-loop-blog/examples/evaluator_loop.rb)):
+These Signatures turn our LLM invocations into functions (abridged, from [`examples/evaluator_loop.rb`](https://github.com/vicentereig/dspy.rb/blob/feature/evaluator-loop-blog/examples/evaluator_loop.rb)):
 
 ```ruby
 class GenerateSdrPost < DSPy::Signature
