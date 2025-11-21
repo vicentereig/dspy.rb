@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Evaluator Loops in Ruby: Ship Sales Pitches with Confidence"
-description: "Turn LLM calls into composable routines—cheap drafts, expert critiques, and token-aware guardrails—so Ruby teams iteratively ship requirement-backed copy without surprise spend."
+description: "Turn LLM calls into composable routines—cheap drafts, expert critiques, and token-aware guardrails—so your Ruby agents iteratively ship requirement-backed copy without surprise spend."
 date: 2025-11-21
 author: "Vicente Reig"
 category: "Workflow"
@@ -35,7 +35,7 @@ flowchart LR
 ```
 
 ## 2. Signatures as Functions
-[Our running example](https://github.com/vicentereig/dspy.rb/blob/feature/evaluator-loop-blog/examples/evaluator_loop.rb) turns LLMs into callable functions:
+[Our running example](https://github.com/vicentereig/dspy.rb/blob/main/examples/evaluator_loop.rb) turns LLMs into callable functions:
 
 ```ruby
 class GenerateLinkedInArticle < DSPy::Signature
