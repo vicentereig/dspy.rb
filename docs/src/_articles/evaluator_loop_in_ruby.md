@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Evaluator Loops in Ruby: Ship Sales Pitches with Confidence"
-description: "Use DSPy.rb signatures, callbacks, and token budgets to iterate sales pitches with a lightweight generator and a heavier CoT evaluator."
+description: "Turn LLM calls into composable routines—cheap drafts, expert critiques, and token-aware guardrails—so Ruby teams iteratively ship requirement-backed copy without surprise spend."
 date: 2025-11-21
 author: "Vicente Reig"
 category: "Workflow"
