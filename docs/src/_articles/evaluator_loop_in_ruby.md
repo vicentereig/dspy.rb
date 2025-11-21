@@ -75,7 +75,7 @@ end
 ```
 
 ## O11y at a Glance
-DSPy.rb ships observability out of the box: every `lm.tokens` event flows into Langfuse, so you don’t need X‑ray vision to see whether budget burned on the draft or the critique. Peek at the latest trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) ships observability out of the box: every `lm.tokens` event flows into Langfuse, so you don’t need X‑ray vision to see whether budget burned on the draft or the critique. Peek at the latest trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
 
 ```
 └─ SalesPitchWriterLoop.forward (ed89899bac229240)
