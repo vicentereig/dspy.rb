@@ -1,7 +1,7 @@
 require 'spec_helper'
 require_relative '../../examples/evaluator_loop'
 
-RSpec.describe EvaluatorLoop::LinkedInSlopLoop do
+RSpec.describe EvaluatorLoop::SalesPitchWriterLoop do
   let(:topic_seed) do
     EvaluatorLoop::TopicSeed.new(
       phrase: 'AI hiring lessons',
@@ -119,7 +119,7 @@ RSpec.describe EvaluatorLoop::LinkedInSlopLoop do
 
     expect(result.decision).to eq(EvaluatorLoop::EvaluationDecision::Approved)
     expect(result.attempts).to eq(2)
-    expect(result.history.last.self_score).to be >= EvaluatorLoop::LinkedInSlopLoop::SELF_SCORE_THRESHOLD
+    expect(result.history.last.self_score).to be >= EvaluatorLoop::SalesPitchWriterLoop::SELF_SCORE_THRESHOLD
     expect(generator).to have_received(:call).twice
     expect(evaluator).to have_received(:call).twice
   end
