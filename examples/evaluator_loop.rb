@@ -236,6 +236,7 @@ module EvaluatorLoop
     REQUIREMENT_COVERAGE_THRESHOLD = 0.85
 
     subscribe 'lm.tokens', :count_tokens, scope: DSPy::Module::SubcriptionScope::Descendants
+    after :forward, :emit_budget_event
 
     sig do
       params(
@@ -333,7 +334,7 @@ module EvaluatorLoop
         break if final_decision == EvaluationDecision::Approved || tracker.exhausted?
       end
 
-      RevisedPost.new(
+      result = RevisedPost.new(
         final_post: final_post,
         decision: final_decision,
         attempts: history.size,
@@ -343,7 +344,10 @@ module EvaluatorLoop
         budget_exhausted: tracker.exhausted?,
         requirement_summary: latest_summary
       )
+      @last_tracker_snapshot = tracker
+      result
     ensure
+      @last_tracker_snapshot ||= tracker
       @active_budget_tracker = nil
     end
 
@@ -398,6 +402,19 @@ module EvaluatorLoop
         prompt_tokens: prompt&.to_i,
         completion_tokens: completion&.to_i,
         total_tokens: total&.to_i
+      )
+    end
+
+    sig { void }
+    def emit_budget_event
+      snapshot = @last_tracker_snapshot
+      return unless snapshot
+
+      DSPy.event(
+        'sdr_loop.budget',
+        token_budget_used: snapshot.used,
+        token_budget_remaining: snapshot.remaining,
+        token_budget_limit: snapshot.limit
       )
     end
   end
