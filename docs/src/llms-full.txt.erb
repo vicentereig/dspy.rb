@@ -33,7 +33,7 @@ DSPy.rb brings software engineering best practices to LLM development. Instead o
 DSPy.rb is a Ruby framework for building language model applications with programmatic prompts. It provides:
 
 - **Type-safe signatures** - Define inputs/outputs with Sorbet types
-- **Modular components** - Compose and reuse LLM logic  
+- **Modular components** - Compose and reuse LLM logic
 - **Automatic optimization** - Use data to improve prompts, not guesswork
 - **Production-ready** - Built-in observability, testing, and error handling
 
@@ -55,10 +55,10 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 | Text Generation | ✅ | ✅ | ✅ | ✅ |
 | Structured Output | ✅ | ✅ | ✅ | ✅ |
 | Vision (Raw Chat) | ✅ | ✅ | ✅ | ❌ |
-| Vision (Signatures) | 🚧 (raw_chat only) | 🚧 (raw_chat only) | 🚧 (raw_chat only) | ❌ |
+| Vision (Signatures)  | ✅ | ✅ | ✅ | ❌ |
 | Image URLs | ✅ | ❌ | ❌ | ❌ |
 | Image Base64 | ✅ | ✅ | ✅ | ❌ |
-| Tool Calling | ❌ (pending) | ✅ (passes tools) | ❌ (pending) | Varies |
+| Tool Calling |  ✅ | ✅ | ✅ | Varies |
 
 ### Current Limitations
 
@@ -154,12 +154,12 @@ export NEW_RELIC_LICENSE_KEY=your_license_key
 ```ruby
 DSPy.configure do |c|
   # Language Model
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', 
+  c.lm = DSPy::LM.new('openai/gpt-4o-mini',
     api_key: ENV['OPENAI_API_KEY'],
     temperature: 0.7,
     max_tokens: 2000
   )
-  
+
   # Observability
   c.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
     logger.add_backend(level: :info, stream: $stdout)
@@ -176,7 +176,7 @@ Signatures define the interface between your application and language models:
 ```ruby
 class EmailClassifier < DSPy::Signature
   description "Classify customer support emails by category and priority"
-  
+
   class Priority < T::Enum
     enums do
       Low = new('low')
@@ -185,12 +185,12 @@ class EmailClassifier < DSPy::Signature
       Urgent = new('urgent')
     end
   end
-  
+
   input do
     const :email_content, String
     const :sender, String
   end
-  
+
   output do
     const :category, String
     const :priority, Priority
@@ -230,11 +230,11 @@ Improve accuracy with data:
 ```ruby
 class TaskSignature < DSPy::Signature
   description "Clear description of what this signature accomplishes"
-  
+
   input do
     const :field_name, String
   end
-  
+
   output do
     const :result_field, String
   end
@@ -276,13 +276,13 @@ end
 ```ruby
 class SmartSearch < DSPy::Signature
   description "Search with intelligent defaults"
-  
+
   input do
     const :query, String
     const :max_results, Integer, default: 10
     const :language, String, default: "English"
   end
-  
+
   output do
     const :results, T::Array[String]
     const :cached, T::Boolean, default: false
@@ -301,7 +301,7 @@ end
 
 class ExtractContact < DSPy::Signature
   description "Extract contact information"
-  
+
   output do
     const :contact, ContactInfo
   end
@@ -333,7 +333,7 @@ class SearchAction < T::Struct
   const :max_results, Integer, default: 10
 end
 
-class AnswerAction < T::Struct  
+class AnswerAction < T::Struct
   const :content, String
   const :confidence, Float
 end
@@ -349,7 +349,7 @@ end
 **How `_type` Fields Work:**
 
 1. **Automatic Injection**: DSPy adds `_type` fields to JSON schemas with `const` constraints
-2. **Type Resolution**: LLMs include the `_type` field in responses to indicate struct type  
+2. **Type Resolution**: LLMs include the `_type` field in responses to indicate struct type
 3. **Automatic Filtering**: DSPy filters out `_type` fields during deserialization for all structs
 4. **Recursive Handling**: Works at any nesting level in complex data structures
 
@@ -403,7 +403,7 @@ class DocumentProcessor < DSPy::Module
     classification = @classifier.call(content: document)
     summary = @summarizer.call(content: document)
     keywords = @extractor.call(content: document)
-    
+
     {
       document_type: classification.document_type,
       summary: summary.summary,
@@ -418,7 +418,7 @@ end
 ```ruby
 module = DSPy::ChainOfThought.new(SignatureClass)
 module.configure do |config|
-  config.lm = DSPy::LM.new('anthropic/claude-3-sonnet', 
+  config.lm = DSPy::LM.new('anthropic/claude-3-sonnet',
     api_key: ENV['ANTHROPIC_API_KEY']
   )
 end
@@ -550,7 +550,7 @@ end
 # Complex signature with nested discriminated types
 class BusinessAnalysis < DSPy::Signature
   description "Analyze business entities with nested address data"
-  
+
   output do
     const :entity, T.any(Person, Company)  # Union with complex nested types
     const :confidence, Float
@@ -572,7 +572,7 @@ The `T.any(Person, Company)` generates a `oneOf` schema:
             "_type": { "type": "string", "const": "Person" },
             "name": { "type": "string" },
             "address": {
-              "type": "object", 
+              "type": "object",
               "properties": {
                 "_type": { "type": "string", "const": "CompanyAddress" },
                 "street": { "type": "string" },
@@ -613,7 +613,7 @@ The `T.any(Person, Company)` generates a `oneOf` schema:
     "address": {
       "_type": "CompanyAddress",
       "street": "123 Business Ave",
-      "city": "Tech City", 
+      "city": "Tech City",
       "postal_code": "12345"
     },
     "employees": [
@@ -622,7 +622,7 @@ The `T.any(Person, Company)` generates a `oneOf` schema:
         "name": "John Doe",
         "address": {
           "_type": "CompanyAddress",
-          "street": "456 Home St", 
+          "street": "456 Home St",
           "city": "Residential Area",
           "postal_code": "67890"
         }
@@ -647,7 +647,7 @@ class Company < T::Struct
     const :name, String
     const :head, String
   end
-  
+
   const :name, String
   const :departments, T::Array[Department]
 end
@@ -730,7 +730,7 @@ end
 ```
 
 **Anthropic (base64 only):**
-```ruby  
+```ruby
 lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
 
 # Must use base64 or raw data
@@ -739,7 +739,7 @@ File.open('image.jpg', 'rb') do |file|
     data: file.read,
     content_type: 'image/jpeg'
   )
-  
+
   response = lm.raw_chat do |messages|
     messages.system('You are a color detection expert.')
     messages.user_with_image('What color?', image)
@@ -756,7 +756,7 @@ DSPy.rb validates image compatibility and provides clear error messages:
 begin
   non_vision_lm = DSPy::LM.new('openai/gpt-3.5-turbo', api_key: ENV['OPENAI_API_KEY'])
   image = DSPy::Image.new(url: 'https://example.com/image.jpg')
-  
+
   non_vision_lm.raw_chat do |messages|
     messages.user_with_image('What is this?', image)
   end
@@ -768,7 +768,7 @@ end
 begin
   anthropic_lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
   image = DSPy::Image.new(url: 'https://example.com/image.jpg')
-  
+
   anthropic_lm.raw_chat do |messages|
     messages.user_with_image('What is this?', image)
   end
@@ -801,7 +801,7 @@ class ImageAnalysis < DSPy::Signature
     const :focus, String, default: 'general', description: 'Analysis focus'
     const :detail_level, String, default: 'standard', description: 'Detail level'
   end
-  
+
   output do
     const :description, String, description: 'Overall image description'
     const :objects, T::Array[String], description: 'Objects detected in image'
@@ -833,7 +833,7 @@ class BoundingBoxDetection < DSPy::Signature
     const :image, DSPy::Image, description: 'Image to analyze for object detection'
     const :query, T.any(String, NilClass), description: 'Object to detect'
   end
-  
+
   output do
     const :objects, T::Array[DetectedObject], description: 'Detected objects with type-safe bounding boxes'
     const :count, Integer, description: 'Total objects detected'
@@ -878,17 +878,17 @@ Reasoning + Acting pattern:
 class ResearchAssistant < DSPy::Module
   def initialize
     super
-    
+
     # Create tools (implement as needed for your use case)
     calculator = YourCalculatorTool.new
     memory_tools = DSPy::Tools::MemoryToolset.to_tools
-    
+
     @agent = DSPy::ReAct.new(
       ResearchSignature,
       tools: [calculator, *memory_tools]
     )
   end
-  
+
   def forward(query:)
     @agent.call(query: query)
   end
@@ -912,12 +912,12 @@ class CustomAgent < DSPy::Module
     @executor = DSPy::CodeAct.new(ExecutionSignature)
     @validator = DSPy::Predict.new(ValidationSignature)
   end
-  
+
   def forward(task:)
     plan = @planner.call(task: task)
     execution = @executor.call(plan: plan.plan)
     validation = @validator.call(result: execution.solution)
-    
+
     {
       result: execution.solution,
       confidence: validation.confidence
@@ -960,13 +960,13 @@ class PersonalAssistant < DSPy::Module
   def initialize
     super
     memory_tools = DSPy::Tools::MemoryToolset.to_tools
-    
+
     @agent = DSPy::ReAct.new(
       AssistantSignature,
       tools: memory_tools
     )
   end
-  
+
   def forward(user_message:, user_id:)
     @agent.call(
       user_message: user_message,
@@ -999,7 +999,7 @@ Tools now support comprehensive Sorbet type system including enums, structs, arr
 class CalculatorTool < DSPy::Tools::Base
   tool_name 'calculator'
   tool_description 'Performs arithmetic operations with type-safe enum inputs and comprehensive error handling'
-  
+
   class Operation < T::Enum
     enums do
       Add = new('add')
@@ -1010,7 +1010,7 @@ class CalculatorTool < DSPy::Tools::Base
       Root = new('root')
     end
   end
-  
+
   class CalculationResult < T::Struct
     const :result, T.any(Float, String)
     const :operation_performed, String
@@ -1084,7 +1084,7 @@ end
 class DataAnalysisTool < DSPy::Tools::Base
   tool_name 'data_analyzer'
   tool_description 'Analyzes datasets with comprehensive type-safe configuration'
-  
+
   class DataType < T::Enum
     enums do
       Numeric = new('numeric')
@@ -1093,21 +1093,21 @@ class DataAnalysisTool < DSPy::Tools::Base
       DateTime = new('datetime')
     end
   end
-  
+
   class ColumnInfo < T::Struct
     const :name, String
     const :type, DataType
     const :nullable, T::Boolean, default: false
     const :unique_values, T.nilable(Integer)
   end
-  
+
   class AnalysisConfig < T::Struct
     const :include_correlations, T::Boolean, default: true
     const :max_unique_values, Integer, default: 100
     const :sample_size, T.nilable(Integer), default: nil
     const :output_format, T::Array[String], default: ['summary', 'stats']
   end
-  
+
   class AnalysisResult < T::Struct
     const :total_rows, Integer
     const :total_columns, Integer
@@ -1123,15 +1123,15 @@ class DataAnalysisTool < DSPy::Tools::Base
   ).returns(AnalysisResult) }
   def call(data:, columns:, config: nil)
     config ||= AnalysisConfig.new
-    
+
     # Simulate analysis
     total_rows = data.split("\n").length
     missing_percentage = 0.05
-    
+
     recommendations = []
     recommendations << "Consider handling missing data" if missing_percentage > 0.1
     recommendations << "Some columns have high cardinality" if columns.any? { |c| (c.unique_values || 0) > config.max_unique_values }
-    
+
     AnalysisResult.new(
       total_rows: total_rows,
       total_columns: columns.length,
@@ -1150,7 +1150,7 @@ Toolsets group related tools together with comprehensive type support:
 ```ruby
 class WeatherToolset < DSPy::Tools::Toolset
   toolset_name "weather"
-  
+
   class WeatherCondition < T::Enum
     enums do
       Sunny = new('sunny')
@@ -1160,13 +1160,13 @@ class WeatherToolset < DSPy::Tools::Toolset
       Stormy = new('stormy')
     end
   end
-  
+
   class Temperature < T::Struct
     const :celsius, Float
     const :fahrenheit, Float
     const :feels_like, Float
   end
-  
+
   class WeatherReport < T::Struct
     const :location, String
     const :condition, WeatherCondition
@@ -1175,7 +1175,7 @@ class WeatherToolset < DSPy::Tools::Toolset
     const :wind_speed, Float
     const :timestamp, String
   end
-  
+
   class ForecastDay < T::Struct
     const :date, String
     const :condition, WeatherCondition
@@ -1183,11 +1183,11 @@ class WeatherToolset < DSPy::Tools::Toolset
     const :low_temp, Float
     const :precipitation_chance, Integer
   end
-  
+
   tool :get_current, tool_name: "weather_current", description: "Get current weather conditions"
   tool :get_forecast, description: "Get detailed weather forecast"
   tool :get_alerts, description: "Get weather alerts for location"
-  
+
   sig { params(location: String).returns(WeatherReport) }
   def get_current(location:)
     # Actual implementation would call weather API
@@ -1204,7 +1204,7 @@ class WeatherToolset < DSPy::Tools::Toolset
       timestamp: Time.now.iso8601
     )
   end
-  
+
   sig { params(location: String, days: Integer).returns(T::Array[ForecastDay]) }
   def get_forecast(location:, days: 7)
     # Actual implementation would call weather API
@@ -1218,7 +1218,7 @@ class WeatherToolset < DSPy::Tools::Toolset
       )
     end
   end
-  
+
   sig { params(location: String, severity: T.nilable(String)).returns(T::Array[String]) }
   def get_alerts(location:, severity: nil)
     # Actual implementation would call weather API
@@ -1230,7 +1230,7 @@ end
 # Advanced database toolset with complex operations
 class DatabaseToolset < DSPy::Tools::Toolset
   toolset_name "database"
-  
+
   class QueryType < T::Enum
     enums do
       Select = new('select')
@@ -1241,21 +1241,21 @@ class DatabaseToolset < DSPy::Tools::Toolset
       Aggregate = new('aggregate')
     end
   end
-  
+
   class Column < T::Struct
     const :name, String
     const :type, String
     const :nullable, T::Boolean, default: true
     const :default_value, T.nilable(String)
   end
-  
+
   class QueryConfig < T::Struct
     const :limit, T.nilable(Integer)
     const :offset, T.nilable(Integer), default: 0
     const :order_by, T.nilable(String)
     const :include_count, T::Boolean, default: false
   end
-  
+
   class QueryResult < T::Struct
     const :success, T::Boolean
     const :data, T::Array[T::Hash[String, T.untyped]]
@@ -1263,11 +1263,11 @@ class DatabaseToolset < DSPy::Tools::Toolset
     const :execution_time_ms, Float
     const :query_type, QueryType
   end
-  
+
   tool :execute_query, description: "Execute database query with type safety"
   tool :describe_table, description: "Get table schema information"
   tool :optimize_query, description: "Analyze and optimize query performance"
-  
+
   sig { params(
     sql: String,
     query_type: QueryType,
@@ -1275,13 +1275,13 @@ class DatabaseToolset < DSPy::Tools::Toolset
   ).returns(QueryResult) }
   def execute_query(sql:, query_type:, config: nil)
     config ||= QueryConfig.new
-    
+
     # Simulate query execution
     mock_data = [
       { "id" => 1, "name" => "Alice", "email" => "alice@example.com" },
       { "id" => 2, "name" => "Bob", "email" => "bob@example.com" }
     ]
-    
+
     QueryResult.new(
       success: true,
       data: mock_data,
@@ -1290,7 +1290,7 @@ class DatabaseToolset < DSPy::Tools::Toolset
       query_type: query_type
     )
   end
-  
+
   sig { params(table_name: String).returns(T::Array[Column]) }
   def describe_table(table_name:)
     # Simulate table description
@@ -1300,7 +1300,7 @@ class DatabaseToolset < DSPy::Tools::Toolset
       Column.new(name: "email", type: "VARCHAR(320)", nullable: true, default_value: "NULL")
     ]
   end
-  
+
   sig { params(sql: String).returns(T::Hash[String, T.any(String, Integer, Float, T::Array[String])]) }
   def optimize_query(sql:)
     # Simulate query optimization analysis
@@ -1324,7 +1324,7 @@ database_tools = DatabaseToolset.to_tools
 
 # Use with ReAct agent
 agent = DSPy::ReAct.new(
-  WeatherSignature, 
+  WeatherSignature,
   tools: weather_tools + database_tools,
   max_iterations: 15
 )
@@ -1335,8 +1335,8 @@ agent = DSPy::ReAct.new(
 ```ruby
 # Memory toolset with persistent storage
 memory_tools = DSPy::Tools::MemoryToolset.to_tools
-# Includes: memory_store, memory_retrieve, memory_search, 
-#          memory_list, memory_update, memory_delete, 
+# Includes: memory_store, memory_retrieve, memory_search,
+#          memory_list, memory_update, memory_delete,
 #          memory_clear, memory_count, memory_get_metadata
 
 # Text processing toolset
@@ -1365,17 +1365,17 @@ class ComplexTool < DSPy::Tools::Base
       High = new('high')
     end
   end
-  
+
   class TaskData < T::Struct
     const :title, String
     const :priority, Priority
     const :tags, T::Array[String]
   end
-  
+
   # Agent JSON: {
   #   "task": {
   #     "title": "Fix bug",
-  #     "priority": "high", 
+  #     "priority": "high",
   #     "tags": ["urgent", "backend"]
   #   }
   # }
@@ -1384,7 +1384,7 @@ class ComplexTool < DSPy::Tools::Base
   # - "high" → Priority::High enum
   # - Array strings → T::Array[String]
   # - Nested hash → TaskData struct
-  
+
   sig { params(task: TaskData).returns(String) }
   def call(task:)
     "Created task: #{task.title} (#{task.priority.serialize}) with tags: #{task.tags.join(', ')}"
@@ -1393,7 +1393,7 @@ end
 
 # Conversion works for all Sorbet types:
 # - T::Enum → Automatic string-to-enum conversion
-# - T::Struct → Recursive hash-to-struct conversion  
+# - T::Struct → Recursive hash-to-struct conversion
 # - T::Array[Type] → Array element conversion
 # - T::Hash[String, Type] → Hash value conversion
 # - T.nilable(Type) → Handles null/nil values
@@ -1513,12 +1513,12 @@ end
 # Multi-factor custom metric
 quality_metric = ->(example, prediction) do
   return 0.0 unless prediction
-  
+
   score = 0.0
   score += 0.5 if prediction.answer == example.expected_answer  # Accuracy
   score += 0.3 if prediction.explanation&.length&.> 50          # Completeness
   score += 0.2 if prediction.confidence&.> 0.8                  # Confidence
-  
+
   score
 end
 
@@ -1612,7 +1612,7 @@ Langfuse integration also requires these environment variables:
 export LANGFUSE_PUBLIC_KEY=pk_your_public_key
 export LANGFUSE_SECRET_KEY=sk_your_secret_key
 # Optional: defaults to https://cloud.langfuse.com
-export LANGFUSE_HOST=https://your-langfuse-instance.com  
+export LANGFUSE_HOST=https://your-langfuse-instance.com
 ```
 
 **Basic Setup:**
@@ -1714,7 +1714,7 @@ DSPy.events.unsubscribe(subscription_id)
 
 - `llm.generate` - LLM API calls with token usage and timing
 - `dspy.predict` - Prediction operations with inputs/outputs
-- `module.forward` - Module execution with span tracking  
+- `module.forward` - Module execution with span tracking
 - `tool.execute` - Tool invocations in agents
 - `span.start` / `span.end` - OpenTelemetry span lifecycle
 
@@ -1727,9 +1727,9 @@ class MetricsCollector
       collect_llm_metrics(event, attrs)
     end
   end
-  
+
   private
-  
+
   def collect_llm_metrics(event, attributes)
     # Custom metrics collection logic
     if event == 'llm.generate'
@@ -1768,13 +1768,13 @@ current = registry.registry.get_deployed_version("EmailClassifier")
 ```ruby
 RSpec.describe EmailClassifier do
   let(:classifier) { EmailClassifier.new }
-  
+
   it "classifies spam correctly" do
     result = classifier.call(
       email_content: "Win a prize!",
       sender: "spam@example.com"
     )
-    
+
     expect(result.category).to eq("spam")
     expect(result.confidence).to be > 0.8
   end
@@ -1786,7 +1786,7 @@ end
 ```ruby
 RSpec.describe "LLM Integration", vcr: true do
   let(:predictor) { DSPy::Predict.new(AnalysisSignature) }
-  
+
   it "analyzes text with real LLM" do
     result = predictor.call(text: "Sample text")
     expect(result).to respond_to(:analysis)
@@ -1811,12 +1811,12 @@ allow(predictor).to receive(:call).and_return(
 ```ruby
 RSpec.describe ResearchAssistant do
   let(:assistant) { ResearchAssistant.new }
-  
+
   it "uses tools to answer questions" do
     result = assistant.call(
       query: "What is 2+2?"
     )
-    
+
     expect(result.answer).to eq("4")
     expect(result.tool_calls).to include(
       hash_including(tool: "calculator")
@@ -1908,7 +1908,7 @@ class EmailClassifierService
   def initialize
     @classifier = DSPy::ChainOfThought.new(EmailClassifier)
   end
-  
+
   def classify(email)
     @classifier.call(
       email_content: email.body,
@@ -1923,13 +1923,13 @@ end
 ```ruby
 class AnalyzeDocumentJob
   include Sidekiq::Job
-  
+
   def perform(document_id)
     document = Document.find(document_id)
-    
+
     analyzer = DSPy::Predict.new(DocumentAnalysis)
     result = analyzer.call(content: document.text)
-    
+
     document.update!(
       category: result.category,
       summary: result.summary
@@ -1944,12 +1944,12 @@ end
 # Sinatra example
 post '/api/classify' do
   content_type :json
-  
+
   data = JSON.parse(request.body.read)
-  
+
   classifier = DSPy::Predict.new(TextClassifier)
   result = classifier.call(text: data['text'])
-  
+
   {
     category: result.category.serialize,
     confidence: result.confidence
@@ -1970,7 +1970,7 @@ Additional runnable examples in the repo:
 # Signature for email classification
 class EmailTriage < DSPy::Signature
   description "Triage customer support emails"
-  
+
   class Priority < T::Enum
     enums do
       Low = new('low')
@@ -1979,13 +1979,13 @@ class EmailTriage < DSPy::Signature
       Urgent = new('urgent')
     end
   end
-  
+
   input do
     const :subject, String
     const :body, String
     const :customer_tier, String
   end
-  
+
   output do
     const :department, String
     const :priority, Priority
@@ -1998,16 +1998,16 @@ end
 class SupportAgent < DSPy::Module
   def initialize
     super
-    
+
     memory_tools = DSPy::Tools::MemoryToolset.to_tools
-    
+
     @triage = DSPy::ChainOfThought.new(EmailTriage)
     @agent = DSPy::ReAct.new(
       SupportResponse,
       tools: memory_tools
     )
   end
-  
+
   def forward(email:, customer_id:)
     # Triage email
     triage_result = @triage.call(
@@ -2015,14 +2015,14 @@ class SupportAgent < DSPy::Module
       body: email.body,
       customer_tier: email.customer.tier
     )
-    
+
     # Generate response with context
     response = @agent.call(
       email: email.body,
       customer_id: customer_id,
       priority: triage_result.priority.serialize
     )
-    
+
     {
       department: triage_result.department,
       priority: triage_result.priority,
@@ -2047,30 +2047,30 @@ class DataPipeline < DSPy::Module
     @visualizer = DSPy::ChainOfThought.new(DataVisualization)
     @reporter = DSPy::ChainOfThought.new(ReportGeneration)
   end
-  
+
   def forward(raw_data:, analysis_goals:)
     # Clean data
     cleaned = @cleaner.call(data: raw_data)
-    
+
     # Analyze
     analysis = @analyzer.call(
       data: cleaned.cleaned_data,
       goals: analysis_goals
     )
-    
+
     # Generate visualizations
     viz = @visualizer.call(
       data: analysis.results,
       chart_types: ["bar", "line", "scatter"]
     )
-    
+
     # Create report
     report = @reporter.call(
       analysis: analysis.solution,
       visualizations: viz.code,
       goals: analysis_goals
     )
-    
+
     {
       cleaned_data: cleaned.cleaned_data,
       analysis_results: analysis.solution,
@@ -2096,17 +2096,17 @@ class ContentModerator < DSPy::Module
       OffTopic = new('off_topic')
     end
   end
-  
+
   class ModerationResult < T::Struct
     const :violation_type, ViolationType
     const :confidence, Float
     const :explanation, String
     const :action, String  # "approve", "flag", "remove"
   end
-  
+
   def initialize
     super
-    
+
     # Note: These are example signature classes - implement as needed
     @classifier = DSPy::ChainOfThought.new(YourContentClassificationSignature)
     @fact_checker = DSPy::ReAct.new(
@@ -2114,21 +2114,21 @@ class ContentModerator < DSPy::Module
       tools: [your_web_search_tool]
     )
   end
-  
+
   def forward(content:, context:)
     # Initial classification
     classification = @classifier.call(
       content: content,
       context: context
     )
-    
+
     # Fact check if needed
     if classification.needs_fact_check
       fact_result = @fact_checker.call(
         claim: content,
         context: context
       )
-      
+
       if fact_result.likely_false
         return ModerationResult.new(
           violation_type: ViolationType::Misinformation,
@@ -2138,7 +2138,7 @@ class ContentModerator < DSPy::Module
         )
       end
     end
-    
+
     ModerationResult.new(
       violation_type: classification.violation_type,
       confidence: classification.confidence,
@@ -2146,9 +2146,9 @@ class ContentModerator < DSPy::Module
       action: determine_action(classification)
     )
   end
-  
+
   private
-  
+
   def determine_action(classification)
     case classification.violation_type
     when ViolationType::None
@@ -2189,7 +2189,7 @@ class AdaptiveModule < DSPy::Module
       complex: DSPy::ChainOfThought.new(ComplexSignature)
     }
   end
-  
+
   def forward(input:, complexity: :simple)
     strategy = @strategies[complexity]
     strategy.call(input: input)
