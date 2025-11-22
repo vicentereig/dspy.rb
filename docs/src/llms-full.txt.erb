@@ -43,7 +43,7 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 - **Type Safety**: Sorbet integration throughout
 - **Automatic JSON Extraction**: Provider-optimized strategies
 - **Composable Modules**: Chain, compose, and reuse
-- **Multimodal Support**: Text and image inputs with vision models (structured signatures and raw chat)
+- **Multimodal Support**: Text and image inputs with vision models via raw chat (signature wiring planned)
 - **Agent Systems**: ReAct (core), CodeAct (`dspy-code_act`), and custom agents
 - **Memory & State**: Persistent memory for stateful applications
 - **Observability**: Automatic APM integration, token tracking, performance monitoring
@@ -55,18 +55,18 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 | Text Generation | ✅ | ✅ | ✅ | ✅ |
 | Structured Output | ✅ | ✅ | ✅ | ✅ |
 | Vision (Raw Chat) | ✅ | ✅ | ✅ | ❌ |
-| Vision (Signatures) | ✅ | ✅ | ✅ | ❌ |
+| Vision (Signatures) | 🚧 (raw_chat only) | 🚧 (raw_chat only) | 🚧 (raw_chat only) | ❌ |
 | Image URLs | ✅ | ❌ | ❌ | ❌ |
 | Image Base64 | ✅ | ✅ | ✅ | ❌ |
-| Tool Calling | ✅ | ✅ | ✅ | Varies |
+| Tool Calling | ❌ (pending) | ✅ (passes tools) | ❌ (pending) | Varies |
 
 ### Current Limitations
 
-- **Streaming**: Not yet implemented for any provider
-- **Function Calling**: Tool support varies by model capability  
-- **Image URLs**: Only OpenAI supports direct URL references
-- **Local Models**: Limited multimodal support through Ollama
-- **Batch Processing**: Single request processing only
+- **Streaming**: Supported via block streaming on OpenAI, Anthropic, and Gemini adapters; modules return concatenated content only (no token-by-token callbacks).
+- **Function/Tool Calling**: Anthropic adapter accepts `tools:`; OpenAI and Gemini adapters do not yet expose tool specs.
+- **Image URLs**: Only OpenAI supports direct URL references.
+- **Local Models**: Limited multimodal support through Ollama.
+- **Batch Processing**: Single request processing only.
 
 ## Installation & Setup
 
@@ -783,8 +783,11 @@ end
 - **Size Limit**: 5MB per image
 - **OpenAI**: URLs and base64, supports `detail` parameter
 - **Anthropic**: Base64 and raw data only, no `detail` parameter
+- **Signatures**: Image fields in signatures are not yet supported; use raw chat for vision.
 
 ### Structured Multimodal Signatures
+
+Note: Image fields in signatures are not yet serialized into LM requests; use `raw_chat`/`MessageBuilder` for vision today. The examples below illustrate the intended API once signature-level multimodal wiring lands.
 
 DSPy.rb supports advanced structured signatures for comprehensive image analysis:
 
@@ -1956,6 +1959,11 @@ end
 
 ## Examples
 
+Additional runnable examples in the repo:
+- Workflow router: `examples/workflow_router.rb`
+- Evaluator + optimizer loop: `examples/evaluator_loop.rb`
+- GitHub assistant agent: `examples/github-assistant/`
+
 ### Email Support System
 
 ```ruby
@@ -2191,15 +2199,20 @@ end
 
 ### Streaming Responses
 
+Streaming is supported today by passing a block to `raw_chat` (or any adapter-aware call). The block receives provider chunks while DSPy also accumulates the final string.
+
 ```ruby
-# Future feature - not yet implemented
-class StreamingPredictor < DSPy::Module
-  def forward(input:, &block)
-    @lm.stream(prompt: build_prompt(input)) do |chunk|
-      yield chunk
-    end
-  end
+lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+
+buffer = ""
+lm.raw_chat([{ role: 'user', content: 'Stream the alphabet slowly.' }]) do |chunk|
+  text = chunk.dig('choices', 0, 'delta', 'content')
+  next unless text
+  buffer << text
+  print text
 end
+
+puts "\nFinal: #{buffer}"
 ```
 
 ## Performance Optimization

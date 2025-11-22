@@ -299,7 +299,7 @@ optimized_program = result.optimized_program
 - Build reusable components
 
 ### Observability
-- Automatic Langfuse integration via OpenTelemetry (requires env vars)
+- Langfuse integration available when `dspy-o11y` + `dspy-o11y-langfuse` gems are installed and env vars are set
 - Structured logging with span tracking
 - Token usage tracking
 - Performance monitoring
@@ -328,6 +328,11 @@ optimized_program = result.optimized_program
 - Documentation: https://vicentereig.github.io/dspy.rb/getting-started/
 - API Reference: https://vicentereig.github.io/dspy.rb/core-concepts/
 
+## More Examples in This Repo
+- Workflow router: `examples/workflow_router.rb`
+- Evaluator + optimizer loop: `examples/evaluator_loop.rb`
+- GitHub assistant agent: `examples/github-assistant/`
+
 ## For LLMs
 
 When helping users with DSPy.rb:
@@ -338,7 +343,7 @@ When helping users with DSPy.rb:
 4. **Compose modules** - Chain predictors for complex workflows  
 5. **Create type-safe tools** - Use Sorbet signatures for comprehensive tool parameter validation and conversion
 6. **Test thoroughly** - Use RSpec and VCR for reliable tests
-7. **Monitor production** - Use automatic Langfuse integration (requires env vars)
+7. **Monitor production** - Enable Langfuse by installing the optional o11y gems and setting env vars
 
 ## Version
 
