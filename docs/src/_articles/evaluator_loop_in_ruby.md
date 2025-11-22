@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Evaluator Loops in Ruby: Ship Sales Pitches with Confidence"
-description: "Turn LLM calls into composable routines—cheap drafts, expert critiques, and token-aware guardrails—so your Ruby agents iteratively ship requirement-backed copy without surprise spend."
+description: "A quick walkthrough of how to turn LLM calls into composable building blocks in Ruby. With evaluator loops, you get cheap iterations, clear critiques, and real observability into each step. Great for shipping better sales pitches without guessing what the model is doing (or overspending on tokens)."
 date: 2025-11-21
 author: "Vicente Reig"
 category: "Workflow"

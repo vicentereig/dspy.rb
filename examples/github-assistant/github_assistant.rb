@@ -23,13 +23,13 @@ Dotenv.load(File.join(File.dirname(__FILE__), '..', '..', '.env'))
 # Signature for the GitHub Assistant
 class GitHubAssistant < DSPy::Signature
   description "An intelligent GitHub assistant that can perform repository operations using GitHub CLI"
-  
+
   input do
     const :task, String
     const :repository, String, default: ""
     const :context, String, default: ""
   end
-  
+
   output do
     const :result, String
     const :actions_taken, String, default: ""
@@ -46,17 +46,17 @@ class GitHubAssistantDemo
         api_key: ENV['OPENAI_API_KEY'] || ENV['ANTHROPIC_API_KEY']
       )
     end
-    
+
     # Set up the GitHub tools
     @github_tools = DSPy::Tools::GitHubCLIToolset.to_tools
-    
+
     # Create the ReAct agent with GitHub tools
     @agent = DSPy::ReAct.new(
       GitHubAssistant,
       tools: @github_tools,
       max_iterations: 15
     )
-    
+
     puts "🚀 GitHub Assistant initialized with #{@github_tools.length} GitHub CLI tools"
     puts "Available tools: #{@github_tools.map(&:name).join(', ')}"
     puts
@@ -65,33 +65,38 @@ class GitHubAssistantDemo
   def run_demo
     puts "🎯 GitHub Assistant Demo"
     puts "=" * 50
-    
+
     # Demo tasks that showcase different capabilities
     demo_tasks = [
       {
         name: "Repository Analysis",
-        task: "Analyze the microsoft/vscode repository: get basic info and list recent open issues",
-        repo: "microsoft/vscode"
+        task: "Analyze the repository: get basic info and list recent open issues",
+        repo: "vicentereig/dspy.rb"
       },
       {
         name: "Issue Search",
-        task: "Find the 5 most recent issues labeled 'bug' and summarize what types of bugs are being reported",
-        repo: "rails/rails"
+        task: "Find the 10 most recent issues and summarize what types of bugs are being reported",
+        repo: "vicentereig/dspy.rb"
       },
       {
-        name: "Pull Request Overview", 
+        name: "Open Pull Request Overview",
         task: "List open pull requests and identify any that might be ready for review based on their titles",
-        repo: "nodejs/node"
+        repo: "vicentereig/dspy.rb"
+      },
+      {
+        name: "Open Pull Request Overview",
+        task: "List closed pull requests and identify any that might be ready for review based on their titles",
+        repo: "vicentereig/dspy.rb"
       },
       {
         name: "API Exploration",
-        task: "Use the GitHub API to get repository statistics (stars, forks, open issues count) and provide a summary",
-        repo: "golang/go"
+        task: "Use the GitHub API to get repository statistics (stars, forks, open issues count, clones and visits) and provide a summary",
+        repo: "vicentereig/dspy.rb"
       },
       {
         name: "Multi-Step Analysis",
         task: "Compare the activity between issues and pull requests - which has more recent activity and what does that tell us about the project?",
-        repo: "facebook/react"
+        repo: "vicentereig/dspy.rb"
       }
     ]
 
@@ -100,7 +105,7 @@ class GitHubAssistantDemo
       puts "Repository: #{demo[:repo]}"
       puts "Task: #{demo[:task]}"
       puts "-" * 50
-      
+
       begin
         # Execute the task with the agent
         response = @agent.call(
@@ -108,26 +113,26 @@ class GitHubAssistantDemo
           repository: demo[:repo],
           context: "This is a demo of the GitHub CLI toolset capabilities."
         )
-        
+
         puts "✅ Result:"
         puts response.result
         puts
-        
+
         if response.respond_to?(:actions_taken) && !response.actions_taken.empty?
           puts "🔧 Actions taken:"
           puts response.actions_taken
           puts
         end
-        
+
       rescue => e
         puts "❌ Error executing demo #{index + 1}: #{e.message}"
         puts "This might happen if GitHub CLI is not authenticated or the repository is not accessible."
         puts
       end
-      
+
       puts "=" * 50
       puts
-      
+
       # Add a small delay between demos to avoid rate limiting
       sleep(2) unless index == demo_tasks.length - 1
     end
@@ -138,41 +143,41 @@ class GitHubAssistantDemo
     puts "Enter your GitHub-related tasks. Type 'exit' to quit."
     puts "Example: 'List issues from microsoft/vscode labeled as bugs'"
     puts "=" * 50
-    
+
     loop do
       print "You: "
       input = gets.chomp
-      
+
       break if input.downcase == 'exit'
-      
+
       if input.empty?
         puts "Please enter a task or 'exit' to quit."
         next
       end
-      
+
       # Extract repository from input if mentioned
       repo_match = input.match(/(?:from|in|on)\s+([a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+)/)
       repository = repo_match ? repo_match[1] : ""
-      
+
       begin
         puts "🤔 Thinking..."
-        
+
         response = @agent.call(
           task: input,
           repository: repository,
           context: "This is an interactive session. Be helpful and concise."
         )
-        
+
         puts "🤖 Assistant: #{response.result}"
         puts
-        
+
       rescue => e
         puts "❌ Sorry, I encountered an error: #{e.message}"
         puts "Make sure GitHub CLI is authenticated and the repository exists."
         puts
       end
     end
-    
+
     puts "👋 Thanks for using the GitHub Assistant!"
   end
 end
@@ -201,11 +206,11 @@ if __FILE__ == $0
   end
 
   assistant = GitHubAssistantDemo.new
-  
+
   # Check command line arguments
   mode = ARGV[0]
   ARGV.clear # Clear ARGV to prevent gets from reading command line arguments as files
-  
+
   case mode
   when 'demo', nil
     assistant.run_demo
@@ -214,7 +219,7 @@ if __FILE__ == $0
   else
     puts "Usage:"
     puts "  #{$0}           # Run demo"
-    puts "  #{$0} demo      # Run demo" 
+    puts "  #{$0} demo      # Run demo"
     puts "  #{$0} interactive  # Interactive mode"
     exit 1
   end
