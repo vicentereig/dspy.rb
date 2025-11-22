@@ -66,6 +66,8 @@ module DSPy
       tool :get_issue, description: "Get details of a specific GitHub issue"
       tool :get_pr, description: "Get details of a specific GitHub pull request"
       tool :api_request, description: "Make an arbitrary GitHub API request"
+      tool :traffic_views, description: "Get repository traffic views (last 14 days by default)"
+      tool :traffic_clones, description: "Get repository traffic clones (last 14 days by default)"
 
       sig { void }
       def initialize
@@ -216,6 +218,40 @@ module DSPy
         "Error making API request: #{e.message}"
       end
 
+      sig { params(repo: String, per: T.nilable(String)).returns(String) }
+      def traffic_views(repo:, per: nil)
+        endpoint = "repos/#{repo}/traffic/views"
+        cmd = build_gh_command(['api', shell_escape(endpoint)])
+        cmd << ['-f', "per=#{shell_escape(per)}"] if per
+
+        result = execute_command(cmd.flatten.join(' '))
+
+        if result[:success]
+          parse_traffic(result[:output], label: 'Views')
+        else
+          "Failed to fetch traffic views: #{result[:error]}"
+        end
+      rescue => e
+        "Error fetching traffic views: #{e.message}"
+      end
+
+      sig { params(repo: String, per: T.nilable(String)).returns(String) }
+      def traffic_clones(repo:, per: nil)
+        endpoint = "repos/#{repo}/traffic/clones"
+        cmd = build_gh_command(['api', shell_escape(endpoint)])
+        cmd << ['-f', "per=#{shell_escape(per)}"] if per
+
+        result = execute_command(cmd.flatten.join(' '))
+
+        if result[:success]
+          parse_traffic(result[:output], label: 'Clones')
+        else
+          "Failed to fetch traffic clones: #{result[:error]}"
+        end
+      rescue => e
+        "Error fetching traffic clones: #{e.message}"
+      end
+
       private
 
       sig { params(args: T::Array[String]).returns(T::Array[String]) }
@@ -225,6 +261,7 @@ module DSPy
 
       sig { params(str: String).returns(String) }
       def shell_escape(str)
+        return '""' if str.nil?
         "\"#{str.gsub(/"/, '\\"')}\""
       end
 
@@ -238,6 +275,29 @@ module DSPy
           output: success ? output : '',
           error: success ? '' : output
         }
+      end
+
+      sig { params(json_output: String, label: String).returns(String) }
+      def parse_traffic(json_output, label:)
+        data = JSON.parse(json_output)
+
+        total = data['count'] || 0
+        uniques = data['uniques'] || 0
+        series = data[label.downcase] || data['views'] || []
+
+        lines = []
+        lines << "#{label}: #{total} total (#{uniques} unique) over the last #{series.length} data points"
+
+        series.each do |point|
+          ts = point['timestamp'] || point['timestamp'.to_sym]
+          count = point['count'] || 0
+          uniq = point['uniques'] || 0
+          lines << "  #{ts}: #{count} (#{uniq} unique)"
+        end
+
+        lines.join("\n")
+      rescue JSON::ParserError => e
+        "Failed to parse traffic data: #{e.message}"
       end
 
       sig { params(json_output: String).returns(String) }
