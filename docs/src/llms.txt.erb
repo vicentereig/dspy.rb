@@ -56,6 +56,8 @@ Build complex workflows from simple building blocks:
 - **ReAct** - Tool-using agents
 - **CodeAct** - Dynamic code generation agents (install the `dspy-code_act` gem)
 
+Modules also ship Rails-style lifecycle callbacks: declare `before`, `around`, or `after` hooks on any `DSPy::Module` to wrap `forward` with setup, context management, and teardown logic. Hooks fire in the order `before` → `around` (pre-yield) → `forward` → `around` (post-yield) → `after`, so you can stack multiple concerns deterministically. See the Module Runtime Context guide for full examples.
+
 ### 3. Tools & Toolsets
 Create type-safe tools for agents with comprehensive Sorbet support:
 

@@ -413,6 +413,52 @@ class DocumentProcessor < DSPy::Module
 end
 ```
 
+### Lifecycle Callbacks
+
+Modules expose Rails-style lifecycle hooks so you can instrument cross-cutting concerns without cluttering `forward`.
+
+- `before` callbacks run ahead of `forward` for setup (timers, context loading)
+- `around` callbacks wrap `forward` and must `yield`, letting you bracket execution
+- `after` callbacks fire once `forward` returns for cleanup, logging, or persistence
+
+Callbacks execute in the order: all `before` hooks → `around` (pre-yield) → `forward` → `around` (post-yield) → `after` hooks. Multiple callbacks of the same type run in registration order.
+
+```ruby
+class InstrumentedModule < DSPy::Module
+  before :start_timer
+  around :with_context
+  after :record_metrics
+
+  def initialize
+    super
+    @predictor = DSPy::Predict.new(QuestionSignature)
+  end
+
+  def forward(question:)
+    @predictor.call(question: question)
+  end
+
+  private
+
+  def start_timer
+    @started_at = Time.now
+  end
+
+  def with_context
+    load_context
+    result = yield
+    save_context(result)
+    result
+  end
+
+  def record_metrics
+    DSPy.logger.info(duration: Time.now - @started_at)
+  end
+end
+```
+
+See [`docs/src/core-concepts/module-runtime-context.md`](/core-concepts/module-runtime-context/) for more patterns, including fiber-local LM overrides.
+
 ### Per-Instance LM Configuration
 
 ```ruby
