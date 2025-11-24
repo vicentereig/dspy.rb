@@ -229,6 +229,104 @@ class EphemeralMemoryChat < DSPy::Module
 
     result
   end
+
+  class DemoClassifier < DSPy::Module
+    sig { override.params(message: String, conversation_depth: Integer).returns(T.untyped) }
+    def forward(message:, conversation_depth:)
+      level = if message =~ /plan|migrate|critical/i || conversation_depth.positive?
+        ComplexityLevel::Critical
+      else
+        ComplexityLevel::Routine
+      end
+
+      RouteChatRequest.output_struct_class.new(
+        level: level,
+        confidence: 0.9,
+        reason: 'Demo classifier heuristic',
+        suggested_cost_tier: level == ComplexityLevel::Critical ? 'deep' : 'fast'
+      )
+    end
+  end
+
+  class DemoResponder < DSPy::Module
+    def initialize(label:)
+      super()
+      @label = label
+    end
+
+    sig do
+      override.params(
+        user_message: String,
+        history: T::Array[ResolveUserQuestion::MemoryTurn],
+        selected_model: String
+      ).returns(T.untyped)
+    end
+    def forward(user_message:, history:, selected_model:)
+      ResolveUserQuestion.output_struct_class.new(
+        reply: "[#{@label}] #{user_message}",
+        complexity: history.any? ? ComplexityLevel::Critical : ComplexityLevel::Routine,
+        next_action: 'continue'
+      )
+    end
+  end
+
+  private_constant :DemoClassifier, :DemoResponder
+
+  class << self
+    def router
+      if ENV['DSPY_FAKE_CHAT']
+        demo_router
+      else
+        production_router
+      end
+    end
+
+    private
+
+    def production_router
+      classifier = DSPy::Predict.new(RouteChatRequest)
+
+      fast_predictor = DSPy::Predict.new(ResolveUserQuestion)
+      fast_predictor.configure do |config|
+        config.lm = DSPy::LM.new(
+          FAST_RESPONSE_MODEL,
+          api_key: ENV['OPENAI_API_KEY'],
+          structured_outputs: true
+        )
+      end
+
+      deep_predictor = DSPy::ChainOfThought.new(ResolveUserQuestion)
+      deep_predictor.configure do |config|
+        config.lm = DSPy::LM.new(
+          DEEP_REASONING_MODEL,
+          api_key: ENV['OPENAI_API_KEY'],
+          structured_outputs: true
+        )
+      end
+
+      build_router_instance(classifier: classifier, fast_predictor: fast_predictor, deep_predictor: deep_predictor)
+    end
+
+    def demo_router
+      classifier = DemoClassifier.new
+      fast_predictor = DemoResponder.new(label: 'fast-model')
+      deep_predictor = DemoResponder.new(label: 'deep-model')
+
+      build_router_instance(classifier: classifier, fast_predictor: fast_predictor, deep_predictor: deep_predictor)
+    end
+
+    def build_router_instance(classifier:, fast_predictor:, deep_predictor:)
+      ChatRouter.new(
+        classifier: classifier,
+        routes: {
+          ComplexityLevel::Routine => fast_predictor,
+          ComplexityLevel::Detailed => fast_predictor,
+          ComplexityLevel::Critical => deep_predictor
+        },
+        default_level: ComplexityLevel::Routine
+      )
+    end
+  end
 end
 
 # -----------------------------------------------------------------------------
@@ -249,104 +347,6 @@ end
 
 DSPy::Observability.configure!
 
-def build_production_router
-  classifier = DSPy::Predict.new(RouteChatRequest)
-
-  fast_predictor = DSPy::Predict.new(ResolveUserQuestion)
-  fast_predictor.configure do |config|
-    config.lm = DSPy::LM.new(
-      FAST_RESPONSE_MODEL,
-      api_key: ENV['OPENAI_API_KEY'],
-      structured_outputs: true
-    )
-  end
-
-  deep_predictor = DSPy::ChainOfThought.new(ResolveUserQuestion)
-  deep_predictor.configure do |config|
-    config.lm = DSPy::LM.new(
-      DEEP_REASONING_MODEL,
-      api_key: ENV['OPENAI_API_KEY'],
-      structured_outputs: true
-    )
-  end
-
-  ChatRouter.new(
-    classifier: classifier,
-    routes: {
-      ComplexityLevel::Routine => fast_predictor,
-      ComplexityLevel::Detailed => fast_predictor,
-      ComplexityLevel::Critical => deep_predictor
-    },
-    default_level: ComplexityLevel::Routine
-  )
-end
-
-class DemoClassifier < DSPy::Module
-  sig { override.params(message: String, conversation_depth: Integer).returns(T.untyped) }
-  def forward(message:, conversation_depth:)
-    level = if message =~ /plan|migrate|critical/i || conversation_depth.positive?
-      ComplexityLevel::Critical
-    else
-      ComplexityLevel::Routine
-    end
-
-    RouteChatRequest.output_struct_class.new(
-      level: level,
-      confidence: 0.9,
-      reason: 'Demo classifier heuristic',
-      suggested_cost_tier: level == ComplexityLevel::Critical ? 'deep' : 'fast'
-    )
-  end
-end
-
-class DemoResponder < DSPy::Module
-  def initialize(label:)
-    super()
-    @label = label
-  end
-
-  sig do
-    override.params(
-      user_message: String,
-      history: T::Array[ResolveUserQuestion::MemoryTurn],
-      selected_model: String
-    ).returns(T.untyped)
-  end
-  def forward(user_message:, history:, selected_model:)
-    ResolveUserQuestion.output_struct_class.new(
-      reply: "[#{@label}] #{user_message}",
-      complexity: history.any? ? ComplexityLevel::Critical : ComplexityLevel::Routine,
-      next_action: 'continue'
-    )
-  end
-end
-
-def build_demo_router
-  classifier = DemoClassifier.new
-  fast_predictor = DemoResponder.new(label: 'fast-model')
-  deep_predictor = DemoResponder.new(label: 'deep-model')
-
-  ChatRouter.new(
-    classifier: classifier,
-    routes: {
-      ComplexityLevel::Routine => fast_predictor,
-      ComplexityLevel::Detailed => fast_predictor,
-      ComplexityLevel::Critical => deep_predictor
-    },
-    default_level: ComplexityLevel::Routine
-  )
-end
-
-def build_router
-  if ENV['DSPY_FAKE_CHAT']
-    build_demo_router
-  else
-    build_production_router
-  end
-end
-
-# -----------------------------------------------------------------------------
-# CLI helpers
 # -----------------------------------------------------------------------------
 
 def render_chat_pane(session, max_turns: 12)
@@ -407,7 +407,7 @@ end
 
 if $PROGRAM_NAME == __FILE__
   ensure_api_key!('OPENAI_API_KEY') unless ENV['DSPY_FAKE_CHAT']
-  router = build_router
+  router = EphemeralMemoryChat.router
 
   session = EphemeralMemoryChat.new(signature: ResolveUserQuestion, router: router)
 
