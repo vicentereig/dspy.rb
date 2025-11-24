@@ -27,31 +27,11 @@ def env_or_default(key, default)
   ENV.fetch(key, default)
 end
 
-# -----------------------------------------------------------------------------
-# Signatures and enums
-# -----------------------------------------------------------------------------
-
 class ComplexityLevel < T::Enum
   enums do
     Routine = new('routine')
     Detailed = new('detailed')
     Critical = new('critical')
-  end
-end
-
-class RouteChatRequest < DSPy::Signature
-  description 'Estimate message complexity/cost before dispatching to an LM.'
-
-  input do
-    const :message, String
-    const :conversation_depth, Integer
-  end
-
-  output do
-    const :level, ComplexityLevel
-    const :confidence, Float
-    const :reason, String
-    const :suggested_cost_tier, String
   end
 end
 
@@ -75,6 +55,22 @@ class ResolveUserQuestion < DSPy::Signature
   end
 end
 
+class RouteChatRequest < DSPy::Signature
+  description 'Estimate message complexity/cost before dispatching to an LM.'
+
+  input do
+    const :message, String
+    const :conversation_depth, Integer
+  end
+
+  output do
+    const :level, ComplexityLevel
+    const :confidence, Float
+    const :reason, String
+    const :suggested_cost_tier, String
+  end
+end
+
 class ConversationMemoryEntry < T::Struct
   const :role, String
   const :message, String
@@ -89,10 +85,6 @@ class RouteDecision < T::Struct
   const :reason, String
   const :cost_tier, String
 end
-
-# -----------------------------------------------------------------------------
-# Router and session types
-# -----------------------------------------------------------------------------
 
 class ChatRouter < DSPy::Module
   extend T::Sig
@@ -156,30 +148,32 @@ class EphemeralMemoryChat < DSPy::Module
     super()
     @router = router
     @signature = signature
-    @memory_turn_struct = T.let(
-      signature.const_get(:MemoryTurn),
-      T.class_of(T::Struct)
-    )
     @memory = T.let([], T::Array[ConversationMemoryEntry]) # Hydrate from ActiveRecord rows if you persist history
-    @last_route = T.let(nil, T.nilable(RouteDecision))
+    @current_route = T.let(nil, T.nilable(RouteDecision))
   end
 
   sig { returns(T::Array[ConversationMemoryEntry]) }
   attr_reader :memory
 
   sig { returns(T.nilable(RouteDecision)) }
-  attr_reader :last_route
+  def current_route
+    @current_route
+  end
+
+  sig { params(route: T.nilable(RouteDecision)).void }
+  def current_route=(route)
+    @current_route = route
+  end
 
   def forward(user_message:)
     raise ArgumentError, 'user_message is required' unless user_message
-    route = @router.call(message: user_message, memory: @memory)
-    raise ArgumentError, 'Router did not provide a predictor' unless route
-    @last_route = route
+    self.current_route = @router.call(message: user_message, memory: @memory)
+    raise ArgumentError, 'Router did not provide a predictor' unless current_route
 
-    route.predictor.call(
+    current_route.predictor.call(
       user_message: user_message,
-      history: typed_history,
-      selected_model: route.model_id
+      history: memory_turns,
+      selected_model: current_route.model_id
     )
   end
 
@@ -195,17 +189,19 @@ class EphemeralMemoryChat < DSPy::Module
 
   private
 
-  def typed_history
+  def memory_turns
     history_without_current = @memory[0...-1] || []
+    memory_turn_struct = @signature::MemoryTurn
     history_without_current.map do |turn|
-      @memory_turn_struct.new(role: turn.role, message: turn.message)
+      memory_turn_struct.new(role: turn.role, message: turn.message)
     end
   end
 
+  # Receives the same args as forward; DSPy passes them through callbacks.
   def update_memory(_args, kwargs)
     message = kwargs[:user_message]
     raise ArgumentError, 'user_message is required' unless message
-    @last_route = nil
+    self.current_route = nil
 
     user_entry = ConversationMemoryEntry.new(
       role: 'user',
@@ -217,11 +213,11 @@ class EphemeralMemoryChat < DSPy::Module
 
     result = yield
 
-    if result && @last_route
+    if result && current_route
       @memory << ConversationMemoryEntry.new(
         role: 'assistant',
         message: result.reply,
-        model_id: @last_route.model_id,
+        model_id: current_route.model_id,
         timestamp: Time.now.utc.iso8601
       ) # Likewise persist agent replies via ActiveRecord for reloadable memory
     end
@@ -360,9 +356,9 @@ def render_chat_pane(session, max_turns: 12)
       end
     end
 
-    if session.last_route
+    if session.current_route
       CLI::UI::Frame.divider('Route decision')
-      puts session.describe_route(session.last_route)
+      puts session.describe_route(session.current_route)
     end
   end
 end

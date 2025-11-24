@@ -16,7 +16,7 @@
 
 **Build reliable LLM applications in idiomatic Ruby using composable, type-safe modules.**
 
-DSPy.rb is the Ruby-first surgical port of Stanford's [DSPy framework](https://github.com/stanfordnlp/dspy). It delivers structured LLM programming, prompt engineering, and context engineering in the language we love. Instead of wrestling with brittle prompt strings, you define typed signatures in idiomatic Ruby and compose workflows and agents that actually behave.
+DSPy.rb is the Ruby-first surgical port of Stanford's [DSPy paradigm](https://github.com/stanfordnlp/dspy). It delivers structured LLM programming, prompt engineering, and context engineering in the language we love. Instead of wrestling with brittle prompt strings, you define typed signatures in idiomatic Ruby and compose workflows and agents that actually behave.
 
 **Prompts are just functions.** Traditional prompting is like writing code with string concatenation: it works until it doesn't. DSPy.rb brings you the programming approach pioneered by [dspy.ai](https://dspy.ai/): define modular signatures and let the framework deal with the messy bits.
 
