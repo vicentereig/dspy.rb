@@ -114,8 +114,17 @@ class ChatRouter < DSPy::Module
   sig { override.params(input_values: T.untyped).returns(T.untyped) }
   def forward(**input_values)
     message = input_values[:message]
-    memory = input_values[:memory]
+    memory = input_values[:memory] || []
     raise ArgumentError, 'message is required' unless message
+
+    route_turn(message: message, memory: memory)
+  end
+
+  private
+
+  sig { params(message: String, memory: T::Array[ConversationMemoryEntry]).returns(RouteDecision) }
+  def route_turn(message:, memory:)
+    raise ArgumentError, 'message is required' if message.strip.empty?
 
     classification = @classifier.call(
       message: message,
@@ -139,7 +148,7 @@ end
 class EphemeralMemoryChat < DSPy::Module
   extend T::Sig
 
-  around :transcribe_chat
+  around :manage_turn # wraps forward with memory + routing lifecycle
 
   sig { params(signature: T.class_of(DSPy::Signature), router: ChatRouter).void }
   def initialize(signature:, router:)
@@ -150,7 +159,7 @@ class EphemeralMemoryChat < DSPy::Module
       signature.const_get(:MemoryTurn),
       T.class_of(T::Struct)
     )
-    @memory = T.let([], T::Array[ConversationMemoryEntry])
+    @memory = T.let([], T::Array[ConversationMemoryEntry]) # Hydrate from ActiveRecord rows if you persist history
     @active_route = T.let(nil, T.nilable(RouteDecision))
     @last_route = T.let(nil, T.nilable(RouteDecision))
   end
@@ -165,11 +174,6 @@ class EphemeralMemoryChat < DSPy::Module
     raise ArgumentError, 'user_message is required' unless user_message
     route = T.must(@active_route)
 
-    history_without_current = @memory[0...-1] || []
-    typed_history = history_without_current.map do |turn|
-      @memory_turn_struct.new(role: turn.role, message: turn.message)
-    end
-
     route.predictor.call(
       user_message: user_message,
       history: typed_history,
@@ -177,9 +181,26 @@ class EphemeralMemoryChat < DSPy::Module
     )
   end
 
+  def describe_route(decision)
+    return 'No route decision recorded yet.' unless decision
+
+    details = [
+      "Routed to #{decision.model_id} (#{decision.level.serialize}, #{decision.cost_tier})",
+      "Reason: #{decision.reason}"
+    ].join(' | ')
+    "→ #{details}"
+  end
+
   private
 
-  def transcribe_chat(_args, kwargs)
+  def typed_history
+    history_without_current = @memory[0...-1] || []
+    history_without_current.map do |turn|
+      @memory_turn_struct.new(role: turn.role, message: turn.message)
+    end
+  end
+
+  def manage_turn(_args, kwargs)
     message = kwargs[:user_message]
     raise ArgumentError, 'user_message is required' unless message
     @last_route = nil
@@ -190,7 +211,7 @@ class EphemeralMemoryChat < DSPy::Module
       model_id: nil,
       timestamp: Time.now.utc.iso8601
     )
-    @memory << user_entry
+    @memory << user_entry # Replace with ConversationTurn.create!(...) to keep durable transcripts
 
     @active_route = @router.call(message: message, memory: @memory)
     raise ArgumentError, 'Router did not provide a predictor' unless @active_route
@@ -203,7 +224,7 @@ class EphemeralMemoryChat < DSPy::Module
         message: result.reply,
         model_id: @active_route.model_id,
         timestamp: Time.now.utc.iso8601
-      )
+      ) # Likewise persist agent replies via ActiveRecord for reloadable memory
       @last_route = @active_route
     end
 
@@ -270,10 +291,7 @@ def play_turn(session, message, echo_user: false)
   response = session.call(user_message: message)
   decision = session.last_route
 
-  if decision
-    puts "  → Routed to #{decision.model_id} (#{decision.level.serialize}, #{decision.cost_tier})"
-    puts "  → Reason: #{decision.reason}"
-  end
+  puts "  #{session.describe_route(decision)}" if decision
 
   puts "assistant> #{response.reply}"
   puts "next action: #{response.next_action}"
