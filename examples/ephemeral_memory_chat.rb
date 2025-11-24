@@ -162,7 +162,6 @@ class EphemeralMemoryChat < DSPy::Module
       T.class_of(T::Struct)
     )
     @memory = T.let([], T::Array[ConversationMemoryEntry]) # Hydrate from ActiveRecord rows if you persist history
-    @active_route = T.let(nil, T.nilable(RouteDecision))
     @last_route = T.let(nil, T.nilable(RouteDecision))
   end
 
@@ -174,7 +173,9 @@ class EphemeralMemoryChat < DSPy::Module
 
   def forward(user_message:)
     raise ArgumentError, 'user_message is required' unless user_message
-    route = T.must(@active_route)
+    route = @router.call(message: user_message, memory: @memory)
+    raise ArgumentError, 'Router did not provide a predictor' unless route
+    @last_route = route
 
     route.predictor.call(
       user_message: user_message,
@@ -215,24 +216,18 @@ class EphemeralMemoryChat < DSPy::Module
     )
     @memory << user_entry # Replace with ConversationTurn.create!(...) to keep durable transcripts
 
-    @active_route = @router.call(message: message, memory: @memory)
-    raise ArgumentError, 'Router did not provide a predictor' unless @active_route
-
     result = yield
 
-    if result && @active_route
+    if result && @last_route
       @memory << ConversationMemoryEntry.new(
         role: 'assistant',
         message: result.reply,
-        model_id: @active_route.model_id,
+        model_id: @last_route.model_id,
         timestamp: Time.now.utc.iso8601
       ) # Likewise persist agent replies via ActiveRecord for reloadable memory
-      @last_route = @active_route
     end
 
     result
-  ensure
-    @active_route = nil
   end
 end
 
