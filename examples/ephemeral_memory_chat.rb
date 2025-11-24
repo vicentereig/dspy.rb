@@ -100,7 +100,7 @@ class ChatRouter < DSPy::Module
 
   sig do
     params(
-      classifier: DSPy::Predict,
+      classifier: DSPy::Module,
       routes: T::Hash[ComplexityLevel, DSPy::Module],
       default_level: ComplexityLevel
     ).void
@@ -281,6 +281,70 @@ def build_production_router
   )
 end
 
+class DemoClassifier < DSPy::Module
+  sig { override.params(message: String, conversation_depth: Integer).returns(T.untyped) }
+  def forward(message:, conversation_depth:)
+    level = if message =~ /plan|migrate|critical/i || conversation_depth.positive?
+      ComplexityLevel::Critical
+    else
+      ComplexityLevel::Routine
+    end
+
+    RouteChatRequest.output_struct_class.new(
+      level: level,
+      confidence: 0.9,
+      reason: 'Demo classifier heuristic',
+      suggested_cost_tier: level == ComplexityLevel::Critical ? 'deep' : 'fast'
+    )
+  end
+end
+
+class DemoResponder < DSPy::Module
+  def initialize(label:)
+    super()
+    @label = label
+  end
+
+  sig do
+    override.params(
+      user_message: String,
+      history: T::Array[ResolveUserQuestion::MemoryTurn],
+      selected_model: String
+    ).returns(T.untyped)
+  end
+  def forward(user_message:, history:, selected_model:)
+    ResolveUserQuestion.output_struct_class.new(
+      reply: "[#{@label}] #{user_message}",
+      complexity: history.any? ? ComplexityLevel::Critical : ComplexityLevel::Routine,
+      next_action: 'continue'
+    )
+  end
+end
+
+def build_demo_router
+  classifier = DemoClassifier.new
+  fast_predictor = DemoResponder.new(label: 'fast-model')
+  deep_predictor = DemoResponder.new(label: 'deep-model')
+
+  ChatRouter.new(
+    classifier: classifier,
+    routes: {
+      ComplexityLevel::Routine => fast_predictor,
+      ComplexityLevel::Detailed => fast_predictor,
+      ComplexityLevel::Critical => deep_predictor
+    },
+    default_level: ComplexityLevel::Routine
+  )
+end
+
+def build_router
+  if ENV['DSPY_FAKE_CHAT']
+    build_demo_router
+  else
+    build_production_router
+  end
+end
+
 # -----------------------------------------------------------------------------
 # CLI helpers
 # -----------------------------------------------------------------------------
@@ -289,18 +353,18 @@ def render_chat_pane(session, max_turns: 12)
   CLI::UI::Frame.open('Ephemeral Memory Chat') do
     turns = session.memory.last(max_turns)
     if turns.empty?
-      CLI::UI::Frame.puts('No turns yet. Type in the lower pane to start chatting.')
+      puts 'No turns yet. Type in the lower pane to start chatting.'
     else
       turns.each do |turn|
         label = turn.role == 'user' ? '{{bold}}🙋 you{{/bold}}' : '{{green}}🤖 assistant{{/green}}'
         model_suffix = turn.model_id ? " (#{turn.model_id})" : ''
-        CLI::UI::Frame.puts(CLI::UI.fmt("#{label}#{model_suffix}: #{turn.message}"))
+        puts CLI::UI.fmt("#{label}#{model_suffix}: #{turn.message}")
       end
     end
 
     if session.last_route
-      CLI::UI::Frame.puts('')
-      CLI::UI::Frame.puts(session.describe_route(session.last_route))
+      puts ''
+      puts session.describe_route(session.last_route)
     end
   end
 end
@@ -310,7 +374,7 @@ def redraw_chat(session)
   print(CLI::UI::ANSI.control('', 'H'))   # Move cursor home
   render_chat_pane(session)
   CLI::UI::Frame.open('Controls') do
-    CLI::UI::Frame.puts('Type your message below. Send an empty line or `exit` to quit.')
+    puts 'Type your message below. Send an empty line or `exit` to quit.'
   end
 end
 
@@ -326,12 +390,12 @@ end
 def print_memory_summary(session)
   CLI::UI::Frame.open('Stored Memory Turns') do
     if session.memory.empty?
-      CLI::UI::Frame.puts('No memory entries recorded.')
+      puts 'No memory entries recorded.'
     else
       session.memory.each do |turn|
         marker = turn.role == 'user' ? '🙋' : '🤖'
         model = turn.model_id || 'human'
-        CLI::UI::Frame.puts("#{marker} [#{turn.timestamp}] (#{model}) #{turn.message}")
+        puts "#{marker} [#{turn.timestamp}] (#{model}) #{turn.message}"
       end
     end
   end
@@ -342,8 +406,8 @@ end
 # -----------------------------------------------------------------------------
 
 if $PROGRAM_NAME == __FILE__
-  ensure_api_key!('OPENAI_API_KEY')
-  router = build_production_router
+  ensure_api_key!('OPENAI_API_KEY') unless ENV['DSPY_FAKE_CHAT']
+  router = build_router
 
   session = EphemeralMemoryChat.new(signature: ResolveUserQuestion, router: router)
 
