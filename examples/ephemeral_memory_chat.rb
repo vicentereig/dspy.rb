@@ -53,7 +53,7 @@ class RouteChatRequest < DSPy::Signature
   end
 end
 
-class EphemeralMemoryChatSignature < DSPy::Signature
+class ResolveUserQuestion < DSPy::Signature
   description 'Respond to a user while persisting ephemeral memory for routing decisions.'
 
   class MemoryTurn < T::Struct
@@ -63,7 +63,7 @@ class EphemeralMemoryChatSignature < DSPy::Signature
 
   input do
     const :user_message, String
-    const :history, T::Array[MemoryTurn]
+    const :history, T::Array[MemoryTurn], default: []
     const :selected_model, String
   end
 
@@ -103,6 +103,7 @@ class ChatRouter < DSPy::Module
       default_level: ComplexityLevel
     ).void
   end
+
   def initialize(classifier:, routes:, default_level: ComplexityLevel::Routine)
     super()
     @classifier = classifier
@@ -111,9 +112,9 @@ class ChatRouter < DSPy::Module
   end
 
   sig { override.params(input_values: T.untyped).returns(T.untyped) }
-  def call(**input_values)
+  def forward(**input_values)
     message = input_values[:message]
-    memory = input_values[:memory] || []
+    memory = input_values[:memory]
     raise ArgumentError, 'message is required' unless message
 
     classification = @classifier.call(
@@ -234,7 +235,7 @@ DSPy::Observability.configure!
 def build_production_router
   classifier = DSPy::Predict.new(RouteChatRequest)
 
-  fast_predictor = DSPy::Predict.new(EphemeralMemoryChatSignature)
+  fast_predictor = DSPy::Predict.new(ResolveUserQuestion)
   fast_predictor.configure do |config|
     config.lm = DSPy::LM.new(
       FAST_RESPONSE_MODEL,
@@ -243,7 +244,7 @@ def build_production_router
     )
   end
 
-  deep_predictor = DSPy::ChainOfThought.new(EphemeralMemoryChatSignature)
+  deep_predictor = DSPy::ChainOfThought.new(ResolveUserQuestion)
   deep_predictor.configure do |config|
     config.lm = DSPy::LM.new(
       DEEP_REASONING_MODEL,
@@ -287,7 +288,7 @@ if $PROGRAM_NAME == __FILE__
   ensure_api_key!('OPENAI_API_KEY')
   router = build_production_router
 
-  session = EphemeralMemoryChat.new(signature: EphemeralMemoryChatSignature, router: router)
+  session = EphemeralMemoryChat.new(signature: ResolveUserQuestion, router: router)
 
   puts 'Ephemeral Memory Chat with Router'
   puts 'Type your message and press enter. Send `exit` or an empty line to quit.'

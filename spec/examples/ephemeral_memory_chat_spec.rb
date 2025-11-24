@@ -86,7 +86,7 @@ RSpec.describe EphemeralMemoryChat do
     )
   end
 
-  let(:session) { EphemeralMemoryChat.new(signature: EphemeralMemoryChatSignature, router: router) }
+  let(:session) { EphemeralMemoryChat.new(signature: ResolveUserQuestion, router: router) }
 
   it 'stores alternating user/assistant turns with routed metadata' do
     session.call(user_message: 'Hi there')
