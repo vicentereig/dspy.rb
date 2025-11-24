@@ -32,7 +32,7 @@ RSpec.describe EphemeralMemoryChat do
   end
 
   class FakePredictor < DSPy::Module
-    FakePrediction = Struct.new(:reply, :complexity, :next_action, keyword_init: true)
+    FakePrediction = Struct.new(:reply, :complexity, keyword_init: true)
 
     attr_reader :lm, :calls
 
@@ -47,8 +47,7 @@ RSpec.describe EphemeralMemoryChat do
       @calls << input_values
       FakePrediction.new(
         reply: "#{@label}: #{input_values[:user_message]}",
-        complexity: ComplexityLevel::Routine,
-        next_action: 'continue'
+        complexity: ComplexityLevel::Routine
       )
     end
   end

@@ -72,7 +72,6 @@ class ResolveUserQuestion < DSPy::Signature
   output do
     const :reply, String
     const :complexity, ComplexityLevel
-    const :next_action, String
   end
 end
 
@@ -150,7 +149,7 @@ end
 class EphemeralMemoryChat < DSPy::Module
   extend T::Sig
 
-  around :transcribe_chat # wraps forward with memory + routing lifecycle
+  around :update_memory # wraps forward with memory + routing lifecycle
 
   sig { params(signature: T.class_of(DSPy::Signature), router: ChatRouter).void }
   def initialize(signature:, router:)
@@ -203,7 +202,7 @@ class EphemeralMemoryChat < DSPy::Module
     end
   end
 
-  def transcribe_chat(_args, kwargs)
+  def update_memory(_args, kwargs)
     message = kwargs[:user_message]
     raise ArgumentError, 'user_message is required' unless message
     @last_route = nil
@@ -264,8 +263,7 @@ class EphemeralMemoryChat < DSPy::Module
     def forward(user_message:, history:, selected_model:)
       ResolveUserQuestion.output_struct_class.new(
         reply: "[#{@label}] #{user_message}",
-        complexity: history.any? ? ComplexityLevel::Critical : ComplexityLevel::Routine,
-        next_action: 'continue'
+        complexity: history.any? ? ComplexityLevel::Critical : ComplexityLevel::Routine
       )
     end
   end
