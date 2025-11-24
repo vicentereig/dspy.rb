@@ -14,6 +14,15 @@ When teams ask for an "agent," they usually need something far simpler: a predic
 
 This post walks through [`examples/ephemeral_memory_chat.rb`](https://github.com/vicentereig/dspy.rb/blob/main/examples/ephemeral_memory_chat.rb) and shows where to plug in longer-term memory, tool invocation, deep research, and cost controls.
 
+## Outline
+
+1. **Typed signatures** – define `EphemeralMemoryChatSignature` and the `ComplexityLevel` enum that power both classifiers and responders.
+2. **Lifecycle callbacks for memory** – explain how `around :manage_turn` + `forward(user_message:)` store alternating user/assistant turns without overriding `call`.
+3. **Router design** – detail the classifier + predictor map that fans out “routine” vs “critical” turns and how model IDs flow into the signature.
+4. **Production wiring** – show the CLI entrypoint, LM configuration, and observability start/flush calls that make the demo runnable.
+5. **Extension points** – cover persistence, tool usage, deep research swaps, and memory compaction where hooks already exist.
+6. **Next steps** – encourage readers to persist memory, add tools, or compose research loops on top of the same skeleton.
+
 ## 1. Typed signatures keep prompts invisible
 
 Everything starts with a signature (here, `EphemeralMemoryChatSignature`). Inputs include the user's message, prior turns, and the model we routed to; outputs include the structured reply, inferred complexity, and the next action hint. DSPy.rb compiles the prompt automatically, so the blog example only declares types:
