@@ -356,14 +356,14 @@ def render_chat_pane(session, max_turns: 12)
       puts 'No turns yet. Type in the lower pane to start chatting.'
     else
       turns.each do |turn|
-        label = turn.role == 'user' ? '{{bold}}🙋 you{{/bold}}' : '{{green}}🤖 assistant{{/green}}'
+        label = turn.role == 'user' ? '{{bold:🙋 you}}' : '{{green:🤖 assistant}}'
         model_suffix = turn.model_id ? " (#{turn.model_id})" : ''
         puts CLI::UI.fmt("#{label}#{model_suffix}: #{turn.message}")
       end
     end
 
     if session.last_route
-      puts ''
+      CLI::UI::Frame.divider('Route decision')
       puts session.describe_route(session.last_route)
     end
   end
@@ -374,7 +374,7 @@ def redraw_chat(session)
   print(CLI::UI::ANSI.control('', 'H'))   # Move cursor home
   render_chat_pane(session)
   CLI::UI::Frame.open('Controls') do
-    puts 'Type your message below. Send an empty line or `exit` to quit.'
+    puts CLI::UI.fmt('{{cyan:Type your message below. Send an empty line or `exit` to quit.}}')
   end
 end
 
