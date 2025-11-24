@@ -17,11 +17,12 @@ This post walks through [`examples/ephemeral_memory_chat.rb`](https://github.com
 ## Outline
 
 1. **Typed signatures** – define `ResolveUserQuestion` and the `ComplexityLevel` enum that power both classifiers and responders.
-2. **Lifecycle callbacks for memory** – explain how `around :manage_turn` + `forward(user_message:)` store alternating user/assistant turns without overriding `call`.
-3. **Router design** – detail the classifier + predictor map that fans out “routine” vs “critical” turns and how model IDs flow into the signature.
-4. **Production wiring** – show the CLI entrypoint, LM configuration, and observability start/flush calls that make the demo runnable.
-5. **Extension points** – cover persistence, tool usage, deep research swaps, and memory compaction where hooks already exist.
-6. **Next steps** – encourage readers to persist memory, add tools, or compose research loops on top of the same skeleton.
+2. **Rails-style lifecycle hooks** – recap from the [Module Runtime Context docs](/core-concepts/module-runtime-context/) how `around` callbacks wrap `forward`, just like `before_action`/`around_action` in Rails controllers, and show why `around :transcribe_chat` is the cleanest place to capture memory.
+3. **Simple routing recap** – link back to [Workflow Routing with DSPy.rb](../workflow-routing-with-dspy.rb/) to remind readers how we built a basic classifier-driven router, then extend it here with typed decisions and CLI tooling.
+4. **Ephemeral memory in the hook** – walk through the short-term memory struct, how we append user/assistant turns inside the callback, and where to swap in ActiveRecord persistence later.
+5. **Production wiring** – show the CLI entrypoint, LM configuration, CLI::UI-based transcript panes, and observability start/flush calls that make the demo runnable.
+6. **Extension points** – cover persistence, tool usage, deep research swaps, and memory compaction where hooks already exist.
+7. **Next steps** – encourage readers to persist memory, add tools, or compose research loops on top of the same skeleton.
 
 ## 1. Typed signatures keep prompts invisible
 

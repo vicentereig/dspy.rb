@@ -310,6 +310,24 @@ def render_chat_pane(session, max_turns: 12)
   end
 end
 
+def redraw_chat(session)
+  print(CLI::UI::ANSI.control('2', 'J'))  # Clear entire screen
+  print(CLI::UI::ANSI.control('', 'H'))   # Move cursor home
+  render_chat_pane(session)
+  CLI::UI::Frame.open('Controls') do
+    CLI::UI::Frame.puts('Type your message below. Send an empty line or `exit` to quit.')
+  end
+end
+
+def with_chat_screen
+  print(CLI::UI::ANSI.enter_alternate_screen)
+  print(CLI::UI::ANSI.hide_cursor)
+  yield
+ensure
+  print(CLI::UI::ANSI.show_cursor)
+  print(CLI::UI::ANSI.exit_alternate_screen)
+end
+
 def print_memory_summary(session)
   CLI::UI::Frame.open('Stored Memory Turns') do
     if session.memory.empty?
@@ -334,21 +352,21 @@ if $PROGRAM_NAME == __FILE__
 
   session = EphemeralMemoryChat.new(signature: ResolveUserQuestion, router: router)
 
-  loop do
-    CLI::UI::ANSI.clear_screen
-    render_chat_pane(session)
+  with_chat_screen do
+    loop do
+      redraw_chat(session)
 
-    message = CLI::UI::Prompt.ask('you> ').strip
-    break if message.empty? || message.casecmp('exit').zero?
+      message = CLI::UI::Prompt.ask('you> ').strip
+      break if message.empty? || message.casecmp('exit').zero?
 
-    CLI::UI::Spinner.spin('Routing turn...') do
-      session.call(user_message: message)
+      CLI::UI::Spinner.spin('Routing turn...') do
+        session.call(user_message: message)
+      end
     end
-  end
 
-  CLI::UI::ANSI.clear_screen
-  render_chat_pane(session)
-  print_memory_summary(session)
+    redraw_chat(session)
+    print_memory_summary(session)
+  end
 
   DSPy::Observability.flush! if DSPy::Observability.respond_to?(:flush!)
 end
