@@ -16,7 +16,7 @@ This post walks through [`examples/ephemeral_memory_chat.rb`](https://github.com
 
 ## Outline
 
-1. **Typed signatures** – define `EphemeralMemoryChatSignature` and the `ComplexityLevel` enum that power both classifiers and responders.
+1. **Typed signatures** – define `ResolveUserQuestion` and the `ComplexityLevel` enum that power both classifiers and responders.
 2. **Lifecycle callbacks for memory** – explain how `around :manage_turn` + `forward(user_message:)` store alternating user/assistant turns without overriding `call`.
 3. **Router design** – detail the classifier + predictor map that fans out “routine” vs “critical” turns and how model IDs flow into the signature.
 4. **Production wiring** – show the CLI entrypoint, LM configuration, and observability start/flush calls that make the demo runnable.
@@ -25,10 +25,10 @@ This post walks through [`examples/ephemeral_memory_chat.rb`](https://github.com
 
 ## 1. Typed signatures keep prompts invisible
 
-Everything starts with a signature (here, `EphemeralMemoryChatSignature`). Inputs include the user's message, prior turns, and the model we routed to; outputs include the structured reply, inferred complexity, and the next action hint. DSPy.rb compiles the prompt automatically, so the blog example only declares types:
+Everything starts with a signature (here, `ResolveUserQuestion`). Inputs include the user's message, prior turns, and the model we routed to; outputs include the structured reply, inferred complexity, and the next action hint. DSPy.rb compiles the prompt automatically, so the blog example only declares types:
 
 ```ruby
-class EphemeralMemoryChatSignature < DSPy::Signature
+class ResolveUserQuestion < DSPy::Signature
   description "Respond while persisting ephemeral memory for routing decisions."
 
   class MemoryTurn < T::Struct
