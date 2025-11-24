@@ -14,6 +14,8 @@ When teams ask for an "agent," they usually need something far simpler: a predic
 
 This post walks through [`examples/ephemeral_memory_chat.rb`](https://github.com/vicentereig/dspy.rb/blob/main/examples/ephemeral_memory_chat.rb) and shows where to plug in longer-term memory, tool invocation, deep research, and cost controls.
 
+This article shows you how to use dspy.rb conventions to write the simplest agentic flow: a chat with ephemeral memory incorporating the workflow router we introduced in a past post.
+
 ## Outline
 
 1. **Typed signatures** – define `ResolveUserQuestion` and the `ComplexityLevel` enum that power both classifiers and responders.
@@ -166,6 +168,12 @@ Because everything hinges on lifecycle callbacks and typed signatures, scaling u
 - Swap the router’s classifier to a different model or add more `ComplexityLevel` entries without touching the loop.
 - Extend `ConversationMemoryEntry` with `tool_calls` or `attachments` if you decide to add structured tool logs.
 - Promote the chat to a managed agent by replacing the predictors with `DSPy::ReAct` or `DSPy::CodeAct`—the surrounding module and memory system stay intact.
+
+## Reader Next Steps
+
+1. Add a `ReAct` or `CodeAct` step inside the router for certain complexity levels so the session can call tools.
+2. Layer in light context engineering: before calling the predictor, select the most relevant memory snippets using the `informers` gem plus an embedding model, then pass that trimmed context into the signature.
+3. Persist the short-term memory to ActiveRecord (or another store) so the CLI can resume conversations, then experiment with compaction/recall strategies once the transcript grows.
 
 Grab the runnable script with:
 
