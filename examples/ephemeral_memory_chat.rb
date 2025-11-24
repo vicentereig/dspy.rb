@@ -2,12 +2,14 @@
 # frozen_string_literal: true
 
 require 'dotenv'
+require 'cli/ui'
 require 'time'
 
 Dotenv.load(File.expand_path('../.env', __dir__))
 
 require_relative '../lib/dspy'
 
+CLI::UI::StdoutRouter.ensure_activated
 $stdout.sync = true
 
 # -----------------------------------------------------------------------------
@@ -148,7 +150,7 @@ end
 class EphemeralMemoryChat < DSPy::Module
   extend T::Sig
 
-  around :manage_turn # wraps forward with memory + routing lifecycle
+  around :transcribe_chat # wraps forward with memory + routing lifecycle
 
   sig { params(signature: T.class_of(DSPy::Signature), router: ChatRouter).void }
   def initialize(signature:, router:)
@@ -200,7 +202,7 @@ class EphemeralMemoryChat < DSPy::Module
     end
   end
 
-  def manage_turn(_args, kwargs)
+  def transcribe_chat(_args, kwargs)
     message = kwargs[:user_message]
     raise ArgumentError, 'user_message is required' unless message
     @last_route = nil
@@ -285,16 +287,41 @@ def build_production_router
 end
 
 # -----------------------------------------------------------------------------
-def play_turn(session, message, echo_user: false)
-  puts "you> #{message}" if echo_user
+# CLI helpers
+# -----------------------------------------------------------------------------
 
-  response = session.call(user_message: message)
-  decision = session.last_route
+def render_chat_pane(session, max_turns: 12)
+  CLI::UI::Frame.open('Ephemeral Memory Chat') do
+    turns = session.memory.last(max_turns)
+    if turns.empty?
+      CLI::UI::Frame.puts('No turns yet. Type in the lower pane to start chatting.')
+    else
+      turns.each do |turn|
+        label = turn.role == 'user' ? '{{bold}}🙋 you{{/bold}}' : '{{green}}🤖 assistant{{/green}}'
+        model_suffix = turn.model_id ? " (#{turn.model_id})" : ''
+        CLI::UI::Frame.puts(CLI::UI.fmt("#{label}#{model_suffix}: #{turn.message}"))
+      end
+    end
 
-  puts "  #{session.describe_route(decision)}" if decision
+    if session.last_route
+      CLI::UI::Frame.puts('')
+      CLI::UI::Frame.puts(session.describe_route(session.last_route))
+    end
+  end
+end
 
-  puts "assistant> #{response.reply}"
-  puts "next action: #{response.next_action}"
+def print_memory_summary(session)
+  CLI::UI::Frame.open('Stored Memory Turns') do
+    if session.memory.empty?
+      CLI::UI::Frame.puts('No memory entries recorded.')
+    else
+      session.memory.each do |turn|
+        marker = turn.role == 'user' ? '🙋' : '🤖'
+        model = turn.model_id || 'human'
+        CLI::UI::Frame.puts("#{marker} [#{turn.timestamp}] (#{model}) #{turn.message}")
+      end
+    end
+  end
 end
 
 # -----------------------------------------------------------------------------
@@ -307,27 +334,21 @@ if $PROGRAM_NAME == __FILE__
 
   session = EphemeralMemoryChat.new(signature: ResolveUserQuestion, router: router)
 
-  puts 'Ephemeral Memory Chat with Router'
-  puts 'Type your message and press enter. Send `exit` or an empty line to quit.'
-  puts "Routing using #{FAST_RESPONSE_MODEL} for routine turns and #{DEEP_REASONING_MODEL} for complex ones."
-
   loop do
-    print 'you> '
-    line = $stdin.gets
-    break unless line
+    CLI::UI::ANSI.clear_screen
+    render_chat_pane(session)
 
-    message = line.strip
+    message = CLI::UI::Prompt.ask('you> ').strip
     break if message.empty? || message.casecmp('exit').zero?
 
-    play_turn(session, message)
+    CLI::UI::Spinner.spin('Routing turn...') do
+      session.call(user_message: message)
+    end
   end
 
-  puts "\nStored memory turns:"
-  session.memory.each do |turn|
-    marker = turn.role == 'user' ? '🙋' : '🤖'
-    model = turn.model_id || 'human'
-    puts "#{marker} [#{turn.timestamp}] (#{model}) #{turn.message}"
-  end
+  CLI::UI::ANSI.clear_screen
+  render_chat_pane(session)
+  print_memory_summary(session)
 
   DSPy::Observability.flush! if DSPy::Observability.respond_to?(:flush!)
 end
