@@ -139,7 +139,7 @@ end
 class EphemeralMemoryChat < DSPy::Module
   extend T::Sig
 
-  around :manage_turn
+  around :transcribe_chat
 
   sig { params(signature: T.class_of(DSPy::Signature), router: ChatRouter).void }
   def initialize(signature:, router:)
@@ -179,8 +179,7 @@ class EphemeralMemoryChat < DSPy::Module
 
   private
 
-  def manage_turn(_args, kwargs)
-    kwargs ||= {}
+  def transcribe_chat(_args, kwargs)
     message = kwargs[:user_message]
     raise ArgumentError, 'user_message is required' unless message
     @last_route = nil
