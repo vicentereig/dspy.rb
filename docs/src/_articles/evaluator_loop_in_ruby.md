@@ -5,15 +5,18 @@ description: "A quick walkthrough of how to turn LLM calls into composable build
 date: 2025-11-21
 author: "Vicente Reig"
 category: "Workflow"
-reading_time: "4 min read"
+reading_time: "5 min read"
 image: /images/og/evaluator_loop_in_ruby.png
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluator_loop_in_ruby/"
 ---
 
-Outbound copy rarely ships on the first LLM pass. [DSPy.rb](https://github.com/vicentereig/dspy.rb) keeps the loop—propose, critique, refine—without burning budget.
+Outbound copy rarely ships on the first LLM pass. You write a prompt, get something decent, tweak it, try again... and burn tokens guessing what "good enough" means. [DSPy.rb](https://github.com/vicentereig/dspy.rb) turns this into a structured loop—propose, critique, refine—with a clear stopping condition.
 
 ## Why Evaluator Loops?
-Evaluator–optimizer is a two-model handshake: generator drafts, evaluator grades and prescribes fixes, loop repeats until the rubric is met. Anthropic says it shines when “LLM responses can be demonstrably improved when a human articulates their feedback.”[^1]
+
+The evaluator-optimizer pattern is a two-model handshake: a generator drafts content, an evaluator grades it against criteria and prescribes fixes, and the loop repeats until the rubric is met or the budget runs out. Anthropic recommends this pattern when "LLM responses can be demonstrably improved when a human articulates their feedback."[^1]
+
+The key insight: use a cheap, fast model for drafting and a smarter model for critique. You get quality feedback without paying premium prices for every token.
 
 ```mermaid
 flowchart LR
@@ -35,53 +38,111 @@ flowchart LR
 ```
 
 ## Signatures as Functions
-[Our running example](https://github.com/vicentereig/dspy.rb/blob/main/examples/evaluator_loop.rb) turns LLMs into callable functions:
+
+DSPy Signatures turn LLM calls into typed, callable functions. [Our running example](https://github.com/vicentereig/dspy.rb/blob/main/examples/evaluator_loop.rb) defines two signatures—one for generating drafts, one for evaluating them:
 
 ```ruby
 class GenerateLinkedInArticle < DSPy::Signature
-  input  { const :topic_seed, TopicSeed; const :vibe_toggles, VibeToggles; const :structure_template, StructureTemplate; const :recommendations, T::Array[Recommendation], default: [] }
-  output { const :post, String; const :hooks, T::Array[String] }
+  description "Draft a concise sales pitch that embraces a persona's preferences."
+
+  input do
+    const :topic_seed, TopicSeed
+    const :vibe_toggles, VibeToggles
+    const :structure_template, StructureTemplate
+    const :recommendations, T::Array[Recommendation], default: []
+  end
+
+  output do
+    const :post, String
+    const :hooks, T::Array[String]
+  end
 end
 
 class EvaluateLinkedInArticle < DSPy::Signature
-  input  { const :post, String; const :topic_seed, TopicSeed; const :vibe_toggles, VibeToggles; const :recommendations, T::Array[Recommendation]; const :hooks, T::Array[String]; const :attempt, Integer }
-  output { const :decision, EvaluationDecision; const :recommendations, T::Array[Recommendation]; const :self_score, Float }
+  description <<~DESC.strip
+    You are a SKEPTICAL editor who rarely approves drafts on the first attempt.
+    Your role is to find genuine flaws and push for excellence. Default to
+    'needs_revision' unless the post is truly exceptional.
+  DESC
+
+  input do
+    const :post, String
+    const :topic_seed, TopicSeed
+    const :vibe_toggles, VibeToggles
+    const :recommendations, T::Array[Recommendation]
+    const :hooks, T::Array[String]
+    const :attempt, Integer
+  end
+
+  output do
+    const :decision, EvaluationDecision  # Approved or NeedsRevision
+    const :recommendations, T::Array[Recommendation]
+    const :self_score, Float
+  end
 end
 ```
 
+Notice the `description` on the evaluator signature. This is where you set the evaluator's mindset. More on that below.
+
 ## Loop Mechanics: draft → critique within a guardrail
-`SalesPitchWriterLoop` pairs a lightweight Anthropic Haiku generator with an Anthropic Sonnet evaluator (Chain-of-Thought). Budget, not iterations, is the guardrail—unlike [DSPy::ReAct](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) loops that cap turns. Evaluator probes: “Did we quantify pain cost?” “Is the CTA a single action?” Returned fixes: “Add a % proof metric,” “Retune tone to consultative.”
+
+`SalesPitchWriterLoop` pairs a cheap Haiku generator with a smarter Sonnet evaluator (using Chain-of-Thought for reasoning). The loop continues until either the evaluator approves or the token budget runs out—unlike [DSPy::ReAct](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) which caps iterations.
 
 ```ruby
 class SalesPitchWriterLoop < DSPy::Module
-  subscribe 'lm.tokens', :count_tokens
+  subscribe 'lm.tokens', :count_tokens  # Track token usage
 
   def forward(**input_values)
-    tracker = TokenBudgetTracker.new(limit: token_budget_limit)
-    
-    generator =  DSPy::Predict.new(signature_class).configure do |config|
-      config.lm = DSPy::LM.new(
-        'anthropic/claude-haiku-4-5-20251001',
-        api_key: ENV['ANTHROPIC_API_KEY']
-      )
-    end
-    evaluator =  DSPy::ChainOfThought.new(signature_class).configure do |config|
-      config.lm = DSPy::LM.new(
-        'anthropic/claude-sonnet-4-5-20250929',
-        api_key: ENV['ANTHROPIC_API_KEY']
-      )
-    end
+    tracker = TokenBudgetTracker.new(limit: @token_budget_limit)
     recommendations = []
 
     while tracker.remaining.positive?
-      draft = generator.call(**input_values.merge(recommendations: recommendations))
-      eval  = evaluator.call(post: draft.post, hooks: draft.hooks, **input_values)
+      # Cheap model drafts
+      draft = @generator.call(**input_values.merge(recommendations: recommendations))
+
+      # Smart model critiques
+      eval = @evaluator.call(
+        post: draft.post,
+        hooks: draft.hooks,
+        **input_values
+      )
+
+      # Feed recommendations back into next iteration
       recommendations = eval.recommendations || []
       break if eval.decision == EvaluationDecision::Approved
     end
   end
 end
 ```
+
+The evaluator asks questions like: "Did we quantify the pain cost?" "Is the CTA a single action?" Then returns actionable fixes: "Add a percentage proof metric," "Retune tone to consultative."
+
+## Tuning the Evaluator Mindset
+
+Here's the catch: LLM evaluators tend to be sycophantic. They'll approve mediocre content because they default to "yes." If your loop finishes in one iteration every time, your evaluator is probably too easy to please.
+
+The fix is simple—tune the signature `description` to set expectations:
+
+```ruby
+class EvaluateLinkedInArticle < DSPy::Signature
+  # A neutral description leads to lenient evaluation:
+  # description "Score a sales pitch and provide feedback."
+
+  # A skeptical framing pushes for excellence:
+  description <<~DESC.strip
+    You are a SKEPTICAL editor who rarely approves drafts on the first attempt.
+    Your role is to find genuine flaws and push for excellence. Default to
+    'needs_revision' unless the post is truly exceptional.
+  DESC
+end
+```
+
+This adversarial framing makes the evaluator earn its approval. The loop runs more iterations, but each draft gets meaningfully better.
+
+Other levers you can pull:
+- **Self-score threshold**: The example requires `self_score >= 0.9` even if decision is "approved"
+- **Forced criticisms**: Require the output to include at least N specific issues
+- **Rubric criteria**: Add explicit pass/fail fields for each quality dimension
 
 ## O11y at a Glance
 [DSPy.rb](https://github.com/vicentereig/dspy.rb) ships observability out of the box: every `lm.tokens` event flows into Langfuse, so you don’t need X‑ray vision to see whether budget burned on the draft or the critique. Peek at the latest trace (Nov 21, 2025 — Haiku draft, Sonnet CoT evaluator):
@@ -102,8 +163,24 @@ end
 Outcome: 1 attempt; 5,926 / 10,000 tokens; Langfuse cost ≈ $0.0258. Generator and evaluator hops are labeled, so you can confirm the cheap model carried drafting while the expensive model handled critique. Prefer shell? [`lf-cli`](https://github.com/vicentereig/lf-cli) points at the same Langfuse project and gives you the tree from your coding terminal.
 
 ## Run It
-`rbenv exec bundle exec ruby examples/evaluator_loop.rb` (needs `ANTHROPIC_API_KEY` in `.env`). Tune budget with `DSPY_SLOP_TOKEN_BUDGET`; swap models via `DSPY_SLOP_GENERATOR_MODEL` and `DSPY_SLOP_EVALUATOR_MODEL`.
 
-We covered why evaluator loops beat single-shot prompts, how Signatures turn LLM calls into tidy functions, how the SalesPitchWriter pairs a cheap draft with a CoT critic under a token guardrail, and what the Langfuse trace tells you at a glance. Swap in your own structs and rubrics, keep the loop, and ship requirement-backed outputs with less guesswork.
+```bash
+bundle exec ruby examples/evaluator_loop.rb
+```
+
+Requires `ANTHROPIC_API_KEY` in your `.env`. You can tune:
+- `DSPY_SLOP_TOKEN_BUDGET` — how many tokens before the loop gives up
+- `DSPY_SLOP_GENERATOR_MODEL` — the cheap drafting model
+- `DSPY_SLOP_EVALUATOR_MODEL` — the smart critique model
+
+## Takeaways
+
+Evaluator loops beat single-shot prompts when quality matters. The pattern is simple:
+1. **Signatures as functions** — typed inputs and outputs, no prompt wrangling
+2. **Cheap draft, smart critique** — Haiku generates, Sonnet evaluates
+3. **Budget as guardrail** — token cap instead of iteration cap
+4. **Skeptical by design** — tune the evaluator description to push for excellence
+
+The signature `description` is your main lever for controlling evaluator behavior. Don't settle for sycophantic feedback—make the loop earn its approval.
 
 [^1]: Anthropic, “Building effective agents,” Workflow: Evaluator-optimizer, Dec 19 2024. https://www.anthropic.com/engineering/building-effective-agents#workflow-evaluator-optimizer
