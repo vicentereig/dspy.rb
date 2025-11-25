@@ -6,7 +6,7 @@ date: 2025-11-23
 author: "Vicente Reig"
 category: "Agents"
 reading_time: "8 min read"
-image: /images/og/ephemeral-memory-chat.png
+image: /images/og/ephemeral-memory-chat-router.png
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/ephemeral-memory-chat-router/"
 ---
 
