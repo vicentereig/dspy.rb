@@ -19,8 +19,8 @@ RSpec.describe EvaluatorLoop::SalesPitchWriterLoop do
 
   let(:structure_template) { EvaluatorLoop::StructureTemplate::StoryLessonCta }
 
-  let(:generator_model) { 'anthropic/claude-3-5-haiku-20241022' }
-  let(:evaluator_model) { 'anthropic/claude-3-5-sonnet-20241022' }
+  let(:generator_model) { 'anthropic/claude-haiku-4-5-20251001' }
+  let(:evaluator_model) { 'anthropic/claude-sonnet-4-5-20250929' }
 
   def build_predictor(signature_class, model_id)
     predictor = DSPy::Predict.new(signature_class)
@@ -48,7 +48,8 @@ RSpec.describe EvaluatorLoop::SalesPitchWriterLoop do
     ENV['ANTHROPIC_API_KEY'] ||= 'test-anthropic-key'
   end
 
-  it 'approves within the default budget', vcr: { cassette_name: 'examples/evaluator_loop/two_iterations' } do
+  it 'runs multiple iterations with skeptical evaluator feedback',
+     vcr: { cassette_name: 'examples/evaluator_loop/two_iterations' } do
     loop_module = build_loop
 
     result = loop_module.call(
@@ -57,11 +58,14 @@ RSpec.describe EvaluatorLoop::SalesPitchWriterLoop do
       structure_template: structure_template
     )
 
-    expect(result.decision).to eq(EvaluatorLoop::EvaluationDecision::Approved)
-    expect(result.attempts).to eq(2)
-    expect(result.budget_exhausted).to be(false)
+    # Skeptical evaluator provides substantive feedback across iterations
+    expect(result.attempts).to be >= 2
     expect(result.token_budget_limit).to eq(described_class::DEFAULT_TOKEN_BUDGET)
-    expect(result.token_budget_used).to eq(1_728)
+
+    # Verify substantive feedback was provided in each iteration
+    result.history.each do |revision|
+      expect(revision.feedback.length).to be > 50
+    end
   end
 
   it 'halts when the budget is exhausted mid-loop', vcr: { cassette_name: 'examples/evaluator_loop/two_iterations' } do
@@ -122,5 +126,61 @@ RSpec.describe EvaluatorLoop::SalesPitchWriterLoop do
     expect(result.history.last.self_score).to be >= EvaluatorLoop::SalesPitchWriterLoop::SELF_SCORE_THRESHOLD
     expect(generator).to have_received(:call).twice
     expect(evaluator).to have_received(:call).twice
+  end
+
+  describe 'skeptical evaluator behavior' do
+    let(:decent_post) do
+      <<~POST
+        Last week, I had a revelation about AI hiring.
+
+        After interviewing 50+ candidates, I realized the best engineers
+        aren't the ones with the most GitHub stars. They're the ones who
+        ask "why" before "how."
+
+        Here are 3 lessons I learned:
+        1. Curiosity beats credentials
+        2. Communication skills matter more than coding speed
+        3. Culture fit isn't about beer pong
+
+        What's your hot take on hiring in tech?
+
+        #AIHiring #TechRecruitment #Leadership
+      POST
+    end
+
+    def build_evaluator
+      DSPy::ChainOfThought.new(EvaluatorLoop::EvaluateLinkedInArticle).configure do |config|
+        config.lm = DSPy::LM.new(
+          evaluator_model,
+          api_key: ENV['ANTHROPIC_API_KEY']
+        )
+      end
+    end
+
+    it 'rejects first attempts and provides substantive criticism',
+       vcr: { cassette_name: 'examples/evaluator_loop/skeptical_evaluation' } do
+      evaluator = build_evaluator
+
+      result = evaluator.call(
+        post: decent_post,
+        topic_seed: topic_seed,
+        vibe_toggles: vibe_toggles,
+        structure_template: structure_template,
+        hashtag_band: EvaluatorLoop::HashtagBand.new,
+        length_cap: EvaluatorLoop::LengthCap.new,
+        recommendations: [],
+        hooks: ['AI hiring revelation', 'Why before how'],
+        attempt: 1
+      )
+
+      # Skeptical evaluator should NOT approve on first attempt
+      expect(result.decision).to eq(EvaluatorLoop::EvaluationDecision::NeedsRevision)
+
+      # Should provide substantive feedback (not empty or generic)
+      expect(result.feedback.length).to be > 50
+
+      # Should provide actionable recommendations
+      expect(result.recommendations).not_to be_empty
+    end
   end
 end
