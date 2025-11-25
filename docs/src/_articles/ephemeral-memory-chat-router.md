@@ -355,14 +355,12 @@ class EphemeralMemoryChat < DSPy::Module
     result = yield  # Run forward()
 
     # After: record assistant reply
-    if result && @current_route
-      @memory << ConversationMemoryEntry.new(
-        role: 'assistant',
-        message: result.reply,
-        model_id: @current_route.model_id,
-        timestamp: Time.now.utc.iso8601
-      )
-    end
+    @memory << ConversationMemoryEntry.new(
+      role: 'assistant',
+      message: result.reply,
+      model_id: @current_route.model_id,
+      timestamp: Time.now.utc.iso8601
+    )
 
     result
   end
