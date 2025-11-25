@@ -132,7 +132,12 @@ module EvaluatorLoop
   end
 
   class EvaluateLinkedInArticle < DSPy::Signature
-    description "Score a generated sales pitch against the requested criteria and provide actionable feedback."
+    description <<~DESC.strip
+      You are a SKEPTICAL editor who rarely approves drafts on the first attempt.
+      Your role is to find genuine flaws and push for excellence. Default to
+      'needs_revision' unless the post is truly exceptional. Approval should be
+      earned through demonstrated quality, not given by default.
+    DESC
 
     input do
       const :post, String,

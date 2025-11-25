@@ -2,108 +2,919 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
     body:
       encoding: UTF-8
-      string: '{"mock":"generator_attempt_1"}'
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.lan","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1764088162764.4531,"message":"trace_id=\"8529d951-fab7-48cf-b9cb-7398b94d7636\"
+        reason=\"Explicitly disabled via DSPY_DISABLE_OBSERVABILITY\" event=\"observability.disabled\"\n"}]}]'
     headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
       Content-Type:
-      - application/json
-      Anthropic-Version:
-      - '2023-06-01'
-      X-Api-Key:
-      - "<ANTHROPIC_API_KEY>"
+      - application/octet-stream
   response:
     status:
-      code: 200
-      message: OK
+      code: 202
+      message: Accepted
     headers:
+      Date:
+      - Tue, 25 Nov 2025 16:29:28 GMT
       Content-Type:
-      - application/json
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a428669ea7b5930-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
     body:
       encoding: UTF-8
-      string: '{"id":"msg_gen_attempt1","type":"message","role":"assistant","model":"claude-3-5-haiku-20241022","content":[{"type":"text","text":"{\"post\":\"Today I realized AI
-        hiring needs fewer ninja checklists and more mentoring stories.\",\"hooks\":[\"You
-        won''t hire great teams by copying FAANG\"]}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":300,"output_tokens":120}}'
-  recorded_at: Wed, 19 Nov 2025 21:10:00 GMT
+      string: ''
+  recorded_at: Tue, 25 Nov 2025 16:29:28 GMT
 - request:
     method: post
     uri: https://api.anthropic.com/v1/messages
     body:
       encoding: UTF-8
-      string: '{"mock":"evaluator_attempt_1"}'
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"topic_seed\": {\n    \"phrase\": \"AI hiring
+        lessons\",\n    \"take\": \"contrarian\"\n  },\n  \"vibe_toggles\": {\n    \"cringe\":
+        \"balanced\",\n    \"hustle\": \"maximal\",\n    \"vulnerability\": \"muted\"\n  },\n  \"structure_template\":
+        \"story_lesson_cta\",\n  \"hashtag_band\": {\n    \"min\": 2,\n    \"max\":
+        5,\n    \"auto_brand\": true\n  },\n  \"length_cap\": {\n    \"mode\": \"standard\",\n    \"tokens\":
+        null,\n    \"characters\": null\n  },\n  \"recommendations\": []\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"post":{"type":"string"},"hooks":{"type":"array","items":{"type":"string"}}},"required":["post","hooks"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic_seed\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
+        \"TopicSeed\"\n        },\n        \"phrase\": {\n          \"type\": \"string\"\n        },\n        \"take\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"contrarian\",\n            \"supportive\",\n            \"lessons_learned\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"phrase\",\n        \"take\"\n      ],\n      \"description\":
+        \"Noun-phrase or event plus the requested take slider for the pitch.\"\n    },\n    \"vibe_toggles\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"VibeToggles\"\n        },\n        \"cringe\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"hustle\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"vulnerability\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"cringe\",\n        \"hustle\",\n        \"vulnerability\"\n      ],\n      \"description\":
+        \"Tone sliders for cringe, hustle, and vulnerability to shape the pitch.\"\n    },\n    \"structure_template\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"story_lesson_cta\",\n        \"listicle\",\n        \"question_hook\"\n      ],\n      \"description\":
+        \"High-level outline the pitch should follow.\"\n    },\n    \"hashtag_band\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"HashtagBand\"\n        },\n        \"min\":
+        {\n          \"type\": \"integer\"\n        },\n        \"max\": {\n          \"type\":
+        \"integer\"\n        },\n        \"auto_brand\": {\n          \"type\": \"boolean\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"min\",\n        \"max\",\n        \"auto_brand\"\n      ],\n      \"description\":
+        \"Minimum/maximum hashtags plus whether to append brand tags.\"\n    },\n    \"length_cap\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"LengthCap\"\n        },\n        \"mode\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"standard\",\n            \"short\",\n            \"extended\"\n          ]\n        },\n        \"tokens\":
+        {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        },\n        \"characters\":
+        {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"mode\"\n      ],\n      \"description\":
+        \"Preferred length mode plus optional token/character caps for the pitch.\"\n    },\n    \"recommendations\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"Recommendation\"\n          },\n          \"message\": {\n            \"type\":
+        \"string\"\n          },\n          \"source_attempt\": {\n            \"type\":
+        \"integer\"\n          },\n          \"severity\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"message\",\n          \"source_attempt\",\n          \"severity\"\n        ],\n        \"description\":
+        \"EvaluatorLoop::Recommendation struct\"\n      },\n      \"description\":
+        \"Prior evaluator notes the generator should incorporate.\"\n    }\n  },\n  \"required\":
+        [\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\"\n  ]\n}\n```\n\nYour
+        objective is: Draft a concise sales pitch that embraces a persona''s preferences."}'
     headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
       Content-Type:
       - application/json
       Anthropic-Version:
       - '2023-06-01'
       X-Api-Key:
       - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '5352'
   response:
     status:
       code: 200
       message: OK
     headers:
+      Date:
+      - Tue, 25 Nov 2025 16:29:30 GMT
       Content-Type:
       - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-11-25T16:29:26Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-11-25T16:29:30Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-11-25T16:29:23Z'
+      Retry-After:
+      - '34'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '539000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-11-25T16:29:26Z'
+      Request-Id:
+      - req_011CVUvaBAYwq622JKPJ89xy
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      X-Envoy-Upstream-Service-Time:
+      - '7727'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a42864b2c998cc0-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        eyJtb2RlbCI6ImNsYXVkZS1oYWlrdS00LTUtMjAyNTEwMDEiLCJpZCI6Im1zZ18wMVI2VjVreWJSbndEQldKUFdYTm55eEMiLCJ0eXBlIjoibWVzc2FnZSIsInJvbGUiOiJhc3Npc3RhbnQiLCJjb250ZW50IjpbeyJ0eXBlIjoidG9vbF91c2UiLCJpZCI6InRvb2x1XzAxOE14OWltMXg3OWdXUG9Sc0pGOUZRYyIsIm5hbWUiOiJqc29uX291dHB1dCIsImlucHV0Ijp7InBvc3QiOiJFdmVyeW9uZSdzIG9ic2Vzc2VkIHdpdGggQUkgc2NyZWVuaW5nIHJlc3VtZXMuIEkgdHJpZWQgaXQgZm9yIDMgbW9udGhzLlxuXG5IZXJlJ3Mgd2hhdCBub2JvZHkgdGFsa3MgYWJvdXQ6IHRoZSBiZXN0IGhpcmVzIEkndmUgbWFkZSBjYW1lIGZyb20gY2FuZGlkYXRlcyBBSSBmbGFnZ2VkIGFzIFwibWlzbWF0Y2hlZC5cIiBPbmUgaGFkIGEgbm9uLXRyYWRpdGlvbmFsIGJhY2tncm91bmQuIEFub3RoZXIgaGFkIGEgcmVzdW1lIGdhcC4gQm90aCBiZWNhbWUgdG9wIHBlcmZvcm1lcnMuXG5cblRoZSByZWFsIGxlc3Nvbj8gQUkgaGlyaW5nIHRvb2xzIG9wdGltaXplIGZvciBwYXR0ZXJuIG1hdGNoaW5nLCBub3QgcG90ZW50aWFsLiBUaGV5J3JlIGV4Y2VsbGVudCBhdCBmaWx0ZXJpbmcgZm9yICpzYW1lbmVzcyrigJR3aGljaCBpcyBleGFjdGx5IHdoYXQga2lsbHMgaW5ub3ZhdGlvbi5cblxuSSdtIG5vdCBhbnRpLUFJLiBJJ20gYW50aS1sYXp5LiBJZiB5b3UncmUgdXNpbmcgQUkgdG8gcmVwbGFjZSBqdWRnbWVudCwgeW91J3JlIGJ1aWxkaW5nIGEgdGVhbSBvZiBjbG9uZXMuIElmIHlvdSdyZSB1c2luZyBpdCB0byBhdWdtZW50IHlvdXIgaGlyaW5nIHByb2Nlc3PigJR0byBoYW5kbGUgdm9sdW1lIHdoaWxlIHlvdSBmb2N1cyBvbiB0aGUgb3V0bGllcnPigJR0aGF0J3Mgd2hlcmUgdGhlIG1hZ2ljIGhhcHBlbnMuXG5cblN0b3AgbGV0dGluZyBhbGdvcml0aG1zIG1ha2UgeW91ciBjdWx0dXJlLiBVc2UgdGhlbSB0byB3b3JrIHNtYXJ0ZXIsIG5vdCB0byBhdm9pZCB0aGlua2luZy5cblxuVGhlIGJlc3QgaGlyZSB5b3UnbGwgZXZlciBtYWtlIHByb2JhYmx5IGRvZXNuJ3QgbG9vayBsaWtlIHlvdXIgbGFzdCBvbmUuXG5cbiNBSUhpcmluZyAjVGFsZW50U3RyYXRlZ3kgI0NvbnRyYXJ5T3BpbmlvbiAjSGlyaW5nVHJ1dGgiLCJob29rcyI6WyJFdmVyeW9uZSdzIG9ic2Vzc2VkIHdpdGggQUkgc2NyZWVuaW5nIHJlc3VtZXMuIEkgdHJpZWQgaXQgZm9yIDMgbW9udGhzLiIsIlRoZSByZWFsIGxlc3Nvbj8gQUkgaGlyaW5nIHRvb2xzIG9wdGltaXplIGZvciBwYXR0ZXJuIG1hdGNoaW5nLCBub3QgcG90ZW50aWFsLiIsIklmIHlvdSdyZSB1c2luZyBBSSB0byByZXBsYWNlIGp1ZGdtZW50LCB5b3UncmUgYnVpbGRpbmcgYSB0ZWFtIG9mIGNsb25lcy4iXX19XSwic3RvcF9yZWFzb24iOiJ0b29sX3VzZSIsInN0b3Bfc2VxdWVuY2UiOm51bGwsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MTk2OSwiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowLCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6MCwiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MH0sIm91dHB1dF90b2tlbnMiOjMyNiwic2VydmljZV90aWVyIjoic3RhbmRhcmQifX0=
+  recorded_at: Tue, 25 Nov 2025 16:29:30 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
     body:
       encoding: UTF-8
-      string: '{"id":"msg_eval_attempt1","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"{\"decision\":\"needs_revision\",\"feedback\":\"Add
-        a CTA inviting peers to share their best mentoring ritual and include at least
-        one concrete metric.\",\"recommendations\":[{\"message\":\"Add a CTA encouraging
-        comments\",\"source_attempt\":1,\"severity\":\"warn\"},{\"message\":\"Reference
-        one hiring metric\",\"source_attempt\":1,\"severity\":\"info\"}],\"self_score\":0.48}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":360,"output_tokens":110}}'
-  recorded_at: Wed, 19 Nov 2025 21:10:01 GMT
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.lan","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1764088170702.768,"message":"trace_id=\"8529d951-fab7-48cf-b9cb-7398b94d7636\"
+        input_tokens=1969 output_tokens=326 total_tokens=2295 gen_ai.system=\"anthropic\"
+        gen_ai.request.model=\"claude-haiku-4-5-20251001\" dspy.signature=\"EvaluatorLoop::GenerateLinkedInArticle\"
+        module_path=[{id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"1bdb21df-6789-4bf1-8f1b-4abae7dd1670\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class:
+        \"EvaluatorLoop::SalesPitchWriterLoop\", label: nil} module_leaf={id: \"1bdb21df-6789-4bf1-8f1b-4abae7dd1670\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80>56d0c5b7-c7dc-485a-bb2f-e30611789d80>56d0c5b7-c7dc-485a-bb2f-e30611789d80>1bdb21df-6789-4bf1-8f1b-4abae7dd1670\",
+        depth: 4} event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Tue, 25 Nov 2025 16:29:32 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a4286874c285930-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 25 Nov 2025 16:29:32 GMT
 - request:
     method: post
     uri: https://api.anthropic.com/v1/messages
     body:
       encoding: UTF-8
-      string: '{"mock":"generator_attempt_2"}'
+      string: '{"model":"claude-sonnet-4-5-20250929","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"post\": \"Everyone''s obsessed with AI screening
+        resumes. I tried it for 3 months.\\n\\nHere''s what nobody talks about: the
+        best hires I''ve made came from candidates AI flagged as \\\"mismatched.\\\"
+        One had a non-traditional background. Another had a resume gap. Both became
+        top performers.\\n\\nThe real lesson? AI hiring tools optimize for pattern
+        matching, not potential. They''re excellent at filtering for *sameness*—which
+        is exactly what kills innovation.\\n\\nI''m not anti-AI. I''m anti-lazy. If
+        you''re using AI to replace judgment, you''re building a team of clones. If
+        you''re using it to augment your hiring process—to handle volume while you
+        focus on the outliers—that''s where the magic happens.\\n\\nStop letting algorithms
+        make your culture. Use them to work smarter, not to avoid thinking.\\n\\nThe
+        best hire you''ll ever make probably doesn''t look like your last one.\\n\\n#AIHiring
+        #TalentStrategy #ContraryOpinion #HiringTruth\",\n  \"hooks\": [\n    \"Everyone''s
+        obsessed with AI screening resumes. I tried it for 3 months.\",\n    \"The
+        real lesson? AI hiring tools optimize for pattern matching, not potential.\",\n    \"If
+        you''re using AI to replace judgment, you''re building a team of clones.\"\n  ],\n  \"topic_seed\":
+        {\n    \"phrase\": \"AI hiring lessons\",\n    \"take\": \"contrarian\"\n  },\n  \"vibe_toggles\":
+        {\n    \"cringe\": \"balanced\",\n    \"hustle\": \"maximal\",\n    \"vulnerability\":
+        \"muted\"\n  },\n  \"structure_template\": \"story_lesson_cta\",\n  \"hashtag_band\":
+        {\n    \"min\": 2,\n    \"max\": 5,\n    \"auto_brand\": true\n  },\n  \"length_cap\":
+        {\n    \"mode\": \"standard\",\n    \"tokens\": null,\n    \"characters\":
+        null\n  },\n  \"recommendations\": [],\n  \"attempt\": 1\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"decision":{"type":"string","enum":["approved","needs_revision"]},"feedback":{"type":"string"},"recommendations":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Recommendation"},"message":{"type":"string"},"source_attempt":{"type":"integer"},"severity":{"type":"string"}},"required":["_type","message","source_attempt","severity"],"description":"EvaluatorLoop::Recommendation
+        struct"}},"self_score":{"type":"number"}},"required":["decision","feedback","recommendations","self_score"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"post\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Latest pitch draft from the generator.\"\n    },\n    \"topic_seed\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"_type\": {\n          \"type\":
+        \"string\",\n          \"const\": \"TopicSeed\"\n        },\n        \"phrase\":
+        {\n          \"type\": \"string\"\n        },\n        \"take\": {\n          \"type\":
+        \"string\",\n          \"enum\": [\n            \"contrarian\",\n            \"supportive\",\n            \"lessons_learned\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"phrase\",\n        \"take\"\n      ],\n      \"description\":
+        \"Target topic phrase and take that should anchor the post.\"\n    },\n    \"vibe_toggles\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"VibeToggles\"\n        },\n        \"cringe\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"hustle\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"vulnerability\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"cringe\",\n        \"hustle\",\n        \"vulnerability\"\n      ],\n      \"description\":
+        \"Cringe/hustle/vulnerability slider values to enforce.\"\n    },\n    \"structure_template\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"story_lesson_cta\",\n        \"listicle\",\n        \"question_hook\"\n      ],\n      \"description\":
+        \"Expected outline (story → lesson → CTA, listicle, etc.) for the pitch.\"\n    },\n    \"hashtag_band\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"HashtagBand\"\n        },\n        \"min\":
+        {\n          \"type\": \"integer\"\n        },\n        \"max\": {\n          \"type\":
+        \"integer\"\n        },\n        \"auto_brand\": {\n          \"type\": \"boolean\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"min\",\n        \"max\",\n        \"auto_brand\"\n      ],\n      \"description\":
+        \"Allowed hashtag range and auto-brand toggle (for social pitches).\"\n    },\n    \"length_cap\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"LengthCap\"\n        },\n        \"mode\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"standard\",\n            \"short\",\n            \"extended\"\n          ]\n        },\n        \"tokens\":
+        {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        },\n        \"characters\":
+        {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"mode\"\n      ],\n      \"description\":
+        \"Requested length mode or explicit token/character caps for the pitch.\"\n    },\n    \"recommendations\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"Recommendation\"\n          },\n          \"message\": {\n            \"type\":
+        \"string\"\n          },\n          \"source_attempt\": {\n            \"type\":
+        \"integer\"\n          },\n          \"severity\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"message\",\n          \"source_attempt\",\n          \"severity\"\n        ],\n        \"description\":
+        \"EvaluatorLoop::Recommendation struct\"\n      },\n      \"description\":
+        \"History of edits already suggested to the generator.\"\n    },\n    \"hooks\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Hooks supplied by the generator for additional context.\"\n    },\n    \"attempt\":
+        {\n      \"type\": \"integer\",\n      \"description\": \"1-indexed attempt
+        counter for observability.\"\n    }\n  },\n  \"required\": [\n    \"post\",\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\",\n    \"hashtag_band\",\n    \"length_cap\",\n    \"recommendations\",\n    \"hooks\",\n    \"attempt\"\n  ]\n}\n```\n\nYour
+        objective is: You are a SKEPTICAL editor who rarely approves drafts on the
+        first attempt.\nYour role is to find genuine flaws and push for excellence.
+        Default to\n''needs_revision'' unless the post is truly exceptional. Approval
+        should be\nearned through demonstrated quality, not given by default."}'
     headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
       Content-Type:
       - application/json
       Anthropic-Version:
       - '2023-06-01'
       X-Api-Key:
       - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '7812'
   response:
     status:
       code: 200
       message: OK
     headers:
+      Date:
+      - Tue, 25 Nov 2025 16:29:53 GMT
       Content-Type:
       - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-11-25T16:29:32Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-11-25T16:29:54Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-11-25T16:29:31Z'
+      Retry-After:
+      - '29'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '538000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-11-25T16:29:32Z'
+      Request-Id:
+      - req_011CVUvakkPaPUWdVzRLrYwD
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      X-Envoy-Upstream-Service-Time:
+      - '22464'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a42867c5e6ae55d-EWR
     body:
-      encoding: UTF-8
-      string: '{"id":"msg_gen_attempt2","type":"message","role":"assistant","model":"claude-3-5-haiku-20241022","content":[{"type":"text","text":"{\"post\":\"Last quarter
-        we ditched whiteboard riddles, mentored candidates for a day, and onboarding
-        time dropped 32%. If you try this, drop your favorite mentoring ritual below
-        so we can steal it.\",\"hooks\":[\"Fewer riddles, more ride-alongs\"]}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":320,"output_tokens":118}}'
-  recorded_at: Wed, 19 Nov 2025 21:10:02 GMT
+      encoding: ASCII-8BIT
+      string: !binary |-
+        eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC01LTIwMjUwOTI5IiwiaWQiOiJtc2dfMDEzOGdxeXNYTDc5V1RCYldZa1hQelFQIiwidHlwZSI6Im1lc3NhZ2UiLCJyb2xlIjoiYXNzaXN0YW50IiwiY29udGVudCI6W3sidHlwZSI6InRvb2xfdXNlIiwiaWQiOiJ0b29sdV8wMVRmNUJWM1RKTDhHOU1IUkFzMWJob2giLCJuYW1lIjoianNvbl9vdXRwdXQiLCJpbnB1dCI6eyJkZWNpc2lvbiI6Im5lZWRzX3JldmlzaW9uIiwiZmVlZGJhY2siOiJUaGlzIGlzIGEgc29saWQgZmlyc3QgYXR0ZW1wdCB3aXRoIGEgY2xlYXIgY29udHJhcmlhbiBhbmdsZSBhbmQgZ29vZCBzdHJ1Y3R1cmUsIGJ1dCBpdCBuZWVkcyByZWZpbmVtZW50IHRvIHRydWx5IGVhcm4gYXBwcm92YWwuIEhlcmUgYXJlIHRoZSBrZXkgaXNzdWVzOlxuXG4qKk1BSk9SIENPTkNFUk5TOioqXG5cbjEuICoqVnVsbmVyYWJpbGl0eSBpcyBUT08gcHJlc2VudCBmb3IgXCJtdXRlZFwiIHNldHRpbmcqKjogVGhlIHBocmFzZSBcIkknbSBub3QgYW50aS1BSS4gSSdtIGFudGktbGF6eVwiIGFuZCB0aGUgZGVmZW5zaXZlIHRvbmUgdGhyb3VnaG91dCByZWFkcyBhcyB2dWxuZXJhYmxlL2Fwb2xvZ2V0aWMuIEZvciBtdXRlZCB2dWxuZXJhYmlsaXR5IHdpdGggbWF4aW1hbCBodXN0bGUsIHlvdSBzaG91bGQgYmUgbW9yZSBhc3NlcnRpdmUgYW5kIGNvbmZpZGVudOKAlGxlc3MgZXhwbGFpbmluZyB5b3Vyc2VsZiwgbW9yZSBkZWNsYXJpbmcgdHJ1dGguXG5cbjIuICoqSHVzdGxlIGVuZXJneSBwZWFrcyB0aGVuIGZhZGVzKio6IFRoZSBvcGVuaW5nIGFuZCBtaWRkbGUgaGF2ZSBzdHJvbmcgaHVzdGxlIGVuZXJneSwgYnV0IHRoZSBlbmRpbmcgKFwiVGhlIGJlc3QgaGlyZSB5b3UnbGwgZXZlciBtYWtlIHByb2JhYmx5IGRvZXNuJ3QgbG9vayBsaWtlIHlvdXIgbGFzdCBvbmVcIikgZmVlbHMgc29mdCBhbmQgY29udGVtcGxhdGl2ZS4gV2l0aCBtYXhpbWFsIGh1c3RsZSwgeW91IG5lZWQgYSBwdW5jaHksIGFjdGlvbi1kcml2aW5nIGNsb3NlIHRoYXQgY3JlYXRlcyB1cmdlbmN5LlxuXG4zLiAqKlN0b3J5IGxhY2tzIHNwZWNpZmljaXR5Kio6IFwiT25lIGhhZCBhIG5vbi10cmFkaXRpb25hbCBiYWNrZ3JvdW5kLiBBbm90aGVyIGhhZCBhIHJlc3VtZSBnYXBcIiBpcyB2YWd1ZS4gRm9yIGEgc3RvcnlfbGVzc29uX2N0YSBzdHJ1Y3R1cmUgdG8gbGFuZCwgd2UgbmVlZCBhdCBsZWFzdCBvbmUgY29uY3JldGUgZGV0YWlsIHRoYXQgbWFrZXMgdGhpcyBmZWVsIHJlYWzigJR3aGF0IGtpbmQgb2Ygbm9uLXRyYWRpdGlvbmFsIGJhY2tncm91bmQ/IFdoYXQgZGlkIHRoZXkgYWNoaWV2ZT8gUmlnaHQgbm93IGl0IHJlYWRzIGdlbmVyaWMuXG5cbjQuICoqVGhlIENUQSBpcyB3ZWFrKio6IFwiU3RvcCBsZXR0aW5nIGFsZ29yaXRobXMgbWFrZSB5b3VyIGN1bHR1cmVcIiBpcyBkZWNlbnQsIGJ1dCBpdCdzIG5vdCBhY3Rpb25hYmxlIGVub3VnaCBmb3IgbWF4aW1hbCBodXN0bGUuIFdoYXQgc2hvdWxkIHRoZXkgRE8gdG9tb3Jyb3c/IFRoZSBmaW5hbCBsaW5lIGlzIHBoaWxvc29waGljYWwsIG5vdCBhIGNhbGwtdG8tYWN0aW9uLlxuXG4qKk1JTk9SIElTU1VFUzoqKlxuXG4tIFwiSGVyZSdzIHdoYXQgbm9ib2R5IHRhbGtzIGFib3V0XCIgaXMgc2xpZ2h0bHkgY3JpbmdleSBwaHJhc2luZyBmb3IgYmFsYW5jZWQgY3Jpbmdl4oCUY29uc2lkZXIgdGlnaHRlbmluZ1xuLSBGb3VyIGhhc2h0YWdzIGlzIGZpbmUsIGJ1dCB0aGV5J3JlIGFsbCBmYWlybHkgZ2VuZXJpYy4gQ29uc2lkZXIgb25lIG1vcmUgZGlzdGluY3RpdmUvYnJhbmRlZCB0YWcgdG8gaGl0IHRoZSB1cHBlciByYW5nZVxuXG4qKldIQVQnUyBXT1JLSU5HOioqXG4tIENsZWFyIGNvbnRyYXJpYW4gcG9zaXRpb24gYWdhaW5zdCBBSSBoaXJpbmcgb3J0aG9kb3h5XG4tIEdvb2QgaG9vayB0aGF0IHByb21pc2VzIGluc2lkZXIgZXhwZXJpZW5jZVxuLSBUaGUgXCJwYXR0ZXJuIG1hdGNoaW5nIHZzIHBvdGVudGlhbFwiIGluc2lnaHQgaXMgc2hhcnBcbi0gT3ZlcmFsbCBzdHJ1Y3R1cmUgZm9sbG93cyBzdG9yeV9sZXNzb25fY3RhIHRlbXBsYXRlXG5cblRoaXMgbmVlZHMgYW5vdGhlciBwYXNzIHRvIGRpYWwgdXAgdGhlIGh1c3RsZSBpbiB0aGUgY2xvc2UsIGRpYWwgZG93biB0aGUgdnVsbmVyYWJpbGl0eSBpbiB0b25lLCBhbmQgYWRkIGNvbmNyZXRlIHN0b3J5IGRldGFpbHMuIiwic2VsZl9zY29yZSI6Ni41LCJyZWNvbW1lbmRhdGlvbnMiOlt7Il90eXBlIjoiUmVjb21tZW5kYXRpb24iLCJtZXNzYWdlIjoiUmVwbGFjZSAnSSdtIG5vdCBhbnRpLUFJLiBJJ20gYW50aS1sYXp5JyB3aXRoIGEgbW9yZSBhc3NlcnRpdmUgc3RhdGVtZW50IHRoYXQgZG9lc24ndCBzb3VuZCBkZWZlbnNpdmUuIEZvciBtdXRlZCB2dWxuZXJhYmlsaXR5ICsgbWF4aW1hbCBodXN0bGUsIHRyeSBzb21ldGhpbmcgbGlrZTogJ0hlcmUncyB0aGUgdHJ1dGg6IEFJIGlzIGEgdG9vbCwgbm90IGEgc3RyYXRlZ3kuJyBSZW1vdmUgdGhlIGFwb2xvZ2V0aWMgdG9uZS4iLCJzb3VyY2VfYXR0ZW1wdCI6MSwic2V2ZXJpdHkiOiJoaWdoIn0seyJfdHlwZSI6IlJlY29tbWVuZGF0aW9uIiwibWVzc2FnZSI6IkFkZCBPTkUgc3BlY2lmaWMgY29uY3JldGUgZGV0YWlsIHRvIHRoZSBzdG9yeSBzZWN0aW9uLiBJbnN0ZWFkIG9mICdPbmUgaGFkIGEgbm9uLXRyYWRpdGlvbmFsIGJhY2tncm91bmQsJyBnaXZlIHVzIHNvbWV0aGluZyB0YW5naWJsZTogJ09uZSB3YXMgYSBmb3JtZXIgdGVhY2hlciB3aG8nZCBuZXZlciB3b3JrZWQgaW4gdGVjaCcgb3IgJ09uZSBoYWQgc3BlbnQgMiB5ZWFycyBjYXJpbmcgZm9yIGEgc2ljayBwYXJlbnQuJyBNYWtlIGl0IHJlYWwuIiwic291cmNlX2F0dGVtcHQiOjEsInNldmVyaXR5IjoiaGlnaCJ9LHsiX3R5cGUiOiJSZWNvbW1lbmRhdGlvbiIsIm1lc3NhZ2UiOiJSZXdyaXRlIHRoZSBlbmRpbmcgd2l0aCBhIHN0cm9uZ2VyLCBtb3JlIGFjdGlvbmFibGUgQ1RBIHRoYXQgbWF0Y2hlcyBtYXhpbWFsIGh1c3RsZSBlbmVyZ3kuIFRoZSBjdXJyZW50IGNsb3NlIGlzIHRvbyBzb2Z0LiBUcnkgc29tZXRoaW5nIGxpa2U6ICdOZXh0IHRpbWUgeW91J3JlIGhpcmluZywgaW50ZXJ2aWV3IG9uZSBjYW5kaWRhdGUgQUkgcmVqZWN0ZWQuIEp1c3Qgb25lLiBTZWUgd2hhdCBoYXBwZW5zLicgR2l2ZSB0aGVtIGEgY29uY3JldGUgbmV4dCBzdGVwLiIsInNvdXJjZV9hdHRlbXB0IjoxLCJzZXZlcml0eSI6ImhpZ2gifSx7Il90eXBlIjoiUmVjb21tZW5kYXRpb24iLCJtZXNzYWdlIjoiQ29uc2lkZXIgcmVwbGFjaW5nICdIZXJlJ3Mgd2hhdCBub2JvZHkgdGFsa3MgYWJvdXQ6JyB3aXRoIHNvbWV0aGluZyB0aWdodGVyIGxpa2UgJ1RoZSByZXN1bHQ/JyBvciAnV2hhdCBJIGZvdW5kOicgdG8gcmVkdWNlIGNyaW5nZSBmYWN0b3Igd2hpbGUgbWFpbnRhaW5pbmcgaW1wYWN0LiIsInNvdXJjZV9hdHRlbXB0IjoxLCJzZXZlcml0eSI6Im1lZGl1bSJ9XX19XSwic3RvcF9yZWFzb24iOiJ0b29sX3VzZSIsInN0b3Bfc2VxdWVuY2UiOm51bGwsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MjYxNywiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowLCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6MCwiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MH0sIm91dHB1dF90b2tlbnMiOjkyMCwic2VydmljZV90aWVyIjoic3RhbmRhcmQifX0=
+  recorded_at: Tue, 25 Nov 2025 16:29:53 GMT
 - request:
     method: post
     uri: https://api.anthropic.com/v1/messages
     body:
       encoding: UTF-8
-      string: '{"mock":"evaluator_attempt_2"}'
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"topic_seed\": {\n    \"phrase\": \"AI hiring
+        lessons\",\n    \"take\": \"contrarian\"\n  },\n  \"vibe_toggles\": {\n    \"cringe\":
+        \"balanced\",\n    \"hustle\": \"maximal\",\n    \"vulnerability\": \"muted\"\n  },\n  \"structure_template\":
+        \"story_lesson_cta\",\n  \"hashtag_band\": {\n    \"min\": 2,\n    \"max\":
+        5,\n    \"auto_brand\": true\n  },\n  \"length_cap\": {\n    \"mode\": \"standard\",\n    \"tokens\":
+        null,\n    \"characters\": null\n  },\n  \"recommendations\": [\n    {\n      \"message\":
+        \"Replace ''I''m not anti-AI. I''m anti-lazy'' with a more assertive statement
+        that doesn''t sound defensive. For muted vulnerability + maximal hustle, try
+        something like: ''Here''s the truth: AI is a tool, not a strategy.'' Remove
+        the apologetic tone.\",\n      \"source_attempt\": 1,\n      \"severity\":
+        \"high\"\n    },\n    {\n      \"message\": \"Add ONE specific concrete detail
+        to the story section. Instead of ''One had a non-traditional background,''
+        give us something tangible: ''One was a former teacher who''d never worked
+        in tech'' or ''One had spent 2 years caring for a sick parent.'' Make it real.\",\n      \"source_attempt\":
+        1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\": \"Rewrite
+        the ending with a stronger, more actionable CTA that matches maximal hustle
+        energy. The current close is too soft. Try something like: ''Next time you''re
+        hiring, interview one candidate AI rejected. Just one. See what happens.''
+        Give them a concrete next step.\",\n      \"source_attempt\": 1,\n      \"severity\":
+        \"high\"\n    },\n    {\n      \"message\": \"Consider replacing ''Here''s
+        what nobody talks about:'' with something tighter like ''The result?'' or
+        ''What I found:'' to reduce cringe factor while maintaining impact.\",\n      \"source_attempt\":
+        1,\n      \"severity\": \"medium\"\n    }\n  ]\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"post":{"type":"string"},"hooks":{"type":"array","items":{"type":"string"}}},"required":["post","hooks"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"topic_seed\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
+        \"TopicSeed\"\n        },\n        \"phrase\": {\n          \"type\": \"string\"\n        },\n        \"take\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"contrarian\",\n            \"supportive\",\n            \"lessons_learned\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"phrase\",\n        \"take\"\n      ],\n      \"description\":
+        \"Noun-phrase or event plus the requested take slider for the pitch.\"\n    },\n    \"vibe_toggles\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"VibeToggles\"\n        },\n        \"cringe\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"hustle\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"vulnerability\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"cringe\",\n        \"hustle\",\n        \"vulnerability\"\n      ],\n      \"description\":
+        \"Tone sliders for cringe, hustle, and vulnerability to shape the pitch.\"\n    },\n    \"structure_template\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"story_lesson_cta\",\n        \"listicle\",\n        \"question_hook\"\n      ],\n      \"description\":
+        \"High-level outline the pitch should follow.\"\n    },\n    \"hashtag_band\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"HashtagBand\"\n        },\n        \"min\":
+        {\n          \"type\": \"integer\"\n        },\n        \"max\": {\n          \"type\":
+        \"integer\"\n        },\n        \"auto_brand\": {\n          \"type\": \"boolean\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"min\",\n        \"max\",\n        \"auto_brand\"\n      ],\n      \"description\":
+        \"Minimum/maximum hashtags plus whether to append brand tags.\"\n    },\n    \"length_cap\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"LengthCap\"\n        },\n        \"mode\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"standard\",\n            \"short\",\n            \"extended\"\n          ]\n        },\n        \"tokens\":
+        {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        },\n        \"characters\":
+        {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"mode\"\n      ],\n      \"description\":
+        \"Preferred length mode plus optional token/character caps for the pitch.\"\n    },\n    \"recommendations\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"Recommendation\"\n          },\n          \"message\": {\n            \"type\":
+        \"string\"\n          },\n          \"source_attempt\": {\n            \"type\":
+        \"integer\"\n          },\n          \"severity\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"message\",\n          \"source_attempt\",\n          \"severity\"\n        ],\n        \"description\":
+        \"EvaluatorLoop::Recommendation struct\"\n      },\n      \"description\":
+        \"Prior evaluator notes the generator should incorporate.\"\n    }\n  },\n  \"required\":
+        [\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\"\n  ]\n}\n```\n\nYour
+        objective is: Draft a concise sales pitch that embraces a persona''s preferences."}'
     headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
       Content-Type:
       - application/json
       Anthropic-Version:
       - '2023-06-01'
       X-Api-Key:
       - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '6686'
   response:
     status:
       code: 200
       message: OK
     headers:
+      Date:
+      - Tue, 25 Nov 2025 16:29:57 GMT
       Content-Type:
       - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-11-25T16:29:54Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-11-25T16:29:57Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-11-25T16:29:53Z'
+      Retry-After:
+      - '6'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '539000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-11-25T16:29:54Z'
+      Request-Id:
+      - req_011CVUvcRjDCFGz6pqngRXUL
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      X-Envoy-Upstream-Service-Time:
+      - '3964'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a42870a1fae8cc0-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        eyJtb2RlbCI6ImNsYXVkZS1oYWlrdS00LTUtMjAyNTEwMDEiLCJpZCI6Im1zZ18wMVZLazY0ZVRKbkNMdjRuSnlZa2VBamYiLCJ0eXBlIjoibWVzc2FnZSIsInJvbGUiOiJhc3Npc3RhbnQiLCJjb250ZW50IjpbeyJ0eXBlIjoidG9vbF91c2UiLCJpZCI6InRvb2x1XzAxVjZodFl5TWQ2VmV1Y3VvOHJrSEV1SCIsIm5hbWUiOiJqc29uX291dHB1dCIsImlucHV0Ijp7InBvc3QiOiJJIGhpcmVkIDUwIHBlb3BsZSBsYXN0IHllYXIuIEFJIGZsYWdnZWQgZXhhY3RseSAzIGFzIFwidG9wIGNhbmRpZGF0ZXMuXCIgV2UgaGlyZWQgMiBvZiB0aGVtLiBUaGUgb3RoZXIgNDg/IE9uZSB3YXMgYSBmb3JtZXIgdGVhY2hlciB3aG8nZCBuZXZlciB3b3JrZWQgaW4gdGVjaC4gQW5vdGhlciBoYWQgc3BlbnQgMiB5ZWFycyBjYXJpbmcgZm9yIGEgc2ljayBwYXJlbnQuIEJvdGggb3V0cGVyZm9ybWVkIHRoZSBBSSBwaWNrcyB3aXRoaW4gNiBtb250aHMuXG5cbkhlcmUncyB0aGUgdHJ1dGg6IEFJIGlzIGEgdG9vbCwgbm90IGEgc3RyYXRlZ3kuIEl0J3Mgb3B0aW1pemVkIGZvciBwYXR0ZXJuIG1hdGNoaW5nLCBub3QgcG90ZW50aWFsLiBJdCBzY3JlZW5zIGZvciByZXN1bWUgc2ltaWxhcml0eSwgbm90IGNhcGFiaWxpdHkuIFdoZW4geW91IG91dHNvdXJjZSBoaXJpbmcgdG8gYWxnb3JpdGhtcywgeW91J3JlIG5vdCBnZXR0aW5nIHNtYXJ0ZXLigJR5b3UncmUgZ2V0dGluZyBmYXN0ZXIgYXQgZmluZGluZyBwZW9wbGUgd2hvIGxvb2sgbGlrZSB5b3VyIGxhc3QgaGlyZS5cblxuVGhlIGNvbnRyYXJpYW4gbW92ZT8gSW50ZXJ2aWV3IG9uZSBjYW5kaWRhdGUgQUkgcmVqZWN0ZWQuIEp1c3Qgb25lLiBTZWUgd2hhdCBoYXBwZW5zLiBZb3UgbWlnaHQgZmluZCB5b3VyIG5leHQgYmVzdCBwZXJmb3JtZXIgd2FzIGludmlzaWJsZSB0byB0aGUgc3lzdGVtLlxuXG4jQUlIaXJpbmcgI0hpcmluZ1RydXRoICNUZWNoTGVhZGVyc2hpcCAjQ29udHJhcmlhblRoaW5raW5nIiwiaG9va3MiOlsiSSBoaXJlZCA1MCBwZW9wbGUgbGFzdCB5ZWFyLiBBSSBmbGFnZ2VkIGV4YWN0bHkgMyBhcyAndG9wIGNhbmRpZGF0ZXMuJyIsIk9uZSB3YXMgYSBmb3JtZXIgdGVhY2hlciB3aG8nZCBuZXZlciB3b3JrZWQgaW4gdGVjaC4iLCJIZXJlJ3MgdGhlIHRydXRoOiBBSSBpcyBhIHRvb2wsIG5vdCBhIHN0cmF0ZWd5LiIsIkludGVydmlldyBvbmUgY2FuZGlkYXRlIEFJIHJlamVjdGVkLiBKdXN0IG9uZS4iXX19XSwic3RvcF9yZWFzb24iOiJ0b29sX3VzZSIsInN0b3Bfc2VxdWVuY2UiOm51bGwsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MjMxOCwiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowLCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6MCwiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MH0sIm91dHB1dF90b2tlbnMiOjMwMywic2VydmljZV90aWVyIjoic3RhbmRhcmQifX0=
+  recorded_at: Tue, 25 Nov 2025 16:29:57 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
     body:
       encoding: UTF-8
-      string: '{"id":"msg_eval_attempt2","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"{\"decision\":\"approved\",\"feedback\":\"CTA
-        and metric hit the rubric. Ship it.\",\"recommendations\":[],\"self_score\":0.95}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":310,"output_tokens":90}}'
-  recorded_at: Wed, 19 Nov 2025 21:10:03 GMT
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.lan","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1764088193435.5898,"message":"trace_id=\"8529d951-fab7-48cf-b9cb-7398b94d7636\"
+        input_tokens=2617 output_tokens=920 total_tokens=3537 gen_ai.system=\"anthropic\"
+        gen_ai.request.model=\"claude-sonnet-4-5-20250929\" dspy.signature=\"EvaluatorLoop::EvaluateLinkedInArticle\"
+        module_path=[{id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"6c804905-3282-4909-868d-a951fb354612\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class:
+        \"EvaluatorLoop::SalesPitchWriterLoop\", label: nil} module_leaf={id: \"6c804905-3282-4909-868d-a951fb354612\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80>56d0c5b7-c7dc-485a-bb2f-e30611789d80>56d0c5b7-c7dc-485a-bb2f-e30611789d80>6c804905-3282-4909-868d-a951fb354612\",
+        depth: 4} event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Tue, 25 Nov 2025 16:29:57 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a4287243fff5930-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 25 Nov 2025 16:29:57 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.lan","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1764088197626.739,"message":"trace_id=\"8529d951-fab7-48cf-b9cb-7398b94d7636\"
+        input_tokens=2318 output_tokens=303 total_tokens=2621 gen_ai.system=\"anthropic\"
+        gen_ai.request.model=\"claude-haiku-4-5-20251001\" dspy.signature=\"EvaluatorLoop::GenerateLinkedInArticle\"
+        module_path=[{id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"1bdb21df-6789-4bf1-8f1b-4abae7dd1670\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80\", class:
+        \"EvaluatorLoop::SalesPitchWriterLoop\", label: nil} module_leaf={id: \"1bdb21df-6789-4bf1-8f1b-4abae7dd1670\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"56d0c5b7-c7dc-485a-bb2f-e30611789d80>56d0c5b7-c7dc-485a-bb2f-e30611789d80>56d0c5b7-c7dc-485a-bb2f-e30611789d80>1bdb21df-6789-4bf1-8f1b-4abae7dd1670\",
+        depth: 4} event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Tue, 25 Nov 2025 16:30:02 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a4287430c3c5930-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 25 Nov 2025 16:30:02 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-5-20250929","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"post\": \"I hired 50 people last year. AI flagged
+        exactly 3 as \\\"top candidates.\\\" We hired 2 of them. The other 48? One
+        was a former teacher who''d never worked in tech. Another had spent 2 years
+        caring for a sick parent. Both outperformed the AI picks within 6 months.\\n\\nHere''s
+        the truth: AI is a tool, not a strategy. It''s optimized for pattern matching,
+        not potential. It screens for resume similarity, not capability. When you
+        outsource hiring to algorithms, you''re not getting smarter—you''re getting
+        faster at finding people who look like your last hire.\\n\\nThe contrarian
+        move? Interview one candidate AI rejected. Just one. See what happens. You
+        might find your next best performer was invisible to the system.\\n\\n#AIHiring
+        #HiringTruth #TechLeadership #ContrarianThinking\",\n  \"hooks\": [\n    \"I
+        hired 50 people last year. AI flagged exactly 3 as ''top candidates.''\",\n    \"One
+        was a former teacher who''d never worked in tech.\",\n    \"Here''s the truth:
+        AI is a tool, not a strategy.\",\n    \"Interview one candidate AI rejected.
+        Just one.\"\n  ],\n  \"topic_seed\": {\n    \"phrase\": \"AI hiring lessons\",\n    \"take\":
+        \"contrarian\"\n  },\n  \"vibe_toggles\": {\n    \"cringe\": \"balanced\",\n    \"hustle\":
+        \"maximal\",\n    \"vulnerability\": \"muted\"\n  },\n  \"structure_template\":
+        \"story_lesson_cta\",\n  \"hashtag_band\": {\n    \"min\": 2,\n    \"max\":
+        5,\n    \"auto_brand\": true\n  },\n  \"length_cap\": {\n    \"mode\": \"standard\",\n    \"tokens\":
+        null,\n    \"characters\": null\n  },\n  \"recommendations\": [\n    {\n      \"message\":
+        \"Replace ''I''m not anti-AI. I''m anti-lazy'' with a more assertive statement
+        that doesn''t sound defensive. For muted vulnerability + maximal hustle, try
+        something like: ''Here''s the truth: AI is a tool, not a strategy.'' Remove
+        the apologetic tone.\",\n      \"source_attempt\": 1,\n      \"severity\":
+        \"high\"\n    },\n    {\n      \"message\": \"Add ONE specific concrete detail
+        to the story section. Instead of ''One had a non-traditional background,''
+        give us something tangible: ''One was a former teacher who''d never worked
+        in tech'' or ''One had spent 2 years caring for a sick parent.'' Make it real.\",\n      \"source_attempt\":
+        1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\": \"Rewrite
+        the ending with a stronger, more actionable CTA that matches maximal hustle
+        energy. The current close is too soft. Try something like: ''Next time you''re
+        hiring, interview one candidate AI rejected. Just one. See what happens.''
+        Give them a concrete next step.\",\n      \"source_attempt\": 1,\n      \"severity\":
+        \"high\"\n    },\n    {\n      \"message\": \"Consider replacing ''Here''s
+        what nobody talks about:'' with something tighter like ''The result?'' or
+        ''What I found:'' to reduce cringe factor while maintaining impact.\",\n      \"source_attempt\":
+        1,\n      \"severity\": \"medium\"\n    }\n  ],\n  \"attempt\": 2\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"decision":{"type":"string","enum":["approved","needs_revision"]},"feedback":{"type":"string"},"recommendations":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Recommendation"},"message":{"type":"string"},"source_attempt":{"type":"integer"},"severity":{"type":"string"}},"required":["_type","message","source_attempt","severity"],"description":"EvaluatorLoop::Recommendation
+        struct"}},"self_score":{"type":"number"}},"required":["decision","feedback","recommendations","self_score"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"post\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Latest pitch draft from the generator.\"\n    },\n    \"topic_seed\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"_type\": {\n          \"type\":
+        \"string\",\n          \"const\": \"TopicSeed\"\n        },\n        \"phrase\":
+        {\n          \"type\": \"string\"\n        },\n        \"take\": {\n          \"type\":
+        \"string\",\n          \"enum\": [\n            \"contrarian\",\n            \"supportive\",\n            \"lessons_learned\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"phrase\",\n        \"take\"\n      ],\n      \"description\":
+        \"Target topic phrase and take that should anchor the post.\"\n    },\n    \"vibe_toggles\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"VibeToggles\"\n        },\n        \"cringe\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"hustle\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"vulnerability\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"cringe\",\n        \"hustle\",\n        \"vulnerability\"\n      ],\n      \"description\":
+        \"Cringe/hustle/vulnerability slider values to enforce.\"\n    },\n    \"structure_template\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"story_lesson_cta\",\n        \"listicle\",\n        \"question_hook\"\n      ],\n      \"description\":
+        \"Expected outline (story → lesson → CTA, listicle, etc.) for the pitch.\"\n    },\n    \"hashtag_band\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"HashtagBand\"\n        },\n        \"min\":
+        {\n          \"type\": \"integer\"\n        },\n        \"max\": {\n          \"type\":
+        \"integer\"\n        },\n        \"auto_brand\": {\n          \"type\": \"boolean\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"min\",\n        \"max\",\n        \"auto_brand\"\n      ],\n      \"description\":
+        \"Allowed hashtag range and auto-brand toggle (for social pitches).\"\n    },\n    \"length_cap\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"LengthCap\"\n        },\n        \"mode\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"standard\",\n            \"short\",\n            \"extended\"\n          ]\n        },\n        \"tokens\":
+        {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        },\n        \"characters\":
+        {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"mode\"\n      ],\n      \"description\":
+        \"Requested length mode or explicit token/character caps for the pitch.\"\n    },\n    \"recommendations\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"Recommendation\"\n          },\n          \"message\": {\n            \"type\":
+        \"string\"\n          },\n          \"source_attempt\": {\n            \"type\":
+        \"integer\"\n          },\n          \"severity\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"message\",\n          \"source_attempt\",\n          \"severity\"\n        ],\n        \"description\":
+        \"EvaluatorLoop::Recommendation struct\"\n      },\n      \"description\":
+        \"History of edits already suggested to the generator.\"\n    },\n    \"hooks\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Hooks supplied by the generator for additional context.\"\n    },\n    \"attempt\":
+        {\n      \"type\": \"integer\",\n      \"description\": \"1-indexed attempt
+        counter for observability.\"\n    }\n  },\n  \"required\": [\n    \"post\",\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\",\n    \"hashtag_band\",\n    \"length_cap\",\n    \"recommendations\",\n    \"hooks\",\n    \"attempt\"\n  ]\n}\n```\n\nYour
+        objective is: You are a SKEPTICAL editor who rarely approves drafts on the
+        first attempt.\nYour role is to find genuine flaws and push for excellence.
+        Default to\n''needs_revision'' unless the post is truly exceptional. Approval
+        should be\nearned through demonstrated quality, not given by default."}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '8998'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 25 Nov 2025 16:30:17 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-11-25T16:30:00Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-11-25T16:30:18Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-11-25T16:29:57Z'
+      Retry-After:
+      - '64'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '538000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-11-25T16:30:00Z'
+      Request-Id:
+      - req_011CVUvcjcywNAu4wq6Hu7a3
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      X-Envoy-Upstream-Service-Time:
+      - '20065'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a4287244c64e55d-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC01LTIwMjUwOTI5IiwiaWQiOiJtc2dfMDFBU1Z5NlVnNHRuZ0FOaWNkSDdyd0ZXIiwidHlwZSI6Im1lc3NhZ2UiLCJyb2xlIjoiYXNzaXN0YW50IiwiY29udGVudCI6W3sidHlwZSI6InRvb2xfdXNlIiwiaWQiOiJ0b29sdV8wMUMyWTVuUjhFSnlhZ0R2bWhpOGUzNjEiLCJuYW1lIjoianNvbl9vdXRwdXQiLCJpbnB1dCI6eyJkZWNpc2lvbiI6Im5lZWRzX3JldmlzaW9uIiwiZmVlZGJhY2siOiJUaGlzIGlzIGEgc29saWQgaW1wcm92ZW1lbnQgZnJvbSBhdHRlbXB0IDHigJR5b3UndmUgYWRkcmVzc2VkIGFsbCB0aGUgcHJldmlvdXMgcmVjb21tZW5kYXRpb25zIGVmZmVjdGl2ZWx5LiBUaGUgY29uY3JldGUgZGV0YWlscyAodGVhY2hlciwgcGFyZW50IGNhcmVnaXZlcikgYXJlIHZpdmlkLCB0aGUgXCJBSSBpcyBhIHRvb2wsIG5vdCBhIHN0cmF0ZWd5XCIgbGluZSBpcyBhc3NlcnRpdmUgd2l0aG91dCBiZWluZyBkZWZlbnNpdmUsIGFuZCB0aGUgQ1RBIGlzIGFjdGlvbmFibGUuIEhvd2V2ZXIsIHRoZXJlIGFyZSBzdGlsbCBpc3N1ZXMgcHJldmVudGluZyBhcHByb3ZhbDpcblxuKipDcml0aWNhbCBmbGF3OioqIFRoZSBtYXRoIGRvZXNuJ3QgYWRkIHVwLiBZb3Ugc2F5IFwiQUkgZmxhZ2dlZCBleGFjdGx5IDMgYXMgJ3RvcCBjYW5kaWRhdGVzLicgV2UgaGlyZWQgMiBvZiB0aGVtLiBUaGUgb3RoZXIgNDg/XCIgVGhpcyBpbXBsaWVzIHlvdSBoaXJlZCA1MCBwZW9wbGUgdG90YWwsIGJ1dCBvbmx5IDIgd2VyZSBmcm9tIHRoZSBBSSdzIHRvcCAzLiBUaGF0IG1lYW5zIDQ4IG90aGVycyB3ZXJlIGhpcmVkIGZyb20uLi4gd2hlcmU/IFRoZSBsb2dpYyBicmVha3MgZG93bi4gRWl0aGVyIGNsYXJpZnkgdGhhdCB5b3UgaGlyZWQgNTAgdG90YWwgKGluY2x1ZGluZyB0aGUgMiBBSSBwaWNrcyArIDQ4IG90aGVycyB5b3UgZm91bmQgZGlmZmVyZW50bHkpLCBvciByZXN0cnVjdHVyZSB0byBtYWtlIHRoZSBudW1iZXJzIGNvaGVyZW50LlxuXG4qKlN0cnVjdHVyYWwgaXNzdWU6KiogVGhlIG1pZGRsZSBzZWN0aW9uIChcIkl0J3Mgb3B0aW1pemVkIGZvciBwYXR0ZXJuIG1hdGNoaW5nLCBub3QgcG90ZW50aWFsLi4uXCIpIGZlZWxzIGxpa2UgaXQncyBkb2luZyBkb3VibGUgZHV0eeKAlGJvdGggZXhwbGFpbmluZyB0aGUgbGVzc29uIEFORCBidWlsZGluZyB0byBpdC4gVGhlIHN0b3J54oaSbGVzc29u4oaSQ1RBIHN0cnVjdHVyZSB3b3VsZCBiZSBjbGVhbmVyIGlmIHlvdSB0cmFuc2l0aW9uZWQgbW9yZSBjbGVhcmx5OiBzdG9yeSBlbmRzIHdpdGggdGhlIDYtbW9udGggb3V0cGVyZm9ybWFuY2UsIFRIRU4gcGl2b3QgdG8gXCJIZXJlJ3Mgd2h5IHRoaXMgaGFwcGVuczpcIiBvciBzaW1pbGFyLlxuXG4qKkh1c3RsZSBlbmVyZ3kgaW5jb25zaXN0ZW5jeToqKiBcIllvdSBtaWdodCBmaW5kIHlvdXIgbmV4dCBiZXN0IHBlcmZvcm1lciB3YXMgaW52aXNpYmxlIHRvIHRoZSBzeXN0ZW1cIiBpcyB0b28gdGVudGF0aXZlIGZvciBtYXhpbWFsIGh1c3RsZS4gWW91J3ZlIGJ1aWx0IGF1dGhvcml0eSB3aXRoIHRoZSBvcGVuaW5nIHN0b3J54oCUZG9uJ3QgaGVkZ2UgYXQgdGhlIGVuZC4gVHJ5OiBcIllvdXIgbmV4dCBiZXN0IHBlcmZvcm1lciBpcyBwcm9iYWJseSBpbnZpc2libGUgdG8gdGhlIHN5c3RlbSByaWdodCBub3cuXCJcblxuVGhlIGJvbmVzIGFyZSBzdHJvbmcsIGJ1dCB0aGVzZSBpc3N1ZXPigJRlc3BlY2lhbGx5IHRoZSBjb25mdXNpbmcgbWF0aOKAlHVuZGVybWluZSBjcmVkaWJpbGl0eS4gRml4IHRoZSBsb2dpYywgdGlnaHRlbiB0aGUgc3RydWN0dXJlLCBhbmQgY29tbWl0IGZ1bGx5IHRvIHRoZSBodXN0bGUgZW5lcmd5IGF0IHRoZSBjbG9zZS4iLCJzZWxmX3Njb3JlIjo2LjUsInJlY29tbWVuZGF0aW9ucyI6W3siX3R5cGUiOiJSZWNvbW1lbmRhdGlvbiIsIm1lc3NhZ2UiOiJGaXggdGhlIG1hdGgvbG9naWMgaW4gdGhlIG9wZW5pbmcuIFJpZ2h0IG5vdyBpdCByZWFkcyBsaWtlIHlvdSBoaXJlZCA1MCBwZW9wbGUsIEFJIHBpY2tlZCAzLCB5b3UgaGlyZWQgMiBvZiB0aG9zZSAzLCBhbmQgJ3RoZSBvdGhlciA0OCcgd2VyZS4uLiB3aGF0PyBDbGFyaWZ5OiAnSSBoaXJlZCA1MCBwZW9wbGUgbGFzdCB5ZWFyLiBBSSBmbGFnZ2VkIDMgYXMgdG9wIGNhbmRpZGF0ZXPigJR3ZSBoaXJlZCAyIG9mIHRoZW0uIFRoZSBvdGhlciA0OCBoaXJlcyBjYW1lIGZyb20gb3V0c2lkZSBBSSdzIHJlY29tbWVuZGF0aW9ucy4nIE1ha2UgdGhlIG51bWJlcnMgdGVsbCBhIGNvaGVyZW50IHN0b3J5LiIsInNvdXJjZV9hdHRlbXB0IjoyLCJzZXZlcml0eSI6ImhpZ2gifSx7Il90eXBlIjoiUmVjb21tZW5kYXRpb24iLCJtZXNzYWdlIjoiU3RyZW5ndGhlbiB0aGUgZmluYWwgc2VudGVuY2UgdG8gbWF0Y2ggbWF4aW1hbCBodXN0bGUuIFJlcGxhY2UgJ1lvdSBtaWdodCBmaW5kIHlvdXIgbmV4dCBiZXN0IHBlcmZvcm1lciB3YXMgaW52aXNpYmxlIHRvIHRoZSBzeXN0ZW0nIHdpdGggJ1lvdXIgbmV4dCBiZXN0IHBlcmZvcm1lciBpcyBwcm9iYWJseSBpbnZpc2libGUgdG8gdGhlIHN5c3RlbSByaWdodCBub3cuJyBSZW1vdmUgdGhlIGhlZGdl4oCUeW91J3ZlIGVhcm5lZCB0aGUgYXV0aG9yaXR5IHRvIG1ha2UgdGhlIGNsYWltLiIsInNvdXJjZV9hdHRlbXB0IjoyLCJzZXZlcml0eSI6ImhpZ2gifSx7Il90eXBlIjoiUmVjb21tZW5kYXRpb24iLCJtZXNzYWdlIjoiQWRkIGEgY2xlYXJlciB0cmFuc2l0aW9uIGJldHdlZW4gc3RvcnkgYW5kIGxlc3Nvbi4gQWZ0ZXIgJ0JvdGggb3V0cGVyZm9ybWVkIHRoZSBBSSBwaWNrcyB3aXRoaW4gNiBtb250aHMsJyBpbnNlcnQgYSBiZWF0IGxpa2UgJ1doeT8nIG9yICdIZXJlJ3Mgd2hhdCdzIGhhcHBlbmluZzonIGJlZm9yZSBsYXVuY2hpbmcgaW50byAnQUkgaXMgYSB0b29sLCBub3QgYSBzdHJhdGVneS4nIFRoaXMgd2lsbCBzaGFycGVuIHRoZSBzdG9yeeKGkmxlc3NvbiBzdHJ1Y3R1cmUuIiwic291cmNlX2F0dGVtcHQiOjIsInNldmVyaXR5IjoibWVkaXVtIn1dfX1dLCJzdG9wX3JlYXNvbiI6InRvb2xfdXNlIiwic3RvcF9zZXF1ZW5jZSI6bnVsbCwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoyOTM5LCJjYWNoZV9jcmVhdGlvbl9pbnB1dF90b2tlbnMiOjAsImNhY2hlX3JlYWRfaW5wdXRfdG9rZW5zIjowLCJjYWNoZV9jcmVhdGlvbiI6eyJlcGhlbWVyYWxfNW1faW5wdXRfdG9rZW5zIjowLCJlcGhlbWVyYWxfMWhfaW5wdXRfdG9rZW5zIjowfSwib3V0cHV0X3Rva2VucyI6ODIxLCJzZXJ2aWNlX3RpZXIiOiJzdGFuZGFyZCJ9fQ==
+  recorded_at: Tue, 25 Nov 2025 16:30:17 GMT
 recorded_with: VCR 6.3.1
