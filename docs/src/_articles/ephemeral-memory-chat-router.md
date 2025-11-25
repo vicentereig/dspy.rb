@@ -1,33 +1,129 @@
 ---
 layout: blog
-title: "From Prompts to Modules: Designing Resilient Ruby Chat Agents with the DSPy Paradigm"
-description: "Build the simplest agent loop with typed signatures, lifecycle callbacks, and cost-aware routing before layering tools, memory compaction, or deep-research workflows."
+title: "Building Chat Agents with Ephemeral Memory: A Step-by-Step Guide"
+description: "Learn lightweight context engineering in Ruby. We'll incrementally build a chat agent with ephemeral memory and cost-based routing—starting from the simplest possible loop and layering complexity only when needed."
 date: 2025-11-23
 author: "Vicente Reig"
 category: "Agents"
-reading_time: "4 min read"
+reading_time: "8 min read"
 image: /images/og/ephemeral-memory-chat.png
 canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/ephemeral-memory-chat-router/"
 ---
 
-When teams ask for an "AI Agent" they usually need something far simpler: a predictable chat loop that remembers prior turns, sometimes routes complex requests to a pricier LLM, and leaves room to grow into tools or research flows. [DSPy.rb’s](/core-concepts/signatures/) Signatures and Modules let us codify that loop in ~200 lines without touching a handwritten prompt.
+When teams ask for an "AI Agent" they usually need something simpler: a chat loop that remembers prior turns and occasionally routes complex requests to a smarter model. This article builds that system incrementally—starting from the simplest possible chat and layering memory, context engineering, and routing only when needed.
 
-In this article we’ll use those conventions to build the simplest _agentic_ flow: a chat session with ephemeral memory plus the [workflow router we introduced previously](../workflow-routing-with-dspy.rb/). We’ll walk through [`examples/ephemeral_memory_chat.rb`](https://github.com/vicentereig/dspy.rb/blob/main/examples/ephemeral_memory_chat.rb) and point out exactly where to plug in longer-term memory, tool invocation, deep research, and cost controls.
+By the end, you'll understand how to control *what* the LLM sees (context engineering) separately from *what* you store (memory), and how to route requests to different models based on complexity.
 
-## Outline
+## The End Goal
 
-1. **Typed signatures** – define `ResolveUserQuestion`, its helper structs, and why typed contracts keep prompts tidy.
-2. **Lifecycle hooks drive memory** – show how `around :update_memory` brackets `forward` so routing stays in `forward` while callbacks handle transcript storage.
-3. **Where to extend** – highlight the seam for routing, longer-term memory, or tools so readers can continue building on the same skeleton.
+Here's what we're building: a chat agent that maintains conversation history, shapes context before sending it to the LLM, and routes messages to cheap or expensive models based on complexity.
 
-## Writing Typed Signatures to keep Prompts Tidy
+```mermaid
+flowchart TB
+    subgraph Input
+        User[/"user_message"/]
+    end
 
-Everything starts with the `ResolveUserQuestion` signature. Models and prompting techniques change constantly, so signatures act as the anchor: a contract that wraps the prompt answering a user’s query. DSPy.rb compiles the signature automatically, so we only declare Sorbet Runtime types:
+    subgraph Memory["Ephemeral Memory (full detail)"]
+        Store[("@memory array<br/>role, message, model_id, timestamp")]
+    end
+
+    subgraph ContextEngineering["Context Engineering"]
+        Trim["Shape context:<br/>Extract only role + message<br/>Trim to recent N turns"]
+    end
+
+    subgraph Routing["Cost-Based Routing"]
+        Classifier["RouteChatRequest<br/>(classify complexity)"]
+        Fast["Fast Predictor<br/>gpt-4o-mini"]
+        Deep["Deep Predictor<br/>gpt-4o + CoT"]
+    end
+
+    subgraph Output
+        Reply[/"reply + complexity"/]
+    end
+
+    User --> Store
+    Store --> Trim
+    Trim --> Classifier
+    Classifier -->|Routine| Fast
+    Classifier -->|Critical| Deep
+    Fast --> Reply
+    Deep --> Reply
+    Reply --> Store
+
+    style Store fill:#e8f5e9,stroke:#81c784
+    style Trim fill:#fff3e0,stroke:#ffb74d
+    style Classifier fill:#e3f2fd,stroke:#64b5f6
+    style Fast fill:#e8f5e9,stroke:#81c784
+    style Deep fill:#fce4ec,stroke:#f06292
+```
+
+But we won't start here. We'll build up to it.
+
+## Step 1: The Simplest Chat (No Memory)
+
+Everything in DSPy.rb starts with a Signature—a typed contract that defines inputs and outputs:
 
 ```ruby
 class ResolveUserQuestion < DSPy::Signature
-  description "Respond while persisting ephemeral memory for routing decisions."
-  
+  description "Respond to a user question."
+
+  input do
+    const :user_message, String
+  end
+
+  output do
+    const :reply, String
+  end
+end
+```
+
+To use it:
+
+```ruby
+predictor = DSPy::Predict.new(ResolveUserQuestion)
+result = predictor.call(user_message: "What's the capital of France?")
+puts result.reply  # => "The capital of France is Paris."
+```
+
+That's it. No prompt engineering, no JSON parsing—just define what goes in and what comes out.
+
+## Step 2: Add Ephemeral Memory
+
+A chat without memory forgets everything between turns. Let's fix that by accumulating history:
+
+```ruby
+class SimpleChat < DSPy::Module
+  def initialize
+    super()
+    @memory = []
+    @predictor = DSPy::Predict.new(ResolveUserQuestion)
+  end
+
+  def forward(user_message:)
+    # Add user message to memory
+    @memory << { role: 'user', message: user_message }
+
+    # Call LLM with full history
+    result = @predictor.call(
+      user_message: user_message,
+      history: @memory
+    )
+
+    # Add assistant reply to memory
+    @memory << { role: 'assistant', message: result.reply }
+
+    result
+  end
+end
+```
+
+But wait—the signature doesn't accept `history` yet. Let's update it:
+
+```ruby
+class ResolveUserQuestion < DSPy::Signature
+  description "Respond to a user question given conversation history."
+
   class MemoryTurn < T::Struct
     const :role, String
     const :message, String
@@ -36,34 +132,183 @@ class ResolveUserQuestion < DSPy::Signature
   input do
     const :user_message, String
     const :history, T::Array[MemoryTurn], default: []
-    const :selected_model, String
   end
 
   output do
     const :reply, String
-    const :complexity, ComplexityLevel
   end
 end
 ```
-This is how you model a conversation—functionally, with plain structs—so you can keep thinking in terms of domain objects instead of raw prompts.
 
-Because the signature is typed yet decoupled from the prompting technique, you can feed it to a cheap [`DSPy::Predict`]({{ "/core-concepts/predictors/#dspypredict" | relative_url }}) or a heavier [`DSPy::ChainOfThought`]({{ "/core-concepts/predictors/#dspychainofthought" | relative_url }}) without rewriting anything.
+Now the LLM sees prior turns. But there's a problem brewing...
 
-Okay, wait a minute. How do I send my prompt to my favorite LLM again?
+## Step 3: Context Engineering (The Two-Struct Pattern)
+
+As conversations grow, you'll want to store more than just role and message—timestamps for debugging, model IDs for analytics, token counts for billing. But the LLM doesn't need any of that noise.
+
+**Context engineering** means controlling what the LLM sees separately from what you store.
+
+Here's the pattern: use a *rich* struct for storage, and a *lean* struct for the prompt.
 
 ```ruby
-resolve_question = DSPy::Predict.new(ResolveUserQuestion)
-resolved_question = resolve_question.call(user_message: 'Tell me everything you know about me')
-puts resolved_question.reply
+# Rich struct for storage/analytics
+class ConversationMemoryEntry < T::Struct
+  const :role, String
+  const :message, String
+  const :model_id, T.nilable(String)   # Which model answered?
+  const :timestamp, String              # When did this happen?
+  const :token_count, T.nilable(Integer) # How many tokens?
+end
+
+# Lean struct for the prompt (defined inside the signature)
+class ResolveUserQuestion < DSPy::Signature
+  class MemoryTurn < T::Struct
+    const :role, String
+    const :message, String
+    # No timestamps, no model_id—just what the LLM needs
+  end
+end
 ```
 
-Signatures stay decoupled from prompting techniques. DSPy ships multiple techniques—[`DSPy::Predict`]({{ "/core-concepts/predictors/#dspypredict" | relative_url }}), [`DSPy::ChainOfThought`]({{ "/core-concepts/predictors/#dspychainofthought" | relative_url }}), [`DSPy::ReAct`]({{ "/core-concepts/predictors/#dspyreact" | relative_url }})—and they all share this contract. In the naive example above we feed the whole conversation back to the LLM, but we could use the `informers` gem to pick only the most relevant `MemoryTurn`s before dispatching the request.
+Now shape context before sending:
 
-Meanwhile we keep a richer `ConversationMemoryEntry` struct for UI or persistence, enriching it with attributes (timestamps, model IDs) that would add unnecessary noise to the prompt. That seam becomes a natural “context budget” checkpoint: trim what you don’t want the model to see while retaining a detailed transcript for analytics or storage. It’s the same separation of concerns you use in Rails—domain object vs. serializer—applied to prompts.
+```ruby
+def forward(user_message:)
+  # ... add user message to @memory ...
 
-## Lifecycle callbacks create ephemeral memory
+  # Shape context: extract only what the LLM needs
+  memory_turns = @memory.map do |entry|
+    ResolveUserQuestion::MemoryTurn.new(
+      role: entry.role,
+      message: entry.message
+    )
+  end
 
-The agent itself is just a `DSPy::Module`. We rely on the built-in callbacks that already wrap `forward`. The method `call` is just an alias to it. Just like a Rails controller’s `around_action`, `around :update_memory` brackets work while `forward` focuses on routing and invoking the predictor:
+  # Optional: trim to recent N turns to stay within context limits
+  memory_turns = memory_turns.last(10)
+
+  result = @predictor.call(
+    user_message: user_message,
+    history: memory_turns
+  )
+
+  # Store rich entry with metadata
+  @memory << ConversationMemoryEntry.new(
+    role: 'assistant',
+    message: result.reply,
+    model_id: @predictor.lm&.model_id,
+    timestamp: Time.now.utc.iso8601
+  )
+
+  result
+end
+```
+
+**Before (what you store):**
+```ruby
+{ role: 'user', message: 'Hello', model_id: nil, timestamp: '2025-11-23T10:00:00Z' }
+{ role: 'assistant', message: 'Hi!', model_id: 'gpt-4o-mini', timestamp: '2025-11-23T10:00:01Z' }
+```
+
+**After (what the LLM sees):**
+```ruby
+{ role: 'user', message: 'Hello' }
+{ role: 'assistant', message: 'Hi!' }
+```
+
+Same data, different shapes for different purposes.
+
+## Step 4: Cost-Based Routing
+
+Not every message needs your most expensive model. "What time is it?" doesn't require GPT-4o. But "Help me plan a database migration strategy" probably does.
+
+First, define a classifier signature:
+
+```ruby
+class ComplexityLevel < T::Enum
+  enums do
+    Routine = new('routine')
+    Detailed = new('detailed')
+    Critical = new('critical')
+  end
+end
+
+class RouteChatRequest < DSPy::Signature
+  description "Estimate message complexity to route to the appropriate model."
+
+  input do
+    const :message, String
+    const :conversation_depth, Integer
+  end
+
+  output do
+    const :level, ComplexityLevel
+    const :confidence, Float
+    const :reason, String
+    const :suggested_cost_tier, String
+  end
+end
+```
+
+Then build a router that dispatches to different predictors:
+
+```ruby
+class ChatRouter < DSPy::Module
+  def initialize(classifier:, routes:, default_level: ComplexityLevel::Routine)
+    super()
+    @classifier = classifier
+    @routes = routes
+    @default_level = default_level
+  end
+
+  def forward(message:, memory:)
+    # Classify the message
+    classification = @classifier.call(
+      message: message,
+      conversation_depth: memory.length
+    )
+
+    # Pick the right predictor
+    level = classification.level
+    predictor = @routes.fetch(level, @routes[@default_level])
+
+    RouteDecision.new(
+      predictor: predictor,
+      model_id: predictor.lm&.model_id || 'unknown',
+      level: level,
+      reason: classification.reason,
+      cost_tier: classification.suggested_cost_tier
+    )
+  end
+end
+```
+
+Wire it up:
+
+```ruby
+classifier = DSPy::Predict.new(RouteChatRequest)
+
+fast_predictor = DSPy::Predict.new(ResolveUserQuestion)
+fast_predictor.configure { |c| c.lm = DSPy::LM.new('openai/gpt-4o-mini') }
+
+deep_predictor = DSPy::ChainOfThought.new(ResolveUserQuestion)
+deep_predictor.configure { |c| c.lm = DSPy::LM.new('openai/gpt-4o') }
+
+router = ChatRouter.new(
+  classifier: classifier,
+  routes: {
+    ComplexityLevel::Routine => fast_predictor,
+    ComplexityLevel::Detailed => fast_predictor,
+    ComplexityLevel::Critical => deep_predictor
+  }
+)
+```
+
+Notice: both predictors share the same `ResolveUserQuestion` signature. You can swap models and techniques without changing the contract.
+
+## Step 5: Clean Separation with Lifecycle Callbacks
+
+The full implementation uses DSPy's `around` callbacks to separate concerns. Just like Rails' `around_action`, this wraps `forward` so routing stays focused while callbacks handle memory:
 
 ```ruby
 class EphemeralMemoryChat < DSPy::Module
@@ -77,34 +322,29 @@ class EphemeralMemoryChat < DSPy::Module
     @current_route = nil
   end
 
-  def current_route
-    @current_route
-  end
-
-  def current_route=(route)
-    @current_route = route
-  end
-
   def forward(user_message:)
-    self.current_route = @router.call(message: user_message, memory: @memory)
+    # Route to the right predictor
+    @current_route = @router.call(message: user_message, memory: @memory)
 
-    memory_turns = @memory[0...-1].map do |memory_entry|
-      @signature::MemoryTurn.new(role: memory_entry.role, message: memory_entry.message)
+    # Shape context (lean structs only)
+    memory_turns = @memory.map do |entry|
+      @signature::MemoryTurn.new(role: entry.role, message: entry.message)
     end
 
-    current_route.predictor.call(
+    # Call the selected predictor
+    @current_route.predictor.call(
       user_message: user_message,
       history: memory_turns,
-      selected_model: current_route.model_id
+      selected_model: @current_route.model_id
     )
   end
 
   private
 
-  # Receives the same args as forward because DSPy pipes them through callbacks.
   def update_memory(_args, kwargs)
-    message = kwargs[:user_message] or raise ArgumentError, 'user_message is required'
+    message = kwargs[:user_message]
 
+    # Before: record user message
     @memory << ConversationMemoryEntry.new(
       role: 'user',
       message: message,
@@ -112,77 +352,48 @@ class EphemeralMemoryChat < DSPy::Module
       timestamp: Time.now.utc.iso8601
     )
 
-    resolved_question = yield
+    result = yield  # Run forward()
 
-    if resolved_question && current_route
+    # After: record assistant reply
+    if result && @current_route
       @memory << ConversationMemoryEntry.new(
         role: 'assistant',
-        message: resolved_question.reply,
-        model_id: current_route.model_id,
+        message: result.reply,
+        model_id: @current_route.model_id,
         timestamp: Time.now.utc.iso8601
       )
     end
+
+    result
   end
 end
 ```
 
-Even with cost-aware routing in play, this stays the simplest possible agent loop: append the user message, choose the right predictor, run it, then append the assistant response. Because callbacks already target `forward`, DSPy’s observability instrumentation—including the root span every `DSPy::Module` emits—stays intact, so Langfuse or any other configured exporter sees the full call stack automatically.
+## Where to Extend
 
-## Wiring the classifier and predictors
+This skeleton supports many upgrades without rewriting the core loop:
 
-The router itself is still plain Ruby. One classifier estimates complexity, then two predictors share the same signature but swap prompting techniques and models:
+- **Persistent memory** — Swap `@memory` array with ActiveRecord queries. Load in `initialize`, persist in `update_memory`.
+- **Smarter context selection** — Use embeddings (`informers` gem) to pick the most relevant turns instead of just recent ones.
+- **Tool use** — Replace a route's predictor with `DSPy::ReAct` for function calling.
+- **Deep research** — Point the "critical" route to `DSPy::DeepResearch` for multi-step reasoning.
 
-```ruby
-classifier = DSPy::Predict.new(RouteChatRequest)
+## Key Takeaways
 
-fast_predictor = DSPy::Predict.new(ResolveUserQuestion)
-fast_predictor.configure do |config|
-  config.lm = DSPy::LM.new(
-    FAST_RESPONSE_MODEL,
-    api_key: ENV['OPENAI_API_KEY'],
-    structured_outputs: true
-  )
-end
+1. **Start simple** — A chat is just a signature + predictor + array. Don't add complexity until you need it.
 
-deep_predictor = DSPy::ChainOfThought.new(ResolveUserQuestion)
-deep_predictor.configure do |config|
-  config.lm = DSPy::LM.new(
-    DEEP_REASONING_MODEL,
-    api_key: ENV['OPENAI_API_KEY'],
-    structured_outputs: true
-  )
-end
+2. **Separate storage from prompts** — Use rich structs for memory, lean structs for context. This is the core of lightweight context engineering.
 
-router = ChatRouter.new(
-  classifier: classifier,
-  routes: {
-    ComplexityLevel::Routine => fast_predictor,
-    ComplexityLevel::Detailed => fast_predictor,
-    ComplexityLevel::Critical => deep_predictor
-  },
-  default_level: ComplexityLevel::Routine
-)
-```
+3. **Shape context explicitly** — Control what the LLM sees. Trim history, remove noise, select relevant turns.
 
-Because every branch shares the `ResolveUserQuestion` signature, you can drop in more predictors (ReAct, DeepResearch, etc.) without rewriting the chat loop—just update the routes hash.
+4. **Route by complexity** — Use cheap models for simple questions, expensive models for hard ones. Same signature, different backends.
 
-## Where to extend from here
+5. **Use callbacks for lifecycle** — `around` keeps memory concerns out of your routing logic.
 
-- **Routing knobs** – swap in the classifier from [Workflow Routing with DSPy.rb](../workflow-routing-with-dspy.rb/) or add more `ComplexityLevel` branches without touching the chat loop.
-- **Longer-term memory** – hydrate `@memory` from ActiveRecord rows (or `DSPy::Memory`) inside `initialize`, then persist each `ConversationMemoryEntry` inside `update_memory`.
-- **Tooling & research** – replace a route’s predictor with [`DSPy::ReAct`](../react-agent-with-dspy.rb/) for tool use, or upgrade the “deep” branch to `DSPy::DeepResearchWithMemory` (see [`examples/deep_research_cli/chat.rb`](https://github.com/vicentereig/dspy.rb/blob/main/examples/deep_research_cli/chat.rb) for a full walkthrough); the signature contract already matches.
-- **Context selection** – before calling the predictor, run [`informers`](https://rubygems.org/gems/informers) or your favorite embedding service to trim the `memory_turns` to only the most relevant entries.
+## Try It
 
-## Key takeaways
-
-- Anchor your app with Signatures so each prompt stays typed, swappable, and testable even as models change.
-- Model context with plain Ruby structs (`ConversationMemoryEntry`, `MemoryTurn`) so you can control what reaches the model versus what you persist.
-- Use lifecycle callbacks to keep memory concerns lightweight—`around :update_memory` gives you a single seam for recording transcripts or persisting them later.
-- Keep routing decisions and predictor wiring together so you always know which LM answered a turn and why it was chosen.
-
-Run the CLI yourself!
+The full implementation is in [`examples/ephemeral_memory_chat.rb`](https://github.com/vicentereig/dspy.rb/blob/main/examples/ephemeral_memory_chat.rb):
 
 ```bash
-OPENAI_API_KEY=sk-your-key \
-bundle exec ruby examples/ephemeral_memory_chat.rb
+OPENAI_API_KEY=sk-your-key bundle exec ruby examples/ephemeral_memory_chat.rb
 ```
