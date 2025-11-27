@@ -148,7 +148,7 @@ Each signature produces a specialized agent. The `description` guides the LLM's 
 
 CodeAct works well when you need flexible data fetching or transformation. The agent can combine APIs, parse responses, and compute derived values - all without you writing tool definitions.
 
-Use **ReAct** instead when you have well-defined tools with clear interfaces, or need stricter control over what the agent can do.
+Use [**ReAct**](/blog/articles/react-agent-tutorial/) instead when you have well-defined tools with clear interfaces, or need stricter control over what the agent can do.
 
 The tradeoff with CodeAct is safety: it uses `eval` to run generated code. Fine for experimentation, but add sandboxing before using with untrusted input.
 
