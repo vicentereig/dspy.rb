@@ -1,0 +1,401 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1764610881642.47,"message":"trace_id=\"20525dd7-f860-4e5d-8de1-989157d89d28\"
+        input_tokens=721 output_tokens=141 total_tokens=862 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"EvaluateSummary\" module_path=[{id:
+        \"b520712a-975f-4ab1-8865-0773758f7d2a\", class: \"DSPy::ChainOfThought\",
+        label: nil}, {id: \"6eb89112-0850-4d36-afb7-dd04f00a5bf3\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"b520712a-975f-4ab1-8865-0773758f7d2a\", class:
+        \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"6eb89112-0850-4d36-afb7-dd04f00a5bf3\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"b520712a-975f-4ab1-8865-0773758f7d2a>6eb89112-0850-4d36-afb7-dd04f00a5bf3\",
+        depth: 2} event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1764610881643.346,"message":"trace_id=\"20525dd7-f860-4e5d-8de1-989157d89d28\"
+        dspy.signature=\"EvaluateSummary\" cot.reasoning_steps=4 cot.reasoning_length=453
+        cot.has_reasoning=true module_path=[{id: \"b520712a-975f-4ab1-8865-0773758f7d2a\",
+        class: \"DSPy::ChainOfThought\", label: nil}] module_root={id: \"b520712a-975f-4ab1-8865-0773758f7d2a\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"b520712a-975f-4ab1-8865-0773758f7d2a\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_scope={ancestry_token:
+        \"b520712a-975f-4ab1-8865-0773758f7d2a\", depth: 1} event=\"chain_of_thought.reasoning_complete\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:24 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a74600ca8898abe-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 01 Dec 2025 17:41:24 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Text to summarize\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary preserving key concepts\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\"\n  ]\n}\n```\n\nAll interactions will be structured in
+        the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Summarize the given text concisely while preserving key
+        concepts"},{"role":"user","content":"## Input Values\n```json\n{\n  \"text\":
+        \"Photosynthesis is a biological process used by many cellular organisms to
+        convert light energy into chemical energy, which is stored in organic compounds
+        that can later be metabolized through cellular respiration to fuel the organism''s
+        activities. The term usually refers to oxygenic photosynthesis, where oxygen
+        is produced as a byproduct and some of the chemical energy produced is stored
+        in carbohydrate molecules such as sugars, starch, glycogen and cellulose,
+        which are synthesized from endergonic reaction of carbon dioxide with water.
+        Most plants, algae, and cyanobacteria perform photosynthesis; such organisms
+        are called photoautotrophs.\\n\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1969'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:24 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2781'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2803'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9996'
+      X-Ratelimit-Remaining-Tokens:
+      - '199559'
+      X-Ratelimit-Reset-Requests:
+      - 31.169s
+      X-Ratelimit-Reset-Tokens:
+      - 132ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a745ffc4c088d9b-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2BmStLsfyBQ8P6aXzeD04aR2As7",
+          "object": "chat.completion",
+          "created": 1764610882,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"Photosynthesis is a process used by organisms to convert light energy into chemical energy, stored in organic compounds. It primarily refers to oxygenic photosynthesis, which produces oxygen and synthesizes carbohydrates from carbon dioxide and water. Plants, algae, and cyanobacteria are known as photoautotrophs for performing this process.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 410,
+            "completion_tokens": 79,
+            "total_tokens": 489,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_b547601dbd"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:24 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"source_text\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Original text\"\n    },\n    \"summary\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Summary to evaluate\"\n    }\n  },\n  \"required\":
+        [\n    \"source_text\",\n    \"summary\"\n  ]\n}\n```\nYour output schema
+        fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"faithfulness\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary factually
+        accurate? Does it avoid hallucinations?\"\n    },\n    \"relevance\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Does the summary capture
+        the most important information?\"\n    },\n    \"coherence\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary well-structured
+        with logical flow?\"\n    },\n    \"fluency\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Score 1-5: Is the summary grammatically correct and readable?\"\n    },\n    \"overall_score\":
+        {\n      \"type\": \"number\",\n      \"description\": \"Overall quality score
+        from 1.0 to 5.0\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    }\n  },\n  \"required\": [\n    \"faithfulness\",\n    \"relevance\",\n    \"coherence\",\n    \"fluency\",\n    \"overall_score\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Evaluate summary quality using G-Eval criteria.\nBe critical
+        and objective - most summaries should score 3-4, not 5. Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"source_text\": \"Photosynthesis is a biological
+        process used by many cellular organisms to convert light energy into chemical
+        energy, which is stored in organic compounds that can later be metabolized
+        through cellular respiration to fuel the organism''s activities. The term
+        usually refers to oxygenic photosynthesis, where oxygen is produced as a byproduct
+        and some of the chemical energy produced is stored in carbohydrate molecules
+        such as sugars, starch, glycogen and cellulose, which are synthesized from
+        endergonic reaction of carbon dioxide with water. Most plants, algae, and
+        cyanobacteria perform photosynthesis; such organisms are called photoautotrophs.\\n\",\n  \"summary\":
+        \"Photosynthesis is a process used by organisms to convert light energy into
+        chemical energy, stored in organic compounds. It primarily refers to oxygenic
+        photosynthesis, which produces oxygen and synthesizes carbohydrates from carbon
+        dioxide and water. Plants, algae, and cyanobacteria are known as photoautotrophs
+        for performing this process.\"\n}\n```\n\nRespond with the corresponding output
+        schema fields wrapped in a ```json ``` block,\nstarting with the heading `##
+        Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3394'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:28 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3158'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3177'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9995'
+      X-Ratelimit-Remaining-Tokens:
+      - '199230'
+      X-Ratelimit-Reset-Requests:
+      - 36.948s
+      X-Ratelimit-Reset-Tokens:
+      - 231ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a74600e3bac8d9b-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2BoJpcGnehi9g83Lt5oJogcOwFx",
+          "object": "chat.completion",
+          "created": 1764610884,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"faithfulness\": 5,\n  \"relevance\": 4,\n  \"coherence\": 4,\n  \"fluency\": 5,\n  \"overall_score\": 4.6,\n  \"reasoning\": \"The summary accurately captures the essential points of the source text, including the definition of photosynthesis, the mention of oxygen production, and the reference to photoautotrophs. Each significant aspect of the source text is covered, albeit with slightly less detail, which affects its relevance score. The structure of the summary is logical and flows well, also demonstrating grammatical correctness. Therefore, high scores are awarded for faithfulness and fluency. The overall score reflects strong quality while acknowledging slight omissions in detail.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 732,
+            "completion_tokens": 157,
+            "total_tokens": 889,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_50906f2aac"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:28 GMT
+recorded_with: VCR 6.3.1

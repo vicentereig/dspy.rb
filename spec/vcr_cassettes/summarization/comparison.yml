@@ -1,0 +1,1625 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAEnTLWkAA8WWUW+bMBDHvwryc4yAYMBI2UOXTOukpu2a9aWpkIGDeDU2w6ZaGuW7z1nSqqs6LVOT7Q38t+9/5/sd4maFCtU0SqJ0hZgxHc97A3rzBtJws3QlawClaHx1sXS7HA3QQmmzW9S8yZkrVMGEFXYH6p6XVjt7uFtOv94F04/fT75M/OTy+uRyNhHjy+vPn2YeSaazU+9sXPtn40mI1usBEqq2vjcrJOAehI1wOv1wbsMa3oA2rGlR6sdRGPlekoQxpS4h/gBZTbN6k4zpWAEZL0dzFHgkIGUZ4yqJPBwCKXFSgo9pQn0Slwktg2SOHC7b3mRG3YHUo9D3HNWbZysxdYwyTDztSKhTg8wYd/VSG2isk2pBMm5j7YQOvvU2W7dRJQir163BocINl5tNpW6Xrua1ZKbvwMpXfdOwjj+AFe2RXkDWMrMY3ax4mTpzBD4tijCPMVTREIchqzALY7J58vzK80iY2EIGTiGY1psDmzal6UUHJS/MRhEsB5E6kov17aNFp5QZHcPh0UAAq45qoAt78aMVk4W97G657dDfuJXQmkXq+GvHwiaNbYVo3G2f52gu0XqwF4dJEASuR8MDchgPgxcc2q2/gpgcHsTJPRM9M7AFcvkbHG3WeUUJwUEB9nYLP8AMKMXDIIJhTINhTuCVXr5fMC7Pq9lC9fXiZUsHzi64F1V+SJIQE1IVOPTAw0kSUUwKqLxoSIc0L9/G+jHSfw35g1byR+T3qerdvint5iI4xFyQiARvG4w9MC2UsawzrSSXdWaHodUj8mJVgKwtxSSKfwoLprMncWS6Hv4Z7P8Vy2P6vInO1z/IxcY3U1Vmts7PGmp/WVoBBrZI3q5vfwBFwyU3xwgAAA==
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:29 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a74602bfc328abe-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 01 Dec 2025 17:41:29 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Text to summarize\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary preserving key concepts\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\"\n  ]\n}\n```\n\nAll interactions will be structured in
+        the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Summarize the given text concisely while preserving key
+        concepts"},{"role":"user","content":"## Input Values\n```json\n{\n  \"text\":
+        \"Photosynthesis is a biological process used by many cellular organisms to
+        convert light energy into chemical energy, which is stored in organic compounds
+        that can later be metabolized through cellular respiration to fuel the organism''s
+        activities. The term usually refers to oxygenic photosynthesis, where oxygen
+        is produced as a byproduct and some of the chemical energy produced is stored
+        in carbohydrate molecules such as sugars, starch, glycogen and cellulose,
+        which are synthesized from endergonic reaction of carbon dioxide with water.
+        Most plants, algae, and cyanobacteria perform photosynthesis; such organisms
+        are called photoautotrophs.\\n\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1969'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:30 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2086'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2101'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9995'
+      X-Ratelimit-Remaining-Tokens:
+      - '199559'
+      X-Ratelimit-Reset-Requests:
+      - 42.115s
+      X-Ratelimit-Reset-Tokens:
+      - 132ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a746023e8e8d62c-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2Bsu3k4wtvJCc0RwPybTikf8Er3",
+          "object": "chat.completion",
+          "created": 1764610888,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"Photosynthesis is a process used by organisms like plants and algae to convert light energy into stored chemical energy in organic compounds. It primarily refers to oxygenic photosynthesis, which produces oxygen as a byproduct and stores energy in carbohydrates like sugars and starches. These organisms, called photoautotrophs, utilize carbon dioxide and water in this process.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 410,
+            "completion_tokens": 85,
+            "total_tokens": 495,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_b547601dbd"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:30 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"source_text\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Original text\"\n    },\n    \"summary\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Summary to evaluate\"\n    }\n  },\n  \"required\":
+        [\n    \"source_text\",\n    \"summary\"\n  ]\n}\n```\nYour output schema
+        fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"faithfulness\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary factually
+        accurate? Does it avoid hallucinations?\"\n    },\n    \"relevance\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Does the summary capture
+        the most important information?\"\n    },\n    \"coherence\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary well-structured
+        with logical flow?\"\n    },\n    \"fluency\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Score 1-5: Is the summary grammatically correct and readable?\"\n    },\n    \"overall_score\":
+        {\n      \"type\": \"number\",\n      \"description\": \"Overall quality score
+        from 1.0 to 5.0\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    }\n  },\n  \"required\": [\n    \"faithfulness\",\n    \"relevance\",\n    \"coherence\",\n    \"fluency\",\n    \"overall_score\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Evaluate summary quality using G-Eval criteria.\nBe critical
+        and objective - most summaries should score 3-4, not 5. Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"source_text\": \"Photosynthesis is a biological
+        process used by many cellular organisms to convert light energy into chemical
+        energy, which is stored in organic compounds that can later be metabolized
+        through cellular respiration to fuel the organism''s activities. The term
+        usually refers to oxygenic photosynthesis, where oxygen is produced as a byproduct
+        and some of the chemical energy produced is stored in carbohydrate molecules
+        such as sugars, starch, glycogen and cellulose, which are synthesized from
+        endergonic reaction of carbon dioxide with water. Most plants, algae, and
+        cyanobacteria perform photosynthesis; such organisms are called photoautotrophs.\\n\",\n  \"summary\":
+        \"Photosynthesis is a process used by organisms like plants and algae to convert
+        light energy into stored chemical energy in organic compounds. It primarily
+        refers to oxygenic photosynthesis, which produces oxygen as a byproduct and
+        stores energy in carbohydrates like sugars and starches. These organisms,
+        called photoautotrophs, utilize carbon dioxide and water in this process.\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3430'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:33 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2978'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2992'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '199221'
+      X-Ratelimit-Reset-Requests:
+      - 48.573s
+      X-Ratelimit-Reset-Tokens:
+      - 233ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a7460319f57d62c-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2BubQHwj7dSKSnCJjPyErlNUP9Y",
+          "object": "chat.completion",
+          "created": 1764610890,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"faithfulness\": 5,\n  \"relevance\": 5,\n  \"coherence\": 5,\n  \"fluency\": 5,\n  \"overall_score\": 5.0,\n  \"reasoning\": \"The summary accurately captures the essence of photosynthesis, including key details about its process, the types of organisms involved, and the production of oxygen. It mentions the conversion of light energy into chemical energy stored in organic compounds, highlighting carbohydrates as the main products. The logical flow is clear, making the summary easy to read and understand.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 738,
+            "completion_tokens": 124,
+            "total_tokens": 862,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_eca0ce8298"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:33 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAE7TLWkAA8WWXW/aMBSG/0rkaxLly/mS2EUH0zqptF1Zb0qFnPgkeHXsLHaqUcR/nzNo1aJOo6JsN0jxG5/3fDwn4maFClnXUqBshYjWLcs7Dap/AqGZXjqC1IAyNLq6WDptjgZoIZXeHipW58ThsiDcCNsLVceo0c4e7paT73f+5PPPk29jL7m8Prmcjvno8vrrl6mLk8n01D0bVd7ZaByi9XqAuKyM780KcbgHbiKcTj6dm7Ca1aA0qRuUeXEURp6bpG6II8fzvAEymiJVn4xuSQFzRocz5LvYx5TGdplErh0CpnZCwbPTJPVwTJOU+skMWUw0nZ5reQdCDUPPtWSnn50k2NJSE/70RoqtCsScMEctlYbaOMkGBGEm1lZo4UdnsnVqSYEbvWq0HUq7ZqJ/iapm6ShWCaK7Fox81dU1adkDGNFc6TjMG6IXw5sVo5k1Q7h0wyCOPDtwwTeFuKGde0lgQ5GTJA1i8PxohgZWwYlS/YV+TFl20QJlhe4VTnLgmSUYX98+WrRS6uExHB4NOJDyqAaqMI0frogoTLPb5WZCb3Gj0OhFZnlry8AmtBkFr53NnGdoJtB6sBeHAfZ9J3aD9B1BjINkB0TPD1+SmET+e5M4vie8Ixo2RC7/wKMLQY5NUXZSkMAOizKxSUnNIy2MUvphXL42zI8LwsR5OV3IrlrsznRgbYNHUOZFXpjuRBjbYRQQm7gltXGQkjI0P5imh8F+jPRfY/5dK/kr8/tU9WHflLaL4R++GIHjh/5he7EHpYXUBnWipGCimptdaNQw2DnlICoDcZBshAVR8ydxqNsO/hnr/5XKY/ocBOfrH+Si953Lcq43zs8Gav6yNBw0vJnIEAeHEdm0smpJ/73dWVkLfpI+qT6aaYzVmB4C3dBlmmPo9RzXgraV7W/9sUowRCtne9l5Wdjt+vYXMDyb6aAJAAA=
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:34 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a74604b3efa8abe-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 01 Dec 2025 17:41:34 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Text to summarize\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary preserving key concepts\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\"\n  ]\n}\n```\n\nAll interactions will be structured in
+        the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Summarize the given text concisely while preserving key
+        concepts"},{"role":"user","content":"## Input Values\n```json\n{\n  \"text\":
+        \"The Byzantine Empire, also referred to as the Eastern Roman Empire, was
+        the continuation of the Roman Empire centred in Constantinople during Late
+        Antiquity and the Middle Ages. The eastern half of the Empire survived for
+        another millennium after the fall of the western half in 476 AD. During most
+        of its existence, the empire remained the most powerful economic, cultural,
+        and military force in the Mediterranean world. The term \\\"Byzantine Empire\\\"
+        was coined after the fall of Constantinople in 1453; its citizens continued
+        to refer to their empire as the Roman Empire and to themselves as Romans.\\n\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1928'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:35 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1913'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1933'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9993'
+      X-Ratelimit-Remaining-Tokens:
+      - '199570'
+      X-Ratelimit-Reset-Requests:
+      - 54.139s
+      X-Ratelimit-Reset-Tokens:
+      - 129ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a746044bdcdd62c-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2BxXpTjcTR12obJMy2oLi9vTXon",
+          "object": "chat.completion",
+          "created": 1764610893,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The Byzantine Empire, or Eastern Roman Empire, was the continuation of the Roman Empire based in Constantinople, surviving for a millennium after the western half fell in 476 AD. It was a dominant economic, cultural, and military power in the Mediterranean until its fall in 1453. Its citizens identified as Romans, not as Byzantines.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 409,
+            "completion_tokens": 83,
+            "total_tokens": 492,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_b547601dbd"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:35 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"source_text\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Original text\"\n    },\n    \"summary\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Summary to evaluate\"\n    }\n  },\n  \"required\":
+        [\n    \"source_text\",\n    \"summary\"\n  ]\n}\n```\nYour output schema
+        fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"faithfulness\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary factually
+        accurate? Does it avoid hallucinations?\"\n    },\n    \"relevance\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Does the summary capture
+        the most important information?\"\n    },\n    \"coherence\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary well-structured
+        with logical flow?\"\n    },\n    \"fluency\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Score 1-5: Is the summary grammatically correct and readable?\"\n    },\n    \"overall_score\":
+        {\n      \"type\": \"number\",\n      \"description\": \"Overall quality score
+        from 1.0 to 5.0\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    }\n  },\n  \"required\": [\n    \"faithfulness\",\n    \"relevance\",\n    \"coherence\",\n    \"fluency\",\n    \"overall_score\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Evaluate summary quality using G-Eval criteria.\nBe critical
+        and objective - most summaries should score 3-4, not 5. Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"source_text\": \"The Byzantine Empire, also
+        referred to as the Eastern Roman Empire, was the continuation of the Roman
+        Empire centred in Constantinople during Late Antiquity and the Middle Ages.
+        The eastern half of the Empire survived for another millennium after the fall
+        of the western half in 476 AD. During most of its existence, the empire remained
+        the most powerful economic, cultural, and military force in the Mediterranean
+        world. The term \\\"Byzantine Empire\\\" was coined after the fall of Constantinople
+        in 1453; its citizens continued to refer to their empire as the Roman Empire
+        and to themselves as Romans.\\n\",\n  \"summary\": \"The Byzantine Empire,
+        or Eastern Roman Empire, was the continuation of the Roman Empire based in
+        Constantinople, surviving for a millennium after the western half fell in
+        476 AD. It was a dominant economic, cultural, and military power in the Mediterranean
+        until its fall in 1453. Its citizens identified as Romans, not as Byzantines.\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3345'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:38 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3120'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3135'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '199243'
+      X-Ratelimit-Reset-Requests:
+      - 1m0.744s
+      X-Ratelimit-Reset-Tokens:
+      - 227ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a7460517bf6d62c-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2BzvKNp32bhHw1w1PRImAflZCN1",
+          "object": "chat.completion",
+          "created": 1764610895,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"faithfulness\": 5,\n  \"relevance\": 4,\n  \"coherence\": 4,\n  \"fluency\": 5,\n  \"overall_score\": 4.6,\n  \"reasoning\": \"The summary accurately represents the source text, including key details such as the definition of the Byzantine Empire, its survival after the fall of the western half, and its self-identification by citizens. The description of its power is concise but captures the essence of the source material. However, it could improve relevance slightly by including more about its cultural contributions during its duration. Overall, it is well-structured, clear, and grammatically correct, but could have a bit more depth.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 735,
+            "completion_tokens": 153,
+            "total_tokens": 888,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_eca0ce8298"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:38 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAFPTLWkAA8VWW2/bNhT+K4KeLUGSdaEMeA9dMqwDkjZt1pc4ECjx6LJQoiZSQVzD/31HF7uWk21pHW9+4/fx3L9D626jJ6IsRaUvNjpVqiniVoHsTlCpQq3NipagL/SLzx/XZhPrMz0XUo2gLMqYmlwklCMxGmRtwZC7+vqwvv7jwbn+9end75c2ufny7ub2kl/cfPn0263lkevb99bVRWZfXVy6+nY707nIMO7dRufwCBw9vL/+5QO6VUUJUtGy1hd24Lu+bZHQ83zb9EMy05GTNOuSUQ1NICrYcqU7lud4jAVGSnzLcMFjBmFgGyEJbS9gJGQOWelaUdWtipR4gEouXSvURKsOEDLXlFCU72+EjpZBFdHClGupoMRIooaKFuhrJBr4s8VszVIw4MhntTJcYZRF1V1isl6bssgqqtoGkP7cliVtiq+AJJq0HKKaqnx5tynYQlvpXmq588C3jbkFDhZiuUZsk7kBSUxJOA/AdvyVPtMSTqXsDLoxLRYfG2BFojqG0xj4QqsKvr3fhWiEUMtzRNgF4EDTswaQCTZ+uaFVgs1u1sOEvicag1rlC83eaii2SuEoeGkOc17pq0rfzl6lQxIEthl6byjDYO4dydD2jnRICHlrHV4+Ut5SBYMe13+jRgvmsYdFGSShc8NNUmLQlOGRJcikjhukL43y55wW1Yf0Nhdtlh9PdKaNzh0He0oCZjjUCww3tlMDT67BAghjYAEl6fw0qZ8j/ZcU/6aV/KviX1PVT69NaVwL5/S1cEzXc+zTFuMVMk2EQq1TKaqiyiJchhrf6SOUQ5Whij3b64mcymhPLlXTwn8m9v9VlueMc5I6X36Pky5uJNJIDZEPBopfLDUHBd8tSc8JTlNk3Yisod2De7SzGjzRLqnOGzZGq7GHwAZ1YXNQvZYZ2uHkp0HTiKa/visaUODSHH2ZP1xn4Din1QnDohWiMseSo14WLxX+7erwLzVmL5fOxE3fkH8gowYXe2mb1iFBs6yBDAkWlYAfp4lcbqZR8LGaaUfOeyylBZ9g1myYRCTbEpVmhs4OoI8Z0mbo7wD8m+yBo4HtafrUObD6ICpPW15hrwc33jO4d+Ydg50LBBvAmXZrM1i75gTrTd0JMtolIocGpnbfsJ3dATLapbzF8/ow1xHZp7k7jxb72fQlbydSHacUU5XkP76VQeCfaysZVVSCiiR+YqPkngn0uSqnUhxWN/R7VR6uaF/y0YLeb+//AiHD5wlPDQAA
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:39 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a74606a7bce8abe-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 01 Dec 2025 17:41:39 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Text to summarize\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary preserving key concepts\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Step by step reasoning process\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Summarize the given text concisely
+        while preserving key concepts Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"text\": \"Photosynthesis is a biological process
+        used by many cellular organisms to convert light energy into chemical energy,
+        which is stored in organic compounds that can later be metabolized through
+        cellular respiration to fuel the organism''s activities. The term usually
+        refers to oxygenic photosynthesis, where oxygen is produced as a byproduct
+        and some of the chemical energy produced is stored in carbohydrate molecules
+        such as sugars, starch, glycogen and cellulose, which are synthesized from
+        endergonic reaction of carbon dioxide with water. Most plants, algae, and
+        cyanobacteria perform photosynthesis; such organisms are called photoautotrophs.\\n\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2127'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:43 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '4090'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '4190'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '199524'
+      X-Ratelimit-Reset-Requests:
+      - 1m6.166s
+      X-Ratelimit-Reset-Tokens:
+      - 142ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a7460658f07d62c-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2C3OfyYQwCo7HXYcHi4c7rmgtVw",
+          "object": "chat.completion",
+          "created": 1764610899,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"Photosynthesis is a process by which organisms like plants and algae convert light energy into chemical energy to create organic compounds, primarily producing oxygen and storing energy in carbohydrates for metabolism.\",\n  \"reasoning\": \"The input text explains photosynthesis as a biological process that converts light energy into chemical energy, detailing its importance in fueling organism activities through stored compounds. It specifies that oxygenic photosynthesis involves the production of oxygen and synthesis of carbohydrates from carbon dioxide and water. The mention of organisms that perform this process, specifically photoautotrophs such as plants and algae, emphasizes the significance of photosynthesis in ecosystems.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 446,
+            "completion_tokens": 136,
+            "total_tokens": 582,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_b547601dbd"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:43 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1764610903085.919,"message":"trace_id=\"20525dd7-f860-4e5d-8de1-989157d89d28\"
+        input_tokens=446 output_tokens=136 total_tokens=582 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"Summarize\" module_path=[{id:
+        \"5549fd72-4e41-4efd-ae42-33d0e8df05ee\", class: \"DSPy::ChainOfThought\",
+        label: nil}, {id: \"77adaf8c-6d6c-4326-a9bc-1d18b81f1e57\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"5549fd72-4e41-4efd-ae42-33d0e8df05ee\", class:
+        \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"77adaf8c-6d6c-4326-a9bc-1d18b81f1e57\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"5549fd72-4e41-4efd-ae42-33d0e8df05ee>77adaf8c-6d6c-4326-a9bc-1d18b81f1e57\",
+        depth: 2} event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1764610903087.4849,"message":"trace_id=\"20525dd7-f860-4e5d-8de1-989157d89d28\"
+        dspy.signature=\"Summarize\" cot.reasoning_steps=3 cot.reasoning_length=499
+        cot.has_reasoning=true module_path=[{id: \"5549fd72-4e41-4efd-ae42-33d0e8df05ee\",
+        class: \"DSPy::ChainOfThought\", label: nil}] module_root={id: \"5549fd72-4e41-4efd-ae42-33d0e8df05ee\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"5549fd72-4e41-4efd-ae42-33d0e8df05ee\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_scope={ancestry_token:
+        \"5549fd72-4e41-4efd-ae42-33d0e8df05ee\", depth: 1} event=\"chain_of_thought.reasoning_complete\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:44 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a746089cf3b8abe-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 01 Dec 2025 17:41:44 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"source_text\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Original text\"\n    },\n    \"summary\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Summary to evaluate\"\n    }\n  },\n  \"required\":
+        [\n    \"source_text\",\n    \"summary\"\n  ]\n}\n```\nYour output schema
+        fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"faithfulness\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary factually
+        accurate? Does it avoid hallucinations?\"\n    },\n    \"relevance\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Does the summary capture
+        the most important information?\"\n    },\n    \"coherence\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary well-structured
+        with logical flow?\"\n    },\n    \"fluency\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Score 1-5: Is the summary grammatically correct and readable?\"\n    },\n    \"overall_score\":
+        {\n      \"type\": \"number\",\n      \"description\": \"Overall quality score
+        from 1.0 to 5.0\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    }\n  },\n  \"required\": [\n    \"faithfulness\",\n    \"relevance\",\n    \"coherence\",\n    \"fluency\",\n    \"overall_score\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Evaluate summary quality using G-Eval criteria.\nBe critical
+        and objective - most summaries should score 3-4, not 5. Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"source_text\": \"Photosynthesis is a biological
+        process used by many cellular organisms to convert light energy into chemical
+        energy, which is stored in organic compounds that can later be metabolized
+        through cellular respiration to fuel the organism''s activities. The term
+        usually refers to oxygenic photosynthesis, where oxygen is produced as a byproduct
+        and some of the chemical energy produced is stored in carbohydrate molecules
+        such as sugars, starch, glycogen and cellulose, which are synthesized from
+        endergonic reaction of carbon dioxide with water. Most plants, algae, and
+        cyanobacteria perform photosynthesis; such organisms are called photoautotrophs.\\n\",\n  \"summary\":
+        \"Photosynthesis is a process by which organisms like plants and algae convert
+        light energy into chemical energy to create organic compounds, primarily producing
+        oxygen and storing energy in carbohydrates for metabolism.\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3270'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:46 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3739'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3756'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9991'
+      X-Ratelimit-Remaining-Tokens:
+      - '199261'
+      X-Ratelimit-Reset-Requests:
+      - 1m10.47s
+      X-Ratelimit-Reset-Tokens:
+      - 221ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a746080aebcd62c-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2C7AK4brkDzwTXNWderXq0iClEj",
+          "object": "chat.completion",
+          "created": 1764610903,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"faithfulness\": 4,\n  \"relevance\": 4,\n  \"coherence\": 4,\n  \"fluency\": 5,\n  \"overall_score\": 4.2,\n  \"reasoning\": \"The summary accurately captures the essence of photosynthesis as described in the source text, mentioning the conversion of light energy and production of oxygen. However, it simplifies some details, such as the variety of organisms involved and the specific types of carbohydrates mentioned, which slightly lowers the faithfulness score. The summary is relevant, focusing on the key processes of photosynthesis. Coherence is strong, as the summary flows logically, and fluency is excellent due to grammatical correctness. Therefore, an overall score of around 4.2 reflects its quality.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 702,
+            "completion_tokens": 165,
+            "total_tokens": 867,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_eca0ce8298"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:46 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1764610906933.4158,"message":"trace_id=\"20525dd7-f860-4e5d-8de1-989157d89d28\"
+        input_tokens=702 output_tokens=165 total_tokens=867 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"EvaluateSummary\" module_path=[{id:
+        \"0e3b5205-8ca3-4cf8-afd5-8dce3bf247f6\", class: \"DSPy::ChainOfThought\",
+        label: nil}, {id: \"901ea643-24a0-4d22-9911-a524b1da7e56\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"0e3b5205-8ca3-4cf8-afd5-8dce3bf247f6\", class:
+        \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"901ea643-24a0-4d22-9911-a524b1da7e56\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"0e3b5205-8ca3-4cf8-afd5-8dce3bf247f6>901ea643-24a0-4d22-9911-a524b1da7e56\",
+        depth: 2} event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1764610906934.428,"message":"trace_id=\"20525dd7-f860-4e5d-8de1-989157d89d28\"
+        dspy.signature=\"EvaluateSummary\" cot.reasoning_steps=1 cot.reasoning_length=586
+        cot.has_reasoning=true module_path=[{id: \"0e3b5205-8ca3-4cf8-afd5-8dce3bf247f6\",
+        class: \"DSPy::ChainOfThought\", label: nil}] module_root={id: \"0e3b5205-8ca3-4cf8-afd5-8dce3bf247f6\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"0e3b5205-8ca3-4cf8-afd5-8dce3bf247f6\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_scope={ancestry_token:
+        \"0e3b5205-8ca3-4cf8-afd5-8dce3bf247f6\", depth: 1} event=\"chain_of_thought.reasoning_complete\"\n"},{"level":"INFO","timestamp":1764610906934.8018,"message":"trace_id=\"20525dd7-f860-4e5d-8de1-989157d89d28\"
+        program=\"DSPy::ChainOfThought\" example_id=nil passed=true score=0.8400000000000001
+        error=nil event=\"evals.example.complete\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BaJ4t9qNPUoQADvrtB84K3ppLdOkAAEBAAAnIQEAANNqAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:49 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9a7460a9ee428abe-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Mon, 01 Dec 2025 17:41:49 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Text to summarize\"\n    }\n  },\n  \"required\": [\n    \"text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary preserving key concepts\"\n    },\n    \"reasoning\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Step by step reasoning process\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Summarize the given text concisely
+        while preserving key concepts Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"text\": \"The Byzantine Empire, also referred
+        to as the Eastern Roman Empire, was the continuation of the Roman Empire centred
+        in Constantinople during Late Antiquity and the Middle Ages. The eastern half
+        of the Empire survived for another millennium after the fall of the western
+        half in 476 AD. During most of its existence, the empire remained the most
+        powerful economic, cultural, and military force in the Mediterranean world.
+        The term \\\"Byzantine Empire\\\" was coined after the fall of Constantinople
+        in 1453; its citizens continued to refer to their empire as the Roman Empire
+        and to themselves as Romans.\\n\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2086'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:50 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3368'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3382'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9991'
+      X-Ratelimit-Remaining-Tokens:
+      - '199535'
+      X-Ratelimit-Reset-Requests:
+      - 1m15.289s
+      X-Ratelimit-Reset-Tokens:
+      - 139ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a7460989e28d62c-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2CBU9zlZe1zpkWFJCJvF5UA9xZJ",
+          "object": "chat.completion",
+          "created": 1764610907,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The Byzantine Empire, also known as the Eastern Roman Empire, was the continuation of the Roman Empire based in Constantinople, surviving for a millennium after the western half fell in 476 AD. It was a dominant force in the Mediterranean until the fall of Constantinople in 1453, with its citizens identifying as Romans.\",\n  \"reasoning\": \"The text outlines the key historical context of the Byzantine Empire by stating its alternative name, its capital, and its longevity compared to the western Roman Empire. It emphasizes the empire's significance in the Mediterranean region and clarifies the identity of its citizens even after its decline.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 445,
+            "completion_tokens": 138,
+            "total_tokens": 583,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_b547601dbd"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:50 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"source_text\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Original text\"\n    },\n    \"summary\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Summary to evaluate\"\n    }\n  },\n  \"required\":
+        [\n    \"source_text\",\n    \"summary\"\n  ]\n}\n```\nYour output schema
+        fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"faithfulness\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary factually
+        accurate? Does it avoid hallucinations?\"\n    },\n    \"relevance\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Does the summary capture
+        the most important information?\"\n    },\n    \"coherence\": {\n      \"type\":
+        \"integer\",\n      \"description\": \"Score 1-5: Is the summary well-structured
+        with logical flow?\"\n    },\n    \"fluency\": {\n      \"type\": \"integer\",\n      \"description\":
+        \"Score 1-5: Is the summary grammatically correct and readable?\"\n    },\n    \"overall_score\":
+        {\n      \"type\": \"number\",\n      \"description\": \"Overall quality score
+        from 1.0 to 5.0\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    }\n  },\n  \"required\": [\n    \"faithfulness\",\n    \"relevance\",\n    \"coherence\",\n    \"fluency\",\n    \"overall_score\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Evaluate summary quality using G-Eval criteria.\nBe critical
+        and objective - most summaries should score 3-4, not 5. Think step by step."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"source_text\": \"The Byzantine Empire, also
+        referred to as the Eastern Roman Empire, was the continuation of the Roman
+        Empire centred in Constantinople during Late Antiquity and the Middle Ages.
+        The eastern half of the Empire survived for another millennium after the fall
+        of the western half in 476 AD. During most of its existence, the empire remained
+        the most powerful economic, cultural, and military force in the Mediterranean
+        world. The term \\\"Byzantine Empire\\\" was coined after the fall of Constantinople
+        in 1453; its citizens continued to refer to their empire as the Roman Empire
+        and to themselves as Romans.\\n\",\n  \"summary\": \"The Byzantine Empire,
+        also known as the Eastern Roman Empire, was the continuation of the Roman
+        Empire based in Constantinople, surviving for a millennium after the western
+        half fell in 476 AD. It was a dominant force in the Mediterranean until the
+        fall of Constantinople in 1453, with its citizens identifying as Romans.\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3332'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 01 Dec 2025 17:41:53 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2809'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2825'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9990'
+      X-Ratelimit-Remaining-Tokens:
+      - '199246'
+      X-Ratelimit-Reset-Requests:
+      - 1m20.436s
+      X-Ratelimit-Reset-Tokens:
+      - 226ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9a7460ae6a26d62c-IAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Ci2CEjWftjpgMPEJlPI4xikViuHIa",
+          "object": "chat.completion",
+          "created": 1764610910,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"faithfulness\": 5,\n  \"relevance\": 5,\n  \"coherence\": 4,\n  \"fluency\": 5,\n  \"overall_score\": 4.8,\n  \"reasoning\": \"The summary accurately reflects the main points of the source text, including the continuity of the Byzantine Empire from the Roman Empire, its economic and military significance, and the identification of its citizens. However, it could improve coherence slightly by emphasizing the cultural aspects mentioned in the source text. Overall, it is clear, grammatically correct, and captures the essential details.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 731,
+            "completion_tokens": 129,
+            "total_tokens": 860,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_eca0ce8298"
+        }
+  recorded_at: Mon, 01 Dec 2025 17:41:53 GMT
+recorded_with: VCR 6.3.1
