@@ -5,6 +5,21 @@ require 'spec_helper'
 RSpec.describe 'Summarization Comparison: Predict vs ChainOfThought', :vcr do
   let(:openai_lm) { DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY']) }
 
+  # Enum representing the evaluator's scoring mindset
+  class EvaluatorMindset < T::Enum
+    enums do
+      Critical = new('critical')   # Most should score 3-4, not 5
+      Balanced = new('balanced')   # Fair assessment across the range
+      Generous = new('generous')   # Benefit of the doubt
+    end
+  end
+
+  # Struct pairing a summary with its source text for evaluation
+  class GroundedSummary < T::Struct
+    const :source_text, String
+    const :summary, String
+  end
+
   # Signature for summarization
   class Summarize < DSPy::Signature
     description "Summarize the given text concisely while preserving key concepts"
@@ -19,16 +34,13 @@ RSpec.describe 'Summarization Comparison: Predict vs ChainOfThought', :vcr do
   end
 
   # Signature for LLM judge (G-Eval style multi-dimensional evaluation)
-  # Each dimension is a direct output field with its own description
+  # Uses GroundedSummary struct and EvaluatorMindset enum for type-safe inputs
   class EvaluateSummary < DSPy::Signature
-    description <<~DESC.strip
-      Evaluate summary quality using G-Eval criteria.
-      Be critical and objective - most summaries should score 3-4, not 5.
-    DESC
+    description "Evaluate summary quality using G-Eval criteria according to the specified mindset."
 
     input do
-      const :source_text, String, description: "Original text"
-      const :summary, String, description: "Summary to evaluate"
+      const :grounded_summary, GroundedSummary, description: "The source text and summary to evaluate"
+      const :mindset, EvaluatorMindset, description: "How critically to score"
     end
 
     output do
@@ -92,11 +104,14 @@ RSpec.describe 'Summarization Comparison: Predict vs ChainOfThought', :vcr do
       summarizer = DSPy::Predict.new(Summarize)
       summary_result = summarizer.call(text: wikipedia_photosynthesis)
 
-      # Then evaluate it with the LLM judge
+      # Then evaluate it with the LLM judge using GroundedSummary and EvaluatorMindset
       judge = DSPy::ChainOfThought.new(EvaluateSummary)
       eval_result = judge.call(
-        source_text: wikipedia_photosynthesis,
-        summary: summary_result.summary
+        grounded_summary: GroundedSummary.new(
+          source_text: wikipedia_photosynthesis,
+          summary: summary_result.summary
+        ),
+        mindset: EvaluatorMindset::Critical
       )
 
       # Dimensions are now direct output fields
@@ -117,7 +132,7 @@ RSpec.describe 'Summarization Comparison: Predict vs ChainOfThought', :vcr do
   end
 
   describe 'LLM judge metric' do
-    def create_llm_judge_metric(judge_lm)
+    def create_llm_judge_metric(judge_lm, mindset: EvaluatorMindset::Critical)
       judge = DSPy::ChainOfThought.new(EvaluateSummary)
       judge.configure { |c| c.lm = judge_lm }
 
@@ -126,8 +141,11 @@ RSpec.describe 'Summarization Comparison: Predict vs ChainOfThought', :vcr do
         summary = prediction.respond_to?(:summary) ? prediction.summary : prediction[:summary]
 
         eval_result = judge.call(
-          source_text: example.input_values[:text],
-          summary: summary
+          grounded_summary: GroundedSummary.new(
+            source_text: example.input_values[:text],
+            summary: summary
+          ),
+          mindset: mindset
         )
 
         # Access dimensions directly from the prediction
@@ -170,7 +188,7 @@ RSpec.describe 'Summarization Comparison: Predict vs ChainOfThought', :vcr do
   end
 
   describe 'Predict vs ChainOfThought comparison' do
-    def create_llm_judge_metric(judge_lm)
+    def create_llm_judge_metric(judge_lm, mindset: EvaluatorMindset::Critical)
       judge = DSPy::ChainOfThought.new(EvaluateSummary)
       judge.configure { |c| c.lm = judge_lm }
 
@@ -179,8 +197,11 @@ RSpec.describe 'Summarization Comparison: Predict vs ChainOfThought', :vcr do
         summary = prediction.respond_to?(:summary) ? prediction.summary : prediction[:summary]
 
         eval_result = judge.call(
-          source_text: example.input_values[:text],
-          summary: summary
+          grounded_summary: GroundedSummary.new(
+            source_text: example.input_values[:text],
+            summary: summary
+          ),
+          mindset: mindset
         )
 
         # Access dimensions directly from the prediction

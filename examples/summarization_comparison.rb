@@ -13,6 +13,21 @@ Dotenv.load(File.expand_path('../.env', __dir__))
 
 require_relative '../lib/dspy'
 
+# Enum representing the evaluator's scoring mindset
+class EvaluatorMindset < T::Enum
+  enums do
+    Critical = new('critical')   # Most should score 3-4, not 5
+    Balanced = new('balanced')   # Fair assessment across the range
+    Generous = new('generous')   # Benefit of the doubt
+  end
+end
+
+# Struct pairing a summary with its source text for evaluation
+class GroundedSummary < T::Struct
+  const :source_text, String
+  const :summary, String
+end
+
 def ensure_api_key!(env_key)
   return if ENV[env_key]
 
@@ -43,17 +58,13 @@ class Summarize < DSPy::Signature
 end
 
 # Signature for LLM judge (G-Eval style multi-dimensional evaluation)
-# Each dimension is a direct output field with its own description
+# Uses GroundedSummary struct and EvaluatorMindset enum for type-safe inputs
 class EvaluateSummary < DSPy::Signature
-  description <<~DESC.strip
-    Evaluate summary quality using G-Eval criteria.
-    Be critical, skeptical, and objective. Most summaries should score 3-4, not 5.
-    A score of 5 should be reserved for truly exceptional summaries.
-  DESC
+  description "Evaluate summary quality using G-Eval criteria according to the specified mindset."
 
   input do
-    const :source_text, String, description: "Original text"
-    const :summary, String, description: "Summary to evaluate"
+    const :grounded_summary, GroundedSummary, description: "The source text and summary to evaluate"
+    const :mindset, EvaluatorMindset, description: "How critically to score (critical: most get 3-4, generous: benefit of doubt)"
   end
 
   output do
@@ -70,15 +81,18 @@ class EvaluateSummary < DSPy::Signature
   end
 end
 
-# Create LLM judge metric
-def create_llm_judge_metric(judge_lm)
+# Create LLM judge metric with configurable mindset
+def create_llm_judge_metric(judge_lm, mindset: EvaluatorMindset::Critical)
   judge = DSPy::ChainOfThought.new(EvaluateSummary)
   judge.configure { |c| c.lm = judge_lm }
 
   ->(example, prediction) do
     eval_result = judge.call(
-      source_text: example.input_values[:text],
-      summary: prediction.summary
+      grounded_summary: GroundedSummary.new(
+        source_text: example.input_values[:text],
+        summary: prediction.summary
+      ),
+      mindset: mindset
     )
 
     # Access dimensions directly from the prediction

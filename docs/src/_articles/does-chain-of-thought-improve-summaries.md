@@ -89,19 +89,35 @@ puts cot_prediction.reasoning
 
 ### Multi-Dimensional Quality Scoring
 
-Here's where it gets interesting. Instead of manually reviewing summaries, we use another LLM to evaluate them. 
-This G-Eval style approach scores multiple dimensions:
+Here's where it gets interesting. Instead of manually reviewing summaries, we use another LLM to evaluate them.
+This G-Eval style approach scores multiple dimensions.
+
+First, we define types to make our inputs explicit:
+
+```ruby
+class EvaluatorMindset < T::Enum
+  enums do
+    Critical = new('critical')   # Most should score 3-4, not 5
+    Balanced = new('balanced')   # Fair assessment across the range
+    Generous = new('generous')   # Benefit of the doubt
+  end
+end
+
+class GroundedSummary < T::Struct
+  const :source_text, String
+  const :summary, String
+end
+```
+
+Then the judge signature uses these types:
 
 ```ruby
 class EvaluateSummary < DSPy::Signature
-  description <<~DESC.strip
-    Evaluate summary quality using G-Eval criteria.
-    Be critical and objective. Most summaries should score 3-4, not 5.
-  DESC
+  description "Evaluate summary quality using G-Eval criteria according to the specified mindset."
 
   input do
-    const :source_text, String, description: "Original text"
-    const :summary, String, description: "Summary to evaluate"
+    const :grounded_summary, GroundedSummary
+    const :mindset, EvaluatorMindset
   end
 
   output do
@@ -119,21 +135,24 @@ class EvaluateSummary < DSPy::Signature
 end
 ```
 
-The `description` fields guide the judge on what each score means. We use `DSPy::ChainOfThought` for the judge so it reasons through its evaluation.
+The `EvaluatorMindset` enum controls how critically the judge scores—the LLM receives this as a constrained choice. The `GroundedSummary` struct keeps the source and summary paired together. We use `DSPy::ChainOfThought` for the judge so it reasons through its evaluation.
 
 ### Packaging the Judge for Evaluation
 
 A metric is a lambda that takes an example and prediction, returning evaluation results:
 
 ```ruby
-def create_llm_judge_metric(judge_lm)
+def create_llm_judge_metric(judge_lm, mindset: EvaluatorMindset::Critical)
   judge = DSPy::ChainOfThought.new(EvaluateSummary)
   judge.configure { |c| c.lm = DSPy::LM.new('openai/gpt-4.1', api_key: ENV['OPENAI_API_KEY']) }
 
   ->(example, prediction) do
     eval_result = judge.call(
-      source_text: example.input_values[:text],
-      summary: prediction.summary
+      grounded_summary: GroundedSummary.new(
+        source_text: example.input_values[:text],
+        summary: prediction.summary
+      ),
+      mindset: mindset
     )
 
     {
@@ -217,8 +236,9 @@ Tweak `DSPY_SUMMARIZER_MODEL` and `DSPY_JUDGE_MODEL` environment variables to ex
 ## Takeaways
 
 1. **Signatures define the task** — same signature, different predictors
-2. **LLM judges scale evaluation** — multi-dimensional scoring without manual review
-3. **DSPy::Evals unifies the workflow** — predictors, examples, and metrics in one API
-4. **Data beats blind assumptions** — 50 lines of code settles the ChainOfThought question
+2. **Sorbet types model your domain** — `T::Enum` for constrained choices, `T::Struct` for grouped inputs
+3. **LLM judges scale evaluation** — multi-dimensional scoring without manual review
+4. **DSPy::Evals unifies the workflow** — predictors, examples, and metrics in one API
+5. **Data beats blind assumptions** — 50 lines of code settles the ChainOfThought question
 
 Next time a coworker claims one approach is "obviously better," suggest an experiment. With DSPy.rb, you'll have results before the coffee gets cold.
