@@ -58,12 +58,16 @@ class GenerateLinkedInArticle < DSPy::Signature
   end
 end
 
+class EditorMindset < T::Enum
+  enums do
+    Skeptical = new('skeptical')   # Rarely approves, pushes for excellence
+    Balanced = new('balanced')     # Fair assessment across quality levels
+    Lenient = new('lenient')       # More likely to approve decent work
+  end
+end
+
 class EvaluateLinkedInArticle < DSPy::Signature
-  description <<~DESC.strip
-    You are a SKEPTICAL editor who rarely approves drafts on the first attempt.
-    Your role is to find genuine flaws and push for excellence. Default to
-    'needs_revision' unless the post is truly exceptional.
-  DESC
+  description "Evaluate a sales pitch draft according to the specified editor mindset."
 
   input do
     const :post, String
@@ -72,17 +76,19 @@ class EvaluateLinkedInArticle < DSPy::Signature
     const :recommendations, T::Array[Recommendation]
     const :hooks, T::Array[String]
     const :attempt, Integer
+    const :mindset, EditorMindset
   end
 
   output do
-    const :decision, EvaluationDecision  # Approved or NeedsRevision
+    const :decision, EvaluationDecision,
+      description: "Default to 'needs_revision' unless the post meets all criteria."
     const :recommendations, T::Array[Recommendation]
     const :self_score, Float
   end
 end
 ```
 
-Notice the `description` on the evaluator signature. This is where you set the evaluator's mindset. More on that below.
+Notice the `EditorMindset` enum—it controls how critically the evaluator scores drafts. The `decision` output description guides the LLM to default to rejection. More on tuning mindset below.
 
 ## Loop Mechanics: draft → critique within a guardrail
 
@@ -98,12 +104,13 @@ class SalesPitchWriterLoop < DSPy::Module
 
     while tracker.remaining.positive?
       # Cheap model drafts
-      draft = @generator.call(**input_values.merge(recommendations: recommendations))
+      draft = generator.call(**input_values.merge(recommendations: recommendations))
 
-      # Smart model critiques
-      eval = @evaluator.call(
+      # Smart model critiques with configured mindset
+      eval = evaluator.call(
         post: draft.post,
         hooks: draft.hooks,
+        mindset: @mindset,
         **input_values
       )
 
@@ -111,6 +118,25 @@ class SalesPitchWriterLoop < DSPy::Module
       recommendations = eval.recommendations || []
       break if eval.decision == EvaluationDecision::Approved
     end
+  end
+
+  private
+
+  def generator
+    @generator ||= DSPy::Predict.new(GenerateLinkedInArticle)
+  end
+
+  def evaluator
+    @evaluator ||= DSPy::ChainOfThought.new(EvaluateLinkedInArticle)
+  end
+
+  def count_tokens(_event_name, attributes)
+    return unless @active_budget_tracker
+
+    @active_budget_tracker.track(
+      prompt_tokens: attributes[:input_tokens],
+      completion_tokens: attributes[:output_tokens]
+    )
   end
 end
 ```
@@ -121,23 +147,27 @@ The evaluator asks questions like: "Did we quantify the pain cost?" "Is the CTA 
 
 Here's the catch: LLM evaluators tend to be sycophantic. They'll approve mediocre content because they default to "yes." If your loop finishes in one iteration every time, your evaluator is probably too easy to please.
 
-The fix is simple—tune the signature `description` to set expectations:
+The fix is type-safe—use a `T::Enum` to constrain the evaluator's mindset:
 
 ```ruby
-class EvaluateLinkedInArticle < DSPy::Signature
-  # A neutral description leads to lenient evaluation:
-  # description "Score a sales pitch and provide feedback."
-
-  # A skeptical framing pushes for excellence:
-  description <<~DESC.strip
-    You are a SKEPTICAL editor who rarely approves drafts on the first attempt.
-    Your role is to find genuine flaws and push for excellence. Default to
-    'needs_revision' unless the post is truly exceptional.
-  DESC
+class EditorMindset < T::Enum
+  enums do
+    Skeptical = new('skeptical')   # Rarely approves, pushes for excellence
+    Balanced = new('balanced')     # Fair assessment across quality levels
+    Lenient = new('lenient')       # More likely to approve decent work
+  end
 end
+
+# Pass the mindset when constructing the loop
+loop = SalesPitchWriterLoop.new(
+  generator: generator,
+  evaluator: evaluator,
+  token_budget_limit: 10_000,
+  mindset: EditorMindset::Skeptical  # Or ::Balanced, ::Lenient
+)
 ```
 
-This adversarial framing makes the evaluator earn its approval. The loop runs more iterations, but each draft gets meaningfully better.
+The enum becomes a constrained input to the evaluator—the LLM receives it as a structured choice rather than freeform text. Combined with the output description (`"Default to 'needs_revision' unless the post meets all criteria."`), this makes the evaluator earn its approval.
 
 Other levers you can pull:
 - **Self-score threshold**: The example requires `self_score >= 0.9` even if decision is "approved"
@@ -179,8 +209,8 @@ Evaluator loops beat single-shot prompts when quality matters. The pattern is si
 1. **Signatures as functions** — typed inputs and outputs, no prompt wrangling
 2. **Cheap draft, smart critique** — Haiku generates, Sonnet evaluates
 3. **Budget as guardrail** — token cap instead of iteration cap
-4. **Skeptical by design** — tune the evaluator description to push for excellence
+4. **Skeptical by design** — use `T::Enum` to constrain evaluator mindset and output descriptions to set defaults
 
-The signature `description` is your main lever for controlling evaluator behavior. Don't settle for sycophantic feedback—make the loop earn its approval.
+The `EditorMindset` enum is your main lever for controlling evaluator behavior. Don't settle for sycophantic feedback—make the loop earn its approval.
 
 [^1]: Anthropic, “Building effective agents,” Workflow: Evaluator-optimizer, Dec 19 2024. https://www.anthropic.com/engineering/building-effective-agents#workflow-evaluator-optimizer

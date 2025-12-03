@@ -105,6 +105,15 @@ module EvaluatorLoop
     end
   end
 
+  # Enum representing the evaluator's scoring mindset
+  class EditorMindset < T::Enum
+    enums do
+      Skeptical = new('skeptical')   # Rarely approves, pushes for excellence
+      Balanced = new('balanced')     # Fair assessment across quality levels
+      Lenient = new('lenient')       # More likely to approve decent work
+    end
+  end
+
   class GenerateLinkedInArticle < DSPy::Signature
     description "Draft a concise sales pitch that embraces a persona's preferences."
 
@@ -132,12 +141,7 @@ module EvaluatorLoop
   end
 
   class EvaluateLinkedInArticle < DSPy::Signature
-    description <<~DESC.strip
-      You are a SKEPTICAL editor who rarely approves drafts on the first attempt.
-      Your role is to find genuine flaws and push for excellence. Default to
-      'needs_revision' unless the post is truly exceptional. Approval should be
-      earned through demonstrated quality, not given by default.
-    DESC
+    description "Evaluate a sales pitch draft according to the specified editor mindset."
 
     input do
       const :post, String,
@@ -158,11 +162,13 @@ module EvaluatorLoop
         description: "Hooks supplied by the generator for additional context."
       const :attempt, Integer,
         description: "1-indexed attempt counter for observability."
+      const :mindset, EditorMindset,
+        description: "How critically to evaluate (skeptical: rarely approves, lenient: benefit of doubt)."
     end
 
     output do
       const :decision, EvaluationDecision,
-        description: "Whether this draft is approved or needs another revision."
+        description: "Whether this draft is approved or needs another revision. Default to 'needs_revision' unless the post truly meets all criteria for the given mindset."
       const :feedback, String,
         description: "Narrative explanation of the rubric score."
       const :recommendations, T::Array[Recommendation],
@@ -247,14 +253,16 @@ module EvaluatorLoop
       params(
         generator: DSPy::Predict,
         evaluator: DSPy::Predict,
-        token_budget_limit: Integer
+        token_budget_limit: Integer,
+        mindset: EditorMindset
       ).void
     end
-    def initialize(generator:, evaluator:, token_budget_limit: DEFAULT_TOKEN_BUDGET)
+    def initialize(generator:, evaluator:, token_budget_limit: DEFAULT_TOKEN_BUDGET, mindset: EditorMindset::Skeptical)
       super()
       @generator = generator
       @evaluator = evaluator
       @token_budget_limit = token_budget_limit
+      @mindset = mindset
     end
 
     sig { override.params(input_values: T.untyped).returns(T.untyped) }
@@ -287,7 +295,8 @@ module EvaluatorLoop
           hashtag_band: hashtag_band,
           length_cap: length_cap,
           recommendations: recommendations,
-          attempt: attempt_number
+          attempt: attempt_number,
+          mindset: @mindset
         )
 
         evaluation_recommendations = evaluation.recommendations || []

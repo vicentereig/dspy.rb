@@ -170,7 +170,8 @@ RSpec.describe EvaluatorLoop::SalesPitchWriterLoop do
         length_cap: EvaluatorLoop::LengthCap.new,
         recommendations: [],
         hooks: ['AI hiring revelation', 'Why before how'],
-        attempt: 1
+        attempt: 1,
+        mindset: EvaluatorLoop::EditorMindset::Skeptical
       )
 
       # Skeptical evaluator should NOT approve on first attempt
