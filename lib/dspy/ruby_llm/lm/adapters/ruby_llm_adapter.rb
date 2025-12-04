@@ -12,15 +12,16 @@ module DSPy
     module LM
       module Adapters
         class RubyLLMAdapter < DSPy::LM::Adapter
-          attr_reader :ruby_llm_model
+          attr_reader :provider
 
           def initialize(model:, api_key: nil, **options)
-            # model is the RubyLLM model ID (e.g., "gpt-4o", "claude-sonnet-4")
-            @ruby_llm_model = model
             @api_key = api_key
             @options = options
             @structured_outputs_enabled = options.fetch(:structured_outputs, true)
             @provider_override = options[:provider] # Optional provider override
+
+            # Detect provider eagerly (matches OpenAI/Anthropic/Gemini adapters)
+            @provider = detect_provider(model)
 
             # Determine if we should use global RubyLLM config or create scoped context
             @use_global_config = should_use_global_config?(api_key, options)
@@ -36,11 +37,6 @@ module DSPy
           # Returns the context - either scoped or global
           def context
             @context ||= @use_global_config ? nil : create_context(@api_key)
-          end
-
-          # Returns the detected or overridden provider
-          def provider
-            @detected_provider ||= detect_provider
           end
 
           def chat(messages:, signature: nil, &block)
@@ -76,16 +72,17 @@ module DSPy
           private
 
           # Detect provider from model info or use override
-          def detect_provider
+          # Called eagerly at initialization to match other adapters' behavior
+          def detect_provider(model_id)
             return @provider_override.to_s if @provider_override
 
             # Try to find model in RubyLLM registry to get provider
             begin
-              model_info = ::RubyLLM.models.find(@ruby_llm_model)
+              model_info = ::RubyLLM.models.find(model_id)
               model_info.provider.to_s
             rescue ::RubyLLM::ModelNotFoundError
               # If model not in registry, try to infer from model name patterns
-              infer_provider_from_model_name(@ruby_llm_model)
+              infer_provider_from_model_name(model_id)
             end
           end
 
@@ -191,7 +188,7 @@ module DSPy
           end
 
           def create_chat_instance
-            chat_options = { model: @ruby_llm_model }
+            chat_options = { model: model }
 
             # If provider is explicitly overridden, pass it to RubyLLM
             if @provider_override
@@ -208,57 +205,67 @@ module DSPy
           end
 
           def standard_response(chat_instance, messages, signature)
-            # Apply system instructions if present
+            chat_instance = prepare_chat_instance(chat_instance, messages, signature)
+            content, attachments = prepare_message_content(messages)
+            return build_empty_response unless content
+
+            response = send_message(chat_instance, content, attachments)
+            map_response(response)
+          end
+
+          def stream_response(chat_instance, messages, signature, &block)
+            chat_instance = prepare_chat_instance(chat_instance, messages, signature)
+            content, attachments = prepare_message_content(messages)
+            return build_empty_response unless content
+
+            response = send_message(chat_instance, content, attachments, &block)
+            map_response(response)
+          end
+
+          # Common setup: apply system instructions and optional schema
+          def prepare_chat_instance(chat_instance, messages, signature)
             system_message = messages.find { |m| m[:role] == 'system' }
             chat_instance = chat_instance.with_instructions(system_message[:content]) if system_message
 
-            # Apply structured output schema if signature provided
             if signature && @structured_outputs_enabled
               schema = build_json_schema(signature)
               chat_instance = chat_instance.with_schema(schema) if schema
             end
 
-            # Build conversation history (excluding system messages)
-            user_messages = messages.reject { |m| m[:role] == 'system' }
-
-            # Get the last user message to send via ask
-            last_user_message = user_messages.reverse.find { |m| m[:role] == 'user' }
-            return build_empty_response unless last_user_message
-
-            # Handle multimodal content
-            content, attachments = extract_content_and_attachments(last_user_message)
-
-            response = if attachments.any?
-                         chat_instance.ask(content, with: attachments)
-                       else
-                         chat_instance.ask(content)
-                       end
-
-            map_response(response)
+            chat_instance
           end
 
-          def stream_response(chat_instance, messages, signature, &block)
-            # Apply system instructions if present
-            system_message = messages.find { |m| m[:role] == 'system' }
-            chat_instance = chat_instance.with_instructions(system_message[:content]) if system_message
-
-            # Get the last user message
+          # Extract content from last user message
+          # Note: RubyLLM's Chat API is designed for conversational flows where
+          # history is built via multiple ask() calls. For DSPy's single-shot
+          # predictions, we extract only the last user message. Multi-turn
+          # conversation history is managed at DSPy's agent level (ReAct, etc.).
+          def prepare_message_content(messages)
             last_user_message = messages.reverse.find { |m| m[:role] == 'user' }
-            return build_empty_response unless last_user_message
+            return [nil, []] unless last_user_message
 
-            content, attachments = extract_content_and_attachments(last_user_message)
+            extract_content_and_attachments(last_user_message)
+          end
 
-            response = if attachments.any?
-                         chat_instance.ask(content, with: attachments) do |chunk|
-                           block.call(chunk.content) if chunk.content
-                         end
-                       else
-                         chat_instance.ask(content) do |chunk|
-                           block.call(chunk.content) if chunk.content
-                         end
-                       end
-
-            map_response(response)
+          # Send message with optional streaming block
+          def send_message(chat_instance, content, attachments, &block)
+            if block_given?
+              if attachments.any?
+                chat_instance.ask(content, with: attachments) do |chunk|
+                  block.call(chunk.content) if chunk.content
+                end
+              else
+                chat_instance.ask(content) do |chunk|
+                  block.call(chunk.content) if chunk.content
+                end
+              end
+            else
+              if attachments.any?
+                chat_instance.ask(content, with: attachments)
+              else
+                chat_instance.ask(content)
+              end
+            end
           end
 
           def extract_content_and_attachments(message)
@@ -310,7 +317,7 @@ module DSPy
 
           def build_metadata(response)
             DSPy::LM::ResponseMetadataFactory.create('ruby_llm', {
-              model: response.model_id || @ruby_llm_model,
+              model: response.model_id || model,
               provider: provider
             })
           end
@@ -320,7 +327,7 @@ module DSPy
               content: '',
               usage: DSPy::LM::Usage.new(input_tokens: 0, output_tokens: 0, total_tokens: 0),
               metadata: DSPy::LM::ResponseMetadataFactory.create('ruby_llm', {
-                model: @ruby_llm_model,
+                model: model,
                 provider: provider
               })
             )
@@ -378,7 +385,7 @@ module DSPy
           def validate_vision_support!
             # RubyLLM handles vision validation internally, but we can add
             # additional DSPy-specific validation here if needed
-            DSPy::LM::VisionModels.validate_vision_support!(provider, @ruby_llm_model)
+            DSPy::LM::VisionModels.validate_vision_support!(provider, model)
           rescue DSPy::LM::IncompatibleImageFeatureError
             # If DSPy doesn't know about the model, let RubyLLM handle it
             # RubyLLM has its own model registry with capability detection
