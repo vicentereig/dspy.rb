@@ -152,7 +152,7 @@ RSpec.describe DSPy::Teleprompt::MIPROv2, :miprov2 do
       config_id: "test_#{SecureRandom.hex(6)}"
     )
   end
-  
+
   let(:training_examples) do
     [
       DSPy::Example.new(
