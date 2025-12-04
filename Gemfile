@@ -48,6 +48,10 @@ if ENV.fetch('DSPY_WITH_GEPA', '1') == '1'
   gemspec name: "gepa"
 end
 
+if ENV.fetch('DSPY_WITH_RUBY_LLM', '1') == '1'
+  gemspec name: "dspy-ruby_llm"
+end
+
 group :development, :test do
   gem 'rspec', '~> 3.12'
   gem 'dotenv', '~> 2.8'

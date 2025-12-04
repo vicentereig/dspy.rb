@@ -12,30 +12,35 @@ module DSPy
     module LM
       module Adapters
         class RubyLLMAdapter < DSPy::LM::Adapter
-          # Mapping of DSPy provider names to RubyLLM configuration keys
-          PROVIDER_CONFIG_MAP = {
-            'openai' => :openai_api_key,
-            'anthropic' => :anthropic_api_key,
-            'gemini' => :gemini_api_key,
-            'bedrock' => :bedrock_api_key,
-            'ollama' => :ollama_api_base,
-            'openrouter' => :openrouter_api_key,
-            'deepseek' => :deepseek_api_key,
-            'mistral' => :mistral_api_key,
-            'perplexity' => :perplexity_api_key,
-            'vertexai' => :vertexai_project_id,
-            'gpustack' => :gpustack_api_key
-          }.freeze
+          attr_reader :ruby_llm_model
 
-          attr_reader :provider, :ruby_llm_model, :context
-
-          def initialize(model:, api_key:, **options)
-            @provider, @ruby_llm_model = parse_model(model)
+          def initialize(model:, api_key: nil, **options)
+            # model is the RubyLLM model ID (e.g., "gpt-4o", "claude-sonnet-4")
+            @ruby_llm_model = model
+            @api_key = api_key
             @options = options
             @structured_outputs_enabled = options.fetch(:structured_outputs, true)
+            @provider_override = options[:provider] # Optional provider override
+
+            # Determine if we should use global RubyLLM config or create scoped context
+            @use_global_config = should_use_global_config?(api_key, options)
 
             super(model: model, api_key: api_key)
-            @context = create_context(api_key)
+
+            # Only validate API key if not using global config
+            unless @use_global_config
+              validate_api_key_for_provider!(api_key)
+            end
+          end
+
+          # Returns the context - either scoped or global
+          def context
+            @context ||= @use_global_config ? nil : create_context(@api_key)
+          end
+
+          # Returns the detected or overridden provider
+          def provider
+            @detected_provider ||= detect_provider
           end
 
           def chat(messages:, signature: nil, &block)
@@ -55,28 +60,79 @@ module DSPy
               standard_response(chat_instance, normalized_messages, signature)
             end
           rescue ::RubyLLM::UnauthorizedError => e
-            raise DSPy::LM::MissingAPIKeyError.new(@provider)
+            raise DSPy::LM::MissingAPIKeyError.new(provider)
           rescue ::RubyLLM::RateLimitError => e
-            raise DSPy::LM::AdapterError, "Rate limit exceeded for #{@provider}: #{e.message}"
+            raise DSPy::LM::AdapterError, "Rate limit exceeded for #{provider}: #{e.message}"
           rescue ::RubyLLM::ModelNotFoundError => e
             raise DSPy::LM::AdapterError, "Model not found: #{e.message}. Check available models with RubyLLM.models.all"
           rescue ::RubyLLM::BadRequestError => e
-            raise DSPy::LM::AdapterError, "Invalid request to #{@provider}: #{e.message}"
+            raise DSPy::LM::AdapterError, "Invalid request to #{provider}: #{e.message}"
           rescue ::RubyLLM::ConfigurationError => e
             raise DSPy::LM::ConfigurationError, "RubyLLM configuration error: #{e.message}"
           rescue ::RubyLLM::Error => e
-            raise DSPy::LM::AdapterError, "RubyLLM error (#{@provider}): #{e.message}"
+            raise DSPy::LM::AdapterError, "RubyLLM error (#{provider}): #{e.message}"
           end
 
           private
 
-          def parse_model(model)
-            parts = model.split(':', 2)
-            unless parts.length == 2
-              raise DSPy::LM::ConfigurationError,
-                    "Invalid model format '#{model}'. Expected 'provider:model' (e.g., 'openai:gpt-4o', 'anthropic:claude-sonnet-4')"
+          # Detect provider from model info or use override
+          def detect_provider
+            return @provider_override.to_s if @provider_override
+
+            # Try to find model in RubyLLM registry to get provider
+            begin
+              model_info = ::RubyLLM.models.find(@ruby_llm_model)
+              model_info.provider.to_s
+            rescue ::RubyLLM::ModelNotFoundError
+              # If model not in registry, try to infer from model name patterns
+              infer_provider_from_model_name(@ruby_llm_model)
             end
-            parts
+          end
+
+          # Infer provider from common model name patterns
+          def infer_provider_from_model_name(model_name)
+            case model_name.downcase
+            when /^gpt/, /^o[134]/, /^davinci/, /^text-/
+              'openai'
+            when /^claude/
+              'anthropic'
+            when /^gemini/, /^palm/
+              'gemini'
+            when /^llama/, /^mistral/, /^mixtral/, /^codellama/
+              'ollama' # Default local models to ollama
+            when /^deepseek/
+              'deepseek'
+            else
+              'openai' # Default fallback
+            end
+          end
+
+          # Check if we should use RubyLLM's global configuration
+          def should_use_global_config?(api_key, options)
+            # Use global config when:
+            # - No api_key provided
+            # - No provider-specific options that require scoped context
+            return false if api_key
+            return false if options[:base_url]
+            return false if options[:secret_key]  # Bedrock
+            return false if options[:region]      # Bedrock
+            return false if options[:location]    # VertexAI
+            return false if options[:timeout]
+            return false if options[:max_retries]
+
+            true
+          end
+
+          # Validate API key for providers that require it
+          def validate_api_key_for_provider!(api_key)
+            # Ollama and some local providers don't require API keys
+            return if provider_allows_no_api_key?
+
+            validate_api_key!(api_key, provider)
+          end
+
+          def provider_allows_no_api_key?
+            %w[ollama gpustack].include?(provider)
           end
 
           def create_context(api_key)
@@ -87,7 +143,9 @@ module DSPy
           end
 
           def configure_provider(config, api_key)
-            case @provider
+            detected = provider
+
+            case detected
             when 'openai'
               config.openai_api_key = api_key
               config.openai_api_base = @options[:base_url] if @options[:base_url]
@@ -114,8 +172,9 @@ module DSPy
               config.gpustack_api_key = api_key
               config.gpustack_api_base = @options[:base_url] if @options[:base_url]
             else
-              raise DSPy::LM::ConfigurationError,
-                    "Unknown provider '#{@provider}'. Supported: #{PROVIDER_CONFIG_MAP.keys.join(', ')}"
+              # For unknown providers, try openai-compatible configuration
+              config.openai_api_key = api_key
+              config.openai_api_base = @options[:base_url] if @options[:base_url]
             end
           end
 
@@ -132,7 +191,20 @@ module DSPy
           end
 
           def create_chat_instance
-            @context.chat(model: @ruby_llm_model)
+            chat_options = { model: @ruby_llm_model }
+
+            # If provider is explicitly overridden, pass it to RubyLLM
+            if @provider_override
+              chat_options[:provider] = @provider_override.to_sym
+              chat_options[:assume_model_exists] = true
+            end
+
+            # Use global RubyLLM config or scoped context
+            if @use_global_config
+              ::RubyLLM.chat(**chat_options)
+            else
+              context.chat(**chat_options)
+            end
           end
 
           def standard_response(chat_instance, messages, signature)
@@ -239,7 +311,7 @@ module DSPy
           def build_metadata(response)
             DSPy::LM::ResponseMetadataFactory.create('ruby_llm', {
               model: response.model_id || @ruby_llm_model,
-              provider: @provider
+              provider: provider
             })
           end
 
@@ -249,7 +321,7 @@ module DSPy
               usage: DSPy::LM::Usage.new(input_tokens: 0, output_tokens: 0, total_tokens: 0),
               metadata: DSPy::LM::ResponseMetadataFactory.create('ruby_llm', {
                 model: @ruby_llm_model,
-                provider: @provider
+                provider: provider
               })
             )
           end
@@ -306,7 +378,7 @@ module DSPy
           def validate_vision_support!
             # RubyLLM handles vision validation internally, but we can add
             # additional DSPy-specific validation here if needed
-            DSPy::LM::VisionModels.validate_vision_support!(@provider, @ruby_llm_model)
+            DSPy::LM::VisionModels.validate_vision_support!(provider, @ruby_llm_model)
           rescue DSPy::LM::IncompatibleImageFeatureError
             # If DSPy doesn't know about the model, let RubyLLM handle it
             # RubyLLM has its own model registry with capability detection
@@ -323,7 +395,7 @@ module DSPy
                     # Validate and format image for provider
                     image = item[:image]
                     if image.respond_to?(:validate_for_provider!)
-                      image.validate_for_provider!(@provider)
+                      image.validate_for_provider!(provider)
                     end
                     item
                   else

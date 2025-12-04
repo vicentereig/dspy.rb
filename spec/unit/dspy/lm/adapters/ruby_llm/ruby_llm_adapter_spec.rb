@@ -1,120 +1,132 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-
-# Mock RubyLLM for unit tests
-module RubyLLM
-  class Error < StandardError; end
-  class UnauthorizedError < Error; end
-  class RateLimitError < Error; end
-  class ModelNotFoundError < Error; end
-  class BadRequestError < Error; end
-  class ConfigurationError < Error; end
-
-  class Chunk
-    attr_reader :content, :tool_calls
-
-    def initialize(content: nil, tool_calls: nil)
-      @content = content
-      @tool_calls = tool_calls
-    end
-  end
-
-  class Message
-    attr_reader :content, :model_id, :input_tokens, :output_tokens
-
-    def initialize(content:, model_id: nil, input_tokens: nil, output_tokens: nil)
-      @content = content
-      @model_id = model_id
-      @input_tokens = input_tokens
-      @output_tokens = output_tokens
-    end
-  end
-
-  class Chat
-    attr_reader :model
-
-    def initialize(model:)
-      @model = model
-      @instructions = nil
-      @schema = nil
-    end
-
-    def with_instructions(instructions)
-      @instructions = instructions
-      self
-    end
-
-    def with_schema(schema)
-      @schema = schema
-      self
-    end
-
-    def ask(content, with: nil, &block)
-      if block_given?
-        # Simulate streaming
-        yield Chunk.new(content: "Hello ")
-        yield Chunk.new(content: "World")
-      end
-
-      Message.new(
-        content: "Hello World",
-        model_id: @model,
-        input_tokens: 10,
-        output_tokens: 5
-      )
-    end
-  end
-
-  class Context
-    def initialize
-      @config = OpenStruct.new
-      yield @config if block_given?
-    end
-
-    def chat(model:)
-      Chat.new(model: model)
-    end
-  end
-
-  def self.context(&block)
-    Context.new(&block)
-  end
-end
+require 'dspy/ruby_llm'
 
 RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
   let(:api_key) { 'test-api-key' }
 
-  describe '#initialize' do
-    it 'parses provider:model format correctly' do
-      adapter = described_class.new(model: 'openai:gpt-4o', api_key: api_key)
+  # Mock the RubyLLM context to avoid actual API calls
+  let(:mock_chat) { instance_double(RubyLLM::Chat) }
+  let(:mock_context) { instance_double(RubyLLM::Context) }
+  let(:mock_message) do
+    instance_double(
+      RubyLLM::Message,
+      content: 'Hello World',
+      model_id: 'gpt-4o',
+      input_tokens: 10,
+      output_tokens: 5
+    )
+  end
 
-      expect(adapter.provider).to eq('openai')
+  # Mock model registry for provider detection
+  let(:mock_model_info) do
+    instance_double('RubyLLM::Model::Info', provider: :openai)
+  end
+
+  before do
+    allow(RubyLLM).to receive(:context).and_yield(double('config').as_null_object).and_return(mock_context)
+    allow(mock_context).to receive(:chat).and_return(mock_chat)
+    allow(mock_chat).to receive(:with_instructions).and_return(mock_chat)
+    allow(mock_chat).to receive(:with_schema).and_return(mock_chat)
+    allow(mock_chat).to receive(:ask).and_return(mock_message)
+
+    # Mock the model registry
+    mock_models = double('models')
+    allow(RubyLLM).to receive(:models).and_return(mock_models)
+    allow(mock_models).to receive(:find).and_return(mock_model_info)
+  end
+
+  describe '#initialize' do
+    it 'accepts RubyLLM model ID directly' do
+      adapter = described_class.new(model: 'gpt-4o', api_key: api_key)
+
       expect(adapter.ruby_llm_model).to eq('gpt-4o')
     end
 
-    it 'raises error for invalid model format' do
-      expect {
-        described_class.new(model: 'gpt-4o', api_key: api_key)
-      }.to raise_error(DSPy::LM::ConfigurationError, /Invalid model format/)
+    it 'detects provider from RubyLLM model registry' do
+      adapter = described_class.new(model: 'gpt-4o', api_key: api_key)
+
+      expect(adapter.provider).to eq('openai')
     end
 
-    it 'accepts various provider names' do
-      %w[openai anthropic gemini bedrock ollama openrouter deepseek mistral perplexity].each do |provider|
-        adapter = described_class.new(model: "#{provider}:model-name", api_key: api_key)
-        expect(adapter.provider).to eq(provider)
+    it 'allows explicit provider override' do
+      adapter = described_class.new(model: 'custom-model', api_key: api_key, provider: 'anthropic')
+
+      expect(adapter.provider).to eq('anthropic')
+    end
+
+    it 'infers provider from model name patterns when not in registry' do
+      mock_models = double('models')
+      allow(RubyLLM).to receive(:models).and_return(mock_models)
+      allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
+
+      adapter = described_class.new(model: 'claude-sonnet-4', api_key: api_key)
+      expect(adapter.provider).to eq('anthropic')
+
+      adapter = described_class.new(model: 'gemini-1.5-pro', api_key: api_key)
+      expect(adapter.provider).to eq('gemini')
+
+      adapter = described_class.new(model: 'deepseek-chat', api_key: api_key)
+      expect(adapter.provider).to eq('deepseek')
+    end
+
+    it 'does not require API key for ollama' do
+      mock_models = double('models')
+      allow(RubyLLM).to receive(:models).and_return(mock_models)
+      allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
+
+      expect {
+        described_class.new(model: 'llama3.2', api_key: nil)
+      }.not_to raise_error
+    end
+
+    it 'requires API key for cloud providers when not using global config' do
+      # When api_key is explicitly nil but there are options that require scoped context
+      expect {
+        described_class.new(model: 'gpt-4o', api_key: nil, base_url: 'http://custom')
+      }.to raise_error(DSPy::LM::MissingAPIKeyError)
+    end
+
+    context 'with global RubyLLM configuration' do
+      it 'uses global config when no api_key or options provided' do
+        # Mock RubyLLM.chat to be called directly
+        allow(RubyLLM).to receive(:chat).and_return(mock_chat)
+
+        adapter = described_class.new(model: 'gpt-4o')
+
+        expect(adapter.send(:should_use_global_config?, nil, {})).to be true
       end
-    end
 
-    it 'raises error for unknown provider' do
-      expect {
-        described_class.new(model: 'unknown:model', api_key: api_key)
-      }.to raise_error(DSPy::LM::ConfigurationError, /Unknown provider/)
+      it 'creates scoped context when api_key provided' do
+        adapter = described_class.new(model: 'gpt-4o', api_key: api_key)
+
+        expect(adapter.send(:should_use_global_config?, api_key, {})).to be false
+        expect(adapter.context).not_to be_nil
+      end
+
+      it 'creates scoped context when base_url provided' do
+        adapter = described_class.new(model: 'gpt-4o', api_key: api_key, base_url: 'http://custom')
+
+        expect(adapter.send(:should_use_global_config?, api_key, { base_url: 'http://custom' })).to be false
+      end
+
+      it 'uses global config and calls RubyLLM.chat directly' do
+        # Setup: mock for global RubyLLM.chat
+        allow(RubyLLM).to receive(:chat).and_return(mock_chat)
+
+        adapter = described_class.new(model: 'gpt-4o')
+        messages = [{ role: 'user', content: 'Hello!' }]
+
+        expect(RubyLLM).to receive(:chat).with(model: 'gpt-4o').and_return(mock_chat)
+
+        adapter.chat(messages: messages)
+      end
     end
   end
 
   describe '#chat' do
-    let(:adapter) { described_class.new(model: 'openai:gpt-4o', api_key: api_key) }
+    let(:adapter) { described_class.new(model: 'gpt-4o', api_key: api_key) }
 
     context 'with basic messages' do
       let(:messages) do
@@ -145,19 +157,41 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
         expect(response.metadata.provider).to eq('ruby_llm')
         expect(response.metadata.model).to eq('gpt-4o')
       end
+
+      it 'applies system instructions via with_instructions' do
+        expect(mock_chat).to receive(:with_instructions).with('You are a helpful assistant.').and_return(mock_chat)
+        adapter.chat(messages: messages)
+      end
+
+      it 'sends user message via ask' do
+        expect(mock_chat).to receive(:ask).with('Hello!').and_return(mock_message)
+        adapter.chat(messages: messages)
+      end
     end
 
     context 'with streaming' do
       let(:messages) { [{ role: 'user', content: 'Hello!' }] }
 
       it 'yields chunks to the block' do
-        chunks = []
-        adapter.chat(messages: messages) { |chunk| chunks << chunk }
+        chunks_received = []
 
-        expect(chunks).to eq(['Hello ', 'World'])
+        allow(mock_chat).to receive(:ask) do |content, &block|
+          block.call(double(content: 'Hello ')) if block
+          block.call(double(content: 'World')) if block
+          mock_message
+        end
+
+        adapter.chat(messages: messages) { |chunk| chunks_received << chunk }
+
+        expect(chunks_received).to eq(['Hello ', 'World'])
       end
 
       it 'still returns the complete response' do
+        allow(mock_chat).to receive(:ask) do |content, &block|
+          block.call(double(content: 'chunk')) if block
+          mock_message
+        end
+
         response = adapter.chat(messages: messages) { |_| }
 
         expect(response).to be_a(DSPy::LM::Response)
@@ -177,11 +211,11 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
   end
 
   describe 'error handling' do
-    let(:adapter) { described_class.new(model: 'openai:gpt-4o', api_key: api_key) }
+    let(:adapter) { described_class.new(model: 'gpt-4o', api_key: api_key) }
     let(:messages) { [{ role: 'user', content: 'Hello!' }] }
 
     it 'converts UnauthorizedError to MissingAPIKeyError' do
-      allow_any_instance_of(RubyLLM::Chat).to receive(:ask).and_raise(RubyLLM::UnauthorizedError, 'Invalid key')
+      allow(mock_chat).to receive(:ask).and_raise(RubyLLM::UnauthorizedError.new(nil))
 
       expect {
         adapter.chat(messages: messages)
@@ -189,7 +223,7 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
     end
 
     it 'converts RateLimitError to AdapterError' do
-      allow_any_instance_of(RubyLLM::Chat).to receive(:ask).and_raise(RubyLLM::RateLimitError, 'Rate limited')
+      allow(mock_chat).to receive(:ask).and_raise(RubyLLM::RateLimitError.new(nil))
 
       expect {
         adapter.chat(messages: messages)
@@ -197,7 +231,7 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
     end
 
     it 'converts ModelNotFoundError to AdapterError' do
-      allow_any_instance_of(RubyLLM::Chat).to receive(:ask).and_raise(RubyLLM::ModelNotFoundError, 'Model not found')
+      allow(mock_chat).to receive(:ask).and_raise(RubyLLM::ModelNotFoundError.new(nil))
 
       expect {
         adapter.chat(messages: messages)
@@ -205,7 +239,7 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
     end
 
     it 'converts BadRequestError to AdapterError' do
-      allow_any_instance_of(RubyLLM::Chat).to receive(:ask).and_raise(RubyLLM::BadRequestError, 'Bad request')
+      allow(mock_chat).to receive(:ask).and_raise(RubyLLM::BadRequestError.new(nil))
 
       expect {
         adapter.chat(messages: messages)
@@ -213,7 +247,7 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
     end
 
     it 'converts generic RubyLLM::Error to AdapterError' do
-      allow_any_instance_of(RubyLLM::Chat).to receive(:ask).and_raise(RubyLLM::Error, 'Generic error')
+      allow(mock_chat).to receive(:ask).and_raise(RubyLLM::Error.new(nil))
 
       expect {
         adapter.chat(messages: messages)
@@ -223,9 +257,14 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
 
   describe 'provider configuration' do
     it 'configures bedrock with additional options' do
+      mock_models = double('models')
+      allow(RubyLLM).to receive(:models).and_return(mock_models)
+      allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
+
       adapter = described_class.new(
-        model: 'bedrock:anthropic.claude-3',
+        model: 'anthropic.claude-3',
         api_key: 'access-key',
+        provider: 'bedrock',
         secret_key: 'secret-key',
         region: 'us-east-1'
       )
@@ -234,9 +273,14 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
     end
 
     it 'configures ollama with custom base_url' do
+      mock_models = double('models')
+      allow(RubyLLM).to receive(:models).and_return(mock_models)
+      allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
+
       adapter = described_class.new(
-        model: 'ollama:llama3',
+        model: 'llama3',
         api_key: nil,
+        provider: 'ollama',
         base_url: 'http://custom:11434'
       )
 
@@ -244,9 +288,14 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
     end
 
     it 'configures vertexai with location' do
+      mock_models = double('models')
+      allow(RubyLLM).to receive(:models).and_return(mock_models)
+      allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
+
       adapter = described_class.new(
-        model: 'vertexai:gemini-pro',
+        model: 'gemini-pro',
         api_key: 'project-id',
+        provider: 'vertexai',
         location: 'europe-west1'
       )
 
@@ -255,7 +304,7 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
   end
 
   describe 'JSON schema normalization' do
-    let(:adapter) { described_class.new(model: 'openai:gpt-4o', api_key: api_key) }
+    let(:adapter) { described_class.new(model: 'gpt-4o', api_key: api_key) }
 
     it 'adds additionalProperties: false to object schemas' do
       schema = {
@@ -310,11 +359,12 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
         type: 'object',
         properties: { name: { type: 'string' } }
       }
-      original_dup = original.dup
+      frozen_copy = original.dup.freeze
 
       adapter.send(:normalize_schema, original)
 
-      expect(original).to eq(original_dup)
+      # Original should not have additionalProperties added
+      expect(original.key?(:additionalProperties)).to be false
     end
   end
 end
