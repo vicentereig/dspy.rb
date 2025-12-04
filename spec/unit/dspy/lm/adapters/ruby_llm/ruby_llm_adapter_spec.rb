@@ -41,10 +41,10 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
     it 'accepts RubyLLM model ID directly' do
       adapter = described_class.new(model: 'gpt-4o', api_key: api_key)
 
-      expect(adapter.ruby_llm_model).to eq('gpt-4o')
+      expect(adapter.model).to eq('gpt-4o')
     end
 
-    it 'detects provider from RubyLLM model registry' do
+    it 'detects provider eagerly from RubyLLM model registry' do
       adapter = described_class.new(model: 'gpt-4o', api_key: api_key)
 
       expect(adapter.provider).to eq('openai')
