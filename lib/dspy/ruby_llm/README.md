@@ -40,31 +40,18 @@ lm = DSPy::LM.new("ruby_llm/gpt-4o", api_key: ENV['OPENAI_API_KEY'])
 lm = DSPy::LM.new("ruby_llm/gpt-4o")
 lm = DSPy::LM.new("ruby_llm/claude-sonnet-4")
 lm = DSPy::LM.new("ruby_llm/gemini-1.5-pro")
-lm = DSPy::LM.new("ruby_llm/llama3.2")  # Ollama - auto-detected
+
+# For models not in RubyLLM registry, specify provider explicitly
+lm = DSPy::LM.new("ruby_llm/llama3.2", provider: 'ollama')
 ```
 
-The adapter automatically detects the provider from the model ID using RubyLLM's model registry.
+The adapter detects the provider from RubyLLM's model registry. For models not in the registry, use the `provider:` option.
 
 ### Provider Override
 
 For custom deployments or models not in the registry, explicitly specify the provider:
 
 ```ruby
-# AWS Bedrock (requires explicit provider)
-lm = DSPy::LM.new("ruby_llm/anthropic.claude-3-5-sonnet",
-  api_key: ENV['AWS_ACCESS_KEY_ID'],
-  provider: 'bedrock',
-  secret_key: ENV['AWS_SECRET_ACCESS_KEY'],
-  region: 'us-east-1'
-)
-
-# VertexAI (requires explicit provider)
-lm = DSPy::LM.new("ruby_llm/gemini-pro",
-  api_key: 'your-project-id',
-  provider: 'vertexai',
-  location: 'us-central1'
-)
-
 # OpenRouter
 lm = DSPy::LM.new("ruby_llm/anthropic/claude-3-opus",
   api_key: ENV['OPENROUTER_API_KEY'],
@@ -77,52 +64,52 @@ lm = DSPy::LM.new("ruby_llm/my-custom-model",
   provider: 'openai',
   base_url: 'https://custom-endpoint.com/v1'
 )
+
+# AWS Bedrock - configure RubyLLM globally first
+RubyLLM.configure do |c|
+  c.bedrock_api_key = ENV['AWS_ACCESS_KEY_ID']
+  c.bedrock_secret_key = ENV['AWS_SECRET_ACCESS_KEY']
+  c.bedrock_region = 'us-east-1'
+end
+lm = DSPy::LM.new("ruby_llm/anthropic.claude-3-5-sonnet", provider: 'bedrock')
+
+# VertexAI - configure RubyLLM globally first
+RubyLLM.configure do |c|
+  c.vertexai_project_id = 'your-project-id'
+  c.vertexai_location = 'us-central1'
+end
+lm = DSPy::LM.new("ruby_llm/gemini-pro", provider: 'vertexai')
 ```
 
 ### Supported Providers
 
 | Provider | Example Model ID | Notes |
 |----------|------------------|-------|
-| OpenAI | `ruby_llm/gpt-4o` | Auto-detected |
-| Anthropic | `ruby_llm/claude-sonnet-4` | Auto-detected |
-| Google Gemini | `ruby_llm/gemini-1.5-pro` | Auto-detected |
-| DeepSeek | `ruby_llm/deepseek-chat` | Auto-detected |
-| Mistral | `ruby_llm/mistral-large` | Auto-detected |
-| Ollama | `ruby_llm/llama3.2` | Auto-detected, no API key needed |
-| AWS Bedrock | `ruby_llm/anthropic.claude-3-5-sonnet` | Requires `provider: 'bedrock'` |
-| VertexAI | `ruby_llm/gemini-pro` | Requires `provider: 'vertexai'` |
-| OpenRouter | `ruby_llm/anthropic/claude-3-opus` | Requires `provider: 'openrouter'` |
-| Perplexity | `ruby_llm/llama-3.1-sonar-large` | Requires `provider: 'perplexity'` |
-| GPUStack | `ruby_llm/model-name` | Requires `provider: 'gpustack'` |
+| OpenAI | `ruby_llm/gpt-4o` | In RubyLLM registry |
+| Anthropic | `ruby_llm/claude-sonnet-4` | In RubyLLM registry |
+| Google Gemini | `ruby_llm/gemini-1.5-pro` | In RubyLLM registry |
+| DeepSeek | `ruby_llm/deepseek-chat` | In RubyLLM registry |
+| Mistral | `ruby_llm/mistral-large` | In RubyLLM registry |
+| Ollama | `ruby_llm/llama3.2` | Use `provider: 'ollama'`, no API key needed |
+| AWS Bedrock | `ruby_llm/anthropic.claude-3-5-sonnet` | Configure RubyLLM globally |
+| VertexAI | `ruby_llm/gemini-pro` | Configure RubyLLM globally |
+| OpenRouter | `ruby_llm/anthropic/claude-3-opus` | Use `provider: 'openrouter'` |
+| Perplexity | `ruby_llm/llama-3.1-sonar-large` | Use `provider: 'perplexity'` |
+| GPUStack | `ruby_llm/model-name` | Use `provider: 'gpustack'` |
 
 ### Configuration Options
 
 ```ruby
-# Common options
 lm = DSPy::LM.new("ruby_llm/gpt-4o",
-  api_key: ENV['OPENAI_API_KEY'],
-  base_url: 'https://custom-endpoint.com/v1',  # Custom endpoint
-  timeout: 120,                                  # Request timeout
-  max_retries: 3,                               # Retry count
-  structured_outputs: true                      # Enable JSON schema
-)
-
-# AWS Bedrock options
-lm = DSPy::LM.new("ruby_llm/anthropic.claude-3",
-  api_key: ENV['AWS_ACCESS_KEY_ID'],
-  provider: 'bedrock',
-  secret_key: ENV['AWS_SECRET_ACCESS_KEY'],
-  region: 'us-east-1',
-  session_token: ENV['AWS_SESSION_TOKEN']  # For temporary credentials
-)
-
-# VertexAI options
-lm = DSPy::LM.new("ruby_llm/gemini-pro",
-  api_key: 'your-project-id',
-  provider: 'vertexai',
-  location: 'us-central1'
+  api_key: ENV['OPENAI_API_KEY'],       # API key (or use global RubyLLM config)
+  base_url: 'https://custom.com/v1',    # Custom endpoint
+  timeout: 120,                          # Request timeout in seconds
+  max_retries: 3,                        # Retry count
+  structured_outputs: true               # Enable JSON schema (default: true)
 )
 ```
+
+For providers with non-standard auth (Bedrock, VertexAI), configure RubyLLM globally - see examples above.
 
 ### With DSPy Signatures
 
