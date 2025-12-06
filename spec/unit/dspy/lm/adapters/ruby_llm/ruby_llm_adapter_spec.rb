@@ -4,38 +4,9 @@ require 'spec_helper'
 require 'dspy/ruby_llm'
 
 RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
+  include RubyLLMTestHelpers
+
   let(:api_key) { 'test-api-key' }
-
-  # Mock the RubyLLM context to avoid actual API calls
-  let(:mock_chat) { instance_double(RubyLLM::Chat) }
-  let(:mock_context) { instance_double(RubyLLM::Context) }
-  let(:mock_message) do
-    instance_double(
-      RubyLLM::Message,
-      content: 'Hello World',
-      model_id: 'gpt-4o',
-      input_tokens: 10,
-      output_tokens: 5
-    )
-  end
-
-  # Mock model registry for provider detection
-  let(:mock_model_info) do
-    instance_double('RubyLLM::Model::Info', provider: :openai)
-  end
-
-  before do
-    allow(RubyLLM).to receive(:context).and_yield(double('config').as_null_object).and_return(mock_context)
-    allow(mock_context).to receive(:chat).and_return(mock_chat)
-    allow(mock_chat).to receive(:with_instructions).and_return(mock_chat)
-    allow(mock_chat).to receive(:with_schema).and_return(mock_chat)
-    allow(mock_chat).to receive(:ask).and_return(mock_message)
-
-    # Mock the model registry
-    mock_models = double('models')
-    allow(RubyLLM).to receive(:models).and_return(mock_models)
-    allow(mock_models).to receive(:find).and_return(mock_model_info)
-  end
 
   describe '#initialize' do
     it 'accepts RubyLLM model ID directly' do
@@ -69,6 +40,16 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
 
       adapter = described_class.new(model: 'deepseek-chat', api_key: api_key)
       expect(adapter.provider).to eq('deepseek')
+    end
+
+    it 'raises error for unknown model names instead of silently defaulting' do
+      mock_models = double('models')
+      allow(RubyLLM).to receive(:models).and_return(mock_models)
+      allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
+
+      expect {
+        described_class.new(model: 'unknown-model-xyz', api_key: api_key)
+      }.to raise_error(DSPy::LM::ConfigurationError, /Cannot infer provider for model 'unknown-model-xyz'/)
     end
 
     it 'does not require API key for ollama' do
@@ -109,6 +90,30 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
         adapter = described_class.new(model: 'gpt-4o', api_key: api_key, base_url: 'http://custom')
 
         expect(adapter.send(:should_use_global_config?, api_key, { base_url: 'http://custom' })).to be false
+      end
+
+      it 'validates base_url scheme' do
+        expect {
+          described_class.new(model: 'gpt-4o', api_key: api_key, base_url: 'ftp://evil.com')
+        }.to raise_error(DSPy::LM::ConfigurationError, /must use http or https scheme/)
+      end
+
+      it 'validates base_url format' do
+        expect {
+          described_class.new(model: 'gpt-4o', api_key: api_key, base_url: 'not-a-valid-url')
+        }.to raise_error(DSPy::LM::ConfigurationError, /Invalid base_url format/)
+      end
+
+      it 'accepts valid http base_url' do
+        expect {
+          described_class.new(model: 'gpt-4o', api_key: api_key, base_url: 'http://localhost:11434')
+        }.not_to raise_error
+      end
+
+      it 'accepts valid https base_url' do
+        expect {
+          described_class.new(model: 'gpt-4o', api_key: api_key, base_url: 'https://api.openai.com')
+        }.not_to raise_error
       end
 
       it 'uses global config and calls RubyLLM.chat directly' do
@@ -365,6 +370,44 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
 
       # Original should not have additionalProperties added
       expect(original.key?(:additionalProperties)).to be false
+    end
+
+    it 'caches normalized schemas to avoid repeated deep copies' do
+      schema = {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          age: { type: 'integer' }
+        }
+      }
+
+      # Normalize the schema twice with the same input
+      first_result = adapter.send(:normalize_schema, schema)
+      second_result = adapter.send(:normalize_schema, schema)
+
+      # Should return the exact same frozen object (not just equal, but identical)
+      expect(first_result.object_id).to eq(second_result.object_id)
+      expect(first_result).to be_frozen
+    end
+
+    it 'returns different cached results for different schemas' do
+      schema1 = {
+        type: 'object',
+        properties: { name: { type: 'string' } }
+      }
+
+      schema2 = {
+        type: 'object',
+        properties: { email: { type: 'string' } }
+      }
+
+      result1 = adapter.send(:normalize_schema, schema1)
+      result2 = adapter.send(:normalize_schema, schema2)
+
+      # Different schemas should produce different cached objects
+      expect(result1.object_id).not_to eq(result2.object_id)
+      expect(result1[:properties]).to have_key(:name)
+      expect(result2[:properties]).to have_key(:email)
     end
   end
 end
