@@ -160,6 +160,8 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
   end
 
   describe 'multi-turn conversations' do
+    let(:adapter) { described_class.new(model: 'gpt-4o', api_key: 'test-key') }
+
     it 'builds conversation history using add_message before final ask' do
       messages = [
         { role: 'system', content: 'You are helpful' },
