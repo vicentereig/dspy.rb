@@ -55,17 +55,19 @@ Provider SDKs now ship as side-loaded gems so you only install what you need. Ad
 
 ```ruby
 # Gemfile
-gem 'dspy'          # core framework
-gem 'dspy-openai'   # OpenAI, OpenRouter, or Ollama adapters
+gem 'dspy'           # core framework
+gem 'dspy-openai'    # OpenAI, OpenRouter, or Ollama adapters
 gem 'dspy-anthropic' # Claude adapters
-gem 'dspy-gemini'   # Gemini adapters
+gem 'dspy-gemini'    # Gemini adapters
+gem 'dspy-ruby_llm'  # RubyLLM unified adapter (12+ providers)
 ```
 
-Each adapter gem already depends on the official SDK (`openai`, `anthropic`, `gemini-ai`), so you don't need to add those manually. DSPy auto-loads the adapters when the gem is present—no extra `require` needed. Read the adapter guides for the specifics:
+Each adapter gem already depends on the official SDK (`openai`, `anthropic`, `gemini-ai`, `ruby_llm`), so you don't need to add those manually. DSPy auto-loads the adapters when the gem is present—no extra `require` needed. Read the adapter guides for the specifics:
 
 - [OpenAI / OpenRouter / Ollama adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/openai/README.md)
 - [Anthropic adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/anthropic/README.md)
 - [Gemini adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/gemini/README.md)
+- [RubyLLM unified adapter](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/ruby_llm/README.md) (OpenAI, Anthropic, Gemini, Bedrock, VertexAI, DeepSeek, Mistral, Ollama, and more)
 
 ## Observability
 
@@ -85,6 +87,8 @@ DSPy.configure do |c|
   c.lm = DSPy::LM.new('ollama/llama3.2')
   # or use OpenRouter for access to multiple providers (auto-fallback enabled)
   c.lm = DSPy::LM.new('openrouter/deepseek/deepseek-chat-v3.1:free', api_key: ENV['OPENROUTER_API_KEY'])
+  # or use RubyLLM for unified access (uses your existing RubyLLM config)
+  c.lm = DSPy::LM.new('ruby_llm/gpt-4o')
 end
 ```
 
@@ -226,6 +230,52 @@ end
    end
    ```
 
+### RubyLLM Setup (Unified Multi-Provider)
+
+[RubyLLM](https://rubyllm.com) provides unified access to 12+ providers through a single lightweight adapter.
+
+1. Add to your Gemfile:
+   ```ruby
+   gem 'dspy-ruby_llm'
+   ```
+
+2. **Option A**: Use existing RubyLLM configuration (recommended if you already use RubyLLM):
+   ```ruby
+   # Your existing RubyLLM setup
+   RubyLLM.configure do |config|
+     config.openai_api_key = ENV['OPENAI_API_KEY']
+     config.anthropic_api_key = ENV['ANTHROPIC_API_KEY']
+   end
+
+   # DSPy uses your config automatically - no api_key needed!
+   DSPy.configure do |c|
+     c.lm = DSPy::LM.new('ruby_llm/gpt-4o')
+     # or
+     c.lm = DSPy::LM.new('ruby_llm/claude-sonnet-4')
+   end
+   ```
+
+3. **Option B**: Pass API key directly:
+   ```ruby
+   DSPy.configure do |c|
+     c.lm = DSPy::LM.new('ruby_llm/gpt-4o', api_key: ENV['OPENAI_API_KEY'])
+   end
+   ```
+
+4. For AWS Bedrock, VertexAI, or other providers requiring explicit configuration:
+   ```ruby
+   DSPy.configure do |c|
+     c.lm = DSPy::LM.new('ruby_llm/anthropic.claude-3-5-sonnet',
+       provider: 'bedrock',
+       api_key: ENV['AWS_ACCESS_KEY_ID'],
+       secret_key: ENV['AWS_SECRET_ACCESS_KEY'],
+       region: 'us-east-1'
+     )
+   end
+   ```
+
+**Supported providers**: OpenAI, Anthropic, Gemini, AWS Bedrock, VertexAI, Ollama, OpenRouter, DeepSeek, Mistral, Perplexity, GPUStack.
+
 ### Structured Outputs Support
 
 Different providers support structured JSON extraction in different ways:
@@ -237,6 +287,7 @@ Different providers support structured JSON extraction in different ways:
 | **Anthropic** | ✅ Tool-based extraction (default)<br/>✅ Enhanced prompting | `structured_outputs: true` (default)<br/>`structured_outputs: false` |
 | **Ollama** | ✅ OpenAI-compatible JSON | `structured_outputs: true` |
 | **OpenRouter** | ⚠️ Varies by model | Check model capabilities |
+| **RubyLLM** | ✅ Via `with_schema` | `structured_outputs: true` (default) |
 
 **Example:**
 ```ruby

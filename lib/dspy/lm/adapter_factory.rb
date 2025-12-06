@@ -10,10 +10,11 @@ module DSPy
         'anthropic' => { class_name: 'DSPy::Anthropic::LM::Adapters::AnthropicAdapter', gem_name: 'dspy-anthropic' },
         'ollama' => { class_name: 'DSPy::OpenAI::LM::Adapters::OllamaAdapter', gem_name: 'dspy-openai' },
         'gemini' => { class_name: 'DSPy::Gemini::LM::Adapters::GeminiAdapter', gem_name: 'dspy-gemini' },
-        'openrouter' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenRouterAdapter', gem_name: 'dspy-openai' }
+        'openrouter' => { class_name: 'DSPy::OpenAI::LM::Adapters::OpenRouterAdapter', gem_name: 'dspy-openai' },
+        'ruby_llm' => { class_name: 'DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter', gem_name: 'dspy-ruby_llm' }
       }.freeze
 
-      PROVIDERS_WITH_EXTRA_OPTIONS = %w[openai anthropic ollama gemini openrouter].freeze
+      PROVIDERS_WITH_EXTRA_OPTIONS = %w[openai anthropic ollama gemini openrouter ruby_llm].freeze
 
       class AdapterData < Data.define(:class_name, :gem_name)
         def self.from_prefix(provider_prefix)
