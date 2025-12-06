@@ -16,7 +16,7 @@ module DSPy
           attr_reader :provider
 
           # Options that require a scoped context instead of global RubyLLM config
-          SCOPED_OPTIONS = %i[base_url secret_key region location timeout max_retries].freeze
+          SCOPED_OPTIONS = %i[base_url timeout max_retries].freeze
 
           def initialize(model:, api_key: nil, **options)
             @api_key = api_key
@@ -126,26 +126,14 @@ module DSPy
             end
           end
 
-          # Configure RubyLLM for the detected provider
-          # Uses convention: {provider}_api_key and {provider}_api_base
+          # Configure RubyLLM using convention: {provider}_api_key and {provider}_api_base
+          # For providers with non-standard auth (bedrock, vertexai), configure RubyLLM globally
           def configure_provider(config, api_key)
-            case provider
-            when 'bedrock'
-              config.bedrock_api_key = api_key
-              config.bedrock_secret_key = @options[:secret_key] || ENV['AWS_SECRET_ACCESS_KEY']
-              config.bedrock_region = @options[:region] || ENV['AWS_REGION']
-              config.bedrock_session_token = @options[:session_token] || ENV['AWS_SESSION_TOKEN']
-            when 'vertexai'
-              config.vertexai_project_id = api_key
-              config.vertexai_location = @options[:location] || 'us-central1'
-            else
-              # Standard pattern: {provider}_api_key and {provider}_api_base
-              key_method = "#{provider}_api_key="
-              config.send(key_method, api_key) if api_key && config.respond_to?(key_method)
+            key_method = "#{provider}_api_key="
+            config.send(key_method, api_key) if api_key && config.respond_to?(key_method)
 
-              base_method = "#{provider}_api_base="
-              config.send(base_method, @options[:base_url]) if @options[:base_url] && config.respond_to?(base_method)
-            end
+            base_method = "#{provider}_api_base="
+            config.send(base_method, @options[:base_url]) if @options[:base_url] && config.respond_to?(base_method)
           end
 
           def configure_connection(config)
