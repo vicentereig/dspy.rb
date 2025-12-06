@@ -78,39 +78,16 @@ module DSPy
 
           private
 
-          # Detect provider from model info or use override
-          # Called eagerly at initialization to match other adapters' behavior
+          # Detect provider from RubyLLM's model registry or use explicit override
           def detect_provider(model_id)
             return @provider_override.to_s if @provider_override
 
-            # Try to find model in RubyLLM registry to get provider
-            begin
-              model_info = ::RubyLLM.models.find(model_id)
-              model_info.provider.to_s
-            rescue ::RubyLLM::ModelNotFoundError
-              # If model not in registry, try to infer from model name patterns
-              infer_provider_from_model_name(model_id)
-            end
-          end
-
-          # Infer provider from common model name patterns
-          def infer_provider_from_model_name(model_name)
-            case model_name.downcase
-            when /^gpt/, /^o[134]/, /^davinci/, /^text-/
-              'openai'
-            when /^claude/
-              'anthropic'
-            when /^gemini/, /^palm/
-              'gemini'
-            when /^llama/, /^mistral/, /^mixtral/, /^codellama/
-              'ollama' # Default local models to ollama
-            when /^deepseek/
-              'deepseek'
-            else
-              raise DSPy::LM::ConfigurationError,
-                "Cannot infer provider for model '#{model_name}'. " \
-                "Use the provider: option to specify explicitly, or check the model name."
-            end
+            model_info = ::RubyLLM.models.find(model_id)
+            model_info.provider.to_s
+          rescue ::RubyLLM::ModelNotFoundError
+            raise DSPy::LM::ConfigurationError,
+              "Model '#{model_id}' not found in RubyLLM registry. " \
+              "Use provider: option to specify explicitly, or run RubyLLM.models.refresh!"
           end
 
           # Check if we should use RubyLLM's global configuration
@@ -149,47 +126,26 @@ module DSPy
             end
           end
 
+          # Configure RubyLLM for the detected provider
+          # Uses convention: {provider}_api_key and {provider}_api_base
           def configure_provider(config, api_key)
-            detected = provider
-
-            case detected
-            when 'openai'
-              config.openai_api_key = api_key
-              config.openai_api_base = @options[:base_url] if @options[:base_url]
-            when 'anthropic'
-              config.anthropic_api_key = api_key
-            when 'gemini'
-              config.gemini_api_key = api_key
+            case provider
             when 'bedrock'
-              configure_bedrock(config, api_key)
-            when 'ollama'
-              config.ollama_api_base = @options[:base_url] || 'http://localhost:11434'
-            when 'openrouter'
-              config.openrouter_api_key = api_key
-            when 'deepseek'
-              config.deepseek_api_key = api_key
-            when 'mistral'
-              config.mistral_api_key = api_key
-            when 'perplexity'
-              config.perplexity_api_key = api_key
+              config.bedrock_api_key = api_key
+              config.bedrock_secret_key = @options[:secret_key] || ENV['AWS_SECRET_ACCESS_KEY']
+              config.bedrock_region = @options[:region] || ENV['AWS_REGION']
+              config.bedrock_session_token = @options[:session_token] || ENV['AWS_SESSION_TOKEN']
             when 'vertexai'
               config.vertexai_project_id = api_key
               config.vertexai_location = @options[:location] || 'us-central1'
-            when 'gpustack'
-              config.gpustack_api_key = api_key
-              config.gpustack_api_base = @options[:base_url] if @options[:base_url]
             else
-              # For unknown providers, try openai-compatible configuration
-              config.openai_api_key = api_key
-              config.openai_api_base = @options[:base_url] if @options[:base_url]
-            end
-          end
+              # Standard pattern: {provider}_api_key and {provider}_api_base
+              key_method = "#{provider}_api_key="
+              config.send(key_method, api_key) if api_key && config.respond_to?(key_method)
 
-          def configure_bedrock(config, api_key)
-            config.bedrock_api_key = api_key
-            config.bedrock_secret_key = @options[:secret_key] || ENV['AWS_SECRET_ACCESS_KEY']
-            config.bedrock_region = @options[:region] || ENV['AWS_REGION']
-            config.bedrock_session_token = @options[:session_token] || ENV['AWS_SESSION_TOKEN']
+              base_method = "#{provider}_api_base="
+              config.send(base_method, @options[:base_url]) if @options[:base_url] && config.respond_to?(base_method)
+            end
           end
 
           def configure_connection(config)
