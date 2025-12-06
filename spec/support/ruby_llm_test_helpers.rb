@@ -8,7 +8,7 @@ module RubyLLMTestHelpers
       let(:mock_message) do
         instance_double(
           RubyLLM::Message,
-          content: 'Hello World',
+          content: 'Hello back!',
           model_id: 'gpt-4o',
           input_tokens: 10,
           output_tokens: 5
