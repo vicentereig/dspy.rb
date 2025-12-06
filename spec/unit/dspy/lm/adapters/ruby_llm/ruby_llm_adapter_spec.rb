@@ -99,9 +99,16 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
       end
 
       it 'validates base_url format' do
+        # URI with invalid characters triggers InvalidURIError
+        expect {
+          described_class.new(model: 'gpt-4o', api_key: api_key, base_url: 'http://[invalid')
+        }.to raise_error(DSPy::LM::ConfigurationError, /Invalid base_url format/)
+      end
+
+      it 'rejects base_url without scheme' do
         expect {
           described_class.new(model: 'gpt-4o', api_key: api_key, base_url: 'not-a-valid-url')
-        }.to raise_error(DSPy::LM::ConfigurationError, /Invalid base_url format/)
+        }.to raise_error(DSPy::LM::ConfigurationError, /must use http or https scheme/)
       end
 
       it 'accepts valid http base_url' do
