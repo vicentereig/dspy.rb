@@ -17,6 +17,8 @@ jobs:
         - name: DSPy Core
           gem: dspy
           command: bundle exec rspec --format documentation --pattern 'spec/unit/**/*_spec.rb'
+            --pattern 'spec/integration/ruby_llm_integration_spec.rb'
+            --pattern 'spec/integration/dspy/lm/adapters/ruby_llm_adapter_spec.rb'
             --exclude-pattern '**/spec/unit/dspy/datasets/**/*_spec.rb' --exclude-pattern
             '**/spec/unit/dspy/teleprompt/mipro_v2_*' --exclude-pattern '**/spec/unit/teleprompt/mipro_v2_*'
             --exclude-pattern '**/spec/unit/optimizers/gaussian_process_spec.rb' --exclude-pattern
