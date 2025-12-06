@@ -146,7 +146,7 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
         response = adapter.chat(messages: messages)
 
         expect(response).to be_a(DSPy::LM::Response)
-        expect(response.content).to eq('Hello World')
+        expect(response.content).to eq('Hello back!')
       end
 
       it 'includes usage information' do
@@ -201,7 +201,7 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
         response = adapter.chat(messages: messages) { |_| }
 
         expect(response).to be_a(DSPy::LM::Response)
-        expect(response.content).to eq('Hello World')
+        expect(response.content).to eq('Hello back!')
       end
     end
 

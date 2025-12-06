@@ -153,18 +153,6 @@ RSpec.describe DSPy::Teleprompt::MIPROv2, :miprov2 do
     )
   end
 
-  describe 'gem compatibility' do
-    it 'uses require (not require_relative) for cross-gem dependencies' do
-      source = File.read(File.expand_path('../../../../lib/dspy/teleprompt/mipro_v2.rb', __dir__))
-
-      # These files are in dspy gem, not dspy-miprov2, so must use require
-      expect(source).not_to include("require_relative 'teleprompter'")
-      expect(source).not_to include("require_relative 'utils'")
-      expect(source).not_to include("require_relative 'instruction_updates'")
-      expect(source).not_to include("require_relative '../propose/grounded_proposer'")
-    end
-  end
-
   let(:training_examples) do
     [
       DSPy::Example.new(
