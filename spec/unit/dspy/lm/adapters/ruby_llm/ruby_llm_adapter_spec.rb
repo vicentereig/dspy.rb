@@ -27,38 +27,32 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
       expect(adapter.provider).to eq('anthropic')
     end
 
-    it 'infers provider from model name patterns when not in registry' do
-      mock_models = double('models')
-      allow(RubyLLM).to receive(:models).and_return(mock_models)
-      allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
-
-      adapter = described_class.new(model: 'claude-sonnet-4', api_key: api_key)
-      expect(adapter.provider).to eq('anthropic')
-
-      adapter = described_class.new(model: 'gemini-1.5-pro', api_key: api_key)
-      expect(adapter.provider).to eq('gemini')
-
-      adapter = described_class.new(model: 'deepseek-chat', api_key: api_key)
-      expect(adapter.provider).to eq('deepseek')
-    end
-
-    it 'raises error for unknown model names instead of silently defaulting' do
+    it 'raises error when model not in registry and no provider specified' do
       mock_models = double('models')
       allow(RubyLLM).to receive(:models).and_return(mock_models)
       allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
 
       expect {
         described_class.new(model: 'unknown-model-xyz', api_key: api_key)
-      }.to raise_error(DSPy::LM::ConfigurationError, /Cannot infer provider for model 'unknown-model-xyz'/)
+      }.to raise_error(DSPy::LM::ConfigurationError, /not found in RubyLLM registry/)
     end
 
-    it 'does not require API key for ollama' do
+    it 'allows unknown models with explicit provider override' do
+      mock_models = double('models')
+      allow(RubyLLM).to receive(:models).and_return(mock_models)
+      allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
+
+      adapter = described_class.new(model: 'custom-model', api_key: api_key, provider: 'openai')
+      expect(adapter.provider).to eq('openai')
+    end
+
+    it 'does not require API key for ollama with explicit provider' do
       mock_models = double('models')
       allow(RubyLLM).to receive(:models).and_return(mock_models)
       allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
 
       expect {
-        described_class.new(model: 'llama3.2', api_key: nil)
+        described_class.new(model: 'llama3.2', api_key: nil, provider: 'ollama')
       }.not_to raise_error
     end
 

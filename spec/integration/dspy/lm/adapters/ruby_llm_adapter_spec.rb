@@ -210,30 +210,22 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
       expect(adapter.provider).to eq('openai')
     end
 
-    it 'infers anthropic provider from claude model name' do
+    it 'requires explicit provider for unknown models' do
       mock_models = double('models')
       allow(RubyLLM).to receive(:models).and_return(mock_models)
       allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
 
-      adapter = described_class.new(model: 'claude-sonnet-4', api_key: 'test-key')
-      expect(adapter.provider).to eq('anthropic')
+      expect {
+        described_class.new(model: 'unknown-model', api_key: 'test-key')
+      }.to raise_error(DSPy::LM::ConfigurationError, /not found in RubyLLM registry/)
     end
 
-    it 'infers gemini provider from gemini model name' do
+    it 'accepts explicit provider for custom models' do
       mock_models = double('models')
       allow(RubyLLM).to receive(:models).and_return(mock_models)
       allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
 
-      adapter = described_class.new(model: 'gemini-1.5-pro', api_key: 'test-key')
-      expect(adapter.provider).to eq('gemini')
-    end
-
-    it 'infers ollama provider from llama model name' do
-      mock_models = double('models')
-      allow(RubyLLM).to receive(:models).and_return(mock_models)
-      allow(mock_models).to receive(:find).and_raise(RubyLLM::ModelNotFoundError.new(nil))
-
-      adapter = described_class.new(model: 'llama3.2', api_key: nil)
+      adapter = described_class.new(model: 'llama3.2', api_key: nil, provider: 'ollama')
       expect(adapter.provider).to eq('ollama')
     end
   end
