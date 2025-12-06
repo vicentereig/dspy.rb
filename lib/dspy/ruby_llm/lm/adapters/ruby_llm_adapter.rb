@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'uri'
 require 'ruby_llm'
 require 'dspy/lm/adapter'
 require 'dspy/lm/vision_models'
@@ -13,6 +14,9 @@ module DSPy
       module Adapters
         class RubyLLMAdapter < DSPy::LM::Adapter
           attr_reader :provider
+
+          # Options that require a scoped context instead of global RubyLLM config
+          SCOPED_OPTIONS = %i[base_url secret_key region location timeout max_retries].freeze
 
           def initialize(model:, api_key: nil, **options)
             @api_key = api_key
@@ -32,6 +36,9 @@ module DSPy
             unless @use_global_config
               validate_api_key_for_provider!(api_key)
             end
+
+            # Validate base_url if provided
+            validate_base_url!(@options[:base_url])
           end
 
           # Returns the context - either scoped or global
@@ -100,24 +107,16 @@ module DSPy
             when /^deepseek/
               'deepseek'
             else
-              'openai' # Default fallback
+              raise DSPy::LM::ConfigurationError,
+                "Cannot infer provider for model '#{model_name}'. " \
+                "Use the provider: option to specify explicitly, or check the model name."
             end
           end
 
           # Check if we should use RubyLLM's global configuration
+          # Uses global config when no api_key and no provider-specific options provided
           def should_use_global_config?(api_key, options)
-            # Use global config when:
-            # - No api_key provided
-            # - No provider-specific options that require scoped context
-            return false if api_key
-            return false if options[:base_url]
-            return false if options[:secret_key]  # Bedrock
-            return false if options[:region]      # Bedrock
-            return false if options[:location]    # VertexAI
-            return false if options[:timeout]
-            return false if options[:max_retries]
-
-            true
+            api_key.nil? && (options.keys & SCOPED_OPTIONS).empty?
           end
 
           # Validate API key for providers that require it
@@ -130,6 +129,17 @@ module DSPy
 
           def provider_allows_no_api_key?
             %w[ollama gpustack].include?(provider)
+          end
+
+          def validate_base_url!(url)
+            return if url.nil?
+
+            uri = URI.parse(url)
+            unless %w[http https].include?(uri.scheme)
+              raise DSPy::LM::ConfigurationError, "base_url must use http or https scheme"
+            end
+          rescue URI::InvalidURIError
+            raise DSPy::LM::ConfigurationError, "Invalid base_url format: #{url}"
           end
 
           def create_context(api_key)
@@ -222,10 +232,33 @@ module DSPy
             map_response(response)
           end
 
-          # Common setup: apply system instructions and optional schema
+          # Common setup: apply system instructions, build conversation history, and optional schema
           def prepare_chat_instance(chat_instance, messages, signature)
+            # First, handle system messages via with_instructions for proper system prompt handling
             system_message = messages.find { |m| m[:role] == 'system' }
             chat_instance = chat_instance.with_instructions(system_message[:content]) if system_message
+
+            # Build conversation history by adding all non-system messages except the last user message
+            # The last user message will be passed to ask() to get the response
+            messages_to_add = messages.reject { |m| m[:role] == 'system' }
+
+            # Find the index of the last user message
+            last_user_index = messages_to_add.rindex { |m| m[:role] == 'user' }
+
+            if last_user_index && last_user_index > 0
+              # Add all messages before the last user message to build history
+              messages_to_add[0...last_user_index].each do |msg|
+                content, attachments = extract_content_and_attachments(msg)
+                next unless content
+
+                # Add message with appropriate role
+                if attachments.any?
+                  chat_instance.add_message(role: msg[:role].to_sym, content: content, attachments: attachments)
+                else
+                  chat_instance.add_message(role: msg[:role].to_sym, content: content)
+                end
+              end
+            end
 
             if signature && @structured_outputs_enabled
               schema = build_json_schema(signature)
@@ -236,10 +269,8 @@ module DSPy
           end
 
           # Extract content from last user message
-          # Note: RubyLLM's Chat API is designed for conversational flows where
-          # history is built via multiple ask() calls. For DSPy's single-shot
-          # predictions, we extract only the last user message. Multi-turn
-          # conversation history is managed at DSPy's agent level (ReAct, etc.).
+          # RubyLLM's Chat API builds conversation history via add_message() for previous turns,
+          # and the last user message is passed to ask() to get the response.
           def prepare_message_content(messages)
             last_user_message = messages.reverse.find { |m| m[:role] == 'user' }
             return [nil, []] unless last_user_message
@@ -249,22 +280,14 @@ module DSPy
 
           # Send message with optional streaming block
           def send_message(chat_instance, content, attachments, &block)
+            kwargs = attachments.any? ? { with: attachments } : {}
+
             if block_given?
-              if attachments.any?
-                chat_instance.ask(content, with: attachments) do |chunk|
-                  block.call(chunk.content) if chunk.content
-                end
-              else
-                chat_instance.ask(content) do |chunk|
-                  block.call(chunk.content) if chunk.content
-                end
+              chat_instance.ask(content, **kwargs) do |chunk|
+                block.call(chunk.content) if chunk.content
               end
             else
-              if attachments.any?
-                chat_instance.ask(content, with: attachments)
-              else
-                chat_instance.ask(content)
-              end
+              chat_instance.ask(content, **kwargs)
             end
           end
 
@@ -318,7 +341,7 @@ module DSPy
           def build_metadata(response)
             DSPy::LM::ResponseMetadataFactory.create('ruby_llm', {
               model: response.model_id || model,
-              provider: provider
+              underlying_provider: provider
             })
           end
 
@@ -328,7 +351,7 @@ module DSPy
               usage: DSPy::LM::Usage.new(input_tokens: 0, output_tokens: 0, total_tokens: 0),
               metadata: DSPy::LM::ResponseMetadataFactory.create('ruby_llm', {
                 model: model,
-                provider: provider
+                underlying_provider: provider
               })
             )
           end
@@ -343,13 +366,14 @@ module DSPy
           def normalize_schema(schema)
             return schema unless schema.is_a?(Hash)
 
-            # Deep dup to avoid mutating original
-            schema = deep_dup(schema)
+            @normalized_schema_cache ||= {}
+            cache_key = schema.hash
 
-            # Add additionalProperties: false for OpenAI compatibility
-            add_additional_properties_false(schema)
-
-            schema
+            @normalized_schema_cache[cache_key] ||= begin
+              duped = deep_dup(schema)
+              add_additional_properties_false(duped)
+              duped.freeze
+            end
           end
 
           def add_additional_properties_false(schema)
