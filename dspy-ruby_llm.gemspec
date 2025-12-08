@@ -6,8 +6,8 @@ require_relative "lib/dspy/ruby_llm/version"
 Gem::Specification.new do |spec|
   spec.name = "dspy-ruby_llm"
   spec.version = DSPy::RubyLLM::VERSION
-  spec.authors = ["Vicente Reig Rincón de Arellano"]
-  spec.email = ["hey@vicente.services"]
+  spec.authors = ["Vicente Reig Rincón de Arellano", "Kieran Klaassen"]
+  spec.email = ["hey@vicente.services", "kieranklaassen@gmail.com"]
 
   spec.summary = "RubyLLM adapter for DSPy.rb - unified access to 12+ LLM providers."
   spec.description = "Provides a unified adapter using RubyLLM to access OpenAI, Anthropic, Gemini, Bedrock, Ollama, and more through a single interface in DSPy.rb projects."
