@@ -1,0 +1,381 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields (TOON order) are:\n- task (String) — JSON representation
+        of all input fields for the task\n- context (String) — Available variables
+        and previous results from code execution history\n- history (Array<CodeActHistoryEntry>)
+        — Previous thoughts and code executions with their results. Use this to understand
+        what has been tried and what variables are available.\n    • Tabular columns:
+        step, thought, ruby_code, execution_result, error_message\n\nYour output schema
+        fields (TOON order) are:\n- thought (String) — Reasoning about the approach
+        to solve the task with Ruby code\n- ruby_code (String) — Ruby code to execute.
+        This should be valid Ruby code that can be evaluated safely. Avoid system
+        calls, file operations, or other potentially dangerous operations.\n- explanation
+        (String) — Brief explanation of what the code does and why this approach was
+        chosen\n\nAll interactions will be structured in the following way, with the
+        appropriate values filled in.\n## TOON data format instructions\nAll input
+        and output payloads must use Token-Oriented Object Notation (TOON). Do not
+        return JSON, YAML, or prose.\n\n## Input values\nCopy the TOON block below
+        and replace the placeholder values with the correct inputs.\n```toon\n{input_values}\n```\n\n###
+        Example TOON input\n```toon\ntask: example_task\ncontext: example_context\nhistory[1]{step,thought,ruby_code,execution_result,error_message}:\n  1,example_thought,example_ruby_code,example_execution_result,example_error_message\n```\n\n##
+        Output values\nRespond exclusively with a ```toon``` block that lists the
+        output fields in the exact order shown in the schema.\n```toon\n{output_values}\n```\n\n###
+        Example TOON output\n```toon\nthought: example_thought\nruby_code: example_ruby_code\nexplanation:
+        example_explanation\n```\n\nIn adhering to this structure, your objective
+        is: Generate Ruby code to solve the given task."},{"role":"user","content":"##
+        Input Values\nUse the TOON block below as-is; do not convert it to JSON.\n```toon\ntask:
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Find the square
+        of 12\\\"}\"\ncontext: No previous context available.\nhistory[0]:\n```\n\nRespond
+        with the corresponding output schema fields encoded as TOON inside a ```toon```
+        block starting with the heading `## Output values`. Do not include any JSON."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2432'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 15:08:57 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1602'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1618'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '199434'
+      X-Ratelimit-Reset-Requests:
+      - 43.297s
+      X-Ratelimit-Reset-Tokens:
+      - 169ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9abda911fdd1033d-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-ClG6CWln5wrTPnxGBzQZPo0GARLEE",
+          "object": "chat.completion",
+          "created": 1765379336,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```toon\nthought: To find the square of 12, I will simply multiply 12 by itself. This is a straightforward calculation that doesn't require any complex logic.\nruby_code: 12 * 12\nexplanation: The code multiplies the number 12 by itself to compute its square, which is a fundamental arithmetic operation.\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 507,
+            "completion_tokens": 69,
+            "total_tokens": 576,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_aa07c96156"
+        }
+  recorded_at: Wed, 10 Dec 2025 15:08:57 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BT-_PHzm4ZnbADvrtB84K3ppOY1IAAEBAAAnIQEAAH3KAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAAqNOWkAA82Va2/TMBSG/0rkz3UUJ44vkTqJ0QFDWndh7Ms6Vb6cdGG5lMSZKFX/O67WIRiTWokW8dE+9nveY5/Hvl0i01RVU6NsiZRzbaF7B916BLUr3CKsVQUoQ6NPF4uw1WiA7pvObSa7otIqLBujSh/YbJj1hfWxs+8Pi/GXh3j84dvx5xMiLm+OL69PytHlzdXH6ygV4+vT6Gw0I2ejE4pWqwEqm5nPe7tEJTxC6RVOx+/OvawrKuicquYoI5ylCZdJQiPCQj8YIB/r1GxtxrXKwLSwwwmKqDUScotziAmmXDCsSSyxUAIMcKGNiScoKOp576aueYC6G6YkCpre/TIjaOAap8qfKyQNZlBPVRF2i85B5TM1c6hV4bU2gRa+9t5tWDUWSh+fzR2mDa6Ker3IdvNF2BWzWrm+BR9en2qWXfV68dZveA81tMoVTe3XeoW+hOlcufvh7bKwWTBBTKdKilxhYZXB1MYWSwoxJjrhlluZxDqfoEFgStV16w1P+mvtN8atI6XSUGZBXZSrQbBRtakiLGcpTtPUq2qTYqW5xIxGhlOVcAX6FdWLFmzxh+rds/G2adzwEL6fE5Sg8uEhSnhO0Bl/u8Olqo2/0Xbx1Aa7lnO0qyULc3efBfEq8G1fO98UZRU+ddwETWq0GuxERCpjHqYJk3tEghH5AomU/44E4+ywSJzrDtrHf8+ElhEQoS1mhglMQQBWsWXYsJxENlGQSPOfM7HXEvbDxK6W9sQE5wkJGSX7/CUi/gIJJl/8EodGYusvEYmcUCYTTJTMMTWJwtqfBiZ57m9B+BLIa4/hFiKSKI94HqU4j0WCqZAMC0OsPzcba5UIbpj6OyL26vs1IvZawlYidinnaFdLW4m4W939AG8+NJ3MCQAA
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BT-_PHzm4ZnbADvrtB84K3ppOY1IAAEBAAAnIQEAAH3KAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '0'
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Wed, 10 Dec 2025 15:08:58 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Served-By:
+      - cache-mad2200102-MAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 10 Dec 2025 15:08:58 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields (TOON order) are:\n- task (String) — JSON representation
+        of all input fields for the task\n- history (Array<CodeActHistoryEntry>) —
+        Previous thoughts, code executions, and their results\n    • Tabular columns:
+        step, thought, ruby_code, execution_result, error_message\n- execution_result
+        (String, optional) — The result from executing the Ruby code\n- error_message
+        (String) — Error message if the code execution failed (empty string if no
+        error)\n\nYour output schema fields (TOON order) are:\n- observation (String)
+        — Analysis of the execution result and what it means for solving the task\n-
+        next_step (Enum<continue, finish>) — What to do next: ''#<DSPy::CodeActNextStep::Continue>''
+        to continue with more code or ''#<DSPy::CodeActNextStep::Finish>'' if the
+        task is complete\n- final_answer (String, optional) — If next_step is ''finish'',
+        provide the final answer to the task based on the execution results\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## TOON data format instructions\nAll input and output
+        payloads must use Token-Oriented Object Notation (TOON). Do not return JSON,
+        YAML, or prose.\n\n## Input values\nCopy the TOON block below and replace
+        the placeholder values with the correct inputs.\n```toon\n{input_values}\n```\n\n###
+        Example TOON input\n```toon\ntask: example_task\nhistory[1]{step,thought,ruby_code,execution_result,error_message}:\n  1,example_thought,example_ruby_code,example_execution_result,example_error_message\nexecution_result:
+        example_execution_result\nerror_message: example_error_message\n```\n\n##
+        Output values\nRespond exclusively with a ```toon``` block that lists the
+        output fields in the exact order shown in the schema.\n```toon\n{output_values}\n```\n\n###
+        Example TOON output\n```toon\nobservation: example_observation\nnext_step:
+        continue\nfinal_answer: example_final_answer\n```\n\nIn adhering to this structure,
+        your objective is: Process the result of Ruby code execution and decide what
+        to do next."},{"role":"user","content":"## Input Values\nUse the TOON block
+        below as-is; do not convert it to JSON.\n```toon\ntask: \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Find
+        the square of 12\\\"}\"\nhistory[1]{step,thought,ruby_code,execution_result,error_message}:\n  1,\"To
+        find the square of 12, I will simply multiply 12 by itself. This is a straightforward
+        calculation that doesn''t require any complex logic.\",12 * 12,\"144\",\"\"\nexecution_result:
+        \"144\"\nerror_message: \"\"\n```\n\nRespond with the corresponding output
+        schema fields encoded as TOON inside a ```toon``` block starting with the
+        heading `## Output values`. Do not include any JSON."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2799'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 15:08:59 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1814'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1838'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '199346'
+      X-Ratelimit-Reset-Requests:
+      - 50.147s
+      X-Ratelimit-Reset-Tokens:
+      - 196ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9abda91cfa14033d-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-ClG6DxgDB1sRvbWPrSVOh2LJbep1p",
+          "object": "chat.completion",
+          "created": 1765379337,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "```toon\nobservation: \"The execution result of '144' indicates that we have correctly calculated the square of 12 as 12 * 12 equals 144. This confirms the accurate execution of the code for the given task.\"\nnext_step: finish\nfinal_answer: \"The square of 12 is 144.\"\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 610,
+            "completion_tokens": 67,
+            "total_tokens": 677,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_aa07c96156"
+        }
+  recorded_at: Wed, 10 Dec 2025 15:08:59 GMT
+recorded_with: VCR 6.3.1

@@ -2,12 +2,15 @@
 
 require 'spec_helper'
 
-# Define ComplexityLevel as a T::Enum for autonomous task orchestration
-class ComplexityLevel < T::Enum
-  enums do
-    Basic = new('basic')
-    Intermediate = new('intermediate')
-    Advanced = new('advanced')
+# Namespace to avoid conflicts with other ComplexityLevel enums (e.g., ephemeral_memory_chat example)
+module AutonomousOrchestratorSpecs
+  # Define ComplexityLevel as a T::Enum for autonomous task orchestration
+  class ComplexityLevel < T::Enum
+    enums do
+      Basic = new('basic')
+      Intermediate = new('intermediate')
+      Advanced = new('advanced')
+    end
   end
 end
 
@@ -18,7 +21,7 @@ class TaskDecomposition < DSPy::Signature
   input do
     const :topic, String, description: "The main research topic to investigate"
     const :context, String, description: "Any additional context or constraints"
-    const :complexity_level, ComplexityLevel, description: "Desired complexity level for task decomposition"
+    const :complexity_level, AutonomousOrchestratorSpecs::ComplexityLevel, description: "Desired complexity level for task decomposition"
   end
 
   output do
@@ -160,10 +163,10 @@ class AutonomousTaskOrchestrator
   private
 
   def extract_complexity_level(context)
-    return ComplexityLevel::Basic if context.include?("complexity_level: basic")
-    return ComplexityLevel::Advanced if context.include?("complexity_level: advanced")
-    return ComplexityLevel::Intermediate if context.include?("complexity_level: intermediate")
-    ComplexityLevel::Intermediate # Default to intermediate
+    return AutonomousOrchestratorSpecs::ComplexityLevel::Basic if context.include?("complexity_level: basic")
+    return AutonomousOrchestratorSpecs::ComplexityLevel::Advanced if context.include?("complexity_level: advanced")
+    return AutonomousOrchestratorSpecs::ComplexityLevel::Intermediate if context.include?("complexity_level: intermediate")
+    AutonomousOrchestratorSpecs::ComplexityLevel::Intermediate # Default to intermediate
   end
 end
 

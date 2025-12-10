@@ -1,0 +1,357 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BT-_PHzm4ZnbADvrtB84K3ppOY1IAAEBAAAnIQEAAH3KAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAACNOWkAA+2UX2vbMBTFv4rRc2RsRbZlQwbr0m0dNP2zri9NCZJ942qVJc+SS72Q7z6ZNjC6seWhhQ72qHuk39URV+dqg0rTNEajYoO4c50UvQM7rkA76YZQ8wZQgeafT4ewE2iCbox1j0UrG8FDZUquvPB4oO5l5bXj77fD4ustWXy8P/hyGLOzy4Ozi0M1P7s8/3QRJWxxcRQdz+v4eH5I0XY7QcrUvu/VBim4A+UJR4v3Jx7rZAPW8aZFRZylyTTLp4SSJAlzmrAJ8qLl9Xgb1/ESVrKaLVFEqzKHdYXXQGJMM5ZiEZMcM86ghIyJsiRLFEjd9m7lzC1oOyNpEpje/VSJKQmccVztCjTKghr0isvQDtZB41uZFjSXHvYodPCt9/cNG1OB8nrdOkwNbqQeN1W2HUIra81d34GXx3ctivNeDO/8gQ+goeNOGu33ekKvYNVydzO72siqCJZoCklFszXBOYMM0zL2nvI48sZ8NYtFngm2RJOgVNza8cADf2S/Ld2oKC5AFYGWajsJ/kEqlASqdVLhLGYMU5p7qp8GPC1T345SEk3j31BPO6jkL9Tr3SN3xrjZS9x710ABX89ewsKugS39JM42XJd++rrhYWT3tfPm+Tbta66C1t0UAd0G/rtr57+CasKHf7ZES422k72SIE1iEk7zKH/GJKDR0yRIsidBkJKXDYITYaG7+58Ef6LylIEHCiy4R1OWC8xBEMwrCkmSpUwk5JUnwbNaeG1JsK+5vybB9fb6B1uHiUWoCAAA
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BT-_PHzm4ZnbADvrtB84K3ppOY1IAAEBAAAnIQEAAH3KAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '0'
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Wed, 10 Dec 2025 15:08:48 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Served-By:
+      - cache-mad22030-MAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 10 Dec 2025 15:08:48 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```baml\nclass CodeActHistoryEntry {\n  step int\n  thought
+        string?\n  ruby_code string?\n  execution_result string?\n  error_message
+        string\n}\n\nclass DSPy::RubyCodeGenerationInput {\n  task string\n  context
+        string\n  history CodeActHistoryEntry[]\n}\n```\nYour output schema fields
+        are:\n```baml\nclass DSPy::RubyCodeGenerationOutput {\n  thought string\n  ruby_code
+        string\n  explanation string\n}\n```\n\nAll interactions will be structured
+        in the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Generate Ruby code to solve the given task."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task\": \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Calculate
+        5 factorial (5!)\\\"}\",\n  \"context\": \"No previous context available.\",\n  \"history\":
+        []\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1267'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 15:08:49 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3094'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3107'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '199726'
+      X-Ratelimit-Reset-Requests:
+      - 18.127s
+      X-Ratelimit-Reset-Tokens:
+      - 82ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9abda8d75e780469-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-ClG62Hyzlu5SX2762boj5KYfoxh09",
+          "object": "chat.completion",
+          "created": 1765379326,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To calculate 5 factorial, I can use a simple iterative approach or recursion in Ruby. I will implement an iterative method to compute 5!.\",\n  \"ruby_code\": \"def factorial(n)\\n  result = 1\\n  (1..n).each do |i|\\n    result *= i\\n  end\\n  result\\nend\\n\\nputs factorial(5)\",\n  \"explanation\": \"The `factorial` method multiplies all integers from 1 to n to compute the factorial. In this case, calling `factorial(5)` will yield 120.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 260,
+            "completion_tokens": 135,
+            "total_tokens": 395,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_11f3029f6b"
+        }
+  recorded_at: Wed, 10 Dec 2025 15:08:49 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```baml\nclass CodeActHistoryEntry {\n  step int\n  thought
+        string?\n  ruby_code string?\n  execution_result string?\n  error_message
+        string\n}\n\nclass DSPy::RubyCodeObservationInput {\n  task string\n  history
+        CodeActHistoryEntry[]\n  execution_result string?\n  error_message string\n}\n```\nYour
+        output schema fields are:\n```baml\nenum CodeActNextStep {\n  \"continue\"\n  \"finish\"\n}\n\nclass
+        DSPy::RubyCodeObservationOutput {\n  observation string\n  next_step CodeActNextStep\n  final_answer
+        string?\n}\n```\n\nAll interactions will be structured in the following way,
+        with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Process the result of Ruby code execution and decide what
+        to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"task\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Calculate 5 factorial
+        (5!)\\\"}\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
+        \"To calculate 5 factorial, I can use a simple iterative approach or recursion
+        in Ruby. I will implement an iterative method to compute 5!.\",\n      \"ruby_code\":
+        \"def factorial(n)\\n  result = 1\\n  (1..n).each do |i|\\n    result *= i\\n  end\\n  result\\nend\\n\\nputs
+        factorial(5)\",\n      \"execution_result\": \"120\",\n      \"error_message\":
+        \"\"\n    }\n  ],\n  \"execution_result\": \"120\",\n  \"error_message\":
+        \"\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1831'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 15:08:51 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1573'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1589'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '199598'
+      X-Ratelimit-Reset-Requests:
+      - 23.404s
+      X-Ratelimit-Reset-Tokens:
+      - 120ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9abda8ec3ee50469-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-ClG66EzWlwBcLQFBNagV1OZLUaDNm",
+          "object": "chat.completion",
+          "created": 1765379330,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"observation\": \"The execution of the Ruby code to calculate 5 factorial was successful. The result is 120.\",\n  \"next_step\": \"finish\",\n  \"final_answer\": \"120\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 404,
+            "completion_tokens": 52,
+            "total_tokens": 456,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_aa07c96156"
+        }
+  recorded_at: Wed, 10 Dec 2025 15:08:51 GMT
+recorded_with: VCR 6.3.1

@@ -1,0 +1,306 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```baml\nclass CodeActHistoryEntry {\n  step int\n  thought
+        string?\n  ruby_code string?\n  execution_result string?\n  error_message
+        string\n}\n\nclass DSPy::RubyCodeGenerationInput {\n  task string\n  context
+        string\n  history CodeActHistoryEntry[]\n}\n```\nYour output schema fields
+        are:\n```baml\nclass DSPy::RubyCodeGenerationOutput {\n  thought string\n  ruby_code
+        string\n  explanation string\n}\n```\n\nAll interactions will be structured
+        in the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Generate Ruby code to solve the given task."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"task\": \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Calculate
+        the sum of even numbers from 2 to 10\\\"}\",\n  \"context\": \"No previous
+        context available.\",\n  \"history\": []\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1287'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 15:08:44 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '5305'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '5323'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9999'
+      X-Ratelimit-Remaining-Tokens:
+      - '199721'
+      X-Ratelimit-Reset-Requests:
+      - 8.64s
+      X-Ratelimit-Reset-Tokens:
+      - 83ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9abda8a68e173429-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-ClG5uUGa2wwdGYr2apiPAI10dffcu",
+          "object": "chat.completion",
+          "created": 1765379318,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To solve the task, I will create a Ruby code snippet that calculates the sum of even numbers from 2 to 10. I can use a range to generate the even numbers and then sum them up.\",\n  \"ruby_code\": \"even_numbers_sum = (2..10).select { |num| num.even? }.sum\\nputs even_numbers_sum\",\n  \"explanation\": \"This Ruby code uses a range from 2 to 10, selects all even numbers using the `even?` method, and then calculates the sum of those numbers using the `sum` method. Finally, it outputs the result.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 265,
+            "completion_tokens": 142,
+            "total_tokens": 407,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_11f3029f6b"
+        }
+  recorded_at: Wed, 10 Dec 2025 15:08:44 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```baml\nclass CodeActHistoryEntry {\n  step int\n  thought
+        string?\n  ruby_code string?\n  execution_result string?\n  error_message
+        string\n}\n\nclass DSPy::RubyCodeObservationInput {\n  task string\n  history
+        CodeActHistoryEntry[]\n  execution_result string?\n  error_message string\n}\n```\nYour
+        output schema fields are:\n```baml\nenum CodeActNextStep {\n  \"continue\"\n  \"finish\"\n}\n\nclass
+        DSPy::RubyCodeObservationOutput {\n  observation string\n  next_step CodeActNextStep\n  final_answer
+        string?\n}\n```\n\nAll interactions will be structured in the following way,
+        with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Process the result of Ruby code execution and decide what
+        to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"task\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Calculate the sum
+        of even numbers from 2 to 10\\\"}\",\n  \"history\": [\n    {\n      \"step\":
+        1,\n      \"thought\": \"To solve the task, I will create a Ruby code snippet
+        that calculates the sum of even numbers from 2 to 10. I can use a range to
+        generate the even numbers and then sum them up.\",\n      \"ruby_code\": \"even_numbers_sum
+        = (2..10).select { |num| num.even? }.sum\\nputs even_numbers_sum\",\n      \"execution_result\":
+        \"30\",\n      \"error_message\": \"\"\n    }\n  ],\n  \"execution_result\":
+        \"30\",\n  \"error_message\": \"\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1848'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 10 Dec 2025 15:08:46 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2052'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2065'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '199592'
+      X-Ratelimit-Reset-Requests:
+      - 11.778s
+      X-Ratelimit-Reset-Tokens:
+      - 122ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9abda8c8d99a3429-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-ClG60zjNSSzirNRGPJDhchlaxJlrz",
+          "object": "chat.completion",
+          "created": 1765379324,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"observation\": \"The Ruby code executed successfully and returned the correct sum of even numbers from 2 to 10, which is 30.\",\n  \"next_step\": \"finish\",\n  \"final_answer\": \"30\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 405,
+            "completion_tokens": 57,
+            "total_tokens": 462,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_aa07c96156"
+        }
+  recorded_at: Wed, 10 Dec 2025 15:08:46 GMT
+recorded_with: VCR 6.3.1
