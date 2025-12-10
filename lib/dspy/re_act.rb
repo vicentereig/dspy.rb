@@ -72,10 +72,12 @@ module DSPy
     class TypeMismatchError < StandardError; end
 
     # AvailableTool struct for better type safety in ReAct agents
+    # Schema is stored as a pre-serialized string (JSON or BAML) to avoid
+    # T.untyped issues during schema format conversion
     class AvailableTool < T::Struct
       const :name, String
       const :description, String
-      const :schema, T::Hash[Symbol, T.untyped]
+      const :schema, String
     end
 
     FINISH_ACTION = "finish"
@@ -337,11 +339,10 @@ module DSPy
     def execute_react_reasoning_loop(input_struct)
       history = T.let([], T::Array[HistoryEntry])
       available_tools_desc = @tools.map { |name, tool|
-        schema = JSON.parse(tool.schema)
         AvailableTool.new(
           name: name,
           description: tool.description,
-          schema: schema.transform_keys(&:to_sym)
+          schema: tool.schema
         )
       }
       final_answer = T.let(nil, T.untyped)

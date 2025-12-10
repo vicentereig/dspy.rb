@@ -49,33 +49,33 @@ RSpec.describe 'DSPy::CodeAct' do
       expect(prediction.history).to be_an(Array)
     end
 
-    it 'has history entries as hashes' do
+    it 'has history entries as CodeActHistoryEntry structs' do
       prediction.history.each do |entry|
-        expect(entry).to be_a(Hash)
+        expect(entry).to be_a(DSPy::CodeActHistoryEntry)
       end
     end
 
-    it 'has history entries with :step key' do
+    it 'has history entries with step field' do
       prediction.history.each do |entry|
-        expect(entry).to have_key(:step)
+        expect(entry).to respond_to(:step)
       end
     end
 
-    it 'has history entries with :thought key' do
+    it 'has history entries with thought field' do
       prediction.history.each do |entry|
-        expect(entry).to have_key(:thought)
+        expect(entry).to respond_to(:thought)
       end
     end
 
-    it 'has history entries with :ruby_code key' do
+    it 'has history entries with ruby_code field' do
       prediction.history.each do |entry|
-        expect(entry).to have_key(:ruby_code)
+        expect(entry).to respond_to(:ruby_code)
       end
     end
 
-    it 'has history entries with :execution_result key' do
+    it 'has history entries with execution_result field' do
       prediction.history.each do |entry|
-        expect(entry).to have_key(:execution_result)
+        expect(entry).to respond_to(:execution_result)
       end
     end
 
@@ -109,32 +109,32 @@ RSpec.describe 'DSPy::CodeAct' do
 
     it 'history entries have thought as a string' do
       prediction.history.each do |entry|
-        expect(entry[:thought]).to be_a(String)
+        expect(entry.thought).to be_a(String)
       end
     end
 
     it 'history entries have ruby_code as a string' do
       prediction.history.each do |entry|
-        expect(entry[:ruby_code]).to be_a(String)
+        expect(entry.ruby_code).to be_a(String)
       end
     end
 
     it 'history entries have execution_result as a string or nil' do
       prediction.history.each do |entry|
-        expect(entry[:execution_result]).to satisfy { |val| val.is_a?(String) || val.nil? }
+        expect(entry.execution_result).to satisfy { |val| val.is_a?(String) || val.nil? }
       end
     end
 
     it 'history entries have step as an integer' do
       prediction.history.each do |entry|
-        expect(entry[:step]).to be_an(Integer)
+        expect(entry.step).to be_an(Integer)
       end
     end
 
     it 'generates valid Ruby code in history' do
-      ruby_codes = prediction.history.map { |entry| entry[:ruby_code] }.compact
+      ruby_codes = prediction.history.map(&:ruby_code).compact
       expect(ruby_codes).not_to be_empty
-      
+
       # Basic validation - code should not be empty and should contain some Ruby syntax
       ruby_codes.each do |code|
         expect(code).not_to be_empty
@@ -143,25 +143,25 @@ RSpec.describe 'DSPy::CodeAct' do
     end
 
     it 'executes Ruby code and produces results' do
-      execution_results = prediction.history.map { |entry| entry[:execution_result] }.compact
+      execution_results = prediction.history.map(&:execution_result).compact
       expect(execution_results).not_to be_empty
     end
 
     it 'provides reasoning in the thought process' do
-      thoughts = prediction.history.map { |entry| entry[:thought] }
+      thoughts = prediction.history.map(&:thought)
       expect(thoughts.any? { |thought| thought.length > 10 }).to be(true), "Expected substantial reasoning in thoughts"
     end
 
     it 'has error_message field in history entries' do
       prediction.history.each do |entry|
-        expect(entry).to have_key(:error_message)
+        expect(entry).to respond_to(:error_message)
       end
     end
 
     it 'handles code execution errors gracefully' do
       prediction.history.each do |entry|
-        # error_message should be nil for successful executions, string for errors
-        expect(entry[:error_message]).to satisfy { |val| val.is_a?(String) || val.nil? }
+        # error_message should be a string (empty for successful executions)
+        expect(entry.error_message).to be_a(String)
       end
     end
   end
