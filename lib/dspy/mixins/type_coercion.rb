@@ -37,7 +37,7 @@ module DSPy
         when ->(type) { hash_type?(type) }
           coerce_hash_value(value, prop_type)
         when ->(type) { type == String || simple_type_match?(type, String) }
-          value.to_s
+          coerce_to_string(value)
         when ->(type) { enum_type?(type) }
           coerce_enum_value(value, prop_type)
         when ->(type) { type == Float || simple_type_match?(type, Float) }
@@ -293,6 +293,18 @@ module DSPy
       rescue ArgumentError, TypeError
         DSPy.logger.debug("Failed to coerce to Time: #{value}")
         nil
+      end
+
+      # Coerces a value to String with strict type checking
+      # Only allows String (passthrough) and Symbol (to_s) - rejects other types
+      sig { params(value: T.untyped).returns(String) }
+      def coerce_to_string(value)
+        case value
+        when String then value
+        when Symbol then value.to_s
+        else
+          raise TypeError, "Cannot coerce #{value.class} to String - expected String or Symbol"
+        end
       end
 
       # Coerces a value to an enum, handling both strings and existing enum instances

@@ -176,15 +176,25 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         expect(result).to eq([1, 2, 3])
       end
 
-      it 'coerces scalars into strings when required' do
+      it 'rejects integers when String is required (strict type safety)' do
         string_type = T::Utils.coerce(String)
-        expect(instance.test_coerce(123, string_type)).to eq("123")
+        expect { instance.test_coerce(123, string_type) }.to raise_error(TypeError, /Cannot coerce Integer to String/)
       end
 
-      it 'coerces array elements into strings when required' do
+      it 'allows symbols to be coerced to strings' do
+        string_type = T::Utils.coerce(String)
+        expect(instance.test_coerce(:hello, string_type)).to eq("hello")
+      end
+
+      it 'rejects non-string/symbol elements in string arrays (strict type safety)' do
         array_type = T::Array[String]
-        result = instance.test_coerce([1, :symbol, 3.5], array_type)
-        expect(result).to eq(["1", "symbol", "3.5"])
+        expect { instance.test_coerce([1, :symbol, 3.5], array_type) }.to raise_error(TypeError, /Cannot coerce Integer to String/)
+      end
+
+      it 'coerces symbol array elements into strings' do
+        array_type = T::Array[String]
+        result = instance.test_coerce([:one, :two, :three], array_type)
+        expect(result).to eq(["one", "two", "three"])
       end
 
       it 'still handles regular structs correctly' do

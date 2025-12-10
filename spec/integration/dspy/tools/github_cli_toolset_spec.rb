@@ -20,7 +20,9 @@ RSpec.describe DSPy::Tools::GitHubCLIToolset do
         'github_list_prs',
         'github_get_issue',
         'github_get_pr',
-        'github_api_request'
+        'github_api_request',
+        'github_traffic_views',
+        'github_traffic_clones'
       ]
       
       expect(tool_names).to match_array(expected_names)

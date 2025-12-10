@@ -101,7 +101,7 @@ RSpec.describe 'Ollama Integration', :integration do
     
     it 'configures remote endpoint correctly' do
       adapter = remote_lm.adapter
-      expect(adapter).to be_a(DSPy::LM::OllamaAdapter)
+      expect(adapter).to be_a(DSPy::OpenAI::LM::Adapters::OllamaAdapter)
       expect(adapter.instance_variable_get(:@base_url)).to eq('https://ollama.example.com/v1')
       expect(adapter.instance_variable_get(:@api_key)).to eq('test-auth-key')
     end
