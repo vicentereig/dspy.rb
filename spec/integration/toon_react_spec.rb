@@ -162,15 +162,13 @@ RSpec.describe 'ReAct with TOON data format', type: :integration do
     history_entries = fetch_field(first_input, :history) || []
     expect(history_entries).to be_empty
     available_tools = fetch_field(first_input, :available_tools) || []
-    tool_schema = fetch_field(available_tools.first, :schema)
-    expect(fetch_field(tool_schema, :name)).to eq('lookup_city')
-    parameters = fetch_field(tool_schema, :parameters) || {}
-    properties = fetch_field(parameters, :properties) || {}
-    property_keys = if properties.respond_to?(:keys)
-      properties.keys.map { |key| key.to_s }
-    else
-      []
-    end
+    tool_schema_str = fetch_field(available_tools.first, :schema)
+    # schema is now a JSON string, parse it to access fields
+    tool_schema = JSON.parse(tool_schema_str, symbolize_names: true)
+    expect(tool_schema[:name]).to eq('lookup_city')
+    parameters = tool_schema[:parameters] || {}
+    properties = parameters[:properties] || {}
+    property_keys = properties.keys.map(&:to_s)
     expect(property_keys).to include('city')
 
     observation_input = captured_inputs.find { |entry| !thought_signature?(entry[:signature]) }[:decoded]
