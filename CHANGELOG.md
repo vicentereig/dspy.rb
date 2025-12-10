@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.32.0] - 2025-12-10
+
+### Added
+- **RubyLLM Adapter** ([@kieranklaassen](https://github.com/kieranklaassen)) – New `dspy-ruby_llm` gem provides unified access to 12+ LLM providers (OpenAI, Anthropic, Gemini, Bedrock, Ollama, DeepSeek, Mistral, OpenRouter, VertexAI, Perplexity, GPUStack) through [RubyLLM](https://rubyllm.com). Zero-config integration uses existing `RubyLLM.configure` setup automatically. Pure convention-based design auto-detects provider from RubyLLM's model registry. 800+ lines of comprehensive test coverage.
+- **Skeptical Evaluator Loop** – The evaluator loop now produces more critical, actionable feedback. New `EvaluatorMindset` T::Enum controls evaluator behavior.
+- **GroundedSummary struct** – Structured summarization outputs with `EvaluatorMindset` enum.
+
+### Fixed
+- **Rails double-loading fix** ([@kieranklaassen](https://github.com/kieranklaassen)) – Prevent `ObservationType` enum from loading twice in Rails apps (#191).
+- **Cross-gem require paths** ([@kieranklaassen](https://github.com/kieranklaassen)) – Fixed `require_relative` issues in dspy-miprov2 and dspy-gepa gems by using `require` instead (#189).
+- **Dependency conflicts** – Relaxed gem dependencies to resolve version conflicts.
+- **Test alignment** – Unit test expectations aligned with shared helpers.
+
+### Documentation
+- **Chain of Thought vs Predict** – New article comparing when to use reasoning vs direct prediction.
+- **Ephemeral Memory Chat Router** – Step-by-step tutorial with CLI demo demonstrating workflow routing.
+- **CodeAct Research Agent Tutorial** – Building autonomous research agents.
+- **Evaluator Loop Deep Dive** – Skeptical evaluation and budget control patterns.
+
+### CI/Testing
+- Added RubyLLM integration tests to DSPy Core CI job.
+- Comprehensive VCR cassettes for ruby_llm adapter.
+
 ## [0.31.1] - 2025-11-07
 
 ### Documentation

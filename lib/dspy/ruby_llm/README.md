@@ -117,12 +117,17 @@ For providers with non-standard auth (Bedrock, VertexAI), configure RubyLLM glob
 class Summarize < DSPy::Signature
   description "Summarize the given text"
 
-  input :text, String, desc: "Text to summarize"
-  output :summary, String, desc: "Concise summary"
+  input do
+    const :text, String
+  end
+
+  output do
+    const :summary, String
+  end
 end
 
 DSPy.configure do |config|
-  config.lm = DSPy::LM.new("ruby_llm/claude-sonnet-4", api_key: ENV['ANTHROPIC_API_KEY'])
+  config.lm = DSPy::LM.new("ruby_llm/claude-sonnet-4")
 end
 
 summarizer = DSPy::Predict.new(Summarize)
@@ -143,7 +148,7 @@ end
 ## Dependencies
 
 This gem depends on:
-- `dspy` (>= 0.30)
+- `dspy` (>= 0.32)
 - `ruby_llm` (~> 1.3)
 
 RubyLLM itself has minimal dependencies (Faraday, Zeitwerk, Marcel).
