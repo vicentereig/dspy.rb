@@ -90,16 +90,17 @@ RSpec.describe 'ReAct Field Descriptions', type: :unit do
   describe 'AvailableTool struct' do
     let(:tool_name) { 'github_list_prs' }
     let(:tool_description) { 'List GitHub pull requests with optional filters' }
-    let(:tool_schema) { { type: 'object', properties: { repo: { type: 'string' } } } }
-    
+    let(:tool_schema_hash) { { type: 'object', properties: { repo: { type: 'string' } } } }
+    let(:tool_schema) { JSON.generate(tool_schema_hash) }
+
     it 'creates AvailableTool instances from tool data' do
-      # This test will fail until we implement AvailableTool
+      # Schema is now stored as a pre-serialized string to avoid T.untyped in BAML conversion
       available_tool = DSPy::ReAct::AvailableTool.new(
         name: tool_name,
         description: tool_description,
         schema: tool_schema
       )
-      
+
       expect(available_tool.name).to eq(tool_name)
       expect(available_tool.description).to eq(tool_description)
       expect(available_tool.schema).to eq(tool_schema)

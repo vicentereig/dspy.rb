@@ -287,7 +287,7 @@ module DSPy
       build_enhanced_struct(
         { input: input_props, output: output_props },
         {
-          history: [T::Array[T::Hash[Symbol, T.untyped]], "CodeAct execution history"],
+          history: [T::Array[CodeActHistoryEntry], "CodeAct execution history"],
           iterations: [Integer, "Number of iterations executed"],
           execution_context: [T::Hash[Symbol, T.untyped], "Variables and context from code execution"]
         }
@@ -300,7 +300,7 @@ module DSPy
       output_field_name = @original_signature_class.output_struct_class.props.keys.first
 
       output_data = input_kwargs.merge({
-        history: reasoning_result[:history].map(&:to_h),
+        history: reasoning_result[:history],
         iterations: reasoning_result[:iterations],
         execution_context: reasoning_result[:execution_context]
       })
