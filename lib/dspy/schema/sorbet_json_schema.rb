@@ -113,16 +113,17 @@ module DSPy
         elsif type.is_a?(T::Types::TypedHash)
           # Handle hashes as objects with additionalProperties
           # TypedHash has keys and values methods to access its key and value types
-          key_schema = self.type_to_json_schema(type.keys, visited)
+          # Note: propertyNames is NOT supported by OpenAI structured outputs, so we omit it
           value_schema = self.type_to_json_schema(type.values, visited)
-          
-          # Create a more descriptive schema for nested structures
+          key_type_desc = type.keys.respond_to?(:raw_type) ? type.keys.raw_type.to_s : "string"
+          value_type_desc = value_schema[:description] || value_schema[:type].to_s
+
+          # Create a schema compatible with OpenAI structured outputs
           {
             type: "object",
-            propertyNames: key_schema,  # Describe key constraints
             additionalProperties: value_schema,
-            # Add a more explicit description of the expected structure
-            description: "A mapping where keys are #{key_schema[:type]}s and values are #{value_schema[:description] || value_schema[:type]}s"
+            # Description explains the expected structure without using propertyNames
+            description: "A mapping where keys are #{key_type_desc}s and values are #{value_type_desc}s"
           }
         elsif type.is_a?(T::Types::FixedHash)
           # Handle fixed hashes (from type aliases like { "key" => Type })

@@ -2,219 +2,22 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Serialized representation of all input
-        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
-        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
-        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
-        \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
-        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
-        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
-        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"courses_toolset_search_courses\",\n        \"finish\"\n      ],\n      \"description\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to process the given
-        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Can you recommend
-        some courses on AI and Machine Learning?\\\"}\",\n  \"history\": [],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"courses_toolset_search_courses\",\n      \"description\":
-        \"recommend courses related to the query\",\n      \"schema\": {\n        \"name\":
-        \"courses_toolset_search_courses\",\n        \"description\": \"recommend
-        courses related to the query\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"query\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter query\"\n            }\n          },\n          \"required\":
-        [\n            \"query\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.1
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '6142'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Thu, 02 Oct 2025 19:27:07 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '2248'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '2532'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9999'
-      X-Ratelimit-Remaining-Tokens:
-      - '198634'
-      X-Ratelimit-Reset-Requests:
-      - 8.64s
-      X-Ratelimit-Reset-Tokens:
-      - 409ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      X-Openai-Proxy-Wasm:
-      - v0.1
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 98869855ba6cacc5-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BZK9VqGQOuyBADvrtB84K3ppOtg4AAEBAAAnIQEAAWa2AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
     body:
       encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CMJFBkW1QJgvbrSg8moyvk8ZKf7fs",
-          "object": "chat.completion",
-          "created": 1759433225,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to use the available tool 'courses_toolset_search_courses' to recommend courses related to AI and Machine Learning based on the user's query.\",\n  \"action\": \"courses_toolset_search_courses\",\n  \"action_input\": {\n    \"query\": \"AI and Machine Learning\"\n  }\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 1187,
-            "completion_tokens": 73,
-            "total_tokens": 1260,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
-        }
-  recorded_at: Thu, 02 Oct 2025 19:27:07 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BZml8rPSAG6yADvrtB0vtKZo3tJ8AAEBAAAnIQEAADHqAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-    body:
-      encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.lan","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1759433227582.336,"message":"trace_id=\"1d48723c-2bbd-4be5-b357-4f1977e55c0b\"
-        otel_span_stack=[] input_tokens=1187 output_tokens=73 total_tokens=1260 gen_ai.system=\"openai\"
-        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=nil event=\"lm.tokens\"\n"}]}]'
+      string: !binary |-
+        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
     headers:
       Content-Encoding:
-      - identity
+      - gzip
       Host:
       - collector.newrelic.com
       Nr-Utilizationmetadata:
-      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
       Nr-Utilizationextra:
       - AQARAAUAAAAIAABgAA
       Nr-Session:
-      - BZml8rPSAG6yADvrtB0vtKZo3tJ8AAEBAAAnIQEAADHqAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+      - BZK9VqGQOuyBADvrtB84K3ppOtg4AAEBAAAnIQEAAWa2AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
       Nr-Agenttags:
       - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
       Accept-Encoding:
@@ -222,7 +25,7 @@ http_interactions:
       Accept:
       - "*/*"
       User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
       Content-Type:
       - application/octet-stream
   response:
@@ -239,17 +42,17 @@ http_interactions:
       X-Envoy-Upstream-Service-Time:
       - '1'
       Date:
-      - Thu, 02 Oct 2025 19:27:08 GMT
+      - Thu, 11 Dec 2025 14:40:59 GMT
       Server:
       - envoy
       Nr-Rate-Limited:
       - allowed
       X-Served-By:
-      - cache-iad-kjyo7100040-IAD
+      - cache-mad22034-MAD
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Thu, 02 Oct 2025 19:27:09 GMT
+  recorded_at: Thu, 11 Dec 2025 14:40:59 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -264,16 +67,205 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are Strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
+        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"courses_toolset_search_courses\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"array\",\n        \"null\"\n      ],\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"Course\"\n          },\n          \"id\":
+        {\n            \"type\": \"integer\"\n          },\n          \"course_title\":
+        {\n            \"type\": \"string\"\n          },\n          \"description\":
+        {\n            \"type\": \"string\"\n          },\n          \"link\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"id\",\n          \"course_title\",\n          \"description\",\n          \"link\"\n        ],\n        \"description\":
+        \"Course struct\"\n      },\n      \"description\": \"The final answer to
+        return. Required when action is \\\"finish\\\". Must match the expected output
+        type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Can you recommend
+        some courses on AI and Machine Learning?\\\"}\",\n  \"history\": [],\n  \"available_tools\":
+        [\n    {\n      \"name\": \"courses_toolset_search_courses\",\n      \"description\":
+        \"recommend courses related to the query\",\n      \"schema\": \"{\\\"name\\\":\\\"courses_toolset_search_courses\\\",\\\"description\\\":\\\"recommend
+        courses related to the query\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"query\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        query\\\"}},\\\"required\\\":[\\\"query\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '5871'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 11 Dec 2025 14:41:01 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2380'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2394'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9836'
+      X-Ratelimit-Remaining-Tokens:
+      - '198710'
+      X-Ratelimit-Reset-Requests:
+      - 23m30.815s
+      X-Ratelimit-Reset-Tokens:
+      - 387ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9ac5bd813e501bb2-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Clc8hWE6cTsxRuff7q07qSsE3gPLM",
+          "object": "chat.completion",
+          "created": 1765464059,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to search for courses related to AI and Machine Learning based on the user's query.\",\n  \"action\": \"courses_toolset_search_courses\",\n  \"tool_input\": {\n    \"query\": \"AI and Machine Learning\"\n  },\n  \"final_answer\": null\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1166,
+            "completion_tokens": 69,
+            "total_tokens": 1235,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_11f3029f6b"
+        }
+  recorded_at: Thu, 11 Dec 2025 14:41:01 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
+        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are Strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
         \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
@@ -291,26 +283,27 @@ http_interactions:
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Can you recommend
         some courses on AI and Machine Learning?\\\"}\",\n  \"history\": [\n    {\n      \"step\":
-        1,\n      \"thought\": \"I need to use the available tool ''courses_toolset_search_courses''
-        to recommend courses related to AI and Machine Learning based on the user''s
-        query.\",\n      \"action\": \"courses_toolset_search_courses\",\n      \"action_input\":
+        1,\n      \"thought\": \"I need to search for courses related to AI and Machine
+        Learning based on the user''s query.\",\n      \"action\": \"courses_toolset_search_courses\",\n      \"tool_input\":
         {\n        \"query\": \"AI and Machine Learning\"\n      },\n      \"observation\":
-        [\n        {\n          \"id\": 1,\n          \"course_title\": \"Introduction
-        to AI\",\n          \"description\": \"Learn the basics of Artificial Intelligence.\",\n          \"link\":
-        \"https://example.com/intro-to-ai\"\n        },\n        {\n          \"id\":
-        2,\n          \"course_title\": \"Advanced Machine Learning\",\n          \"description\":
-        \"Deep dive into machine learning algorithms and techniques.\",\n          \"link\":
-        \"https://example.com/advanced-ml\"\n        },\n        {\n          \"id\":
-        3,\n          \"course_title\": \"Data Science Fundamentals\",\n          \"description\":
-        \"Understand data analysis, visualization, and statistical methods.\",\n          \"link\":
-        \"https://example.com/data-science-fundamentals\"\n        }\n      ]\n    }\n  ],\n  \"observation\":
-        [\n    {\n      \"id\": 1,\n      \"course_title\": \"Introduction to AI\",\n      \"description\":
-        \"Learn the basics of Artificial Intelligence.\",\n      \"link\": \"https://example.com/intro-to-ai\"\n    },\n    {\n      \"id\":
-        2,\n      \"course_title\": \"Advanced Machine Learning\",\n      \"description\":
-        \"Deep dive into machine learning algorithms and techniques.\",\n      \"link\":
-        \"https://example.com/advanced-ml\"\n    },\n    {\n      \"id\": 3,\n      \"course_title\":
-        \"Data Science Fundamentals\",\n      \"description\": \"Understand data analysis,
-        visualization, and statistical methods.\",\n      \"link\": \"https://example.com/data-science-fundamentals\"\n    }\n  ]\n}\n```\n\nRespond
+        [\n        {\n          \"_type\": \"Course\",\n          \"id\": 1,\n          \"course_title\":
+        \"Introduction to AI\",\n          \"description\": \"Learn the basics of
+        Artificial Intelligence.\",\n          \"link\": \"https://example.com/intro-to-ai\"\n        },\n        {\n          \"_type\":
+        \"Course\",\n          \"id\": 2,\n          \"course_title\": \"Advanced
+        Machine Learning\",\n          \"description\": \"Deep dive into machine learning
+        algorithms and techniques.\",\n          \"link\": \"https://example.com/advanced-ml\"\n        },\n        {\n          \"_type\":
+        \"Course\",\n          \"id\": 3,\n          \"course_title\": \"Data Science
+        Fundamentals\",\n          \"description\": \"Understand data analysis, visualization,
+        and statistical methods.\",\n          \"link\": \"https://example.com/data-science-fundamentals\"\n        }\n      ]\n    }\n  ],\n  \"observation\":
+        [\n    {\n      \"_type\": \"Course\",\n      \"id\": 1,\n      \"course_title\":
+        \"Introduction to AI\",\n      \"description\": \"Learn the basics of Artificial
+        Intelligence.\",\n      \"link\": \"https://example.com/intro-to-ai\"\n    },\n    {\n      \"_type\":
+        \"Course\",\n      \"id\": 2,\n      \"course_title\": \"Advanced Machine
+        Learning\",\n      \"description\": \"Deep dive into machine learning algorithms
+        and techniques.\",\n      \"link\": \"https://example.com/advanced-ml\"\n    },\n    {\n      \"_type\":
+        \"Course\",\n      \"id\": 3,\n      \"course_title\": \"Data Science Fundamentals\",\n      \"description\":
+        \"Understand data analysis, visualization, and statistical methods.\",\n      \"link\":
+        \"https://example.com/data-science-fundamentals\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":1.0}'
     headers:
@@ -319,7 +312,7 @@ http_interactions:
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -329,11 +322,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -343,14 +336,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '5616'
+      - '5172'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 19:27:10 GMT
+      - Thu, 11 Dec 2025 14:41:03 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -362,25 +355,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1755'
+      - '1296'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1933'
+      - '1312'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9836'
       X-Ratelimit-Remaining-Tokens:
-      - '198748'
+      - '198854'
       X-Ratelimit-Reset-Requests:
-      - 14.223s
+      - 23m36.885s
       X-Ratelimit-Reset-Tokens:
-      - 375ms
+      - 343ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -397,23 +390,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 988698690b24acc5-EWR
+      - 9ac5bd916e6e1bb2-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMJFEh4ec470Mgjs55uCAPBnzHYP8",
+          "id": "chatcmpl-Clc8jcauKd1Zfz4ehJSllMSpo6w9h",
           "object": "chat.completion",
-          "created": 1759433228,
+          "created": 1765464061,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The user has been provided with three course recommendations on AI and Machine Learning, which include 'Introduction to AI', 'Advanced Machine Learning', and 'Data Science Fundamentals'.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The tool returned a list of courses related to AI and Machine Learning. The user can benefit from these recommendations.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -422,9 +415,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1131,
-            "completion_tokens": 58,
-            "total_tokens": 1189,
+            "prompt_tokens": 1075,
+            "completion_tokens": 46,
+            "total_tokens": 1121,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -437,9 +430,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Thu, 02 Oct 2025 19:27:09 GMT
+  recorded_at: Thu, 11 Dec 2025 14:41:03 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -454,26 +447,19 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are Strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -483,15 +469,22 @@ http_interactions:
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
         {\n      \"type\": \"string\",\n      \"enum\": [\n        \"courses_toolset_search_courses\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"array\",\n        \"null\"\n      ],\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"Course\"\n          },\n          \"id\":
+        {\n            \"type\": \"integer\"\n          },\n          \"course_title\":
         {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        {\n            \"type\": \"string\"\n          },\n          \"link\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"id\",\n          \"course_title\",\n          \"description\",\n          \"link\"\n        ],\n        \"description\":
+        \"Course struct\"\n      },\n      \"description\": \"The final answer to
+        return. Required when action is \\\"finish\\\". Must match the expected output
+        type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -500,26 +493,22 @@ http_interactions:
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Can you recommend
         some courses on AI and Machine Learning?\\\"}\",\n  \"history\": [\n    {\n      \"step\":
-        1,\n      \"thought\": \"I need to use the available tool ''courses_toolset_search_courses''
-        to recommend courses related to AI and Machine Learning based on the user''s
-        query.\",\n      \"action\": \"courses_toolset_search_courses\",\n      \"action_input\":
+        1,\n      \"thought\": \"I need to search for courses related to AI and Machine
+        Learning based on the user''s query.\",\n      \"action\": \"courses_toolset_search_courses\",\n      \"tool_input\":
         {\n        \"query\": \"AI and Machine Learning\"\n      },\n      \"observation\":
-        [\n        {\n          \"id\": 1,\n          \"course_title\": \"Introduction
-        to AI\",\n          \"description\": \"Learn the basics of Artificial Intelligence.\",\n          \"link\":
-        \"https://example.com/intro-to-ai\"\n        },\n        {\n          \"id\":
-        2,\n          \"course_title\": \"Advanced Machine Learning\",\n          \"description\":
-        \"Deep dive into machine learning algorithms and techniques.\",\n          \"link\":
-        \"https://example.com/advanced-ml\"\n        },\n        {\n          \"id\":
-        3,\n          \"course_title\": \"Data Science Fundamentals\",\n          \"description\":
-        \"Understand data analysis, visualization, and statistical methods.\",\n          \"link\":
-        \"https://example.com/data-science-fundamentals\"\n        }\n      ]\n    }\n  ],\n  \"available_tools\":
+        [\n        {\n          \"_type\": \"Course\",\n          \"id\": 1,\n          \"course_title\":
+        \"Introduction to AI\",\n          \"description\": \"Learn the basics of
+        Artificial Intelligence.\",\n          \"link\": \"https://example.com/intro-to-ai\"\n        },\n        {\n          \"_type\":
+        \"Course\",\n          \"id\": 2,\n          \"course_title\": \"Advanced
+        Machine Learning\",\n          \"description\": \"Deep dive into machine learning
+        algorithms and techniques.\",\n          \"link\": \"https://example.com/advanced-ml\"\n        },\n        {\n          \"_type\":
+        \"Course\",\n          \"id\": 3,\n          \"course_title\": \"Data Science
+        Fundamentals\",\n          \"description\": \"Understand data analysis, visualization,
+        and statistical methods.\",\n          \"link\": \"https://example.com/data-science-fundamentals\"\n        }\n      ]\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"courses_toolset_search_courses\",\n      \"description\":
-        \"recommend courses related to the query\",\n      \"schema\": {\n        \"name\":
-        \"courses_toolset_search_courses\",\n        \"description\": \"recommend
-        courses related to the query\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"query\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter query\"\n            }\n          },\n          \"required\":
-        [\n            \"query\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        \"recommend courses related to the query\",\n      \"schema\": \"{\\\"name\\\":\\\"courses_toolset_search_courses\\\",\\\"description\\\":\\\"recommend
+        courses related to the query\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"query\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        query\\\"}},\\\"required\\\":[\\\"query\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":1.0}'
     headers:
@@ -528,7 +517,7 @@ http_interactions:
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -538,11 +527,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -552,14 +541,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '7290'
+      - '7061'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 19:27:13 GMT
+      - Thu, 11 Dec 2025 14:41:08 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -571,25 +560,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '3743'
+      - '5616'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '3763'
+      - '5630'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9835'
       X-Ratelimit-Remaining-Tokens:
-      - '198369'
+      - '198439'
       X-Ratelimit-Reset-Requests:
-      - 20.97s
+      - 23m44.055s
       X-Ratelimit-Reset-Tokens:
-      - 489ms
+      - 468ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -606,23 +595,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 988698782ddbacc5-EWR
+      - 9ac5bd9aafb61bb2-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMJFGux7O6WOUgfoS3ZDbga2gtCQw",
+          "id": "chatcmpl-Clc8logbW0EF6d5kVZihkDgkExt9n",
           "object": "chat.completion",
-          "created": 1759433230,
+          "created": 1765464063,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have retrieved a list of courses related to AI and Machine Learning. Now, I should finish my process by providing these recommendations to the user as the final answer.\",\n  \"action\": \"finish\",\n  \"action_input\": [\n    {\n      \"course_title\": \"Introduction to AI\",\n      \"description\": \"Learn the basics of Artificial Intelligence.\",\n      \"link\": \"https://example.com/intro-to-ai\"\n    },\n    {\n      \"course_title\": \"Advanced Machine Learning\",\n      \"description\": \"Deep dive into machine learning algorithms and techniques.\",\n      \"link\": \"https://example.com/advanced-ml\"\n    },\n    {\n      \"course_title\": \"Data Science Fundamentals\",\n      \"description\": \"Understand data analysis, visualization, and statistical methods.\",\n      \"link\": \"https://example.com/data-science-fundamentals\"\n    }\n  ]\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have found a few relevant courses on AI and Machine Learning. I need to decide if I should present these courses now or get more information first.\",\n  \"action\": \"finish\",\n  \"tool_input\": null,\n  \"final_answer\": [\n    {\n      \"_type\": \"Course\",\n      \"id\": 1,\n      \"course_title\": \"Introduction to AI\",\n      \"description\": \"Learn the basics of Artificial Intelligence.\",\n      \"link\": \"https://example.com/intro-to-ai\"\n    },\n    {\n      \"_type\": \"Course\",\n      \"id\": 2,\n      \"course_title\": \"Advanced Machine Learning\",\n      \"description\": \"Deep dive into machine learning algorithms and techniques.\",\n      \"link\": \"https://example.com/advanced-ml\"\n    },\n    {\n      \"_type\": \"Course\",\n      \"id\": 3,\n      \"course_title\": \"Data Science Fundamentals\",\n      \"description\": \"Understand data analysis, visualization, and statistical methods.\",\n      \"link\": \"https://example.com/data-science-fundamentals\"\n    }\n  ]\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -631,9 +620,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1420,
-            "completion_tokens": 191,
-            "total_tokens": 1611,
+            "prompt_tokens": 1409,
+            "completion_tokens": 237,
+            "total_tokens": 1646,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -646,7 +635,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Thu, 02 Oct 2025 19:27:13 GMT
+  recorded_at: Thu, 11 Dec 2025 14:41:08 GMT
 recorded_with: VCR 6.3.1

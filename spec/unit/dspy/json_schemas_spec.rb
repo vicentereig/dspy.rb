@@ -121,7 +121,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
       expect(input_schema[:properties][:query]).to include(:oneOf)
       expect(input_schema[:properties][:query][:oneOf]).to contain_exactly(
         { type: "string" },
-        { type: "object", propertyNames: { type: "string" }, additionalProperties: { type: "string" }, description: "A mapping where keys are strings and values are strings" }
+        { type: "object", additionalProperties: { type: "string" }, description: "A mapping where keys are Strings and values are strings" }
       )
 
       expect(input_schema[:properties][:limit]).to include(:oneOf)
@@ -241,9 +241,9 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
       expect(output_schema[:properties][:similarity_matrix][:items][:type]).to eq("array")
       expect(output_schema[:properties][:similarity_matrix][:items][:items][:type]).to eq("number")
 
-      # Test typed hashes
+      # Test typed hashes (propertyNames is not supported by OpenAI structured outputs, so we omit it)
       expect(input_schema[:properties][:weights][:type]).to eq("object")
-      expect(input_schema[:properties][:weights][:propertyNames][:type]).to eq("string")
+      expect(input_schema[:properties][:weights]).not_to have_key(:propertyNames)
       expect(input_schema[:properties][:weights][:additionalProperties][:type]).to eq("number")
 
       # Test hash with union values

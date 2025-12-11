@@ -140,7 +140,8 @@ RSpec.describe 'Text Processing Toolset Integration with ReAct Agent', type: :in
         )
         
         expect(response.result).to be_a(String)
-        expect(response.result.downcase).to include('unique').or include('duplicate').or include('lines').or include('text').or include('summary').or include('words')
+        # The LLM may return a summary with keywords or the actual unique lines themselves
+        expect(response.result.downcase).to include('unique').or include('duplicate').or include('lines').or include('text').or include('summary').or include('hello').or include('world')
       end
     end
 

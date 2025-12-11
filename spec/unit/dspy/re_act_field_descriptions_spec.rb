@@ -38,11 +38,16 @@ RSpec.describe 'ReAct Field Descriptions', type: :unit do
       expect(action_description).to include('finish')
     end
     
-    it 'includes description for action_input field' do
-      action_input_description = output_schema.dig(:properties, :action_input, :description)
-      expect(action_input_description).to be_a(String)
-      expect(action_input_description).to include('JSON object')
-      expect(action_input_description).to include('finish')
+    it 'includes description for tool_input field' do
+      tool_input_description = output_schema.dig(:properties, :tool_input, :description)
+      expect(tool_input_description).to be_a(String)
+      expect(tool_input_description).to include('JSON object')
+    end
+
+    it 'includes description for final_answer field' do
+      final_answer_description = output_schema.dig(:properties, :final_answer, :description)
+      expect(final_answer_description).to be_a(String)
+      expect(final_answer_description).to include('finish')
     end
     
     it 'includes description for input_context field' do

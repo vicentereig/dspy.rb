@@ -9,23 +9,28 @@ require 'json'
 require_relative 'mixins/struct_builder'
 
 module DSPy
+  # Type alias for tool input parameters - provides semantic meaning in schemas
+  ToolInput = T.type_alias { T.nilable(T::Hash[String, T.untyped]) }
+
   # Define a simple struct for history entries with proper type annotations
   class HistoryEntry < T::Struct
     const :step, Integer
     prop :thought, T.nilable(String)
     prop :action, T.nilable(String)
-    prop :action_input, T.nilable(T.any(String, Numeric, T::Hash[T.untyped, T.untyped], T::Array[T.untyped]))
+    prop :tool_input, ToolInput
     prop :observation, T.untyped
 
     # Custom serialization to ensure compatibility with the rest of the code
+    # Note: We don't use .compact here to ensure tool_input is always present as a key,
+    # even when nil, for consistent history entry structure
     def to_h
       {
         step: step,
         thought: thought,
         action: action,
-        action_input: action_input,
+        tool_input: tool_input,
         observation: observation
-      }.compact
+      }
     end
   end
   # Base class for ReAct thought generation - will be customized per input type
@@ -37,8 +42,10 @@ module DSPy
         description: "Reasoning about what to do next, considering the history and observations."
       const :action, String,
         description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
-      const :action_input, T.untyped,
-        description: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final result based on processing the input data. This result MUST be directly taken from the relevant Observation in the history if available."
+      const :tool_input, ToolInput,
+        description: "Input for the chosen tool action. Required when action is a tool name. MUST be a JSON object matching the tool's parameter schema. Set to null when action is \"finish\"."
+      const :final_answer, T.nilable(String),
+        description: "The final answer to return. Required when action is \"finish\". Must match the expected output type. Set to null when action is a tool name."
     end
   end
 
@@ -213,7 +220,7 @@ module DSPy
           step: entry.step,
           thought: entry.thought,
           action: entry.action,
-          action_input: serialize_for_llm(entry.action_input),
+          tool_input: serialize_for_llm(entry.tool_input),
           observation: serialize_for_llm(entry.observation)
         }.compact
       end
@@ -246,22 +253,26 @@ module DSPy
     def create_action_enum_class
       tool_names = @tools.keys
       all_actions = tool_names + [FINISH_ACTION]
-      
+
       # Create a dynamic enum class using proper T::Enum pattern
       enum_class = Class.new(T::Enum)
-      
+
+      # Give the anonymous class a proper name for BAML schema rendering
+      # This overrides the default behavior that returns #<Class:0x...>
+      enum_class.define_singleton_method(:name) { 'ActionEnum' }
+
       # Build the enums block code dynamically
       enum_definitions = all_actions.map do |action_name|
         const_name = action_name.upcase.gsub(/[^A-Z0-9_]/, '_')
         "#{const_name} = new(#{action_name.inspect})"
       end.join("\n        ")
-      
+
       enum_class.class_eval <<~RUBY
         enums do
           #{enum_definitions}
         end
       RUBY
-      
+
       enum_class
     end
 
@@ -274,6 +285,11 @@ module DSPy
       else
         String
       end
+
+      # Get the output field type for the final_answer field
+      output_field_name = signature_class.output_struct_class.props.keys.first
+      output_field_type = signature_class.output_struct_class.props[output_field_name][:type_object]
+
       # Create new class that inherits from DSPy::Signature
       Class.new(DSPy::Signature) do
         # Set description
@@ -289,14 +305,16 @@ module DSPy
             description: "Array of available tools with their JSON schemas."
         end
 
-        # Define output fields (same as ThoughtBase)
+        # Define output fields with separate tool_input and final_answer
         output do
           const :thought, String,
             description: "Reasoning about what to do next, considering the history and observations."
           const :action, action_enum_class,
             description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
-          const :action_input, T.untyped,
-            description: "Input for the chosen action. If action is a tool name, this MUST be a JSON object matching the tool's schema. If action is \"finish\", this field MUST contain the final result based on processing the input data."
+          const :tool_input, ToolInput,
+            description: "Input for the chosen tool action. Required when action is a tool name. MUST be a JSON object matching the tool's parameter schema. Set to null when action is \"finish\"."
+          const :final_answer, T.nilable(output_field_type),
+            description: "The final answer to return. Required when action is \"finish\". Must match the expected output type. Set to null when action is a tool name."
         end
       end
     end
@@ -400,7 +418,7 @@ module DSPy
         # Process thought result
         if finish_action?(thought_obj.action)
           final_answer = handle_finish_action(
-            thought_obj.action_input, last_observation, iteration,
+            thought_obj.final_answer, last_observation, iteration,
             thought_obj.thought, thought_obj.action, history
           )
           return { should_finish: true, final_answer: final_answer }
@@ -408,19 +426,19 @@ module DSPy
 
         # Execute tool action
         observation = execute_tool_with_instrumentation(
-          thought_obj.action, thought_obj.action_input, iteration
+          thought_obj.action, thought_obj.tool_input, iteration
         )
 
         # Convert action enum to string for processing and storage
         action_str = thought_obj.action.respond_to?(:serialize) ? thought_obj.action.serialize : thought_obj.action.to_s
-        
+
         # Track tools used
         tools_used << action_str.downcase if valid_tool?(thought_obj.action)
 
         # Add to history
         history << create_history_entry(
           iteration, thought_obj.thought, action_str,
-          thought_obj.action_input, observation
+          thought_obj.tool_input, observation
         )
 
         # Process observation and decide next step
@@ -434,7 +452,7 @@ module DSPy
 
         emit_iteration_complete_event(
           iteration, thought_obj.thought, action_str,
-          thought_obj.action_input, observation, tools_used
+          thought_obj.tool_input, observation, tools_used
         )
 
         {
@@ -614,8 +632,8 @@ module DSPy
       !!@tools[action_str.downcase]
     end
 
-    sig { params(action: T.nilable(T.any(String, T::Enum)), action_input: T.untyped, iteration: Integer).returns(T.untyped) }
-    def execute_tool_with_instrumentation(action, action_input, iteration)
+    sig { params(action: T.nilable(T.any(String, T::Enum)), tool_input: ToolInput, iteration: Integer).returns(T.untyped) }
+    def execute_tool_with_instrumentation(action, tool_input, iteration)
       raise InvalidActionError, "No action provided" unless action
 
       action_str = action.respond_to?(:serialize) ? action.serialize : action.to_s
@@ -631,19 +649,19 @@ module DSPy
         'dspy.module' => 'ReAct',
         'react.iteration' => iteration,
         'tool.name' => action_str.downcase,
-        'tool.input' => action_input
+        'tool.input' => tool_input
       ) do
-        execute_action(action_str, action_input)
+        execute_action(action_str, tool_input)
       end
     end
 
-    sig { params(step: Integer, thought: String, action: String, action_input: T.untyped, observation: T.untyped).returns(HistoryEntry) }
-    def create_history_entry(step, thought, action, action_input, observation)
+    sig { params(step: Integer, thought: String, action: String, tool_input: ToolInput, observation: T.untyped).returns(HistoryEntry) }
+    def create_history_entry(step, thought, action, tool_input, observation)
       HistoryEntry.new(
         step: step,
         thought: thought,
         action: action,
-        action_input: action_input,
+        tool_input: tool_input,
         observation: observation
       )
     end
@@ -685,17 +703,17 @@ module DSPy
                         end
         handle_finish_action(forced_answer, history.last&.observation, iteration + 1, final_thought.thought, FINISH_ACTION, history)
       else
-        handle_finish_action(final_thought.action_input, history.last&.observation, iteration + 1, final_thought.thought, final_thought.action, history)
+        handle_finish_action(final_thought.final_answer, history.last&.observation, iteration + 1, final_thought.thought, final_thought.action, history)
       end
     end
 
-    sig { params(iteration: Integer, thought: String, action: String, action_input: T.untyped, observation: T.untyped, tools_used: T::Array[String]).void }
-    def emit_iteration_complete_event(iteration, thought, action, action_input, observation, tools_used)
+    sig { params(iteration: Integer, thought: String, action: String, tool_input: ToolInput, observation: T.untyped, tools_used: T::Array[String]).void }
+    def emit_iteration_complete_event(iteration, thought, action, tool_input, observation, tools_used)
       DSPy.event('react.iteration_complete', {
         'react.iteration' => iteration,
         'react.thought' => thought,
         'react.action' => action,
-        'react.action_input' => action_input,
+        'react.tool_input' => tool_input,
         'react.observation' => observation,
         'react.tools_used' => tools_used.uniq
       })
@@ -821,8 +839,8 @@ module DSPy
     end
 
     # Tool execution method
-    sig { params(action: String, action_input: T.untyped).returns(T.untyped) }
-    def execute_action(action, action_input)
+    sig { params(action: String, tool_input: ToolInput).returns(T.untyped) }
+    def execute_action(action, tool_input)
       tool_name = action.downcase
       tool = @tools[tool_name]
 
@@ -830,10 +848,10 @@ module DSPy
       raise InvalidActionError, "Tool '#{action}' not found" unless tool
 
       # Execute tool - let errors propagate
-      if action_input.nil? || (action_input.is_a?(String) && action_input.strip.empty?)
+      if tool_input.nil? || tool_input.empty?
         tool.dynamic_call({})
       else
-        tool.dynamic_call(action_input)
+        tool.dynamic_call(tool_input)
       end
     end
 
@@ -873,7 +891,7 @@ module DSPy
           step: 1,
           thought: "I need to think about this question...",
           action: "some_tool",
-          action_input: "input for tool",
+          tool_input: { "param" => "value" },
           observation: "result from tool"
         }
       ]
@@ -882,9 +900,9 @@ module DSPy
       example
     end
 
-    sig { params(action_input: T.untyped, last_observation: T.untyped, step: Integer, thought: String, action: T.any(String, T::Enum), history: T::Array[HistoryEntry]).returns(T.untyped) }
-    def handle_finish_action(action_input, last_observation, step, thought, action, history)
-      final_answer = action_input
+    sig { params(final_answer_value: T.untyped, last_observation: T.untyped, step: Integer, thought: String, action: T.any(String, T::Enum), history: T::Array[HistoryEntry]).returns(T.untyped) }
+    def handle_finish_action(final_answer_value, last_observation, step, thought, action, history)
+      final_answer = final_answer_value
 
       # If final_answer is empty/nil but we have a last observation, use it
       if (final_answer.nil? || (final_answer.is_a?(String) && final_answer.empty?)) && last_observation
@@ -894,12 +912,12 @@ module DSPy
       # Convert action enum to string for storage in history
       action_str = action.respond_to?(:serialize) ? action.serialize : action.to_s
 
-      # Always add the finish action to history
+      # Always add the finish action to history (tool_input is nil for finish actions)
       history << HistoryEntry.new(
         step: step,
         thought: thought,
         action: action_str,
-        action_input: final_answer,
+        tool_input: nil,
         observation: nil  # No observation for finish action
       )
 

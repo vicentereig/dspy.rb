@@ -14,27 +14,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -42,17 +35,18 @@ http_interactions:
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"github_traffic_views\",\n        \"github_traffic_clones\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -62,82 +56,57 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get details about
         issue #999999 from the microsoft/vscode repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
         [],\n  \"available_tools\": [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
-        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
-        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
-        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
-        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
-        \"github_get_issue\",\n        \"description\": \"Get details of a specific
-        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
-        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_issues\\\",\\\"description\\\":\\\"List
+        GitHub issues with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"labels\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        labels (optional)\\\"},\\\"assignee\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        assignee (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_list_prs\",\n      \"description\": \"List GitHub pull requests with
+        optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_prs\\\",\\\"description\\\":\\\"List
+        GitHub pull requests with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"merged\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"author\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        author (optional)\\\"},\\\"base\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        base (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_get_issue\",\n      \"description\": \"Get details of a specific
+        GitHub issue\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_issue\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub issue\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"issue_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        issue_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"issue_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
-        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_pr\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub pull request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"pr_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        pr_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"pr_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
-        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
-        \"object\",\n              \"propertyNames\": {\n                \"type\":
-        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
-        \"string\"\n              },\n              \"description\": \"Parameter fields
-        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_api_request\\\",\\\"description\\\":\\\"Make
+        an arbitrary GitHub API request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"endpoint\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        endpoint\\\"},\\\"method\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        method (optional)\\\"},\\\"fields\\\":{\\\"type\\\":\\\"object\\\",\\\"propertyNames\\\":{\\\"type\\\":\\\"string\\\"},\\\"additionalProperties\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        fields (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"endpoint\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_views\",\n      \"description\": \"Get repository traffic
+        views (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_views\\\",\\\"description\\\":\\\"Get
+        repository traffic views (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_clones\",\n      \"description\": \"Get repository traffic
+        clones (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_clones\\\",\\\"description\\\":\\\"Get
+        repository traffic clones (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
-        about what to do next, considering the history and observations.\",\n  \"action\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
-        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -147,11 +116,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -161,14 +130,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '12196'
+      - '10246'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:48:08 GMT
+      - Thu, 11 Dec 2025 14:27:12 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -180,25 +149,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '988'
+      - '2764'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1003'
+      - '2781'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9991'
+      - '9970'
       X-Ratelimit-Remaining-Tokens:
-      - '197262'
+      - '197822'
       X-Ratelimit-Reset-Requests:
-      - 1m9.925s
+      - 4m13.412s
       X-Ratelimit-Reset-Tokens:
-      - 821ms
+      - 653ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -215,23 +184,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98182a5bf9fe2bbd-LAX
+      - 9ac5a93f2f258c07-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHS0lI30BatwnQSyfUGJHZUhtHhUa",
+          "id": "chatcmpl-ClbvJFPoxdLy490jKFiXWbmpCrF3V",
           "object": "chat.completion",
-          "created": 1758275287,
+          "created": 1765463229,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To retrieve detailed information about issue #999999 from the microsoft/vscode repository, I should use the 'github_get_issue' action since it is designed to get specific issue details.\",\n  \"action\": \"github_get_issue\",\n  \"action_input\": {\n    \"issue_number\": 999999,\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to retrieve the details of issue #999999 from the microsoft/vscode repository. The appropriate action to take is to use the 'github_get_issue' tool, and I will provide the issue number as a parameter.\",\n  \"action\": \"github_get_issue\",\n  \"tool_input\": {\n    \"issue_number\": 999999,\n    \"repo\": \"microsoft/vscode\"\n  },\n  \"final_answer\": null\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -240,11 +209,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2276,
-            "completion_tokens": 87,
-            "total_tokens": 2363,
+            "prompt_tokens": 1961,
+            "completion_tokens": 103,
+            "total_tokens": 2064,
             "prompt_tokens_details": {
-              "cached_tokens": 1024,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -255,9 +224,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_51db84afab"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Fri, 19 Sep 2025 09:48:08 GMT
+  recorded_at: Thu, 11 Dec 2025 14:27:12 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -272,17 +241,13 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
         \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
@@ -300,30 +265,24 @@ http_interactions:
         a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get details about
         issue #999999 from the microsoft/vscode repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve detailed information
-        about issue #999999 from the microsoft/vscode repository, I should use the
-        ''github_get_issue'' action since it is designed to get specific issue details.\",\n      \"action\":
-        \"github_get_issue\",\n      \"action_input\": {\n        \"issue_number\":
-        999999,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to retrieve the
+        details of issue #999999 from the microsoft/vscode repository. The appropriate
+        action to take is to use the ''github_get_issue'' tool, and I will provide
+        the issue number as a parameter.\",\n      \"action\": \"github_get_issue\",\n      \"tool_input\":
+        {\n        \"issue_number\": 999999,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
         \"Failed to get issue: GraphQL: Could not resolve to an issue or pull request
         with the number of 999999. (repository.issue)\\n\"\n    }\n  ],\n  \"observation\":
         \"Failed to get issue: GraphQL: Could not resolve to an issue or pull request
         with the number of 999999. (repository.issue)\\n\"\n}\n```\n\nRespond with
         the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
-        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
-        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
-        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -333,11 +292,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -347,14 +306,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '5063'
+      - '4039'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:48:13 GMT
+      - Thu, 11 Dec 2025 14:27:14 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -366,25 +325,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '791'
+      - '1179'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '815'
+      - '1195'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9991'
+      - '9970'
       X-Ratelimit-Remaining-Tokens:
-      - '198867'
+      - '199105'
       X-Ratelimit-Reset-Requests:
-      - 1m13.511s
+      - 4m18.49s
       X-Ratelimit-Reset-Tokens:
-      - 339ms
+      - 268ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -401,23 +360,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98182a80b8b92bbd-LAX
+      - 9ac5a9555afe8c07-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHS0qM0diugvTeIVyHgshXdgODxw5",
+          "id": "chatcmpl-ClbvMpvm6ewZVbVi1if9F0cmVOy6Y",
           "object": "chat.completion",
-          "created": 1758275292,
+          "created": 1765463232,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The attempt to retrieve issue #999999 from the microsoft/vscode repository failed because it does not exist.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The attempt to retrieve issue #999999 from the microsoft/vscode repository was unsuccessful due to the issue number being invalid or nonexistent.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -426,9 +385,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1039,
-            "completion_tokens": 45,
-            "total_tokens": 1084,
+            "prompt_tokens": 851,
+            "completion_tokens": 50,
+            "total_tokens": 901,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -441,9 +400,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_51db84afab"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Fri, 19 Sep 2025 09:48:12 GMT
+  recorded_at: Thu, 11 Dec 2025 14:27:14 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -458,27 +417,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -486,17 +438,18 @@ http_interactions:
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"github_traffic_views\",\n        \"github_traffic_clones\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -505,90 +458,65 @@ http_interactions:
         inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get details about
         issue #999999 from the microsoft/vscode repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve detailed information
-        about issue #999999 from the microsoft/vscode repository, I should use the
-        ''github_get_issue'' action since it is designed to get specific issue details.\",\n      \"action\":
-        \"github_get_issue\",\n      \"action_input\": {\n        \"issue_number\":
-        999999,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to retrieve the
+        details of issue #999999 from the microsoft/vscode repository. The appropriate
+        action to take is to use the ''github_get_issue'' tool, and I will provide
+        the issue number as a parameter.\",\n      \"action\": \"github_get_issue\",\n      \"tool_input\":
+        {\n        \"issue_number\": 999999,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
         \"Failed to get issue: GraphQL: Could not resolve to an issue or pull request
         with the number of 999999. (repository.issue)\\n\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
-        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
-        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
-        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
-        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
-        \"github_get_issue\",\n        \"description\": \"Get details of a specific
-        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
-        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_issues\\\",\\\"description\\\":\\\"List
+        GitHub issues with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"labels\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        labels (optional)\\\"},\\\"assignee\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        assignee (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_list_prs\",\n      \"description\": \"List GitHub pull requests with
+        optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_prs\\\",\\\"description\\\":\\\"List
+        GitHub pull requests with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"merged\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"author\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        author (optional)\\\"},\\\"base\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        base (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_get_issue\",\n      \"description\": \"Get details of a specific
+        GitHub issue\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_issue\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub issue\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"issue_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        issue_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"issue_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
-        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_pr\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub pull request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"pr_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        pr_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"pr_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
-        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
-        \"object\",\n              \"propertyNames\": {\n                \"type\":
-        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
-        \"string\"\n              },\n              \"description\": \"Parameter fields
-        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_api_request\\\",\\\"description\\\":\\\"Make
+        an arbitrary GitHub API request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"endpoint\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        endpoint\\\"},\\\"method\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        method (optional)\\\"},\\\"fields\\\":{\\\"type\\\":\\\"object\\\",\\\"propertyNames\\\":{\\\"type\\\":\\\"string\\\"},\\\"additionalProperties\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        fields (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"endpoint\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_views\",\n      \"description\": \"Get repository traffic
+        views (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_views\\\",\\\"description\\\":\\\"Get
+        repository traffic views (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_clones\",\n      \"description\": \"Get repository traffic
+        clones (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_clones\\\",\\\"description\\\":\\\"Get
+        repository traffic clones (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
-        about what to do next, considering the history and observations.\",\n  \"action\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
-        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -598,11 +526,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -612,14 +540,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '12751'
+      - '10821'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Fri, 19 Sep 2025 09:48:14 GMT
+      - Thu, 11 Dec 2025 14:27:16 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -631,25 +559,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1012'
+      - '1852'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1029'
+      - '1883'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9990'
+      - '9969'
       X-Ratelimit-Remaining-Tokens:
-      - '197132'
+      - '197687'
       X-Ratelimit-Reset-Requests:
-      - 1m20.872s
+      - 4m25.699s
       X-Ratelimit-Reset-Tokens:
-      - 860ms
+      - 693ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -666,23 +594,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98182a877a652bbd-LAX
+      - 9ac5a95e3f2d8c07-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CHS0ralVCtgRmhQEaazWtgWD0IzPU",
+          "id": "chatcmpl-ClbvO1Zq2zEhhMphf1VBdBHOHJgbD",
           "object": "chat.completion",
-          "created": 1758275293,
+          "created": 1765463234,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since the request to get issue #999999 did not succeed, I should first list the issues in the 'microsoft/vscode' repository to check the available issues and see if the specified issue exists.\",\n  \"action\": \"github_list_issues\",\n  \"action_input\": {\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since I couldn't retrieve the specifics for issue #999999, it might be effective to list the issues in the 'microsoft/vscode' repository to ascertain the correct issue number or verify if that issue exists.\",\n  \"action\": \"github_list_issues\",\n  \"tool_input\": {\n    \"repo\": \"microsoft/vscode\"\n  },\n  \"final_answer\": null\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -691,267 +619,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2403,
-            "completion_tokens": 84,
-            "total_tokens": 2487,
-            "prompt_tokens_details": {
-              "cached_tokens": 1024,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_51db84afab"
-        }
-  recorded_at: Fri, 19 Sep 2025 09:48:14 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Serialized representation of all input
-        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
-        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
-        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
-        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
-        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
-        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
-        adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get details about
-        issue #999999 from the microsoft/vscode repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve detailed information
-        about issue #999999 from the microsoft/vscode repository, I should use the
-        ''github_get_issue'' action since it is designed to get specific issue details.\",\n      \"action\":
-        \"github_get_issue\",\n      \"action_input\": {\n        \"issue_number\":
-        999999,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"Failed to get issue: GraphQL: Could not resolve to an issue or pull request
-        with the number of 999999. (repository.issue)\\n\"\n    },\n    {\n      \"step\":
-        2,\n      \"thought\": \"Since the request to get issue #999999 did not succeed,
-        I should first list the issues in the ''microsoft/vscode'' repository to check
-        the available issues and see if the specified issue exists.\",\n      \"action\":
-        \"github_list_issues\",\n      \"action_input\": {\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"Found 20 issue(s):\\n#267467: bug copy paste by shortcut ketboard on windows
-        11  (OPEN)\\n  Labels: new release\\n  URL: https://github.com/microsoft/vscode/issues/267467\\n\\n#267466:
-        Primary sidebar does not restore its width when additional windows are opened
-        (OPEN)\\n  Labels: new release\\n  URL: https://github.com/microsoft/vscode/issues/267466\\n\\n#267464:
-        Profile output becomes unresponsive (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/267464\\n\\n#267463:
-        Search in profile output not working (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/267463\\n\\n#267462:
-        同样的代码通过 ws 注册的 server 函数 (基于 anvil 框架)  pycharm 就可以正常调试 vscode 最新版升级后只能打断点
-        无法单步调试 点击没反应 (OPEN)\\n  Labels: ai-translated\\n  Assignees: mjbvz\\n  URL:
-        https://github.com/microsoft/vscode/issues/267462\\n\\n#267461: When using
-        the chatOutputRenderer API, the webview in the history message disappears
-        (OPEN)\\n  Labels: new release\\n  Assignees: justschen\\n  URL: https://github.com/microsoft/vscode/issues/267461\\n\\n#267460:
-        Run problems (OPEN)\\n  Assignees: mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/267460\\n\\n#267459:
-        OS-Level Notifications for VSCode Tasks Completion (OPEN)\\n  Assignees: meganrogge\\n  URL:
-        https://github.com/microsoft/vscode/issues/267459\\n\\n#267458: AI chat never
-        works (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/267458\\n\\n#267457:
-        New chat button does not work (OPEN)\\n  Labels: new release\\n  Assignees:
-        justschen\\n  URL: https://github.com/microsoft/vscode/issues/267457\\n\\n#267456:
-        Slow (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267456\\n\\n#267455:
-        Close all tabs on the left (OPEN)\\n  Assignees: benibenj\\n  URL: https://github.com/microsoft/vscode/issues/267455\\n\\n#267454:
-        Chrome Devtools cannot discover VS Code when launching it with --remote-debugging-port=0
-        (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267454\\n\\n#267453:
-        Created files outside workspace (OPEN)\\n  Labels: new release\\n  Assignees:
-        lramos15\\n  URL: https://github.com/microsoft/vscode/issues/267453\\n\\n#267450:
-        Cannot find module error (OPEN)\\n  Labels: new release\\n  Assignees: chrmarti\\n  URL:
-        https://github.com/microsoft/vscode/issues/267450\\n\\n#267449: support MarkdownString
-        in TerminalLink.tooltip and DocumentLink.tooltip (OPEN)\\n  Assignees: Tyriar\\n  URL:
-        https://github.com/microsoft/vscode/issues/267449\\n\\n#267448: How to restore
-        has been checked \\\"No more notice\\\"? (OPEN)\\n  Assignees: bpasero\\n  URL:
-        https://github.com/microsoft/vscode/issues/267448\\n\\n#267445: Accessibility/A11y:
-        quickInputBox aria role is textbox when it should be combobox (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/267445\\n\\n#267444:
-        Refund me (OPEN)\\n  Labels: info-needed, new release\\n  URL: https://github.com/microsoft/vscode/issues/267444\\n\\n#267443:
-        Terminal is not opening  (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/267443\\n\"\n    }\n  ],\n  \"observation\":
-        \"Found 20 issue(s):\\n#267467: bug copy paste by shortcut ketboard on windows
-        11  (OPEN)\\n  Labels: new release\\n  URL: https://github.com/microsoft/vscode/issues/267467\\n\\n#267466:
-        Primary sidebar does not restore its width when additional windows are opened
-        (OPEN)\\n  Labels: new release\\n  URL: https://github.com/microsoft/vscode/issues/267466\\n\\n#267464:
-        Profile output becomes unresponsive (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/267464\\n\\n#267463:
-        Search in profile output not working (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/267463\\n\\n#267462:
-        同样的代码通过 ws 注册的 server 函数 (基于 anvil 框架)  pycharm 就可以正常调试 vscode 最新版升级后只能打断点
-        无法单步调试 点击没反应 (OPEN)\\n  Labels: ai-translated\\n  Assignees: mjbvz\\n  URL:
-        https://github.com/microsoft/vscode/issues/267462\\n\\n#267461: When using
-        the chatOutputRenderer API, the webview in the history message disappears
-        (OPEN)\\n  Labels: new release\\n  Assignees: justschen\\n  URL: https://github.com/microsoft/vscode/issues/267461\\n\\n#267460:
-        Run problems (OPEN)\\n  Assignees: mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/267460\\n\\n#267459:
-        OS-Level Notifications for VSCode Tasks Completion (OPEN)\\n  Assignees: meganrogge\\n  URL:
-        https://github.com/microsoft/vscode/issues/267459\\n\\n#267458: AI chat never
-        works (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/267458\\n\\n#267457:
-        New chat button does not work (OPEN)\\n  Labels: new release\\n  Assignees:
-        justschen\\n  URL: https://github.com/microsoft/vscode/issues/267457\\n\\n#267456:
-        Slow (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267456\\n\\n#267455:
-        Close all tabs on the left (OPEN)\\n  Assignees: benibenj\\n  URL: https://github.com/microsoft/vscode/issues/267455\\n\\n#267454:
-        Chrome Devtools cannot discover VS Code when launching it with --remote-debugging-port=0
-        (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267454\\n\\n#267453:
-        Created files outside workspace (OPEN)\\n  Labels: new release\\n  Assignees:
-        lramos15\\n  URL: https://github.com/microsoft/vscode/issues/267453\\n\\n#267450:
-        Cannot find module error (OPEN)\\n  Labels: new release\\n  Assignees: chrmarti\\n  URL:
-        https://github.com/microsoft/vscode/issues/267450\\n\\n#267449: support MarkdownString
-        in TerminalLink.tooltip and DocumentLink.tooltip (OPEN)\\n  Assignees: Tyriar\\n  URL:
-        https://github.com/microsoft/vscode/issues/267449\\n\\n#267448: How to restore
-        has been checked \\\"No more notice\\\"? (OPEN)\\n  Assignees: bpasero\\n  URL:
-        https://github.com/microsoft/vscode/issues/267448\\n\\n#267445: Accessibility/A11y:
-        quickInputBox aria role is textbox when it should be combobox (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/267445\\n\\n#267444:
-        Refund me (OPEN)\\n  Labels: info-needed, new release\\n  URL: https://github.com/microsoft/vscode/issues/267444\\n\\n#267443:
-        Terminal is not opening  (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/267443\\n\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
-        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
-        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
-        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.1
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '12135'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Fri, 19 Sep 2025 09:48:17 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '794'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '823'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9990'
-      X-Ratelimit-Remaining-Tokens:
-      - '197153'
-      X-Ratelimit-Reset-Requests:
-      - 1m26.399s
-      X-Ratelimit-Reset-Tokens:
-      - 854ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      X-Openai-Proxy-Wasm:
-      - v0.1
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 98182a9c19012bbd-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CHS0ucQzHJ7fGtvLM6uJxmjPGtcnH",
-          "object": "chat.completion",
-          "created": 1758275296,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The request to retrieve details about issue #999999 failed because the issue does not exist. The follow-up action to list all issues revealed that there are 20 issues available, none of which match the specified issue number.\",\n  \"next_step\": \"continue\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 3009,
-            "completion_tokens": 68,
-            "total_tokens": 3077,
+            "prompt_tokens": 2097,
+            "completion_tokens": 92,
+            "total_tokens": 2189,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -964,311 +634,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_51db84afab"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Fri, 19 Sep 2025 09:48:17 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Serialized representation of all input
-        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
-        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
-        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
-        \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
-        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
-        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
-        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to process the given
-        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
-        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get details about
-        issue #999999 from the microsoft/vscode repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To retrieve detailed information
-        about issue #999999 from the microsoft/vscode repository, I should use the
-        ''github_get_issue'' action since it is designed to get specific issue details.\",\n      \"action\":
-        \"github_get_issue\",\n      \"action_input\": {\n        \"issue_number\":
-        999999,\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"Failed to get issue: GraphQL: Could not resolve to an issue or pull request
-        with the number of 999999. (repository.issue)\\n\"\n    },\n    {\n      \"step\":
-        2,\n      \"thought\": \"Since the request to get issue #999999 did not succeed,
-        I should first list the issues in the ''microsoft/vscode'' repository to check
-        the available issues and see if the specified issue exists.\",\n      \"action\":
-        \"github_list_issues\",\n      \"action_input\": {\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"Found 20 issue(s):\\n#267467: bug copy paste by shortcut ketboard on windows
-        11  (OPEN)\\n  Labels: new release\\n  URL: https://github.com/microsoft/vscode/issues/267467\\n\\n#267466:
-        Primary sidebar does not restore its width when additional windows are opened
-        (OPEN)\\n  Labels: new release\\n  URL: https://github.com/microsoft/vscode/issues/267466\\n\\n#267464:
-        Profile output becomes unresponsive (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/267464\\n\\n#267463:
-        Search in profile output not working (OPEN)\\n  Labels: triage-needed, new
-        release\\n  Assignees: ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/267463\\n\\n#267462:
-        同样的代码通过 ws 注册的 server 函数 (基于 anvil 框架)  pycharm 就可以正常调试 vscode 最新版升级后只能打断点
-        无法单步调试 点击没反应 (OPEN)\\n  Labels: ai-translated\\n  Assignees: mjbvz\\n  URL:
-        https://github.com/microsoft/vscode/issues/267462\\n\\n#267461: When using
-        the chatOutputRenderer API, the webview in the history message disappears
-        (OPEN)\\n  Labels: new release\\n  Assignees: justschen\\n  URL: https://github.com/microsoft/vscode/issues/267461\\n\\n#267460:
-        Run problems (OPEN)\\n  Assignees: mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/267460\\n\\n#267459:
-        OS-Level Notifications for VSCode Tasks Completion (OPEN)\\n  Assignees: meganrogge\\n  URL:
-        https://github.com/microsoft/vscode/issues/267459\\n\\n#267458: AI chat never
-        works (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/267458\\n\\n#267457:
-        New chat button does not work (OPEN)\\n  Labels: new release\\n  Assignees:
-        justschen\\n  URL: https://github.com/microsoft/vscode/issues/267457\\n\\n#267456:
-        Slow (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267456\\n\\n#267455:
-        Close all tabs on the left (OPEN)\\n  Assignees: benibenj\\n  URL: https://github.com/microsoft/vscode/issues/267455\\n\\n#267454:
-        Chrome Devtools cannot discover VS Code when launching it with --remote-debugging-port=0
-        (OPEN)\\n  Labels: triage-needed\\n  Assignees: deepak1556\\n  URL: https://github.com/microsoft/vscode/issues/267454\\n\\n#267453:
-        Created files outside workspace (OPEN)\\n  Labels: new release\\n  Assignees:
-        lramos15\\n  URL: https://github.com/microsoft/vscode/issues/267453\\n\\n#267450:
-        Cannot find module error (OPEN)\\n  Labels: new release\\n  Assignees: chrmarti\\n  URL:
-        https://github.com/microsoft/vscode/issues/267450\\n\\n#267449: support MarkdownString
-        in TerminalLink.tooltip and DocumentLink.tooltip (OPEN)\\n  Assignees: Tyriar\\n  URL:
-        https://github.com/microsoft/vscode/issues/267449\\n\\n#267448: How to restore
-        has been checked \\\"No more notice\\\"? (OPEN)\\n  Assignees: bpasero\\n  URL:
-        https://github.com/microsoft/vscode/issues/267448\\n\\n#267445: Accessibility/A11y:
-        quickInputBox aria role is textbox when it should be combobox (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/267445\\n\\n#267444:
-        Refund me (OPEN)\\n  Labels: info-needed, new release\\n  URL: https://github.com/microsoft/vscode/issues/267444\\n\\n#267443:
-        Terminal is not opening  (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/267443\\n\"\n    }\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
-        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
-        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
-        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
-        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
-        \"github_get_issue\",\n        \"description\": \"Get details of a specific
-        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
-        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
-        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
-        \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
-        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
-        \"object\",\n              \"propertyNames\": {\n                \"type\":
-        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
-        \"string\"\n              },\n              \"description\": \"Parameter fields
-        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
-        about what to do next, considering the history and observations.\",\n  \"action\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
-        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.22.1
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '16550'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Fri, 19 Sep 2025 09:48:19 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '2090'
-      Openai-Project:
-      - proj_n52OL5vlzVaXGnYDaGWmVX5F
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '2120'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9989'
-      X-Ratelimit-Remaining-Tokens:
-      - '196212'
-      X-Ratelimit-Reset-Requests:
-      - 1m33.922s
-      X-Ratelimit-Reset-Tokens:
-      - 1.136s
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      X-Openai-Proxy-Wasm:
-      - v0.1
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 98182aa32c4a2bbd-LAX
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-CHS0v6M0GTdCOObPIRpgMAjhSaMNj",
-          "object": "chat.completion",
-          "created": 1758275297,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since the specific issue #999999 does not exist, I have retrieved the list of current issues in the microsoft/vscode repository. I should analyze these issues to check if any of them match what the user is looking for, or if I need to proceed with a different action.\",\n  \"action\": \"finish\",\n  \"action_input\": \"The specified issue #999999 does not exist in the microsoft/vscode repository. Here are some of the current open issues: #267467, #267466, #267464, among others.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 3449,
-            "completion_tokens": 124,
-            "total_tokens": 3573,
-            "prompt_tokens_details": {
-              "cached_tokens": 1024,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_51db84afab"
-        }
-  recorded_at: Fri, 19 Sep 2025 09:48:19 GMT
+  recorded_at: Thu, 11 Dec 2025 14:27:16 GMT
 recorded_with: VCR 6.3.1

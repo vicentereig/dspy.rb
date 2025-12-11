@@ -149,12 +149,12 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
 
     it 'generates correct JSON schema for T.nilable(Hash[String, Integer])' do
       schema = NilableHashSchemaSignature.output_json_schema
-      
+
+      # propertyNames is not supported by OpenAI structured outputs, so we omit it
       expect(schema[:properties][:metadata]).to eq({
         type: ['object', 'null'],
-        propertyNames: { type: 'string' },
         additionalProperties: { type: 'integer' },
-        description: 'A mapping where keys are strings and values are integers'
+        description: 'A mapping where keys are Strings and values are integers'
       })
     end
   end
