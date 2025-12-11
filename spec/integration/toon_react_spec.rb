@@ -50,7 +50,8 @@ RSpec.describe 'ReAct with TOON data format', type: :integration do
       {
         thought: 'Need to finish',
         action: 'finish',
-        action_input: 'answer'
+        tool_input: nil,
+        final_answer: 'answer'
       },
       signature: ToonReActSignature,
       role: :output
@@ -131,13 +132,15 @@ RSpec.describe 'ReAct with TOON data format', type: :integration do
           {
             thought: 'Need structured city data',
             action: lookup_action,
-            action_input: { city: 'Paris' }
+            tool_input: { city: 'Paris' },
+            final_answer: nil
           }
         else
           {
             thought: 'Provide final answer',
             action: finish_action,
-            action_input: 'Paris population is 2,148,000'
+            tool_input: nil,
+            final_answer: 'Paris population is 2,148,000'
           }
         end
       else
@@ -175,8 +178,8 @@ RSpec.describe 'ReAct with TOON data format', type: :integration do
     observation_history = fetch_field(observation_input, :history) || []
     expect(observation_history.length).to eq(1)
     history_entry = observation_history.first
-    action_input = fetch_field(history_entry, :action_input)
-    city_arg = fetch_field(action_input, :city)
+    tool_input = fetch_field(history_entry, :tool_input)
+    city_arg = fetch_field(tool_input, :city)
     expect(city_arg).to eq('Paris')
 
     history_observation = fetch_field(history_entry, :observation)

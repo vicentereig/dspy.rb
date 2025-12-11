@@ -14,27 +14,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -42,17 +35,18 @@ http_interactions:
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"github_traffic_views\",\n        \"github_traffic_clones\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -63,82 +57,57 @@ http_interactions:
         the microsoft/vscode repository - how many open issues and pull requests are
         there?\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
         [],\n  \"available_tools\": [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
-        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
-        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
-        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
-        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
-        \"github_get_issue\",\n        \"description\": \"Get details of a specific
-        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
-        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_issues\\\",\\\"description\\\":\\\"List
+        GitHub issues with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"labels\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        labels (optional)\\\"},\\\"assignee\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        assignee (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_list_prs\",\n      \"description\": \"List GitHub pull requests with
+        optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_prs\\\",\\\"description\\\":\\\"List
+        GitHub pull requests with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"merged\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"author\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        author (optional)\\\"},\\\"base\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        base (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_get_issue\",\n      \"description\": \"Get details of a specific
+        GitHub issue\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_issue\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub issue\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"issue_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        issue_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"issue_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
-        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_pr\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub pull request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"pr_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        pr_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"pr_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
-        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
-        \"object\",\n              \"propertyNames\": {\n                \"type\":
-        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
-        \"string\"\n              },\n              \"description\": \"Parameter fields
-        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_api_request\\\",\\\"description\\\":\\\"Make
+        an arbitrary GitHub API request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"endpoint\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        endpoint\\\"},\\\"method\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        method (optional)\\\"},\\\"fields\\\":{\\\"type\\\":\\\"object\\\",\\\"propertyNames\\\":{\\\"type\\\":\\\"string\\\"},\\\"additionalProperties\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        fields (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"endpoint\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_views\",\n      \"description\": \"Get repository traffic
+        views (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_views\\\",\\\"description\\\":\\\"Get
+        repository traffic views (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_clones\",\n      \"description\": \"Get repository traffic
+        clones (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_clones\\\",\\\"description\\\":\\\"Get
+        repository traffic clones (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
-        about what to do next, considering the history and observations.\",\n  \"action\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
-        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -148,11 +117,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -162,14 +131,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '12232'
+      - '10282'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Wed, 24 Sep 2025 09:52:44 GMT
+      - Thu, 11 Dec 2025 14:26:56 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -181,25 +150,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1937'
+      - '3770'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1952'
+      - '3815'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9974'
       X-Ratelimit-Remaining-Tokens:
-      - '197253'
+      - '197813'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 3m38.572s
       X-Ratelimit-Reset-Tokens:
-      - 824ms
+      - 656ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -216,23 +185,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 984163f65b75218c-MAD
+      - 9ac5a8d4c8168038-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CJGSwdIx9nmytKcrmvkzMC8Mt2612",
+          "id": "chatcmpl-Clbv2hcbgONle5IQnALGc40Kd78LA",
           "object": "chat.completion",
-          "created": 1758707562,
+          "created": 1765463212,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"To gather statistics about the microsoft/vscode repository, I need to first list the open issues and pull requests. Therefore, I will start with the action to list open issues.\",\n  \"action\": \"github_list_issues\",\n  \"action_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To get the statistics about the microsoft/vscode repository, I should first list the open issues and pull requests. Therefore, I will use the 'github_list_issues' tool to find the number of open issues, and then the 'github_list_prs' tool to find the number of open pull requests.\",\n  \"action\": \"github_list_issues\",\n  \"tool_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  },\n  \"final_answer\": null\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -241,9 +210,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2282,
-            "completion_tokens": 85,
-            "total_tokens": 2367,
+            "prompt_tokens": 1967,
+            "completion_tokens": 119,
+            "total_tokens": 2086,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -256,9 +225,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Wed, 24 Sep 2025 09:52:44 GMT
+  recorded_at: Thu, 11 Dec 2025 14:26:56 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -273,17 +242,13 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
         \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
@@ -302,93 +267,101 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get statistics about
         the microsoft/vscode repository - how many open issues and pull requests are
         there?\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To gather statistics about
-        the microsoft/vscode repository, I need to first list the open issues and
-        pull requests. Therefore, I will start with the action to list open issues.\",\n      \"action\":
-        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
-        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#268137:
-        Screen going blank when using dual screen (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
-        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
-        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
-        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
-        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
-        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
-        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
-        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
-        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
-        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
-        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
-        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
-        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
-        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
-        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
-        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
-        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
-        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
-        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
-        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
-        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
-        terminal activates base conda environment instead of configured environment
-        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
-        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
-        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
-        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
-        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
-        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
-        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
-        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n    }\n  ],\n  \"observation\":
-        \"Found 20 issue(s):\\n#268137: Screen going blank when using dual screen
-        (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
-        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
-        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
-        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
-        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
-        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
-        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
-        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
-        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
-        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
-        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
-        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
-        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
-        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
-        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
-        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
-        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
-        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
-        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
-        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
-        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
-        terminal activates base conda environment instead of configured environment
-        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
-        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
-        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
-        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
-        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
-        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
-        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
-        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n}\n```\n\nRespond
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get the statistics about
+        the microsoft/vscode repository, I should first list the open issues and pull
+        requests. Therefore, I will use the ''github_list_issues'' tool to find the
+        number of open issues, and then the ''github_list_prs'' tool to find the number
+        of open pull requests.\",\n      \"action\": \"github_list_issues\",\n      \"tool_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 issue(s):\\n#282756: Issue: Inline Next Editor Suggestion (NES)
+        not working by clicking (OPEN)\\n  Labels: new release\\n  Assignees: hediet\\n  URL:
+        https://github.com/microsoft/vscode/issues/282756\\n\\n#282755: Add a button
+        to keep staged changed closed (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/282755\\n\\n#282753:
+        Terminal inline chat input box is incorrectly rendered (OPEN)\\n  Assignees:
+        Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/282753\\n\\n#282752:
+        Shortcuts with dead keys broken in Linux since 1.107.0 (OPEN)\\n  Labels:
+        new release\\n  URL: https://github.com/microsoft/vscode/issues/282752\\n\\n#282750:
+        Remember workspace specific tool disablement (OPEN)\\n  Labels: bug, chat-tools\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/282750\\n\\n#282740:
+        all files are closed but complained too many open files, open. (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: jruales\\n  URL: https://github.com/microsoft/vscode/issues/282740\\n\\n#282738:
+        ClaudeSkills generalization (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        kycutler\\n  URL: https://github.com/microsoft/vscode/issues/282738\\n\\n#282737:
+        Tools and Agent selection in vscode. revamped UI (OPEN)\\n  Assignees: benibenj\\n  URL:
+        https://github.com/microsoft/vscode/issues/282737\\n\\n#282734: Chat UI appearing
+        despite being disabled (OPEN)\\n  Labels: info-needed\\n  Assignees: bpasero\\n  URL:
+        https://github.com/microsoft/vscode/issues/282734\\n\\n#282733: Improve Multi
+        File Diff Editor Commands / Keybindings (OPEN)\\n  Labels: feature-request,
+        multi-diff-editor\\n  Assignees: hediet\\n  URL: https://github.com/microsoft/vscode/issues/282733\\n\\n#282727:
+        A bottom shadow shows incorrectly in chat (OPEN)\\n  Assignees: roblourens\\n  URL:
+        https://github.com/microsoft/vscode/issues/282727\\n\\n#282726: Agent session
+        says it''s in progress when it''s not (OPEN)\\n  Labels: chat-agents-view\\n  Assignees:
+        osortega\\n  URL: https://github.com/microsoft/vscode/issues/282726\\n\\n#282724:
+        Restart to Update needs to be used twice (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        zhichli\\n  URL: https://github.com/microsoft/vscode/issues/282724\\n\\n#282723:
+        workbench.panel.defaultLocation is ignored without deprecation message (OPEN)\\n  Assignees:
+        benibenj\\n  URL: https://github.com/microsoft/vscode/issues/282723\\n\\n#282721:
+        Notebook diff editor doesn''t preserve scroll position when switching to another
+        tab and then back (OPEN)\\n  Labels: bug, notebook-diff\\n  Assignees: DonJayamanne\\n  URL:
+        https://github.com/microsoft/vscode/issues/282721\\n\\n#282714: over-engineered
+        a solution (OPEN)\\n  Labels: info-needed, triage-needed, new release\\n  URL:
+        https://github.com/microsoft/vscode/issues/282714\\n\\n#282713: No response
+        (OPEN)\\n  Labels: ~info-needed, triage-needed\\n  URL: https://github.com/microsoft/vscode/issues/282713\\n\\n#282710:
+        copilot unable to delete (OPEN)\\n  Labels: info-needed\\n  Assignees: jrieken\\n  URL:
+        https://github.com/microsoft/vscode/issues/282710\\n\\n#282709: \\\"Suggestion
+        preview\\\" does not work (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/282709\\n\\n#282708:
+        Vite Terminal Output Looks Broken (OPEN)\\n  Assignees: anthonykim1\\n  URL:
+        https://github.com/microsoft/vscode/issues/282708\\n\"\n    }\n  ],\n  \"observation\":
+        \"Found 20 issue(s):\\n#282756: Issue: Inline Next Editor Suggestion (NES)
+        not working by clicking (OPEN)\\n  Labels: new release\\n  Assignees: hediet\\n  URL:
+        https://github.com/microsoft/vscode/issues/282756\\n\\n#282755: Add a button
+        to keep staged changed closed (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/282755\\n\\n#282753:
+        Terminal inline chat input box is incorrectly rendered (OPEN)\\n  Assignees:
+        Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/282753\\n\\n#282752:
+        Shortcuts with dead keys broken in Linux since 1.107.0 (OPEN)\\n  Labels:
+        new release\\n  URL: https://github.com/microsoft/vscode/issues/282752\\n\\n#282750:
+        Remember workspace specific tool disablement (OPEN)\\n  Labels: bug, chat-tools\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/282750\\n\\n#282740:
+        all files are closed but complained too many open files, open. (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: jruales\\n  URL: https://github.com/microsoft/vscode/issues/282740\\n\\n#282738:
+        ClaudeSkills generalization (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        kycutler\\n  URL: https://github.com/microsoft/vscode/issues/282738\\n\\n#282737:
+        Tools and Agent selection in vscode. revamped UI (OPEN)\\n  Assignees: benibenj\\n  URL:
+        https://github.com/microsoft/vscode/issues/282737\\n\\n#282734: Chat UI appearing
+        despite being disabled (OPEN)\\n  Labels: info-needed\\n  Assignees: bpasero\\n  URL:
+        https://github.com/microsoft/vscode/issues/282734\\n\\n#282733: Improve Multi
+        File Diff Editor Commands / Keybindings (OPEN)\\n  Labels: feature-request,
+        multi-diff-editor\\n  Assignees: hediet\\n  URL: https://github.com/microsoft/vscode/issues/282733\\n\\n#282727:
+        A bottom shadow shows incorrectly in chat (OPEN)\\n  Assignees: roblourens\\n  URL:
+        https://github.com/microsoft/vscode/issues/282727\\n\\n#282726: Agent session
+        says it''s in progress when it''s not (OPEN)\\n  Labels: chat-agents-view\\n  Assignees:
+        osortega\\n  URL: https://github.com/microsoft/vscode/issues/282726\\n\\n#282724:
+        Restart to Update needs to be used twice (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        zhichli\\n  URL: https://github.com/microsoft/vscode/issues/282724\\n\\n#282723:
+        workbench.panel.defaultLocation is ignored without deprecation message (OPEN)\\n  Assignees:
+        benibenj\\n  URL: https://github.com/microsoft/vscode/issues/282723\\n\\n#282721:
+        Notebook diff editor doesn''t preserve scroll position when switching to another
+        tab and then back (OPEN)\\n  Labels: bug, notebook-diff\\n  Assignees: DonJayamanne\\n  URL:
+        https://github.com/microsoft/vscode/issues/282721\\n\\n#282714: over-engineered
+        a solution (OPEN)\\n  Labels: info-needed, triage-needed, new release\\n  URL:
+        https://github.com/microsoft/vscode/issues/282714\\n\\n#282713: No response
+        (OPEN)\\n  Labels: ~info-needed, triage-needed\\n  URL: https://github.com/microsoft/vscode/issues/282713\\n\\n#282710:
+        copilot unable to delete (OPEN)\\n  Labels: info-needed\\n  Assignees: jrieken\\n  URL:
+        https://github.com/microsoft/vscode/issues/282710\\n\\n#282709: \\\"Suggestion
+        preview\\\" does not work (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/282709\\n\\n#282708:
+        Vite Terminal Output Looks Broken (OPEN)\\n  Assignees: anthonykim1\\n  URL:
+        https://github.com/microsoft/vscode/issues/282708\\n\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
-        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
-        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
-        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -398,11 +371,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -412,14 +385,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '10961'
+      - '10627'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Wed, 24 Sep 2025 09:52:46 GMT
+      - Thu, 11 Dec 2025 14:26:58 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -431,25 +404,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1300'
+      - '1696'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1312'
+      - '1710'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9974'
       X-Ratelimit-Remaining-Tokens:
-      - '197432'
+      - '197505'
       X-Ratelimit-Reset-Requests:
-      - 14.174s
+      - 3m42.35s
       X-Ratelimit-Reset-Tokens:
-      - 770ms
+      - 748ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -466,23 +439,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98416409de53218c-MAD
+      - 9ac5a8f33ad48038-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CJGSzGLdF0vGx3NdTmGCaZ0e97N4z",
+          "id": "chatcmpl-Clbv7zvhOMGkejBhrdyIlQbdyFGta",
           "object": "chat.completion",
-          "created": 1758707565,
+          "created": 1765463217,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The action to list open issues in the microsoft/vscode repository was successful, returning 20 open issues with their details.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"There are currently 20 open issues in the microsoft/vscode repository. The next step is to retrieve the statistics about open pull requests.\",\n  \"next_step\": \"continue\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -491,9 +464,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2643,
-            "completion_tokens": 48,
-            "total_tokens": 2691,
+            "prompt_tokens": 2671,
+            "completion_tokens": 51,
+            "total_tokens": 2722,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -506,62 +479,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Wed, 24 Sep 2025 09:52:46 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BcqAy6DTw1x9ADvrtB84K3po07-4AAEBAAAnIQEAALgmAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        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
-    headers:
-      Content-Encoding:
-      - gzip
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BcqAy6DTw1x9ADvrtB84K3po07-4AAEBAAAnIQEAALgmAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: ''
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '0'
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Envoy-Upstream-Service-Time:
-      - '1'
-      Date:
-      - Wed, 24 Sep 2025 09:52:46 GMT
-      Server:
-      - envoy
-      Nr-Rate-Limited:
-      - allowed
-      X-Served-By:
-      - cache-mad22026-MAD
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Wed, 24 Sep 2025 09:52:46 GMT
+  recorded_at: Thu, 11 Dec 2025 14:26:59 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -576,27 +496,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -604,17 +517,18 @@ http_interactions:
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"github_traffic_views\",\n        \"github_traffic_clones\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -624,121 +538,104 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get statistics about
         the microsoft/vscode repository - how many open issues and pull requests are
         there?\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To gather statistics about
-        the microsoft/vscode repository, I need to first list the open issues and
-        pull requests. Therefore, I will start with the action to list open issues.\",\n      \"action\":
-        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
-        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#268137:
-        Screen going blank when using dual screen (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
-        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
-        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
-        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
-        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
-        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
-        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
-        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
-        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
-        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
-        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
-        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
-        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
-        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
-        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
-        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
-        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
-        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
-        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
-        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
-        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
-        terminal activates base conda environment instead of configured environment
-        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
-        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
-        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
-        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
-        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
-        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
-        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
-        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get the statistics about
+        the microsoft/vscode repository, I should first list the open issues and pull
+        requests. Therefore, I will use the ''github_list_issues'' tool to find the
+        number of open issues, and then the ''github_list_prs'' tool to find the number
+        of open pull requests.\",\n      \"action\": \"github_list_issues\",\n      \"tool_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 issue(s):\\n#282756: Issue: Inline Next Editor Suggestion (NES)
+        not working by clicking (OPEN)\\n  Labels: new release\\n  Assignees: hediet\\n  URL:
+        https://github.com/microsoft/vscode/issues/282756\\n\\n#282755: Add a button
+        to keep staged changed closed (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/282755\\n\\n#282753:
+        Terminal inline chat input box is incorrectly rendered (OPEN)\\n  Assignees:
+        Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/282753\\n\\n#282752:
+        Shortcuts with dead keys broken in Linux since 1.107.0 (OPEN)\\n  Labels:
+        new release\\n  URL: https://github.com/microsoft/vscode/issues/282752\\n\\n#282750:
+        Remember workspace specific tool disablement (OPEN)\\n  Labels: bug, chat-tools\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/282750\\n\\n#282740:
+        all files are closed but complained too many open files, open. (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: jruales\\n  URL: https://github.com/microsoft/vscode/issues/282740\\n\\n#282738:
+        ClaudeSkills generalization (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        kycutler\\n  URL: https://github.com/microsoft/vscode/issues/282738\\n\\n#282737:
+        Tools and Agent selection in vscode. revamped UI (OPEN)\\n  Assignees: benibenj\\n  URL:
+        https://github.com/microsoft/vscode/issues/282737\\n\\n#282734: Chat UI appearing
+        despite being disabled (OPEN)\\n  Labels: info-needed\\n  Assignees: bpasero\\n  URL:
+        https://github.com/microsoft/vscode/issues/282734\\n\\n#282733: Improve Multi
+        File Diff Editor Commands / Keybindings (OPEN)\\n  Labels: feature-request,
+        multi-diff-editor\\n  Assignees: hediet\\n  URL: https://github.com/microsoft/vscode/issues/282733\\n\\n#282727:
+        A bottom shadow shows incorrectly in chat (OPEN)\\n  Assignees: roblourens\\n  URL:
+        https://github.com/microsoft/vscode/issues/282727\\n\\n#282726: Agent session
+        says it''s in progress when it''s not (OPEN)\\n  Labels: chat-agents-view\\n  Assignees:
+        osortega\\n  URL: https://github.com/microsoft/vscode/issues/282726\\n\\n#282724:
+        Restart to Update needs to be used twice (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        zhichli\\n  URL: https://github.com/microsoft/vscode/issues/282724\\n\\n#282723:
+        workbench.panel.defaultLocation is ignored without deprecation message (OPEN)\\n  Assignees:
+        benibenj\\n  URL: https://github.com/microsoft/vscode/issues/282723\\n\\n#282721:
+        Notebook diff editor doesn''t preserve scroll position when switching to another
+        tab and then back (OPEN)\\n  Labels: bug, notebook-diff\\n  Assignees: DonJayamanne\\n  URL:
+        https://github.com/microsoft/vscode/issues/282721\\n\\n#282714: over-engineered
+        a solution (OPEN)\\n  Labels: info-needed, triage-needed, new release\\n  URL:
+        https://github.com/microsoft/vscode/issues/282714\\n\\n#282713: No response
+        (OPEN)\\n  Labels: ~info-needed, triage-needed\\n  URL: https://github.com/microsoft/vscode/issues/282713\\n\\n#282710:
+        copilot unable to delete (OPEN)\\n  Labels: info-needed\\n  Assignees: jrieken\\n  URL:
+        https://github.com/microsoft/vscode/issues/282710\\n\\n#282709: \\\"Suggestion
+        preview\\\" does not work (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/282709\\n\\n#282708:
+        Vite Terminal Output Looks Broken (OPEN)\\n  Assignees: anthonykim1\\n  URL:
+        https://github.com/microsoft/vscode/issues/282708\\n\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
-        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
-        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
-        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
-        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
-        \"github_get_issue\",\n        \"description\": \"Get details of a specific
-        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
-        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_issues\\\",\\\"description\\\":\\\"List
+        GitHub issues with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"labels\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        labels (optional)\\\"},\\\"assignee\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        assignee (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_list_prs\",\n      \"description\": \"List GitHub pull requests with
+        optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_prs\\\",\\\"description\\\":\\\"List
+        GitHub pull requests with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"merged\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"author\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        author (optional)\\\"},\\\"base\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        base (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_get_issue\",\n      \"description\": \"Get details of a specific
+        GitHub issue\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_issue\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub issue\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"issue_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        issue_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"issue_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
-        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_pr\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub pull request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"pr_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        pr_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"pr_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
-        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
-        \"object\",\n              \"propertyNames\": {\n                \"type\":
-        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
-        \"string\"\n              },\n              \"description\": \"Parameter fields
-        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_api_request\\\",\\\"description\\\":\\\"Make
+        an arbitrary GitHub API request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"endpoint\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        endpoint\\\"},\\\"method\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        method (optional)\\\"},\\\"fields\\\":{\\\"type\\\":\\\"object\\\",\\\"propertyNames\\\":{\\\"type\\\":\\\"string\\\"},\\\"additionalProperties\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        fields (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"endpoint\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_views\",\n      \"description\": \"Get repository traffic
+        views (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_views\\\",\\\"description\\\":\\\"Get
+        repository traffic views (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_clones\",\n      \"description\": \"Get repository traffic
+        clones (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_clones\\\",\\\"description\\\":\\\"Get
+        repository traffic clones (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
-        about what to do next, considering the history and observations.\",\n  \"action\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
-        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -748,11 +645,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -762,14 +659,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '15712'
+      - '14168'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Wed, 24 Sep 2025 09:52:49 GMT
+      - Thu, 11 Dec 2025 14:27:01 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -781,25 +678,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '2697'
+      - '2390'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2720'
+      - '2485'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9973'
       X-Ratelimit-Remaining-Tokens:
-      - '196412'
+      - '196874'
       X-Ratelimit-Reset-Requests:
-      - 21.32s
+      - 3m49.118s
       X-Ratelimit-Reset-Tokens:
-      - 1.076s
+      - 937ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -816,23 +713,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 984164131f08218c-MAD
+      - 9ac5a8feeb928038-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CJGT05cRxJGY8LrtrhXZrnJKrW1TT",
+          "id": "chatcmpl-Clbv9H0gwfQ6IWxvmGW1IW7RzcNlr",
           "object": "chat.completion",
-          "created": 1758707566,
+          "created": 1765463219,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have successfully retrieved the list of open issues from the microsoft/vscode repository. Next, I need to list the open pull requests to get a complete overview of the repository statistics.\",\n  \"action\": \"github_list_prs\",\n  \"action_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Having successfully retrieved the number of open issues (20), I now need to proceed to get the number of open pull requests for the microsoft/vscode repository. Therefore, I will use the 'github_list_prs' tool with the appropriate parameters.\",\n  \"action\": \"github_list_prs\",\n  \"tool_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  },\n  \"final_answer\": null\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -841,9 +738,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 3207,
-            "completion_tokens": 86,
-            "total_tokens": 3293,
+            "prompt_tokens": 3018,
+            "completion_tokens": 106,
+            "total_tokens": 3124,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -856,9 +753,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Wed, 24 Sep 2025 09:52:49 GMT
+  recorded_at: Thu, 11 Dec 2025 14:27:01 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -873,17 +770,13 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
         \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
@@ -902,146 +795,140 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get statistics about
         the microsoft/vscode repository - how many open issues and pull requests are
         there?\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To gather statistics about
-        the microsoft/vscode repository, I need to first list the open issues and
-        pull requests. Therefore, I will start with the action to list open issues.\",\n      \"action\":
-        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
-        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#268137:
-        Screen going blank when using dual screen (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
-        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
-        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
-        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
-        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
-        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
-        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
-        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
-        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
-        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
-        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
-        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
-        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
-        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
-        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
-        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
-        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
-        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
-        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
-        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
-        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
-        terminal activates base conda environment instead of configured environment
-        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
-        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
-        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
-        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
-        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
-        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
-        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
-        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n    },\n    {\n      \"step\":
-        2,\n      \"thought\": \"I have successfully retrieved the list of open issues
-        from the microsoft/vscode repository. Next, I need to list the open pull requests
-        to get a complete overview of the repository statistics.\",\n      \"action\":
-        \"github_list_prs\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
-        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 pull request(s):\\n#268131:
-        Engineering - extract Windows ci jobs in a template (OPEN)\\n  lszomoru/product-build-windows-ci
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268131\\n\\n#268123:
-        Add test coverage to runTests tool (OPEN)\\n  alexr00/odd-cheetah → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268123\\n\\n#268109: Chat: improve
-        welcome for no-auth flow (#5872) (OPEN)\\n  ben/outer-dragon → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268109\\n\\n#268093: Feature/107183
-        add ability to right align tree items description (OPEN)\\n  feature/107183-add-ability-to-right-align-TreeItems-description
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268093\\n\\n#268090:
-        add opt-in setting to show OS notification when a chat response is received
-        (OPEN)\\n  sensible-rooster → main\\n  URL: https://github.com/microsoft/vscode/pull/268090\\n\\n#268089:
-        chatSessions API redesign/experiment (OPEN)\\n  joshspicer/chatSessionParticipant
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268089\\n\\n#268081:
-        Claude with worktree (OPEN)\\n  osortega/claude-git-worktree → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268081\\n\\n#268080: Empty state
-        chat history 2.0 (OPEN)\\n  eli/empty-state-chat-history-2 → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268080\\n\\n#268072: Set suppressInSnippetMode
-        default to true to prevent inline completions from interfering with snippets
-        (OPEN)\\n  copilot/fix-054c0b93-82b2-4b82-b8fa-f1bca13ccf2e → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268072\\n\\n#268058: Show full date/time
-        for history items (OPEN)\\n  vijayu/sessionDateTime → main\\n  URL: https://github.com/microsoft/vscode/pull/268058\\n\\n#268039:
-        fix(snap): detect Wayland socket under XDG_RUNTIME_DIR for Fedora (OPEN)\\n  patch-1
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268039\\n\\n#268038:
-        i18n: add missing localizations for monaco-editor (OPEN)\\n  missing-loc →
-        main\\n  URL: https://github.com/microsoft/vscode/pull/268038\\n\\n#268017:
-        add opt-in setting for OS notification when long running (> 2 min) task finishes
-        (OPEN)\\n  applicable-mongoose → main\\n  URL: https://github.com/microsoft/vscode/pull/268017\\n\\n#268005:
-        Chat - switch chat toolbar to use overlay widget (OPEN)\\n  lszomoru/chat-overlay-toolbar
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268005\\n\\n#267991:
-        Copy selection for deleted chunk in inline diff (OPEN)\\n  copy-selection-inline-delete
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267991\\n\\n#267874:
-        Implement AI search success tracking telemetry for user interaction analytics
-        (OPEN)\\n  copilot/fix-de0c7c5c-08fd-4acb-9f35-1e1a2bb982ae → copilot/fix-55f237c2-f853-4d9a-9b3c-3de2aa253bd3\\n  URL:
-        https://github.com/microsoft/vscode/pull/267874\\n\\n#267853: Don''t eagerly
-        attach pasted images in `provideDocumentPasteEdits` (OPEN)\\n  dev/mjbvz/alone-gazelle
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267853\\n\\n#267829:
-        Fix history list not updating when deleting chats from command palette (OPEN)\\n  copilot/fix-794bcb92-6906-4959-a26d-dcfbd3449d71
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267829\\n\\n#267823:
-        Change padding from 4px to 5px to increase target size to at least 24… (OPEN)\\n  padding-patch
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267823\\n\\n#267799:
-        Fix memory leak with installing cursor change position listener (OPEN)\\n  patch-4
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267799\\n\"\n    }\n  ],\n  \"observation\":
-        \"Found 20 pull request(s):\\n#268131: Engineering - extract Windows ci jobs
-        in a template (OPEN)\\n  lszomoru/product-build-windows-ci → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268131\\n\\n#268123: Add test coverage
-        to runTests tool (OPEN)\\n  alexr00/odd-cheetah → main\\n  URL: https://github.com/microsoft/vscode/pull/268123\\n\\n#268109:
-        Chat: improve welcome for no-auth flow (#5872) (OPEN)\\n  ben/outer-dragon
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268109\\n\\n#268093:
-        Feature/107183 add ability to right align tree items description (OPEN)\\n  feature/107183-add-ability-to-right-align-TreeItems-description
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268093\\n\\n#268090:
-        add opt-in setting to show OS notification when a chat response is received
-        (OPEN)\\n  sensible-rooster → main\\n  URL: https://github.com/microsoft/vscode/pull/268090\\n\\n#268089:
-        chatSessions API redesign/experiment (OPEN)\\n  joshspicer/chatSessionParticipant
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268089\\n\\n#268081:
-        Claude with worktree (OPEN)\\n  osortega/claude-git-worktree → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268081\\n\\n#268080: Empty state
-        chat history 2.0 (OPEN)\\n  eli/empty-state-chat-history-2 → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268080\\n\\n#268072: Set suppressInSnippetMode
-        default to true to prevent inline completions from interfering with snippets
-        (OPEN)\\n  copilot/fix-054c0b93-82b2-4b82-b8fa-f1bca13ccf2e → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268072\\n\\n#268058: Show full date/time
-        for history items (OPEN)\\n  vijayu/sessionDateTime → main\\n  URL: https://github.com/microsoft/vscode/pull/268058\\n\\n#268039:
-        fix(snap): detect Wayland socket under XDG_RUNTIME_DIR for Fedora (OPEN)\\n  patch-1
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268039\\n\\n#268038:
-        i18n: add missing localizations for monaco-editor (OPEN)\\n  missing-loc →
-        main\\n  URL: https://github.com/microsoft/vscode/pull/268038\\n\\n#268017:
-        add opt-in setting for OS notification when long running (> 2 min) task finishes
-        (OPEN)\\n  applicable-mongoose → main\\n  URL: https://github.com/microsoft/vscode/pull/268017\\n\\n#268005:
-        Chat - switch chat toolbar to use overlay widget (OPEN)\\n  lszomoru/chat-overlay-toolbar
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268005\\n\\n#267991:
-        Copy selection for deleted chunk in inline diff (OPEN)\\n  copy-selection-inline-delete
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267991\\n\\n#267874:
-        Implement AI search success tracking telemetry for user interaction analytics
-        (OPEN)\\n  copilot/fix-de0c7c5c-08fd-4acb-9f35-1e1a2bb982ae → copilot/fix-55f237c2-f853-4d9a-9b3c-3de2aa253bd3\\n  URL:
-        https://github.com/microsoft/vscode/pull/267874\\n\\n#267853: Don''t eagerly
-        attach pasted images in `provideDocumentPasteEdits` (OPEN)\\n  dev/mjbvz/alone-gazelle
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267853\\n\\n#267829:
-        Fix history list not updating when deleting chats from command palette (OPEN)\\n  copilot/fix-794bcb92-6906-4959-a26d-dcfbd3449d71
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267829\\n\\n#267823:
-        Change padding from 4px to 5px to increase target size to at least 24… (OPEN)\\n  padding-patch
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267823\\n\\n#267799:
-        Fix memory leak with installing cursor change position listener (OPEN)\\n  patch-4
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267799\\n\"\n}\n```\n\nRespond
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get the statistics about
+        the microsoft/vscode repository, I should first list the open issues and pull
+        requests. Therefore, I will use the ''github_list_issues'' tool to find the
+        number of open issues, and then the ''github_list_prs'' tool to find the number
+        of open pull requests.\",\n      \"action\": \"github_list_issues\",\n      \"tool_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 issue(s):\\n#282756: Issue: Inline Next Editor Suggestion (NES)
+        not working by clicking (OPEN)\\n  Labels: new release\\n  Assignees: hediet\\n  URL:
+        https://github.com/microsoft/vscode/issues/282756\\n\\n#282755: Add a button
+        to keep staged changed closed (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/282755\\n\\n#282753:
+        Terminal inline chat input box is incorrectly rendered (OPEN)\\n  Assignees:
+        Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/282753\\n\\n#282752:
+        Shortcuts with dead keys broken in Linux since 1.107.0 (OPEN)\\n  Labels:
+        new release\\n  URL: https://github.com/microsoft/vscode/issues/282752\\n\\n#282750:
+        Remember workspace specific tool disablement (OPEN)\\n  Labels: bug, chat-tools\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/282750\\n\\n#282740:
+        all files are closed but complained too many open files, open. (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: jruales\\n  URL: https://github.com/microsoft/vscode/issues/282740\\n\\n#282738:
+        ClaudeSkills generalization (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        kycutler\\n  URL: https://github.com/microsoft/vscode/issues/282738\\n\\n#282737:
+        Tools and Agent selection in vscode. revamped UI (OPEN)\\n  Assignees: benibenj\\n  URL:
+        https://github.com/microsoft/vscode/issues/282737\\n\\n#282734: Chat UI appearing
+        despite being disabled (OPEN)\\n  Labels: info-needed\\n  Assignees: bpasero\\n  URL:
+        https://github.com/microsoft/vscode/issues/282734\\n\\n#282733: Improve Multi
+        File Diff Editor Commands / Keybindings (OPEN)\\n  Labels: feature-request,
+        multi-diff-editor\\n  Assignees: hediet\\n  URL: https://github.com/microsoft/vscode/issues/282733\\n\\n#282727:
+        A bottom shadow shows incorrectly in chat (OPEN)\\n  Assignees: roblourens\\n  URL:
+        https://github.com/microsoft/vscode/issues/282727\\n\\n#282726: Agent session
+        says it''s in progress when it''s not (OPEN)\\n  Labels: chat-agents-view\\n  Assignees:
+        osortega\\n  URL: https://github.com/microsoft/vscode/issues/282726\\n\\n#282724:
+        Restart to Update needs to be used twice (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        zhichli\\n  URL: https://github.com/microsoft/vscode/issues/282724\\n\\n#282723:
+        workbench.panel.defaultLocation is ignored without deprecation message (OPEN)\\n  Assignees:
+        benibenj\\n  URL: https://github.com/microsoft/vscode/issues/282723\\n\\n#282721:
+        Notebook diff editor doesn''t preserve scroll position when switching to another
+        tab and then back (OPEN)\\n  Labels: bug, notebook-diff\\n  Assignees: DonJayamanne\\n  URL:
+        https://github.com/microsoft/vscode/issues/282721\\n\\n#282714: over-engineered
+        a solution (OPEN)\\n  Labels: info-needed, triage-needed, new release\\n  URL:
+        https://github.com/microsoft/vscode/issues/282714\\n\\n#282713: No response
+        (OPEN)\\n  Labels: ~info-needed, triage-needed\\n  URL: https://github.com/microsoft/vscode/issues/282713\\n\\n#282710:
+        copilot unable to delete (OPEN)\\n  Labels: info-needed\\n  Assignees: jrieken\\n  URL:
+        https://github.com/microsoft/vscode/issues/282710\\n\\n#282709: \\\"Suggestion
+        preview\\\" does not work (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/282709\\n\\n#282708:
+        Vite Terminal Output Looks Broken (OPEN)\\n  Assignees: anthonykim1\\n  URL:
+        https://github.com/microsoft/vscode/issues/282708\\n\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"Having successfully retrieved the number of open
+        issues (20), I now need to proceed to get the number of open pull requests
+        for the microsoft/vscode repository. Therefore, I will use the ''github_list_prs''
+        tool with the appropriate parameters.\",\n      \"action\": \"github_list_prs\",\n      \"tool_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 pull request(s):\\n#282759: Add flushOnListenerRemove to pass through
+        to debounce (OPEN)\\n  tyriar/278969 → main\\n  URL: https://github.com/microsoft/vscode/pull/282759\\n\\n#282758:
+        Better rename accepted telemetry (OPEN)\\n  benibenj/scared-impala → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/282758\\n\\n#282757: Fix word replacement
+        view clicking (OPEN)\\n  benibenj/harsh-lungfish → main\\n  URL: https://github.com/microsoft/vscode/pull/282757\\n\\n#282751:
+        Hint against printing credentials in terminal tool (OPEN)\\n  tyriar/272432
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282751\\n\\n#282749:
+        fix #282748 (OPEN)\\n  sandy081/abundant-mink → main\\n  URL: https://github.com/microsoft/vscode/pull/282749\\n\\n#282747:
+        fix: ensure fallback to default system monospace font (OPEN)\\n  fix-monaco-editor-linux-fonts
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282747\\n\\n#282707:
+        fix chat flickering on accept input (OPEN)\\n  justin/croagunk → release/1.107\\n  URL:
+        https://github.com/microsoft/vscode/pull/282707\\n\\n#282706: fix chat jump/flicker
+        on accept input  (OPEN)\\n  justin/croagunk → main\\n  URL: https://github.com/microsoft/vscode/pull/282706\\n\\n#282704:
+        Agent sessions: make sidebar toggle visible even in chats (fix #282527) (OPEN)\\n  ben/certain-otter
+        → release/1.107\\n  URL: https://github.com/microsoft/vscode/pull/282704\\n\\n#282698:
+        Enhance inline edits for high contrast mode (OPEN)\\n  mrleemurray/wee-yak-rose
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282698\\n\\n#282695:
+        Display configurationDefaults in extension editor Features tab (OPEN)\\n  copilot/fix-configuration-defaults-display
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282695\\n\\n#282693:
+        Add ARGB color format support for color decorators (OPEN)\\n  fix/282673-argb-color-format
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282693\\n\\n#282680:
+        Add ''Show Outdated'' filter to Comments panel (OPEN)\\n  copilot/add-outdated-comments-filter
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282680\\n\\n#282677:
+        Add setting to disable automatic editor navigation on arrow keys in Problems
+        view (OPEN)\\n  copilot/add-disable-editor-navigation → main\\n  URL: https://github.com/microsoft/vscode/pull/282677\\n\\n#282665:
+        Add source and extension filter syntax for Problems panel (OPEN)\\n  copilot/filter-problems-by-extension
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282665\\n\\n#282660:
+        Add minimum release age setting for extensions (OPEN)\\n  copilot/add-minimum-age-setting
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282660\\n\\n#282657:
+        Save dirty files before Copilot CLI edits (OPEN)\\n  copilot/ensure-file-saved-before-edit
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282657\\n\\n#282654:
+        Filter agents with target:vscode from Background Agent dropdown (OPEN)\\n  copilot/fix-background-agent-dropdown
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282654\\n\\n#282638:
+        Agents sessions: \\\"Hide Agent Sessions Sidebar\\\" doesn''t work (fix #282607)
+        (OPEN)\\n  ben/dramatic-harrier → release/1.107\\n  URL: https://github.com/microsoft/vscode/pull/282638\\n\\n#282633:
+        fix: Latest input is not stored to the history when sending message to a new
+        chat (OPEN)\\n  fix-282498 → main\\n  URL: https://github.com/microsoft/vscode/pull/282633\\n\"\n    }\n  ],\n  \"observation\":
+        \"Found 20 pull request(s):\\n#282759: Add flushOnListenerRemove to pass through
+        to debounce (OPEN)\\n  tyriar/278969 → main\\n  URL: https://github.com/microsoft/vscode/pull/282759\\n\\n#282758:
+        Better rename accepted telemetry (OPEN)\\n  benibenj/scared-impala → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/282758\\n\\n#282757: Fix word replacement
+        view clicking (OPEN)\\n  benibenj/harsh-lungfish → main\\n  URL: https://github.com/microsoft/vscode/pull/282757\\n\\n#282751:
+        Hint against printing credentials in terminal tool (OPEN)\\n  tyriar/272432
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282751\\n\\n#282749:
+        fix #282748 (OPEN)\\n  sandy081/abundant-mink → main\\n  URL: https://github.com/microsoft/vscode/pull/282749\\n\\n#282747:
+        fix: ensure fallback to default system monospace font (OPEN)\\n  fix-monaco-editor-linux-fonts
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282747\\n\\n#282707:
+        fix chat flickering on accept input (OPEN)\\n  justin/croagunk → release/1.107\\n  URL:
+        https://github.com/microsoft/vscode/pull/282707\\n\\n#282706: fix chat jump/flicker
+        on accept input  (OPEN)\\n  justin/croagunk → main\\n  URL: https://github.com/microsoft/vscode/pull/282706\\n\\n#282704:
+        Agent sessions: make sidebar toggle visible even in chats (fix #282527) (OPEN)\\n  ben/certain-otter
+        → release/1.107\\n  URL: https://github.com/microsoft/vscode/pull/282704\\n\\n#282698:
+        Enhance inline edits for high contrast mode (OPEN)\\n  mrleemurray/wee-yak-rose
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282698\\n\\n#282695:
+        Display configurationDefaults in extension editor Features tab (OPEN)\\n  copilot/fix-configuration-defaults-display
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282695\\n\\n#282693:
+        Add ARGB color format support for color decorators (OPEN)\\n  fix/282673-argb-color-format
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282693\\n\\n#282680:
+        Add ''Show Outdated'' filter to Comments panel (OPEN)\\n  copilot/add-outdated-comments-filter
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282680\\n\\n#282677:
+        Add setting to disable automatic editor navigation on arrow keys in Problems
+        view (OPEN)\\n  copilot/add-disable-editor-navigation → main\\n  URL: https://github.com/microsoft/vscode/pull/282677\\n\\n#282665:
+        Add source and extension filter syntax for Problems panel (OPEN)\\n  copilot/filter-problems-by-extension
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282665\\n\\n#282660:
+        Add minimum release age setting for extensions (OPEN)\\n  copilot/add-minimum-age-setting
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282660\\n\\n#282657:
+        Save dirty files before Copilot CLI edits (OPEN)\\n  copilot/ensure-file-saved-before-edit
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282657\\n\\n#282654:
+        Filter agents with target:vscode from Background Agent dropdown (OPEN)\\n  copilot/fix-background-agent-dropdown
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282654\\n\\n#282638:
+        Agents sessions: \\\"Hide Agent Sessions Sidebar\\\" doesn''t work (fix #282607)
+        (OPEN)\\n  ben/dramatic-harrier → release/1.107\\n  URL: https://github.com/microsoft/vscode/pull/282638\\n\\n#282633:
+        fix: Latest input is not stored to the history when sending message to a new
+        chat (OPEN)\\n  fix-282498 → main\\n  URL: https://github.com/microsoft/vscode/pull/282633\\n\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
-        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
-        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
-        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -1051,11 +938,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -1065,14 +952,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '15527'
+      - '14625'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Wed, 24 Sep 2025 09:52:52 GMT
+      - Thu, 11 Dec 2025 14:27:04 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1084,25 +971,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1255'
+      - '1512'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1279'
+      - '1526'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9972'
       X-Ratelimit-Remaining-Tokens:
-      - '196319'
+      - '196533'
       X-Ratelimit-Reset-Requests:
-      - 25.79s
+      - 3m54.407s
       X-Ratelimit-Reset-Tokens:
-      - 1.104s
+      - 1.04s
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -1119,23 +1006,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9841642d0ee2218c-MAD
+      - 9ac5a913d8e38038-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CJGT4Hwt3GuttkHX3scTXfHP6HVHE",
+          "id": "chatcmpl-ClbvCowhqDWTchpcvDiSRFNWNQZkR",
           "object": "chat.completion",
-          "created": 1758707570,
+          "created": 1765463222,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"Successfully retrieved the statistics for the microsoft/vscode repository: there are 20 open issues and 20 open pull requests.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The statistics for the microsoft/vscode repository show that there are 20 open issues and 20 open pull requests.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1144,11 +1031,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 4001,
-            "completion_tokens": 48,
-            "total_tokens": 4049,
+            "prompt_tokens": 3747,
+            "completion_tokens": 47,
+            "total_tokens": 3794,
             "prompt_tokens_details": {
-              "cached_tokens": 0,
+              "cached_tokens": 1024,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -1159,9 +1046,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Wed, 24 Sep 2025 09:52:52 GMT
+  recorded_at: Thu, 11 Dec 2025 14:27:04 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1176,27 +1063,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -1204,17 +1084,18 @@ http_interactions:
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"github_traffic_views\",\n        \"github_traffic_clones\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -1224,167 +1105,146 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"Get statistics about
         the microsoft/vscode repository - how many open issues and pull requests are
         there?\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"To gather statistics about
-        the microsoft/vscode repository, I need to first list the open issues and
-        pull requests. Therefore, I will start with the action to list open issues.\",\n      \"action\":
-        \"github_list_issues\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
-        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 issue(s):\\n#268137:
-        Screen going blank when using dual screen (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268137\\n\\n#268136:
-        .ts files not automatically recognized as TypeScript (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268136\\n\\n#268135:
-        طلب دعم لتكامل ChatGPT مع نموذج توليد حملات تسويقية مخصص (OPEN)\\n  Labels:
-        ai-translated\\n  URL: https://github.com/microsoft/vscode/issues/268135\\n\\n#268134:
-        Very bad performance , crashes and deletion of the program (OPEN)\\n  URL:
-        https://github.com/microsoft/vscode/issues/268134\\n\\n#268132: Enhance References
-        View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
-        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
-        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
-        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
-        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
-        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
-        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
-        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
-        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
-        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
-        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
-        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
-        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
-        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
-        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
-        terminal activates base conda environment instead of configured environment
-        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
-        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
-        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
-        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
-        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
-        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
-        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
-        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\"\n    },\n    {\n      \"step\":
-        2,\n      \"thought\": \"I have successfully retrieved the list of open issues
-        from the microsoft/vscode repository. Next, I need to list the open pull requests
-        to get a complete overview of the repository statistics.\",\n      \"action\":
-        \"github_list_prs\",\n      \"action_input\": {\n        \"state\": \"open\",\n        \"repo\":
-        \"microsoft/vscode\"\n      },\n      \"observation\": \"Found 20 pull request(s):\\n#268131:
-        Engineering - extract Windows ci jobs in a template (OPEN)\\n  lszomoru/product-build-windows-ci
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268131\\n\\n#268123:
-        Add test coverage to runTests tool (OPEN)\\n  alexr00/odd-cheetah → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268123\\n\\n#268109: Chat: improve
-        welcome for no-auth flow (#5872) (OPEN)\\n  ben/outer-dragon → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268109\\n\\n#268093: Feature/107183
-        add ability to right align tree items description (OPEN)\\n  feature/107183-add-ability-to-right-align-TreeItems-description
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268093\\n\\n#268090:
-        add opt-in setting to show OS notification when a chat response is received
-        (OPEN)\\n  sensible-rooster → main\\n  URL: https://github.com/microsoft/vscode/pull/268090\\n\\n#268089:
-        chatSessions API redesign/experiment (OPEN)\\n  joshspicer/chatSessionParticipant
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268089\\n\\n#268081:
-        Claude with worktree (OPEN)\\n  osortega/claude-git-worktree → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268081\\n\\n#268080: Empty state
-        chat history 2.0 (OPEN)\\n  eli/empty-state-chat-history-2 → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268080\\n\\n#268072: Set suppressInSnippetMode
-        default to true to prevent inline completions from interfering with snippets
-        (OPEN)\\n  copilot/fix-054c0b93-82b2-4b82-b8fa-f1bca13ccf2e → main\\n  URL:
-        https://github.com/microsoft/vscode/pull/268072\\n\\n#268058: Show full date/time
-        for history items (OPEN)\\n  vijayu/sessionDateTime → main\\n  URL: https://github.com/microsoft/vscode/pull/268058\\n\\n#268039:
-        fix(snap): detect Wayland socket under XDG_RUNTIME_DIR for Fedora (OPEN)\\n  patch-1
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268039\\n\\n#268038:
-        i18n: add missing localizations for monaco-editor (OPEN)\\n  missing-loc →
-        main\\n  URL: https://github.com/microsoft/vscode/pull/268038\\n\\n#268017:
-        add opt-in setting for OS notification when long running (> 2 min) task finishes
-        (OPEN)\\n  applicable-mongoose → main\\n  URL: https://github.com/microsoft/vscode/pull/268017\\n\\n#268005:
-        Chat - switch chat toolbar to use overlay widget (OPEN)\\n  lszomoru/chat-overlay-toolbar
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/268005\\n\\n#267991:
-        Copy selection for deleted chunk in inline diff (OPEN)\\n  copy-selection-inline-delete
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267991\\n\\n#267874:
-        Implement AI search success tracking telemetry for user interaction analytics
-        (OPEN)\\n  copilot/fix-de0c7c5c-08fd-4acb-9f35-1e1a2bb982ae → copilot/fix-55f237c2-f853-4d9a-9b3c-3de2aa253bd3\\n  URL:
-        https://github.com/microsoft/vscode/pull/267874\\n\\n#267853: Don''t eagerly
-        attach pasted images in `provideDocumentPasteEdits` (OPEN)\\n  dev/mjbvz/alone-gazelle
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267853\\n\\n#267829:
-        Fix history list not updating when deleting chats from command palette (OPEN)\\n  copilot/fix-794bcb92-6906-4959-a26d-dcfbd3449d71
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267829\\n\\n#267823:
-        Change padding from 4px to 5px to increase target size to at least 24… (OPEN)\\n  padding-patch
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267823\\n\\n#267799:
-        Fix memory leak with installing cursor change position listener (OPEN)\\n  patch-4
-        → main\\n  URL: https://github.com/microsoft/vscode/pull/267799\\n\"\n    }\n  ],\n  \"available_tools\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"To get the statistics about
+        the microsoft/vscode repository, I should first list the open issues and pull
+        requests. Therefore, I will use the ''github_list_issues'' tool to find the
+        number of open issues, and then the ''github_list_prs'' tool to find the number
+        of open pull requests.\",\n      \"action\": \"github_list_issues\",\n      \"tool_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 issue(s):\\n#282756: Issue: Inline Next Editor Suggestion (NES)
+        not working by clicking (OPEN)\\n  Labels: new release\\n  Assignees: hediet\\n  URL:
+        https://github.com/microsoft/vscode/issues/282756\\n\\n#282755: Add a button
+        to keep staged changed closed (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/282755\\n\\n#282753:
+        Terminal inline chat input box is incorrectly rendered (OPEN)\\n  Assignees:
+        Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/282753\\n\\n#282752:
+        Shortcuts with dead keys broken in Linux since 1.107.0 (OPEN)\\n  Labels:
+        new release\\n  URL: https://github.com/microsoft/vscode/issues/282752\\n\\n#282750:
+        Remember workspace specific tool disablement (OPEN)\\n  Labels: bug, chat-tools\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/282750\\n\\n#282740:
+        all files are closed but complained too many open files, open. (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: jruales\\n  URL: https://github.com/microsoft/vscode/issues/282740\\n\\n#282738:
+        ClaudeSkills generalization (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        kycutler\\n  URL: https://github.com/microsoft/vscode/issues/282738\\n\\n#282737:
+        Tools and Agent selection in vscode. revamped UI (OPEN)\\n  Assignees: benibenj\\n  URL:
+        https://github.com/microsoft/vscode/issues/282737\\n\\n#282734: Chat UI appearing
+        despite being disabled (OPEN)\\n  Labels: info-needed\\n  Assignees: bpasero\\n  URL:
+        https://github.com/microsoft/vscode/issues/282734\\n\\n#282733: Improve Multi
+        File Diff Editor Commands / Keybindings (OPEN)\\n  Labels: feature-request,
+        multi-diff-editor\\n  Assignees: hediet\\n  URL: https://github.com/microsoft/vscode/issues/282733\\n\\n#282727:
+        A bottom shadow shows incorrectly in chat (OPEN)\\n  Assignees: roblourens\\n  URL:
+        https://github.com/microsoft/vscode/issues/282727\\n\\n#282726: Agent session
+        says it''s in progress when it''s not (OPEN)\\n  Labels: chat-agents-view\\n  Assignees:
+        osortega\\n  URL: https://github.com/microsoft/vscode/issues/282726\\n\\n#282724:
+        Restart to Update needs to be used twice (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        zhichli\\n  URL: https://github.com/microsoft/vscode/issues/282724\\n\\n#282723:
+        workbench.panel.defaultLocation is ignored without deprecation message (OPEN)\\n  Assignees:
+        benibenj\\n  URL: https://github.com/microsoft/vscode/issues/282723\\n\\n#282721:
+        Notebook diff editor doesn''t preserve scroll position when switching to another
+        tab and then back (OPEN)\\n  Labels: bug, notebook-diff\\n  Assignees: DonJayamanne\\n  URL:
+        https://github.com/microsoft/vscode/issues/282721\\n\\n#282714: over-engineered
+        a solution (OPEN)\\n  Labels: info-needed, triage-needed, new release\\n  URL:
+        https://github.com/microsoft/vscode/issues/282714\\n\\n#282713: No response
+        (OPEN)\\n  Labels: ~info-needed, triage-needed\\n  URL: https://github.com/microsoft/vscode/issues/282713\\n\\n#282710:
+        copilot unable to delete (OPEN)\\n  Labels: info-needed\\n  Assignees: jrieken\\n  URL:
+        https://github.com/microsoft/vscode/issues/282710\\n\\n#282709: \\\"Suggestion
+        preview\\\" does not work (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/282709\\n\\n#282708:
+        Vite Terminal Output Looks Broken (OPEN)\\n  Assignees: anthonykim1\\n  URL:
+        https://github.com/microsoft/vscode/issues/282708\\n\"\n    },\n    {\n      \"step\":
+        2,\n      \"thought\": \"Having successfully retrieved the number of open
+        issues (20), I now need to proceed to get the number of open pull requests
+        for the microsoft/vscode repository. Therefore, I will use the ''github_list_prs''
+        tool with the appropriate parameters.\",\n      \"action\": \"github_list_prs\",\n      \"tool_input\":
+        {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
+        \"Found 20 pull request(s):\\n#282759: Add flushOnListenerRemove to pass through
+        to debounce (OPEN)\\n  tyriar/278969 → main\\n  URL: https://github.com/microsoft/vscode/pull/282759\\n\\n#282758:
+        Better rename accepted telemetry (OPEN)\\n  benibenj/scared-impala → main\\n  URL:
+        https://github.com/microsoft/vscode/pull/282758\\n\\n#282757: Fix word replacement
+        view clicking (OPEN)\\n  benibenj/harsh-lungfish → main\\n  URL: https://github.com/microsoft/vscode/pull/282757\\n\\n#282751:
+        Hint against printing credentials in terminal tool (OPEN)\\n  tyriar/272432
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282751\\n\\n#282749:
+        fix #282748 (OPEN)\\n  sandy081/abundant-mink → main\\n  URL: https://github.com/microsoft/vscode/pull/282749\\n\\n#282747:
+        fix: ensure fallback to default system monospace font (OPEN)\\n  fix-monaco-editor-linux-fonts
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282747\\n\\n#282707:
+        fix chat flickering on accept input (OPEN)\\n  justin/croagunk → release/1.107\\n  URL:
+        https://github.com/microsoft/vscode/pull/282707\\n\\n#282706: fix chat jump/flicker
+        on accept input  (OPEN)\\n  justin/croagunk → main\\n  URL: https://github.com/microsoft/vscode/pull/282706\\n\\n#282704:
+        Agent sessions: make sidebar toggle visible even in chats (fix #282527) (OPEN)\\n  ben/certain-otter
+        → release/1.107\\n  URL: https://github.com/microsoft/vscode/pull/282704\\n\\n#282698:
+        Enhance inline edits for high contrast mode (OPEN)\\n  mrleemurray/wee-yak-rose
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282698\\n\\n#282695:
+        Display configurationDefaults in extension editor Features tab (OPEN)\\n  copilot/fix-configuration-defaults-display
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282695\\n\\n#282693:
+        Add ARGB color format support for color decorators (OPEN)\\n  fix/282673-argb-color-format
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282693\\n\\n#282680:
+        Add ''Show Outdated'' filter to Comments panel (OPEN)\\n  copilot/add-outdated-comments-filter
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282680\\n\\n#282677:
+        Add setting to disable automatic editor navigation on arrow keys in Problems
+        view (OPEN)\\n  copilot/add-disable-editor-navigation → main\\n  URL: https://github.com/microsoft/vscode/pull/282677\\n\\n#282665:
+        Add source and extension filter syntax for Problems panel (OPEN)\\n  copilot/filter-problems-by-extension
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282665\\n\\n#282660:
+        Add minimum release age setting for extensions (OPEN)\\n  copilot/add-minimum-age-setting
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282660\\n\\n#282657:
+        Save dirty files before Copilot CLI edits (OPEN)\\n  copilot/ensure-file-saved-before-edit
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282657\\n\\n#282654:
+        Filter agents with target:vscode from Background Agent dropdown (OPEN)\\n  copilot/fix-background-agent-dropdown
+        → main\\n  URL: https://github.com/microsoft/vscode/pull/282654\\n\\n#282638:
+        Agents sessions: \\\"Hide Agent Sessions Sidebar\\\" doesn''t work (fix #282607)
+        (OPEN)\\n  ben/dramatic-harrier → release/1.107\\n  URL: https://github.com/microsoft/vscode/pull/282638\\n\\n#282633:
+        fix: Latest input is not stored to the history when sending message to a new
+        chat (OPEN)\\n  fix-282498 → main\\n  URL: https://github.com/microsoft/vscode/pull/282633\\n\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
-        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
-        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
-        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
-        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
-        \"github_get_issue\",\n        \"description\": \"Get details of a specific
-        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
-        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_issues\\\",\\\"description\\\":\\\"List
+        GitHub issues with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"labels\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        labels (optional)\\\"},\\\"assignee\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        assignee (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_list_prs\",\n      \"description\": \"List GitHub pull requests with
+        optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_prs\\\",\\\"description\\\":\\\"List
+        GitHub pull requests with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"merged\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"author\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        author (optional)\\\"},\\\"base\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        base (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_get_issue\",\n      \"description\": \"Get details of a specific
+        GitHub issue\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_issue\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub issue\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"issue_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        issue_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"issue_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
-        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_pr\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub pull request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"pr_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        pr_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"pr_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
-        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
-        \"object\",\n              \"propertyNames\": {\n                \"type\":
-        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
-        \"string\"\n              },\n              \"description\": \"Parameter fields
-        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_api_request\\\",\\\"description\\\":\\\"Make
+        an arbitrary GitHub API request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"endpoint\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        endpoint\\\"},\\\"method\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        method (optional)\\\"},\\\"fields\\\":{\\\"type\\\":\\\"object\\\",\\\"propertyNames\\\":{\\\"type\\\":\\\"string\\\"},\\\"additionalProperties\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        fields (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"endpoint\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_views\",\n      \"description\": \"Get repository traffic
+        views (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_views\\\",\\\"description\\\":\\\"Get
+        repository traffic views (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_clones\",\n      \"description\": \"Get repository traffic
+        clones (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_clones\\\",\\\"description\\\":\\\"Get
+        repository traffic clones (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
-        about what to do next, considering the history and observations.\",\n  \"action\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
-        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -1394,11 +1254,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -1408,14 +1268,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '19740'
+      - '18088'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Wed, 24 Sep 2025 09:52:56 GMT
+      - Thu, 11 Dec 2025 14:27:06 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1427,25 +1287,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '3732'
+      - '2048'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '3750'
+      - '2061'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9996'
+      - '9972'
       X-Ratelimit-Remaining-Tokens:
-      - '195433'
+      - '195923'
       X-Ratelimit-Reset-Requests:
-      - 32.894s
+      - 4m1.387s
       X-Ratelimit-Reset-Tokens:
-      - 1.37s
+      - 1.223s
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -1462,23 +1322,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 98416436ce03218c-MAD
+      - 9ac5a91e4f5d8038-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CJGT6NUexTrk1tMXT0GnHbk6ZLdGd",
+          "id": "chatcmpl-ClbvEOCltGlusI6CaSkIGCNYMSHtB",
           "object": "chat.completion",
-          "created": 1758707572,
+          "created": 1765463224,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have now obtained the number of open issues (20) and open pull requests (20) in the microsoft/vscode repository. To provide a comprehensive summary of the statistics, I will create a formatted response detailing these counts and include any relevant URLs for reference.\",\n  \"action\": \"finish\",\n  \"action_input\": \"There are currently a total of 20 open issues and 20 open pull requests in the microsoft/vscode repository. For further details, you can check the following links:\\n\\nOpen Issues:\\n- https://github.com/microsoft/vscode/issues\\n\\nOpen Pull Requests:\\n- https://github.com/microsoft/vscode/pulls\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Now that I have the counts of both open issues (20) and open pull requests (20), I need to summarize this information and provide the final answer regarding the statistics of the microsoft/vscode repository.\",\n  \"action\": \"finish\",\n  \"tool_input\": null,\n  \"final_answer\": \"The microsoft/vscode repository currently has 20 open issues and 20 open pull requests.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1487,11 +1347,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 4348,
-            "completion_tokens": 149,
-            "total_tokens": 4497,
+            "prompt_tokens": 4074,
+            "completion_tokens": 94,
+            "total_tokens": 4168,
             "prompt_tokens_details": {
-              "cached_tokens": 1920,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -1502,7 +1362,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Wed, 24 Sep 2025 09:52:56 GMT
+  recorded_at: Thu, 11 Dec 2025 14:27:06 GMT
 recorded_with: VCR 6.3.1

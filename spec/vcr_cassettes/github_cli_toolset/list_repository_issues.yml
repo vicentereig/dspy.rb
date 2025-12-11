@@ -2,6 +2,59 @@
 http_interactions:
 - request:
     method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BYjV0XrGRR67ADvrtB84K3ppOtR4AAEBAAAnIQEAATX0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        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
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BYjV0XrGRR67ADvrtB84K3ppOtR4AAEBAAAnIQEAATX0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Thu, 11 Dec 2025 14:25:37 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-mad2200102-MAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Thu, 11 Dec 2025 14:25:37 GMT
+- request:
+    method: post
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
@@ -14,27 +67,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -42,17 +88,18 @@ http_interactions:
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"github_traffic_views\",\n        \"github_traffic_clones\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -62,82 +109,57 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"List the open issues
         for this repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
         [],\n  \"available_tools\": [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
-        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
-        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
-        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
-        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
-        \"github_get_issue\",\n        \"description\": \"Get details of a specific
-        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
-        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_issues\\\",\\\"description\\\":\\\"List
+        GitHub issues with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"labels\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        labels (optional)\\\"},\\\"assignee\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        assignee (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_list_prs\",\n      \"description\": \"List GitHub pull requests with
+        optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_prs\\\",\\\"description\\\":\\\"List
+        GitHub pull requests with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"merged\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"author\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        author (optional)\\\"},\\\"base\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        base (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_get_issue\",\n      \"description\": \"Get details of a specific
+        GitHub issue\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_issue\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub issue\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"issue_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        issue_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"issue_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
-        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_pr\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub pull request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"pr_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        pr_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"pr_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
-        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
-        \"object\",\n              \"propertyNames\": {\n                \"type\":
-        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
-        \"string\"\n              },\n              \"description\": \"Parameter fields
-        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_api_request\\\",\\\"description\\\":\\\"Make
+        an arbitrary GitHub API request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"endpoint\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        endpoint\\\"},\\\"method\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        method (optional)\\\"},\\\"fields\\\":{\\\"type\\\":\\\"object\\\",\\\"propertyNames\\\":{\\\"type\\\":\\\"string\\\"},\\\"additionalProperties\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        fields (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"endpoint\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_views\",\n      \"description\": \"Get repository traffic
+        views (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_views\\\",\\\"description\\\":\\\"Get
+        repository traffic views (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_clones\",\n      \"description\": \"Get repository traffic
+        clones (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_clones\\\",\\\"description\\\":\\\"Get
+        repository traffic clones (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
-        about what to do next, considering the history and observations.\",\n  \"action\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
-        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -147,11 +169,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -161,14 +183,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '12168'
+      - '10218'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Wed, 24 Sep 2025 09:42:29 GMT
+      - Thu, 11 Dec 2025 14:25:39 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -180,25 +202,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '2083'
+      - '3175'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2276'
+      - '3271'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9985'
       X-Ratelimit-Remaining-Tokens:
-      - '197269'
+      - '197829'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 2m1.667s
       X-Ratelimit-Reset-Tokens:
-      - 819ms
+      - 651ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -215,23 +237,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 984154f1d90d1d6c-MAD
+      - 9ac5a6fa8fb2eca1-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CJGJ1wb63pqSZRH0e6cGpxW7ZEhBd",
+          "id": "chatcmpl-ClbtoszohgSajXR4h8iI9V8753JrG",
           "object": "chat.completion",
-          "created": 1758706947,
+          "created": 1765463136,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"Since the task is to list the open issues for the repository 'microsoft/vscode', I should use the 'github_list_issues' tool with the 'state' parameter set to 'open' to get the relevant issues.\",\n  \"action\": \"github_list_issues\",\n  \"action_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since the task is to list the open issues for the repository 'microsoft/vscode' and no prior history exists, the next step is to use the 'github_list_issues' tool to retrieve these open issues.\",\n  \"action\": \"github_list_issues\",\n  \"tool_input\": {\n    \"state\": \"open\",\n    \"repo\": \"microsoft/vscode\"\n  },\n  \"final_answer\": null\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -240,9 +262,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2270,
-            "completion_tokens": 96,
-            "total_tokens": 2366,
+            "prompt_tokens": 1955,
+            "completion_tokens": 101,
+            "total_tokens": 2056,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -255,9 +277,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Wed, 24 Sep 2025 09:42:29 GMT
+  recorded_at: Thu, 11 Dec 2025 14:25:39 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -272,17 +294,13 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
         \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
@@ -301,95 +319,99 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"List the open issues
         for this repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
         [\n    {\n      \"step\": 1,\n      \"thought\": \"Since the task is to list
-        the open issues for the repository ''microsoft/vscode'', I should use the
-        ''github_list_issues'' tool with the ''state'' parameter set to ''open'' to
-        get the relevant issues.\",\n      \"action\": \"github_list_issues\",\n      \"action_input\":
+        the open issues for the repository ''microsoft/vscode'' and no prior history
+        exists, the next step is to use the ''github_list_issues'' tool to retrieve
+        these open issues.\",\n      \"action\": \"github_list_issues\",\n      \"tool_input\":
         {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"Found 20 issue(s):\\n#268134: Very bad performance , crashes and deletion
-        of the program (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268134\\n\\n#268132:
-        Enhance References View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
-        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
-        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
-        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
-        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
-        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
-        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
-        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
-        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
-        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
-        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
-        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
-        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
-        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
-        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
-        terminal activates base conda environment instead of configured environment
-        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
-        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
-        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
-        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
-        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
-        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
-        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
-        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\\n#268104:
-        Fetch tool seems to have cached a 404 for a page (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268104\\n\\n#268103: Fetch tool
-        should better indicate in UI when the request fails (OPEN)\\n  Assignees:
-        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268103\\n\\n#268102:
-        Chat fetch tool can''t read content from my private GitHub repos (OPEN)\\n  Assignees:
-        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268102\\n\"\n    }\n  ],\n  \"observation\":
-        \"Found 20 issue(s):\\n#268134: Very bad performance , crashes and deletion
-        of the program (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268134\\n\\n#268132:
-        Enhance References View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
-        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
-        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
-        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
-        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
-        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
-        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
-        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
-        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
-        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
-        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
-        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
-        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
-        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
-        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
-        terminal activates base conda environment instead of configured environment
-        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
-        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
-        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
-        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
-        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
-        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
-        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
-        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\\n#268104:
-        Fetch tool seems to have cached a 404 for a page (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268104\\n\\n#268103: Fetch tool
-        should better indicate in UI when the request fails (OPEN)\\n  Assignees:
-        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268103\\n\\n#268102:
-        Chat fetch tool can''t read content from my private GitHub repos (OPEN)\\n  Assignees:
-        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268102\\n\"\n}\n```\n\nRespond
+        \"Found 20 issue(s):\\n#282756: Issue: Inline Next Editor Suggestion (NES)
+        not working by clicking (OPEN)\\n  Labels: new release\\n  Assignees: hediet\\n  URL:
+        https://github.com/microsoft/vscode/issues/282756\\n\\n#282755: Add a button
+        to keep staged changed closed (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/282755\\n\\n#282753:
+        Terminal inline chat input box is incorrectly rendered (OPEN)\\n  Assignees:
+        Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/282753\\n\\n#282752:
+        Shortcuts with dead keys broken in Linux since 1.107.0 (OPEN)\\n  Labels:
+        new release\\n  URL: https://github.com/microsoft/vscode/issues/282752\\n\\n#282750:
+        Remember workspace specific tool disablement (OPEN)\\n  Labels: bug, chat-tools\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/282750\\n\\n#282740:
+        all files are closed but complained too many open files, open. (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: jruales\\n  URL: https://github.com/microsoft/vscode/issues/282740\\n\\n#282738:
+        ClaudeSkills generalization (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        kycutler\\n  URL: https://github.com/microsoft/vscode/issues/282738\\n\\n#282737:
+        Tools and Agent selection in vscode. revamped UI (OPEN)\\n  Assignees: benibenj\\n  URL:
+        https://github.com/microsoft/vscode/issues/282737\\n\\n#282734: Chat UI appearing
+        despite being disabled (OPEN)\\n  Labels: info-needed\\n  Assignees: bpasero\\n  URL:
+        https://github.com/microsoft/vscode/issues/282734\\n\\n#282733: Improve Multi
+        File Diff Editor Commands / Keybindings (OPEN)\\n  Labels: feature-request,
+        multi-diff-editor\\n  Assignees: hediet\\n  URL: https://github.com/microsoft/vscode/issues/282733\\n\\n#282727:
+        A bottom shadow shows incorrectly in chat (OPEN)\\n  Assignees: roblourens\\n  URL:
+        https://github.com/microsoft/vscode/issues/282727\\n\\n#282726: Agent session
+        says it''s in progress when it''s not (OPEN)\\n  Labels: chat-agents-view\\n  Assignees:
+        osortega\\n  URL: https://github.com/microsoft/vscode/issues/282726\\n\\n#282724:
+        Restart to Update needs to be used twice (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        zhichli\\n  URL: https://github.com/microsoft/vscode/issues/282724\\n\\n#282723:
+        workbench.panel.defaultLocation is ignored without deprecation message (OPEN)\\n  Assignees:
+        benibenj\\n  URL: https://github.com/microsoft/vscode/issues/282723\\n\\n#282721:
+        Notebook diff editor doesn''t preserve scroll position when switching to another
+        tab and then back (OPEN)\\n  Labels: bug, notebook-diff\\n  Assignees: DonJayamanne\\n  URL:
+        https://github.com/microsoft/vscode/issues/282721\\n\\n#282714: over-engineered
+        a solution (OPEN)\\n  Labels: info-needed, triage-needed, new release\\n  URL:
+        https://github.com/microsoft/vscode/issues/282714\\n\\n#282713: No response
+        (OPEN)\\n  Labels: ~info-needed, triage-needed\\n  URL: https://github.com/microsoft/vscode/issues/282713\\n\\n#282710:
+        copilot unable to delete (OPEN)\\n  Labels: info-needed\\n  Assignees: jrieken\\n  URL:
+        https://github.com/microsoft/vscode/issues/282710\\n\\n#282709: \\\"Suggestion
+        preview\\\" does not work (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/282709\\n\\n#282708:
+        Vite Terminal Output Looks Broken (OPEN)\\n  Assignees: anthonykim1\\n  URL:
+        https://github.com/microsoft/vscode/issues/282708\\n\"\n    }\n  ],\n  \"observation\":
+        \"Found 20 issue(s):\\n#282756: Issue: Inline Next Editor Suggestion (NES)
+        not working by clicking (OPEN)\\n  Labels: new release\\n  Assignees: hediet\\n  URL:
+        https://github.com/microsoft/vscode/issues/282756\\n\\n#282755: Add a button
+        to keep staged changed closed (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/282755\\n\\n#282753:
+        Terminal inline chat input box is incorrectly rendered (OPEN)\\n  Assignees:
+        Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/282753\\n\\n#282752:
+        Shortcuts with dead keys broken in Linux since 1.107.0 (OPEN)\\n  Labels:
+        new release\\n  URL: https://github.com/microsoft/vscode/issues/282752\\n\\n#282750:
+        Remember workspace specific tool disablement (OPEN)\\n  Labels: bug, chat-tools\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/282750\\n\\n#282740:
+        all files are closed but complained too many open files, open. (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: jruales\\n  URL: https://github.com/microsoft/vscode/issues/282740\\n\\n#282738:
+        ClaudeSkills generalization (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        kycutler\\n  URL: https://github.com/microsoft/vscode/issues/282738\\n\\n#282737:
+        Tools and Agent selection in vscode. revamped UI (OPEN)\\n  Assignees: benibenj\\n  URL:
+        https://github.com/microsoft/vscode/issues/282737\\n\\n#282734: Chat UI appearing
+        despite being disabled (OPEN)\\n  Labels: info-needed\\n  Assignees: bpasero\\n  URL:
+        https://github.com/microsoft/vscode/issues/282734\\n\\n#282733: Improve Multi
+        File Diff Editor Commands / Keybindings (OPEN)\\n  Labels: feature-request,
+        multi-diff-editor\\n  Assignees: hediet\\n  URL: https://github.com/microsoft/vscode/issues/282733\\n\\n#282727:
+        A bottom shadow shows incorrectly in chat (OPEN)\\n  Assignees: roblourens\\n  URL:
+        https://github.com/microsoft/vscode/issues/282727\\n\\n#282726: Agent session
+        says it''s in progress when it''s not (OPEN)\\n  Labels: chat-agents-view\\n  Assignees:
+        osortega\\n  URL: https://github.com/microsoft/vscode/issues/282726\\n\\n#282724:
+        Restart to Update needs to be used twice (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        zhichli\\n  URL: https://github.com/microsoft/vscode/issues/282724\\n\\n#282723:
+        workbench.panel.defaultLocation is ignored without deprecation message (OPEN)\\n  Assignees:
+        benibenj\\n  URL: https://github.com/microsoft/vscode/issues/282723\\n\\n#282721:
+        Notebook diff editor doesn''t preserve scroll position when switching to another
+        tab and then back (OPEN)\\n  Labels: bug, notebook-diff\\n  Assignees: DonJayamanne\\n  URL:
+        https://github.com/microsoft/vscode/issues/282721\\n\\n#282714: over-engineered
+        a solution (OPEN)\\n  Labels: info-needed, triage-needed, new release\\n  URL:
+        https://github.com/microsoft/vscode/issues/282714\\n\\n#282713: No response
+        (OPEN)\\n  Labels: ~info-needed, triage-needed\\n  URL: https://github.com/microsoft/vscode/issues/282713\\n\\n#282710:
+        copilot unable to delete (OPEN)\\n  Labels: info-needed\\n  Assignees: jrieken\\n  URL:
+        https://github.com/microsoft/vscode/issues/282710\\n\\n#282709: \\\"Suggestion
+        preview\\\" does not work (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/282709\\n\\n#282708:
+        Vite Terminal Output Looks Broken (OPEN)\\n  Assignees: anthonykim1\\n  URL:
+        https://github.com/microsoft/vscode/issues/282708\\n\"\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"interpretation\": \"Interpretation
-        of the observation\",\n  \"next_step\": \"What to do next: ''#<DSPy::NextStep::Continue>''
-        or ''#<DSPy::NextStep::Finish>''\"\n}\n```\n\nRequired fields: interpretation,
-        next_step\n\nEnsure your response:\n1. Is valid JSON (properly quoted strings,
-        no trailing commas)\n2. Includes all required fields\n3. Uses the correct
-        data types for each field\n4. Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -399,11 +421,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -413,14 +435,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '11009'
+      - '10476'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Wed, 24 Sep 2025 09:42:34 GMT
+      - Thu, 11 Dec 2025 14:25:42 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -432,25 +454,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1442'
+      - '1560'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2744'
+      - '1575'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9998'
+      - '9985'
       X-Ratelimit-Remaining-Tokens:
-      - '197421'
+      - '197543'
       X-Ratelimit-Reset-Requests:
-      - 13.355s
+      - 2m5.796s
       X-Ratelimit-Reset-Tokens:
-      - 773ms
+      - 737ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -467,23 +489,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9841550aba3f1d6c-MAD
+      - 9ac5a716bea9eca1-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CJGJ6fa06L6RR5w8aG7mubO72o6tR",
+          "id": "chatcmpl-Clbtt2XYdwhzUnPDmn5I9QjFzcoOO",
           "object": "chat.completion",
-          "created": 1758706952,
+          "created": 1765463141,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"A total of 20 open issues were found for the repository 'microsoft/vscode', which include a variety of problems and feature requests, highlighting areas for improvement and user feedback.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The tool successfully retrieved a total of 20 open issues from the 'microsoft/vscode' repository, providing a detailed list including issue numbers, descriptions, labels, assignees, and URLs for further reference.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -492,9 +514,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2684,
-            "completion_tokens": 60,
-            "total_tokens": 2744,
+            "prompt_tokens": 2641,
+            "completion_tokens": 67,
+            "total_tokens": 2708,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -507,62 +529,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Wed, 24 Sep 2025 09:42:34 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaIQLAf_oT5sADvrtB84K3po071gAAEBAAAnIQEAAKv8AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        H4sIAAy902gAA71XbW/bNhD+Kwftg1vAsSW/xLaADEgbp3WRuE3iZB/iwKCks8RaIlWSsusE+e87Sm6nZRm2Ocg+CLZE6e654z3PHW8fnFBmmRSO/+AwYxQPCoPa3qEw3GxbgmXo+M7J1ZdtSwVO00mkNruHmmcBa6UyZCkt7D6ICx7R2vn9ajv9uupMP35/dz32hhc37y5m4/Tk4uby08ztD6eziXt+EnvnJ+Oe8/jYdFIZk9/bByfFNaZkYTI9/UxmDc9QG5blju8N+sOBezjq9zxv1KL/naZDi5rFFo1RLMQFj47mTt/rDobIRgfYXw4PeoeD6GB4OOweeN1g1O9H0aA3iuYOSIPpQudMLMhBuDq6vQOFLDQtblAxw6U48nZPTCKLODFk+4qLEMEkdDG9Aq7BSEi5NuUzmaOgZ7pADUupymcKc6m5kWoLjYyHSmq5NO21DmWEjSZMQJPxNIJCV3YbMTdJESys0UVlq0FOZAobWqheIcAGG5AzRVtBaEGjsUAaFoB9G2I0O++UUCbMDlWL4q5CostGOHf+6u7JOwsu8sIcPcyd0u3cOfp17lhHc6cJc8fGVz17Gt3cedwZkoFGtWY7j6eyEBF03ArTG/3Wn8/FL53Dodft+XCDlKmARZCjohxmzCa8CaFiOqG0Mvo0oqCsLZDLMshcyZgyAW8+fxlP35IxgOvLMx8SY3Ltt9tViC2q9fZTjO0q5HblnT79CaXjw1gkpfdLXKJC+qfhhuPmxX46NT+dkQ+fCqofchVr2CS2guzecbHS9E/b6EKMuIhbdcdnLMBU+8DFUh4IxAijvQF1RnVAQ9+W5MZW9orA4PecK4xezfew7nvw//oe1H33fTiOIngv8y2MlSL6nlfqYvk0EaQWKb9CQTTNpCVrItfEPMtMw/PnIJKe0td1kMda85juaVHdJ0x2Bt7+4Pt18EScd9cf4HL82+VkNob3n0/Gr5a1Ok06ng8nXLMgRdotQ+mxvKQ2YugnooU8R6aoeOtoamnQxOetO3xBGrw6GteHGQmCJlkEQ3hIGFMsVQwSHicpXQYiSUQW0sBGKpJwASEqw+wv07TyX3eSoQ7J8v4RuLUIPGJfIcp0UtXZMmNiC0tkplCEjQQvlDlPCfzz+ZxtU1RnKEm5VGT2xuTVWekRM2aKxzGV+3R8VWmUpm4UJnZjlzx9Pms71AcKv5Fd07QfP8VbpEUc4Eqw/aHWeeARDy6RaSn8JxJCdOZizVIe+dBzu6+cvjpFvK5fyge1KENAqF1nXLAUbHelnki5C6juaF9FxADFmispMrQtW2iD1AjLTRdLHhc2kPobzweRYcwEtcQY9w+gWw+AWuEVsThMqhFkSi3wjAuEU4V4//fcJuOKwn7B1tYbpedV+nz8ZQJtsHOrHQXslGU7hkXBQOcY8iUPoZxKIUyYVQBdatLzGJUMUkl5FboJ2ddgfb8/2LoQuUTj49huUUgTkN3jUCpV5LYALF+AANGgS5NOeVe+9G9A7o3OrRPapTZ7RUkDbWT+Q6w3iUWyYdyUpKa8kvqoqvJoCvs5b9lJ9J9z+ZVGGpJFFPsjrjdnl3h9iiQ4lX+NmJWTd8LWlD1GjiLa/p7bK4Ezmoypbb8qxd06xd3un+FVE32Axs7mXEQ8pBqwneZ6UqlnNZqXsghLxlP9ymDrdHaJzu8tM5Z/IA6ZaBg7rEd2w40t3KWSGWRbGj9LlYIP3Hwsguo488poS9r/OIRYfHpBtRgd3T5/WrmzVBL2dPbk/LYgTzkdFegkMhfO493j3e8gg/+m8g4AAA==
-    headers:
-      Content-Encoding:
-      - gzip
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BaIQLAf_oT5sADvrtB84K3po071gAAEBAAAnIQEAAKv8AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: ''
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '0'
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Envoy-Upstream-Service-Time:
-      - '1'
-      Date:
-      - Wed, 24 Sep 2025 09:42:36 GMT
-      Server:
-      - envoy
-      Nr-Rate-Limited:
-      - allowed
-      X-Served-By:
-      - cache-mad2200101-MAD
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Wed, 24 Sep 2025 09:42:37 GMT
+  recorded_at: Thu, 11 Dec 2025 14:25:42 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -577,27 +546,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -605,17 +567,18 @@ http_interactions:
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"finish\"\n      ],\n      \"description\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"github_list_issues\",\n        \"github_list_prs\",\n        \"github_get_issue\",\n        \"github_get_pr\",\n        \"github_api_request\",\n        \"github_traffic_views\",\n        \"github_traffic_clones\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -625,122 +588,102 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"task\\\":\\\"List the open issues
         for this repository\\\",\\\"repository\\\":\\\"microsoft/vscode\\\"}\",\n  \"history\":
         [\n    {\n      \"step\": 1,\n      \"thought\": \"Since the task is to list
-        the open issues for the repository ''microsoft/vscode'', I should use the
-        ''github_list_issues'' tool with the ''state'' parameter set to ''open'' to
-        get the relevant issues.\",\n      \"action\": \"github_list_issues\",\n      \"action_input\":
+        the open issues for the repository ''microsoft/vscode'' and no prior history
+        exists, the next step is to use the ''github_list_issues'' tool to retrieve
+        these open issues.\",\n      \"action\": \"github_list_issues\",\n      \"tool_input\":
         {\n        \"state\": \"open\",\n        \"repo\": \"microsoft/vscode\"\n      },\n      \"observation\":
-        \"Found 20 issue(s):\\n#268134: Very bad performance , crashes and deletion
-        of the program (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268134\\n\\n#268132:
-        Enhance References View (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/268132\\n\\n#268129:
-        Just hangs when it thinks its proceding. (OPEN)\\n  Labels: info-needed\\n  URL:
-        https://github.com/microsoft/vscode/issues/268129\\n\\n#268128: shows token
-        expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268128\\n\\n#268127:
-        shows token expired (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268127\\n\\n#268125:
-        Add Copy Error Message to IntelliSense mouse hover tooltip (OPEN)\\n  Labels:
-        triage-needed\\n  Assignees: rzhao271\\n  URL: https://github.com/microsoft/vscode/issues/268125\\n\\n#268124:
-        BUG REWRITE CODE (OPEN)\\n  Labels: info-needed\\n  URL: https://github.com/microsoft/vscode/issues/268124\\n\\n#268121:
-        Disable extension button disappearing (OPEN)\\n  Assignees: sandy081\\n  URL:
-        https://github.com/microsoft/vscode/issues/268121\\n\\n#268120: The same text
-        selection highlight does not work in certain cases (OPEN)\\n  Labels: triage-needed\\n  Assignees:
-        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/268120\\n\\n#268118:
-        unable to use any features of copilot (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268118\\n\\n#268115: Trigger NES
-        when switching files (OPEN)\\n  Labels: feature-request, NES\\n  Assignees:
-        ulugbekna\\n  URL: https://github.com/microsoft/vscode/issues/268115\\n\\n#268114:
-        Reason: token expired or invalid: 403 (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268114\\n\\n#268113: Integrated
-        terminal activates base conda environment instead of configured environment
-        (OPEN)\\n  Assignees: meganrogge\\n  URL: https://github.com/microsoft/vscode/issues/268113\\n\\n#268112:
-        Search with New Line Freezing (OPEN)\\n  Assignees: osortega\\n  URL: https://github.com/microsoft/vscode/issues/268112\\n\\n#268111:
-        Add API / command for showing a specific local chat session (OPEN)\\n  Assignees:
-        roblourens, mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/268111\\n\\n#268108:
-        Agent creates corrupted file on every file creation (OPEN)\\n  Assignees:
-        roblourens\\n  URL: https://github.com/microsoft/vscode/issues/268108\\n\\n#268107:
-        Show stop button while waiting for user confirmation of tool (OPEN)\\n  Assignees:
-        roblourens, justschen\\n  URL: https://github.com/microsoft/vscode/issues/268107\\n\\n#268104:
-        Fetch tool seems to have cached a 404 for a page (OPEN)\\n  Assignees: TylerLeonhardt\\n  URL:
-        https://github.com/microsoft/vscode/issues/268104\\n\\n#268103: Fetch tool
-        should better indicate in UI when the request fails (OPEN)\\n  Assignees:
-        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268103\\n\\n#268102:
-        Chat fetch tool can''t read content from my private GitHub repos (OPEN)\\n  Assignees:
-        TylerLeonhardt\\n  URL: https://github.com/microsoft/vscode/issues/268102\\n\"\n    }\n  ],\n  \"available_tools\":
+        \"Found 20 issue(s):\\n#282756: Issue: Inline Next Editor Suggestion (NES)
+        not working by clicking (OPEN)\\n  Labels: new release\\n  Assignees: hediet\\n  URL:
+        https://github.com/microsoft/vscode/issues/282756\\n\\n#282755: Add a button
+        to keep staged changed closed (OPEN)\\n  URL: https://github.com/microsoft/vscode/issues/282755\\n\\n#282753:
+        Terminal inline chat input box is incorrectly rendered (OPEN)\\n  Assignees:
+        Tyriar\\n  URL: https://github.com/microsoft/vscode/issues/282753\\n\\n#282752:
+        Shortcuts with dead keys broken in Linux since 1.107.0 (OPEN)\\n  Labels:
+        new release\\n  URL: https://github.com/microsoft/vscode/issues/282752\\n\\n#282750:
+        Remember workspace specific tool disablement (OPEN)\\n  Labels: bug, chat-tools\\n  Assignees:
+        aeschli\\n  URL: https://github.com/microsoft/vscode/issues/282750\\n\\n#282740:
+        all files are closed but complained too many open files, open. (OPEN)\\n  Labels:
+        triage-needed\\n  Assignees: jruales\\n  URL: https://github.com/microsoft/vscode/issues/282740\\n\\n#282738:
+        ClaudeSkills generalization (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        kycutler\\n  URL: https://github.com/microsoft/vscode/issues/282738\\n\\n#282737:
+        Tools and Agent selection in vscode. revamped UI (OPEN)\\n  Assignees: benibenj\\n  URL:
+        https://github.com/microsoft/vscode/issues/282737\\n\\n#282734: Chat UI appearing
+        despite being disabled (OPEN)\\n  Labels: info-needed\\n  Assignees: bpasero\\n  URL:
+        https://github.com/microsoft/vscode/issues/282734\\n\\n#282733: Improve Multi
+        File Diff Editor Commands / Keybindings (OPEN)\\n  Labels: feature-request,
+        multi-diff-editor\\n  Assignees: hediet\\n  URL: https://github.com/microsoft/vscode/issues/282733\\n\\n#282727:
+        A bottom shadow shows incorrectly in chat (OPEN)\\n  Assignees: roblourens\\n  URL:
+        https://github.com/microsoft/vscode/issues/282727\\n\\n#282726: Agent session
+        says it''s in progress when it''s not (OPEN)\\n  Labels: chat-agents-view\\n  Assignees:
+        osortega\\n  URL: https://github.com/microsoft/vscode/issues/282726\\n\\n#282724:
+        Restart to Update needs to be used twice (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        zhichli\\n  URL: https://github.com/microsoft/vscode/issues/282724\\n\\n#282723:
+        workbench.panel.defaultLocation is ignored without deprecation message (OPEN)\\n  Assignees:
+        benibenj\\n  URL: https://github.com/microsoft/vscode/issues/282723\\n\\n#282721:
+        Notebook diff editor doesn''t preserve scroll position when switching to another
+        tab and then back (OPEN)\\n  Labels: bug, notebook-diff\\n  Assignees: DonJayamanne\\n  URL:
+        https://github.com/microsoft/vscode/issues/282721\\n\\n#282714: over-engineered
+        a solution (OPEN)\\n  Labels: info-needed, triage-needed, new release\\n  URL:
+        https://github.com/microsoft/vscode/issues/282714\\n\\n#282713: No response
+        (OPEN)\\n  Labels: ~info-needed, triage-needed\\n  URL: https://github.com/microsoft/vscode/issues/282713\\n\\n#282710:
+        copilot unable to delete (OPEN)\\n  Labels: info-needed\\n  Assignees: jrieken\\n  URL:
+        https://github.com/microsoft/vscode/issues/282710\\n\\n#282709: \\\"Suggestion
+        preview\\\" does not work (OPEN)\\n  Labels: triage-needed\\n  Assignees:
+        mjbvz\\n  URL: https://github.com/microsoft/vscode/issues/282709\\n\\n#282708:
+        Vite Terminal Output Looks Broken (OPEN)\\n  Assignees: anthonykim1\\n  URL:
+        https://github.com/microsoft/vscode/issues/282708\\n\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"github_list_issues\",\n      \"description\":
-        \"List GitHub issues with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_issues\",\n        \"description\": \"List GitHub issues with
-        optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"labels\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"string\"\n              },\n              \"description\":
-        \"Parameter labels (optional)\"\n            },\n            \"assignee\":
-        {\n              \"type\": [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter assignee (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_list_prs\",\n      \"description\":
-        \"List GitHub pull requests with optional filters\",\n      \"schema\": {\n        \"name\":
-        \"github_list_prs\",\n        \"description\": \"List GitHub pull requests
-        with optional filters\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"state\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"open\",\n                \"closed\",\n                \"merged\",\n                \"all\"\n              ],\n              \"description\":
-        \"Parameter state (optional)\"\n            },\n            \"author\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter author (optional)\"\n            },\n            \"base\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter base (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            },\n            \"limit\": {\n              \"type\":
-        \"integer\",\n              \"description\": \"Parameter limit (optional)\"\n            }\n          },\n          \"required\":
-        []\n        }\n      }\n    },\n    {\n      \"name\": \"github_get_issue\",\n      \"description\":
-        \"Get details of a specific GitHub issue\",\n      \"schema\": {\n        \"name\":
-        \"github_get_issue\",\n        \"description\": \"Get details of a specific
-        GitHub issue\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"issue_number\": {\n              \"type\": \"integer\",\n              \"description\":
-        \"Parameter issue_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"issue_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"List GitHub issues with optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_issues\\\",\\\"description\\\":\\\"List
+        GitHub issues with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"labels\\\":{\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        labels (optional)\\\"},\\\"assignee\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        assignee (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_list_prs\",\n      \"description\": \"List GitHub pull requests with
+        optional filters\",\n      \"schema\": \"{\\\"name\\\":\\\"github_list_prs\\\",\\\"description\\\":\\\"List
+        GitHub pull requests with optional filters\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"open\\\",\\\"closed\\\",\\\"merged\\\",\\\"all\\\"],\\\"description\\\":\\\"Parameter
+        state (optional)\\\"},\\\"author\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        author (optional)\\\"},\\\"base\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        base (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"},\\\"limit\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        limit (optional)\\\"}},\\\"required\\\":[]}}\"\n    },\n    {\n      \"name\":
+        \"github_get_issue\",\n      \"description\": \"Get details of a specific
+        GitHub issue\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_issue\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub issue\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"issue_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        issue_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"issue_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_get_pr\",\n      \"description\": \"Get details of a specific GitHub
-        pull request\",\n      \"schema\": {\n        \"name\": \"github_get_pr\",\n        \"description\":
-        \"Get details of a specific GitHub pull request\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"pr_number\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        pr_number\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"pr_number\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        pull request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_get_pr\\\",\\\"description\\\":\\\"Get
+        details of a specific GitHub pull request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"pr_number\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        pr_number\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"pr_number\\\"]}}\"\n    },\n    {\n      \"name\":
         \"github_api_request\",\n      \"description\": \"Make an arbitrary GitHub
-        API request\",\n      \"schema\": {\n        \"name\": \"github_api_request\",\n        \"description\":
-        \"Make an arbitrary GitHub API request\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"endpoint\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter endpoint\"\n            },\n            \"method\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        method (optional)\"\n            },\n            \"fields\": {\n              \"type\":
-        \"object\",\n              \"propertyNames\": {\n                \"type\":
-        \"string\"\n              },\n              \"additionalProperties\": {\n                \"type\":
-        \"string\"\n              },\n              \"description\": \"Parameter fields
-        (optional)\"\n            },\n            \"repo\": {\n              \"type\":
-        [\n                \"string\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter repo (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"endpoint\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        API request\",\n      \"schema\": \"{\\\"name\\\":\\\"github_api_request\\\",\\\"description\\\":\\\"Make
+        an arbitrary GitHub API request\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"endpoint\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        endpoint\\\"},\\\"method\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        method (optional)\\\"},\\\"fields\\\":{\\\"type\\\":\\\"object\\\",\\\"propertyNames\\\":{\\\"type\\\":\\\"string\\\"},\\\"additionalProperties\\\":{\\\"type\\\":\\\"string\\\"},\\\"description\\\":\\\"Parameter
+        fields (optional)\\\"},\\\"repo\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        repo (optional)\\\"}},\\\"required\\\":[\\\"endpoint\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_views\",\n      \"description\": \"Get repository traffic
+        views (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_views\\\",\\\"description\\\":\\\"Get
+        repository traffic views (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"github_traffic_clones\",\n      \"description\": \"Get repository traffic
+        clones (last 14 days by default)\",\n      \"schema\": \"{\\\"name\\\":\\\"github_traffic_clones\\\",\\\"description\\\":\\\"Get
+        repository traffic clones (last 14 days by default)\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"repo\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        repo\\\"},\\\"per\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        per (optional)\\\"}},\\\"required\\\":[\\\"repo\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
-        about what to do next, considering the history and observations.\",\n  \"action\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
-        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -750,11 +693,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -764,14 +707,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '15712'
+      - '14017'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Wed, 24 Sep 2025 09:42:47 GMT
+      - Thu, 11 Dec 2025 14:25:49 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -783,25 +726,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '12597'
+      - '6965'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '12823'
+      - '6980'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9997'
+      - '9984'
       X-Ratelimit-Remaining-Tokens:
-      - '196412'
+      - '196912'
       X-Ratelimit-Reset-Requests:
-      - 18.735s
+      - 2m12.71s
       X-Ratelimit-Reset-Tokens:
-      - 1.076s
+      - 926ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -818,23 +761,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9841551f7d051d6c-MAD
+      - 9ac5a7217c2ceca1-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CJGJ8EjRNpyPD1ABSqzguS26kXAjS",
+          "id": "chatcmpl-ClbtuEmcFRJDVKY67LEYQu3NF5cHs",
           "object": "chat.completion",
-          "created": 1758706954,
+          "created": 1765463142,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"The open issues for the repository 'microsoft/vscode' have been successfully retrieved. I should create a summary of the open issues to provide a concise overview to the user.\",\n  \"action\": \"finish\",\n  \"action_input\": \"Total open issues: 20\\n\\n1. #268134: Very bad performance, crashes and deletion of the program - [Link](https://github.com/microsoft/vscode/issues/268134)\\n2. #268132: Enhance References View - [Link](https://github.com/microsoft/vscode/issues/268132)\\n3. #268129: Just hangs when it thinks its proceeding - [Link](https://github.com/microsoft/vscode/issues/268129)\\n4. #268128: shows token expired - [Link](https://github.com/microsoft/vscode/issues/268128)\\n5. #268127: shows token expired - [Link](https://github.com/microsoft/vscode/issues/268127)\\n6. #268125: Add Copy Error Message to IntelliSense mouse hover tooltip - [Link](https://github.com/microsoft/vscode/issues/268125)\\n7. #268124: BUG REWRITE CODE - [Link](https://github.com/microsoft/vscode/issues/268124)\\n8. #268121: Disable extension button disappearing - [Link](https://github.com/microsoft/vscode/issues/268121)\\n9. #268120: The same text selection highlight does not work in certain cases - [Link](https://github.com/microsoft/vscode/issues/268120)\\n10. #268118: unable to use any features of copilot - [Link](https://github.com/microsoft/vscode/issues/268118)\\n11. #268115: Trigger NES when switching files - [Link](https://github.com/microsoft/vscode/issues/268115)\\n12. #268114: Reason: token expired or invalid: 403 - [Link](https://github.com/microsoft/vscode/issues/268114)\\n13. #268113: Integrated terminal activates base conda environment instead of configured environment - [Link](https://github.com/microsoft/vscode/issues/268113)\\n14. #268112: Search with New Line Freezing - [Link](https://github.com/microsoft/vscode/issues/268112)\\n15. #268111: Add API / command for showing a specific local chat session - [Link](https://github.com/microsoft/vscode/issues/268111)\\n16. #268108: Agent creates corrupted file on every file creation - [Link](https://github.com/microsoft/vscode/issues/268108)\\n17. #268107: Show stop button while waiting for user confirmation of tool - [Link](https://github.com/microsoft/vscode/issues/268107)\\n18. #268104: Fetch tool seems to have cached a 404 for a page - [Link](https://github.com/microsoft/vscode/issues/268104)\\n19. #268103: Fetch tool should better indicate in UI when the request fails - [Link](https://github.com/microsoft/vscode/issues/268103)\\n20. #268102: Chat fetch tool can't read content from my private GitHub repos - [Link](https://github.com/microsoft/vscode/issues/268102)\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I have retrieved the list of open issues for the repository 'microsoft/vscode'. Next, I need to determine if any specific issues require further investigation or if I should provide a summary of the findings. Since there are 20 open issues, it might be beneficial to summarize key issues or provide specific details upon request.\",\n  \"action\": \"finish\",\n  \"tool_input\": null,\n  \"final_answer\": \"I found 20 open issues in the repository 'microsoft/vscode'. Here are a few key issues:\\n\\n1. [#282756](https://github.com/microsoft/vscode/issues/282756): Inline Next Editor Suggestion (NES) not working\\n2. [#282755](https://github.com/microsoft/vscode/issues/282755): Add a button to keep staged changes closed\\n3. [#282753](https://github.com/microsoft/vscode/issues/282753): Terminal inline chat input box is incorrectly rendered\\n4. [#282721](https://github.com/microsoft/vscode/issues/282721): Notebook diff editor doesn't preserve scroll position\\n\\nLet me know if you need more details on any specific issue.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -843,11 +786,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 3227,
-            "completion_tokens": 708,
-            "total_tokens": 3935,
+            "prompt_tokens": 2988,
+            "completion_tokens": 254,
+            "total_tokens": 3242,
             "prompt_tokens_details": {
-              "cached_tokens": 1024,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -858,64 +801,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Wed, 24 Sep 2025 09:42:47 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaFfKBDiBZwfADvrtBCL5gxo4DTcAAEBAAAnIQEAAR1ZAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        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
-    headers:
-      Content-Encoding:
-      - gzip
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgANTXVzdGFmYUtoYWxpbBcADU11c3RhZmFLaGFsaWw
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BaFfKBDiBZwfADvrtBCL5gxo4DTcAAEBAAAnIQEAAR1ZAgQfPOcaAwAGOS4yMS4wAA1NdXN0YWZhS2hhbGlsAAdEU1B5LnJi
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.3.6 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: Accepted
-    headers:
-      Date:
-      - Fri, 03 Oct 2025 20:39:50 GMT
-      Content-Type:
-      - application/json; charset=UTF-8
-      Content-Length:
-      - '0'
-      Connection:
-      - keep-alive
-      Cf-Ray:
-      - 988f40484ff1d6a5-IAD
-      Cf-Cache-Status:
-      - DYNAMIC
-      Server:
-      - cloudflare
-      Nr-Rate-Limited:
-      - allowed
-      X-Envoy-Upstream-Service-Time:
-      - '0'
-      Vary:
-      - accept-encoding
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Fri, 03 Oct 2025 20:39:50 GMT
+  recorded_at: Thu, 11 Dec 2025 14:25:49 GMT
 recorded_with: VCR 6.3.1

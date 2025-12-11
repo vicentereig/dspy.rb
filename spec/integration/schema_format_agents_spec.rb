@@ -141,10 +141,11 @@ RSpec.describe 'Schema Format Integration with Agents', type: :integration do
     it 'describes output fields with action enum in TOON format' do
       system_prompt = agent.prompt.render_system_prompt
 
-      # Should describe thought, action, action_input
+      # Should describe thought, action, tool_input, final_answer
       expect(system_prompt).to include('thought')
       expect(system_prompt).to include('action')
-      expect(system_prompt).to include('action_input')
+      expect(system_prompt).to include('tool_input')
+      expect(system_prompt).to include('final_answer')
 
       # Should list valid action values
       expect(system_prompt).to include('calculate')

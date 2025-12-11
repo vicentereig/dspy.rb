@@ -2,6 +2,107 @@
 http_interactions:
 - request:
     method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=metric_data&protocol_version=17&run_id=BYjV0XrGRR67ADvrtB84K3ppOtR4AAEBAAAnIQEAATX0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        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
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BYjV0XrGRR67ADvrtB84K3ppOtR4AAEBAAAnIQEAATX0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-mad2200102-MAD
+      Date:
+      - Thu, 11 Dec 2025 14:25:31 GMT
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Thu, 11 Dec 2025 14:25:31 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=get_agent_commands&protocol_version=17&run_id=BYjV0XrGRR67ADvrtB84K3ppOtR4AAEBAAAnIQEAATX0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '["BYjV0XrGRR67ADvrtB84K3ppOtR4AAEBAAAnIQEAATX0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg"]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BYjV0XrGRR67ADvrtB84K3ppOtR4AAEBAAAnIQEAATX0AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '19'
+      Date:
+      - Thu, 11 Dec 2025 14:25:32 GMT
+      Content-Type:
+      - text/plain
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Server:
+      - istio-envoy
+      X-Served-By:
+      - cache-mad2200102-MAD
+    body:
+      encoding: UTF-8
+      string: '{"return_value":[]}'
+  recorded_at: Thu, 11 Dec 2025 14:25:32 GMT
+- request:
+    method: post
     uri: https://api.openai.com/v1/chat/completions
     body:
       encoding: UTF-8
@@ -14,27 +115,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        [\n              \"string\",\n              \"null\"\n            ]\n          }\n        },\n        \"required\":
-        [\n          \"_type\",\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -44,15 +138,22 @@ http_interactions:
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
         {\n      \"type\": \"string\",\n      \"enum\": [\n        \"irrelevant_tool\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"array\",\n        \"null\"\n      ],\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"CourseResult\"\n          },\n          \"name\":
+        {\n            \"type\": \"string\"\n          },\n          \"code\": {\n            \"type\":
+        \"string\"\n          },\n          \"credits\": {\n            \"type\":
+        \"integer\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"name\",\n          \"code\",\n          \"credits\"\n        ],\n        \"description\":
+        \"CourseResult struct\"\n      },\n      \"description\": \"The final answer
+        to return. Required when action is \\\"finish\\\". Must match the expected
+        output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -62,26 +163,17 @@ http_interactions:
         \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"query\\\":\\\"Find computer science
         courses\\\"}\",\n  \"history\": [],\n  \"available_tools\": [\n    {\n      \"name\":
         \"irrelevant_tool\",\n      \"description\": \"A tool that doesn''t help find
-        courses\",\n      \"schema\": {\n        \"name\": \"irrelevant_tool\",\n        \"description\":
-        \"A tool that doesn''t help find courses\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {},\n          \"required\": []\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        courses\",\n      \"schema\": \"{\\\"name\\\":\\\"irrelevant_tool\\\",\\\"description\\\":\\\"A
+        tool that doesn''t help find courses\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{},\\\"required\\\":[]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`.\n\nIMPORTANT: You must respond with valid
-        JSON that matches this structure:\n```json\n{\n  \"thought\": \"Reasoning
-        about what to do next, considering the history and observations.\",\n  \"action\":
-        \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\",\n  \"action_input\":
-        \"example value\"\n}\n```\n\nRequired fields: thought, action, action_input\n\nEnsure
-        your response:\n1. Is valid JSON (properly quoted strings, no trailing commas)\n2.
-        Includes all required fields\n3. Uses the correct data types for each field\n4.
-        Is wrapped in ```json``` markdown code blocks\n"}],"temperature":1.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -91,11 +183,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -105,14 +197,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '6591'
+      - '5749'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Tue, 30 Sep 2025 16:40:06 GMT
+      - Thu, 11 Dec 2025 14:25:34 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -124,25 +216,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1940'
+      - '4461'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '2352'
+      - '4476'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9999'
+      - '9986'
       X-Ratelimit-Remaining-Tokens:
-      - '198526'
+      - '198736'
       X-Ratelimit-Reset-Requests:
-      - 8.64s
+      - 1m59.517s
       X-Ratelimit-Reset-Tokens:
-      - 442ms
+      - 379ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -159,23 +251,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 987528ee780b4289-EWR
+      - 9ac5a6d1eee7216c-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CLXgSw696lqbGei2PDb8Z6IXO8iP6",
+          "id": "chatcmpl-Clbtik81YiKHnIjwJ1GQoGk9RcbKH",
           "object": "chat.completion",
-          "created": 1759250404,
+          "created": 1765463130,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find relevant computer science courses, but there are no available tools that can help with this task as the only tool provided is irrelevant. Therefore, I should indicate that no relevant tool is available and finish the process.\",\n  \"action\": \"finish\",\n  \"action_input\": \"No relevant tools available to find computer science courses.\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Since the history is empty and the available tools do not provide any relevant aid in finding computer science courses, I should determine the best next step. The only available tool is irrelevant to the task. Therefore, the logical action is to finish without using a tool.\",\n  \"action\": \"finish\",\n  \"tool_input\": null,\n  \"final_answer\": null\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -184,9 +276,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1294,
-            "completion_tokens": 83,
-            "total_tokens": 1377,
+            "prompt_tokens": 1153,
+            "completion_tokens": 88,
+            "total_tokens": 1241,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -199,7 +291,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Tue, 30 Sep 2025 16:40:06 GMT
+  recorded_at: Thu, 11 Dec 2025 14:25:34 GMT
 recorded_with: VCR 6.3.1

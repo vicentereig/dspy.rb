@@ -78,9 +78,9 @@ RSpec.describe DSPy::ReAct do
       end
     end
 
-    it 'has history entries with :action_input key' do
+    it 'has history entries with :tool_input key' do
       prediction.history.each do |entry|
-        expect(entry).to have_key(:action_input)
+        expect(entry).to have_key(:tool_input)
       end
     end
 
@@ -116,9 +116,9 @@ RSpec.describe DSPy::ReAct do
       end
     end
 
-    it 'history entries have action_input as a string or hash' do
+    it 'history entries have tool_input as nil or hash' do
       prediction.history.each do |entry|
-        expect(entry[:action_input]).to satisfy { |val| val.is_a?(String) || val.is_a?(Hash) }
+        expect(entry[:tool_input]).to satisfy { |val| val.nil? || val.is_a?(Hash) }
       end
     end
 
@@ -770,7 +770,8 @@ RSpec.describe DSPy::ReAct do
           double(
             thought: "I'll use the tool again",
             action: 'useless_tool',
-            action_input: {},
+            tool_input: {},
+            final_answer: nil,
             next_step: DSPy::NextStep::Continue,  # For observation processor
             interpretation: "Got a result, continuing"  # Also needed for observation processor
           )
@@ -801,7 +802,8 @@ RSpec.describe DSPy::ReAct do
           double(
             thought: "I'll use a non-existent tool",
             action: 'nonexistent_tool',
-            action_input: 'test'
+            tool_input: { 'test' => 'value' },
+            final_answer: nil
           )
         )
       end
@@ -847,7 +849,8 @@ RSpec.describe DSPy::ReAct do
           double(
             thought: "I'll use the failing tool",
             action: 'failing_tool',
-            action_input: {}
+            tool_input: {},
+            final_answer: nil
           )
         )
 
@@ -878,7 +881,8 @@ RSpec.describe DSPy::ReAct do
           double(
             thought: "I'll finish with a string",
             action: 'finish',
-            action_input: 'not a number'
+            tool_input: nil,
+            final_answer: 'not a number'
           )
         )
 

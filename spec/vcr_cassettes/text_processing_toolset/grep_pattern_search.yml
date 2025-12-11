@@ -2,245 +2,70 @@
 http_interactions:
 - request:
     method: post
-    uri: https://api.openai.com/v1/chat/completions
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BajcDFb7lB0HADvrtB84K3ppOtZYAAEBAAAnIQEAAUz-AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
     body:
       encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools. The agent MUST use
-        information from the history to inform its actions and final answer. Each
-        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
-        \"Array of available tools with their JSON schemas. The agent MUST choose
-        an action from the tool names in this list or use \\\"finish\\\". For each
-        tool, use the name exactly as specified and provide action_input as a JSON
-        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
-        MUST be one of the tool names listed in `available_tools` input, or the literal
-        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final answer to the original question. This answer MUST be
-        directly taken from the relevant Observation in the history if available.
-        For example, if an observation showed \\\"Observation: 100.0\\\", and you
-        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
-        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"question\": \"Hello world, this is a test.\\nThis
-        is line number two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe
-        quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\",\n  \"history\": [],\n  \"available_tools\": [\n    {\n      \"name\":
-        \"text_grep\",\n      \"description\": \"Search for patterns in text using
-        grep\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"pattern\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter pattern\"\n          },\n          \"ignore_case\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        ignore_case (optional)\"\n          },\n          \"count_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter count_only (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_wc\",\n      \"description\": \"Count lines, words, and characters
-        in text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"lines_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter lines_only (optional)\"\n          },\n          \"words_only\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        words_only (optional)\"\n          },\n          \"chars_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter chars_only (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter pattern\"\n          },\n          \"context\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter context (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
-        from text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"start_line\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter start_line\"\n          },\n          \"end_line\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        end_line (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"start_line\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
-        not matching a pattern\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"pattern\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter pattern\"\n          },\n          \"invert\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        invert (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"preserve_order\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter preserve_order (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"reverse\": {\n            \"type\": \"boolean\",\n            \"description\":
-        \"Parameter reverse (optional)\"\n          },\n          \"numeric\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter numeric (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
-        of text content\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          }\n        },\n        \"required\": [\n          \"text\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1765463672765.7778,"message":"trace_id=\"8d09bde9-ce5f-43ff-9406-669d52962dd1\"
+        evaluation.program_class=\"DSPy::Predict\" evaluation.total_examples=2 evaluation.passed_examples=2
+        evaluation.pass_rate=1.0 evaluation.aggregated_metrics={total_examples: 2,
+        passed_examples: 2, failed_examples: 0, score_sum: 1.92, score_avg: 0.96,
+        score_min: 0.9199999999999999, score_max: 1.0, faithfulness_avg: 5.0, faithfulness_min:
+        5, faithfulness_max: 5, relevance_avg: 4.5, relevance_min: 4, relevance_max:
+        5, coherence_avg: 4.5, coherence_min: 4, coherence_max: 5, fluency_avg: 5.0,
+        fluency_min: 5, fluency_max: 5, pass_rate: 1.0} event=\"evaluation.batch_complete\"\n"},{"level":"INFO","timestamp":1765463672770.232,"message":"trace_id=\"8d09bde9-ce5f-43ff-9406-669d52962dd1\"
+        evaluation.program_class=\"DSPy::ChainOfThought\" evaluation.total_examples=2
+        evaluation.passed_examples=2 evaluation.pass_rate=1.0 evaluation.aggregated_metrics={total_examples:
+        2, passed_examples: 2, failed_examples: 0, score_sum: 1.8, score_avg: 0.9,
+        score_min: 0.8400000000000001, score_max: 0.96, faithfulness_avg: 4.5, faithfulness_min:
+        4, faithfulness_max: 5, relevance_avg: 4.5, relevance_min: 4, relevance_max:
+        5, coherence_avg: 4.0, coherence_min: 4, coherence_max: 4, fluency_avg: 5.0,
+        fluency_min: 5, fluency_max: 5, pass_rate: 1.0} event=\"evaluation.batch_complete\"\n"}]}]'
     headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BajcDFb7lB0HADvrtB84K3ppOtZYAAEBAAAnIQEAAUz-AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
-      - application/json
+      - "*/*"
       User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
       Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '10614'
+      - application/octet-stream
   response:
     status:
-      code: 200
-      message: OK
+      code: 202
+      message: ''
     headers:
-      Date:
-      - Sat, 05 Jul 2025 07:51:43 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1880'
-      Openai-Version:
-      - '2020-10-01'
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
       X-Envoy-Upstream-Service-Time:
-      - '1882'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9855'
-      X-Ratelimit-Remaining-Tokens:
-      - '197621'
-      X-Ratelimit-Reset-Requests:
-      - 20m50.873s
-      X-Ratelimit-Reset-Tokens:
-      - 713ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      X-Content-Type-Options:
-      - nosniff
+      - '2'
+      Date:
+      - Thu, 11 Dec 2025 14:34:34 GMT
       Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a54753fc7a20f8-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-mad2200143-MAD
     body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-BpryPDp6IZiI5B8VE5xAAIgY9Rplb",
-          "object": "chat.completion",
-          "created": 1751701901,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to analyze the provided text to extract useful information. Since the question contains multiple lines and mentions specific words and numbers, I can use the 'text_wc' tool to count the lines, words, and characters in the text. This will give me a good overview of the text structure before proceeding with any specific searches or extractions.\",\n  \"action\": \"text_wc\",\n  \"action_input\": {\n    \"text\": \"Hello world, this is a test.\\nThis is line number two.\\nHere's another line with some numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\" for testing.\\nFinal line with more test data.\\nHello world appears again here.\\n\"\n  }\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 2083,
-            "completion_tokens": 176,
-            "total_tokens": 2259,
-            "prompt_tokens_details": {
-              "cached_tokens": 2048,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 07:51:43 GMT
+      encoding: UTF-8
+      string: ''
+  recorded_at: Thu, 11 Dec 2025 14:34:35 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -248,61 +73,114 @@ http_interactions:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts, actions, and observations. Each entry is a hash representing a step
-        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
-        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
-        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
-        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
-        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
-        adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Hello world, this is a test.\\nThis is line number two.\\nHere''s another
-        line with some numbers: 123, 456, 789.\\nThe quick brown fox jumps over the
-        lazy dog.\\nThis line contains the word \\\"error\\\" for testing.\\nFinal
-        line with more test data.\\nHello world appears again here.\\n\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to analyze the provided
-        text to extract useful information. Since the question contains multiple lines
-        and mentions specific words and numbers, I can use the ''text_wc'' tool to
-        count the lines, words, and characters in the text. This will give me a good
-        overview of the text structure before proceeding with any specific searches
-        or extractions.\",\n      \"action\": \"text_wc\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Lines: 7, Words: 48, Characters:
-        266\"\n    }\n  ],\n  \"observation\": \"Lines: 7, Words: 48, Characters:
-        266\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
-        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":0.0}'
+        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"text_grep\",\n        \"text_wc\",\n        \"text_rg\",\n        \"text_extract_lines\",\n        \"text_filter_lines\",\n        \"text_unique_lines\",\n        \"text_sort_lines\",\n        \"text_summarize_text\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"text\\\":\\\"Hello world, this
+        is a test.\\\\nThis is line number two.\\\\nHere''s another line with some
+        numbers: 123, 456, 789.\\\\nThe quick brown fox jumps over the lazy dog.\\\\nThis
+        line contains the word \\\\\\\"error\\\\\\\" for testing.\\\\nFinal line with
+        more test data.\\\\nHello world appears again here.\\\\n\\\",\\\"task\\\":\\\"Find
+        lines containing \\\\\\\"Hello\\\\\\\" and tell me how many were found\\\"}\",\n  \"history\":
+        [],\n  \"available_tools\": [\n    {\n      \"name\": \"text_grep\",\n      \"description\":
+        \"Search for patterns in text using grep\",\n      \"schema\": \"{\\\"name\\\":\\\"text_grep\\\",\\\"description\\\":\\\"Search
+        for patterns in text using grep\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"ignore_case\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        ignore_case (optional)\\\"},\\\"count_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        count_only (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_wc\",\n      \"description\": \"Count lines, words, and characters
+        in text\",\n      \"schema\": \"{\\\"name\\\":\\\"text_wc\\\",\\\"description\\\":\\\"Count
+        lines, words, and characters in text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"lines_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        lines_only (optional)\\\"},\\\"words_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        words_only (optional)\\\"},\\\"chars_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        chars_only (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"schema\":
+        \"{\\\"name\\\":\\\"text_rg\\\",\\\"description\\\":\\\"Fast text search using
+        ripgrep\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"context\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        context (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
+        from text\",\n      \"schema\": \"{\\\"name\\\":\\\"text_extract_lines\\\",\\\"description\\\":\\\"Extract
+        specific line ranges from text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"start_line\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        start_line\\\"},\\\"end_line\\\":{\\\"type\\\":[\\\"integer\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        end_line (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"start_line\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
+        not matching a pattern\",\n      \"schema\": \"{\\\"name\\\":\\\"text_filter_lines\\\",\\\"description\\\":\\\"Filter
+        lines matching or not matching a pattern\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"invert\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        invert (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"schema\":
+        \"{\\\"name\\\":\\\"text_unique_lines\\\",\\\"description\\\":\\\"Get unique
+        lines from text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"preserve_order\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        preserve_order (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"schema\":
+        \"{\\\"name\\\":\\\"text_sort_lines\\\",\\\"description\\\":\\\"Sort lines
+        in text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"reverse\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        reverse (optional)\\\"},\\\"numeric\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        numeric (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
+        of text content\",\n      \"schema\": \"{\\\"name\\\":\\\"text_summarize_text\\\",\\\"description\\\":\\\"Generate
+        statistical summary of text content\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -312,11 +190,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.9.0
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -326,14 +204,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '4517'
+      - '10468'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 07:51:44 GMT
+      - Thu, 11 Dec 2025 14:34:37 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -345,54 +223,58 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1029'
+      - '4570'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1033'
+      - '4714'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9854'
+      - '9906'
       X-Ratelimit-Remaining-Tokens:
-      - '198986'
+      - '197773'
       X-Ratelimit-Reset-Requests:
-      - 20m57.414s
+      - 13m32.129s
       X-Ratelimit-Reset-Tokens:
-      - 304ms
+      - 668ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a547610dae20f8-EWR
+      - 9ac5b4131c9aec8d-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpryRTmD1BBaUompzDVCV3rak0a7H",
+          "id": "chatcmpl-Clc2T9k2pWpdAj86uT0Z1dZ66Towb",
           "object": "chat.completion",
-          "created": 1751701903,
+          "created": 1765463673,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The text consists of 7 lines, 48 words, and 266 characters. This indicates a moderately sized text with a variety of content, including numbers and the word 'error'.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to find lines containing the word 'Hello' in the provided text and count how many were found. The tool 'text_grep' can be used to search for the pattern. After that, I will also use 'text_wc' if I decide to count the lines, but since the task specifically asks for how many lines contain 'Hello', using 'text_grep' with count_only will suffice.\",\n  \"action\": \"text_grep\",\n  \"tool_input\": {\n    \"text\": \"Hello world, this is a test.\\nThis is line number two.\\nHere's another line with some numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\" for testing.\\nFinal line with more test data.\\nHello world appears again here.\",\n    \"pattern\": \"Hello\",\n    \"count_only\": true\n  },\n  \"final_answer\": null\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -401,9 +283,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 962,
-            "completion_tokens": 62,
-            "total_tokens": 1024,
+            "prompt_tokens": 1968,
+            "completion_tokens": 211,
+            "total_tokens": 2179,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -416,260 +298,58 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Sat, 05 Jul 2025 07:51:44 GMT
+  recorded_at: Thu, 11 Dec 2025 14:34:37 GMT
 - request:
     method: post
-    uri: https://api.openai.com/v1/chat/completions
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=metric_data&protocol_version=17&run_id=BajcDFb7lB0HADvrtB84K3ppOtZYAAEBAAAnIQEAAUz-AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
     body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools. The agent MUST use
-        information from the history to inform its actions and final answer. Each
-        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
-        \"Array of available tools with their JSON schemas. The agent MUST choose
-        an action from the tool names in this list or use \\\"finish\\\". For each
-        tool, use the name exactly as specified and provide action_input as a JSON
-        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
-        MUST be one of the tool names listed in `available_tools` input, or the literal
-        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final answer to the original question. This answer MUST be
-        directly taken from the relevant Observation in the history if available.
-        For example, if an observation showed \\\"Observation: 100.0\\\", and you
-        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
-        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"question\": \"Hello world, this is a test.\\nThis
-        is line number two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe
-        quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
-        \"I need to analyze the provided text to extract useful information. Since
-        the question contains multiple lines and mentions specific words and numbers,
-        I can use the ''text_wc'' tool to count the lines, words, and characters in
-        the text. This will give me a good overview of the text structure before proceeding
-        with any specific searches or extractions.\",\n      \"action\": \"text_wc\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Lines: 7, Words: 48, Characters:
-        266\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\": \"text_grep\",\n      \"description\":
-        \"Search for patterns in text using grep\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"text\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter text\"\n          },\n          \"pattern\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        pattern\"\n          },\n          \"ignore_case\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter ignore_case (optional)\"\n          },\n          \"count_only\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        count_only (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_wc\",\n      \"description\": \"Count lines, words, and characters
-        in text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"lines_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter lines_only (optional)\"\n          },\n          \"words_only\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        words_only (optional)\"\n          },\n          \"chars_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter chars_only (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter pattern\"\n          },\n          \"context\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter context (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
-        from text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"start_line\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter start_line\"\n          },\n          \"end_line\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        end_line (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"start_line\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
-        not matching a pattern\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"pattern\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter pattern\"\n          },\n          \"invert\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        invert (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"preserve_order\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter preserve_order (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"reverse\": {\n            \"type\": \"boolean\",\n            \"description\":
-        \"Parameter reverse (optional)\"\n          },\n          \"numeric\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter numeric (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
-        of text content\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          }\n        },\n        \"required\": [\n          \"text\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAH7WOmkAA61X227iSBD9lRXPmbir771vJpdJtJvbkOwqG0WoMT3Es8ZGdkNERvvvW21yNWAmIUgG60SpPq46dap80+naH8n+4UBlXXIU789K39X8DzaZnPl/ruP4oBvHcX58cRDHVw9f4tHF9/OzxMb38dezHp+f9Ph9HPsH+zek1z1RDejp3SCOj74dnl64nphfjzo7oKTgkknQuxqoVJI+QwohQhjjOzc3Pzu5HbvO753edDIpSm8HaZb6eRSfH0fDtLKDzPVtlvV9aZM0x7idKikm4R86/+3cUL1Ddknzur3daY1buqQoh/2x82WaNCJK9e6II5f7aK/IMpf4oowWYftD6220Py2tT4u8cQhgTKqFJNzgR1MlwGwDEQ1CEQqSgACuFG3jm+az4l/XL9248K5fuTK1WfrgGhRZCEuIoqI+iCkFHBS0oQQgsFLcCC2MlsAXuOQy4JQo0EwtCNcfThnloLUChTdKfID162yvSPLa07dHA3/QkmiNT0yMUKaV/7fpYP5KJGdTP5n6qDv3rlrKPAClBoVnIHzp8IUVDz9cKA3ctAuycdRrPbYcC0+HaPPqwMcfSpnUIN/XCCPn+zZg/aQYj20+rNr6QQLVGkJamWJEbAUxJSRlQAklUlEFHxHWMvvV+lqn+k/AYZczhPBCEeKvdl/gPZVfUYB2AehHx1to7kV4bWce2XLmKr8iOYZxdH2zeCrF2TaQVgyVr6UEyanSbYQuS5tXNgkyO5jhw68hSOu0g2H1QYxjhnFOsRaUhF4PnAzgpbDvFzDVqnZjIJoaJbR8NgiGw05LoygjaHWs1Zb3ppUvxpsZE0HkQi6UakJFC0hqRSFbLkIHYy4XOIAIf5VECcM1zotnwoQagm6GUSRTaHiKtVE+KMui/AXGoOoECc2MqI2yFcY01zBFmgBakKcGoTVrxQxXyJBT/kKbYIJxpQA0YgMMx0mrF/9ZjDaxptzgCYEHZkMZthqqc8wXQsW0E6VVzQqHmQxNi3VRSnJWP5kEJnCUoD4ER28ybxgipRGuN1GW5kuNST+y46R5gpYWen/lmiM2xnzDKDo+PTzbltZTxMOivLflMNz2nGvOgs8Jmzer+v4kNqZZVoz6Lqhm82aHnsVFrQrUKpV6SwyVg/uAwAsYdgFtdb914+wt/TWjTC4WHU0M51xK+ZlwvTDx4KBoi4gDWuI7Zlkj/a1zDARVWGCK1+PtE8LQG2hzfdo7v4p688q78W+X6bi5CNcVxR0QFgOp/sgtMdx8JZGMSiFrr9NyidAVlm41HcCQOILUU1LJVhCKDZlwpbEywWNXEomuPBblYZ3ggzUDDgysulCCME0/AwxSYgxfatBrcfU26LNryraRHuEsTI464wK1QD8LDUnUHDOIzo5vQlLrxpA/wT4s59H53bxKE5stsWMMdYnTQGy4AxweJlhBWI1wuX0730Kv/HUSfd2Lymne7Icg+4b1CbNrwtKijaQc+5DzNeF84W0W3r+LxHo37BeDH9iOSwcAwwoavsFgX8KO07wo+6ME99LpklOv4Lsm0p5N7txxPkOHG9bFr6IEv7xdFZMCfUfUk7SqXEs4JnEd/+XnvXN20s/SWbOZ0dCpXp5M0B7oe+mWXAHQbZdn+ppAl3els/gygHXduBY0QxzXCUlc1J1W81XNtpyS29v/AR83r+huEgAA
     headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BajcDFb7lB0HADvrtB84K3ppOtZYAAEBAAAnIQEAAUz-AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
-      - application/json
+      - "*/*"
       User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
       Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '11473'
+      - application/octet-stream
   response:
     status:
-      code: 200
-      message: OK
+      code: 202
+      message: ''
     headers:
-      Date:
-      - Sat, 05 Jul 2025 07:51:46 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '2060'
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '2063'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9853'
-      X-Ratelimit-Remaining-Tokens:
-      - '197417'
-      X-Ratelimit-Reset-Requests:
-      - 21m4.752s
-      X-Ratelimit-Reset-Tokens:
-      - 774ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a5476958a920f8-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-mad22039-MAD
+      Date:
+      - Thu, 11 Dec 2025 14:34:39 GMT
     body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-BpryS8HlSEsizFflw88AqOdSfOWLm",
-          "object": "chat.completion",
-          "created": 1751701904,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have analyzed the text and obtained the line, word, and character counts. Now, I should search for specific patterns in the text, such as the word 'error', to see how many times it appears. I will use the 'text_grep' tool for this purpose.\",\n  \"action\": \"text_grep\",\n  \"action_input\": {\n    \"text\": \"Hello world, this is a test.\\nThis is line number two.\\nHere's another line with some numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\" for testing.\\nFinal line with more test data.\\nHello world appears again here.\\n\",\n    \"pattern\": \"error\"\n  }\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 2283,
-            "completion_tokens": 173,
-            "total_tokens": 2456,
-            "prompt_tokens_details": {
-              "cached_tokens": 1024,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 07:51:46 GMT
+      encoding: UTF-8
+      string: ''
+  recorded_at: Thu, 11 Dec 2025 14:34:39 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -677,25 +357,24 @@ http_interactions:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts, actions, and observations. Each entry is a hash representing a step
-        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
+        thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
         \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
-        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
+        [\n    \"input_context\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
         \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
@@ -706,501 +385,35 @@ http_interactions:
         in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
         exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
         adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Hello world, this is a test.\\nThis is line number two.\\nHere''s another
-        line with some numbers: 123, 456, 789.\\nThe quick brown fox jumps over the
-        lazy dog.\\nThis line contains the word \\\"error\\\" for testing.\\nFinal
-        line with more test data.\\nHello world appears again here.\\n\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to analyze the provided
-        text to extract useful information. Since the question contains multiple lines
-        and mentions specific words and numbers, I can use the ''text_wc'' tool to
-        count the lines, words, and characters in the text. This will give me a good
-        overview of the text structure before proceeding with any specific searches
-        or extractions.\",\n      \"action\": \"text_wc\",\n      \"action_input\":
+        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"text\\\":\\\"Hello world, this
+        is a test.\\\\nThis is line number two.\\\\nHere''s another line with some
+        numbers: 123, 456, 789.\\\\nThe quick brown fox jumps over the lazy dog.\\\\nThis
+        line contains the word \\\\\\\"error\\\\\\\" for testing.\\\\nFinal line with
+        more test data.\\\\nHello world appears again here.\\\\n\\\",\\\"task\\\":\\\"Find
+        lines containing \\\\\\\"Hello\\\\\\\" and tell me how many were found\\\"}\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to find lines containing
+        the word ''Hello'' in the provided text and count how many were found. The
+        tool ''text_grep'' can be used to search for the pattern. After that, I will
+        also use ''text_wc'' if I decide to count the lines, but since the task specifically
+        asks for how many lines contain ''Hello'', using ''text_grep'' with count_only
+        will suffice.\",\n      \"action\": \"text_grep\",\n      \"tool_input\":
         {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
         two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
         brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
         for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Lines: 7, Words: 48, Characters:
-        266\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"I have analyzed
-        the text and obtained the line, word, and character counts. Now, I should
-        search for specific patterns in the text, such as the word ''error'', to see
-        how many times it appears. I will use the ''text_grep'' tool for this purpose.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"Hello world,
-        this is a test.\\nThis is line number two.\\nHere''s another line with some
-        numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis
-        line contains the word \\\"error\\\" for testing.\\nFinal line with more test
-        data.\\nHello world appears again here.\\n\",\n        \"pattern\": \"error\"\n      },\n      \"observation\":
-        \"This line contains the word \\\"error\\\" for testing.\\n\"\n    }\n  ],\n  \"observation\":
-        \"This line contains the word \\\"error\\\" for testing.\\n\"\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '5340'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 05 Jul 2025 07:51:48 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '888'
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '894'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9852'
-      X-Ratelimit-Remaining-Tokens:
-      - '198793'
-      X-Ratelimit-Reset-Requests:
-      - 21m11.099s
-      X-Ratelimit-Reset-Tokens:
-      - 361ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a547777c0120f8-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-BpryVWvf8lM68DFQbrefdg21nx2UZ",
-          "object": "chat.completion",
-          "created": 1751701907,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The observation indicates that the word 'error' was found in the text, which may require further investigation or action depending on the context of the analysis.\",\n  \"next_step\": \"continue\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 1153,
-            "completion_tokens": 54,
-            "total_tokens": 1207,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 07:51:47 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools. The agent MUST use
-        information from the history to inform its actions and final answer. Each
-        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
-        \"Array of available tools with their JSON schemas. The agent MUST choose
-        an action from the tool names in this list or use \\\"finish\\\". For each
-        tool, use the name exactly as specified and provide action_input as a JSON
-        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
-        MUST be one of the tool names listed in `available_tools` input, or the literal
-        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final answer to the original question. This answer MUST be
-        directly taken from the relevant Observation in the history if available.
-        For example, if an observation showed \\\"Observation: 100.0\\\", and you
-        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
-        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"question\": \"Hello world, this is a test.\\nThis
-        is line number two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe
-        quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
-        \"I need to analyze the provided text to extract useful information. Since
-        the question contains multiple lines and mentions specific words and numbers,
-        I can use the ''text_wc'' tool to count the lines, words, and characters in
-        the text. This will give me a good overview of the text structure before proceeding
-        with any specific searches or extractions.\",\n      \"action\": \"text_wc\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Lines: 7, Words: 48, Characters:
-        266\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"I have analyzed
-        the text and obtained the line, word, and character counts. Now, I should
-        search for specific patterns in the text, such as the word ''error'', to see
-        how many times it appears. I will use the ''text_grep'' tool for this purpose.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"Hello world,
-        this is a test.\\nThis is line number two.\\nHere''s another line with some
-        numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis
-        line contains the word \\\"error\\\" for testing.\\nFinal line with more test
-        data.\\nHello world appears again here.\\n\",\n        \"pattern\": \"error\"\n      },\n      \"observation\":
-        \"This line contains the word \\\"error\\\" for testing.\\n\"\n    }\n  ],\n  \"available_tools\":
-        [\n    {\n      \"name\": \"text_grep\",\n      \"description\": \"Search
-        for patterns in text using grep\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"text\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter text\"\n          },\n          \"pattern\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        pattern\"\n          },\n          \"ignore_case\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter ignore_case (optional)\"\n          },\n          \"count_only\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        count_only (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_wc\",\n      \"description\": \"Count lines, words, and characters
-        in text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"lines_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter lines_only (optional)\"\n          },\n          \"words_only\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        words_only (optional)\"\n          },\n          \"chars_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter chars_only (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter pattern\"\n          },\n          \"context\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter context (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
-        from text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"start_line\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter start_line\"\n          },\n          \"end_line\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        end_line (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"start_line\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
-        not matching a pattern\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"pattern\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter pattern\"\n          },\n          \"invert\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        invert (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"preserve_order\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter preserve_order (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"reverse\": {\n            \"type\": \"boolean\",\n            \"description\":
-        \"Parameter reverse (optional)\"\n          },\n          \"numeric\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter numeric (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
-        of text content\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          }\n        },\n        \"required\": [\n          \"text\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '12275'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 05 Jul 2025 07:51:50 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '2151'
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '2154'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9852'
-      X-Ratelimit-Remaining-Tokens:
-      - '197230'
-      X-Ratelimit-Reset-Requests:
-      - 21m18.652s
-      X-Ratelimit-Reset-Tokens:
-      - 831ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a5477e5c7720f8-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-BpryWcMjioMG3u5U6vEQpMfHDAh6B",
-          "object": "chat.completion",
-          "created": 1751701908,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have found the line containing the word 'error'. Now, I should check how many times the word 'error' appears in the text. I can use the 'text_grep' tool again, but this time I will set the 'count_only' parameter to true to get the count directly.\",\n  \"action\": \"text_grep\",\n  \"action_input\": {\n    \"text\": \"Hello world, this is a test.\\nThis is line number two.\\nHere's another line with some numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\" for testing.\\nFinal line with more test data.\\nHello world appears again here.\\n\",\n    \"pattern\": \"error\",\n    \"count_only\": true\n  }\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 2476,
-            "completion_tokens": 184,
-            "total_tokens": 2660,
-            "prompt_tokens_details": {
-              "cached_tokens": 1152,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 07:51:50 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts, actions, and observations. Each entry is a hash representing a step
-        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
-        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
-        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
-        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
-        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
-        adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Hello world, this is a test.\\nThis is line number two.\\nHere''s another
-        line with some numbers: 123, 456, 789.\\nThe quick brown fox jumps over the
-        lazy dog.\\nThis line contains the word \\\"error\\\" for testing.\\nFinal
-        line with more test data.\\nHello world appears again here.\\n\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to analyze the provided
-        text to extract useful information. Since the question contains multiple lines
-        and mentions specific words and numbers, I can use the ''text_wc'' tool to
-        count the lines, words, and characters in the text. This will give me a good
-        overview of the text structure before proceeding with any specific searches
-        or extractions.\",\n      \"action\": \"text_wc\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Lines: 7, Words: 48, Characters:
-        266\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"I have analyzed
-        the text and obtained the line, word, and character counts. Now, I should
-        search for specific patterns in the text, such as the word ''error'', to see
-        how many times it appears. I will use the ''text_grep'' tool for this purpose.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"Hello world,
-        this is a test.\\nThis is line number two.\\nHere''s another line with some
-        numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis
-        line contains the word \\\"error\\\" for testing.\\nFinal line with more test
-        data.\\nHello world appears again here.\\n\",\n        \"pattern\": \"error\"\n      },\n      \"observation\":
-        \"This line contains the word \\\"error\\\" for testing.\\n\"\n    },\n    {\n      \"step\":
-        3,\n      \"thought\": \"I have found the line containing the word ''error''.
-        Now, I should check how many times the word ''error'' appears in the text.
-        I can use the ''text_grep'' tool again, but this time I will set the ''count_only''
-        parameter to true to get the count directly.\",\n      \"action\": \"text_grep\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\",\n        \"pattern\": \"error\",\n        \"count_only\": true\n      },\n      \"observation\":
-        \"Found 1 matches for pattern ''error''\"\n    }\n  ],\n  \"observation\":
-        \"Found 1 matches for pattern ''error''\"\n}\n```\n\nRespond with the corresponding
+        here.\",\n        \"pattern\": \"Hello\",\n        \"count_only\": true\n      },\n      \"observation\":
+        \"Found 2 matches for pattern ''Hello''\"\n    }\n  ],\n  \"observation\":
+        \"Found 2 matches for pattern ''Hello''\"\n}\n```\n\nRespond with the corresponding
         output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`."}],"temperature":0.0}'
+        `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -1210,11 +423,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.9.0
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -1224,14 +437,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '6136'
+      - '4587'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 07:51:51 GMT
+      - Thu, 11 Dec 2025 14:34:39 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1243,54 +456,58 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1070'
+      - '1453'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1075'
+      - '1473'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9851'
+      - '9888'
       X-Ratelimit-Remaining-Tokens:
-      - '198605'
+      - '198979'
       X-Ratelimit-Reset-Requests:
-      - 21m24.86s
+      - 16m2.642s
       X-Ratelimit-Reset-Tokens:
-      - 418ms
+      - 306ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a5478d9fae20f8-EWR
+      - 9ac5b4326b88ec8d-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpryYyx0DD1AeTrEswZYGXSPQAQbM",
+          "id": "chatcmpl-Clc2Xmz0iL094F3V89bGUTj037q0h",
           "object": "chat.completion",
-          "created": 1751701910,
+          "created": 1765463677,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The analysis indicates that the word 'error' appears once in the provided text. This suggests that there may be a need to address or investigate the context in which 'error' is mentioned.\",\n  \"next_step\": \"continue\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The task to find lines containing 'Hello' in the given text was successfully completed, with 2 matches found.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1299,9 +516,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1349,
-            "completion_tokens": 62,
-            "total_tokens": 1411,
+            "prompt_tokens": 993,
+            "completion_tokens": 47,
+            "total_tokens": 1040,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -1314,9 +531,61 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Sat, 05 Jul 2025 07:51:51 GMT
+  recorded_at: Thu, 11 Dec 2025 14:34:39 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=get_agent_commands&protocol_version=17&run_id=BajcDFb7lB0HADvrtB84K3ppOtZYAAEBAAAnIQEAAUz-AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '["BajcDFb7lB0HADvrtB84K3ppOtZYAAEBAAAnIQEAAUz-AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg"]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BajcDFb7lB0HADvrtB84K3ppOtZYAAEBAAAnIQEAAUz-AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 200
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '19'
+      Date:
+      - Thu, 11 Dec 2025 14:34:39 GMT
+      Content-Type:
+      - text/plain
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Server:
+      - istio-envoy
+      X-Served-By:
+      - cache-mad22039-MAD
+    body:
+      encoding: UTF-8
+      string: '{"return_value":[]}'
+  recorded_at: Thu, 11 Dec 2025 14:34:39 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -1324,154 +593,126 @@ http_interactions:
       encoding: UTF-8
       string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
+        \"object\",\n  \"properties\": {\n    \"input_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Serialized representation of all input
+        fields\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools. The agent MUST use
-        information from the history to inform its actions and final answer. Each
-        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
-        \"Array of available tools with their JSON schemas. The agent MUST choose
-        an action from the tool names in this list or use \\\"finish\\\". For each
-        tool, use the name exactly as specified and provide action_input as a JSON
-        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
+        thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
+        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"type\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
+        \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
+        of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
+        [\n    \"input_context\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
         output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
-        MUST be one of the tool names listed in `available_tools` input, or the literal
-        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final answer to the original question. This answer MUST be
-        directly taken from the relevant Observation in the history if available.
-        For example, if an observation showed \\\"Observation: 100.0\\\", and you
-        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
-        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"text_grep\",\n        \"text_wc\",\n        \"text_rg\",\n        \"text_extract_lines\",\n        \"text_filter_lines\",\n        \"text_unique_lines\",\n        \"text_sort_lines\",\n        \"text_summarize_text\",\n        \"finish\"\n      ],\n      \"description\":
+        \"The action to take. MUST be one of the tool names listed in `available_tools`
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
         below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"question\": \"Hello world, this is a test.\\nThis
-        is line number two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe
-        quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
-        \"I need to analyze the provided text to extract useful information. Since
-        the question contains multiple lines and mentions specific words and numbers,
-        I can use the ''text_wc'' tool to count the lines, words, and characters in
-        the text. This will give me a good overview of the text structure before proceeding
-        with any specific searches or extractions.\",\n      \"action\": \"text_wc\",\n      \"action_input\":
+        objective is: Generate a thought about what to do next to process the given
+        inputs."},{"role":"user","content":"## Input Values\n```json\n{\n  \"input_context\":
+        \"{\\\"_type\\\":\\\"AnonymousStruct\\\",\\\"text\\\":\\\"Hello world, this
+        is a test.\\\\nThis is line number two.\\\\nHere''s another line with some
+        numbers: 123, 456, 789.\\\\nThe quick brown fox jumps over the lazy dog.\\\\nThis
+        line contains the word \\\\\\\"error\\\\\\\" for testing.\\\\nFinal line with
+        more test data.\\\\nHello world appears again here.\\\\n\\\",\\\"task\\\":\\\"Find
+        lines containing \\\\\\\"Hello\\\\\\\" and tell me how many were found\\\"}\",\n  \"history\":
+        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to find lines containing
+        the word ''Hello'' in the provided text and count how many were found. The
+        tool ''text_grep'' can be used to search for the pattern. After that, I will
+        also use ''text_wc'' if I decide to count the lines, but since the task specifically
+        asks for how many lines contain ''Hello'', using ''text_grep'' with count_only
+        will suffice.\",\n      \"action\": \"text_grep\",\n      \"tool_input\":
         {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
         two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
         brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
         for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Lines: 7, Words: 48, Characters:
-        266\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"I have analyzed
-        the text and obtained the line, word, and character counts. Now, I should
-        search for specific patterns in the text, such as the word ''error'', to see
-        how many times it appears. I will use the ''text_grep'' tool for this purpose.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"Hello world,
-        this is a test.\\nThis is line number two.\\nHere''s another line with some
-        numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis
-        line contains the word \\\"error\\\" for testing.\\nFinal line with more test
-        data.\\nHello world appears again here.\\n\",\n        \"pattern\": \"error\"\n      },\n      \"observation\":
-        \"This line contains the word \\\"error\\\" for testing.\\n\"\n    },\n    {\n      \"step\":
-        3,\n      \"thought\": \"I have found the line containing the word ''error''.
-        Now, I should check how many times the word ''error'' appears in the text.
-        I can use the ''text_grep'' tool again, but this time I will set the ''count_only''
-        parameter to true to get the count directly.\",\n      \"action\": \"text_grep\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\",\n        \"pattern\": \"error\",\n        \"count_only\": true\n      },\n      \"observation\":
-        \"Found 1 matches for pattern ''error''\"\n    }\n  ],\n  \"available_tools\":
+        here.\",\n        \"pattern\": \"Hello\",\n        \"count_only\": true\n      },\n      \"observation\":
+        \"Found 2 matches for pattern ''Hello''\"\n    }\n  ],\n  \"available_tools\":
         [\n    {\n      \"name\": \"text_grep\",\n      \"description\": \"Search
-        for patterns in text using grep\",\n      \"parameters\": {\n        \"type\":
-        \"object\",\n        \"properties\": {\n          \"text\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter text\"\n          },\n          \"pattern\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        pattern\"\n          },\n          \"ignore_case\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter ignore_case (optional)\"\n          },\n          \"count_only\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        count_only (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        for patterns in text using grep\",\n      \"schema\": \"{\\\"name\\\":\\\"text_grep\\\",\\\"description\\\":\\\"Search
+        for patterns in text using grep\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"ignore_case\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        ignore_case (optional)\\\"},\\\"count_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        count_only (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_wc\",\n      \"description\": \"Count lines, words, and characters
-        in text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"lines_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter lines_only (optional)\"\n          },\n          \"words_only\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        words_only (optional)\"\n          },\n          \"chars_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter chars_only (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter pattern\"\n          },\n          \"context\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter context (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        in text\",\n      \"schema\": \"{\\\"name\\\":\\\"text_wc\\\",\\\"description\\\":\\\"Count
+        lines, words, and characters in text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"lines_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        lines_only (optional)\\\"},\\\"words_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        words_only (optional)\\\"},\\\"chars_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        chars_only (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"schema\":
+        \"{\\\"name\\\":\\\"text_rg\\\",\\\"description\\\":\\\"Fast text search using
+        ripgrep\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"context\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        context (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
-        from text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"start_line\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter start_line\"\n          },\n          \"end_line\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        end_line (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"start_line\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        from text\",\n      \"schema\": \"{\\\"name\\\":\\\"text_extract_lines\\\",\\\"description\\\":\\\"Extract
+        specific line ranges from text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"start_line\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        start_line\\\"},\\\"end_line\\\":{\\\"type\\\":[\\\"integer\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        end_line (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"start_line\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
-        not matching a pattern\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"pattern\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter pattern\"\n          },\n          \"invert\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        invert (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"preserve_order\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter preserve_order (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"reverse\": {\n            \"type\": \"boolean\",\n            \"description\":
-        \"Parameter reverse (optional)\"\n          },\n          \"numeric\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter numeric (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
+        not matching a pattern\",\n      \"schema\": \"{\\\"name\\\":\\\"text_filter_lines\\\",\\\"description\\\":\\\"Filter
+        lines matching or not matching a pattern\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"invert\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        invert (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"schema\":
+        \"{\\\"name\\\":\\\"text_unique_lines\\\",\\\"description\\\":\\\"Get unique
+        lines from text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"preserve_order\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        preserve_order (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
+        \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"schema\":
+        \"{\\\"name\\\":\\\"text_sort_lines\\\",\\\"description\\\":\\\"Sort lines
+        in text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"reverse\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        reverse (optional)\\\"},\\\"numeric\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        numeric (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
-        of text content\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          }\n        },\n        \"required\": [\n          \"text\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
+        of text content\",\n      \"schema\": \"{\\\"name\\\":\\\"text_summarize_text\\\",\\\"description\\\":\\\"Generate
+        statistical summary of text content\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
+        with the heading `## Output values`."}],"temperature":1.0}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -1481,11 +722,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.9.0
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -1495,14 +736,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '13093'
+      - '11387'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sat, 05 Jul 2025 07:51:53 GMT
+      - Thu, 11 Dec 2025 14:34:42 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1514,54 +755,58 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1928'
+      - '2598'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1931'
+      - '2608'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9850'
+      - '9887'
       X-Ratelimit-Remaining-Tokens:
-      - '197036'
+      - '197555'
       X-Ratelimit-Reset-Requests:
-      - 21m32.198s
+      - 16m9.659s
       X-Ratelimit-Reset-Tokens:
-      - 888ms
+      - 733ms
       X-Request-Id:
       - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
+      X-Openai-Proxy-Wasm:
+      - v0.1
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:
       - __cf_bm=<REDACTED>
       - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
       X-Content-Type-Options:
       - nosniff
       Server:
       - cloudflare
       Cf-Ray:
-      - 95a5479599d020f8-EWR
+      - 9ac5b43c8ae7ec8d-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-BpryaoIrRehgbS6lUD7OISxfDdyBZ",
+          "id": "chatcmpl-Clc2Znc0qDbqbVGFYCIJZYS0bMPIL",
           "object": "chat.completion",
-          "created": 1751701912,
+          "created": 1765463679,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have successfully counted the occurrences of the word 'error' in the text. Now, I should summarize the findings to provide a clear answer to the question. I will use the 'text_summarize_text' tool to generate a statistical summary of the text content, which will help in formulating the final answer.\",\n  \"action\": \"text_summarize_text\",\n  \"action_input\": {\n    \"text\": \"Hello world, this is a test.\\nThis is line number two.\\nHere's another line with some numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\" for testing.\\nFinal line with more test data.\\nHello world appears again here.\\n\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"I found 2 occurrences of the word 'Hello' in the text provided. This matches the task requirement to identify the number of lines containing 'Hello'. Since I have the answer, it's time to finish and provide the final response.\",\n  \"action\": \"finish\",\n  \"tool_input\": null,\n  \"final_answer\": \"2 lines contain the word 'Hello'.\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -1570,11 +815,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2676,
-            "completion_tokens": 175,
-            "total_tokens": 2851,
+            "prompt_tokens": 2190,
+            "completion_tokens": 91,
+            "total_tokens": 2281,
             "prompt_tokens_details": {
-              "cached_tokens": 1280,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -1585,504 +830,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Sat, 05 Jul 2025 07:51:53 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The original question\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts, actions, and observations. Each entry is a hash representing a step
-        in the reasoning process.\"\n    },\n    \"observation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
-        [\n    \"question\",\n    \"history\",\n    \"observation\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"interpretation\": {\n      \"type\":
-        \"string\",\n      \"description\": \"Interpretation of the observation\"\n    },\n    \"next_step\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"continue\",\n        \"finish\"\n      ],\n      \"description\":
-        \"What to do next: ''#<DSPy::NextStep::Continue>'' or ''#<DSPy::NextStep::Finish>''\"\n    }\n  },\n  \"required\":
-        [\n    \"interpretation\",\n    \"next_step\"\n  ]\n}\n```\n\nAll interactions
-        will be structured in the following way, with the appropriate values filled
-        in.\n## Input values\n```json\n{input_values}\n```\n## Output values\nRespond
-        exclusively with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
-        adhering to this structure, your objective is: Process the observation from
-        a tool and decide what to do next."},{"role":"user","content":"## Input Values\n```json\n{\n  \"question\":
-        \"Hello world, this is a test.\\nThis is line number two.\\nHere''s another
-        line with some numbers: 123, 456, 789.\\nThe quick brown fox jumps over the
-        lazy dog.\\nThis line contains the word \\\"error\\\" for testing.\\nFinal
-        line with more test data.\\nHello world appears again here.\\n\",\n  \"history\":
-        [\n    {\n      \"step\": 1,\n      \"thought\": \"I need to analyze the provided
-        text to extract useful information. Since the question contains multiple lines
-        and mentions specific words and numbers, I can use the ''text_wc'' tool to
-        count the lines, words, and characters in the text. This will give me a good
-        overview of the text structure before proceeding with any specific searches
-        or extractions.\",\n      \"action\": \"text_wc\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Lines: 7, Words: 48, Characters:
-        266\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"I have analyzed
-        the text and obtained the line, word, and character counts. Now, I should
-        search for specific patterns in the text, such as the word ''error'', to see
-        how many times it appears. I will use the ''text_grep'' tool for this purpose.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"Hello world,
-        this is a test.\\nThis is line number two.\\nHere''s another line with some
-        numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis
-        line contains the word \\\"error\\\" for testing.\\nFinal line with more test
-        data.\\nHello world appears again here.\\n\",\n        \"pattern\": \"error\"\n      },\n      \"observation\":
-        \"This line contains the word \\\"error\\\" for testing.\\n\"\n    },\n    {\n      \"step\":
-        3,\n      \"thought\": \"I have found the line containing the word ''error''.
-        Now, I should check how many times the word ''error'' appears in the text.
-        I can use the ''text_grep'' tool again, but this time I will set the ''count_only''
-        parameter to true to get the count directly.\",\n      \"action\": \"text_grep\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\",\n        \"pattern\": \"error\",\n        \"count_only\": true\n      },\n      \"observation\":
-        \"Found 1 matches for pattern ''error''\"\n    },\n    {\n      \"step\":
-        4,\n      \"thought\": \"I have successfully counted the occurrences of the
-        word ''error'' in the text. Now, I should summarize the findings to provide
-        a clear answer to the question. I will use the ''text_summarize_text'' tool
-        to generate a statistical summary of the text content, which will help in
-        formulating the final answer.\",\n      \"action\": \"text_summarize_text\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Text Summary:\\n  Lines: 7\\n  Words:
-        48\\n  Characters: 266\\n  Average line length: 38.0\\n  Average word length:
-        4.54\\n  Most frequent words:\\n    line: 4\\n    this: 3\\n    the: 3\\n    hello:
-        2\\n    world: 2\"\n    }\n  ],\n  \"observation\": \"Text Summary:\\n  Lines:
-        7\\n  Words: 48\\n  Characters: 266\\n  Average line length: 38.0\\n  Average
-        word length: 4.54\\n  Most frequent words:\\n    line: 4\\n    this: 3\\n    the:
-        3\\n    hello: 2\\n    world: 2\"\n}\n```\n\nRespond with the corresponding
-        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
-        `## Output values`."}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '7316'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 05 Jul 2025 07:51:55 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1286'
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1290'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9849'
-      X-Ratelimit-Remaining-Tokens:
-      - '198326'
-      X-Ratelimit-Reset-Requests:
-      - 21m38.747s
-      X-Ratelimit-Reset-Tokens:
-      - 502ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a547a2d99f20f8-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-BprycJu4zgjwdR4HKBPIZtTytr4UO",
-          "object": "chat.completion",
-          "created": 1751701914,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The text analysis has been completed, providing a summary of the text structure and the frequency of specific words. The findings indicate that the text contains 7 lines, 48 words, and 266 characters, with the word 'error' appearing once. The next step is to finish the analysis as the required information has been gathered.\",\n  \"next_step\": \"finish\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 1678,
-            "completion_tokens": 90,
-            "total_tokens": 1768,
-            "prompt_tokens_details": {
-              "cached_tokens": 1024,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 07:51:55 GMT
-- request:
-    method: post
-    uri: https://api.openai.com/v1/chat/completions
-    body:
-      encoding: UTF-8
-      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
-        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
-        \"The question to answer\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"step\":
-        {\n            \"type\": \"integer\"\n          },\n          \"thought\":
-        {\n            \"type\": \"string\"\n          },\n          \"action\": {\n            \"type\":
-        \"string\"\n          },\n          \"action_input\": {\n            \"oneOf\":
-        [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              }\n            ],\n            \"description\":
-        \"Union of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"step\"\n        ],\n        \"description\":
-        \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
-        thoughts and actions, including observations from tools. The agent MUST use
-        information from the history to inform its actions and final answer. Each
-        entry is a hash representing a step in the reasoning process.\"\n    },\n    \"available_tools\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"propertyNames\":
-        {\n          \"type\": \"string\"\n        },\n        \"additionalProperties\":
-        {\n          \"type\": \"string\"\n        },\n        \"description\": \"A
-        mapping where keys are strings and values are strings\"\n      },\n      \"description\":
-        \"Array of available tools with their JSON schemas. The agent MUST choose
-        an action from the tool names in this list or use \\\"finish\\\". For each
-        tool, use the name exactly as specified and provide action_input as a JSON
-        object matching the tool''s schema.\"\n    }\n  },\n  \"required\": [\n    \"question\",\n    \"history\",\n    \"available_tools\"\n  ]\n}\n```\nYour
-        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
-        \"object\",\n  \"properties\": {\n    \"thought\": {\n      \"type\": \"string\",\n      \"description\":
-        \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
-        {\n      \"type\": \"string\",\n      \"description\": \"The action to take.
-        MUST be one of the tool names listed in `available_tools` input, or the literal
-        string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\"\n        },\n        {\n          \"type\":
-        \"object\",\n          \"propertyNames\": {\n            \"type\": \"string\"\n          },\n          \"additionalProperties\":
-        {\n            \"type\": \"string\"\n          },\n          \"description\":
-        \"A mapping where keys are strings and values are strings\"\n        }\n      ],\n      \"description\":
-        \"Input for the chosen action. If action is a tool name, this MUST be a JSON
-        object matching the tool''s schema. If action is \\\"finish\\\", this field
-        MUST contain the final answer to the original question. This answer MUST be
-        directly taken from the relevant Observation in the history if available.
-        For example, if an observation showed \\\"Observation: 100.0\\\", and you
-        are finishing, this field MUST be \\\"100.0\\\". Do not leave empty if finishing
-        with an observed answer.\"\n    }\n  },\n  \"required\": [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
-        interactions will be structured in the following way, with the appropriate
-        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
-        values\nRespond exclusively with the output schema fields in the json block
-        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
-        objective is: Generate a thought about what to do next to answer the question."},{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"question\": \"Hello world, this is a test.\\nThis
-        is line number two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe
-        quick brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\",\n  \"history\": [\n    {\n      \"step\": 1,\n      \"thought\":
-        \"I need to analyze the provided text to extract useful information. Since
-        the question contains multiple lines and mentions specific words and numbers,
-        I can use the ''text_wc'' tool to count the lines, words, and characters in
-        the text. This will give me a good overview of the text structure before proceeding
-        with any specific searches or extractions.\",\n      \"action\": \"text_wc\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Lines: 7, Words: 48, Characters:
-        266\"\n    },\n    {\n      \"step\": 2,\n      \"thought\": \"I have analyzed
-        the text and obtained the line, word, and character counts. Now, I should
-        search for specific patterns in the text, such as the word ''error'', to see
-        how many times it appears. I will use the ''text_grep'' tool for this purpose.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"Hello world,
-        this is a test.\\nThis is line number two.\\nHere''s another line with some
-        numbers: 123, 456, 789.\\nThe quick brown fox jumps over the lazy dog.\\nThis
-        line contains the word \\\"error\\\" for testing.\\nFinal line with more test
-        data.\\nHello world appears again here.\\n\",\n        \"pattern\": \"error\"\n      },\n      \"observation\":
-        \"This line contains the word \\\"error\\\" for testing.\\n\"\n    },\n    {\n      \"step\":
-        3,\n      \"thought\": \"I have found the line containing the word ''error''.
-        Now, I should check how many times the word ''error'' appears in the text.
-        I can use the ''text_grep'' tool again, but this time I will set the ''count_only''
-        parameter to true to get the count directly.\",\n      \"action\": \"text_grep\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\",\n        \"pattern\": \"error\",\n        \"count_only\": true\n      },\n      \"observation\":
-        \"Found 1 matches for pattern ''error''\"\n    },\n    {\n      \"step\":
-        4,\n      \"thought\": \"I have successfully counted the occurrences of the
-        word ''error'' in the text. Now, I should summarize the findings to provide
-        a clear answer to the question. I will use the ''text_summarize_text'' tool
-        to generate a statistical summary of the text content, which will help in
-        formulating the final answer.\",\n      \"action\": \"text_summarize_text\",\n      \"action_input\":
-        {\n        \"text\": \"Hello world, this is a test.\\nThis is line number
-        two.\\nHere''s another line with some numbers: 123, 456, 789.\\nThe quick
-        brown fox jumps over the lazy dog.\\nThis line contains the word \\\"error\\\"
-        for testing.\\nFinal line with more test data.\\nHello world appears again
-        here.\\n\"\n      },\n      \"observation\": \"Text Summary:\\n  Lines: 7\\n  Words:
-        48\\n  Characters: 266\\n  Average line length: 38.0\\n  Average word length:
-        4.54\\n  Most frequent words:\\n    line: 4\\n    this: 3\\n    the: 3\\n    hello:
-        2\\n    world: 2\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
-        \"text_grep\",\n      \"description\": \"Search for patterns in text using
-        grep\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"pattern\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter pattern\"\n          },\n          \"ignore_case\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        ignore_case (optional)\"\n          },\n          \"count_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter count_only (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_wc\",\n      \"description\": \"Count lines, words, and characters
-        in text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"lines_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter lines_only (optional)\"\n          },\n          \"words_only\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        words_only (optional)\"\n          },\n          \"chars_only\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter chars_only (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"pattern\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter pattern\"\n          },\n          \"context\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter context (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
-        from text\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"start_line\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter start_line\"\n          },\n          \"end_line\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        end_line (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"start_line\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
-        not matching a pattern\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          },\n          \"pattern\": {\n            \"type\":
-        \"string\",\n            \"description\": \"Parameter pattern\"\n          },\n          \"invert\":
-        {\n            \"type\": \"boolean\",\n            \"description\": \"Parameter
-        invert (optional)\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"pattern\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"preserve_order\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter preserve_order (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"parameters\":
-        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\":
-        {\n            \"type\": \"string\",\n            \"description\": \"Parameter
-        text\"\n          },\n          \"reverse\": {\n            \"type\": \"boolean\",\n            \"description\":
-        \"Parameter reverse (optional)\"\n          },\n          \"numeric\": {\n            \"type\":
-        \"boolean\",\n            \"description\": \"Parameter numeric (optional)\"\n          }\n        },\n        \"required\":
-        [\n          \"text\"\n        ]\n      }\n    },\n    {\n      \"name\":
-        \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
-        of text content\",\n      \"parameters\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\":
-        \"Parameter text\"\n          }\n        },\n        \"required\": [\n          \"text\"\n        ]\n      }\n    }\n  ]\n}\n```\n\nRespond
-        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
-        with the heading `## Output values`."}],"temperature":0.0}'
-    headers:
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - application/json
-      User-Agent:
-      - Ruby
-      Host:
-      - api.openai.com
-      X-Stainless-Arch:
-      - arm64
-      X-Stainless-Lang:
-      - ruby
-      X-Stainless-Os:
-      - MacOS
-      X-Stainless-Package-Version:
-      - 0.9.0
-      X-Stainless-Runtime:
-      - ruby
-      X-Stainless-Runtime-Version:
-      - 3.3.6
-      Content-Type:
-      - application/json
-      Authorization:
-      - Bearer <OPENAI_API_KEY>
-      X-Stainless-Retry-Count:
-      - '0'
-      X-Stainless-Timeout:
-      - '600.0'
-      Content-Length:
-      - '14092'
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Date:
-      - Sat, 05 Jul 2025 07:51:57 GMT
-      Content-Type:
-      - application/json
-      Transfer-Encoding:
-      - chunked
-      Connection:
-      - keep-alive
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
-      Openai-Processing-Ms:
-      - '1496'
-      Openai-Version:
-      - '2020-10-01'
-      X-Envoy-Upstream-Service-Time:
-      - '1499'
-      X-Ratelimit-Limit-Requests:
-      - '10000'
-      X-Ratelimit-Limit-Tokens:
-      - '200000'
-      X-Ratelimit-Remaining-Requests:
-      - '9848'
-      X-Ratelimit-Remaining-Tokens:
-      - '196800'
-      X-Ratelimit-Reset-Requests:
-      - 21m45.933s
-      X-Ratelimit-Reset-Tokens:
-      - 960ms
-      X-Request-Id:
-      - "<REQUEST_ID>"
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains; preload
-      Cf-Cache-Status:
-      - DYNAMIC
-      Set-Cookie:
-      - __cf_bm=<REDACTED>
-      - _cfuvid=<REDACTED>
-      X-Content-Type-Options:
-      - nosniff
-      Server:
-      - cloudflare
-      Cf-Ray:
-      - 95a547abec9920f8-EWR
-      Alt-Svc:
-      - h3=":443"; ma=86400
-    body:
-      encoding: ASCII-8BIT
-      string: |
-        {
-          "id": "chatcmpl-Bpryd8OOqnSTLXPiJIIClarmOO2Tl",
-          "object": "chat.completion",
-          "created": 1751701915,
-          "model": "gpt-4o-mini-2024-07-18",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have generated a statistical summary of the text content, which includes the line, word, and character counts, as well as the most frequent words. Now, I can provide a final answer summarizing the key findings from the text analysis, including the occurrence of the word 'error'.\",\n  \"action\": \"finish\",\n  \"action_input\": \"The text contains 7 lines, 48 words, and 266 characters. The word 'error' appears once.\"\n}\n```",
-                "refusal": null,
-                "annotations": []
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "prompt_tokens": 2936,
-            "completion_tokens": 110,
-            "total_tokens": 3046,
-            "prompt_tokens_details": {
-              "cached_tokens": 1536,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "service_tier": "default",
-          "system_fingerprint": "fp_34a54ae93c"
-        }
-  recorded_at: Sat, 05 Jul 2025 07:51:56 GMT
+  recorded_at: Thu, 11 Dec 2025 14:34:42 GMT
 recorded_with: VCR 6.3.1

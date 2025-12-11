@@ -64,12 +64,12 @@ RSpec.describe "Type Alias Support" do
   describe "simple type alias schema generation" do
     it "generates correct schema for simple hash type alias" do
       schema = SimpleTypeAliasSignature.output_json_schema
-      
+
+      # propertyNames is not supported by OpenAI structured outputs, so we omit it
       expect(schema[:properties][:response]).to eq({
         type: "object",
-        propertyNames: { type: "string" },
         additionalProperties: { type: "string" },
-        description: "A mapping where keys are strings and values are strings"
+        description: "A mapping where keys are Strings and values are strings"
       })
     end
   end
@@ -77,7 +77,8 @@ RSpec.describe "Type Alias Support" do
   describe "complex type alias schema generation" do
     it "generates correct schema for structured type alias" do
       schema = ComplexTypeAliasSignature.output_json_schema
-      
+
+      # propertyNames is not supported by OpenAI structured outputs, so we omit it
       expect(schema[:properties][:result]).to eq({
         type: ["object", "null"],
         properties: {
@@ -85,9 +86,8 @@ RSpec.describe "Type Alias Support" do
           "confidence" => { type: "number" },
           "metadata" => {
             type: "object",
-            propertyNames: { type: "string" },
             additionalProperties: { type: "string" },
-            description: "A mapping where keys are strings and values are strings"
+            description: "A mapping where keys are Strings and values are strings"
           }
         },
         required: ["answer", "confidence", "metadata"],
@@ -99,7 +99,8 @@ RSpec.describe "Type Alias Support" do
   describe "nested type alias schema generation" do
     it "generates correct schema for deeply nested structures" do
       schema = NestedTypeAliasSignature.output_json_schema
-      
+
+      # propertyNames is not supported by OpenAI structured outputs, so we omit it
       expect(schema[:properties][:analysis]).to eq({
         type: "object",
         properties: {
@@ -108,9 +109,8 @@ RSpec.describe "Type Alias Support" do
             type: "array",
             items: {
               type: "object",
-              propertyNames: { type: "string" },
               additionalProperties: { type: "string" },
-              description: "A mapping where keys are strings and values are strings"
+              description: "A mapping where keys are Strings and values are strings"
             }
           },
           "summary" => {

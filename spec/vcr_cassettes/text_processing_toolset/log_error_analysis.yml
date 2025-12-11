@@ -14,26 +14,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -43,12 +37,16 @@ http_interactions:
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
         {\n      \"type\": \"string\",\n      \"enum\": [\n        \"text_grep\",\n        \"text_wc\",\n        \"text_rg\",\n        \"text_extract_lines\",\n        \"text_filter_lines\",\n        \"text_unique_lines\",\n        \"text_sort_lines\",\n        \"text_summarize_text\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"type\": \"string\",\n      \"description\": \"Input for the chosen
-        action. If action is a tool name, this MUST be a JSON object matching the
-        tool''s schema. If action is \\\"finish\\\", this field MUST contain the final
-        result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -62,79 +60,52 @@ http_interactions:
         10:00:25 INFO: Query completed\\\\n2024-01-01 10:00:30 DEBUG: Processing complete\\\\n\\\",\\\"task\\\":\\\"Search
         this log data for ERROR messages\\\"}\",\n  \"history\": [],\n  \"available_tools\":
         [\n    {\n      \"name\": \"text_grep\",\n      \"description\": \"Search
-        for patterns in text using grep\",\n      \"schema\": {\n        \"name\":
-        \"text_grep\",\n        \"description\": \"Search for patterns in text using
-        grep\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"ignore_case\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        ignore_case (optional)\"\n            },\n            \"count_only\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter count_only (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        for patterns in text using grep\",\n      \"schema\": \"{\\\"name\\\":\\\"text_grep\\\",\\\"description\\\":\\\"Search
+        for patterns in text using grep\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"ignore_case\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        ignore_case (optional)\\\"},\\\"count_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        count_only (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_wc\",\n      \"description\": \"Count lines, words, and characters
-        in text\",\n      \"schema\": {\n        \"name\": \"text_wc\",\n        \"description\":
-        \"Count lines, words, and characters in text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"lines_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        lines_only (optional)\"\n            },\n            \"words_only\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter words_only (optional)\"\n            },\n            \"chars_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        chars_only (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        in text\",\n      \"schema\": \"{\\\"name\\\":\\\"text_wc\\\",\\\"description\\\":\\\"Count
+        lines, words, and characters in text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"lines_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        lines_only (optional)\\\"},\\\"words_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        words_only (optional)\\\"},\\\"chars_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        chars_only (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"schema\":
-        {\n        \"name\": \"text_rg\",\n        \"description\": \"Fast text search
-        using ripgrep\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"context\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        context (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"{\\\"name\\\":\\\"text_rg\\\",\\\"description\\\":\\\"Fast text search using
+        ripgrep\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"context\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        context (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
-        from text\",\n      \"schema\": {\n        \"name\": \"text_extract_lines\",\n        \"description\":
-        \"Extract specific line ranges from text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"start_line\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        start_line\"\n            },\n            \"end_line\": {\n              \"type\":
-        [\n                \"integer\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter end_line (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"start_line\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        from text\",\n      \"schema\": \"{\\\"name\\\":\\\"text_extract_lines\\\",\\\"description\\\":\\\"Extract
+        specific line ranges from text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"start_line\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        start_line\\\"},\\\"end_line\\\":{\\\"type\\\":[\\\"integer\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        end_line (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"start_line\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
-        not matching a pattern\",\n      \"schema\": {\n        \"name\": \"text_filter_lines\",\n        \"description\":
-        \"Filter lines matching or not matching a pattern\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"text\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"invert\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        invert (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        not matching a pattern\",\n      \"schema\": \"{\\\"name\\\":\\\"text_filter_lines\\\",\\\"description\\\":\\\"Filter
+        lines matching or not matching a pattern\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"invert\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        invert (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"schema\":
-        {\n        \"name\": \"text_unique_lines\",\n        \"description\": \"Get
-        unique lines from text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"preserve_order\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        preserve_order (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"{\\\"name\\\":\\\"text_unique_lines\\\",\\\"description\\\":\\\"Get unique
+        lines from text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"preserve_order\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        preserve_order (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"schema\":
-        {\n        \"name\": \"text_sort_lines\",\n        \"description\": \"Sort
-        lines in text\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"reverse\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter reverse (optional)\"\n            },\n            \"numeric\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        numeric (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"{\\\"name\\\":\\\"text_sort_lines\\\",\\\"description\\\":\\\"Sort lines
+        in text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"reverse\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        reverse (optional)\\\"},\\\"numeric\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        numeric (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
-        of text content\",\n      \"schema\": {\n        \"name\": \"text_summarize_text\",\n        \"description\":
-        \"Generate statistical summary of text content\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"text\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        text\"\n            }\n          },\n          \"required\": [\n            \"text\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        of text content\",\n      \"schema\": \"{\\\"name\\\":\\\"text_summarize_text\\\",\\\"description\\\":\\\"Generate
+        statistical summary of text content\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":1.0}'
     headers:
@@ -143,7 +114,7 @@ http_interactions:
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -153,11 +124,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -167,14 +138,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '12547'
+      - '10471'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 20:22:45 GMT
+      - Thu, 11 Dec 2025 14:34:46 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -186,25 +157,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '4407'
+      - '4557'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '4431'
+      - '4570'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9988'
+      - '9887'
       X-Ratelimit-Remaining-Tokens:
-      - '197196'
+      - '197768'
       X-Ratelimit-Reset-Requests:
-      - 1m42.033s
+      - 16m15.476s
       X-Ratelimit-Reset-Tokens:
-      - 841ms
+      - 669ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -221,23 +192,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9886e9c848ce0f70-EWR
+      - 9ac5b44e2f390311-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMK6yPdEha63MCFOuueuR6FGoCSe3",
+          "id": "chatcmpl-Clc2cUk8KajxL4eEs2658ZYjNIgh5",
           "object": "chat.completion",
-          "created": 1759436560,
+          "created": 1765463682,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I need to search through the provided log data for ERROR messages. The available tool 'text_grep' is suitable for this purpose as it allows me to specify a pattern to search in the text.\",\n  \"action\": \"text_grep\",\n  \"action_input\": {\n    \"text\": \"2024-01-01 10:00:01 INFO: Application started\\n2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:10 WARN: Retrying connection\\n2024-01-01 10:00:15 INFO: Connected successfully\\n2024-01-01 10:00:20 ERROR: Database timeout\\n2024-01-01 10:00:25 INFO: Query completed\\n2024-01-01 10:00:30 DEBUG: Processing complete\\n\",\n    \"pattern\": \"ERROR\",\n    \"ignore_case\": true\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"To find all ERROR messages in the log data, I will use the text_grep tool to search for the pattern 'ERROR' in the provided text.\",\n  \"action\": \"text_grep\",\n  \"tool_input\": {\n    \"text\": \"2024-01-01 10:00:01 INFO: Application started\\n2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:10 WARN: Retrying connection\\n2024-01-01 10:00:15 INFO: Connected successfully\\n2024-01-01 10:00:20 ERROR: Database timeout\\n2024-01-01 10:00:25 INFO: Query completed\\n2024-01-01 10:00:30 DEBUG: Processing complete\\n\",\n    \"pattern\": \"ERROR\"\n  },\n  \"final_answer\": null\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -246,11 +217,11 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2429,
-            "completion_tokens": 212,
-            "total_tokens": 2641,
+            "prompt_tokens": 2007,
+            "completion_tokens": 203,
+            "total_tokens": 2210,
             "prompt_tokens_details": {
-              "cached_tokens": 1024,
+              "cached_tokens": 0,
               "audio_tokens": 0
             },
             "completion_tokens_details": {
@@ -261,9 +232,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_aa07c96156"
         }
-  recorded_at: Thu, 02 Oct 2025 20:22:45 GMT
+  recorded_at: Thu, 11 Dec 2025 14:34:47 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -278,16 +249,13 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts, actions, and observations.\"\n    },\n    \"observation\": {\n      \"type\":
         \"string\",\n      \"description\": \"The result from the last action\"\n    }\n  },\n  \"required\":
@@ -309,15 +277,14 @@ http_interactions:
         successfully\\\\n2024-01-01 10:00:20 ERROR: Database timeout\\\\n2024-01-01
         10:00:25 INFO: Query completed\\\\n2024-01-01 10:00:30 DEBUG: Processing complete\\\\n\\\",\\\"task\\\":\\\"Search
         this log data for ERROR messages\\\"}\",\n  \"history\": [\n    {\n      \"step\":
-        1,\n      \"thought\": \"I need to search through the provided log data for
-        ERROR messages. The available tool ''text_grep'' is suitable for this purpose
-        as it allows me to specify a pattern to search in the text.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"2024-01-01
-        10:00:01 INFO: Application started\\n2024-01-01 10:00:05 ERROR: Connection
-        failed\\n2024-01-01 10:00:10 WARN: Retrying connection\\n2024-01-01 10:00:15
-        INFO: Connected successfully\\n2024-01-01 10:00:20 ERROR: Database timeout\\n2024-01-01
-        10:00:25 INFO: Query completed\\n2024-01-01 10:00:30 DEBUG: Processing complete\\n\",\n        \"pattern\":
-        \"ERROR\",\n        \"ignore_case\": true\n      },\n      \"observation\":
+        1,\n      \"thought\": \"To find all ERROR messages in the log data, I will
+        use the text_grep tool to search for the pattern ''ERROR'' in the provided
+        text.\",\n      \"action\": \"text_grep\",\n      \"tool_input\": {\n        \"text\":
+        \"2024-01-01 10:00:01 INFO: Application started\\n2024-01-01 10:00:05 ERROR:
+        Connection failed\\n2024-01-01 10:00:10 WARN: Retrying connection\\n2024-01-01
+        10:00:15 INFO: Connected successfully\\n2024-01-01 10:00:20 ERROR: Database
+        timeout\\n2024-01-01 10:00:25 INFO: Query completed\\n2024-01-01 10:00:30
+        DEBUG: Processing complete\\n\",\n        \"pattern\": \"ERROR\"\n      },\n      \"observation\":
         \"2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:20 ERROR:
         Database timeout\\n\"\n    }\n  ],\n  \"observation\": \"2024-01-01 10:00:05
         ERROR: Connection failed\\n2024-01-01 10:00:20 ERROR: Database timeout\\n\"\n}\n```\n\nRespond
@@ -329,7 +296,7 @@ http_interactions:
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -339,11 +306,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -353,14 +320,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '5084'
+      - '4503'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 20:22:46 GMT
+      - Thu, 11 Dec 2025 14:34:49 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -372,25 +339,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '1304'
+      - '1891'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '1373'
+      - '1905'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9987'
+      - '9886'
       X-Ratelimit-Remaining-Tokens:
-      - '198862'
+      - '198996'
       X-Ratelimit-Reset-Requests:
-      - 1m46.112s
+      - 16m19.144s
       X-Ratelimit-Reset-Tokens:
-      - 341ms
+      - 301ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -407,23 +374,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9886e9e4db8b0f70-EWR
+      - 9ac5b46d4eda0311-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMK73GnnLKkWd1hVqM4ZVyDufutVk",
+          "id": "chatcmpl-Clc2hSwRiAUBjy3HD46iDXWGAZMrQ",
           "object": "chat.completion",
-          "created": 1759436565,
+          "created": 1765463687,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The tool has successfully retrieved the ERROR messages from the log data, identifying two key issues: a connection failure and a database timeout.\",\n  \"next_step\": \"finish\"\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"interpretation\": \"The tool successfully identified two ERROR messages in the log data: 'Connection failed' and 'Database timeout'.\",\n  \"next_step\": \"finish\"\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -432,9 +399,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 1164,
-            "completion_tokens": 50,
-            "total_tokens": 1214,
+            "prompt_tokens": 1076,
+            "completion_tokens": 46,
+            "total_tokens": 1122,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -447,9 +414,9 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Thu, 02 Oct 2025 20:22:46 GMT
+  recorded_at: Thu, 11 Dec 2025 14:34:49 GMT
 - request:
     method: post
     uri: https://api.openai.com/v1/chat/completions
@@ -464,26 +431,20 @@ http_interactions:
         {\n            \"type\": \"string\",\n            \"const\": \"HistoryEntry\"\n          },\n          \"step\":
         {\n            \"type\": \"integer\"\n          },\n          \"thought\":
         {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action\":
-        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"action_input\":
-        {\n            \"oneOf\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\":
-        \"number\"\n              },\n              {\n                \"type\": \"object\",\n                \"propertyNames\":
-        {\n                  \"type\": \"string\"\n                },\n                \"additionalProperties\":
-        {\n                  \"type\": \"string\"\n                },\n                \"description\":
-        \"A mapping where keys are strings and values are strings\"\n              },\n              {\n                \"type\":
-        \"array\",\n                \"items\": {\n                  \"type\": \"string\"\n                }\n              },\n              {\n                \"type\":
-        \"null\"\n              }\n            ],\n            \"description\": \"Union
-        of multiple types\"\n          },\n          \"observation\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
+        {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          },\n          \"tool_input\":
+        {\n            \"type\": [\n              \"object\",\n              \"null\"\n            ],\n            \"propertyNames\":
+        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
+        {\n              \"type\": \"string\"\n            },\n            \"description\":
+        \"A mapping where keys are strings and values are strings\"\n          },\n          \"observation\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"step\",\n          \"observation\"\n        ],\n        \"description\":
         \"DSPy::HistoryEntry struct\"\n      },\n      \"description\": \"Previous
         thoughts and actions, including observations from tools.\"\n    },\n    \"available_tools\":
         {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
         {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
         \"AvailableTool\"\n          },\n          \"name\": {\n            \"type\":
         \"string\"\n          },\n          \"description\": {\n            \"type\":
-        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"object\",\n            \"propertyNames\":
-        {\n              \"type\": \"string\"\n            },\n            \"additionalProperties\":
-        {\n              \"type\": \"string\"\n            },\n            \"description\":
-        \"A mapping where keys are strings and values are strings\"\n          }\n        },\n        \"required\":
+        \"string\"\n          },\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
         [\n          \"_type\",\n          \"name\",\n          \"description\",\n          \"schema\"\n        ],\n        \"description\":
         \"DSPy::ReAct::AvailableTool struct\"\n      },\n      \"description\": \"Array
         of available tools with their JSON schemas.\"\n    }\n  },\n  \"required\":
@@ -493,12 +454,16 @@ http_interactions:
         \"Reasoning about what to do next, considering the history and observations.\"\n    },\n    \"action\":
         {\n      \"type\": \"string\",\n      \"enum\": [\n        \"text_grep\",\n        \"text_wc\",\n        \"text_rg\",\n        \"text_extract_lines\",\n        \"text_filter_lines\",\n        \"text_unique_lines\",\n        \"text_sort_lines\",\n        \"text_summarize_text\",\n        \"finish\"\n      ],\n      \"description\":
         \"The action to take. MUST be one of the tool names listed in `available_tools`
-        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"action_input\":
-        {\n      \"type\": \"string\",\n      \"description\": \"Input for the chosen
-        action. If action is a tool name, this MUST be a JSON object matching the
-        tool''s schema. If action is \\\"finish\\\", this field MUST contain the final
-        result based on processing the input data.\"\n    }\n  },\n  \"required\":
-        [\n    \"thought\",\n    \"action\",\n    \"action_input\"\n  ]\n}\n```\n\nAll
+        input, or the literal string \\\"finish\\\" to provide the final answer.\"\n    },\n    \"tool_input\":
+        {\n      \"type\": [\n        \"object\",\n        \"null\"\n      ],\n      \"propertyNames\":
+        {\n        \"type\": \"string\"\n      },\n      \"additionalProperties\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Input
+        for the chosen tool action. Required when action is a tool name. MUST be a
+        JSON object matching the tool''s parameter schema. Set to null when action
+        is \\\"finish\\\".\"\n    },\n    \"final_answer\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\":
+        \"The final answer to return. Required when action is \\\"finish\\\". Must
+        match the expected output type. Set to null when action is a tool name.\"\n    }\n  },\n  \"required\":
+        [\n    \"thought\",\n    \"action\",\n    \"tool_input\",\n    \"final_answer\"\n  ]\n}\n```\n\nAll
         interactions will be structured in the following way, with the appropriate
         values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
         values\nRespond exclusively with the output schema fields in the json block
@@ -511,91 +476,63 @@ http_interactions:
         successfully\\\\n2024-01-01 10:00:20 ERROR: Database timeout\\\\n2024-01-01
         10:00:25 INFO: Query completed\\\\n2024-01-01 10:00:30 DEBUG: Processing complete\\\\n\\\",\\\"task\\\":\\\"Search
         this log data for ERROR messages\\\"}\",\n  \"history\": [\n    {\n      \"step\":
-        1,\n      \"thought\": \"I need to search through the provided log data for
-        ERROR messages. The available tool ''text_grep'' is suitable for this purpose
-        as it allows me to specify a pattern to search in the text.\",\n      \"action\":
-        \"text_grep\",\n      \"action_input\": {\n        \"text\": \"2024-01-01
-        10:00:01 INFO: Application started\\n2024-01-01 10:00:05 ERROR: Connection
-        failed\\n2024-01-01 10:00:10 WARN: Retrying connection\\n2024-01-01 10:00:15
-        INFO: Connected successfully\\n2024-01-01 10:00:20 ERROR: Database timeout\\n2024-01-01
-        10:00:25 INFO: Query completed\\n2024-01-01 10:00:30 DEBUG: Processing complete\\n\",\n        \"pattern\":
-        \"ERROR\",\n        \"ignore_case\": true\n      },\n      \"observation\":
+        1,\n      \"thought\": \"To find all ERROR messages in the log data, I will
+        use the text_grep tool to search for the pattern ''ERROR'' in the provided
+        text.\",\n      \"action\": \"text_grep\",\n      \"tool_input\": {\n        \"text\":
+        \"2024-01-01 10:00:01 INFO: Application started\\n2024-01-01 10:00:05 ERROR:
+        Connection failed\\n2024-01-01 10:00:10 WARN: Retrying connection\\n2024-01-01
+        10:00:15 INFO: Connected successfully\\n2024-01-01 10:00:20 ERROR: Database
+        timeout\\n2024-01-01 10:00:25 INFO: Query completed\\n2024-01-01 10:00:30
+        DEBUG: Processing complete\\n\",\n        \"pattern\": \"ERROR\"\n      },\n      \"observation\":
         \"2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:20 ERROR:
         Database timeout\\n\"\n    }\n  ],\n  \"available_tools\": [\n    {\n      \"name\":
         \"text_grep\",\n      \"description\": \"Search for patterns in text using
-        grep\",\n      \"schema\": {\n        \"name\": \"text_grep\",\n        \"description\":
-        \"Search for patterns in text using grep\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"pattern\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        pattern\"\n            },\n            \"ignore_case\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter ignore_case (optional)\"\n            },\n            \"count_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        count_only (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        grep\",\n      \"schema\": \"{\\\"name\\\":\\\"text_grep\\\",\\\"description\\\":\\\"Search
+        for patterns in text using grep\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"ignore_case\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        ignore_case (optional)\\\"},\\\"count_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        count_only (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_wc\",\n      \"description\": \"Count lines, words, and characters
-        in text\",\n      \"schema\": {\n        \"name\": \"text_wc\",\n        \"description\":
-        \"Count lines, words, and characters in text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"lines_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        lines_only (optional)\"\n            },\n            \"words_only\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter words_only (optional)\"\n            },\n            \"chars_only\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        chars_only (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        in text\",\n      \"schema\": \"{\\\"name\\\":\\\"text_wc\\\",\\\"description\\\":\\\"Count
+        lines, words, and characters in text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"lines_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        lines_only (optional)\\\"},\\\"words_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        words_only (optional)\\\"},\\\"chars_only\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        chars_only (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_rg\",\n      \"description\": \"Fast text search using ripgrep\",\n      \"schema\":
-        {\n        \"name\": \"text_rg\",\n        \"description\": \"Fast text search
-        using ripgrep\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"context\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        context (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"{\\\"name\\\":\\\"text_rg\\\",\\\"description\\\":\\\"Fast text search using
+        ripgrep\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"context\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        context (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_extract_lines\",\n      \"description\": \"Extract specific line ranges
-        from text\",\n      \"schema\": {\n        \"name\": \"text_extract_lines\",\n        \"description\":
-        \"Extract specific line ranges from text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"start_line\":
-        {\n              \"type\": \"integer\",\n              \"description\": \"Parameter
-        start_line\"\n            },\n            \"end_line\": {\n              \"type\":
-        [\n                \"integer\",\n                \"null\"\n              ],\n              \"description\":
-        \"Parameter end_line (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"start_line\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        from text\",\n      \"schema\": \"{\\\"name\\\":\\\"text_extract_lines\\\",\\\"description\\\":\\\"Extract
+        specific line ranges from text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"start_line\\\":{\\\"type\\\":\\\"integer\\\",\\\"description\\\":\\\"Parameter
+        start_line\\\"},\\\"end_line\\\":{\\\"type\\\":[\\\"integer\\\",\\\"null\\\"],\\\"description\\\":\\\"Parameter
+        end_line (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"start_line\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_filter_lines\",\n      \"description\": \"Filter lines matching or
-        not matching a pattern\",\n      \"schema\": {\n        \"name\": \"text_filter_lines\",\n        \"description\":
-        \"Filter lines matching or not matching a pattern\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"text\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        text\"\n            },\n            \"pattern\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter pattern\"\n            },\n            \"invert\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        invert (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\",\n            \"pattern\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        not matching a pattern\",\n      \"schema\": \"{\\\"name\\\":\\\"text_filter_lines\\\",\\\"description\\\":\\\"Filter
+        lines matching or not matching a pattern\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"pattern\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        pattern\\\"},\\\"invert\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        invert (optional)\\\"}},\\\"required\\\":[\\\"text\\\",\\\"pattern\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_unique_lines\",\n      \"description\": \"Get unique lines from text\",\n      \"schema\":
-        {\n        \"name\": \"text_unique_lines\",\n        \"description\": \"Get
-        unique lines from text\",\n        \"parameters\": {\n          \"type\":
-        \"object\",\n          \"properties\": {\n            \"text\": {\n              \"type\":
-        \"string\",\n              \"description\": \"Parameter text\"\n            },\n            \"preserve_order\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        preserve_order (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"{\\\"name\\\":\\\"text_unique_lines\\\",\\\"description\\\":\\\"Get unique
+        lines from text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"preserve_order\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        preserve_order (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_sort_lines\",\n      \"description\": \"Sort lines in text\",\n      \"schema\":
-        {\n        \"name\": \"text_sort_lines\",\n        \"description\": \"Sort
-        lines in text\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"text\": {\n              \"type\": \"string\",\n              \"description\":
-        \"Parameter text\"\n            },\n            \"reverse\": {\n              \"type\":
-        \"boolean\",\n              \"description\": \"Parameter reverse (optional)\"\n            },\n            \"numeric\":
-        {\n              \"type\": \"boolean\",\n              \"description\": \"Parameter
-        numeric (optional)\"\n            }\n          },\n          \"required\":
-        [\n            \"text\"\n          ]\n        }\n      }\n    },\n    {\n      \"name\":
+        \"{\\\"name\\\":\\\"text_sort_lines\\\",\\\"description\\\":\\\"Sort lines
+        in text\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"},\\\"reverse\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        reverse (optional)\\\"},\\\"numeric\\\":{\\\"type\\\":\\\"boolean\\\",\\\"description\\\":\\\"Parameter
+        numeric (optional)\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    },\n    {\n      \"name\":
         \"text_summarize_text\",\n      \"description\": \"Generate statistical summary
-        of text content\",\n      \"schema\": {\n        \"name\": \"text_summarize_text\",\n        \"description\":
-        \"Generate statistical summary of text content\",\n        \"parameters\":
-        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"text\":
-        {\n              \"type\": \"string\",\n              \"description\": \"Parameter
-        text\"\n            }\n          },\n          \"required\": [\n            \"text\"\n          ]\n        }\n      }\n    }\n  ]\n}\n```\n\nRespond
+        of text content\",\n      \"schema\": \"{\\\"name\\\":\\\"text_summarize_text\\\",\\\"description\\\":\\\"Generate
+        statistical summary of text content\\\",\\\"parameters\\\":{\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"text\\\":{\\\"type\\\":\\\"string\\\",\\\"description\\\":\\\"Parameter
+        text\\\"}},\\\"required\\\":[\\\"text\\\"]}}\"\n    }\n  ]\n}\n```\n\nRespond
         with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
         with the heading `## Output values`."}],"temperature":1.0}'
     headers:
@@ -604,7 +541,7 @@ http_interactions:
       Accept:
       - application/json
       User-Agent:
-      - Ruby
+      - OpenAI::Client/Ruby 0.36.0
       Host:
       - api.openai.com
       X-Stainless-Arch:
@@ -614,11 +551,11 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 0.22.1
+      - 0.36.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.3.6
+      - 3.4.5
       Content-Type:
       - application/json
       Authorization:
@@ -628,14 +565,14 @@ http_interactions:
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '13412'
+      - '11245'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Thu, 02 Oct 2025 20:22:50 GMT
+      - Thu, 11 Dec 2025 14:34:52 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -647,25 +584,25 @@ http_interactions:
       Openai-Organization:
       - "<OPENAI_ORGANIZATION>"
       Openai-Processing-Ms:
-      - '3338'
+      - '2781'
       Openai-Project:
       - proj_n52OL5vlzVaXGnYDaGWmVX5F
       Openai-Version:
       - '2020-10-01'
       X-Envoy-Upstream-Service-Time:
-      - '3371'
+      - '2797'
       X-Ratelimit-Limit-Requests:
       - '10000'
       X-Ratelimit-Limit-Tokens:
       - '200000'
       X-Ratelimit-Remaining-Requests:
-      - '9987'
+      - '9885'
       X-Ratelimit-Remaining-Tokens:
-      - '196992'
+      - '197586'
       X-Ratelimit-Reset-Requests:
-      - 1m44.627s
+      - 16m25.711s
       X-Ratelimit-Reset-Tokens:
-      - 902ms
+      - 724ms
       X-Request-Id:
       - "<REQUEST_ID>"
       X-Openai-Proxy-Wasm:
@@ -682,23 +619,23 @@ http_interactions:
       Server:
       - cloudflare
       Cf-Ray:
-      - 9886e9ee1c400f70-EWR
+      - 9ac5b47a3ae50311-MAD
       Alt-Svc:
       - h3=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |
         {
-          "id": "chatcmpl-CMK74H9M5a5Yt9HxrjF9cxilW6zq0",
+          "id": "chatcmpl-Clc2jFv21RuDddqtQXSbfFkdWxwdo",
           "object": "chat.completion",
-          "created": 1759436566,
+          "created": 1765463689,
           "model": "gpt-4o-mini-2024-07-18",
           "choices": [
             {
               "index": 0,
               "message": {
                 "role": "assistant",
-                "content": "## Output values\n```json\n{\n  \"thought\": \"I have identified the ERROR messages in the log data. Next, I can either summarize the errors or filter the lines further if needed. Since I already have the ERROR messages, I will choose to summarize the content.\",\n  \"action\": \"text_summarize_text\",\n  \"action_input\": {\n    \"text\": \"2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:20 ERROR: Database timeout\\n\"\n  }\n}\n```",
+                "content": "## Output values\n```json\n{\n  \"thought\": \"Now that I have identified the ERROR messages, I should summarize them to provide a concise overview of the issues reported in the log.\",\n  \"action\": \"text_summarize_text\",\n  \"tool_input\": {\n    \"text\": \"2024-01-01 10:00:05 ERROR: Connection failed\\n2024-01-01 10:00:20 ERROR: Database timeout\\n\"\n  },\n  \"final_answer\": null\n}\n```",
                 "refusal": null,
                 "annotations": []
               },
@@ -707,9 +644,9 @@ http_interactions:
             }
           ],
           "usage": {
-            "prompt_tokens": 2685,
-            "completion_tokens": 117,
-            "total_tokens": 2802,
+            "prompt_tokens": 2247,
+            "completion_tokens": 107,
+            "total_tokens": 2354,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -722,7 +659,7 @@ http_interactions:
             }
           },
           "service_tier": "default",
-          "system_fingerprint": "fp_560af6e559"
+          "system_fingerprint": "fp_11f3029f6b"
         }
-  recorded_at: Thu, 02 Oct 2025 20:22:50 GMT
+  recorded_at: Thu, 11 Dec 2025 14:34:52 GMT
 recorded_with: VCR 6.3.1
