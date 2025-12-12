@@ -179,6 +179,47 @@ module DSPy
       named_predictors.map { |(_, predictor)| predictor }
     end
 
+    # Override Dry::Configurable's configure to propagate LM to child predictors
+    # When you configure an agent's LM, it automatically propagates to all child predictors
+    # returned by named_predictors, recursively.
+    #
+    # @example Basic usage
+    #   agent.configure { |c| c.lm = DSPy::LM.new('openai/gpt-4o') }
+    #   # All internal predictors now use gpt-4o
+    #
+    # @example Fine-grained control (configure then override)
+    #   agent.configure { |c| c.lm = cheap_lm }
+    #   agent.configure_predictor('thought_generator') { |c| c.lm = expensive_lm }
+    #
+    # @return [self] for method chaining
+    sig { params(block: T.proc.params(config: T.untyped).void).returns(T.self_type) }
+    def configure(&block)
+      super(&block)
+      propagate_lm_to_children(config.lm) if config.lm
+      self
+    end
+
+    # Configure a specific child predictor by name
+    # Use this for fine-grained control when different predictors need different LMs
+    #
+    # @param predictor_name [String] The name of the predictor (e.g., 'thought_generator')
+    # @yield [config] Configuration block
+    # @return [self] for method chaining
+    # @raise [ArgumentError] if predictor_name is not found
+    #
+    # @example
+    #   agent.configure_predictor('thought_generator') { |c| c.lm = expensive_lm }
+    sig { params(predictor_name: String, block: T.proc.params(config: T.untyped).void).returns(T.self_type) }
+    def configure_predictor(predictor_name, &block)
+      _, predictor = named_predictors.find { |name, _| name == predictor_name }
+      unless predictor
+        available = named_predictors.map(&:first).join(', ')
+        raise ArgumentError, "Unknown predictor: #{predictor_name}. Available: #{available}"
+      end
+      predictor.configure(&block)
+      self
+    end
+
     def instrument_forward_call(call_args, call_kwargs)
       ensure_module_subscriptions!
 
@@ -254,6 +295,21 @@ module DSPy
     end
 
     private
+
+    # Propagate LM configuration to child predictors recursively
+    # Skips children that already have an explicit LM configured
+    sig { params(lm: T.untyped).void }
+    def propagate_lm_to_children(lm)
+      named_predictors.each do |(name, predictor)|
+        next if predictor == self # Skip self-references (Predict returns [['self', self]])
+
+        # Only propagate if child doesn't have explicit LM configured
+        unless predictor.config.lm
+          # Recursive: configure calls propagate_lm_to_children on the child too
+          predictor.configure { |c| c.lm = lm }
+        end
+      end
+    end
 
     def ensure_module_subscriptions!
       return if @module_subscriptions_registered
