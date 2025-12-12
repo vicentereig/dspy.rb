@@ -134,6 +134,69 @@ DSPy.with_lm(local_model) do
 end
 ```
 
+## Configuring Agent LMs
+
+Complex agents like `ReAct` and `CodeAct` contain internal predictors. When you configure an agent's LM using `configure`, it automatically propagates to all child predictors.
+
+### Basic Configuration
+
+```ruby
+# Configure a ReAct agent - LM propagates to internal predictors
+agent = DSPy::ReAct.new(MySignature, tools: tools)
+agent.configure { |c| c.lm = DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY']) }
+
+# All internal predictors (thought_generator, observation_processor) now use gpt-4o
+result = agent.call(question: "What is the capital of France?")
+```
+
+### Fine-Grained Control
+
+Use `configure_predictor` to assign different LMs to specific internal predictors:
+
+```ruby
+# Use a fast model for most predictors
+agent.configure { |c| c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY']) }
+
+# Use a more capable model for reasoning
+agent.configure_predictor('thought_generator') do |c|
+  c.lm = DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY'])
+end
+```
+
+Both methods support chaining:
+
+```ruby
+agent
+  .configure { |c| c.lm = cheap_model }
+  .configure_predictor('thought_generator') { |c| c.lm = expensive_model }
+```
+
+### Available Predictors by Agent Type
+
+| Agent | Internal Predictors |
+|-------|---------------------|
+| `DSPy::ReAct` | `thought_generator`, `observation_processor` |
+| `DSPy::CodeAct` | `code_generator`, `observation_processor` |
+| `DSPy::DeepResearch` | `planner`, `synthesizer`, `qa_reviewer`, `reporter` |
+| `DSPy::DeepSearch` | `seed_predictor`, `search_predictor`, `reader_predictor`, `reason_predictor` |
+
+### Propagation Behavior
+
+- **Recursive propagation**: Configuration propagates to children, grandchildren, etc.
+- **Respects explicit configuration**: Children with already-configured LMs are not overwritten
+- **Order matters**: Configure the parent first, then override specific children
+
+```ruby
+# This pattern works correctly:
+agent.configure { |c| c.lm = default_lm }           # Sets on agent + all children
+agent.configure_predictor('thought_generator') { |c| c.lm = special_lm }  # Overrides one child
+
+# Children configured before parent retain their configuration:
+thought_gen = agent.named_predictors.find { |n, _| n == 'thought_generator' }.last
+thought_gen.configure { |c| c.lm = special_lm }     # Configure child first
+agent.configure { |c| c.lm = default_lm }           # Parent config won't overwrite
+```
+
 ## Lifecycle Callbacks
 
 DSPy.rb modules support Rails-style lifecycle callbacks that run before, after, or around the `forward` method. This enables clean separation of concerns for cross-cutting concerns like logging, metrics, context management, and memory operations.
