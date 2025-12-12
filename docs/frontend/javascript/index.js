@@ -93,21 +93,40 @@ track404Errors()
 
 // Add any interactive functionality here
 
-// Example: Smooth scrolling for anchor links
+// Add anchor links to headers for easy link copying
+document.addEventListener('DOMContentLoaded', function() {
+  const article = document.querySelector('article.prose');
+  if (!article) return;
+
+  const headers = article.querySelectorAll('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]');
+
+  headers.forEach(header => {
+    const anchor = document.createElement('a');
+    anchor.className = 'anchor-link';
+    anchor.href = '#' + header.id;
+    anchor.setAttribute('aria-label', 'Link to this section');
+    anchor.textContent = '#';
+    header.insertBefore(anchor, header.firstChild);
+  });
+});
+
+// Smooth scrolling for anchor links
 document.addEventListener('DOMContentLoaded', function() {
   const links = document.querySelectorAll('a[href^="#"]');
-  
+
   links.forEach(link => {
     link.addEventListener('click', function(e) {
       const href = this.getAttribute('href');
       if (href === '#') return;
-      
+
       const target = document.querySelector(href);
       if (target) {
         e.preventDefault();
         target.scrollIntoView({
           behavior: 'smooth'
         });
+        // Update URL hash without jumping
+        history.pushState(null, '', href);
       }
     });
   });

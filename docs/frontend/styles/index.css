@@ -6,6 +6,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Header anchor links - show # on hover for easy link copying */
+.prose h1[id],
+.prose h2[id],
+.prose h3[id],
+.prose h4[id],
+.prose h5[id],
+.prose h6[id] {
+  position: relative;
+}
+
+.prose .anchor-link {
+  position: absolute;
+  left: -1.25em;
+  opacity: 0;
+  text-decoration: none;
+  color: #9ca3af;
+  font-weight: normal;
+  transition: opacity 0.2s ease;
+}
+
+.prose h1:hover .anchor-link,
+.prose h2:hover .anchor-link,
+.prose h3:hover .anchor-link,
+.prose h4:hover .anchor-link,
+.prose h5:hover .anchor-link,
+.prose h6:hover .anchor-link {
+  opacity: 1;
+}
+
+.prose .anchor-link:hover {
+  color: #dc2626;
+}
+
 /* Custom scrollbar styles for documentation */
 @layer utilities {
   .scrollbar-thin {
