@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.33.0] - 2025-12-12
+
+### Added
+- **LM Configuration Propagation** (#193, PR #196) - `Module#configure` now propagates LM settings to child predictors
+  - New `configure_predictor` method for fine-grained control over specific predictors
+  - Recursive propagation to nested modules respects explicit child configurations
+  - Documented in Module Runtime Context guide
+
+### Fixed
+- **ReAct Type Safety** - Properly typed action fields and fixed BAML enum naming in ReAct agents
+- **Type Elimination** - Eliminated `T.untyped` from ReAct and CodeAct struct fields for better type safety
+- **Test Reliability** - Fixed locally failing tests and enforced strict type coercion
+
+### Documentation
+- **Header Anchor Links** - Added hoverable anchor links (#) to documentation headers for easy section linking
+
 ## [0.32.0] - 2025-12-10
 
 ### Added
