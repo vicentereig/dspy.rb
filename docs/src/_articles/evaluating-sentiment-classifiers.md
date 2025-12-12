@@ -6,7 +6,7 @@ date: 2025-06-01
 author: Vicente Reig
 categories: [evaluation, sentiment-analysis, tutorial]
 featured: true
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluating-sentiment-classifiers/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/evaluating-sentiment-classifiers/"
 image: /images/og/evaluating-sentiment-classifiers.png
 ---
 

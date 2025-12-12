@@ -7,7 +7,7 @@ author: "Vicente Reig"
 category: "Agents"
 reading_time: "8 min read"
 image: /images/og/ephemeral-memory-chat-router.png
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/ephemeral-memory-chat-router/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/ephemeral-memory-chat-router/"
 ---
 
 When teams ask for an "AI Agent" they usually need something simpler: a chat loop that remembers prior turns and occasionally routes complex requests to a smarter model. This article builds that system incrementally—starting from the simplest possible chat and layering memory, context engineering, and routing only when needed.

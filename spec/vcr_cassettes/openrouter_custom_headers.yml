@@ -51,7 +51,7 @@ http_interactions:
       X-Title:
       - DSPy.rb Integration Test
       Http-Referer:
-      - https://vicentereig.github.io/dspy.rb/
+      - https://oss.vicente.services/dspy.rb/
       X-Stainless-Retry-Count:
       - '0'
       X-Stainless-Timeout:

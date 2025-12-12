@@ -4,7 +4,7 @@ title: "What TOON Gets That CSV Doesn’t for LLM Payloads"
 date: 2025-11-15
 description: "Token-Oriented Object Notation keeps your nested Sorbet structs intact—something flat CSV rows simply can’t do when you prompt large language models."
 author: "Vicente Reig Rincon de Arellano"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/toon-vs-csv-nested-relationships/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/toon-vs-csv-nested-relationships/"
 image: /images/og/toon-vs-csv-nested-relationships.png
 reading_time: "3 min read"
 ---
@@ -105,7 +105,7 @@ Because TOON preserves the nested structure, Gemini receives a compact table for
 
 ## Related Resources
 
-- [Toolsets Documentation](https://vicentereig.github.io/dspy.rb/core-concepts/toolsets/) - Learn how to build tools that work with TOON-formatted data
+- [Toolsets Documentation](https://oss.vicente.services/dspy.rb/core-concepts/toolsets/) - Learn how to build tools that work with TOON-formatted data
 
-[^1]: For a comprehensive introduction to TOON and how it pairs with BAML to cut prompt tokens in half, see [Cut Prompt Tokens in Half with BAML + TOON](https://vicentereig.github.io/dspy.rb/blog/articles/toon-data-format/).
-[^2]: BAML (BoundaryML Schema Language) provides TypeScript-like schema syntax that's 83-85% more compact than JSON Schema. Learn more in [Rich Signatures, Lean Schemas](https://vicentereig.github.io/dspy.rb/blog/articles/baml-schema-format/).
+[^1]: For a comprehensive introduction to TOON and how it pairs with BAML to cut prompt tokens in half, see [Cut Prompt Tokens in Half with BAML + TOON](https://oss.vicente.services/dspy.rb/blog/articles/toon-data-format/).
+[^2]: BAML (BoundaryML Schema Language) provides TypeScript-like schema syntax that's 83-85% more compact than JSON Schema. Learn more in [Rich Signatures, Lean Schemas](https://oss.vicente.services/dspy.rb/blog/articles/baml-schema-format/).

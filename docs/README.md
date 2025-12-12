@@ -58,7 +58,7 @@ The site is configured for GitHub Pages deployment:
 
 1. Push to the `main` branch
 2. GitHub Actions will automatically build and deploy
-3. View at https://vicentereig.github.io/dspy.rb/
+3. View at https://oss.vicente.services/dspy.rb/
 
 ## 🛠️ Key Features
 

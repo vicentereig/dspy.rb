@@ -7,7 +7,7 @@ author: "Vicente Reig"
 category: "Evaluation"
 reading_time: "4 min read"
 image: /images/og/does-chain-of-thought-improve-summaries.png
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/does-chain-of-thought-improve-summaries/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/does-chain-of-thought-improve-summaries/"
 tags: ["evaluation", "chain-of-thought", "summarization", "llm-judge"]
 ---
 

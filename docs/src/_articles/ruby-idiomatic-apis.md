@@ -6,7 +6,7 @@ date: 2025-06-05
 author: "Vicente Reig"
 category: "Design"
 reading_time: "8 min read"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/ruby-idiomatic-apis/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/ruby-idiomatic-apis/"
 image: /images/og/ruby-idiomatic-apis.png
 ---
 

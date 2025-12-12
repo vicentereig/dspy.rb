@@ -5,7 +5,7 @@ date: 2025-09-05
 description: "DSPy.rb now provides true async concurrency for LLM retries and operations, eliminating blocking delays while maintaining reliability"
 author: "Vicente Reig"
 tags: ["performance", "async", "concurrency", "reliability"]
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/async-telemetry-optimization/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/async-telemetry-optimization/"
 image: /images/og/async-telemetry-optimization.png
 ---
 

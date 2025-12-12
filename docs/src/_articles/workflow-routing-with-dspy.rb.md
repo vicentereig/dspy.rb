@@ -7,7 +7,7 @@ author: "Vicente Reig"
 category: "Workflow"
 reading_time: "4 min read"
 image: /images/og/workflow-routing-with-dspy.rb.png
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/workflow-routing-with-dspy.rb/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/workflow-routing-with-dspy.rb/"
 ---
 
 Successful LLM implementations rely on simple, composable patterns instead of sprawling frameworks. 
@@ -45,7 +45,7 @@ of specialized predictors that stay focused and easy to optimize.
 
 ## Why a workflow before you build an agent?
 
-Workflows[^1] keep LLMs and tools on predefined code paths—you still need to tune prompts, choose models, and explicitly wire every branch—so you retain deterministic control while you validate the solution. Once you've validated routing and specialized handlers, you can [upgrade specific branches to autonomous ReAct agents](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) without rewriting the classifier.
+Workflows[^1] keep LLMs and tools on predefined code paths—you still need to tune prompts, choose models, and explicitly wire every branch—so you retain deterministic control while you validate the solution. Once you've validated routing and specialized handlers, you can [upgrade specific branches to autonomous ReAct agents](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/) without rewriting the classifier.
 
 ## Architecture at a glance
 
@@ -53,10 +53,10 @@ Breaking down the router into components, we can delegate their predictions to s
 
 | Component                     | Prompting Technique                                                                 | Default Model                          | Purpose |
 |-------------------------------|--------------------------------------------------------------------------------------|----------------------------------------|---------|
-| RouteSupportTicket classifier | [`DSPy::Predict`](https://vicentereig.github.io/dspy.rb/core-concepts/predictors/)           | `anthropic/claude-haiku-4-5-20251001`  | Categorize each ticket + explain reasoning |
-| Billing / General playbooks   | [`DSPy::Predict`](https://vicentereig.github.io/dspy.rb/core-concepts/predictors/#dspypredict) | `anthropic/claude-haiku-4-5-20251001`  | Cheap follow-up guidance for routine issues |
-| Technical playbook            | [`DSPy::ChainOfThought`](https://vicentereig.github.io/dspy.rb/core-concepts/predictors/#dspychainofthought) | `anthropic/claude-sonnet-4-5-20250929` | Deeper reasoning + escalation steps for tricky tickets |
-| SupportRouter                 | [`DSPy::Module`](https://vicentereig.github.io/dspy.rb/core-concepts/modules/)      | `anthropic/claude-haiku-4-5-20251001`  | Orchestrates classifier, handlers, and output struct |
+| RouteSupportTicket classifier | [`DSPy::Predict`](https://oss.vicente.services/dspy.rb/core-concepts/predictors/)           | `anthropic/claude-haiku-4-5-20251001`  | Categorize each ticket + explain reasoning |
+| Billing / General playbooks   | [`DSPy::Predict`](https://oss.vicente.services/dspy.rb/core-concepts/predictors/#dspypredict) | `anthropic/claude-haiku-4-5-20251001`  | Cheap follow-up guidance for routine issues |
+| Technical playbook            | [`DSPy::ChainOfThought`](https://oss.vicente.services/dspy.rb/core-concepts/predictors/#dspychainofthought) | `anthropic/claude-sonnet-4-5-20250929` | Deeper reasoning + escalation steps for tricky tickets |
+| SupportRouter                 | [`DSPy::Module`](https://oss.vicente.services/dspy.rb/core-concepts/modules/)      | `anthropic/claude-haiku-4-5-20251001`  | Orchestrates classifier, handlers, and output struct |
 
 
 1. **A signature to anchor ticket classification** – one `DSPy::Predict` call decides which category is the best fit and reports confidence/reasoning:
@@ -255,8 +255,8 @@ Notice how every branch produces traceable metadata: we know which LM responded,
 
 - Swap the classifier for a lightweight heuristic or a fine-tuned model if you already track intents elsewhere.
 - Feed historical tickets into DSPy’s evaluation helpers to benchmark routing accuracy before shipping.
-- Attach [`DSPy::Callbacks`](https://vicentereig.github.io/dspy.rb/core-concepts/module-runtime-context/#lifecycle-callbacks) subscribers so each routed request emits spans/metrics to Langfuse, Honeycomb, or Datadog; DSPy.rb modules support Rails-style lifecycle callbacks that wrap `forward`, letting you keep logging, metrics, context management, and memory operations out of business logic.
-- Promote a branch to a [ReAct agent](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) later without rewriting the classifier—`SupportRouter` just needs a handler that responds to `call`.
+- Attach [`DSPy::Callbacks`](https://oss.vicente.services/dspy.rb/core-concepts/module-runtime-context/#lifecycle-callbacks) subscribers so each routed request emits spans/metrics to Langfuse, Honeycomb, or Datadog; DSPy.rb modules support Rails-style lifecycle callbacks that wrap `forward`, letting you keep logging, metrics, context management, and memory operations out of business logic.
+- Promote a branch to a [ReAct agent](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/) later without rewriting the classifier—`SupportRouter` just needs a handler that responds to `call`.
 
 Routing is a "minimum viable orchestration" pattern: fast to build, cheap to run, and powerful enough to keep your prompts specialized. Grab the example, swap in your own categories, and start measuring the gains before you reach for a full-blown agent.
 

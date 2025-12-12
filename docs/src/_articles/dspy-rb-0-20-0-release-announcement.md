@@ -5,7 +5,7 @@ description: "Major release brings Google Gemini support, fiber-local contexts, 
 date: 2025-08-26
 author: Vicente Reig
 tags: ["release", "features", "ruby", "ai"]
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/dspy-rb-0-20-0-release-announcement/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/dspy-rb-0-20-0-release-announcement/"
 image: /images/og/dspy-rb-0-20-0-release-announcement.png
 ---
 
@@ -107,7 +107,7 @@ Storage system improvements will bring Rails-like patterns to program management
 gem install dspy
 ```
 
-The [documentation](https://vicentereig.github.io/dspy.rb/) covers everything. The examples show real usage patterns.
+The [documentation](https://oss.vicente.services/dspy.rb/) covers everything. The examples show real usage patterns.
 
 Found a bug or want a feature? Open an issue. Pull requests welcome.
 

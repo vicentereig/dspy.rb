@@ -165,9 +165,9 @@ result = agent.call(request: "What's 15% of 250?")
 # => result.action will be properly typed as CalculateAction
 ```
 
-Learn more about this pattern in: [Union Types: The Secret to Cleaner AI Agent Workflows](https://vicentereig.github.io/dspy.rb/blog/union-types-agentic-workflows/).
+Learn more about this pattern in: [Union Types: The Secret to Cleaner AI Agent Workflows](https://oss.vicente.services/dspy.rb/blog/union-types-agentic-workflows/).
 
-Want to dive deeper into building ReAct agents? Check out this step-by-step tutorial that walks through creating a research agent with multiple tools: [Building Smart Agents with DSPy.rb: A ReAct Tutorial](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/).
+Want to dive deeper into building ReAct agents? Check out this step-by-step tutorial that walks through creating a research agent with multiple tools: [Building Smart Agents with DSPy.rb: A ReAct Tutorial](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/).
 
 These modules compose naturally. Want a math-solving agent with step-by-step reasoning? Combine them:
 
@@ -237,7 +237,7 @@ MIPROv2 runs a three-phase optimization:
 
 The results are impressive. In testing, MIPROv2 consistently improves performance by 10-30% over manual prompts. More importantly, it finds optimizations humans miss—better phrasings, effective examples, and prompt structures that work reliably.
 
-DSPy.rb includes a comprehensive evaluation framework that goes beyond simple accuracy metrics. You can create custom metrics, track multiple performance dimensions, and get detailed evaluation reports. Learn more about building robust evaluation pipelines: [Evaluation Framework Guide](https://vicentereig.github.io/dspy.rb/optimization/evaluation/).
+DSPy.rb includes a comprehensive evaluation framework that goes beyond simple accuracy metrics. You can create custom metrics, track multiple performance dimensions, and get detailed evaluation reports. Learn more about building robust evaluation pipelines: [Evaluation Framework Guide](https://oss.vicente.services/dspy.rb/optimization/evaluation/).
 
 ## Production-Ready From Day One
 
@@ -294,7 +294,7 @@ relevant = memory.retrieve("user_123", "How should I explain this API error?")
 # => Returns contextually relevant memories based on semantic similarity
 ```
 
-Memory systems enable building chatbots that remember context, recommendation engines that learn preferences, and agents that accumulate knowledge over time. The system supports automatic compaction, deduplication, and smart retrieval strategies. Learn more: [Memory Systems Guide](https://vicentereig.github.io/dspy.rb/advanced/memory-systems/).
+Memory systems enable building chatbots that remember context, recommendation engines that learn preferences, and agents that accumulate knowledge over time. The system supports automatic compaction, deduplication, and smart retrieval strategies. Learn more: [Memory Systems Guide](https://oss.vicente.services/dspy.rb/advanced/memory-systems/).
 
 ## Ruby-Specific Advantages
 
@@ -551,7 +551,7 @@ With typed signatures, automatic optimization, and production-ready features, DS
 The Ruby ecosystem now has a serious framework for LLM development. Give DSPy.rb a try on your next project—your future self will thank you.
 
 **Get started today:**
-- Documentation: [vicentereig.github.io/dspy.rb](https://vicentereig.github.io/dspy.rb)
+- Documentation: [oss.vicente.services/dspy.rb](https://oss.vicente.services/dspy.rb)
 - Gem: `gem install dspy`
 
 *DSPy.rb is an idiomatic Ruby port of Stanford's DSPy framework, adapted for Ruby developers and enhanced with production-ready features. It's MIT licensed and actively maintained.*

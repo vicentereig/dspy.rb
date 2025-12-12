@@ -6,7 +6,7 @@ date: 2024-09-07
 author: "Vicente Reig"
 category: "Performance"
 reading_time: "7 min read"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/concurrent-llm-processing-performance-gains/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/concurrent-llm-processing-performance-gains/"
 image: /images/og/concurrent-llm-processing-performance-gains.png
 ---
 
@@ -88,7 +88,7 @@ Ruby's async processing capabilities have matured significantly. The [async gem]
 
 DSPy.rb builds on this solid foundation, providing async-aware features throughout the framework:
 
-- [Concurrent predictions](https://vicentereig.github.io/dspy.rb/core-concepts/predictors/#concurrent-predictions) using `Async::Barrier`
+- [Concurrent predictions](https://oss.vicente.services/dspy.rb/core-concepts/predictors/#concurrent-predictions) using `Async::Barrier`
 - Fiber-local context management for clean request isolation
 - Background telemetry processing via a dedicated export worker with automatic retry handling
 - Non-blocking observability that doesn't slow down your application

@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "DeepResearch orchestration for DSPy"
   spec.description   = "Planner, queue, and coherence orchestration built on DSPy::DeepSearch."
-  spec.homepage      = "https://vicentereig.github.io/dspy.rb/"
+  spec.homepage      = "https://oss.vicente.services/dspy.rb/"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 3.1"
 

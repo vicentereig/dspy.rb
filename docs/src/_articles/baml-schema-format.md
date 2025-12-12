@@ -4,7 +4,7 @@ title: "Rich Signatures, Lean Schemas"
 date: 2025-10-07
 description: "When signatures hit 5+ fields, JSON Schema overhead eats hundreds of tokens per call. BAML keeps them compact—no retraining needed."
 author: "Vicente Reig Rincon de Arellano"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/baml-schema-format/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/baml-schema-format/"
 image: /images/og/baml-schema-format.png
 ---
 
@@ -351,8 +351,8 @@ BAML generation is automatic from your Sorbet type signatures - no additional se
 
 ## Resources
 
-- [Schema Formats Documentation](https://vicentereig.github.io/dspy.rb/core-concepts/signatures/#schema-formats)
-- [Rich Types Guide](https://vicentereig.github.io/dspy.rb/advanced/complex-types/#schema-format-options)
-- [Getting Started](https://vicentereig.github.io/dspy.rb/getting-started/quick-start/)
+- [Schema Formats Documentation](https://oss.vicente.services/dspy.rb/core-concepts/signatures/#schema-formats)
+- [Rich Types Guide](https://oss.vicente.services/dspy.rb/advanced/complex-types/#schema-format-options)
+- [Getting Started](https://oss.vicente.services/dspy.rb/getting-started/quick-start/)
 - [DSPy.rb GitHub](https://github.com/vicentereig/dspy.rb)
 - [Integration Tests](https://github.com/vicentereig/dspy.rb/blob/main/spec/integration/baml_schema_format_spec.rb)

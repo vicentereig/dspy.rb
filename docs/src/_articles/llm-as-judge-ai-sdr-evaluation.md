@@ -5,7 +5,7 @@ date: 2025-09-09
 description: "How to use LLM judges to evaluate AI SDR campaigns with human-like reasoning, going beyond rule-based metrics to assess prospect relevance, personalization, and professional tone."
 author: "Vicente Reig"
 tags: ["evaluation", "llm-judge", "sales", "sdr", "custom-metrics"]
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/llm-as-judge-ai-sdr-evaluation/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/llm-as-judge-ai-sdr-evaluation/"
 image: /images/og/llm-as-judge-ai-sdr-evaluation.png
 ---
 

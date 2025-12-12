@@ -4,7 +4,7 @@ title: "Stop Fighting JSON Parsing Errors in Your LLM Apps"
 date: 2025-07-11
 description: "How DSPy.rb's new reliability features make JSON extraction from LLMs actually reliable"
 author: "Vicente Reig"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-parsing-reliability/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/json-parsing-reliability/"
 image: /images/og/json-parsing-reliability.png
 ---
 
@@ -222,7 +222,7 @@ Or in your Gemfile:
 gem 'dspy', '~> 0.9.0'
 ```
 
-Check out the [documentation](https://vicentereig.github.io/dspy.rb/) for more examples, or dive into the [reliability features guide](https://vicentereig.github.io/dspy.rb/production/) for advanced usage.
+Check out the [documentation](https://oss.vicente.services/dspy.rb/) for more examples, or dive into the [reliability features guide](https://oss.vicente.services/dspy.rb/production/) for advanced usage.
 
 ---
 

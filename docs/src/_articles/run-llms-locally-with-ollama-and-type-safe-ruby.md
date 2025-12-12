@@ -6,7 +6,7 @@ date: 2025-07-28
 author: "Vicente Reig"
 category: "Features"
 reading_time: "2 min read"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/run-llms-locally-with-ollama-and-type-safe-ruby/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/run-llms-locally-with-ollama-and-type-safe-ruby/"
 image: /images/og/run-llms-locally-with-ollama-and-type-safe-ruby.png
 ---
 

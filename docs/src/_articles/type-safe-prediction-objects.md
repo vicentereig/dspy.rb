@@ -6,7 +6,7 @@ date: 2025-07-15
 author: "Vicente Reig"
 category: "Features"
 reading_time: "6 min read"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/type-safe-prediction-objects/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/type-safe-prediction-objects/"
 image: /images/og/type-safe-prediction-objects.png
 ---
 

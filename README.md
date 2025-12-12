@@ -3,7 +3,7 @@
 [![Gem Version](https://img.shields.io/gem/v/dspy)](https://rubygems.org/gems/dspy)
 [![Total Downloads](https://img.shields.io/gem/dt/dspy)](https://rubygems.org/gems/dspy)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/vicentereig/dspy.rb/ruby.yml?branch=main&label=build)](https://github.com/vicentereig/dspy.rb/actions/workflows/ruby.yml)
-[![Documentation](https://img.shields.io/badge/docs-vicentereig.github.io%2Fdspy.rb-blue)](https://vicentereig.github.io/dspy.rb/)
+[![Documentation](https://img.shields.io/badge/docs-oss.vicente.services%2Fdspy.rb-blue)](https://oss.vicente.services/dspy.rb/)
 [![Discord](https://img.shields.io/discord/1161519468141355160?label=discord&logo=discord&logoColor=white)](https://discord.gg/zWBhrMqn)
 
 > [!NOTE]
@@ -248,13 +248,13 @@ DSPy.rb has gone from experimental to production-ready in three fast releases.
 
 ## Documentation
 
-📖 **[Complete Documentation Website](https://vicentereig.github.io/dspy.rb/)**
+📖 **[Complete Documentation Website](https://oss.vicente.services/dspy.rb/)**
 
 ### LLM-Friendly Documentation
 
 For LLMs and AI assistants working with DSPy.rb:
-- **[llms.txt](https://vicentereig.github.io/dspy.rb/llms.txt)** - Concise reference optimized for LLMs
-- **[llms-full.txt](https://vicentereig.github.io/dspy.rb/llms-full.txt)** - Comprehensive API documentation
+- **[llms.txt](https://oss.vicente.services/dspy.rb/llms.txt)** - Concise reference optimized for LLMs
+- **[llms-full.txt](https://oss.vicente.services/dspy.rb/llms-full.txt)** - Comprehensive API documentation
 
 ### Getting Started
 - **[Installation & Setup](docs/src/getting-started/installation.md)** - Detailed installation and configuration

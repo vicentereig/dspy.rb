@@ -6,7 +6,7 @@ date: 2025-08-26
 author: "Vicente Reig"
 category: "Features"
 reading_time: "4 min read"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/program-persistence-and-serialization/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/program-persistence-and-serialization/"
 image: /images/og/program-persistence-and-serialization.png
 ---
 

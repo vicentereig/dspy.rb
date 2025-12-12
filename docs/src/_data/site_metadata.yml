@@ -4,7 +4,7 @@ tagline: The Ruby Framework for Self-Improving Language Model Programs
 description: Build self-improving AI systems with DSPy.rb - a Ruby implementation of Stanford's DSPy framework for programming with language models.
 author: Vicente Reig Rincon de Arellano
 # Use host-only URL so canonical tags don't duplicate the base_path.
-url: "https://vicentereig.github.io"
+url: "https://oss.vicente.services"
 
 # Social media handles
 twitter:

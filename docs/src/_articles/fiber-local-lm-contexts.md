@@ -6,7 +6,7 @@ date: 2025-08-26
 author: "Vicente Reig"
 category: "Features"
 reading_time: "3 min read"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/fiber-local-lm-contexts/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/fiber-local-lm-contexts/"
 image: /images/og/fiber-local-lm-contexts.png
 ---
 

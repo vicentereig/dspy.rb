@@ -7,7 +7,7 @@ author: "Vicente Reig"
 category: "Workflow"
 reading_time: "5 min read"
 image: /images/og/evaluator_loop_in_ruby.png
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluator_loop_in_ruby/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/evaluator_loop_in_ruby/"
 ---
 
 Outbound copy rarely ships on the first LLM pass. You write a prompt, get something decent, tweak it, try again... and burn tokens guessing what "good enough" means. [DSPy.rb](https://github.com/vicentereig/dspy.rb) turns this into a structured loop—propose, critique, refine—with a clear stopping condition.
@@ -92,7 +92,7 @@ Notice the `EditorMindset` enum—it controls how critically the evaluator score
 
 ## Loop Mechanics: draft → critique within a guardrail
 
-`SalesPitchWriterLoop` pairs a cheap Haiku generator with a smarter Sonnet evaluator (using Chain-of-Thought for reasoning). The loop continues until either the evaluator approves or the token budget runs out—unlike [DSPy::ReAct](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/) which caps iterations.
+`SalesPitchWriterLoop` pairs a cheap Haiku generator with a smarter Sonnet evaluator (using Chain-of-Thought for reasoning). The loop continues until either the evaluator approves or the token budget runs out—unlike [DSPy::ReAct](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/) which caps iterations.
 
 ```ruby
 class SalesPitchWriterLoop < DSPy::Module

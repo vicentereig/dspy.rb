@@ -5,7 +5,7 @@ description: "Learn how to systematically test and measure your LLM applications
 date: 2025-06-01
 author: Vicente Reig
 tags: ["evaluation", "metrics", "testing", "quality"]
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/evaluating-llm-applications/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/evaluating-llm-applications/"
 image: /images/og/evaluating-llm-applications.png
 ---
 

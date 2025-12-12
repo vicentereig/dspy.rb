@@ -6,7 +6,7 @@ date: 2025-09-07
 author: "Vicente Reig"
 category: "Production"
 reading_time: "8 min read"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/observability-in-action-langfuse/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/observability-in-action-langfuse/"
 image: /images/og/observability-in-action-langfuse.png
 ---
 

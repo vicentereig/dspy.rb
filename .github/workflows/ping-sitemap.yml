@@ -37,7 +37,7 @@ jobs:
       
       - name: Ping Bing
         run: |
-          response=$(curl -s -w "\n%{http_code}" "https://www.bing.com/ping?sitemap=https://vicentereig.github.io/dspy.rb/sitemap.xml")
+          response=$(curl -s -w "\n%{http_code}" "https://www.bing.com/ping?sitemap=https://oss.vicente.services/dspy.rb/sitemap.xml")
           http_code=$(echo "$response" | tail -n1)
           if [ "$http_code" -eq 200 ]; then
             echo "✅ Successfully pinged Bing"
@@ -48,9 +48,9 @@ jobs:
       - name: Verify sitemap accessibility
         run: |
           echo "Verifying sitemap is accessible..."
-          http_code=$(curl -s -o /dev/null -w "%{http_code}" "https://vicentereig.github.io/dspy.rb/sitemap.xml")
+          http_code=$(curl -s -o /dev/null -w "%{http_code}" "https://oss.vicente.services/dspy.rb/sitemap.xml")
           if [ "$http_code" -eq 200 ]; then
-            echo "✅ Sitemap is accessible at https://vicentereig.github.io/dspy.rb/sitemap.xml"
+            echo "✅ Sitemap is accessible at https://oss.vicente.services/dspy.rb/sitemap.xml"
           else
             echo "❌ Sitemap returned status code: $http_code"
             exit 1

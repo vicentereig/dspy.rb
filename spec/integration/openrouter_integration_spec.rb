@@ -96,7 +96,7 @@ RSpec.describe "OpenRouter Integration" do
       lm = DSPy::LM.new(
         'openrouter/google/gemini-2.5-flash',
         api_key: api_key,
-        http_referrer: 'https://vicentereig.github.io/dspy.rb/',
+        http_referrer: 'https://oss.vicente.services/dspy.rb/',
         x_title: 'DSPy.rb Integration Test'
       )
       DSPy.configure { |config| config.lm = lm }
@@ -115,7 +115,7 @@ RSpec.describe "OpenRouter Integration" do
       expect(request_params[:request_options]).to have_key(:extra_headers)
       expect(request_params[:request_options][:extra_headers]).to include(
         'X-Title' => 'DSPy.rb Integration Test',
-        'HTTP-Referer' => 'https://vicentereig.github.io/dspy.rb/'
+        'HTTP-Referer' => 'https://oss.vicente.services/dspy.rb/'
       )
     end
   end

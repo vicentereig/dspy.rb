@@ -4,7 +4,7 @@ title: "Enhanced Prompting vs Native Structured Outputs: A DSPy.rb Comparison"
 date: 2025-09-18
 description: "Head-to-head comparison of enhanced prompting vs native structured outputs across OpenAI, Anthropic, and Google models"
 author: "Vicente Reig"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/json-modes-comparison/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/json-modes-comparison/"
 image: /images/og/json-modes-comparison.png
 ---
 
@@ -499,7 +499,7 @@ Token usage varies dramatically by both model and strategy. Modern structured ou
 
 ## Implementation
 
-[DSPy.rb](https://github.com/vicentereig/dspy.rb) uses [Signatures](https://vicentereig.github.io/dspy.rb/core-concepts/signatures/) to define structured inputs and outputs. Here's an example using [T::Enum types](https://vicentereig.github.io/dspy.rb/advanced/complex-types/):
+[DSPy.rb](https://github.com/vicentereig/dspy.rb) uses [Signatures](https://oss.vicente.services/dspy.rb/core-concepts/signatures/) to define structured inputs and outputs. Here's an example using [T::Enum types](https://oss.vicente.services/dspy.rb/advanced/complex-types/):
 
 ```ruby
 class ActionType < T::Enum
@@ -550,8 +550,8 @@ end
 ```
 
 This example shows [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s core components working together:
-- **[Configuration](https://vicentereig.github.io/dspy.rb/getting-started/core-concepts/)**: Set up your language model
-- **[Predictors](https://vicentereig.github.io/dspy.rb/core-concepts/predictors/)**: The `DSPy::Predict` class handles JSON extraction automatically
+- **[Configuration](https://oss.vicente.services/dspy.rb/getting-started/core-concepts/)**: Set up your language model
+- **[Predictors](https://oss.vicente.services/dspy.rb/core-concepts/predictors/)**: The `DSPy::Predict` class handles JSON extraction automatically
 
 ## Recommendations
 
@@ -572,7 +572,7 @@ This example shows [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s core comp
 
 **Speed-critical applications**: Use GPT-4o with structured outputs (1.769s average)—the fastest option tested.
 
-For enterprise deployments, implement [production observability](https://vicentereig.github.io/dspy.rb/production/observability/) to monitor extraction quality across providers.
+For enterprise deployments, implement [production observability](https://oss.vicente.services/dspy.rb/production/observability/) to monitor extraction quality across providers.
 
 ## Future: BAML-Inspired Enhanced Prompting
 
@@ -590,9 +590,9 @@ This enhancement will integrate seamlessly with [DSPy.rb](https://github.com/vic
 
 ## Related Articles
 
-- [Type-Safe Prediction Objects](https://vicentereig.github.io/dspy.rb/blog/articles/type-safe-prediction-objects/) - Deep dive into [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s type system
-- [Under the Hood: JSON Extraction](https://vicentereig.github.io/dspy.rb/blog/articles/under-the-hood-json-extraction/) - Technical details of extraction strategies
-- [JSON Parsing Reliability](https://vicentereig.github.io/dspy.rb/blog/articles/json-parsing-reliability/) - Techniques for robust JSON handling
+- [Type-Safe Prediction Objects](https://oss.vicente.services/dspy.rb/blog/articles/type-safe-prediction-objects/) - Deep dive into [DSPy.rb](https://github.com/vicentereig/dspy.rb)'s type system
+- [Under the Hood: JSON Extraction](https://oss.vicente.services/dspy.rb/blog/articles/under-the-hood-json-extraction/) - Technical details of extraction strategies
+- [JSON Parsing Reliability](https://oss.vicente.services/dspy.rb/blog/articles/json-parsing-reliability/) - Techniques for robust JSON handling
 
 ---
 

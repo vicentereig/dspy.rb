@@ -5,7 +5,7 @@ date: 2025-07-25
 description: "A technical deep-dive into DSPy.rb's multi-strategy JSON extraction system, showing exactly how it handles OpenAI, Anthropic, and other providers"
 author: "Vicente Reig"
 draft: true
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/under-the-hood-json-extraction/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/under-the-hood-json-extraction/"
 image: /images/og/under-the-hood-json-extraction.png
 ---
 

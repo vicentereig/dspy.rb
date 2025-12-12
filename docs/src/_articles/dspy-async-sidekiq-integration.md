@@ -5,7 +5,7 @@ date: 2025-09-01
 description: "How DSPy.rb's async architecture enables efficient background processing with Sidekiq, avoiding thread blocking during LLM API calls"
 author: "Vicente Reig"
 tags: ["async", "sidekiq", "performance", "production", "concurrency"]
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/dspy-async-sidekiq-integration/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/dspy-async-sidekiq-integration/"
 image: /images/og/dspy-async-sidekiq-integration.png
 ---
 

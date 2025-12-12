@@ -4,12 +4,12 @@ title: "Cut Prompt Tokens in Half with BAML + TOON"
 date: 2025-11-07
 description: "DSPy.rb now pairs BAML schemas with Sorbet::Toon payloads. The combo keeps Enhanced Prompting simple while saving ~9000 schema tokens and ~2400 data tokens per request."
 author: "Vicente Reig Rincon de Arellano"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/toon-data-format/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/toon-data-format/"
 image: /images/og/toon-data-format.png
 reading_time: "4 min read"
 ---
 
-**[DSPy Signatures](https://vicentereig.github.io/dspy.rb/getting-started/core-concepts/#signatures-as-the-contract)** anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. JSON Schema and JSON payloads, however, bloat requests—especially when you’re shipping time-series data or long lists of structs that repeat every key. Starting today you can flip two symbols and keep Enhanced Prompting lean. Here’s the latest signature we used for the benchmark (now with nested structs and enums):
+**[DSPy Signatures](https://oss.vicente.services/dspy.rb/getting-started/core-concepts/#signatures-as-the-contract)** anchor your app in a world where everything changes—prompting techniques, model families, even serialization formats. They’re the declarative contract for your prompt, so you never handcraft schemas or payloads again. JSON Schema and JSON payloads, however, bloat requests—especially when you’re shipping time-series data or long lists of structs that repeat every key. Starting today you can flip two symbols and keep Enhanced Prompting lean. Here’s the latest signature we used for the benchmark (now with nested structs and enums):
 
 ```ruby
 class TaskDecomposition < DSPy::Signature
@@ -52,7 +52,7 @@ DSPy.configure do |c|
 end
 ```
 
-That’s it. [Predictors](https://vicentereig.github.io/dspy.rb/getting-started/core-concepts/#predictors-basic-llm-operations), [ChainOfThought](https://vicentereig.github.io/dspy.rb/core-concepts/modules/#chain-of-thought), [ReAct](https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/), and every [DSPy module](https://vicentereig.github.io/dspy.rb/core-concepts/modules/) keep the same API; prompts just get cheaper.
+That’s it. [Predictors](https://oss.vicente.services/dspy.rb/getting-started/core-concepts/#predictors-basic-llm-operations), [ChainOfThought](https://oss.vicente.services/dspy.rb/core-concepts/modules/#chain-of-thought), [ReAct](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/), and every [DSPy module](https://oss.vicente.services/dspy.rb/core-concepts/modules/) keep the same API; prompts just get cheaper.
 
 ## Why TOON + BAML matters
 
@@ -80,7 +80,7 @@ That reduction isn’t just abstract token math:
 
 1. **[Prediction prompts](/getting-started/core-concepts/#predictors-basic-llm-operations)** – any signature-backed `Predict` now emits TOON payloads, so even single-call apps get the 57% token cut.
 2. **[ReAct loops](/blog/articles/react-agent-tutorial/)** – every turn now shares tools, histories, and observations as TOON. Long multi-tool dialogues stop reprinting JSON hashes.
-3. **[Tool ecosystems](https://vicentereig.github.io/dspy.rb/core-concepts/toolsets/)** – TOON preserves typing (thanks to `Sorbet::Toon.decode`), so tool outputs round-trip back into Sorbet structs without manual serialization glue.
+3. **[Tool ecosystems](https://oss.vicente.services/dspy.rb/core-concepts/toolsets/)** – TOON preserves typing (thanks to `Sorbet::Toon.decode`), so tool outputs round-trip back into Sorbet structs without manual serialization glue.
 
 ## FAQ
 

@@ -6,7 +6,7 @@ date: 2025-06-28
 author: "Vicente Reig"
 category: "Tutorial"
 reading_time: "12 min read"
-canonical_url: "https://vicentereig.github.io/dspy.rb/blog/articles/react-agent-tutorial/"
+canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/"
 image: /images/og/react-agent-tutorial.png
 ---
 

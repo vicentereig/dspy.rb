@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "DeepSearch primitives for DSPy"
   spec.description   = "DeepSearch loop utilities and modules for DSPy agents."
-  spec.homepage      = "https://vicentereig.github.io/dspy.rb/"
+  spec.homepage      = "https://oss.vicente.services/dspy.rb/"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 3.1"
 
