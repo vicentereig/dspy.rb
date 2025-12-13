@@ -256,6 +256,17 @@ For LLMs and AI assistants working with DSPy.rb:
 - **[llms.txt](https://oss.vicente.services/dspy.rb/llms.txt)** - Concise reference optimized for LLMs
 - **[llms-full.txt](https://oss.vicente.services/dspy.rb/llms-full.txt)** - Comprehensive API documentation
 
+### Claude Skill
+
+A [Claude Skill](https://github.com/vicentereig/dspy-rb-skill) is available to help you build DSPy.rb applications with Claude Code or claude.ai.
+
+**Claude Code:**
+```bash
+git clone https://github.com/vicentereig/dspy-rb-skill ~/.claude/skills/dspy-rb
+```
+
+**Claude.ai (Pro/Max):** Download the [skill as a ZIP](https://github.com/vicentereig/dspy-rb-skill/archive/refs/heads/main.zip) and upload via Settings > Skills.
+
 ### Getting Started
 - **[Installation & Setup](docs/src/getting-started/installation.md)** - Detailed installation and configuration
 - **[Quick Start Guide](docs/src/getting-started/quick-start.md)** - Your first DSPy programs
