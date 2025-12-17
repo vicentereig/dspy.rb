@@ -4,7 +4,7 @@ import './mobile-navigation.js'
 
 // Initialize Plausible analytics  
 const plausible = Plausible({
-  domain: 'vicentereig.github.io',
+  domain: 'oss.vicente.services',
   trackLocalhost: false,
   apiHost: 'https://plausible.io',
   hashMode: true // Enable hashed page path tracking
