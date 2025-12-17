@@ -1,12 +1,10 @@
+@import "syntax-highlighting.css";
 @import "mobile-enhancements.css";
 @import "mobile-navigation.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Syntax highlighting must come after Tailwind to avoid being reset by @tailwind base */
-@import "syntax-highlighting.css";
 
 /* Header anchor links - show # on hover for easy link copying */
 /* Using @layer components to prevent Tailwind from purging these styles */
