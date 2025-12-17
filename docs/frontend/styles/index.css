@@ -72,12 +72,12 @@
     a, button {
       @apply leading-normal;
     }
-    
+
     /* Fix baseline alignment for links with icons */
     a svg, button svg {
       @apply align-middle;
     }
-    
+
     /* Improve touch targets */
     .prose a {
       @apply inline-flex items-center;
