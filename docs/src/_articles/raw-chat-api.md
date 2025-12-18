@@ -7,7 +7,6 @@ description: "Learn how to use DSPy.rb's raw_chat API for benchmarking monolithi
 tags: [api, benchmarking, migration, observability]
 excerpt: |
   The raw_chat API lets you run existing prompts through DSPy's observability system to compare token usage and performance against modular implementations.
-permalink: /blog/raw-chat-api/
 canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/raw-chat-api/"
 image: /images/og/raw-chat-api.png
 ---
