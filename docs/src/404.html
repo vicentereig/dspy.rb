@@ -1,0 +1,27 @@
+---
+layout: default
+title: "Page Not Found"
+description: "The page you're looking for doesn't exist. Return to DSPy.rb documentation."
+permalink: /404.html
+---
+
+<div class="min-h-[60vh] flex items-center justify-center px-6 py-24 sm:py-32 lg:px-8">
+  <div class="text-center">
+    <p class="text-base font-semibold text-dspy-ruby">404</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Page not found</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">Sorry, we couldn't find the page you're looking for.</p>
+    <div class="mt-10 flex items-center justify-center gap-x-6">
+      <a href="{{ '/' | relative_url }}" class="rounded-md bg-dspy-ruby px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-ruby">Go back home</a>
+      <a href="{{ '/getting-started/' | relative_url }}" class="text-sm font-semibold text-gray-900 hover:text-dspy-ruby">Getting started <span aria-hidden="true">&rarr;</span></a>
+    </div>
+    <div class="mt-10 text-sm text-gray-500">
+      <p>Looking for something specific? Try these popular pages:</p>
+      <ul class="mt-4 space-y-2">
+        <li><a href="{{ '/core-concepts/signatures/' | relative_url }}" class="text-dspy-ruby hover:text-red-700">Signatures</a></li>
+        <li><a href="{{ '/core-concepts/modules/' | relative_url }}" class="text-dspy-ruby hover:text-red-700">Modules</a></li>
+        <li><a href="{{ '/optimization/' | relative_url }}" class="text-dspy-ruby hover:text-red-700">Optimization</a></li>
+        <li><a href="{{ '/blog/' | relative_url }}" class="text-dspy-ruby hover:text-red-700">Blog</a></li>
+      </ul>
+    </div>
+  </div>
+</div>

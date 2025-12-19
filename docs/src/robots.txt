@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://oss.vicente.services/dspy.rb/sitemap.xml
