@@ -1,129 +1,149 @@
 # SEO Keyword Strategy: Low-CTR High-Impression Keywords
 
-This document outlines the strategy for identifying and improving pages with high impressions but low click-through rates.
+This document tracks keyword performance from Google Search Console and outlines improvement strategies.
 
 ## Current Status (December 2025)
 
-Based on the Google Search Console report:
+Based on Google Search Console data (last 3 months):
+- **Total Clicks**: 139
+- **Total Impressions**: 12,146
 - **Average CTR**: 1.1% (target: 2-3%)
 - **Average Position**: 7.4
-- **Total Impressions**: 12.1K over 3 months
-
-### Already Addressed
-
-The following pages had meta content optimized in the December 2025 SEO update:
-
-| Page | Impressions | Old CTR | Changes Made |
-|------|-------------|---------|--------------|
-| Homepage | 516 | 1% | Stanford authority signal, benefit bullets |
-| TOON vs CSV | 1,086 | 0.5% | Search intent matching, "nested data" keywords |
-| JSON Modes Comparison | 729 | 1% | Benchmark teaser, model names |
-| GEPA | 737 | 0.7% | "Optimizer" keyword, demo emphasis |
-| Prompt Optimization | 300 | - | MIPROv2 & GEPA algorithm keywords |
-
-## Strategy for Ongoing Improvement
-
-### 1. Monthly Keyword Review
-
-Check Search Console monthly for queries with:
-- **High impressions (>100/month)** + **Low CTR (<2%)**
-- These represent ranking success but messaging failure
-
-### 2. Content Gap Analysis
-
-For each low-CTR keyword, ask:
-1. Does the page title contain the exact search term?
-2. Does the meta description address the searcher's intent?
-3. Is there a clear value proposition in the first 160 characters?
-
-### 3. Intent Matching Framework
-
-| Search Intent | Strategy |
-|---------------|----------|
-| **Informational** ("what is DSPy") | Lead with definition, promise clarity |
-| **Comparative** ("dspy vs langchain") | Highlight benchmark data, direct comparison |
-| **Tutorial** ("dspy ruby tutorial") | Promise step count, timeframe |
-| **Research** ("miprov2 paper") | Cite sources, academic credibility |
-
-### 4. Title Formula Templates
-
-Based on search intent:
-
-**For Tutorials:**
-```
-[Topic] in Ruby: [Benefit] in [Time] | DSPy.rb
-Example: "ReAct Agents in Ruby: Build Your First Agent in 10 Minutes"
-```
-
-**For Comparisons:**
-```
-[A] vs [B]: [Key Differentiator] | DSPy.rb
-Example: "TOON vs CSV: Why Nested Data Needs a New Format"
-```
-
-**For Features:**
-```
-[Feature]: [Benefit] in Ruby | DSPy.rb
-Example: "Automatic Prompt Optimization: Stop Guessing at Prompts"
-```
-
-**For Research:**
-```
-[Paper/Topic]: [Implementation Angle] | DSPy.rb
-Example: "MIPROv2 Paper: How Stanford's Optimizer Works in Ruby"
-```
-
-### 5. Description Formula Templates
-
-Use the AIDA framework in 150-160 characters:
-
-```
-[Pain Point]. [Solution]. [Proof Point]. [CTA].
-
-Example:
-"CSV breaks with nested LLM data. TOON preserves Ruby structs while cutting tokens. See the benchmark."
-```
-
-## Priority Keywords to Monitor
-
-Based on the SEO report, watch these query patterns:
-
-### High Priority (Research Interest)
-- "miprov2" / "miprov2 paper" / "miprov2 prompt optimization"
-- "dspy python" / "dspy ruby" (comparison searches)
-- "prompt optimization" / "automatic prompt optimization"
-
-### Medium Priority (Feature Discovery)
-- "ruby llm" / "ruby ai" / "ruby openai"
-- "structured outputs ruby"
-- "chain of thought ruby"
-
-### Lower Priority (Long-tail)
-- Specific model combinations ("gemini ruby", "anthropic ruby")
-- Error-related queries ("json parsing llm")
-
-## Implementation Checklist
-
-For each low-CTR keyword identified:
-
-1. [ ] Find the ranking page in Search Console
-2. [ ] Read the current title and description
-3. [ ] Check if the exact search term appears
-4. [ ] Verify the intent matches the content
-5. [ ] Update meta content following templates above
-6. [ ] Build and deploy
-7. [ ] Monitor CTR change over 2-4 weeks
-
-## Measurement
-
-Track in Search Console:
-- **Before/After CTR** for each updated page
-- **Position stability** (ensure optimization doesn't hurt rankings)
-- **Click growth** (absolute clicks, not just rate)
-
-Review quarterly to assess strategy effectiveness.
+- **Total Queries**: 179
 
 ---
 
-*Last updated: December 2025*
-*Next review: January 2025*
+## Priority 1: High-Impression Low-CTR Keywords (Action Taken)
+
+| Query | Impressions | CTR | Position | Status |
+|-------|-------------|-----|----------|--------|
+| toon vs csv | 380 | 0.5% | 9.0 | ✅ Title/desc optimized Dec 2025 |
+| miprov2 paper | 103 | 1.9% | 7.3 | ✅ New article created Dec 2025 |
+| mipro v2 | - | 4.1% | 5.4 | ✅ Covered by MIPROv2 docs |
+| miprov2 prompt optimization | - | 3.8% | 8.2 | ✅ New article targets this |
+
+## Priority 2: MIPROv2 Query Cluster
+
+Strong search interest in MIPROv2 paper/research content:
+
+| Query | Position | Notes |
+|-------|----------|-------|
+| miprov2 arxiv | 4.6 | 7.1% CTR - good |
+| miprov2 optimizer | 3.7 | 14.3% CTR - good |
+| miprov2 dspy paper | 5.9 | New article targets |
+| miprov2 prompt optimizer paper | 5.8 | New article targets |
+| dspy miprov2 | 64.0 | Poor position - need backlinks |
+
+**Action**: Created `/blog/articles/miprov2-paper-implementation/` with paper citations and Ruby examples.
+
+## Priority 3: TOON/CSV Query Cluster
+
+| Query | CTR | Position | Notes |
+|-------|-----|----------|-------|
+| dspy toon | 66.7% | 3.0 | ✅ Excellent |
+| toon nested data | 25% | 7.5 | Good |
+| toon is just csv | 11.1% | 6.3 | Good |
+| toon csv | - | 9.1 | Title optimized |
+| csv vs toon | - | 8.3 | Title optimized |
+
+**Action**: Updated TOON vs CSV article title to match search intent.
+
+## Priority 4: DSPy Documentation Queries
+
+Many queries for DSPy documentation land on our Ruby docs:
+
+| Query | Position | Opportunity |
+|-------|----------|-------------|
+| dspy signatures documentation | 7.8 | ✅ Title added |
+| dspy chainofthought module documentation | 7.4 | Consider dedicated page |
+| dspy predict module documentation | 8.5 | ✅ Predictors title added |
+| dspy codeact module | 6.2 | Existing page |
+| dspy modules documentation | 5.0 | ✅ Title added |
+
+---
+
+## Well-Performing Queries (Monitor)
+
+These queries have good CTR - protect their performance:
+
+| Query | CTR | Position | Page |
+|-------|-----|----------|------|
+| dspy toon | 66.7% | 3.0 | TOON article |
+| dspy evals | 50% | 21.0 | Evaluation docs |
+| toon nested data | 25% | 7.5 | TOON vs CSV |
+| gepa example | 25% | 9.0 | GEPA docs |
+| miprov2 optimizer | 14.3% | 3.7 | MIPROv2 docs |
+| toon is just csv | 11.1% | 6.3 | TOON vs CSV |
+
+---
+
+## Queries Needing Better Positioning
+
+These queries have poor positions (>20) despite relevance:
+
+| Query | Position | Notes |
+|-------|----------|-------|
+| dspy | 45.1 | Main Python DSPy ranks higher |
+| dspy documentation | 47.0 | Python docs dominate |
+| dspy github | 25.0 | Python repo ranks higher |
+| dspy tutorial | 17.0 | Need more tutorial content |
+| dspy prompt optimization | 63.4 | Poor position |
+| dspy gemini | 32.0 | Consider Gemini-focused content |
+
+**Strategy**: Focus on "dspy ruby" and "dspy.rb" variants where we can rank better.
+
+---
+
+## Content Gaps Identified
+
+Based on search queries we're not fully serving:
+
+1. **BAML queries** (baml docs, baml format, baml types)
+   - Consider dedicated BAML documentation page
+   - Current coverage is in articles only
+
+2. **Evaluation/Metrics queries** (dspy evaluate metric, dspy evaluator)
+   - Strengthen evaluation documentation SEO
+
+3. **Tool class queries** (dspy tool class, dspy.tool)
+   - Consider dedicated Toolsets SEO optimization
+
+4. **Langfuse queries** (langfuse tracing, dspy langfuse)
+   - Existing observability article could be optimized
+
+---
+
+## Implementation Log
+
+### December 2025 Updates
+
+1. **Meta Content Optimization** (9 pages)
+   - Homepage: Stanford authority signal
+   - TOON vs CSV: "nested data" in title
+   - Prompt Optimization: MIPROv2 & GEPA keywords
+   - GEPA: "Optimizer" keyword
+   - JSON Modes: Benchmark teaser
+   - Core Concepts: Component names
+   - Signatures, Modules, Predictors: Explicit titles
+
+2. **New Content**
+   - Created MIPROv2 paper article targeting research queries
+   - Added internal links from TOON articles to core docs
+
+3. **Homepage Strengthening**
+   - Stanford mention above fold
+   - Benefit checkmarks
+   - Clearer secondary CTA
+
+---
+
+## Measurement Schedule
+
+- **Weekly**: Check Search Console for position changes
+- **Monthly**: Full keyword performance review
+- **After deployments**: Monitor CTR changes over 2-4 weeks
+
+---
+
+*Data source: Google Search Console for vicentereig.github.io/dspy.rb/*
+*Last updated: December 20, 2025*
