@@ -1,7 +1,7 @@
 ---
 layout: home
-title: DSPy.rb - Program LLMs, Don't Prompt Them
-description: Write modular, testable Ruby code instead of tweaking prompts
+title: "Stanford's DSPy Framework for Ruby | LLM Programming"
+description: "The Ruby port of Stanford's DSPy framework. Build type-safe, testable LLM applications with Sorbet. Automatic prompt optimization, structured outputs, and MIPROv2 support. Get started in minutes."
 date: 2025-06-28 00:00:00 +0000
 last_modified_at: 2025-09-01 00:00:00 +0000
 ---

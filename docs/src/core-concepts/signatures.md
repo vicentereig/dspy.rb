@@ -1,7 +1,8 @@
 ---
 layout: docs
+title: "DSPy Signatures: Type-Safe LLM Interfaces in Ruby"
 name: Signatures
-description: Define interfaces between your application and language models
+description: "Define type-safe contracts between your Ruby code and LLMs using Sorbet structs. Input/output validation, automatic prompt generation, and IDE autocomplete support. No more string parsing."
 breadcrumb:
 - name: Core Concepts
   url: "/core-concepts/"

@@ -1,7 +1,8 @@
 ---
 layout: docs
+title: "Automatic Prompt Optimization in Ruby | MIPROv2 & GEPA"
 name: Prompt Optimization
-description: Programmatically optimize prompts for better performance
+description: "Stop guessing at prompts. DSPy.rb optimizes them automatically using MIPROv2 and GEPA algorithms. Define your metric, provide examples, and let the optimizer find the best instructions. Works with OpenAI, Anthropic, and local models."
 breadcrumb:
 - name: Optimization
   url: "/optimization/"

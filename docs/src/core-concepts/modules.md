@@ -1,7 +1,8 @@
 ---
 layout: docs
+title: "DSPy Modules: Composable LLM Components in Ruby"
 name: Modules
-description: Build reusable LLM components with DSPy.rb modules
+description: "Build reusable LLM components that compose like regular Ruby code. Chain operations, share state, and create complex workflows. Includes Predict, ChainOfThought, ReAct, and custom modules."
 breadcrumb:
 - name: Core Concepts
   url: "/core-concepts/"

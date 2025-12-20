@@ -1,8 +1,8 @@
 ---
 layout: docs
-title: "GEPA Ruby: Reflective Prompt Evolution in Practice"
+title: "GEPA Optimizer for Ruby — Reflective Prompt Evolution"
 name: GEPA Optimizer
-description: "Learn how to optimize Ruby predictors with GEPA, configure reflection feedback, and ship production-ready prompts using the ADE GEPA demo as your guide."
+description: "Implement GEPA (Reflective Prompt Evolution) in Ruby. Step-by-step guide: configure reflection feedback, define evaluation metrics, and ship optimized prompts. Includes working ADE demo code."
 breadcrumb:
 - name: Optimization
   url: "/optimization/"

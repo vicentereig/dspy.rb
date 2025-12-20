@@ -1,7 +1,7 @@
 ---
 layout: docs
-title: Core Concepts
-description: Master the fundamental building blocks of DSPy.rb
+title: "DSPy.rb Core Concepts: Signatures, Modules, and Predictors"
+description: "Learn the building blocks of DSPy.rb: type-safe Signatures, composable Modules, and production-ready Predictors. Understand how they work together to build reliable LLM applications."
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-13 00:00:00 +0000
 ---

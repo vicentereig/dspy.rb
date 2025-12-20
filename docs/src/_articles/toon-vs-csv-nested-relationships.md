@@ -1,8 +1,8 @@
 ---
 layout: blog
-title: "What TOON Gets That CSV Doesn’t for LLM Payloads"
+title: "TOON vs CSV for LLM Prompts: Why Nested Data Needs a New Format"
 date: 2025-11-15
-description: "Token-Oriented Object Notation keeps your nested Sorbet structs intact—something flat CSV rows simply can’t do when you prompt large language models."
+description: "CSV breaks when you need nested relationships in LLM prompts. TOON (Token-Oriented Object Notation) preserves Ruby structs, arrays, and enums while cutting token costs. See the benchmark."
 author: "Vicente Reig Rincon de Arellano"
 canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/toon-vs-csv-nested-relationships/"
 image: /images/og/toon-vs-csv-nested-relationships.png

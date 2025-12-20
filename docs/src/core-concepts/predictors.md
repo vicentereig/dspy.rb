@@ -1,7 +1,8 @@
 ---
 layout: docs
+title: "DSPy Predictors: Predict, ChainOfThought, and ReAct"
 name: Predictors
-description: Execution engines that generate structured results using language models
+description: "Master DSPy.rb's execution engines: Predict for simple calls, ChainOfThought for reasoning, ReAct for tool use. Each returns typed Ruby objects with full observability and error handling."
 breadcrumb:
 - name: Core Concepts
   url: "/core-concepts/"

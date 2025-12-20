@@ -1,8 +1,8 @@
 ---
 layout: blog
-title: "Enhanced Prompting vs Native Structured Outputs: A DSPy.rb Comparison"
+title: "JSON Mode Comparison: Enhanced Prompting vs Structured Outputs"
 date: 2025-09-18
-description: "Head-to-head comparison of enhanced prompting vs native structured outputs across OpenAI, Anthropic, and Google models"
+description: "Head-to-head benchmark of 8 LLM models: GPT-4, Claude 3.5, Gemini 2.0. Compare enhanced prompting vs native JSON mode for reliability, speed, and cost. Real-world performance data inside."
 author: "Vicente Reig"
 canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/json-modes-comparison/"
 image: /images/og/json-modes-comparison.png
