@@ -12,18 +12,23 @@ last_modified_at: 2025-09-01 00:00:00 +0000
     </div>
   </div>
   <div class="text-center">
+    <p class="text-sm font-medium text-dspy-ruby mb-4">The Ruby port of Stanford's <a href="https://dspy.ai" rel="noopener noreferrer" class="underline hover:text-red-700">DSPy framework</a></p>
     <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Turn messy prompts into repeatable reasoning systems</h1>
-    <p class="mt-6 text-lg leading-8 text-gray-600">Tired of copy-pasting prompts and hoping they work? DSPy.rb lets you write modular, testable, type-safe, instrumentable Ruby code that handles the LLM stuff for you. Test it, optimize it, ship it. Repeat.</p>
+    <p class="mt-6 text-lg leading-8 text-gray-600">Stop copy-pasting prompts and hoping they work. DSPy.rb lets you write modular, testable, type-safe Ruby code that handles the LLM stuff for you.</p>
+    <div class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500">
+      <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>Type-safe with Sorbet</span>
+      <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>Automatic prompt optimization</span>
+      <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>OpenAI, Anthropic, Gemini, Ollama</span>
+    </div>
     <div class="mt-10 flex items-center justify-center gap-x-6">
       <a href="{{ '/getting-started/' | relative_url }}" class="rounded-md bg-dspy-ruby px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-ruby">Get started</a>
-      <a href="{{ '/llms-full.txt' | relative_url }}" target="_blank" class="inline-flex items-center py-2.5 text-sm font-semibold text-gray-900 hover:text-dspy-ruby">llms-full.txt <span aria-hidden="true" class="ml-2">→</span></a>
+      <a href="{{ '/core-concepts/' | relative_url }}" class="inline-flex items-center py-2.5 text-sm font-semibold text-gray-900 hover:text-dspy-ruby">Learn the concepts <span aria-hidden="true" class="ml-2">→</span></a>
     </div>
   </div>
 </div>
 
 <div class="mx-auto max-w-5xl px-6 lg:px-8">
   <div class="mx-auto max-w-3xl">
-    <p class="text-sm text-gray-500 mb-8">DSPy.rb is a Ruby port of Stanford's <a href="https://dspy.ai" rel="noopener noreferrer" class="underline">DSPy framework</a>, adapted to Ruby idioms and enhanced with production-ready features.</p>
     
     <h2 class="text-2xl font-bold text-gray-900 mb-6">Why programmatic prompts?</h2>
     <p class="text-lg text-gray-600 mb-12">Because prompt engineering without a system is a nightmare. DSPy.rb fixes this by letting you define what you want, not how to ask for it.</p>

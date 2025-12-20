@@ -13,7 +13,7 @@ CSV is phenomenal for spreadsheets and OLAP imports, but it breaks down the mome
 
 ## Rich types, zero prompt glue
 
-DSPy.rb leans on Sorbet runtime types so you can model prompts like regular functions—define input parameters and return values, and let the serializers do the dirty work. Here’s a classic “book has many authors” relationship straight out of the spec:
+DSPy.rb leans on [Sorbet runtime types](https://oss.vicente.services/dspy.rb/core-concepts/signatures/) so you can model prompts like regular functions—define input parameters and return values, and let the serializers do the dirty work. Here's a classic "book has many authors" relationship straight out of the spec:
 
 ```ruby
 class Author < T::Struct
@@ -59,7 +59,7 @@ Next stop: record a VCR cassette using this signature so we can show TOON’s ne
 
 ## Using these structs inside DSPy.rb
 
-Hooking the `Book`/`Author` structs into a real predictor just takes a signature and an LM configured for TOON:
+Hooking the `Book`/`Author` structs into a real [predictor](https://oss.vicente.services/dspy.rb/core-concepts/predictors/) just takes a [signature](https://oss.vicente.services/dspy.rb/core-concepts/signatures/) and an LM configured for TOON:
 
 ```ruby
 class SummarizeBookCatalog < DSPy::Signature
@@ -105,6 +105,9 @@ Because TOON preserves the nested structure, Gemini receives a compact table for
 
 ## Related Resources
 
+- [Getting Started Guide](https://oss.vicente.services/dspy.rb/getting-started/) - New to DSPy.rb? Start here
+- [Signatures Documentation](https://oss.vicente.services/dspy.rb/core-concepts/signatures/) - Define type-safe LLM interfaces
+- [Predictors Documentation](https://oss.vicente.services/dspy.rb/core-concepts/predictors/) - Learn about Predict, ChainOfThought, and ReAct
 - [Toolsets Documentation](https://oss.vicente.services/dspy.rb/core-concepts/toolsets/) - Learn how to build tools that work with TOON-formatted data
 
 [^1]: For a comprehensive introduction to TOON and how it pairs with BAML to cut prompt tokens in half, see [Cut Prompt Tokens in Half with BAML + TOON](https://oss.vicente.services/dspy.rb/blog/articles/toon-data-format/).
