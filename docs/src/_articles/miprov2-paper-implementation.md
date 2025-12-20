@@ -63,6 +63,8 @@ MIPROv2 uses Gaussian Process surrogate models to guide the search. Instead of r
 
 This adaptive search is why MIPROv2 often finds better prompts in fewer trials than random search.
 
+> **Implementation note:** DSPy.rb uses Gaussian Process regression with an Upper Confidence Bound (UCB) acquisition function. Python DSPy takes a different approach, using Optuna's TPE (Tree-structured Parzen Estimator) sampler. Both are valid Bayesian optimization strategies—GP excels at modeling smooth objective landscapes, while TPE handles high-dimensional categorical spaces efficiently.
+
 ### 4. Mini-batch Evaluation
 
 Evaluating every candidate on your full validation set is expensive. The paper introduces stochastic evaluation:
