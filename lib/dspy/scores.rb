@@ -2,6 +2,7 @@
 
 require_relative 'scores/data_type'
 require_relative 'scores/score_event'
+require_relative 'scores/exporter'
 
 module DSPy
   # Score reporting for Langfuse integration
