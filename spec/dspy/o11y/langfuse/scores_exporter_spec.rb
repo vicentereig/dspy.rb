@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DSPy::Scores::Exporter do
+RSpec.describe DSPy::Observability::Adapters::Langfuse::ScoresExporter do
   let(:public_key) { 'pk-test-123' }
   let(:secret_key) { 'sk-test-456' }
   let(:host) { 'https://cloud.langfuse.com' }

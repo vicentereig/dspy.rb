@@ -132,3 +132,6 @@ module DSPy
 end
 
 DSPy::Observability::Adapters::Langfuse.register!
+
+# Load scores exporter for Langfuse
+require_relative 'langfuse/scores_exporter'

@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir.glob(%w[
     lib/dspy/o11y/langfuse.rb
     lib/dspy/o11y/langfuse/version.rb
+    lib/dspy/o11y/langfuse/scores_exporter.rb
     README.md
     LICENSE
   ])
