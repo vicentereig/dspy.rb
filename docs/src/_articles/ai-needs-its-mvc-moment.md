@@ -16,7 +16,7 @@ Back then, every team built web applications differently. Business logic lived i
 
 Enterprise Java promised to solve this with J2EE, EJBs, and XML configuration files that stretched for miles. But the cure was worse than the disease—deployment descriptors, home interfaces, remote interfaces, and enough ceremony to make a Vatican cardinal jealous. Teams spent more time fighting the framework than building features.
 
-Then Rails arrived with MVC, and everything changed. Not because MVC was new (it wasn't), but because Rails provided an opinionated, standardized way to build applications that teams could reason about, debug, and maintain—without drowning in bureaucracy.
+Then Rails arrived with MVC and everything changed. MVC wasn't exactly news at the time, but Rails provided a structured and opinionated way to build web apps that prevented teams from drowning in bureaucracy.
 
 **LLM applications are at that same inflection point today.** (I explored this theme in my recent talk, [Turning Messy Prompts into Repeatable Reasoning Systems](https://vicente.services/talks/2025/12/turning-messy-prompts-into-repeatable-reasoning-systems/).)
 
@@ -38,9 +38,9 @@ Sound familiar? It should. This is exactly what web development looked like befo
 
 ## What MVC Actually Solved
 
-The genius of Rails wasn't the code—it was the constraints.
+The genius of Rails wasn't the sophisticated code—it was the guardrails that propelled our productivity forward.
 
-By standardizing where business logic lived (models), how data flowed through the system (controllers), and how presentation happened (views), Rails made applications **legible**. Any Rails developer could walk into any Rails codebase and immediately understand the architecture.
+You know how it worked: models gave you access to the database, controllers orchestrated the data flow, and views regulated how things were presented to the user and captured their actions. Rails made app development **legible**. Any Rails developer could walk into any Rails codebase and immediately understand the architecture.
 
 More importantly, standardization enabled an ecosystem. Once everyone agreed on patterns, you could build tools that worked everywhere: debuggers, profilers, test frameworks, deployment pipelines.
 
@@ -127,7 +127,7 @@ The same consolidation is coming to LLM applications. The question for engineeri
 
 DSPy.rb represents one path forward: type-safe contracts, composable modules, built-in observability, and systematic evaluation. It's opinionated by design. The constraints are the feature.
 
-The teams building production AI systems today will look back at this moment the way we look back at pre-Rails web development. The winners will be those who recognized the pattern and adopted discipline early.
+The teams building production AI systems today are at the same crossroads we faced in 2004. The ones who adopt discipline early will have the advantage.
 
 AI needs its MVC moment. It's happening now.
 
