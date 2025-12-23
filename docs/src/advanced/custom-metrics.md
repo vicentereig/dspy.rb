@@ -26,6 +26,53 @@ Custom metrics in DSPy.rb:
 - **Domain-specific Logic**: Create evaluation criteria specific to your use case
 - **Flexible Scoring**: Support for boolean, numeric, and composite scoring
 - **Integration**: Work seamlessly with DSPy's evaluation and optimization systems
+- **Built-in Evaluators**: Common evaluators like exact match, contains, regex, and similarity
+
+## Built-in Score Evaluators
+
+Before creating custom metrics, check if `DSPy::Scores::Evaluators` provides what you need:
+
+```ruby
+# Exact string match
+DSPy::Scores::Evaluators.exact_match(
+  output: prediction.answer,
+  expected: example.expected_answer,
+  name: 'accuracy',
+  ignore_case: true  # optional case-insensitive matching
+)
+
+# Substring containment
+DSPy::Scores::Evaluators.contains(
+  output: prediction.response,
+  expected: 'required keyword'
+)
+
+# Regex pattern matching
+DSPy::Scores::Evaluators.regex_match(
+  output: prediction.email,
+  pattern: /\A[\w.+-]+@[\w.-]+\.[a-z]{2,}\z/i
+)
+
+# Length validation
+DSPy::Scores::Evaluators.length_check(
+  output: prediction.summary,
+  min_length: 50,
+  max_length: 200
+)
+
+# Levenshtein similarity (0.0 to 1.0)
+DSPy::Scores::Evaluators.similarity(
+  output: prediction.answer,
+  expected: example.expected_answer
+)
+
+# JSON validity check
+DSPy::Scores::Evaluators.json_valid(
+  output: prediction.json_response
+)
+```
+
+Each evaluator returns a `DSPy::Scores::ScoreEvent` that can be exported to Langfuse. See the [Observability guide](/production/observability/#score-reporting) for details on score export.
 
 ## Basic Custom Metrics
 

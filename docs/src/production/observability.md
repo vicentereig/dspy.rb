@@ -774,6 +774,166 @@ If these gems are not available, DSPy gracefully falls back to logging-only mode
 1. Verify your public and secret keys are correct
 2. Check that keys have proper permissions in Langfuse dashboard
 
+## Score Reporting
+
+DSPy.rb provides a Score Reporting API for exporting evaluation scores to Langfuse. This enables you to track model quality metrics alongside your traces.
+
+### Basic Usage
+
+```ruby
+# Create a simple score
+DSPy.score('accuracy', 0.95)
+
+# With a comment
+DSPy.score('relevance', 0.87, comment: 'High semantic similarity')
+
+# Boolean score
+DSPy.score('is_valid', 1, data_type: DSPy::Scores::DataType::Boolean)
+
+# Categorical score
+DSPy.score('sentiment', 'positive', data_type: DSPy::Scores::DataType::Categorical)
+```
+
+### Score Data Types
+
+DSPy uses Sorbet T::Enum for type-safe score data types:
+
+```ruby
+# Available data types
+DSPy::Scores::DataType::Numeric     # Default - for 0.0 to 1.0 scores
+DSPy::Scores::DataType::Boolean     # For pass/fail scores (0 or 1)
+DSPy::Scores::DataType::Categorical # For string labels like 'positive', 'negative'
+```
+
+### Built-in Evaluators
+
+DSPy provides common evaluators in `DSPy::Scores::Evaluators`:
+
+```ruby
+# Exact string match (1.0 if equal, 0.0 otherwise)
+score = DSPy::Scores::Evaluators.exact_match(
+  output: prediction.answer,
+  expected: example.expected_answer,
+  name: 'answer_accuracy'
+)
+
+# Case-insensitive match
+score = DSPy::Scores::Evaluators.exact_match(
+  output: prediction.answer,
+  expected: example.expected_answer,
+  ignore_case: true
+)
+
+# Substring containment
+score = DSPy::Scores::Evaluators.contains(
+  output: prediction.response,
+  expected: 'required keyword'
+)
+
+# Regex pattern matching
+score = DSPy::Scores::Evaluators.regex_match(
+  output: prediction.email,
+  pattern: /\A[\w.+-]+@[\w.-]+\.[a-z]{2,}\z/i,
+  name: 'email_format'
+)
+
+# Length validation
+score = DSPy::Scores::Evaluators.length_check(
+  output: prediction.summary,
+  min_length: 50,
+  max_length: 200
+)
+
+# Levenshtein similarity (0.0 to 1.0)
+score = DSPy::Scores::Evaluators.similarity(
+  output: prediction.answer,
+  expected: example.expected_answer
+)
+
+# JSON validity check
+score = DSPy::Scores::Evaluators.json_valid(
+  output: prediction.json_response
+)
+```
+
+### Automatic Score Export with Evals
+
+The `DSPy::Evals` evaluator can automatically export scores for each example:
+
+```ruby
+evaluator = DSPy::Evals.new(
+  program,
+  metric: my_metric,
+  export_scores: true,        # Enable automatic score export
+  score_name: 'qa_accuracy'   # Custom score name
+)
+
+result = evaluator.evaluate(test_examples)
+# Scores are automatically exported for each example
+# A batch score is created at the end with overall pass rate
+```
+
+### Async Langfuse Export
+
+For production use, configure the async exporter to send scores to Langfuse:
+
+```ruby
+# Configure the exporter (typically in an initializer)
+exporter = DSPy::Scores::Exporter.configure(
+  public_key: ENV['LANGFUSE_PUBLIC_KEY'],
+  secret_key: ENV['LANGFUSE_SECRET_KEY'],
+  host: 'https://cloud.langfuse.com'  # or your Langfuse host
+)
+
+# Scores are now automatically exported in the background
+DSPy.score('accuracy', 0.95)
+
+# Shutdown gracefully when done (waits up to 5 seconds by default)
+exporter.shutdown
+```
+
+The exporter:
+- Uses a background thread with a Thread::Queue
+- Automatically subscribes to `score.create` events
+- Includes retry logic with exponential backoff
+- Queues scores for async processing
+
+### Context Propagation
+
+Scores automatically inherit the current trace context:
+
+```ruby
+# Inside a traced operation, scores attach to the current trace
+DSPy::Context.with_span(operation: 'evaluate_response') do |span|
+  # This score will be attached to the current trace
+  DSPy.score('response_quality', 0.92)
+end
+
+# Explicit trace_id override
+DSPy.score('accuracy', 0.95, trace_id: 'custom-trace-id')
+```
+
+### Event-Driven Architecture
+
+Scores emit `score.create` events that you can subscribe to:
+
+```ruby
+# Subscribe to score events
+DSPy.events.subscribe('score.create') do |event_name, attrs|
+  puts "Score created: #{attrs[:score_name]} = #{attrs[:score_value]}"
+
+  # Access all score attributes
+  # attrs[:score_id]
+  # attrs[:score_name]
+  # attrs[:score_value]
+  # attrs[:score_data_type]
+  # attrs[:score_comment]
+  # attrs[:trace_id]
+  # attrs[:observation_id]
+  # attrs[:timestamp]
+end
+```
+
 ## Summary
 
 The DSPy.rb event system provides:

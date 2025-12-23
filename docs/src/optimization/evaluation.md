@@ -52,6 +52,30 @@ puts "Pass Rate: #{(result.pass_rate * 100).round(1)}%"
 puts "Passed: #{result.passed_examples}/#{result.total_examples}"
 ```
 
+### Automatic Score Export
+
+Export evaluation scores to Langfuse automatically:
+
+```ruby
+# Enable score export for Langfuse integration
+evaluator = DSPy::Evals.new(
+  predictor,
+  metric: metric,
+  export_scores: true,        # Export scores for each example
+  score_name: 'qa_accuracy'   # Custom score name (default: 'evaluation')
+)
+
+result = evaluator.evaluate(test_examples)
+# Creates individual scores for each example
+# Creates a batch score with overall pass rate at the end
+```
+
+The `export_scores` option:
+- Emits `score.create` events for each evaluated example
+- Creates a batch score with the overall pass rate when evaluation completes
+- Scores automatically attach to the current trace context
+- Works with the `DSPy::Scores::Exporter` for async Langfuse export
+
 ### Built-in Metrics
 
 DSPy.rb provides common metrics in the `DSPy::Metrics` module:
