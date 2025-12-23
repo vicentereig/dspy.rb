@@ -25,14 +25,14 @@ RSpec.describe 'DSPy.score' do
     end
 
     it 'creates a score event with boolean data type' do
-      event = DSPy.score('is_valid', 1, data_type: :boolean)
+      event = DSPy.score('is_valid', 1, data_type: DSPy::Scores::DataType::Boolean)
 
       expect(event.data_type).to eq(DSPy::Scores::DataType::Boolean)
       expect(event.value).to eq(1)
     end
 
     it 'creates a score event with categorical data type' do
-      event = DSPy.score('sentiment', 'positive', data_type: :categorical)
+      event = DSPy.score('sentiment', 'positive', data_type: DSPy::Scores::DataType::Categorical)
 
       expect(event.data_type).to eq(DSPy::Scores::DataType::Categorical)
       expect(event.value).to eq('positive')
@@ -80,25 +80,20 @@ RSpec.describe 'DSPy.score' do
     end
   end
 
-  describe 'symbol to DataType conversion' do
-    it 'converts :numeric symbol to DataType::Numeric' do
-      event = DSPy.score('test', 0.5, data_type: :numeric)
+  describe 'DataType enum' do
+    it 'accepts DataType::Numeric' do
+      event = DSPy.score('test', 0.5, data_type: DSPy::Scores::DataType::Numeric)
       expect(event.data_type).to eq(DSPy::Scores::DataType::Numeric)
     end
 
-    it 'converts :boolean symbol to DataType::Boolean' do
-      event = DSPy.score('test', 1, data_type: :boolean)
+    it 'accepts DataType::Boolean' do
+      event = DSPy.score('test', 1, data_type: DSPy::Scores::DataType::Boolean)
       expect(event.data_type).to eq(DSPy::Scores::DataType::Boolean)
     end
 
-    it 'converts :categorical symbol to DataType::Categorical' do
-      event = DSPy.score('test', 'value', data_type: :categorical)
+    it 'accepts DataType::Categorical' do
+      event = DSPy.score('test', 'value', data_type: DSPy::Scores::DataType::Categorical)
       expect(event.data_type).to eq(DSPy::Scores::DataType::Categorical)
-    end
-
-    it 'accepts DataType enum directly' do
-      event = DSPy.score('test', 0.5, data_type: DSPy::Scores::DataType::Numeric)
-      expect(event.data_type).to eq(DSPy::Scores::DataType::Numeric)
     end
   end
 

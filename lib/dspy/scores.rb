@@ -9,13 +9,6 @@ module DSPy
   module Scores
     extend T::Sig
 
-    # Symbol to DataType mapping for convenience
-    DATA_TYPE_MAP = {
-      numeric: DataType::Numeric,
-      boolean: DataType::Boolean,
-      categorical: DataType::Categorical
-    }.freeze
-
     class << self
       extend T::Sig
 
@@ -23,7 +16,7 @@ module DSPy
       #
       # @param name [String] Score identifier (e.g., "accuracy", "relevance")
       # @param value [Numeric, String] Score value
-      # @param data_type [DataType, Symbol] Type of score (default: Numeric)
+      # @param data_type [DataType] Type of score (default: Numeric)
       # @param comment [String, nil] Optional human-readable comment
       # @param span [Object, nil] Optional span to attach score to
       # @param emit [Boolean] Whether to emit score.create event (default: true)
@@ -32,7 +25,7 @@ module DSPy
         params(
           name: String,
           value: T.any(Numeric, String),
-          data_type: T.any(DataType, Symbol),
+          data_type: DataType,
           comment: T.nilable(String),
           span: T.untyped,
           trace_id: T.nilable(String),
@@ -50,9 +43,6 @@ module DSPy
         observation_id: nil,
         emit: true
       )
-        # Convert symbol to DataType if needed
-        resolved_data_type = resolve_data_type(data_type)
-
         # Extract trace_id from context if not provided
         resolved_trace_id = trace_id || extract_trace_id_from_context
         resolved_observation_id = observation_id || extract_observation_id_from_span(span)
@@ -60,7 +50,7 @@ module DSPy
         event = ScoreEvent.new(
           name: name,
           value: value,
-          data_type: resolved_data_type,
+          data_type: data_type,
           comment: comment,
           trace_id: resolved_trace_id,
           observation_id: resolved_observation_id
@@ -73,20 +63,6 @@ module DSPy
       end
 
       private
-
-      sig { params(data_type: T.any(DataType, Symbol)).returns(DataType) }
-      def resolve_data_type(data_type)
-        case data_type
-        when DataType
-          data_type
-        when Symbol
-          DATA_TYPE_MAP.fetch(data_type) do
-            raise ArgumentError, "Unknown data_type: #{data_type}. Valid options: #{DATA_TYPE_MAP.keys.join(', ')}"
-          end
-        else
-          raise ArgumentError, "data_type must be a Symbol or DataType, got: #{data_type.class}"
-        end
-      end
 
       sig { returns(T.nilable(String)) }
       def extract_trace_id_from_context
@@ -139,12 +115,12 @@ module DSPy
   #   DSPy.score('accuracy', 0.95, comment: 'Exact match')
   #
   # @example Boolean score
-  #   DSPy.score('is_valid', 1, data_type: :boolean)
+  #   DSPy.score('is_valid', 1, data_type: DSPy::Scores::DataType::Boolean)
   #
   # @example Categorical score
-  #   DSPy.score('sentiment', 'positive', data_type: :categorical)
+  #   DSPy.score('sentiment', 'positive', data_type: DSPy::Scores::DataType::Categorical)
   #
-  def self.score(name, value, data_type: :numeric, comment: nil, span: nil, trace_id: nil, observation_id: nil)
+  def self.score(name, value, data_type: Scores::DataType::Numeric, comment: nil, span: nil, trace_id: nil, observation_id: nil)
     Scores.create(
       name: name,
       value: value,
