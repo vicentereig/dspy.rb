@@ -5,7 +5,7 @@ description: "Why LLM application development today looks like web development i
 date: 2025-12-23
 author: "Vicente Reig"
 category: "Leadership"
-reading_time: "7 min read"
+reading_time: "5 min read"
 canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/ai-needs-its-mvc-moment/"
 image: /images/og/ai-needs-its-mvc-moment.png
 ---
@@ -14,9 +14,11 @@ If you're a CTO or Head of Engineering who lived through the early 2000s web dev
 
 Back then, every team built web applications differently. Business logic lived in templates. Database queries scattered across presentation layers. No standardized patterns. No observability. Debugging meant `print` statements and prayer.
 
-Then Rails arrived with MVC, and everything changed. Not because MVC was new (it wasn't), but because Rails provided an opinionated, standardized way to build applications that teams could reason about, debug, and maintain.
+Enterprise Java promised to solve this with J2EE, EJBs, and XML configuration files that stretched for miles. But the cure was worse than the disease—deployment descriptors, home interfaces, remote interfaces, and enough ceremony to make a Vatican cardinal jealous. Teams spent more time fighting the framework than building features.
 
-**LLM applications are at that same inflection point today.**
+Then Rails arrived with MVC, and everything changed. Not because MVC was new (it wasn't), but because Rails provided an opinionated, standardized way to build applications that teams could reason about, debug, and maintain—without drowning in bureaucracy.
+
+**LLM applications are at that same inflection point today.** (I explored this theme in my recent talk, [Turning Messy Prompts into Repeatable Reasoning Systems](https://vicente.services/talks/2025/12/turning-messy-prompts-into-repeatable-reasoning-systems/).)
 
 ## The Current State of Chaos
 
@@ -46,7 +48,7 @@ The observability story is instructive. Before standardized patterns, monitoring
 
 ## What DSPy.rb Brings to LLM Development
 
-DSPy.rb applies the same philosophy to LLM applications. Instead of prompt strings and API calls, you define **Signatures**—typed contracts between your application and language models:
+DSPy.rb applies the same philosophy to LLM applications. Instead of prompt strings and API calls, you define [**Signatures**](/core-concepts/signatures/)—typed contracts between your application and language models:
 
 ```ruby
 class CustomerIntent < DSPy::Signature
@@ -67,17 +69,17 @@ end
 
 This isn't just syntax. It's a fundamental shift in how you build:
 
-**Contracts, Not Prompts**: Your team reasons about interfaces, not prompt wording. The prompt becomes an implementation detail that can be optimized automatically.
+**Contracts, Not Prompts**: Your team reasons about interfaces, not prompt wording. The prompt becomes an implementation detail that can be [optimized automatically](/optimization/prompt-optimization/).
 
-**Type Safety**: When the LLM returns `"high"` as a string instead of `Urgency::High`, the framework catches it. Before production. Every time.
+**[Type Safety](/advanced/complex-types/)**: When the LLM returns `"high"` as a string instead of `Urgency::High`, the framework catches it. Before production. Every time.
 
-**Composable Modules**: Build complex workflows from simple, testable components. The `ChainOfThought` module adds reasoning. The `ReAct` module adds tool use. Stack them like Lego blocks.
+**[Composable Modules](/core-concepts/modules/)**: Build complex workflows from simple, testable components. The [`ChainOfThought`](/core-concepts/modules/#chainofthought) module adds reasoning. The [`ReAct`](/core-concepts/modules/#react) module adds [tool use](/core-concepts/toolsets/). Stack them like Lego blocks.
 
 ## Observability That Actually Works
 
 Here's where the MVC parallel becomes concrete. Because DSPy.rb knows the structure of your application—what Signatures you're calling, what reasoning steps are happening, what tools are being invoked—it can provide observability that generic tools cannot.
 
-Every operation automatically emits structured events following OpenTelemetry semantic conventions:
+Every operation automatically emits structured events following [OpenTelemetry semantic conventions](/production/observability/):
 
 - **Generation spans** capture LLM calls with token usage, timing, and model details
 - **Chain spans** show reasoning steps in ChainOfThought workflows
@@ -86,18 +88,19 @@ Every operation automatically emits structured events following OpenTelemetry se
 
 This isn't bolted-on logging. It's architectural. The framework knows what's happening because the patterns are standardized.
 
-**Score Reporting** takes this further. With `DSPy.score()`, you can export evaluation metrics directly to Langfuse:
+**Score Reporting** takes this further. Export [evaluation](/optimization/evaluation/) metrics directly to [Langfuse](/production/observability/#langfuse-integration) with a single call:
 
 ```ruby
-evaluator = DSPy::Evals.new(
-  program,
-  metric: accuracy_metric,
-  export_scores: true
+# Score individual predictions
+DSPy.score(
+  name: "intent_accuracy",
+  value: 0.92,
+  trace_id: prediction.trace_id
 )
 
-result = evaluator.evaluate(test_examples)
-# Every example gets a score in Langfuse
-# Overall batch metrics tracked automatically
+# Or evaluate entire datasets with automatic score export
+evaluator = DSPy::Evals.new(program, metric: accuracy_metric)
+result = evaluator.evaluate(test_examples, export_scores: true)
 ```
 
 When your customer intent classifier starts degrading in production, you'll know—not because users complained, but because your monitoring caught the score drop.
@@ -110,7 +113,7 @@ For CTOs and Heads of Engineering, the question isn't whether AI will be part of
 
 **Debugging**: When an agent hallucinates, can your team trace back to why? Hierarchical spans show exactly which reasoning step went wrong and what context it had.
 
-**Evaluation**: Before deploying a prompt change, can you prove it won't regress? Built-in evaluation frameworks with systematic metrics make this a CI/CD step, not a hope.
+**Evaluation**: Before deploying a prompt change, can you prove it won't regress? [Built-in evaluation frameworks](/optimization/evaluation/) with [systematic metrics](/advanced/custom-metrics/) make this a CI/CD step, not a hope.
 
 **Cost Control**: Are you burning through tokens on unnecessary retries? Token usage tracked at every level, exportable to your cost monitoring systems.
 
@@ -118,7 +121,7 @@ For CTOs and Heads of Engineering, the question isn't whether AI will be part of
 
 ## The Path Forward
 
-The early 2000s web chaos resolved through adoption of standardized frameworks. Teams that adopted Rails (or Django, or Spring) could move faster, hire easier, and build more reliable systems.
+The early 2000s web chaos resolved through adoption of standardized frameworks. Teams that adopted Rails, Django, or eventually Spring Boot (which learned from Rails' developer-friendly approach) could move faster, hire easier, and build more reliable systems.
 
 The same consolidation is coming to LLM applications. The question for engineering leaders is whether to adopt standardized patterns now—while you can still shape your architecture—or later, when you're migrating spaghetti.
 
