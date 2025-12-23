@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.34.0] - 2025-12-23
+
+### Added
+- **Score Reporting API** (#168) - New `DSPy.score()` method for reporting evaluation metrics to Langfuse
+  - `DSPy::Scores::ScoreEvent` - Structured score data with trace/observation linking
+  - `DSPy::Scores::DataType` - Enum for Numeric, Boolean, and Categorical scores
+  - `DSPy::Scores::Evaluators` - Built-in evaluators (Exact, F1, SemanticSimilarity, LLMAsJudge, etc.)
+  - Automatic trace context extraction from `DSPy::Context`
+  - Event-driven architecture via `score.create` events
+
+- **Evals Integration** - `DSPy::Evals` now supports `export_scores: true` for automatic score export during evaluation runs
+
+### Changed
+- **dspy-o11y-langfuse 1.1.0** - `ScoresExporter` moved from core gem to dspy-o11y-langfuse for cleaner separation
+  - New class: `DSPy::Observability::Adapters::Langfuse::ScoresExporter`
+  - Async background thread with retry logic and exponential backoff
+  - Auto-subscribes to `score.create` events when configured
+
+### Documentation
+- **Score Reporting Guide** - New section in Production > Observability documenting the full score reporting workflow
+- **Custom Metrics Guide** - New Advanced > Custom Metrics page for building evaluation metrics
+- **"AI Needs Its MVC Moment"** - New blog post on programmatic AI frameworks for CTOs/engineering leaders
+
 ## [0.33.0] - 2025-12-12
 
 ### Added
