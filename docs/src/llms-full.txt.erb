@@ -1791,6 +1791,120 @@ end
 metrics = MetricsCollector.new
 ```
 
+### Score Reporting
+
+DSPy.rb provides a Score Reporting API for exporting evaluation scores to Langfuse.
+
+**Basic Usage:**
+
+```ruby
+# Create a simple score
+DSPy.score('accuracy', 0.95)
+
+# With a comment
+DSPy.score('relevance', 0.87, comment: 'High semantic similarity')
+
+# Boolean score (pass/fail)
+DSPy.score('is_valid', 1, data_type: DSPy::Scores::DataType::Boolean)
+
+# Categorical score
+DSPy.score('sentiment', 'positive', data_type: DSPy::Scores::DataType::Categorical)
+```
+
+**Score Data Types:**
+
+```ruby
+# Available T::Enum data types
+DSPy::Scores::DataType::Numeric     # Default - for 0.0 to 1.0 scores
+DSPy::Scores::DataType::Boolean     # For pass/fail scores (0 or 1)
+DSPy::Scores::DataType::Categorical # For string labels
+```
+
+**Built-in Evaluators:**
+
+```ruby
+# Exact string match
+DSPy::Scores::Evaluators.exact_match(
+  output: prediction.answer,
+  expected: example.expected_answer,
+  ignore_case: true
+)
+
+# Substring containment
+DSPy::Scores::Evaluators.contains(
+  output: prediction.response,
+  expected: 'required keyword'
+)
+
+# Regex pattern matching
+DSPy::Scores::Evaluators.regex_match(
+  output: prediction.email,
+  pattern: /\A[\w.+-]+@[\w.-]+\.[a-z]{2,}\z/i
+)
+
+# Length validation
+DSPy::Scores::Evaluators.length_check(
+  output: prediction.summary,
+  min_length: 50,
+  max_length: 200
+)
+
+# Levenshtein similarity (0.0 to 1.0)
+DSPy::Scores::Evaluators.similarity(
+  output: prediction.answer,
+  expected: example.expected_answer
+)
+
+# JSON validity check
+DSPy::Scores::Evaluators.json_valid(
+  output: prediction.json_response
+)
+```
+
+**Automatic Score Export with Evals:**
+
+```ruby
+# Enable score export during evaluation
+evaluator = DSPy::Evals.new(
+  program,
+  metric: my_metric,
+  export_scores: true,        # Export scores for each example
+  score_name: 'qa_accuracy'   # Custom score name
+)
+
+result = evaluator.evaluate(test_examples)
+# Individual scores created for each example
+# Batch score created at the end with overall pass rate
+```
+
+**Async Langfuse Export:**
+
+```ruby
+# Configure exporter for production
+exporter = DSPy::Scores::Exporter.configure(
+  public_key: ENV['LANGFUSE_PUBLIC_KEY'],
+  secret_key: ENV['LANGFUSE_SECRET_KEY'],
+  host: 'https://cloud.langfuse.com'
+)
+
+# Scores now auto-export in background
+DSPy.score('accuracy', 0.95)
+
+# Shutdown gracefully (waits up to 5 seconds by default)
+exporter.shutdown
+```
+
+**Event Subscription:**
+
+```ruby
+# Subscribe to score events
+DSPy.events.subscribe('score.create') do |event_name, attrs|
+  puts "Score: #{attrs[:score_name]} = #{attrs[:score_value]}"
+  # attrs includes: score_id, score_name, score_value,
+  # score_data_type, score_comment, trace_id, observation_id, timestamp
+end
+```
+
 ### Registry & Storage
 
 ```ruby

@@ -191,6 +191,12 @@ module DSPy
     sig { returns(T.nilable(BatchEvaluationResult)) }
     attr_reader :last_batch_result
 
+    sig { returns(T::Boolean) }
+    attr_reader :export_scores
+
+    sig { returns(String) }
+    attr_reader :score_name
+
     include DSPy::Callbacks
 
     create_before_callback :call, wrap: false
@@ -227,16 +233,20 @@ module DSPy
         num_threads: T.nilable(Integer),
         max_errors: T.nilable(Integer),
         failure_score: T.nilable(Numeric),
-        provide_traceback: T::Boolean
+        provide_traceback: T::Boolean,
+        export_scores: T::Boolean,
+        score_name: String
       ).void
     end
-    def initialize(program, metric: nil, num_threads: 1, max_errors: 5, failure_score: 0.0, provide_traceback: true)
+    def initialize(program, metric: nil, num_threads: 1, max_errors: 5, failure_score: 0.0, provide_traceback: true, export_scores: false, score_name: 'evaluation')
       @program = program
       @metric = metric
       @num_threads = num_threads || 1
       @max_errors = max_errors || 5
       @provide_traceback = provide_traceback
       @failure_score = failure_score ? failure_score.to_f : 0.0
+      @export_scores = export_scores
+      @score_name = score_name
       @last_example_result = nil
       @last_batch_result = nil
     end
@@ -665,6 +675,11 @@ module DSPy
         score: result.metrics[:score],
         error: result.metrics[:error]
       })
+
+      # Export score to Langfuse if enabled
+      if @export_scores
+        export_example_score(example, result)
+      end
     rescue => e
       DSPy.log('evals.example.observation_error', error: e.message)
     end
@@ -678,8 +693,36 @@ module DSPy
         pass_rate: batch_result.pass_rate,
         score: batch_result.score
       })
+
+      # Export batch score to Langfuse if enabled
+      if @export_scores
+        export_batch_score(batch_result)
+      end
     rescue => e
       DSPy.log('evals.batch.observation_error', error: e.message)
+    end
+
+    def export_example_score(example, result)
+      score_value = result.metrics[:score] || (result.passed ? 1.0 : 0.0)
+      example_id = extract_example_id(example)
+
+      DSPy.score(
+        @score_name,
+        score_value,
+        comment: "Example: #{example_id || 'unknown'}, passed: #{result.passed}"
+      )
+    rescue => e
+      DSPy.log('evals.score_export_error', error: e.message)
+    end
+
+    def export_batch_score(batch_result)
+      DSPy.score(
+        "#{@score_name}_batch",
+        batch_result.pass_rate,
+        comment: "Batch: #{batch_result.passed_examples}/#{batch_result.total_examples} passed"
+      )
+    rescue => e
+      DSPy.log('evals.batch_score_export_error', error: e.message)
     end
 
     def extract_example_id(example)

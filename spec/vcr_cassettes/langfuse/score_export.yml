@@ -1,0 +1,255 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://cloud.langfuse.com/api/public/scores
+    body:
+      encoding: UTF-8
+      string: '{"id":"ae1d05ba-1d25-45dd-877e-52c3c07207e4","name":"accuracy","value":0.95,"dataType":"NUMERIC","traceId":"trace-123"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic cGstdGVzdC0xMjM6c2stdGVzdC00NTY=
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Tue, 23 Dec 2025 12:30:57 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '83'
+      Connection:
+      - keep-alive
+      X-Robots-Tag:
+      - noindex
+      X-Content-Type-Options:
+      - nosniff
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Document-Policy:
+      - js-profiling
+      Permissions-Policy:
+      - autoplay=*, fullscreen=*, microphone=*
+      X-Frame-Options:
+      - SAMEORIGIN
+      Vary:
+      - Origin, Accept-Encoding
+      Etag:
+      - '"shlzp847bz2b"'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Nel:
+      - '{"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}'
+      Strict-Transport-Security:
+      - max-age=0; includeSubDomains
+      Report-To:
+      - '{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=o2jdlF4VpKufPHO9WAKCo13XfmOEe5WND98iPRW4ASHE9ZX4%2B0STFtf1SadFbu7ZLNtk3N4hs9bFqOP6vdxVCU4McBePuMOL6BrGxIVI1iB9"}]}'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b27df870a1af28a-MAD
+    body:
+      encoding: UTF-8
+      string: '{"message":"Invalid credentials. Confirm that you''ve configured the
+        correct host."}'
+  recorded_at: Tue, 23 Dec 2025 12:30:57 GMT
+- request:
+    method: post
+    uri: https://cloud.langfuse.com/api/public/scores
+    body:
+      encoding: UTF-8
+      string: '{"id":"ae1d05ba-1d25-45dd-877e-52c3c07207e4","name":"accuracy","value":0.95,"dataType":"NUMERIC","traceId":"trace-123"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic cGstdGVzdC0xMjM6c2stdGVzdC00NTY=
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Tue, 23 Dec 2025 12:30:57 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '83'
+      Connection:
+      - keep-alive
+      X-Robots-Tag:
+      - noindex
+      X-Content-Type-Options:
+      - nosniff
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Document-Policy:
+      - js-profiling
+      Permissions-Policy:
+      - autoplay=*, fullscreen=*, microphone=*
+      X-Frame-Options:
+      - SAMEORIGIN
+      Vary:
+      - Origin, Accept-Encoding
+      Etag:
+      - '"shlzp847bz2b"'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Nel:
+      - '{"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}'
+      Strict-Transport-Security:
+      - max-age=0; includeSubDomains
+      Report-To:
+      - '{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=sy0TDwdHbCehq2RH%2FStKHd18XGa%2B7qNm3TJNQu0UQs%2B92uRG9DSowXIpJ%2FqFkDPITxkzewjmgMubaTM%2BDYRpHkaRz9AOqIx44i2txjsMtutZ"}]}'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b27df890f6cc8f7-MAD
+    body:
+      encoding: UTF-8
+      string: '{"message":"Invalid credentials. Confirm that you''ve configured the
+        correct host."}'
+  recorded_at: Tue, 23 Dec 2025 12:30:57 GMT
+- request:
+    method: post
+    uri: https://cloud.langfuse.com/api/public/scores
+    body:
+      encoding: UTF-8
+      string: '{"id":"ae1d05ba-1d25-45dd-877e-52c3c07207e4","name":"accuracy","value":0.95,"dataType":"NUMERIC","traceId":"trace-123"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic cGstdGVzdC0xMjM6c2stdGVzdC00NTY=
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Tue, 23 Dec 2025 12:30:57 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '83'
+      Connection:
+      - keep-alive
+      X-Robots-Tag:
+      - noindex
+      X-Content-Type-Options:
+      - nosniff
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Document-Policy:
+      - js-profiling
+      Permissions-Policy:
+      - autoplay=*, fullscreen=*, microphone=*
+      X-Frame-Options:
+      - SAMEORIGIN
+      Vary:
+      - Origin, Accept-Encoding
+      Etag:
+      - '"shlzp847bz2b"'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Nel:
+      - '{"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}'
+      Strict-Transport-Security:
+      - max-age=0; includeSubDomains
+      Report-To:
+      - '{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=hXpuvSOVlDf9213HWWbFP8BYhy5rzmaK%2FMgmZypYTQmU2o3oMYQXeBQkjmzzKEY5cHvOVDhzw1ISdZ7SKglJsHNGmt5KPZKQzMMfW9T9zahO"}]}'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b27df8b3e150341-MAD
+    body:
+      encoding: UTF-8
+      string: '{"message":"Invalid credentials. Confirm that you''ve configured the
+        correct host."}'
+  recorded_at: Tue, 23 Dec 2025 12:30:57 GMT
+- request:
+    method: post
+    uri: https://cloud.langfuse.com/api/public/scores
+    body:
+      encoding: UTF-8
+      string: '{"id":"ae1d05ba-1d25-45dd-877e-52c3c07207e4","name":"accuracy","value":0.95,"dataType":"NUMERIC","traceId":"trace-123"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic cGstdGVzdC0xMjM6c2stdGVzdC00NTY=
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Tue, 23 Dec 2025 12:30:58 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '83'
+      Connection:
+      - keep-alive
+      X-Robots-Tag:
+      - noindex
+      X-Content-Type-Options:
+      - nosniff
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Document-Policy:
+      - js-profiling
+      Permissions-Policy:
+      - autoplay=*, fullscreen=*, microphone=*
+      X-Frame-Options:
+      - SAMEORIGIN
+      Vary:
+      - Origin, Accept-Encoding
+      Etag:
+      - '"shlzp847bz2b"'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Nel:
+      - '{"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}'
+      Strict-Transport-Security:
+      - max-age=0; includeSubDomains
+      Report-To:
+      - '{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=BHw38PzgmFwhs%2B4sqaNGnDFk%2FCv3Vo0dFyWxIXYif2QSHInn%2FF87Jm7IVtJxtf74BoqCgA4a1pXtSf9fObLkwndjEBQ45bXR87UdvlYHEA%3D%3D"}]}'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b27df8eee28014a-MAD
+    body:
+      encoding: UTF-8
+      string: '{"message":"Invalid credentials. Confirm that you''ve configured the
+        correct host."}'
+  recorded_at: Tue, 23 Dec 2025 12:30:58 GMT
+recorded_with: VCR 6.3.1
