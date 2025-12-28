@@ -100,7 +100,7 @@ module DSPy
         # Use Anthropic Beta API structured outputs
         schema = DSPy::Anthropic::LM::SchemaConverter.to_beta_format(signature_class)
 
-        request_params[:output_format] = Anthropic::Models::Beta::BetaJSONOutputFormat.new(
+        request_params[:output_format] = ::Anthropic::Models::Beta::BetaJSONOutputFormat.new(
           type: :json_schema,
           schema: schema
         )

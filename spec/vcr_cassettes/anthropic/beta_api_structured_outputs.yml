@@ -1,0 +1,102 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages?beta=true
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-5-20250929","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"question\": \"What is 2+2?\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"question\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer\"\n    }\n  },\n  \"required\": [\n    \"question\"\n  ]\n}\n```\n\nYour
+        objective is: Answer a question with reasoning","output_format":{"type":"json_schema","schema":{"type":"object","properties":{"answer":{"type":"string","description":"The
+        answer"},"confidence":{"type":"number","description":"Confidence score between
+        0 and 1"}},"required":["answer","confidence"],"additionalProperties":false}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.16.2
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.16.2
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      Anthropic-Beta:
+      - structured-outputs-2025-11-13
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '843'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sun, 28 Dec 2025 05:07:05 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '400000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '400000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-28T05:07:05Z'
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '2000000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '2000000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-28T05:07:04Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '2400000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '2400000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-28T05:07:04Z'
+      Request-Id:
+      - req_011CWYWEPsuuPVaRDUVJPE1Y
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - 3908dea7-9e6a-4af2-8040-5c8e7334d4d3
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '3824'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b4e881c8eb46295-BSB
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-sonnet-4-5-20250929","id":"msg_016Mt43DuzuHZfg53THTUtU2","type":"message","role":"assistant","content":[{"type":"text","text":"{\"answer\":\"4\",\"confidence\":1.0}"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":326,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":14,"service_tier":"standard"}}'
+  recorded_at: Sun, 28 Dec 2025 05:07:05 GMT
+recorded_with: VCR 6.3.1
