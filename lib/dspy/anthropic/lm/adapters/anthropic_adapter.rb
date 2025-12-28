@@ -32,11 +32,15 @@ module DSPy
             # Anthropic requires system message to be separate from messages
             system_message, user_messages = extract_system_message(normalized_messages)
 
+            # Extract Beta API parameters if present
+            output_format = extra_params.delete(:output_format)
+            betas = extra_params.delete(:betas)
+
             # Check if this is a tool use request
             has_tools = extra_params.key?(:tools) && !extra_params[:tools].empty?
 
-            # Apply JSON prefilling if needed for better Claude JSON compliance (but not for tool use)
-            unless has_tools || contains_images?(normalized_messages)
+            # Apply JSON prefilling if needed for better Claude JSON compliance (but not for tool use or Beta API)
+            unless has_tools || output_format || contains_images?(normalized_messages)
               user_messages = prepare_messages_for_json(user_messages, system_message)
             end
 
@@ -58,11 +62,21 @@ module DSPy
             begin
               if block_given?
                 content = ""
-                @client.messages.stream(**request_params) do |chunk|
-                  if chunk.respond_to?(:delta) && chunk.delta.respond_to?(:text)
-                    chunk_text = chunk.delta.text
-                    content += chunk_text
-                    block.call(chunk)
+                if output_format
+                  @client.beta.messages.stream(**request_params, output_format: output_format, betas: betas) do |chunk|
+                    if chunk.respond_to?(:delta) && chunk.delta.respond_to?(:text)
+                      chunk_text = chunk.delta.text
+                      content += chunk_text
+                      block.call(chunk)
+                    end
+                  end
+                else
+                  @client.messages.stream(**request_params) do |chunk|
+                    if chunk.respond_to?(:delta) && chunk.delta.respond_to?(:text)
+                      chunk_text = chunk.delta.text
+                      content += chunk_text
+                      block.call(chunk)
+                    end
                   end
                 end
 
@@ -78,7 +92,11 @@ module DSPy
                   metadata: metadata
                 )
               else
-                response = @client.messages.create(**request_params)
+                response = if output_format
+                  @client.beta.messages.create(**request_params, output_format: output_format, betas: betas)
+                else
+                  @client.messages.create(**request_params)
+                end
 
                 if response.respond_to?(:error) && response.error
                   raise DSPy::LM::AdapterError, "Anthropic API error: #{response.error}"

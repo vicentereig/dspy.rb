@@ -47,36 +47,117 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
         { role: 'user', content: 'Hello' }
       ]
     end
-    
+
     let(:mock_response) do
       double('Anthropic::Response',
              id: 'msg-123',
              role: 'assistant',
              content: [double('Content', type: 'text', text: 'Hello back!')],
-             usage: double('Usage', 
+             usage: double('Usage',
                           total_tokens: 30,
                           to_h: { 'total_tokens' => 30 }))
     end
 
-    it 'makes successful API call and returns normalized response' do
-      expect(mock_messages).to receive(:create).with(
-        model: 'claude-3-sonnet',
-        messages: [{ role: 'user', content: 'Hello' }],
-        system: 'You are helpful',
-        max_tokens: 4096,
-        temperature: 0.0
-      ).and_return(mock_response)
+    context 'standard API (without output_format)' do
+      it 'makes successful API call and returns normalized response' do
+        expect(mock_messages).to receive(:create).with(
+          model: 'claude-3-sonnet',
+          messages: [{ role: 'user', content: 'Hello' }],
+          system: 'You are helpful',
+          max_tokens: 4096,
+          temperature: 0.0
+        ).and_return(mock_response)
 
-      result = adapter.chat(messages: messages)
+        result = adapter.chat(messages: messages)
 
-      expect(result).to be_a(DSPy::LM::Response)
-      expect(result.content).to eq('Hello back!')
-      expect(result.usage).to be_a(DSPy::LM::AnthropicUsage)
-      expect(result.usage.total_tokens).to eq(30)
-      expect(result.metadata).to be_a(DSPy::LM::AnthropicResponseMetadata)
-      expect(result.metadata.provider).to eq('anthropic')
-      expect(result.metadata.model).to eq('claude-3-sonnet')
-      expect(result.metadata.response_id).to eq('msg-123')
+        expect(result).to be_a(DSPy::LM::Response)
+        expect(result.content).to eq('Hello back!')
+        expect(result.usage).to be_a(DSPy::LM::AnthropicUsage)
+        expect(result.usage.total_tokens).to eq(30)
+        expect(result.metadata).to be_a(DSPy::LM::AnthropicResponseMetadata)
+        expect(result.metadata.provider).to eq('anthropic')
+        expect(result.metadata.model).to eq('claude-3-sonnet')
+        expect(result.metadata.response_id).to eq('msg-123')
+      end
+    end
+
+    context 'Beta API (with output_format)' do
+      let(:mock_beta) { double('Anthropic::Beta') }
+      let(:mock_beta_messages) { double('Anthropic::Beta::Messages') }
+      let(:output_format) do
+        double('OutputFormat', type: :json_schema, schema: { type: 'object' })
+      end
+
+      before do
+        allow(mock_client).to receive(:beta).and_return(mock_beta)
+        allow(mock_beta).to receive(:messages).and_return(mock_beta_messages)
+      end
+
+      it 'routes to beta.messages.create when output_format is present' do
+        expect(mock_beta_messages).to receive(:create).with(
+          model: 'claude-3-sonnet',
+          messages: [{ role: 'user', content: 'Hello' }],
+          system: 'You are helpful',
+          max_tokens: 4096,
+          temperature: 0.0,
+          output_format: output_format,
+          betas: ['structured-outputs-2025-11-13']
+        ).and_return(mock_response)
+
+        result = adapter.chat(
+          messages: messages,
+          output_format: output_format,
+          betas: ['structured-outputs-2025-11-13']
+        )
+
+        expect(result).to be_a(DSPy::LM::Response)
+        expect(result.content).to eq('Hello back!')
+      end
+
+      it 'routes to beta.messages.stream when output_format is present with block' do
+        block_called = false
+        test_block = proc { |chunk| block_called = true }
+
+        expect(mock_beta_messages).to receive(:stream).with(
+          model: 'claude-3-sonnet',
+          messages: [{ role: 'user', content: 'Hello' }],
+          system: 'You are helpful',
+          max_tokens: 4096,
+          temperature: 0.0,
+          stream: true,
+          output_format: output_format,
+          betas: ['structured-outputs-2025-11-13']
+        ).and_yield(
+          double('Chunk',
+                 delta: double('Delta', text: 'Hello'),
+                 respond_to?: ->(method) { method == :delta })
+        )
+
+        result = adapter.chat(
+          messages: messages,
+          output_format: output_format,
+          betas: ['structured-outputs-2025-11-13'],
+          &test_block
+        )
+
+        expect(block_called).to be true
+        expect(result).to be_a(DSPy::LM::Response)
+      end
+
+      it 'does not apply JSON prefilling when using Beta API' do
+        # Should not call prepare_messages_for_json when output_format is present
+        expect(adapter).not_to receive(:prepare_messages_for_json)
+
+        expect(mock_beta_messages).to receive(:create).with(
+          hash_including(output_format: output_format)
+        ).and_return(mock_response)
+
+        adapter.chat(
+          messages: messages,
+          output_format: output_format,
+          betas: ['structured-outputs-2025-11-13']
+        )
+      end
     end
 
     it 'handles streaming with block' do
