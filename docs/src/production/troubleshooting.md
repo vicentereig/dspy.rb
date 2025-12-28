@@ -144,11 +144,11 @@ DSPy.configure do |config|
   #   structured_outputs: true
   # )
 
-  # Anthropic with tool-based extraction (default, recommended)
+  # Anthropic with Beta API structured outputs (default, recommended)
   # config.lm = DSPy::LM.new(
   #   "anthropic/claude-sonnet-4-5-20250929",
   #   api_key: ENV["ANTHROPIC_API_KEY"],
-  #   structured_outputs: true  # Default
+  #   structured_outputs: true  # Default - uses Beta API
   # )
 
   # Anthropic with enhanced prompting (alternative)
@@ -162,8 +162,8 @@ end
 
 **Provider Support**:
 - **OpenAI/Gemini/Ollama**: Use `structured_outputs: true` for native JSON mode
-- **Anthropic**:
-  - `structured_outputs: true` (default) - Tool-based extraction (most reliable)
+- **Anthropic** (requires anthropic gem >= 1.16.2):
+  - `structured_outputs: true` (default) - Beta API structured outputs with JSON schema enforcement
   - `structured_outputs: false` - Enhanced prompting extraction
 
 ## Memory Issues
