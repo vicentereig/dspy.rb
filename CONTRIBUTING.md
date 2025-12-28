@@ -89,10 +89,30 @@ bundle exec rspec spec/path/to/file_spec.rb
    ```
 
 4. **Verify documentation builds:**
+
+   The documentation site requires additional setup:
+
    ```bash
+   # Install Bun (if not already installed)
+   curl -fsSL https://bun.sh/install | bash
+
+   # Navigate to docs directory
    cd docs
+
+   # Install npm dependencies
+   bun install
+
+   # Install Playwright browsers for OG image generation
+   npx playwright install --with-deps chromium
+
+   # Install Ruby dependencies
+   bundle install
+
+   # Verify the build works
    BRIDGETOWN_ENV=production npm run build
    ```
+
+   The build should complete without errors. If successful, the site will be in `output/`.
 
 ### Commit Guidelines
 
