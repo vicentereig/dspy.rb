@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Anthropic Beta API Structured Outputs** (#198) - Migrated from tool-based extraction to Anthropic's Beta API structured outputs
+  - Uses `output_format` parameter with JSON schema for guaranteed conformance
+  - Removes tool-calling overhead for JSON extraction
+  - Simplifies extraction logic to match OpenAI/Gemini pattern
+  - **BREAKING**: Requires `anthropic` gem >= 1.16.2 and a supported model: `claude-sonnet-4-5`, `claude-haiku-4-5`, `claude-opus-4-1`, or `claude-opus-4-5`
+
+### Removed
+- **Tool-based JSON extraction for Anthropic** - Deleted `convert_to_anthropic_tool_schema`, `build_properties_from_fields`, and `extract_anthropic_tool_json` methods in favor of Beta API
+
 ## [0.34.3] - 2026-02-05
 
 ### Added
