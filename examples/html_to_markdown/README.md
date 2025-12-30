@@ -13,6 +13,50 @@ We compare multiple approaches for converting HTML to Markdown:
 | **C: Direct String** | Simple string output | `String` |
 | **D: Hierarchical** | Two-phase parsing (outline → fill) | `MarkdownDocument` struct |
 
+```mermaid
+flowchart LR
+    subgraph Input
+        HTML["📄 HTML"]
+    end
+
+    subgraph "Approach A & B: AST Pipeline"
+        direction TB
+        LLM1["🤖 LLM<br/>(structured output)"]
+        AST["🌳 MarkdownDocument<br/>typed AST"]
+        Render["⚙️ Renderer"]
+    end
+
+    subgraph "Approach C: Direct"
+        LLM2["🤖 LLM<br/>(string output)"]
+    end
+
+    subgraph "Approach D: Hierarchical"
+        direction TB
+        Phase1["🤖 Phase 1<br/>ParseOutline"]
+        Skeleton["📋 SkeletonSections"]
+        Phase2["🤖 Phase 2<br/>ParseSection ×N"]
+        AST2["🌳 MarkdownDocument"]
+        Render2["⚙️ Renderer"]
+    end
+
+    subgraph Output
+        MD["📝 Markdown"]
+    end
+
+    HTML --> LLM1 --> AST --> Render --> MD
+    HTML --> LLM2 --> MD
+    HTML --> Phase1 --> Skeleton --> Phase2 --> AST2 --> Render2 --> MD
+
+    style AST fill:#e1f5fe
+    style AST2 fill:#e1f5fe
+    style Skeleton fill:#fff3e0
+```
+
+**Pipeline Comparison:**
+- **A/B (AST)**: Single LLM call → typed struct → deterministic render
+- **C (Direct)**: Single LLM call → string output (fastest, cheapest)
+- **D (Hierarchical)**: Multiple LLM calls → handles complex docs that exceed token limits
+
 ## Key Findings (Updated December 2025)
 
 ### Issue #201 Fixed: OpenAI Native JSON Now Works
