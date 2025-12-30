@@ -139,11 +139,41 @@ end
 DSPy.rb uses sophisticated type discrimination for complex data structures:
 
 - **Automatic `_type` field injection** - DSPy adds discriminator fields to structs for type safety
-- **Union type support** - T.any() types automatically disambiguated by `_type` 
+- **Union type support** - T.any() types automatically disambiguated by `_type`
 - **Reserved field name** - Avoid defining your own `_type` fields in structs
 - **Recursive filtering** - `_type` fields filtered during deserialization at all nesting levels
 
-### 5. Optimization
+### 5. Recursive Types with `$defs`
+
+DSPy.rb supports recursive types in structured outputs using JSON Schema `$defs`:
+
+```ruby
+class TreeNode < T::Struct
+  const :value, String
+  const :children, T::Array[TreeNode], default: []  # Self-reference
+end
+```
+
+The schema generator creates `#/$defs/TreeNode` references, compatible with OpenAI and Gemini.
+
+**Important**: Use `default: []` instead of `T.nilable(T::Array[...])` for OpenAI compatibility.
+
+### 6. Field Descriptions for T::Struct
+
+Add field-level `description:` kwargs that flow to JSON Schema:
+
+```ruby
+class ASTNode < T::Struct
+  const :node_type, String, description: 'The type of node (heading, paragraph, etc.)'
+  const :text, String, default: "", description: 'Text content of the node'
+  const :level, Integer, default: 0  # No description needed - self-explanatory
+end
+
+# Access programmatically
+ASTNode.field_descriptions[:node_type]  # => "The type of node..."
+```
+
+### 7. Optimization
 Improve accuracy with real data:
 
 - **MIPROv2** - Advanced multi-prompt optimization with bootstrap sampling and Bayesian optimization
@@ -343,6 +373,7 @@ optimized_program = result.optimized_program
 - Workflow router: `examples/workflow_router.rb`
 - Evaluator + optimizer loop: `examples/evaluator_loop.rb`
 - GitHub assistant agent: `examples/github-assistant/`
+- HTML to Markdown AST: `examples/html_to_markdown/` (recursive types, field descriptions)
 
 ## For LLMs
 
@@ -350,11 +381,13 @@ When helping users with DSPy.rb:
 
 1. **Focus on signatures** - They define the contract with LLMs
 2. **Use proper types** - T::Enum for categories, T::Struct for complex data
-3. **Leverage automatic type conversion** - Tools and toolsets automatically convert JSON strings to proper Ruby types (enums, structs, arrays, hashes)
-4. **Compose modules** - Chain predictors for complex workflows  
-5. **Create type-safe tools** - Use Sorbet signatures for comprehensive tool parameter validation and conversion
-6. **Test thoroughly** - Use RSpec and VCR for reliable tests
-7. **Monitor production** - Enable Langfuse by installing the optional o11y gems and setting env vars
+3. **Use defaults over nilables** - `default: []` instead of `T.nilable(T::Array[...])` for OpenAI compatibility
+4. **Add field descriptions** - Use `description:` kwarg on T::Struct fields for complex semantics
+5. **Leverage automatic type conversion** - Tools and toolsets automatically convert JSON strings to proper Ruby types
+6. **Compose modules** - Chain predictors for complex workflows
+7. **Create type-safe tools** - Use Sorbet signatures for comprehensive tool parameter validation
+8. **Test thoroughly** - Use RSpec and VCR for reliable tests
+9. **Monitor production** - Enable Langfuse by installing the optional o11y gems and setting env vars
 
 ## Version
 

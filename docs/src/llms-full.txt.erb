@@ -701,6 +701,64 @@ class Company < T::Struct
 end
 ```
 
+### Recursive Types with `$defs`
+
+DSPy.rb supports recursive types in structured outputs using JSON Schema `$defs`:
+
+```ruby
+class TreeNode < T::Struct
+  const :value, String
+  const :children, T::Array[TreeNode], default: []  # Self-reference
+end
+
+class DocumentAST < DSPy::Signature
+  description 'Parse document into tree structure'
+
+  output do
+    const :root, TreeNode
+  end
+end
+```
+
+The schema generator automatically creates `#/$defs/TreeNode` references for recursive types, compatible with OpenAI and Gemini structured outputs.
+
+**Important**: Use `default: []` instead of `T.nilable(T::Array[...])` for OpenAI compatibility:
+
+```ruby
+# ✅ Good - works with OpenAI structured outputs
+const :children, T::Array[TreeNode], default: []
+
+# ❌ Bad - causes schema issues with OpenAI
+const :children, T.nilable(T::Array[TreeNode])
+```
+
+### Field Descriptions for T::Struct
+
+DSPy.rb extends T::Struct to support field-level `description:` kwargs that flow to JSON Schema:
+
+```ruby
+class ASTNode < T::Struct
+  const :node_type, NodeType, description: 'The type of node (heading, paragraph, etc.)'
+  const :text, String, default: "", description: 'Text content of the node'
+  const :level, Integer, default: 0  # No description - self-explanatory
+  const :children, T::Array[ASTNode], default: []
+end
+
+# Access descriptions programmatically
+ASTNode.field_descriptions[:node_type]  # => "The type of node (heading, paragraph, etc.)"
+```
+
+The generated JSON Schema includes these descriptions, helping LLMs understand field semantics.
+
+**When to use field descriptions**:
+- Complex field semantics not obvious from the type
+- Enum-like strings with specific allowed values
+- Fields with constraints (e.g., "1-6 for heading levels")
+
+**When to skip descriptions**:
+- Self-explanatory fields like `name`, `id`, `url`
+- Fields where the type tells the story
+
 ## Multimodal Support
 
 DSPy.rb provides comprehensive support for text and image inputs through its unified `DSPy::Image` interface, enabling vision-capable LLM applications across multiple providers.
