@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.34.1] - 2025-12-30
+
+### Fixed
+- **Recursive Schema `$ref` Format** (#201) - Changed JSON Schema `$ref` format from `#/definitions/` to `#/$defs/` for OpenAI and Gemini structured outputs compatibility
+  - Recursive types now work correctly with all major LLM providers
+  - Schema generator properly tracks and outputs `$defs` section
+
+### Added
+- **T::Struct Field Descriptions** - New `description:` kwarg for T::Struct `const`/`prop` fields
+  - Field descriptions flow to JSON Schema for better LLM understanding
+  - Access via `YourStruct.field_descriptions[:field_name]`
+  - Implemented via `DSPy::Ext::StructDescriptions` module prepended to T::Struct
+
+- **HTML to Markdown Example** - Comprehensive example demonstrating:
+  - Recursive AST types with `$defs`
+  - Field descriptions for complex schemas
+  - Hierarchical (two-phase) parsing pattern
+  - Comparison of structured vs direct string approaches
+
+### Documentation
+- Updated llms.txt and llms-full.txt with recursive types and field descriptions
+- New best practice: use `default: []` instead of `T.nilable(T::Array[...])` for OpenAI compatibility
+
 ## [0.34.0] - 2025-12-23
 
 ### Added
