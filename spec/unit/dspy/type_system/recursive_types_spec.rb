@@ -29,18 +29,19 @@ RSpec.describe "Recursive Type Support" do
 
     it "generates proper JSON schema for recursive types" do
       schema = DSPy::TypeSystem::SorbetJsonSchema.generate_struct_schema(MindMapNode)
-      
+
       expect(schema[:type]).to eq("object")
       expect(schema[:properties]).to be_a(Hash)
       expect(schema[:properties][:children]).to be_a(Hash)
-      
+
       # The children field should be present and properly typed as nullable array
       children_schema = schema[:properties][:children]
       expect(children_schema[:type]).to eq(["array", "null"])
-      
-      # For recursive types, we expect a reference or simplified schema to avoid infinite recursion
+
+      # For recursive types, we expect a $ref in #/$defs/ format for OpenAI/Gemini compatibility
       expect(children_schema[:items]).to be_a(Hash)
-      expect(children_schema[:items]).to have_key("$ref").or have_key(:type)
+      expect(children_schema[:items]).to have_key("$ref")
+      expect(children_schema[:items]["$ref"]).to eq("#/$defs/MindMapNode")
     end
   end
 
@@ -51,26 +52,28 @@ RSpec.describe "Recursive Type Support" do
       }.not_to raise_error
     end
 
-    it "generates schema with proper nullable references" do
+    it "generates schema with proper nullable references using #/$defs/ format" do
       schema = DSPy::TypeSystem::SorbetJsonSchema.generate_struct_schema(TreeNode)
-      
+
       # For T.nilable references to the same type, we expect anyOf with reference and null
       left_schema = schema[:properties][:left]
       right_schema = schema[:properties][:right]
-      
+
       expect(left_schema).to have_key(:anyOf)
       expect(right_schema).to have_key(:anyOf)
-      
-      # Should have [reference, null] in anyOf
+
+      # Should have [reference, null] in anyOf using #/$defs/ format
       expect(left_schema[:anyOf]).to be_an(Array)
       expect(left_schema[:anyOf].length).to eq(2)
       expect(left_schema[:anyOf]).to include({ type: "null" })
       expect(left_schema[:anyOf][0]).to have_key("$ref")
-      
+      expect(left_schema[:anyOf][0]["$ref"]).to eq("#/$defs/TreeNode")
+
       expect(right_schema[:anyOf]).to be_an(Array)
       expect(right_schema[:anyOf].length).to eq(2)
       expect(right_schema[:anyOf]).to include({ type: "null" })
       expect(right_schema[:anyOf][0]).to have_key("$ref")
+      expect(right_schema[:anyOf][0]["$ref"]).to eq("#/$defs/TreeNode")
     end
   end
 end

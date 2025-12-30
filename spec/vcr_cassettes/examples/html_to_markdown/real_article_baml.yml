@@ -1,0 +1,412 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BaztPlWgxIxUADvrtB84K3ppU8QkAAEBAAAnIQEAADWpAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAMfDU2kAA82UbWvbMBDHv4rR68hY8pNsyIuVdLSDZO2W9U1Tgp6SaJElz5K3ZSHffQppYeta1tEE9sbId7r73+l+3O0WcNs01oB6C6j3nWK9l27/J41XfhMb2khQg9HHq03cMTAAK+v8vdGphtFYW051cNwHLHslgm/8Y72ZfF7jycX3s0/niFzfnF1Pz/Xo+ubDu2mSk8n0MhmPlmg8Os/AbjcA2i6D7u0WaPlV6pDhcvL2fUjrVSOdp00LalQWZVKVmBSkqOKK4AEIPkeX+2J8R7mcKzGcgQRLzHnGYFniEmao5JCiDEO+KDPKOc54Vc1ApEzb+7m3a2ncEGOEItv7X0xZUhWRt57qB0uRJmW0lGZOVew2zssmqFHjV51tFQ8p732d/NKHouPGCqnDFa5pLyRcUbXuYQZziBOcoyRBIUS4dhM7tTTU950Mly98o6d2TLu1sN9MXV/RzsmD8Y3zISJk7bWct9SvhrdbJepoBkTOCF4IBCUtaGg5nNiiIDBliOGFZBkToeVBFCpxbh+wH2jI3UmhuN97NGVS15FRenf3INFZ64enUHgQ0JIuTirguG3lcEsND/PoNodB/ouakK1f1RHaRQFL48N8dBMfcJiBmQG7wQuJJSTG+RGBRWVCHgGbk/J3XjGu8j94DQ9iqHoe1mXrYWZho4w6Gp6Y8jxJMIOFxAUMPVWQZiKDGUlJlqcF5Sx9HZ5HVXgKz5MIPIvnS9WOhWeFcIwRIccEFOePAUVFjh4RWiXVf0GoEAVlpArNVYs8fPLw4IQlEIWlkC7SUuaFeOUCPabCkwv0FALPL9AXqv2V0Lvd3U86iXrFhwgAAA==
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BaztPlWgxIxUADvrtB84K3ppU8QkAAEBAAAnIQEAADWpAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 12:21:27 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9b617f3e1e8e4a1a-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 30 Dec 2025 12:21:27 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"            <article>\\n              <h1>Tangle:
+        Building an ML Experimentation Platform</h1>\\n\\n              <p>Your experiment
+        finally finished. Six hours later, your teammate asks you to reproduce it.\\n              You
+        <strong>can''t remember</strong> which notebook version you used or what parameters
+        were set.</p>\\n\\n              <h2>The Problem</h2>\\n              <p>ML
+        development faces <em>six critical challenges</em>:</p>\\n              <ul>\\n                <li><strong>Manual
+        query tracking</strong> leads to lost experiments</li>\\n                <li>Notebook
+        accumulation creates confusion</li>\\n                <li>Repeated data preparation
+        wastes time</li>\\n                <li>Irreproducibility blocks collaboration</li>\\n                <li>Slow
+        deployments delay production</li>\\n                <li>Lack of team sharing
+        silos knowledge</li>\\n              </ul>\\n\\n              <h2>Architecture
+        Components</h2>\\n              <p>Tangle uses a <code>component</code>-based
+        architecture:</p>\\n\\n              <h3>Components</h3>\\n              <p>Reusable
+        YAML-based units that function like pure functions:</p>\\n              <pre><code
+        class=\\\"language-yaml\\\">name: train-model\\ninputs:\\n  - name: dataset\\n    type:
+        path\\n  - name: epochs\\n    type: int\\noutputs:\\n  - name: model\\n    type:
+        path</code></pre>\\n\\n              <h3>Execution Example</h3>\\n              <pre><code
+        class=\\\"language-python\\\">from tangle import Pipeline\\n\\npipeline =
+        Pipeline.from_yaml(\\\"training.yaml\\\")\\nresult = pipeline.run(\\n    dataset=\\\"./data/train.csv\\\",\\n    epochs=100\\n)\\nprint(f\\\"Model
+        saved: {result.model}\\\")</code></pre>\\n\\n              <h2>Key Features</h2>\\n              <ol>\\n                <li><strong>Content-based
+        caching</strong>: Reuses computations across team runs</li>\\n                <li><strong>Language-neutral</strong>:
+        Supports Python, Shell, JavaScript, Rust, Go, and more</li>\\n                <li><strong>Visual
+        editor</strong>: Drag-and-drop DAG interface</li>\\n              </ol>\\n\\n              <blockquote>\\n                <p>Tangle
+        reduced our iteration time by 60% and made every experiment fully reproducible.</p>\\n              </blockquote>\\n\\n              <h2>Getting
+        Started</h2>\\n              <p>Check out the <a href=\\\"https://github.com/shopify/tangle\\\">GitHub
+        repository</a> or try the\\n              <a href=\\\"https://huggingface.co/spaces/shopify/tangle\\\">HuggingFace
+        Space</a>.</p>\\n\\n              <hr>\\n\\n              <p><em>This article
+        was written by the ML Platform team at Shopify.</em></p>\\n            </article>\\n\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: Respond with ONLY valid
+        JSON. No markdown formatting, no code blocks, no explanations. Start your
+        response with ''{'' and end with ''}''."}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        input schema fields are:\n```baml\nclass HtmlToMarkdown::ParseHtmlToAstInput
+        {\n  html string\n}\n```\nYour output schema fields are:\n```baml\nenum NodeType
+        {\n  \"heading\"\n  \"paragraph\"\n  \"code_block\"\n  \"blockquote\"\n  \"horizontal_rule\"\n  \"list\"\n  \"list_item\"\n  \"table\"\n  \"table_row\"\n  \"table_cell\"\n  \"text\"\n  \"bold\"\n  \"italic\"\n  \"code\"\n  \"link\"\n  \"image\"\n  \"line_break\"\n  \"strikethrough\"\n  \"footnote_ref\"\n  \"footnote_def\"\n  \"task_list_item\"\n}\n\nclass
+        ASTNode {\n  node_type NodeType\n  text string\n  level int\n  language string\n  url
+        string\n  alt string\n  title string\n  ordered bool\n  checked bool\n  align
+        string\n  header bool\n  id string\n  children ASTNode[]\n}\n\nclass MarkdownDocument
+        {\n  nodes ASTNode[]\n}\n\nclass HtmlToMarkdown::ParseHtmlToAstOutput {\n  document
+        MarkdownDocument\n}\n```\n\nAll interactions will be structured in the following
+        way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Parse HTML content into a Markdown Abstract Syntax Tree
+        (AST).\n\nConvert HTML elements to their Markdown AST node equivalents:\n-
+        <h1>-<h6> -> Heading node with level 1-6\n- <p> -> Paragraph node with inline
+        children\n- <strong> or <b> -> Bold node\n- <em> or <i> -> Italic node\n-
+        <code> -> Code node (inline)\n- <pre><code> -> CodeBlock node with optional
+        language\n- <a href=\"url\"> -> Link node with url and text children\n- <img
+        src=\"url\" alt=\"text\"> -> Image node\n- <ul> or <ol> -> List node (ordered:
+        true/false)\n- <li> -> ListItem node\n- <blockquote> -> Blockquote node\n-
+        <hr> -> HorizontalRule node\n- <del> or <s> -> Strikethrough node\n\nStructure
+        rules:\n- Block elements (Heading, Paragraph, CodeBlock, List, Blockquote,
+        HorizontalRule) are top-level nodes\n- Inline elements (Text, Bold, Italic,
+        Code, Link, Image, Strikethrough) appear as children of block elements\n-
+        Preserve text content exactly, including whitespace\n- Nested structures (lists
+        within lists, formatting within formatting) use the children array\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '5390'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 12:21:46 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T12:21:28Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '86000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T12:21:48Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T12:21:27Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '535000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T12:21:28Z'
+      Request-Id:
+      - req_011CWcryg7kzpD2NbhyYV85Z
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '18825'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b617f3e59084ba5-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01AqfYffuwwj7FmfnGuRfa1q","type":"message","role":"assistant","content":[{"type":"text","text":"##
+        Output values\n```json\n{\n  \"document\": {\n    \"nodes\": [\n      {\n        \"node_type\":
+        \"heading\",\n        \"text\": \"Tangle: Building an ML Experimentation Platform\",\n        \"level\":
+        1,\n        \"language\": \"\",\n        \"url\": \"\",\n        \"alt\":
+        \"\",\n        \"title\": \"\",\n        \"ordered\": false,\n        \"checked\":
+        false,\n        \"align\": \"\",\n        \"header\": false,\n        \"id\":
+        \"\",\n        \"children\": []\n      },\n      {\n        \"node_type\":
+        \"paragraph\",\n        \"text\": \"\",\n        \"level\": 0,\n        \"language\":
+        \"\",\n        \"url\": \"\",\n        \"alt\": \"\",\n        \"title\":
+        \"\",\n        \"ordered\": false,\n        \"checked\": false,\n        \"align\":
+        \"\",\n        \"header\": false,\n        \"id\": \"\",\n        \"children\":
+        [\n          {\n            \"node_type\": \"text\",\n            \"text\":
+        \"Your experiment finally finished. Six hours later, your teammate asks you
+        to reproduce it.\\n              You \",\n            \"level\": 0,\n            \"language\":
+        \"\",\n            \"url\": \"\",\n            \"alt\": \"\",\n            \"title\":
+        \"\",\n            \"ordered\": false,\n            \"checked\": false,\n            \"align\":
+        \"\",\n            \"header\": false,\n            \"id\": \"\",\n            \"children\":
+        []\n          },\n          {\n            \"node_type\": \"bold\",\n            \"text\":
+        \"can''t remember\",\n            \"level\": 0,\n            \"language\":
+        \"\",\n            \"url\": \"\",\n            \"alt\": \"\",\n            \"title\":
+        \"\",\n            \"ordered\": false,\n            \"checked\": false,\n            \"align\":
+        \"\",\n            \"header\": false,\n            \"id\": \"\",\n            \"children\":
+        []\n          },\n          {\n            \"node_type\": \"text\",\n            \"text\":
+        \" which notebook version you used or what parameters were set.\",\n            \"level\":
+        0,\n            \"language\": \"\",\n            \"url\": \"\",\n            \"alt\":
+        \"\",\n            \"title\": \"\",\n            \"ordered\": false,\n            \"checked\":
+        false,\n            \"align\": \"\",\n            \"header\": false,\n            \"id\":
+        \"\",\n            \"children\": []\n          }\n        ]\n      },\n      {\n        \"node_type\":
+        \"heading\",\n        \"text\": \"The Problem\",\n        \"level\": 2,\n        \"language\":
+        \"\",\n        \"url\": \"\",\n        \"alt\": \"\",\n        \"title\":
+        \"\",\n        \"ordered\": false,\n        \"checked\": false,\n        \"align\":
+        \"\",\n        \"header\": false,\n        \"id\": \"\",\n        \"children\":
+        []\n      },\n      {\n        \"node_type\": \"paragraph\",\n        \"text\":
+        \"\",\n        \"level\": 0,\n        \"language\": \"\",\n        \"url\":
+        \"\",\n        \"alt\": \"\",\n        \"title\": \"\",\n        \"ordered\":
+        false,\n        \"checked\": false,\n        \"align\": \"\",\n        \"header\":
+        false,\n        \"id\": \"\",\n        \"children\": [\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \"ML development faces \",\n            \"level\":
+        0,\n            \"language\": \"\",\n            \"url\": \"\",\n            \"alt\":
+        \"\",\n            \"title\": \"\",\n            \"ordered\": false,\n            \"checked\":
+        false,\n            \"align\": \"\",\n            \"header\": false,\n            \"id\":
+        \"\",\n            \"children\": []\n          },\n          {\n            \"node_type\":
+        \"italic\",\n            \"text\": \"six critical challenges\",\n            \"level\":
+        0,\n            \"language\": \"\",\n            \"url\": \"\",\n            \"alt\":
+        \"\",\n            \"title\": \"\",\n            \"ordered\": false,\n            \"checked\":
+        false,\n            \"align\": \"\",\n            \"header\": false,\n            \"id\":
+        \"\",\n            \"children\": []\n          },\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \":\",\n            \"level\": 0,\n            \"language\":
+        \"\",\n            \"url\": \"\",\n            \"alt\": \"\",\n            \"title\":
+        \"\",\n            \"ordered\": false,\n            \"checked\": false,\n            \"align\":
+        \"\",\n            \"header\": false,\n            \"id\": \"\",\n            \"children\":
+        []\n          }\n        ]\n      },\n      {\n        \"node_type\": \"list\",\n        \"text\":
+        \"\",\n        \"level\": 0,\n        \"language\": \"\",\n        \"url\":
+        \"\",\n        \"alt\": \"\",\n        \"title\": \"\",\n        \"ordered\":
+        false,\n        \"checked\": false,\n        \"align\": \"\",\n        \"header\":
+        false,\n        \"id\": \"\",\n        \"children\": [\n          {\n            \"node_type\":
+        \"list_item\",\n            \"text\": \"\",\n            \"level\": 0,\n            \"language\":
+        \"\",\n            \"url\": \"\",\n            \"alt\": \"\",\n            \"title\":
+        \"\",\n            \"ordered\": false,\n            \"checked\": false,\n            \"align\":
+        \"\",\n            \"header\": false,\n            \"id\": \"\",\n            \"children\":
+        [\n              {\n                \"node_type\": \"bold\",\n                \"text\":
+        \"Manual query tracking\",\n                \"level\": 0,\n                \"language\":
+        \"\",\n                \"url\": \"\",\n                \"alt\": \"\",\n                \"title\":
+        \"\",\n                \"ordered\": false,\n                \"checked\": false,\n                \"align\":
+        \"\",\n                \"header\": false,\n                \"id\": \"\",\n                \"children\":
+        []\n              },\n              {\n                \"node_type\": \"text\",\n                \"text\":
+        \" leads to lost experiments\",\n                \"level\": 0,\n                \"language\":
+        \"\",\n                \"url\": \"\",\n                \"alt\": \"\",\n                \"title\":
+        \"\",\n                \"ordered\": false,\n                \"checked\": false,\n                \"align\":
+        \"\",\n                \"header\": false,\n                \"id\": \"\",\n                \"children\":
+        []\n              }\n            ]\n          },\n          {\n            \"node_type\":
+        \"list_item\",\n            \"text\": \"Notebook accumulation creates confusion\",\n            \"level\":
+        0,\n            \"language\": \"\",\n            \"url\": \"\",\n            \"alt\":
+        \"\",\n            \"title\": \"\",\n            \"ordered\": false,\n            \"checked\":
+        false,\n            \"align\": \"\",\n            \"header\": false,\n            \"id\":
+        \"\",\n            \"children\": []\n          },\n          {\n            \"node_type\":
+        \"list_item\",\n            \"text\": \"Repeated data preparation wastes time\",\n            \"level\":
+        0,\n            \"language\": \"\",\n            \"url\": \"\",\n            \"alt\":
+        \"\",\n            \"title\": \"\",\n            \"ordered\": false,\n            \"checked\":
+        false,\n            \"align\": \"\",\n            \"header\": false,\n            \"id\":
+        \"\",\n            \"children\": []\n          },\n          {\n            \"node_type\":
+        \"list_item\",\n            \"text\": \"Irreproducibility blocks collaboration\",\n            \"level\":
+        0,\n            \"language\": \"\",\n            \"url\": \"\",\n            \"alt\":
+        \"\",\n            \"title\": \"\",\n            \"ordered\": false,\n            \"checked\":
+        false,\n            \"align\": \"\",\n            \"header\": false,\n            \"id\":
+        \"\",\n            \"children\": []\n          },\n          {\n            \"node_type\":
+        \"list_item\",\n            \"text\": \"Slow deployments delay production\",\n            \"level\":
+        0,\n            \"language\": \"\",\n            \"url\": \"\",\n            \"alt\":
+        \"\",\n            \"title\": \"\",\n            \"ordered\": false,\n            \"checked\":
+        false,\n            \"align\": \"\",\n            \"header\": false,\n            \"id\":
+        \"\",\n            \"children\": []\n          },\n          {\n            \"node_type\":
+        \"list_item\",\n            \"text\": \"Lack of team sharing silos knowledge\",\n            \"level\":
+        0,\n            \"language\": \"\",\n            \"url\": \"\",\n            \"alt\":
+        \"\",\n            \"title\": \"\",\n            \"ordered\": false,\n            \"checked\":
+        false,\n            \"align\": \"\",\n            \"header\": false,\n            \"id\":
+        \"\",\n            \"children\": []\n          }\n        ]\n      },\n      {\n        \"node_type\":
+        \"heading\",\n        \"text\": \"Architecture Components\",\n        \"level\":
+        2,\n        \"language\": \"\",\n        \"url\": \"\",\n        \"alt\":
+        \"\",\n        \"title\": \"\",\n        \"ordered\": false,\n        \"checked\":
+        false,\n        \"align\": \"\",\n        \"header\": false,\n        \"id\":
+        \"\",\n        \"children\": []\n      },\n      {\n        \"node_type\":
+        \"paragraph\",\n        \"text\": \"\",\n        \"level\": 0,\n        \"language\":
+        \"\",\n        \"url\": \"\",\n        \"alt\": \"\",\n        \"title\":
+        \"\",\n        \"ordered\": false,\n        \"checked\": false,\n        \"align\":
+        \"\",\n        \"header\": false,\n        \"id\": \"\",\n        \"children\":
+        [\n          {\n            \"node_type\": \"text\",\n            \"text\":
+        \"Tangle uses a \",\n            \"level\": 0,\n            \"language\":
+        \"\",\n            \"url\": \"\",\n            \"alt\": \"\",\n            \"title\":
+        \"\",\n            \"ordered\": false,\n            \"checked\": false,\n            \"align\":
+        \"\",\n            \"header\": false,\n            \"id\": \"\",\n            \"children\":
+        []\n          },\n          {\n            \"node_type\": \"code\",\n            \"text\":
+        \"component\",\n            \"level\": 0,\n            \"language\": \"\",\n            \"url\":
+        \"\",\n            \"alt\": \"\",\n            \"title\": \"\",\n            \"ordered\":
+        false,\n            \"checked\": false,\n            \"align\": \"\",\n            \"header\":
+        false,\n            \"id\": \"\",\n            \"children\": []\n          },\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \"-based architecture:\",\n            \"level\":
+        0,\n            \"language\": \"\",\n            \"url\": \"\",\n            \"alt\":
+        \"\",\n            \"title\": \"\",\n            \"ordered\": false,\n            \"checked\":
+        false,\n            \"align\": \"\",\n            \"header\": false,\n            \"id\":
+        \"\",\n            \"children\": []\n          }\n        ]\n      },\n      {\n        \"node_type\":
+        \"heading\",\n        \"text\": \"Components\",\n        \"level\": 3,\n        \"language\":
+        \"\",\n        \"url\": \"\",\n        \"alt\": \"\",\n        \"title\":
+        \"\",\n        \"ordered\": false,\n        \"checked\": false,\n        \"align\":
+        \"\",\n        \"header\": false,\n        \"id\": \"\",\n        \"children\":
+        []\n      },\n      {\n        \"node_type\": \"paragraph\",\n        \"text\":
+        \"Reusable YAML-based units that function like pure functions:\",\n        \"level\":
+        0,\n        \"language\": \"\",\n        \"url\": \"\",\n        \"alt\":
+        \"\",\n        \"title\": \"\",\n        \"ordered\": false,\n        \"checked\":
+        false,\n        \"align\": \"\",\n        \"header\": false,\n        \"id\":
+        \"\",\n        \"children\": []\n      },\n      {\n        \"node_type\":
+        \"code_block\",\n        \"text\": \"name: train-model\\ninputs:\\n  - name:
+        dataset\\n    type: path\\n  - name: epochs\\n    type: int\\noutputs:\\n  -
+        name: model\\n    type: path\",\n        \"level\": 0,\n        \"language\":
+        \"yaml\",\n        \"url\": \"\",\n        \"alt\": \"\",\n        \"title\":
+        \"\",\n        \"ordered\": false,\n        \"checked\": false,\n        \"align\":
+        \"\",\n        \"header\": false,\n        \"id\": \"\",\n        \"children\":
+        []\n      },\n      {\n        \"node_type\": \"heading\",\n        \"text\":
+        \"Execution Example\",\n        \"level\": 3,\n        \"language\": \"\",\n        \"url\":
+        \"\",\n        \"alt\": \"\",\n        \"title\": \"\",\n        \"ordered\":
+        false,\n        \"checked\": false,\n        \"align\": \"\",\n        \"header\":
+        false,\n        \"id\": \"\",\n        \"children\": []\n      },\n      {\n        \"node_type\":
+        \"code_block\",\n        \"text\": \"from tangle import Pipeline\\n\\npipeline
+        = Pipeline.from_yaml(\\\"training.yaml\\\")\\nresult = pipeline.run(\\n    dataset=\\\"./data/train.csv\\\",\\n    epochs=100\\n)\\nprint(f\\\"Model
+        saved: {result.model}\\\")\",\n        \"level\": 0,\n        \"language\":
+        \"python\",\n        \"url\": \"\",\n        \"alt\": \"\",\n        \"title\":
+        \"\",\n        \"ordered\": false,\n        \"checked\": false,\n        \"align\":
+        \"\",\n        \"header\": false,\n        \"id\": \"\",\n        \"children\":
+        []\n      },\n      {\n        \"node_type\": \"heading\",\n        \"text\":
+        \"Key Features\",\n        \"level\": 2,\n        \"language\": \"\",\n        \"url\":
+        \"\",\n        \"alt\": \"\",\n        \"title\": \"\",\n        \"ordered\":
+        false,\n        \"checked\": false,\n        \"align\": \"\",\n        \"header\":
+        false,\n        \"id\": \"\",\n        \"children\": []\n      },\n      {\n        \"node_type\":
+        \"list\",\n        \"text\": \"\",\n        \"level\": 0,\n        \"language\":
+        \"\",\n        \"url\": \"\",\n        \"alt\": \"\",\n        \"title\":
+        \"\",\n        \"ordered\": true,\n        \"checked\": false,\n        \"align\":
+        \"\",\n        \"header\": false,\n        \"id\": \"\",\n        \"children\":
+        [\n          {\n            \"node_type\": \"list_item\",\n            \"text\":
+        \"\",\n            \"level\": 0,\n            \"language\": \"\",\n            \"url\":
+        \"\",\n            \"alt\": \"\",\n            \"title\": \"\",\n            \"ordered\":
+        false,\n            \"checked\": false,\n            \"align\": \"\",\n            \"header\":
+        false,\n            \"id\": \"\",\n            \"children\": [\n              {\n                \"node_type\":
+        \"bold\",\n                \"text\": \"Content-based caching\",\n                \"level\":
+        0,\n                \"language\": \"\",\n                \"url\": \"\",\n                \"alt\":
+        \"\",\n                \"title\": \"\",\n                \"ordered\": false,\n                \"checked\":
+        false,\n                \"align\": \"\",\n                \"header\": false,\n                \"id\":
+        \"\",\n                \"children\": []\n              },\n              {\n                \"node_type\":
+        \"text\",\n                \"text\": \": Reuses computations across team runs\",\n                \"level\":
+        0,\n                \"language\": \"\",\n                \"url\": \"\",\n                \"alt\":
+        \"\",\n                \"title\": \"\",\n                \"ordered\": false,\n                \"checked\":
+        false,\n                \"align\": \"\",\n                \"header\": false,\n                \"id\":
+        \"\",\n                \"children\": []\n              }\n            ]\n          },\n          {\n            \"node_type\":
+        \"list_item\",\n            \"text\": \"\",\n            \"level\": 0,\n            \"language\":
+        \"\",\n            \"url\": \"\",\n            \"alt\": \"\",\n            \"title\":
+        \"\",\n            \"ordered\": false,\n            \"checked\": false,\n            \"align\":
+        \"\",\n            \"header\": false,\n            \"id\": \"\",\n            \"children\":
+        [\n              {\n                \"node_type\": \"bold\",\n                \"text\":
+        \"Language-neutral\",\n                \"level\": 0,\n                \"language\":
+        \"\",\n                \"url\": \"\",\n                \"alt\": \"\",\n                \"title\":
+        \"\",\n                \"ordered\": false,\n                \"checked\": false,\n                \"align\":
+        \"\",\n                \"header\": false,\n                \"id\": \"\",\n                \"children\":
+        []\n              },\n              {\n                \"node_type\": \"text\",\n                \"text\":
+        \": Supports Python, Shell, JavaScript, Rust, Go, and more\",\n                \"level\":
+        0,\n                \"language\": \"\",\n                \"url\": \"\",\n                \"alt\":
+        \"\",\n                \"title\": \"\",\n                \"ordered\": false,\n                \"checked\":
+        false,\n                \"align\": \"\",\n                \"header\": false,\n                \"id\":
+        \"\",\n                \"children\": []\n              }\n            ]\n          },\n          {\n            \"node_type\":
+        \"list_item\",\n            \"text\": \"\",\n            \"level\": 0,\n            \"language\":
+        \"\",\n            \"url\": \"\",\n            \"alt\": \"\",\n            \"title\":
+        \"\",\n            \"ordered\": false,\n            \"checked\": false,\n            \"align\":
+        \"\",\n            \"header\": false,\n            \"id\": \"\",\n            \"children\":
+        [\n              {\n                \"node_type\": \"bold\",\n                \"text\":
+        \"Visual editor\",\n                \"level\": 0,\n                \"language\":
+        \"\",\n                \"url\": \"\",\n                \"alt\": \"\",\n                \"title\":
+        \"\",\n                \"ordered\": false,\n                \"checked\": false,\n                \"align\":
+        \"\",\n                \"header\": false,\n                \"id\": \"\",\n                \"children\":
+        []\n              },\n              {\n                \"node_type\": \"text\",\n                \"text\":
+        \": Drag-and-drop DAG interface\",\n                \"level\": 0,\n                \"language\":
+        \"\",\n                \"url\": \"\",\n                \"alt\": \"\",\n                \"title\":
+        \"\",\n                \"ordered\": false,\n                \"checked\": false,\n                \"align\":
+        \"\",\n                \"header\": false,\n                \"id\": \"\",\n                \"children\":"}],"stop_reason":"max_tokens","stop_sequence":null,"usage":{"input_tokens":1490,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":4096,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 12:21:46 GMT
+recorded_with: VCR 6.3.1

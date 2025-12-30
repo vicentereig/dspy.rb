@@ -5,6 +5,9 @@ require 'dry-configurable'
 require 'dry/logger'
 require 'securerandom'
 
+# Extensions to core classes (must be loaded early)
+require_relative 'dspy/ext/struct_descriptions'
+
 require_relative 'dspy/version'
 require_relative 'dspy/errors'
 require_relative 'dspy/type_serializer'

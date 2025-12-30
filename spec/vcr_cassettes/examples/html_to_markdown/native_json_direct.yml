@@ -1,0 +1,178 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BT2mcs7ZjmVyADvrtB84K3ppU784AAEBAAAnIQEAABanAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1767096022686.29,"message":"trace_id=\"e4107a9f-8b43-4f92-9dd6-2fe28f020b2c\"
+        input_tokens=1556 output_tokens=1664 total_tokens=3220 gen_ai.system=\"anthropic\"
+        gen_ai.request.model=\"claude-haiku-4-5-20251001\" dspy.signature=\"HtmlToMarkdown::ParseHtmlToAst\"
+        module_path=[{id: \"f54f3079-a33e-4e7d-a35a-0fd070f75285\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"f54f3079-a33e-4e7d-a35a-0fd070f75285\", class:
+        \"DSPy::Predict\", label: nil} module_leaf={id: \"f54f3079-a33e-4e7d-a35a-0fd070f75285\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"f54f3079-a33e-4e7d-a35a-0fd070f75285\",
+        depth: 1} event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BT2mcs7ZjmVyADvrtB84K3ppU784AAEBAAAnIQEAABanAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Tue, 30 Dec 2025 12:00:23 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-nyc-kteb1890042-NYC
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 30 Dec 2025 12:00:22 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"<article>\\n  <h1>Test Article</h1>\\n  <p>This
+        has <strong>bold</strong> and <em>italic</em> text.</p>\\n  <ul>\\n    <li>Item
+        one</li>\\n    <li>Item two</li>\\n  </ul>\\n</article>\\n\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"markdown":{"type":"string"}},"required":["markdown"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"html\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Raw HTML content to convert to Markdown\"\n    }\n  },\n  \"required\":
+        [\n    \"html\"\n  ]\n}\n```\n\nYour objective is: Convert HTML content directly
+        to Markdown string format.\n\nApply standard Markdown conversions:\n- Headers:
+        <h1> -> # , <h2> -> ## , etc.\n- Bold: <strong> or <b> -> **text**\n- Italic:
+        <em> or <i> -> *text*\n- Inline code: <code> -> `code`\n- Code blocks: <pre><code
+        class=\"language-X\"> -> ```X\\ncode\\n```\n- Links: <a href=\"url\">text</a>
+        -> [text](url)\n- Images: <img src=\"url\" alt=\"text\"> -> ![text](url)\n-
+        Unordered lists: <ul><li> -> - item\n- Ordered lists: <ol><li> -> 1. item\n-
+        Blockquotes: <blockquote> -> > text\n- Horizontal rules: <hr> -> ---\n- Strikethrough:
+        <del> or <s> -> ~~text~~\n\nPreserve:\n- Text content exactly as written\n-
+        Paragraph breaks between block elements\n- Proper nesting of formatting (bold
+        within italic, etc.)\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1720'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 12:00:23 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T12:00:23Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T12:00:23Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T12:00:23Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '539000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T12:00:23Z'
+      Request-Id:
+      - req_011CWcqNV1vo8YUjJkxdo6C8
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '677'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b616060f89a49c1-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01GesGyQHEobdBp53CoS8Fou","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_012Wse15Ra3ptWqQWCj5uTrG","name":"json_output","input":{"markdown":"#
+        Test Article\n\nThis has **bold** and *italic* text.\n\n- Item one\n- Item
+        two"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":1112,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":55,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 12:00:23 GMT
+recorded_with: VCR 6.3.1

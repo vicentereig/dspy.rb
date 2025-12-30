@@ -12,10 +12,33 @@ module DSPy
       extend T::Sig
       extend T::Helpers
 
+      # Result type that includes both schema and any accumulated definitions
+      class SchemaResult < T::Struct
+        const :schema, T::Hash[Symbol, T.untyped]
+        const :definitions, T::Hash[String, T::Hash[Symbol, T.untyped]], default: {}
+      end
+
+      # Convert a Sorbet type to JSON Schema format with definitions tracking
+      # Returns a SchemaResult with the schema and any $defs needed
+      sig { params(type: T.untyped, visited: T.nilable(T::Set[T.untyped]), definitions: T.nilable(T::Hash[String, T::Hash[Symbol, T.untyped]])).returns(SchemaResult) }
+      def self.type_to_json_schema_with_defs(type, visited = nil, definitions = nil)
+        visited ||= Set.new
+        definitions ||= {}
+        schema = type_to_json_schema_internal(type, visited, definitions)
+        SchemaResult.new(schema: schema, definitions: definitions)
+      end
+
       # Convert a Sorbet type to JSON Schema format
+      # For backward compatibility, this method returns just the schema hash
       sig { params(type: T.untyped, visited: T.nilable(T::Set[T.untyped])).returns(T::Hash[Symbol, T.untyped]) }
       def self.type_to_json_schema(type, visited = nil)
         visited ||= Set.new
+        type_to_json_schema_internal(type, visited, {})
+      end
+
+      # Internal implementation that tracks definitions
+      sig { params(type: T.untyped, visited: T::Set[T.untyped], definitions: T::Hash[String, T::Hash[Symbol, T.untyped]]).returns(T::Hash[Symbol, T.untyped]) }
+      def self.type_to_json_schema_internal(type, visited, definitions)
         
         # Handle T::Boolean type alias first
         if type == T::Boolean
@@ -24,7 +47,7 @@ module DSPy
 
         # Handle type aliases by resolving to their underlying type
         if type.is_a?(T::Private::Types::TypeAlias)
-          return self.type_to_json_schema(type.aliased_type, visited)
+          return type_to_json_schema_internal(type.aliased_type, visited, definitions)
         end
 
         # Handle raw class types first
@@ -54,12 +77,13 @@ module DSPy
             # Check for recursion
             if visited.include?(type)
               # Return a reference to avoid infinite recursion
+              # Use #/$defs/ format for OpenAI/Gemini compatibility
+              simple_name = type.name.split('::').last
               {
-                "$ref" => "#/definitions/#{type.name.split('::').last}",
-                description: "Recursive reference to #{type.name}"
+                "$ref" => "#/$defs/#{simple_name}"
               }
             else
-              self.generate_struct_schema(type, visited)
+              generate_struct_schema_internal(type, visited, definitions)
             end
           else
             { type: "string" }  # Default fallback
@@ -93,12 +117,13 @@ module DSPy
             elsif type.raw_type < T::Struct
               # Handle custom T::Struct classes
               if visited.include?(type.raw_type)
+                # Use #/$defs/ format for OpenAI/Gemini compatibility
+                simple_name = type.raw_type.name.split('::').last
                 {
-                  "$ref" => "#/definitions/#{type.raw_type.name.split('::').last}",
-                  description: "Recursive reference to #{type.raw_type.name}"
+                  "$ref" => "#/$defs/#{simple_name}"
                 }
               else
-                generate_struct_schema(type.raw_type, visited)
+                generate_struct_schema_internal(type.raw_type, visited, definitions)
               end
             else
               { type: "string" }  # Default fallback
@@ -108,13 +133,13 @@ module DSPy
           # Handle arrays properly with nested item type
           {
             type: "array",
-            items: self.type_to_json_schema(type.type, visited)
+            items: type_to_json_schema_internal(type.type, visited, definitions)
           }
         elsif type.is_a?(T::Types::TypedHash)
           # Handle hashes as objects with additionalProperties
           # TypedHash has keys and values methods to access its key and value types
           # Note: propertyNames is NOT supported by OpenAI structured outputs, so we omit it
-          value_schema = self.type_to_json_schema(type.values, visited)
+          value_schema = type_to_json_schema_internal(type.values, visited, definitions)
           key_type_desc = type.keys.respond_to?(:raw_type) ? type.keys.raw_type.to_s : "string"
           value_type_desc = value_schema[:description] || value_schema[:type].to_s
 
@@ -129,9 +154,9 @@ module DSPy
           # Handle fixed hashes (from type aliases like { "key" => Type })
           properties = {}
           required = []
-          
+
           type.types.each do |key, value_type|
-            properties[key] = self.type_to_json_schema(value_type, visited)
+            properties[key] = type_to_json_schema_internal(value_type, visited, definitions)
             required << key
           end
           
@@ -155,9 +180,9 @@ module DSPy
               !(t.respond_to?(:raw_type) && t.raw_type == NilClass) &&
               !(t.respond_to?(:name) && t.name == "NilClass")
             end
-            
+
             if non_nil_type
-              base_schema = self.type_to_json_schema(non_nil_type, visited)
+              base_schema = type_to_json_schema_internal(non_nil_type, visited, definitions)
               if base_schema[:type].is_a?(String)
                 # Convert single type to array with null
                 { type: [base_schema[:type], "null"] }.merge(base_schema.except(:type))
@@ -173,13 +198,13 @@ module DSPy
             # Generate oneOf schema for all types
             if type.respond_to?(:types) && type.types.length > 1
               {
-                oneOf: type.types.map { |t| self.type_to_json_schema(t, visited) },
+                oneOf: type.types.map { |t| type_to_json_schema_internal(t, visited, definitions) },
                 description: "Union of multiple types"
               }
             else
               # Single type or fallback
               first_type = type.respond_to?(:types) ? type.types.first : type
-              self.type_to_json_schema(first_type, visited)
+              type_to_json_schema_internal(first_type, visited, definitions)
             end
           end
         elsif type.is_a?(T::Types::Union)
@@ -200,7 +225,7 @@ module DSPy
           
           if non_nil_types.size == 1 && is_nilable
             # This is T.nilable(SomeType) - generate proper schema with null allowed
-            base_schema = self.type_to_json_schema(non_nil_types.first, visited)
+            base_schema = type_to_json_schema_internal(non_nil_types.first, visited, definitions)
             if base_schema[:type].is_a?(String)
               # Convert single type to array with null
               { type: [base_schema[:type], "null"] }.merge(base_schema.except(:type))
@@ -210,11 +235,11 @@ module DSPy
             end
           elsif non_nil_types.size == 1
             # Non-nilable single type union (shouldn't happen in practice)
-            self.type_to_json_schema(non_nil_types.first, visited)
+            type_to_json_schema_internal(non_nil_types.first, visited, definitions)
           elsif non_nil_types.size > 1
             # Handle complex unions with oneOf for better JSON schema compliance
             base_schema = {
-              oneOf: non_nil_types.map { |t| self.type_to_json_schema(t, visited) },
+              oneOf: non_nil_types.map { |t| type_to_json_schema_internal(t, visited, definitions) },
               description: "Union of multiple types"
             }
             if is_nilable
@@ -237,11 +262,30 @@ module DSPy
       end
 
       # Generate JSON schema for custom T::Struct classes
+      # For backward compatibility, this returns just the schema hash
       sig { params(struct_class: T.class_of(T::Struct), visited: T.nilable(T::Set[T.untyped])).returns(T::Hash[Symbol, T.untyped]) }
       def self.generate_struct_schema(struct_class, visited = nil)
         visited ||= Set.new
-        
+        generate_struct_schema_internal(struct_class, visited, {})
+      end
+
+      # Generate JSON schema with $defs tracking
+      # Returns a SchemaResult with schema and accumulated definitions
+      sig { params(struct_class: T.class_of(T::Struct), visited: T.nilable(T::Set[T.untyped]), definitions: T.nilable(T::Hash[String, T::Hash[Symbol, T.untyped]])).returns(SchemaResult) }
+      def self.generate_struct_schema_with_defs(struct_class, visited = nil, definitions = nil)
+        visited ||= Set.new
+        definitions ||= {}
+        schema = generate_struct_schema_internal(struct_class, visited, definitions)
+        SchemaResult.new(schema: schema, definitions: definitions)
+      end
+
+      # Internal implementation that tracks definitions for $defs
+      sig { params(struct_class: T.class_of(T::Struct), visited: T::Set[T.untyped], definitions: T::Hash[String, T::Hash[Symbol, T.untyped]]).returns(T::Hash[Symbol, T.untyped]) }
+      def self.generate_struct_schema_internal(struct_class, visited, definitions)
         return { type: "string", description: "Struct (schema introspection not available)" } unless struct_class.respond_to?(:props)
+
+        struct_name = struct_class.name || "Struct#{format('%x', struct_class.object_id)}"
+        simple_name = struct_name.split('::').last || struct_name
 
         # Add this struct to visited set to detect recursion
         visited.add(struct_class)
@@ -255,9 +299,6 @@ module DSPy
                                        "DSPy uses _type for automatic type detection in union types."
         end
 
-        struct_name = struct_class.name || "Struct#{format('%x', struct_class.object_id)}"
-        simple_name = struct_name.split('::').last || struct_name
-
         # Add automatic _type field for type detection
         properties[:_type] = {
           type: "string",
@@ -265,10 +306,20 @@ module DSPy
         }
         required << "_type"
 
+        # Get field descriptions if the struct supports them (via DSPy::Ext::StructDescriptions)
+        field_descs = struct_class.respond_to?(:field_descriptions) ? struct_class.field_descriptions : {}
+
         struct_class.props.each do |prop_name, prop_info|
           prop_type = prop_info[:type_object] || prop_info[:type]
-          properties[prop_name] = self.type_to_json_schema(prop_type, visited)
-          
+          prop_schema = type_to_json_schema_internal(prop_type, visited, definitions)
+
+          # Add field description if available
+          if field_descs[prop_name]
+            prop_schema[:description] = field_descs[prop_name]
+          end
+
+          properties[prop_name] = prop_schema
+
           # A field is required if it's not fully optional
           # fully_optional is true for nilable prop fields
           # immutable const fields are required unless nilable
@@ -280,12 +331,18 @@ module DSPy
         # Remove this struct from visited set after processing
         visited.delete(struct_class)
 
-        {
+        schema = {
           type: "object",
           properties: properties,
           required: required,
           description: "#{struct_name} struct"
         }
+
+        # Add this struct's schema to definitions for $defs
+        # This allows recursive references to be resolved
+        definitions[simple_name] = schema
+
+        schema
       end
 
       private

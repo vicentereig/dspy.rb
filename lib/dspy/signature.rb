@@ -174,6 +174,35 @@ module DSPy
         }
       end
 
+      # Returns output JSON schema with accumulated $defs for recursive types
+      # This is needed for providers like OpenAI and Gemini that require $defs at the root
+      sig { returns(DSPy::TypeSystem::SorbetJsonSchema::SchemaResult) }
+      def output_json_schema_with_defs
+        properties = {}
+        required = []
+        all_definitions = {}
+
+        @output_field_descriptors&.each do |name, descriptor|
+          result = DSPy::TypeSystem::SorbetJsonSchema.type_to_json_schema_with_defs(descriptor.type, nil, all_definitions)
+          schema = result.schema
+          schema[:description] = descriptor.description if descriptor.description
+          properties[name] = schema
+          required << name.to_s unless descriptor.has_default
+        end
+
+        final_schema = {
+          "$schema": "http://json-schema.org/draft-06/schema#",
+          type: "object",
+          properties: properties,
+          required: required
+        }
+
+        DSPy::TypeSystem::SorbetJsonSchema::SchemaResult.new(
+          schema: final_schema,
+          definitions: all_definitions
+        )
+      end
+
       sig { returns(T.nilable(T.class_of(T::Struct))) }
       def output_schema
         @output_struct_class
