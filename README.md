@@ -41,9 +41,10 @@ That's it. No prompt templates. No JSON parsing. No prayer-based error handling.
 ```ruby
 # Gemfile
 gem 'dspy'
-gem 'dspy-openai'  # For OpenAI, OpenRouter, or Ollama
-# gem 'dspy-anthropic'  # For Claude
-# gem 'dspy-gemini'     # For Gemini
+gem 'dspy-openai'     # For OpenAI, OpenRouter, or Ollama
+# gem 'dspy-anthropic' # For Claude
+# gem 'dspy-gemini'    # For Gemini
+# gem 'dspy-ruby_llm'  # For 12+ providers via RubyLLM
 ```
 
 ```bash
