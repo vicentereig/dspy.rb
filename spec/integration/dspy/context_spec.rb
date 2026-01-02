@@ -39,6 +39,21 @@ RSpec.describe DSPy::Context do
       # Different threads have different root fibers, so should have different contexts
       expect(context1[:trace_id]).not_to eq(context2[:trace_id])
     end
+
+    it 'isolates fiber contexts while preserving trace_id' do
+      described_class.clear!
+      main_context = described_class.current
+      fiber_context = nil
+
+      Fiber.new do
+        fiber_context = described_class.current
+        fiber_context[:span_stack] << 'fiber-span'
+      end.resume
+
+      expect(fiber_context[:trace_id]).to eq(main_context[:trace_id])
+      expect(fiber_context.object_id).not_to eq(main_context.object_id)
+      expect(main_context[:span_stack]).to eq([])
+    end
   end
 
   describe '.with_span' do

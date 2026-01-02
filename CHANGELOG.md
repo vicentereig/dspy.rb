@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.34.2] - 2026-01-02
+
+### Fixed
+- **Async context isolation** - Fiber-local DSPy::Context now avoids shared span/module stacks while preserving trace lineage.
+- **Raw chat normalization** - Accept symbol roles and string-keyed hashes in `LM#raw_chat` message arrays.
+
+### Changed
+- Removed unused LM event consolidation helpers.
+
 ## [0.34.1] - 2025-12-30
 
 ### Fixed

@@ -179,6 +179,25 @@ RSpec.describe DSPy::LM do
         end
         expect(result).to eq('This is a raw response without JSON')
       end
+
+      it 'accepts symbol roles and string keys' do
+        messages = [
+          { role: :system, content: 'You are a helpful assistant' },
+          { 'role' => :user, 'content' => 'What is 2+2?' }
+        ]
+
+        allow(mock_adapter).to receive(:chat).and_call_original
+
+        lm.raw_chat(messages)
+
+        expect(mock_adapter).to have_received(:chat) do |**args|
+          expect(args[:messages]).to eq([
+            { role: 'system', content: 'You are a helpful assistant' },
+            { role: 'user', content: 'What is 2+2?' }
+          ])
+          expect(args[:signature]).to be_nil
+        end
+      end
     end
 
     context 'with DSL builder' do
