@@ -4,7 +4,7 @@ Date: 2026-01-04
 
 ## Status
 
-Proposed
+Implemented (Phases 0–6 complete)
 
 ## Context
 
@@ -113,6 +113,18 @@ Goal: Reduce maintenance burden by removing/isolating unused paths.
 Plan:
 1. Remove or deprecate unused fields/methods (`@subscription_counter`, `Prompt#to_messages`, `LM#validate_messages!`, etc.) after verifying no external usage.
 2. Keep public methods only if needed by external API or docs; otherwise delete with a changelog note.
+
+## Implementation Status (Completed)
+
+As of 2026-01-04, the plan has been executed in full:
+
+- **Phase 0**: Baseline specs added for subscription lifecycle, fiber correlation, and TOON structured-output routing; edge cases and compat matrix documented in `adr/ARCHITECTURE.md`.
+- **Phase 1**: Module subscriptions now use `WeakRef` and auto-unsubscribe on dead references; explicit cleanup preserved.
+- **Phase 2**: Request correlation moved into fiber-local `DSPy::Context`, eliminating cross-fiber contamination.
+- **Phase 3A/3B**: Structured outputs routing respects `data_format`; TOON skips JSON-only structured prompts.
+- **Phase 4**: Prompt formats resolved at construction time with explicit `with_schema_format` / `with_data_format` helpers; Predict re-syncs on LM configure.
+- **Phase 5**: `dup_for_thread` added; evaluators/optimizers clone per thread; thread-safety guidance documented.
+- **Phase 6**: Removed unused helpers (`Prompt#to_messages`, `LM#validate_messages!`, legacy subscription counter/state) with changelog entry.
 
 ## Sequencing Rationale
 
