@@ -198,6 +198,35 @@ Key features:
 - TTL support for cache expiration
 - Namespace isolation for multi-tenant deployments
 
+---
+
+## Current Edge Cases (Baseline Jan 4, 2026)
+
+As of January 4, 2026, the following behaviors are known and are addressed by the hardening plan:
+
+- Module-scoped event subscriptions are instance-bound and retained by the event registry; they are not auto-released on GC, so explicit `unsubscribe_module_events` is required for cleanup.
+- LLM request correlation uses `Thread.current` for `request_id` and timing; concurrent fibers on the same thread can overwrite or clear metadata.
+- Structured outputs selection is coupled to adapter class names/instance variables and ignores `data_format`, so TOON can be wrapped in JSON-only structured prompts.
+- Prompt rendering reads `DSPy.config.lm` at render time; changing global config can change prompts across threads.
+- Modules/predictors carry mutable state (`@last_input_values`, `@demos`, subscription queues, cached LMs) and are not safe to share across threads without cloning.
+
+## Hardening Phase Compatibility Matrix (Baseline Jan 4, 2026)
+
+Phase | Core (dspy) | Adapters | O11y | Evals/Optimization | Notes
+---|---|---|---|---|---
+0 | ✅ | — | — | — | Specs + docs only
+1 | ✅ | — | — | — | Subscription lifecycle cleanup
+2 | ✅ | — | ✅ | — | Fiber-aware request correlation in LM events
+3A | ✅ | ✅ | — | — | Adapter capability interface for structured outputs
+3B | ✅ | ✅ | — | — | Structured outputs routing + data_format alignment
+4 | ✅ | — | — | — | Deterministic prompt formats
+5 | ✅ | — | — | ✅ | Concurrency safety in evals/optimizers
+6 | ✅ | — | — | — | Dead code cleanup
+
+Adapters: `dspy-openai`, `dspy-gemini`, `dspy-anthropic`, `dspy-ruby_llm` (plus OpenRouter/Ollama adapters within `dspy-openai`).
+O11y: `dspy-o11y`, `dspy-o11y-langfuse`.
+Evals/Optimization: `dspy-evals`, `dspy-gepa`, `dspy-miprov2`.
+
 ### Registry System
 
 The registry manages:
