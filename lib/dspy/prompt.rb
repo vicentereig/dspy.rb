@@ -251,15 +251,6 @@ module DSPy
       sections.join("\n")
     end
 
-    # Generate messages for LM adapter
-    sig { params(input_values: T::Hash[Symbol, T.untyped]).returns(T::Array[T::Hash[Symbol, String]]) }
-    def to_messages(input_values)
-      [
-        { role: 'system', content: render_system_prompt },
-        { role: 'user', content: render_user_prompt(input_values) }
-      ]
-    end
-
     # Serialization for persistence and optimization
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def to_h

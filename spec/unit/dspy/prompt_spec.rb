@@ -278,36 +278,6 @@ RSpec.describe DSPy::Prompt do
     end
   end
 
-  describe '#to_messages' do
-    it 'returns system and user messages' do
-      prompt = DSPy::Prompt.new(
-        instruction: instruction,
-        input_schema: input_schema,
-        output_schema: output_schema
-      )
-      
-      input_values = { question: "What is 7 + 1?" }
-      messages = prompt.to_messages(input_values)
-      
-      expect(messages.length).to eq(2)
-      expect(messages[0][:role]).to eq('system')
-      expect(messages[1][:role]).to eq('user')
-    end
-
-    it 'includes input values in user message' do
-      prompt = DSPy::Prompt.new(
-        instruction: instruction,
-        input_schema: input_schema,
-        output_schema: output_schema
-      )
-      
-      input_values = { question: "What is 9 - 4?" }
-      messages = prompt.to_messages(input_values)
-      
-      expect(messages[1][:content]).to include("What is 9 - 4?")
-    end
-  end
-
   describe '.from_signature' do
     it 'creates prompt from signature class' do
       prompt = DSPy::Prompt.from_signature(MathQA)

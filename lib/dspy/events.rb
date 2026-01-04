@@ -11,7 +11,6 @@ module DSPy
   class EventRegistry
     def initialize
       @listeners = {}
-      @subscription_counter = 0
       @mutex = Mutex.new
     end
 

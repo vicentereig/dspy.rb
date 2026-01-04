@@ -172,9 +172,6 @@ module DSPy
       input_props = @signature_class.input_struct_class.props
       coerced_input_values = coerce_output_attributes(input_values, input_props)
       
-      # Store coerced input values for optimization
-      @last_input_values = coerced_input_values.clone
-      
       # Validate input with coerced values
       validate_input_struct(coerced_input_values)
       
@@ -198,7 +195,6 @@ module DSPy
 
     def reset_thread_state
       super
-      @last_input_values = nil
     end
 
     def build_prompt_from_signature

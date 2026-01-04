@@ -386,40 +386,6 @@ module DSPy
       end
     end
 
-    public
-
-    def validate_messages!(messages)
-      unless messages.is_a?(Array)
-        raise ArgumentError, "messages must be an array"
-      end
-      
-      messages.each_with_index do |message, index|
-        # Accept both Message objects and hash format for backward compatibility
-        if message.is_a?(Message)
-          # Already validated by type system
-          next
-        elsif message.is_a?(Hash) || message.respond_to?(:to_h)
-          data = message.is_a?(Hash) ? message : message.to_h
-          unless data.is_a?(Hash)
-            raise ArgumentError, "Message at index #{index} must be a Message object or hash with :role and :content"
-          end
-
-          normalized = data.transform_keys(&:to_sym)
-          unless normalized.key?(:role) && normalized.key?(:content)
-            raise ArgumentError, "Message at index #{index} must have :role and :content"
-          end
-
-          role = normalized[:role].to_s
-          valid_roles = %w[system user assistant]
-          unless valid_roles.include?(role)
-            raise ArgumentError, "Invalid role at index #{index}: #{normalized[:role]}. Must be one of: #{valid_roles.join(', ')}"
-          end
-        else
-          raise ArgumentError, "Message at index #{index} must be a Message object or hash with :role and :content"
-        end
-      end
-    end
-
     def execute_raw_chat(messages, &streaming_block)
       # Generate unique request ID for tracking
       request_id = SecureRandom.hex(8)

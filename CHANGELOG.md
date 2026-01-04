@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Removed unused `Prompt#to_messages`, `LM#validate_messages!`, and legacy subscription counter/state fields.
+
 ## [0.34.2] - 2026-01-02
 
 ### Fixed
