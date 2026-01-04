@@ -548,6 +548,34 @@ RSpec.describe DSPy::Prompt do
     end
   end
 
+  describe 'format helpers' do
+    it 'updates schema_format with with_schema_format' do
+      original = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema
+      )
+
+      updated = original.with_schema_format(:baml)
+
+      expect(updated.schema_format).to eq(:baml)
+      expect(updated.instruction).to eq(original.instruction)
+    end
+
+    it 'updates data_format with with_data_format' do
+      original = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema
+      )
+
+      updated = original.with_data_format(:toon)
+
+      expect(updated.data_format).to eq(:toon)
+      expect(updated.instruction).to eq(original.instruction)
+    end
+  end
+
   describe 'BAML schema rendering' do
     it 'renders BAML format in system prompt when schema_format is :baml' do
       prompt = DSPy::Prompt.new(

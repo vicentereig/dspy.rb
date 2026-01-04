@@ -26,24 +26,14 @@ module DSPy
     sig { returns(T.nilable(String)) }
     attr_reader :signature_class_name
 
-    # Returns the effective schema format
-    # Precedence: instance variable (if not :json default) > config.lm > :json
     sig { returns(Symbol) }
     def schema_format
-      # If @schema_format was explicitly set to something other than :json, respect it
-      return @schema_format if @schema_format && @schema_format != :json
-
-      # Otherwise, read from config if available
-      DSPy.config.lm&.schema_format || @schema_format || :json
+      @schema_format || :json
     end
 
     sig { returns(Symbol) }
     def data_format
-      return @data_format if @data_format && @data_format != :json
-
-      lm = DSPy.config.lm
-      lm_format = lm&.respond_to?(:data_format) ? lm.data_format : nil
-      lm_format || @data_format || :json
+      @data_format || :json
     end
 
     sig { returns(T.nilable(T.class_of(Signature))) }
@@ -56,20 +46,20 @@ module DSPy
         output_schema: T::Hash[Symbol, T.untyped],
         few_shot_examples: T::Array[FewShotExample],
         signature_class_name: T.nilable(String),
-        schema_format: Symbol,
+        schema_format: T.nilable(Symbol),
         signature_class: T.nilable(T.class_of(Signature)),
-        data_format: Symbol
+        data_format: T.nilable(Symbol)
       ).void
     end
-    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil, schema_format: :json, signature_class: nil, data_format: :json)
+    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil, schema_format: nil, signature_class: nil, data_format: nil)
       @instruction = instruction
       @few_shot_examples = few_shot_examples.freeze
       @input_schema = input_schema.freeze
       @output_schema = output_schema.freeze
       @signature_class_name = signature_class_name
-      @schema_format = schema_format
+      @schema_format = resolve_schema_format(schema_format)
       @signature_class = signature_class
-      @data_format = data_format
+      @data_format = resolve_data_format(data_format)
     end
 
     # Immutable update methods for optimization
@@ -105,6 +95,34 @@ module DSPy
     def add_examples(new_examples)
       combined_examples = @few_shot_examples + new_examples
       with_examples(combined_examples)
+    end
+
+    sig { params(new_schema_format: Symbol).returns(Prompt) }
+    def with_schema_format(new_schema_format)
+      self.class.new(
+        instruction: @instruction,
+        input_schema: @input_schema,
+        output_schema: @output_schema,
+        few_shot_examples: @few_shot_examples,
+        signature_class_name: @signature_class_name,
+        schema_format: new_schema_format,
+        signature_class: @signature_class,
+        data_format: @data_format
+      )
+    end
+
+    sig { params(new_data_format: Symbol).returns(Prompt) }
+    def with_data_format(new_data_format)
+      self.class.new(
+        instruction: @instruction,
+        input_schema: @input_schema,
+        output_schema: @output_schema,
+        few_shot_examples: @few_shot_examples,
+        signature_class_name: @signature_class_name,
+        schema_format: @schema_format,
+        signature_class: @signature_class,
+        data_format: new_data_format
+      )
     end
 
     # Core prompt rendering methods
@@ -280,10 +298,6 @@ module DSPy
       ).returns(Prompt)
     end
     def self.from_signature(signature_class, schema_format: nil, data_format: nil)
-      lm = DSPy.config.lm
-      schema_format ||= lm&.schema_format || :json
-      data_format ||= (lm&.respond_to?(:data_format) ? lm.data_format : nil) || :json
-
       new(
         instruction: signature_class.description || "Complete this task.",
         input_schema: signature_class.input_json_schema,
@@ -505,6 +519,21 @@ module DSPy
       base = field_name.to_s.gsub(/[^a-z0-9]+/i, '_').gsub(/_{2,}/, '_').sub(/^_+|_+$/, '')
       base = 'value' if base.empty?
       "example_#{base}"
+    end
+
+    def resolve_schema_format(schema_format)
+      return schema_format unless schema_format.nil?
+
+      lm = DSPy.respond_to?(:current_lm) ? DSPy.current_lm : DSPy.config.lm
+      lm&.schema_format || :json
+    end
+
+    def resolve_data_format(data_format)
+      return data_format unless data_format.nil?
+
+      lm = DSPy.respond_to?(:current_lm) ? DSPy.current_lm : DSPy.config.lm
+      lm_format = lm&.respond_to?(:data_format) ? lm.data_format : nil
+      lm_format || :json
     end
   end
 end

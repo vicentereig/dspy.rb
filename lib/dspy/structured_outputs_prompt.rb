@@ -16,12 +16,12 @@ module DSPy
         output_schema: T::Hash[Symbol, T.untyped],
         few_shot_examples: T::Array[T.untyped],
         signature_class_name: T.nilable(String),
-        schema_format: Symbol,
+        schema_format: T.nilable(Symbol),
         signature_class: T.nilable(T.class_of(Signature)),
-        data_format: Symbol
+        data_format: T.nilable(Symbol)
       ).void
     end
-    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil, schema_format: :json, signature_class: nil, data_format: :json)
+    def initialize(instruction:, input_schema:, output_schema:, few_shot_examples: [], signature_class_name: nil, schema_format: nil, signature_class: nil, data_format: nil)
       normalized_examples = few_shot_examples.map do |example|
         case example
         when FewShotExample

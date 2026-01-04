@@ -64,8 +64,7 @@ module DSPy
       super()
       @signature_class = signature_class
 
-      # Prompt will read schema_format from config automatically
-      @prompt = Prompt.from_signature(signature_class)
+      @prompt = build_prompt_from_signature
       @demos = nil
     end
 
@@ -146,6 +145,13 @@ module DSPy
       instance
     end
 
+    sig { override.params(block: T.proc.params(config: T.untyped).void).returns(T.self_type) }
+    def configure(&block)
+      super(&block)
+      sync_prompt_formats_from_lm(config.lm) if config.lm
+      self
+    end
+
     sig { override.returns(T::Array[[String, DSPy::Module]]) }
     def named_predictors
       [["self", self]]
@@ -189,6 +195,26 @@ module DSPy
     end
 
     private
+
+    def build_prompt_from_signature
+      lm_source = lm
+      schema_format = lm_source&.schema_format
+      data_format = lm_source&.respond_to?(:data_format) ? lm_source.data_format : nil
+
+      Prompt.from_signature(@signature_class, schema_format: schema_format, data_format: data_format)
+    end
+
+    def sync_prompt_formats_from_lm(lm_source)
+      return unless lm_source
+
+      schema_format = lm_source&.schema_format
+      data_format = lm_source&.respond_to?(:data_format) ? lm_source.data_format : nil
+
+      prompt = @prompt
+      prompt = prompt.with_schema_format(schema_format) if schema_format
+      prompt = prompt.with_data_format(data_format) if data_format
+      @prompt = prompt
+    end
 
     # Validates input using signature struct (assumes input is already coerced)
     sig { params(input_values: T::Hash[Symbol, T.untyped]).void }
