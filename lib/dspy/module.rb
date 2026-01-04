@@ -24,15 +24,20 @@ module DSPy
 
     DEFAULT_MODULE_SUBSCRIPTION_SCOPE = SubcriptionScope::Descendants
 
+    # Hook to wrap forward methods with instrumentation.
+    # Uses a Set-based guard (not boolean) to prevent re-wrapping when
+    # other hooks (like Callbacks) also use define_method.
     module ForwardOverrideHooks
       def method_added(method_name)
         super
 
         return unless method_name == :forward
         return if self == DSPy::Module
-        return if @_wrapping_forward
 
-        @_wrapping_forward = true
+        # Use Set-based guard - persists across hook invocations
+        @_forward_instrumented ||= Set.new
+        return if @_forward_instrumented.include?(object_id)
+        @_forward_instrumented << object_id
 
         original = instance_method(:forward)
         define_method(:forward) do |*args, **kwargs, &block|
@@ -40,8 +45,6 @@ module DSPy
             original.bind(self).call(*args, **kwargs, &block)
           end
         end
-      ensure
-        @_wrapping_forward = false
       end
     end
 
@@ -97,7 +100,8 @@ module DSPy
     create_after_callback :forward
     create_around_callback :forward
 
-    # The main forward method that users will call is generic and type parameterized
+    # The main forward method that users will call is generic and type parameterized.
+    # Instrumentation is handled by ForwardInstrumentation prepended module.
     sig do
       type_parameters(:I, :O)
         .params(
@@ -106,10 +110,8 @@ module DSPy
         .returns(T.type_parameter(:O))
     end
     def forward(**input_values)
-      instrument_forward_call([], input_values) do
-        result = forward_untyped(**input_values)
-        T.cast(result, T.type_parameter(:O))
-      end
+      result = forward_untyped(**input_values)
+      T.cast(result, T.type_parameter(:O))
     end
 
     # The implementation method that subclasses must override
