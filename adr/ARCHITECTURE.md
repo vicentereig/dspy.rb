@@ -227,6 +227,10 @@ Adapters: `dspy-openai`, `dspy-gemini`, `dspy-anthropic`, `dspy-ruby_llm` (plus 
 O11y: `dspy-o11y`, `dspy-o11y-langfuse`.
 Evals/Optimization: `dspy-evals`, `dspy-gepa`, `dspy-miprov2`.
 
+## Thread Safety Guidance
+
+DSPy modules are not thread-safe by default. Use `dup_for_thread` (or an equivalent fork/clone helper) when evaluating in parallel to avoid shared mutable state. Built-in evaluators and optimizers use per-thread clones for parallel execution.
+
 ### Registry System
 
 The registry manages:

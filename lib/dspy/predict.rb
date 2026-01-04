@@ -196,6 +196,11 @@ module DSPy
 
     private
 
+    def reset_thread_state
+      super
+      @last_input_values = nil
+    end
+
     def build_prompt_from_signature
       lm_source = lm
       schema_format = lm_source&.schema_format

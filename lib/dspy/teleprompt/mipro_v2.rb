@@ -1168,7 +1168,12 @@ module DSPy
 
         futures = chunks.map do |chunk|
           Concurrent::Promises.future_on(executor) do
-            evaluate_program(modified_program, chunk)
+            program_for_thread = if modified_program.respond_to?(:dup_for_thread)
+              modified_program.dup_for_thread
+            else
+              modified_program.dup
+            end
+            evaluate_program(program_for_thread, chunk)
           end
         end
 

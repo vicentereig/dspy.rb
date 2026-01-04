@@ -254,25 +254,7 @@ module DSPy
     # Evaluate program on a single example
     sig { params(example: T.untyped, trace: T.nilable(T.untyped)).returns(EvaluationResult) }
     def call(example, trace: nil)
-      run_callbacks(:before, :call, example: example)
-
-      DSPy::Context.with_span(
-        operation: 'evaluation.example',
-        'dspy.module' => 'Evaluator',
-        'evaluation.program' => @program.class.name,
-        'evaluation.has_metric' => !@metric.nil?
-      ) do
-        begin
-          perform_call(example, trace: trace)
-        rescue => e
-          build_error_result(example, e, trace: trace)
-        end
-      end.then do |result|
-        @last_example_result = result
-        emit_example_observation(example, result)
-        run_callbacks(:after, :call, example: example, result: result)
-        result
-      end
+      call_with_program(@program, example, trace: trace, track_state: true)
     end
 
     # Evaluate program on multiple examples
@@ -403,7 +385,8 @@ module DSPy
 
         futures = batch.map do |item|
           Concurrent::Promises.future_on(executor) do
-            [:ok, item[:index], safe_call(item[:example])]
+            program_for_thread = fork_program_for_thread
+            [:ok, item[:index], safe_call(item[:example], program: program_for_thread, track_state: false)]
           rescue => e
             [:error, item[:index], e]
           end
@@ -441,18 +424,18 @@ module DSPy
       results.compact
     end
 
-    def safe_call(example)
-      call(example)
+    def safe_call(example, program: @program, track_state: true)
+      call_with_program(program, example, track_state: track_state)
     rescue => e
       build_error_result(example, e)
     end
 
-    def perform_call(example, trace:)
+    def perform_call(example, trace:, program:)
       # Extract input from example - support both hash and object formats
       input_values = extract_input_values(example)
 
       # Run prediction
-      prediction = @program.call(**input_values)
+      prediction = program.call(**input_values)
 
       # Calculate metrics if provided
       metrics = {}
@@ -488,6 +471,34 @@ module DSPy
         metrics: metrics,
         passed: passed
       )
+    end
+
+    def call_with_program(program, example, trace: nil, track_state: true)
+      run_callbacks(:before, :call, example: example)
+
+      DSPy::Context.with_span(
+        operation: 'evaluation.example',
+        'dspy.module' => 'Evaluator',
+        'evaluation.program' => program.class.name,
+        'evaluation.has_metric' => !@metric.nil?
+      ) do
+        begin
+          perform_call(example, trace: trace, program: program)
+        rescue => e
+          build_error_result(example, e, trace: trace)
+        end
+      end.then do |result|
+        @last_example_result = result if track_state
+        emit_example_observation(example, result)
+        run_callbacks(:after, :call, example: example, result: result)
+        result
+      end
+    end
+
+    def fork_program_for_thread
+      return @program if @program.nil?
+      return @program.dup_for_thread if @program.respond_to?(:dup_for_thread)
+      @program.dup
     end
 
     def build_error_result(example, error, trace: nil)

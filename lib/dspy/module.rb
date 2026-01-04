@@ -326,7 +326,27 @@ module DSPy
       @module_subscriptions_registered = false
     end
 
+    sig { returns(T.self_type) }
+    def dup_for_thread
+      cloned = dup
+      cloned.instance_variable_set(:@module_subscription_ids, [])
+      cloned.instance_variable_set(:@module_subscriptions_registered, false)
+      cloned.instance_variable_set(:@module_scope_id, SecureRandom.uuid)
+      cloned.send(:reset_thread_state)
+      cloned
+    end
+
     private
+
+    def reset_thread_state
+      instance_variables.each do |ivar|
+        value = instance_variable_get(ivar)
+        case value
+        when Array, Hash, Set
+          instance_variable_set(ivar, value.dup)
+        end
+      end
+    end
 
     # Propagate LM configuration to child predictors recursively
     # Skips children that already have an explicit LM configured
