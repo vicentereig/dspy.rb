@@ -3,6 +3,7 @@
 require 'sorbet-runtime'
 require 'dry-configurable'
 require 'securerandom'
+require 'weakref'
 require_relative 'context'
 require_relative 'callbacks'
 require_relative 'type_serializer'
@@ -73,6 +74,35 @@ module DSPy
       end
 
       private
+
+      def build_subscription_callback(weakref, subscription_id_ref, spec)
+        scope = spec[:scope] || DEFAULT_MODULE_SUBSCRIPTION_SCOPE
+        handler = spec[:handler]
+        block = spec[:block]
+
+        ->(event_name, attributes) do
+          target = begin
+            weakref.__getobj__
+          rescue WeakRef::RefError
+            nil
+          end
+
+          unless target
+            subscription_id = subscription_id_ref[:id]
+            DSPy.events.unsubscribe(subscription_id) if subscription_id
+            DSPy.logger&.debug(event: 'module.subscription.auto_unsubscribe', subscription_id: subscription_id)
+            return
+          end
+
+          return unless target.send(:module_event_within_scope?, attributes, scope)
+
+          if handler
+            target.send(handler, event_name, attributes)
+          else
+            target.instance_exec(event_name, attributes, &block)
+          end
+        end
+      end
 
       def validate_subscription_scope!(scope)
         T.must(scope)
@@ -324,28 +354,15 @@ module DSPy
 
       @module_subscription_ids ||= []
       specs.each do |spec|
-        callback = build_subscription_callback(spec)
+        weakref = WeakRef.new(self)
+        subscription_id_ref = { id: nil }
+        callback = self.class.send(:build_subscription_callback, weakref, subscription_id_ref, spec)
         subscription_id = DSPy.events.subscribe(spec[:pattern], &callback)
+        subscription_id_ref[:id] = subscription_id
         @module_subscription_ids << subscription_id
       end
 
       @module_subscriptions_registered = true
-    end
-
-    def build_subscription_callback(spec)
-      scope = spec[:scope] || DEFAULT_MODULE_SUBSCRIPTION_SCOPE
-      handler = spec[:handler]
-      block = spec[:block]
-
-      proc do |event_name, attributes|
-        next unless module_event_within_scope?(attributes, scope)
-
-        if handler
-          send(handler, event_name, attributes)
-        else
-          instance_exec(event_name, attributes, &block)
-        end
-      end
     end
 
     def module_event_within_scope?(attributes, scope)

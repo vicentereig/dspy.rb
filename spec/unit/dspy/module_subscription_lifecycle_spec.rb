@@ -56,8 +56,6 @@ RSpec.describe 'Module subscription lifecycle' do
   end
 
   it 'auto-unsubscribes when the module is garbage collected' do
-    skip 'Phase 1: WeakRef auto-unsubscribe not implemented yet'
-
     listener = TestLifecycleListener.new
     listener.call
 
