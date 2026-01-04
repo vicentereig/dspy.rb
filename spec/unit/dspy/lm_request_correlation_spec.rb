@@ -28,8 +28,6 @@ RSpec.describe 'LM request correlation' do
   end
 
   it 'emits distinct request_id values for concurrent fibers' do
-    skip 'Phase 2: fiber-aware request correlation not implemented yet'
-
     adapter = FakeAdapter.new
     allow(DSPy::LM::AdapterFactory).to receive(:create).and_return(adapter)
 

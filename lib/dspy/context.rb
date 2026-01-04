@@ -31,6 +31,18 @@ module DSPy
         context
       end
 
+      def with_request(request_id, start_time)
+        previous_request_id = current[:request_id]
+        previous_start_time = current[:request_start_time]
+
+        current[:request_id] = request_id
+        current[:request_start_time] = start_time
+        yield
+      ensure
+        current[:request_id] = previous_request_id
+        current[:request_start_time] = previous_start_time
+      end
+
       def fork_context(parent_context)
         clone_context(parent_context)
       end
@@ -216,7 +228,9 @@ module DSPy
           fiber_id: Fiber.current.object_id,
           span_stack: [],
           otel_span_stack: [],
-          module_stack: []
+          module_stack: [],
+          request_id: nil,
+          request_start_time: nil
         }
       end
 
@@ -227,6 +241,8 @@ module DSPy
         cloned[:module_stack] = Array(context[:module_stack]).map { |entry| entry.dup }
         cloned[:thread_id] = Thread.current.object_id
         cloned[:fiber_id] = Fiber.current.object_id
+        cloned[:request_id] = context[:request_id]
+        cloned[:request_start_time] = context[:request_start_time]
         cloned
       end
 
