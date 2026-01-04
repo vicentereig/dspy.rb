@@ -146,7 +146,7 @@ module DSPy
 
       # Determine if structured outputs will be used and wrap prompt if so
       base_prompt = inference_module.prompt
-      prompt = if will_use_structured_outputs?(inference_module.signature_class)
+      prompt = if will_use_structured_outputs?(inference_module.signature_class, data_format: base_prompt.data_format)
         StructuredOutputsPrompt.new(**base_prompt.to_h)
       else
         base_prompt
@@ -171,8 +171,9 @@ module DSPy
       messages
     end
 
-    def will_use_structured_outputs?(signature_class)
+    def will_use_structured_outputs?(signature_class, data_format: nil)
       return false unless signature_class
+      return false if data_format == :toon
 
       adapter_class_name = adapter.class.name
 

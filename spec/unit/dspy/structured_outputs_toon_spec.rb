@@ -24,19 +24,19 @@ RSpec.describe 'Structured outputs routing with TOON data format' do
   end
 
   it 'avoids JSON-only structured prompts when data_format is :toon' do
-    skip 'Phase 3B: data_format routing for structured outputs not implemented yet'
+    fake_adapter_class = Class.new(DSPy::LM::Adapter) do
+      def self.name
+        'DSPy::OpenAI::LM::Adapters::OpenAIAdapter'
+      end
 
-    adapter = DSPy::OpenAI::LM::Adapters::OpenAIAdapter.new(
-      model: 'gpt-4o-mini',
-      api_key: 'test-key',
-      structured_outputs: true
-    )
+      def initialize
+        super(model: 'fake-model', api_key: 'fake-key')
+      end
+    end
+
+    adapter = fake_adapter_class.new
     allow(DSPy::LM::AdapterFactory).to receive(:create).and_return(adapter)
-    allow(DSPy::OpenAI::LM::SchemaConverter)
-      .to receive(:supports_structured_outputs?)
-      .and_return(true)
-
-    lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: 'test-key', data_format: :toon)
+    lm = DSPy::LM.new('openai/fake-model', api_key: 'fake-key', data_format: :toon)
     DSPy.configure { |c| c.lm = lm }
 
     predictor = DSPy::Predict.new(StructuredOutputsToonSignature)
