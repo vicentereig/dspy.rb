@@ -38,7 +38,90 @@ ANTHROPIC_API_KEY=your-anthropic-key
 ### Data, Evaluation, and Multimodal
 
 - **`sentiment-evaluation/`** — Minimal sentiment classifier with evaluation helpers; great starter for building your own metrics.
+- **`pdf_recursive_summarizer.rb`** — Structure-first PDF summarizer using the map-reduce pattern. See [PDF Summarizer](#pdf-summarizer) below.
 - **`multimodal/`** — Vision-language snippets (`image_analysis.rb`, `bounding_box_detection.rb`) that show how to send images through DSPy LMs.
+
+---
+
+## PDF Summarizer
+
+A structure-first approach to document summarization that's simpler and more predictable than agentic navigation.
+
+### Pipeline
+
+```
+Document + Query
+      │
+      ▼
+┌─────────────────┐
+│ DiscoverStructure │  ← 1 LLM call (ChainOfThought)
+│ (preview + query) │     Identifies sections with relevance scores
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────────────────────┐
+│         PARALLELIZABLE                  │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ │
+│  │Summarize │ │Summarize │ │Summarize │ │  ← N LLM calls
+│  │Section A │ │Section B │ │Section C │ │
+│  └──────────┘ └──────────┘ └──────────┘ │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+          ┌─────────────────┐
+          │SynthesizeSummaries│  ← 1 LLM call
+          └────────┬────────┘
+                   │
+                   ▼
+                Answer
+```
+
+### Signatures
+
+| Signature | Purpose |
+|-----------|---------|
+| `DiscoverStructure` | Identify logical sections from document preview, assign relevance (high/medium/low/skip) |
+| `SummarizeSection` | Summarize a single section with query-focused extraction |
+| `SynthesizeSummaries` | Combine section summaries into coherent final answer |
+
+### Usage
+
+```bash
+# Basic usage
+bundle exec ruby examples/pdf_recursive_summarizer.rb --pdf document.pdf
+
+# With a specific query
+bundle exec ruby examples/pdf_recursive_summarizer.rb \
+  --pdf research_paper.pdf \
+  --query "What methodology was used?"
+
+# Export results to JSON
+bundle exec ruby examples/pdf_recursive_summarizer.rb \
+  --pdf report.pdf \
+  --output-json results.json
+```
+
+### Options
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--pdf PATH` | required | Path to PDF file |
+| `--query QUERY` | "Provide a concise summary" | Focus question for relevance |
+| `--model MODEL` | `openai/gpt-4o-mini` | LLM to use |
+| `--preview-lines N` | 100 | Lines shown to structure discovery |
+| `--max-section-chars N` | 8000 | Max chars per section |
+| `--output-json PATH` | none | Export full results to JSON |
+
+### Why Structure-First?
+
+Compared to agentic/cursor approaches:
+
+- **Predictable**: Fixed number of LLM calls (2 + N sections)
+- **Parallelizable**: Section summarization can run concurrently
+- **Debuggable**: Clear pipeline stages, easy to inspect intermediate results
+- **Cost-efficient**: No history accumulation, minimal token overhead
+
+Best for documents with discoverable structure (reports, papers, legal docs). For truly unstructured or exploratory tasks, consider a ReAct agent instead.
 
 ## Quick Start
 
