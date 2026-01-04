@@ -56,8 +56,10 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    Ascii85 (2.0.1)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
+    afm (1.0.0)
     anthropic (1.15.1)
       connection_pool
     aruba (2.3.2)
@@ -190,6 +192,7 @@ GEM
       os (>= 0.9, < 2.0)
       signet (>= 0.16, < 2.a)
     hashdiff (1.2.1)
+    hashery (2.1.2)
     informers (1.2.1)
       onnxruntime (>= 0.9)
       tokenizers (>= 0.5.3)
@@ -254,6 +257,12 @@ GEM
     os (1.1.4)
     pastel (0.8.0)
       tty-color (~> 0.5)
+    pdf-reader (2.15.1)
+      Ascii85 (>= 1.0, < 3.0, != 2.0.0)
+      afm (>= 0.2.1, < 2)
+      hashery (~> 2.0)
+      ruby-rc4
+      ttfunk
     pkg-config (1.6.5)
     polars-df (0.22.0)
       bigdecimal
@@ -289,6 +298,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.6)
+    ruby-rc4 (0.1.5)
     ruby_llm (1.9.1)
       base64
       event_stream_parser (~> 1)
@@ -332,6 +342,8 @@ GEM
       rb_sys
     tokenizers (0.6.1-arm64-darwin)
     traces (0.18.2)
+    ttfunk (1.8.0)
+      bigdecimal (~> 3.1)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
     tty-prompt (0.23.1)
@@ -389,6 +401,7 @@ DEPENDENCIES
   gepa!
   lf-cli (~> 1.0)
   newrelic_rpm (~> 9.21)
+  pdf-reader (~> 2.11)
   reline (~> 0.5)
   rspec (~> 3.12)
   sorbet-toon!

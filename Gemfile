@@ -61,6 +61,7 @@ group :development, :test do
   gem 'faraday', '~> 2.0'
   gem 'cli-ui', '~> 2.6'
   gem 'aruba', '~> 2.3'
+  gem 'pdf-reader', '~> 2.11'
 end
 
 gem "newrelic_rpm", "~> 9.21"
