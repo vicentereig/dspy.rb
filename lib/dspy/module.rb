@@ -131,7 +131,7 @@ module DSPy
     create_around_callback :forward
 
     # The main forward method that users will call is generic and type parameterized.
-    # Instrumentation is handled by ForwardInstrumentation prepended module.
+    # Instrument here only when subclasses don't override forward.
     sig do
       type_parameters(:I, :O)
         .params(
@@ -140,7 +140,13 @@ module DSPy
         .returns(T.type_parameter(:O))
     end
     def forward(**input_values)
-      result = forward_untyped(**input_values)
+      result = if self.class.instance_method(:forward).owner == DSPy::Module
+        instrument_forward_call([], input_values) do
+          forward_untyped(**input_values)
+        end
+      else
+        forward_untyped(**input_values)
+      end
       T.cast(result, T.type_parameter(:O))
     end
 
