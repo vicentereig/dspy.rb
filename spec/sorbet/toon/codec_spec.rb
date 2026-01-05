@@ -29,7 +29,7 @@ end
 RSpec.describe 'Sorbet::Toon::Codec' do
   describe 'encode fixtures' do
     SorbetToonSpec::ENCODE_FIXTURES.each do |fixture_path|
-      fixtures = JSON.parse(File.read(fixture_path))
+      fixtures = JSON.parse(File.read(fixture_path, encoding: 'UTF-8'))
 
       context fixtures['description'] do
         fixtures.fetch('tests').each do |test|
@@ -52,7 +52,7 @@ RSpec.describe 'Sorbet::Toon::Codec' do
 
   describe 'decode fixtures' do
     SorbetToonSpec::DECODE_FIXTURES.each do |fixture_path|
-      fixtures = JSON.parse(File.read(fixture_path))
+      fixtures = JSON.parse(File.read(fixture_path, encoding: 'UTF-8'))
 
       context fixtures['description'] do
         fixtures.fetch('tests').each do |test|

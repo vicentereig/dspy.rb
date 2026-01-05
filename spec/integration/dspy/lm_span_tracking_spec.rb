@@ -143,6 +143,7 @@ RSpec.describe 'DSPy::LM span tracking' do
       allow(prompt_double).to receive(:render_system_prompt).and_return('Answer the question')
       allow(prompt_double).to receive(:render_user_prompt).with(anything).and_return('What is life?')
       allow(prompt_double).to receive(:to_h).and_return({})
+      allow(prompt_double).to receive(:data_format).and_return(:json)
 
       inference_module = double('inference_module',
         signature_class: signature_class,

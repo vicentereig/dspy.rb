@@ -8,6 +8,9 @@ ENV['DSPY_DEEP_RESEARCH_QA_MODEL'] ||= 'openai/o4-mini'
 ENV['DSPY_DEEP_RESEARCH_SYNTH_MODEL'] ||= 'openai/gpt-4.1'
 ENV['DSPY_DEEP_RESEARCH_REPORTER_MODEL'] ||= 'openai/gpt-4.1'
 
+# Ensure fixture/model JSON files load consistently across locales.
+Encoding.default_external = Encoding::UTF_8
+
 require 'byebug'
 require 'dotenv/load'
 require 'vcr'
