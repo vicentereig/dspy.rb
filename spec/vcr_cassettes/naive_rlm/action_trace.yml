@@ -1,0 +1,757 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIANz0XGkAA92W3W7bOBCFX0XgtSnohxIpAS7QNllsFxu3adPexIExkkYSNxTplaigruF3L9U4QWHkwl3E26J3Ho4454xnPkjXW1KarjOa5FsC1vayGC0OU4TaSrvxNXRIcnL24d3G7wsyI60Z7P5wkF0BvjIlKJfYX2hGWbncxZfbzeKf22jx5+dXH89Dcfnp1eXVuTq7/PT+r6sgEYurN8HFWRNenJ0zstvNiDKN073eEoV3qFyFN4s/3rqyVnY4WOjWJA95ytMsS3nEg8jPIj4jLjdAM5mxPZS4ktV8SSBkkEWQUIhrpEykjBZ1wiiLBGCQ1lEBsCSebXuEaroSChF4tSywn6IkYIHX47+j051iLdVj6Jz0djV5+nYs9Xp0oblFPczTmHtmtN+d8NCzxoJ6jAPhNahXIP1hM1jsnFmzRg3S2dkn9kp+ZypULt+sLWWGdlJPD1XDeuMPstFgxx5dehpMni9A3uH7vy/y/MPYddDLL/i6HfWtu+HqjApXa7Dt/Horq9xbkiwuMMuyiIZhXVOWlgXNah7QJK2wqKuoYKFYkplXKhiG6cKhygLuZAPW9NNTCgpUuef+j93M2ytAxmoUrnhSBJwylnIqeII0hQB4xThGUD+h8K7HSpb2oOrNQxO9MXZ+6h4exBRCPT9FOw8CQ+lmP9+CLt28+839khzb2otjLVW4tm3uRTvPcaWtWxnV+ff7uCRLTXazo5BLRBr4IRenQk6I/4JcGLL4gLmQHUAXRoKdnDpUWNqXpZVG/zTm6jIoI44Z5YwFbgZuLQRLQxrEFUw/qjiOn1B43YLUb+ur1oxNe7irj8XdQmW8iGuaxhBRVhRACy5CyoMqiDCDDMVT9n9VoJ+1necB+pjxvTjW9576+Dmod/VPQz2Ljn7R/iiBpbGOaRiMlrpxxXA9zOODU4W6cYDGafIt0cKwekzObT/ib8TxzyfuFF39f+A9/SYtJ3MrU6/svb3vlst9Vq8VWryn7WZ38xVj60WRawsAAA==
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Tue, 06 Jan 2026 11:41:16 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350026-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 Jan 2026 11:41:16 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"document_stats\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Document metadata: total lines, etc.\"\n    },\n    \"context_window\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Currently visible
+        content (preview or last action result)\"\n    },\n    \"history\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Previous actions and their results (summaries)\"\n    }\n  },\n  \"required\":
+        [\n    \"query\",\n    \"document_stats\",\n    \"context_window\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    },\n    \"action\": {\n      \"oneOf\":
+        [\n        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"_type\":
+        {\n              \"type\": \"string\",\n              \"const\": \"Peek\"\n            },\n            \"start_line\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Start
+        line (1-indexed)\"\n            },\n            \"end_line\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"End line (1-indexed)\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"start_line\",\n            \"end_line\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Peek struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Grep\"\n            },\n            \"pattern\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Regex
+        pattern to search for\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"pattern\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Grep struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Partition\"\n            },\n            \"chunk_size\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Lines
+        per chunk for parallel summarization\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"chunk_size\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Partition struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Finish\"\n            },\n            \"answer\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Final
+        answer to the query\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"answer\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Finish struct\"\n        }\n      ],\n      \"description\":
+        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"reasoning\",\n    \"action\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Select next action to navigate a document and answer a query.
+        Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"query\":
+        \"What was the sample size and duration of the study?\",\n  \"document_stats\":
+        \"Total lines: 65\",\n  \"context_window\": \"1: Title: Effects of Exercise
+        on Mental Health\\n2: Authors: Dr. Sarah Johnson, Dr. Michael Chen\\n3: Published:
+        Journal of Health Psychology, 2024\\n4: \\n5: Abstract\\n6: This study examines
+        the relationship between regular physical exercise\\n7: and mental health
+        outcomes in adults aged 25-65. We conducted a\\n8: randomized controlled trial
+        with 500 participants over 12 months.\\n9: Results show significant improvements
+        in anxiety and depression scores\\n10: among participants who exercised at
+        least 150 minutes per week.\\n11: \\n12: 1. Introduction\\n13: Mental health
+        disorders affect millions of people worldwide.\\n14: Exercise has been proposed
+        as a non-pharmacological intervention.\\n15: Previous studies have shown mixed
+        results regarding efficacy.\\n16: This study aims to provide definitive evidence
+        through rigorous methodology.\\n17: \\n18: 2. Methods\\n19: 2.1 Participants\\n20:
+        We recruited 500 adults (250 male, 250 female) aged 25-65.\\n21: Exclusion
+        criteria included pre-existing cardiovascular conditions.\\n22: Participants
+        were randomly assigned to exercise or control groups.\\n23: \\n24: 2.2 Intervention\\n25:
+        Exercise group: 150+ minutes moderate exercise per week\\n26: Control group:
+        Maintained usual activity levels\\n27: Duration: 12 months with monthly check-ins\\n28:
+        \\n29: 2.3 Measurements\\n30: Primary outcomes: PHQ-9 (depression), GAD-7
+        (anxiety)\\n31: Secondary outcomes: Quality of life (SF-36), sleep quality\\n32:
+        Assessments conducted at baseline, 6 months, and 12 months\\n33: \\n34: 3.
+        Results\\n35: 3.1 Primary Outcomes\\n36: Exercise group showed 45% reduction
+        in depression scores (p<0.001)\\n37: Anxiety scores decreased by 38% in exercise
+        group (p<0.001)\\n38: Effect sizes were large (Cohen''s d = 0.8 for depression)\\n39:
+        \\n40: 3.2 Secondary Outcomes\\n41: Quality of life improved significantly
+        in exercise group\\n42: Sleep quality improved by 52% compared to baseline\\n43:
+        Adherence rate was 78% for the full 12 months\\n44: \\n45: 3.3 Subgroup Analysis\\n46:
+        Benefits were consistent across age groups and genders\\n47: Participants
+        with higher baseline severity showed greater improvements\\n48: Outdoor exercise
+        showed marginally better outcomes than indoor\\n49: \\n50: 4. Discussion\\n51:
+        Our findings strongly support exercise as mental health intervention.\\n52:
+        The effect sizes observed are comparable to antidepressant medications.\\n53:
+        Limitations include self-reported exercise adherence.\\n54: Future research
+        should explore optimal exercise types and durations.\\n55: \\n56: 5. Conclusion\\n57:
+        Regular physical exercise significantly improves mental health outcomes.\\n58:
+        Healthcare providers should consider exercise prescriptions for patients.\\n59:
+        Public health initiatives promoting exercise could reduce mental health burden.\\n60:
+        \\n61: References\\n62: 1. World Health Organization (2023) Mental Health
+        Statistics\\n63: 2. Smith et al. (2022) Exercise and Depression Meta-analysis\\n64:
+        3. Johnson & Lee (2021) Physical Activity Guidelines Review\\n65: 4. Chen
+        et al. (2020) Anxiety Interventions Systematic Review\\n...\\n[65 total lines]\",\n  \"history\":
+        []\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '7529'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:19 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2344'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2601'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '198265'
+      X-Ratelimit-Reset-Requests:
+      - 25.611s
+      X-Ratelimit-Reset-Tokens:
+      - 520ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af2007a9321e7-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Cuzj3blKFrLkOizaDEftavAWju0wY",
+          "object": "chat.completion",
+          "created": 1767699677,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"reasoning\": \"The user's query asks for specific details about the sample size and duration of the study. From the provided context window, it is clear that the sample size was 500 participants and the duration of the study was 12 months. To confirm these specific details, the best next action is to use the Grep action to extract this information directly from the relevant sections of the document where these details are likely mentioned.\",\n  \"action\": {\n    \"_type\": \"Grep\",\n    \"pattern\": \"sample size|duration of the study\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1643,
+            "completion_tokens": 125,
+            "total_tokens": 1768,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_c4585b5b9c"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:19 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1767699679503.329,"message":"trace_id=\"a14a92a5-a3fe-4864-bf54-428ae06f2baa\"
+        thread_id=1880 fiber_id=5112 request_id=nil request_start_time=nil input_tokens=1643
+        output_tokens=125 total_tokens=1768 gen_ai.system=\"openai\" gen_ai.request.model=\"gpt-4o-mini\"
+        dspy.signature=\"DSPy::NaiveRLM::SelectAction\" module_path=[{id: \"14a6fa14-dea8-49bc-842c-dea4c4059a2e\",
+        class: \"DSPy::ChainOfThought\", label: nil}, {id: \"d9e67afd-3302-4830-8e35-85dd6e5264bd\",
+        class: \"DSPy::Predict\", label: nil}] module_root={id: \"14a6fa14-dea8-49bc-842c-dea4c4059a2e\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"d9e67afd-3302-4830-8e35-85dd6e5264bd\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"14a6fa14-dea8-49bc-842c-dea4c4059a2e>d9e67afd-3302-4830-8e35-85dd6e5264bd\",
+        depth: 2} event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1767699679503.968,"message":"trace_id=\"a14a92a5-a3fe-4864-bf54-428ae06f2baa\"
+        thread_id=1880 fiber_id=4240 request_id=nil request_start_time=nil dspy.signature=\"DSPy::NaiveRLM::SelectAction\"
+        cot.reasoning_steps=1 cot.reasoning_length=428 cot.has_reasoning=true module_path=[{id:
+        \"14a6fa14-dea8-49bc-842c-dea4c4059a2e\", class: \"DSPy::ChainOfThought\",
+        label: nil}] module_root={id: \"14a6fa14-dea8-49bc-842c-dea4c4059a2e\", class:
+        \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"14a6fa14-dea8-49bc-842c-dea4c4059a2e\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_scope={ancestry_token:
+        \"14a6fa14-dea8-49bc-842c-dea4c4059a2e\", depth: 1} event=\"chain_of_thought.reasoning_complete\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Tue, 06 Jan 2026 11:41:21 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350026-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 Jan 2026 11:41:21 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"document_stats\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Document metadata: total lines, etc.\"\n    },\n    \"context_window\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Currently visible
+        content (preview or last action result)\"\n    },\n    \"history\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Previous actions and their results (summaries)\"\n    }\n  },\n  \"required\":
+        [\n    \"query\",\n    \"document_stats\",\n    \"context_window\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    },\n    \"action\": {\n      \"oneOf\":
+        [\n        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"_type\":
+        {\n              \"type\": \"string\",\n              \"const\": \"Peek\"\n            },\n            \"start_line\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Start
+        line (1-indexed)\"\n            },\n            \"end_line\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"End line (1-indexed)\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"start_line\",\n            \"end_line\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Peek struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Grep\"\n            },\n            \"pattern\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Regex
+        pattern to search for\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"pattern\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Grep struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Partition\"\n            },\n            \"chunk_size\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Lines
+        per chunk for parallel summarization\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"chunk_size\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Partition struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Finish\"\n            },\n            \"answer\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Final
+        answer to the query\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"answer\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Finish struct\"\n        }\n      ],\n      \"description\":
+        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"reasoning\",\n    \"action\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Select next action to navigate a document and answer a query.
+        Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"query\":
+        \"What was the sample size and duration of the study?\",\n  \"document_stats\":
+        \"Total lines: 65\",\n  \"context_window\": \"1: Title: Effects of Exercise
+        on Mental Health\\n2: Authors: Dr. Sarah Johnson, Dr. Michael Chen\\n3: Published:
+        Journal of Health Psychology, 2024\\n4: \\n5: Abstract\\n6: This study examines
+        the relationship between regular physical exercise\\n7: and mental health
+        outcomes in adults aged 25-65. We conducted a\\n8: randomized controlled trial
+        with 500 participants over 12 months.\\n9: Results show significant improvements
+        in anxiety and depression scores\\n10: among participants who exercised at
+        least 150 minutes per week.\\n11: \\n12: 1. Introduction\\n13: Mental health
+        disorders affect millions of people worldwide.\\n14: Exercise has been proposed
+        as a non-pharmacological intervention.\\n15: Previous studies have shown mixed
+        results regarding efficacy.\\n16: This study aims to provide definitive evidence
+        through rigorous methodology.\\n17: \\n18: 2. Methods\\n19: 2.1 Participants\\n20:
+        We recruited 500 adults (250 male, 250 female) aged 25-65.\\n21: Exclusion
+        criteria included pre-existing cardiovascular conditions.\\n22: Participants
+        were randomly assigned to exercise or control groups.\\n23: \\n24: 2.2 Intervention\\n25:
+        Exercise group: 150+ minutes moderate exercise per week\\n26: Control group:
+        Maintained usual activity levels\\n27: Duration: 12 months with monthly check-ins\\n28:
+        \\n29: 2.3 Measurements\\n30: Primary outcomes: PHQ-9 (depression), GAD-7
+        (anxiety)\\n31: Secondary outcomes: Quality of life (SF-36), sleep quality\\n32:
+        Assessments conducted at baseline, 6 months, and 12 months\\n33: \\n34: 3.
+        Results\\n35: 3.1 Primary Outcomes\\n36: Exercise group showed 45% reduction
+        in depression scores (p<0.001)\\n37: Anxiety scores decreased by 38% in exercise
+        group (p<0.001)\\n38: Effect sizes were large (Cohen''s d = 0.8 for depression)\\n39:
+        \\n40: 3.2 Secondary Outcomes\\n41: Quality of life improved significantly
+        in exercise group\\n42: Sleep quality improved by 52% compared to baseline\\n43:
+        Adherence rate was 78% for the full 12 months\\n44: \\n45: 3.3 Subgroup Analysis\\n46:
+        Benefits were consistent across age groups and genders\\n47: Participants
+        with higher baseline severity showed greater improvements\\n48: Outdoor exercise
+        showed marginally better outcomes than indoor\\n49: \\n50: 4. Discussion\\n51:
+        Our findings strongly support exercise as mental health intervention.\\n52:
+        The effect sizes observed are comparable to antidepressant medications.\\n53:
+        Limitations include self-reported exercise adherence.\\n54: Future research
+        should explore optimal exercise types and durations.\\n55: \\n56: 5. Conclusion\\n57:
+        Regular physical exercise significantly improves mental health outcomes.\\n58:
+        Healthcare providers should consider exercise prescriptions for patients.\\n59:
+        Public health initiatives promoting exercise could reduce mental health burden.\\n60:
+        \\n61: References\\n62: 1. World Health Organization (2023) Mental Health
+        Statistics\\n63: 2. Smith et al. (2022) Exercise and Depression Meta-analysis\\n64:
+        3. Johnson & Lee (2021) Physical Activity Guidelines Review\\n65: 4. Chen
+        et al. (2020) Anxiety Interventions Systematic Review\\n...\\n[65 total lines]\",\n  \"history\":
+        [\n    \"GREP ''sample size|duration of the study'': No matches found\"\n  ]\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '7601'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:22 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2512'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2532'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9996'
+      X-Ratelimit-Remaining-Tokens:
+      - '198248'
+      X-Ratelimit-Reset-Requests:
+      - 31.671s
+      X-Ratelimit-Reset-Tokens:
+      - 525ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af2158e2621e7-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Cuzj5j4CnP7a3X44pRWrFY3WL5dRC",
+          "object": "chat.completion",
+          "created": 1767699679,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"reasoning\": \"The query asks for specific information regarding the sample size and duration of the study, which is present in the context window. However, a previous grep action for this information returned no matches, likely because it was looking for specific phrases that were not used in the document. To retrieve the necessary information, I should directly peek at the lines that contain the relevant details concerning the sample size (line 20) and the duration of the study (line 27). Therefore, I will use the Peek action to access these lines.\",\n  \"action\": {\n    \"_type\": \"Peek\",\n    \"start_line\": 20,\n    \"end_line\": 27\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1662,
+            "completion_tokens": 150,
+            "total_tokens": 1812,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:22 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"document_stats\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Document metadata: total lines, etc.\"\n    },\n    \"context_window\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Currently visible
+        content (preview or last action result)\"\n    },\n    \"history\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Previous actions and their results (summaries)\"\n    }\n  },\n  \"required\":
+        [\n    \"query\",\n    \"document_stats\",\n    \"context_window\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    },\n    \"action\": {\n      \"oneOf\":
+        [\n        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"_type\":
+        {\n              \"type\": \"string\",\n              \"const\": \"Peek\"\n            },\n            \"start_line\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Start
+        line (1-indexed)\"\n            },\n            \"end_line\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"End line (1-indexed)\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"start_line\",\n            \"end_line\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Peek struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Grep\"\n            },\n            \"pattern\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Regex
+        pattern to search for\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"pattern\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Grep struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Partition\"\n            },\n            \"chunk_size\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Lines
+        per chunk for parallel summarization\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"chunk_size\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Partition struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Finish\"\n            },\n            \"answer\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Final
+        answer to the query\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"answer\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Finish struct\"\n        }\n      ],\n      \"description\":
+        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"reasoning\",\n    \"action\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Select next action to navigate a document and answer a query.
+        Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"query\":
+        \"What was the sample size and duration of the study?\",\n  \"document_stats\":
+        \"Total lines: 65\",\n  \"context_window\": \"20: We recruited 500 adults
+        (250 male, 250 female) aged 25-65.\\n21: Exclusion criteria included pre-existing
+        cardiovascular conditions.\\n22: Participants were randomly assigned to exercise
+        or control groups.\\n23: \\n24: 2.2 Intervention\\n25: Exercise group: 150+
+        minutes moderate exercise per week\\n26: Control group: Maintained usual activity
+        levels\\n27: Duration: 12 months with monthly check-ins\",\n  \"history\":
+        [\n    \"GREP ''sample size|duration of the study'': No matches found\",\n    \"PEEK
+        [20-27]: 20: We recruited 500 adults (250 male, 250 female) aged 25-65.\\n21:
+        Exclusion criteria included pre-existing cardiovascular conditions.\\n22:
+        Participants were randomly assigned to exercise or control groups.\\n23: \\n24:
+        2.2 Intervention\\n25: Exercise group: 150+ minutes moderate exercise per
+        week\\n26: Control group: Maintained usual activity levels\\n27: Duration:
+        12 months with monthly check-ins\"\n  ]\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '5304'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:26 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2781'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3033'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9995'
+      X-Ratelimit-Remaining-Tokens:
+      - '198810'
+      X-Ratelimit-Reset-Requests:
+      - 36.543s
+      X-Ratelimit-Reset-Tokens:
+      - 357ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af227cb3121e7-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Cuzj9NRm8iv9KdPWwzcUjyyBVFt5Q",
+          "object": "chat.completion",
+          "created": 1767699683,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"reasoning\": \"The previous actions, including a GREP search for 'sample size' and 'duration of the study', returned no matches, indicating that these specific terms were not found. However, the PEEK action revealed relevant information about the sample size (500 adults) and duration (12 months) in the context window. Therefore, a FINISH action is appropriate to provide a final answer using the extracted details.\",\n  \"action\": {\n    \"_type\": \"Finish\",\n    \"answer\": \"The sample size of the study was 500 adults, and the duration of the study was 12 months.\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1120,
+            "completion_tokens": 137,
+            "total_tokens": 1257,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_c4585b5b9c"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:26 GMT
+recorded_with: VCR 6.3.1

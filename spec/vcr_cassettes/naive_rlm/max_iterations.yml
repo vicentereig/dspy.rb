@@ -1,0 +1,1895 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAOb0XGkAA+1WwW7jNhD9FYFnS5BoSqYEeIHuJkVTNE6ym+YSB8aYHMlsKFKVqKCu4X8vlTjZIMjB241bNOhxZqh5j5w3eLreEGHr2hpSbAg416pl77AbIjROuXVkoEZSkKMv5+uoXZIRWdnO7ZKdqpcQaStA+8Lug6pX0tdO/7xdz367pbOf/vj463HCL64+Xlwe66OLq88/X8Ypn12exKdHVXJ6dMzIdjsi2lYe93pDNN6h9h1OZj+e+bZO1dg5qBtSJJNskuV5ximjacT4iPhSB9XAxbUgcKHkdE4gYZBTSEMYlxgynrFwWaYsZJQDxllJlwBzErhViyCHTxLO46BUS2yHKE1SGrT4e+9hh9go/RR6Iq1bDJTu08o0vQ/tLZpummQZDWzvnqfSOHDWgX5K8IQGFZoFqKhbdw5rz9c2aEB5RrvCDiyqrUTt61XjQmbDWpnhkOyaddSpyoDrW/TlYTRFMQN1h59/OS2KL6hRuB+EU9b4875Lr3HRgFtNrzdKFsGc+AfKSv9MoUTgIcuXIuSMiiFkgsVpDhTnZBQIDV03fPCA8WkFypyVlyvbVys3HNCwRF0E/i22o2DXvORZnMNEhjIvc//okocQUz8NLnI5HpeQ5uUrzc9blEq87HrzyL+11k0PSP8RRyOU00Pc5BGgE37e0w0Y4Wfcrh+Use+tPuxLSWLjVkVAt4HfJuO8THQdPYhwTuaGbEf7LloWJVlMD7NqjLJ4z1X7VtkL6/wiQWeNMpVvhk03ZS+yGk3ltyJlyX1hBd3iqTh1bY//2PL8qzI/JM53qf2ZkJOvQhYD7sKWC/eA/Gyg3ssajQ6/ReIZpTRKcpocyk04+1tuktD4pZuMJy/chKaT9+4mqUjGsf9fCGVcpiFLJQtzKdNQlrkYo+Qpz+R/w03e9CZv4yb7UnojN7lftUmWvQszGb9uJiz+30zeo5ncbG/+AvFpJY4tDQAA
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Tue, 06 Jan 2026 11:41:26 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350026-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 Jan 2026 11:41:26 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"document_stats\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Document metadata: total lines, etc.\"\n    },\n    \"context_window\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Currently visible
+        content (preview or last action result)\"\n    },\n    \"history\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Previous actions and their results (summaries)\"\n    }\n  },\n  \"required\":
+        [\n    \"query\",\n    \"document_stats\",\n    \"context_window\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    },\n    \"action\": {\n      \"oneOf\":
+        [\n        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"_type\":
+        {\n              \"type\": \"string\",\n              \"const\": \"Peek\"\n            },\n            \"start_line\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Start
+        line (1-indexed)\"\n            },\n            \"end_line\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"End line (1-indexed)\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"start_line\",\n            \"end_line\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Peek struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Grep\"\n            },\n            \"pattern\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Regex
+        pattern to search for\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"pattern\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Grep struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Partition\"\n            },\n            \"chunk_size\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Lines
+        per chunk for parallel summarization\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"chunk_size\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Partition struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Finish\"\n            },\n            \"answer\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Final
+        answer to the query\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"answer\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Finish struct\"\n        }\n      ],\n      \"description\":
+        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"reasoning\",\n    \"action\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Select next action to navigate a document and answer a query.
+        Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"query\":
+        \"Provide a comprehensive summary of all sections\",\n  \"document_stats\":
+        \"Total lines: 65\",\n  \"context_window\": \"1: Title: Effects of Exercise
+        on Mental Health\\n2: Authors: Dr. Sarah Johnson, Dr. Michael Chen\\n3: Published:
+        Journal of Health Psychology, 2024\\n4: \\n5: Abstract\\n6: This study examines
+        the relationship between regular physical exercise\\n7: and mental health
+        outcomes in adults aged 25-65. We conducted a\\n8: randomized controlled trial
+        with 500 participants over 12 months.\\n9: Results show significant improvements
+        in anxiety and depression scores\\n10: among participants who exercised at
+        least 150 minutes per week.\\n11: \\n12: 1. Introduction\\n13: Mental health
+        disorders affect millions of people worldwide.\\n14: Exercise has been proposed
+        as a non-pharmacological intervention.\\n15: Previous studies have shown mixed
+        results regarding efficacy.\\n16: This study aims to provide definitive evidence
+        through rigorous methodology.\\n17: \\n18: 2. Methods\\n19: 2.1 Participants\\n20:
+        We recruited 500 adults (250 male, 250 female) aged 25-65.\\n21: Exclusion
+        criteria included pre-existing cardiovascular conditions.\\n22: Participants
+        were randomly assigned to exercise or control groups.\\n23: \\n24: 2.2 Intervention\\n25:
+        Exercise group: 150+ minutes moderate exercise per week\\n26: Control group:
+        Maintained usual activity levels\\n27: Duration: 12 months with monthly check-ins\\n28:
+        \\n29: 2.3 Measurements\\n30: Primary outcomes: PHQ-9 (depression), GAD-7
+        (anxiety)\\n31: Secondary outcomes: Quality of life (SF-36), sleep quality\\n32:
+        Assessments conducted at baseline, 6 months, and 12 months\\n33: \\n34: 3.
+        Results\\n35: 3.1 Primary Outcomes\\n36: Exercise group showed 45% reduction
+        in depression scores (p<0.001)\\n37: Anxiety scores decreased by 38% in exercise
+        group (p<0.001)\\n38: Effect sizes were large (Cohen''s d = 0.8 for depression)\\n39:
+        \\n40: 3.2 Secondary Outcomes\\n41: Quality of life improved significantly
+        in exercise group\\n42: Sleep quality improved by 52% compared to baseline\\n43:
+        Adherence rate was 78% for the full 12 months\\n44: \\n45: 3.3 Subgroup Analysis\\n46:
+        Benefits were consistent across age groups and genders\\n47: Participants
+        with higher baseline severity showed greater improvements\\n48: Outdoor exercise
+        showed marginally better outcomes than indoor\\n49: \\n50: 4. Discussion\\n51:
+        Our findings strongly support exercise as mental health intervention.\\n52:
+        The effect sizes observed are comparable to antidepressant medications.\\n53:
+        Limitations include self-reported exercise adherence.\\n54: Future research
+        should explore optimal exercise types and durations.\\n55: \\n56: 5. Conclusion\\n57:
+        Regular physical exercise significantly improves mental health outcomes.\\n58:
+        Healthcare providers should consider exercise prescriptions for patients.\\n59:
+        Public health initiatives promoting exercise could reduce mental health burden.\\n60:
+        \\n61: References\\n62: 1. World Health Organization (2023) Mental Health
+        Statistics\\n63: 2. Smith et al. (2022) Exercise and Depression Meta-analysis\\n64:
+        3. Johnson & Lee (2021) Physical Activity Guidelines Review\\n65: 4. Chen
+        et al. (2020) Anxiety Interventions Systematic Review\\n...\\n[65 total lines]\",\n  \"history\":
+        []\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '7525'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:30 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2822'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3078'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9995'
+      X-Ratelimit-Remaining-Tokens:
+      - '198266'
+      X-Ratelimit-Reset-Requests:
+      - 41.337s
+      X-Ratelimit-Reset-Tokens:
+      - 520ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af24058ee14ac-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CuzjDWtM8THJa2lKEcoS7bGIaZlRm",
+          "object": "chat.completion",
+          "created": 1767699687,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"reasoning\": \"The user has requested a comprehensive summary of all sections of the document. Since the document contains multiple sections including an Abstract, Introduction, Methods, Results, Discussion, and Conclusion, the next logical step is to partition the document into manageable chunks for parallel summarization. Given that the document has a total of 65 lines, a reasonable chunk size would allow for effective summarization while also maintaining the context across sections.\",\n  \"action\": {\n    \"_type\": \"Partition\",\n    \"chunk_size\": 10\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1640,
+            "completion_tokens": 120,
+            "total_tokens": 1760,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_c4585b5b9c"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:30 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1767699690109.668,"message":"trace_id=\"a14a92a5-a3fe-4864-bf54-428ae06f2baa\"
+        thread_id=1880 fiber_id=5208 request_id=nil request_start_time=nil input_tokens=1640
+        output_tokens=120 total_tokens=1760 gen_ai.system=\"openai\" gen_ai.request.model=\"gpt-4o-mini\"
+        dspy.signature=\"DSPy::NaiveRLM::SelectAction\" module_path=[{id: \"7098f2d7-c83d-4fd4-8ef7-796f4746926f\",
+        class: \"DSPy::ChainOfThought\", label: nil}, {id: \"ad6f6f91-77fc-484c-91b7-ccfe048abea6\",
+        class: \"DSPy::Predict\", label: nil}] module_root={id: \"7098f2d7-c83d-4fd4-8ef7-796f4746926f\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"ad6f6f91-77fc-484c-91b7-ccfe048abea6\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"7098f2d7-c83d-4fd4-8ef7-796f4746926f>ad6f6f91-77fc-484c-91b7-ccfe048abea6\",
+        depth: 2} event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1767699690110.74,"message":"trace_id=\"a14a92a5-a3fe-4864-bf54-428ae06f2baa\"
+        thread_id=1880 fiber_id=4240 request_id=nil request_start_time=nil dspy.signature=\"DSPy::NaiveRLM::SelectAction\"
+        cot.reasoning_steps=1 cot.reasoning_length=475 cot.has_reasoning=true module_path=[{id:
+        \"7098f2d7-c83d-4fd4-8ef7-796f4746926f\", class: \"DSPy::ChainOfThought\",
+        label: nil}] module_root={id: \"7098f2d7-c83d-4fd4-8ef7-796f4746926f\", class:
+        \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"7098f2d7-c83d-4fd4-8ef7-796f4746926f\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_scope={ancestry_token:
+        \"7098f2d7-c83d-4fd4-8ef7-796f4746926f\", depth: 1} event=\"chain_of_thought.reasoning_complete\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Tue, 06 Jan 2026 11:41:31 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350026-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 Jan 2026 11:41:31 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"chunk_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Where this chunk is from (e.g., Lines
+        450-480)\"\n    },\n    \"chunk_text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The extracted text to summarize\"\n    }\n  },\n  \"required\": [\n    \"query\",\n    \"chunk_context\",\n    \"chunk_text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary of relevant information found\"\n    },\n    \"relevance\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"high\",\n        \"medium\",\n        \"low\",\n        \"none\"\n      ],\n      \"description\":
+        \"How relevant this chunk is to the query\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\",\n    \"relevance\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Summarize a chunk of document
+        content, focusing on information relevant to the query."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"query\": \"Provide a comprehensive summary of
+        all sections\",\n  \"chunk_context\": \"Lines 1-10\",\n  \"chunk_text\": \"Title:
+        Effects of Exercise on Mental Health\\nAuthors: Dr. Sarah Johnson, Dr. Michael
+        Chen\\nPublished: Journal of Health Psychology, 2024\\n\\nAbstract\\nThis
+        study examines the relationship between regular physical exercise\\nand mental
+        health outcomes in adults aged 25-65. We conducted a\\nrandomized controlled
+        trial with 500 participants over 12 months.\\nResults show significant improvements
+        in anxiety and depression scores\\namong participants who exercised at least
+        150 minutes per week.\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2523'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:32 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1781'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1806'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9994'
+      X-Ratelimit-Remaining-Tokens:
+      - '199442'
+      X-Ratelimit-Reset-Requests:
+      - 47.005s
+      X-Ratelimit-Reset-Tokens:
+      - 167ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af257d92914ac-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CuzjGuXc2Qxa5UYO3Ius8dL0axljd",
+          "object": "chat.completion",
+          "created": 1767699690,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The study investigates the impact of regular exercise on mental health in adults aged 25-65, finding significant improvements in anxiety and depression for those exercising at least 150 minutes weekly, based on a trial with 500 participants over a year.\",\n  \"relevance\": \"high\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 548,
+            "completion_tokens": 71,
+            "total_tokens": 619,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:32 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"chunk_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Where this chunk is from (e.g., Lines
+        450-480)\"\n    },\n    \"chunk_text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The extracted text to summarize\"\n    }\n  },\n  \"required\": [\n    \"query\",\n    \"chunk_context\",\n    \"chunk_text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary of relevant information found\"\n    },\n    \"relevance\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"high\",\n        \"medium\",\n        \"low\",\n        \"none\"\n      ],\n      \"description\":
+        \"How relevant this chunk is to the query\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\",\n    \"relevance\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Summarize a chunk of document
+        content, focusing on information relevant to the query."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"query\": \"Provide a comprehensive summary of
+        all sections\",\n  \"chunk_context\": \"Lines 11-20\",\n  \"chunk_text\":
+        \"\\n1. Introduction\\nMental health disorders affect millions of people worldwide.\\nExercise
+        has been proposed as a non-pharmacological intervention.\\nPrevious studies
+        have shown mixed results regarding efficacy.\\nThis study aims to provide
+        definitive evidence through rigorous methodology.\\n\\n2. Methods\\n2.1 Participants\\nWe
+        recruited 500 adults (250 male, 250 female) aged 25-65.\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2414'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:35 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2472'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2708'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9993'
+      X-Ratelimit-Remaining-Tokens:
+      - '199469'
+      X-Ratelimit-Reset-Requests:
+      - 52.867s
+      X-Ratelimit-Reset-Tokens:
+      - 159ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af263ebc114ac-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CuzjJ1iwxSalbIndS5qfM4HepjHos",
+          "object": "chat.completion",
+          "created": 1767699693,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The document begins with an introduction highlighting the global impact of mental health disorders and proposes exercise as a potential non-drug treatment, citing mixed results from earlier studies. The aim of the study is to establish clear evidence using rigorous methodologies. In the methods section, it details the recruitment of 500 adults of varied gender between the ages of 25 and 65.\",\n  \"relevance\": \"high\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 530,
+            "completion_tokens": 95,
+            "total_tokens": 625,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:35 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1767699692043.164,"message":"trace_id=\"a14a92a5-a3fe-4864-bf54-428ae06f2baa\"
+        thread_id=1880 fiber_id=5248 request_id=nil request_start_time=nil input_tokens=548
+        output_tokens=71 total_tokens=619 gen_ai.system=\"openai\" gen_ai.request.model=\"gpt-4o-mini\"
+        dspy.signature=\"DSPy::NaiveRLM::SummarizeChunk\" module_path=[{id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil}] module_root={id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil} module_leaf={id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        depth: 1} event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1767699695530.463,"message":"trace_id=\"a14a92a5-a3fe-4864-bf54-428ae06f2baa\"
+        thread_id=1880 fiber_id=5280 request_id=nil request_start_time=nil input_tokens=530
+        output_tokens=95 total_tokens=625 gen_ai.system=\"openai\" gen_ai.request.model=\"gpt-4o-mini\"
+        dspy.signature=\"DSPy::NaiveRLM::SummarizeChunk\" module_path=[{id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil}] module_root={id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil} module_leaf={id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        depth: 1} event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Tue, 06 Jan 2026 11:41:36 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350026-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 Jan 2026 11:41:36 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"chunk_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Where this chunk is from (e.g., Lines
+        450-480)\"\n    },\n    \"chunk_text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The extracted text to summarize\"\n    }\n  },\n  \"required\": [\n    \"query\",\n    \"chunk_context\",\n    \"chunk_text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary of relevant information found\"\n    },\n    \"relevance\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"high\",\n        \"medium\",\n        \"low\",\n        \"none\"\n      ],\n      \"description\":
+        \"How relevant this chunk is to the query\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\",\n    \"relevance\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Summarize a chunk of document
+        content, focusing on information relevant to the query."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"query\": \"Provide a comprehensive summary of
+        all sections\",\n  \"chunk_context\": \"Lines 21-30\",\n  \"chunk_text\":
+        \"Exclusion criteria included pre-existing cardiovascular conditions.\\nParticipants
+        were randomly assigned to exercise or control groups.\\n\\n2.2 Intervention\\nExercise
+        group: 150+ minutes moderate exercise per week\\nControl group: Maintained
+        usual activity levels\\nDuration: 12 months with monthly check-ins\\n\\n2.3
+        Measurements\\nPrimary outcomes: PHQ-9 (depression), GAD-7 (anxiety)\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2415'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:38 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2195'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2451'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9993'
+      X-Ratelimit-Remaining-Tokens:
+      - '199468'
+      X-Ratelimit-Reset-Requests:
+      - 58.045s
+      X-Ratelimit-Reset-Tokens:
+      - 159ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af279bc1e14ac-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CuzjMZPf8ijLc39R7fPxscORfAjRF",
+          "object": "chat.completion",
+          "created": 1767699696,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The study outlined exclusion criteria like pre-existing cardiovascular conditions. Participants were randomly assigned to either an exercise group, which engaged in over 150 minutes of moderate exercise per week, or a control group that maintained usual activity levels. The intervention lasted for 12 months, including monthly check-ins. The primary outcomes measured were depression (using PHQ-9) and anxiety (using GAD-7).\",\n  \"relevance\": \"high\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 534,
+            "completion_tokens": 103,
+            "total_tokens": 637,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:38 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"chunk_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Where this chunk is from (e.g., Lines
+        450-480)\"\n    },\n    \"chunk_text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The extracted text to summarize\"\n    }\n  },\n  \"required\": [\n    \"query\",\n    \"chunk_context\",\n    \"chunk_text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary of relevant information found\"\n    },\n    \"relevance\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"high\",\n        \"medium\",\n        \"low\",\n        \"none\"\n      ],\n      \"description\":
+        \"How relevant this chunk is to the query\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\",\n    \"relevance\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Summarize a chunk of document
+        content, focusing on information relevant to the query."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"query\": \"Provide a comprehensive summary of
+        all sections\",\n  \"chunk_context\": \"Lines 31-40\",\n  \"chunk_text\":
+        \"Secondary outcomes: Quality of life (SF-36), sleep quality\\nAssessments
+        conducted at baseline, 6 months, and 12 months\\n\\n3. Results\\n3.1 Primary
+        Outcomes\\nExercise group showed 45% reduction in depression scores (p<0.001)\\nAnxiety
+        scores decreased by 38% in exercise group (p<0.001)\\nEffect sizes were large
+        (Cohen''s d = 0.8 for depression)\\n\\n3.2 Secondary Outcomes\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2402'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:40 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1972'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1992'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9992'
+      X-Ratelimit-Remaining-Tokens:
+      - '199472'
+      X-Ratelimit-Reset-Requests:
+      - 1m4.322s
+      X-Ratelimit-Reset-Tokens:
+      - 158ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af28d79fc14ac-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CuzjOu14m4o02DaaapK0ahsTEWndf",
+          "object": "chat.completion",
+          "created": 1767699698,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The results section outlines the primary and secondary outcomes of the study. The exercise group demonstrated a 45% reduction in depression scores and a 38% reduction in anxiety scores, both statistically significant (p<0.001). The effect sizes for depression were large (Cohen's d = 0.8). Assessments for secondary outcomes, including quality of life and sleep quality, were conducted at three points: baseline, 6 months, and 12 months.\",\n  \"relevance\": \"high\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 553,
+            "completion_tokens": 117,
+            "total_tokens": 670,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:40 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1767699698692.697,"message":"trace_id=\"a14a92a5-a3fe-4864-bf54-428ae06f2baa\"
+        thread_id=1880 fiber_id=5304 request_id=nil request_start_time=nil input_tokens=534
+        output_tokens=103 total_tokens=637 gen_ai.system=\"openai\" gen_ai.request.model=\"gpt-4o-mini\"
+        dspy.signature=\"DSPy::NaiveRLM::SummarizeChunk\" module_path=[{id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil}] module_root={id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil} module_leaf={id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        depth: 1} event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1767699700866.791,"message":"trace_id=\"a14a92a5-a3fe-4864-bf54-428ae06f2baa\"
+        thread_id=1880 fiber_id=5336 request_id=nil request_start_time=nil input_tokens=553
+        output_tokens=117 total_tokens=670 gen_ai.system=\"openai\" gen_ai.request.model=\"gpt-4o-mini\"
+        dspy.signature=\"DSPy::NaiveRLM::SummarizeChunk\" module_path=[{id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil}] module_root={id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil} module_leaf={id: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"f9edbcb4-d9da-4b36-905d-a64db72b1816\",
+        depth: 1} event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Tue, 06 Jan 2026 11:41:41 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350026-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 Jan 2026 11:41:41 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"chunk_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Where this chunk is from (e.g., Lines
+        450-480)\"\n    },\n    \"chunk_text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The extracted text to summarize\"\n    }\n  },\n  \"required\": [\n    \"query\",\n    \"chunk_context\",\n    \"chunk_text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary of relevant information found\"\n    },\n    \"relevance\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"high\",\n        \"medium\",\n        \"low\",\n        \"none\"\n      ],\n      \"description\":
+        \"How relevant this chunk is to the query\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\",\n    \"relevance\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Summarize a chunk of document
+        content, focusing on information relevant to the query."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"query\": \"Provide a comprehensive summary of
+        all sections\",\n  \"chunk_context\": \"Lines 41-50\",\n  \"chunk_text\":
+        \"Quality of life improved significantly in exercise group\\nSleep quality
+        improved by 52% compared to baseline\\nAdherence rate was 78% for the full
+        12 months\\n\\n3.3 Subgroup Analysis\\nBenefits were consistent across age
+        groups and genders\\nParticipants with higher baseline severity showed greater
+        improvements\\nOutdoor exercise showed marginally better outcomes than indoor\\n\\n4.
+        Discussion\"\n}\n```\n\nRespond with the corresponding output schema fields
+        wrapped in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2424'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:42 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1576'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1598'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9991'
+      X-Ratelimit-Remaining-Tokens:
+      - '199467'
+      X-Ratelimit-Reset-Requests:
+      - 1m10.793s
+      X-Ratelimit-Reset-Tokens:
+      - 159ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af29b0c8114ac-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CuzjR462ccqKgS7JZn9rIFFctnhFM",
+          "object": "chat.completion",
+          "created": 1767699701,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The exercise group experienced a significant improvement in quality of life and sleep quality, with a 52% increase compared to baseline and a 78% adherence rate over 12 months. Subgroup analysis revealed consistent benefits across age groups and genders, with greater improvements noted in participants with higher baseline severity. Outdoor exercise yielded marginally better outcomes than indoor exercise.\",\n  \"relevance\": \"high\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 526,
+            "completion_tokens": 93,
+            "total_tokens": 619,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:42 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"chunk_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Where this chunk is from (e.g., Lines
+        450-480)\"\n    },\n    \"chunk_text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The extracted text to summarize\"\n    }\n  },\n  \"required\": [\n    \"query\",\n    \"chunk_context\",\n    \"chunk_text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary of relevant information found\"\n    },\n    \"relevance\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"high\",\n        \"medium\",\n        \"low\",\n        \"none\"\n      ],\n      \"description\":
+        \"How relevant this chunk is to the query\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\",\n    \"relevance\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Summarize a chunk of document
+        content, focusing on information relevant to the query."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"query\": \"Provide a comprehensive summary of
+        all sections\",\n  \"chunk_context\": \"Lines 51-60\",\n  \"chunk_text\":
+        \"Our findings strongly support exercise as mental health intervention.\\nThe
+        effect sizes observed are comparable to antidepressant medications.\\nLimitations
+        include self-reported exercise adherence.\\nFuture research should explore
+        optimal exercise types and durations.\\n\\n5. Conclusion\\nRegular physical
+        exercise significantly improves mental health outcomes.\\nHealthcare providers
+        should consider exercise prescriptions for patients.\\nPublic health initiatives
+        promoting exercise could reduce mental health burden.\\n\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2551'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:44 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1395'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1412'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9991'
+      X-Ratelimit-Remaining-Tokens:
+      - '199435'
+      X-Ratelimit-Reset-Requests:
+      - 1m17.679s
+      X-Ratelimit-Reset-Tokens:
+      - 169ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af2a61c8514ac-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CuzjSoOo4XZlYtUpmygkqvzVyo08r",
+          "object": "chat.completion",
+          "created": 1767699702,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The findings indicate that exercise is an effective mental health intervention, with effect sizes similar to antidepressants. However, self-reported adherence to exercise presents limitations. The conclusion emphasizes that regular physical exercise enhances mental health and recommends that healthcare providers prescribe exercise while public health initiatives should promote it to alleviate the mental health burden.\",\n  \"relevance\": \"high\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 533,
+            "completion_tokens": 85,
+            "total_tokens": 618,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:44 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"chunk_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Where this chunk is from (e.g., Lines
+        450-480)\"\n    },\n    \"chunk_text\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The extracted text to summarize\"\n    }\n  },\n  \"required\": [\n    \"query\",\n    \"chunk_context\",\n    \"chunk_text\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Concise summary of relevant information found\"\n    },\n    \"relevance\":
+        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"high\",\n        \"medium\",\n        \"low\",\n        \"none\"\n      ],\n      \"description\":
+        \"How relevant this chunk is to the query\"\n    }\n  },\n  \"required\":
+        [\n    \"summary\",\n    \"relevance\"\n  ]\n}\n```\n\nAll interactions will
+        be structured in the following way, with the appropriate values filled in.\n##
+        Input values\n```json\n{input_values}\n```\n## Output values\nRespond exclusively
+        with the output schema fields in the json block below.\n```json\n{output_values}\n```\n\nIn
+        adhering to this structure, your objective is: Summarize a chunk of document
+        content, focusing on information relevant to the query."},{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"query\": \"Provide a comprehensive summary of
+        all sections\",\n  \"chunk_context\": \"Lines 61-65\",\n  \"chunk_text\":
+        \"References\\n1. World Health Organization (2023) Mental Health Statistics\\n2.
+        Smith et al. (2022) Exercise and Depression Meta-analysis\\n3. Johnson & Lee
+        (2021) Physical Activity Guidelines Review\\n4. Chen et al. (2020) Anxiety
+        Interventions Systematic Review\"\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2288'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:45 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '1179'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '1199'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9990'
+      X-Ratelimit-Remaining-Tokens:
+      - '199499'
+      X-Ratelimit-Reset-Requests:
+      - 1m24.738s
+      X-Ratelimit-Reset-Tokens:
+      - 150ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af2afeb4414ac-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CuzjUfUXSfqLOM8opez6j7BvjXQiN",
+          "object": "chat.completion",
+          "created": 1767699704,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"summary\": \"The references include a range of studies from the World Health Organization on mental health statistics to various meta-analyses and reviews on exercise, depression, physical activity guidelines, and anxiety interventions.\",\n  \"relevance\": \"medium\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 513,
+            "completion_tokens": 60,
+            "total_tokens": 573,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:45 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAPr0XGkAA+2Vy27bMBBFf0Xg2hJEPWhJgDepUzRF7ebVbOLAGIljmTVFqiIV1DH876Eap2izaRvAq2Y5czVzB7wH0O2OVLpptCLFjoC1nSh7i2aoUFlht4GCBklBplfn26AryYistbGHphFNCYHUFUgnHAbqXnCnzR422/nXTTT/8P3kyynNLm5OLq5P5fTi5vLjdZhm8+uzcDat6Wx6mpD9fkSkrp3v7Y5IvEfpNpzN3392a61o0FhoWlLQMRuzPB+HEYtpQON0RJxmoB6OsR1UuBR8siBAE8gjSH2IV+gnGUv8cpUmfhJlgCFbRSXAgnh23SHwYYRmWeitRIndUKUxC70Ov/XOd6iVkD9Ld0lnl8NNP9pCtb0r9QaVmaQR83Rvf+nksWe1BflcM5p7NaoliMBsjcXGHatbVCDcOQfh4BQ0mqN0et1aP9F+I9TwETftNjCiVmD7Dp08BFMUcxD3ePlpVhRXfdNAJx7w3bpXGzfh9vQSly3Y9eR2J3jhLcgqR15WZeLznIOflDHz8zDlPrCEl+OopBllCzLyKgnGDANPLucdclHZQZFQoiw89wb7u2eLTms7OYbDs4FEWB3VwFQujckOVOUS6LZPsf2LG8fWrguP7j0HsbIuH9kET+EvyEKR/eiv+E5ongcsZ9mxAM+jVwEexy8Az9KXgGdvgL8B/kfA0zRlQZiz6EiAJ5S9CnD6EnD3J/gN8HQcvwH+XwN+t797BB5DA0s2CQAA
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BXAeVLT0rTOsADvrtB84K3ppXPVEAAEBAAAnIQEAASJ6AgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Tue, 06 Jan 2026 11:41:46 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350026-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 Jan 2026 11:41:46 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What the user wants to know\"\n    },\n    \"document_stats\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Document metadata: total lines, etc.\"\n    },\n    \"context_window\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Currently visible
+        content (preview or last action result)\"\n    },\n    \"history\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
+        \"Previous actions and their results (summaries)\"\n    }\n  },\n  \"required\":
+        [\n    \"query\",\n    \"document_stats\",\n    \"context_window\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    },\n    \"action\": {\n      \"oneOf\":
+        [\n        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"_type\":
+        {\n              \"type\": \"string\",\n              \"const\": \"Peek\"\n            },\n            \"start_line\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Start
+        line (1-indexed)\"\n            },\n            \"end_line\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"End line (1-indexed)\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"start_line\",\n            \"end_line\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Peek struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Grep\"\n            },\n            \"pattern\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Regex
+        pattern to search for\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"pattern\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Grep struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Partition\"\n            },\n            \"chunk_size\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Lines
+        per chunk for parallel summarization\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"chunk_size\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Partition struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Finish\"\n            },\n            \"answer\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Final
+        answer to the query\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"answer\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Finish struct\"\n        }\n      ],\n      \"description\":
+        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"reasoning\",\n    \"action\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Select next action to navigate a document and answer a query.
+        Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"query\":
+        \"Provide a comprehensive summary of all sections\",\n  \"document_stats\":
+        \"Total lines: 65\",\n  \"context_window\": \"[Lines 1-10] The study investigates
+        the impact of regular exercise on mental health in adults aged 25-65, finding
+        significant improvements in anxiety and depression for those exercising at
+        least 150 minutes weekly, based on a trial with 500 participants over a year.\\n[Lines
+        11-20] The document begins with an introduction highlighting the global impact
+        of mental health disorders and proposes exercise as a potential non-drug treatment,
+        citing mixed results from earlier studies. The aim of the study is to establish
+        clear evidence using rigorous methodologies. In the methods section, it details
+        the recruitment of 500 adults of varied gender between the ages of 25 and
+        65.\\n[Lines 21-30] The study outlined exclusion criteria like pre-existing
+        cardiovascular conditions. Participants were randomly assigned to either an
+        exercise group, which engaged in over 150 minutes of moderate exercise per
+        week, or a control group that maintained usual activity levels. The intervention
+        lasted for 12 months, including monthly check-ins. The primary outcomes measured
+        were depression (using PHQ-9) and anxiety (using GAD-7).\\n[Lines 31-40] The
+        results section outlines the primary and secondary outcomes of the study.
+        The exercise group demonstrated a 45% reduction in depression scores and a
+        38% reduction in anxiety scores, both statistically significant (p<0.001).
+        The effect sizes for depression were large (Cohen''s d = 0.8). Assessments
+        for secondary outcomes, including quality of life and sleep quality, were
+        conducted at three points: baseline, 6 months, and 12 months.\\n[Lines 41-50]
+        The exercise group experienced a significant improvement in quality of life
+        and sleep quality, with a 52% increase compared to baseline and a 78% adherence
+        rate over 12 months. Subgroup analysis revealed consistent benefits across
+        age groups and genders, with greater improvements noted in participants with
+        higher baseline severity. Outdoor exercise yielded marginally better outcomes
+        than indoor exercise.\\n[Lines 51-60] The findings indicate that exercise
+        is an effective mental health intervention, with effect sizes similar to antidepressants.
+        However, self-reported adherence to exercise presents limitations. The conclusion
+        emphasizes that regular physical exercise enhances mental health and recommends
+        that healthcare providers prescribe exercise while public health initiatives
+        should promote it to alleviate the mental health burden.\\n[Lines 61-65] The
+        references include a range of studies from the World Health Organization on
+        mental health statistics to various meta-analyses and reviews on exercise,
+        depression, physical activity guidelines, and anxiety interventions.\",\n  \"history\":
+        [\n    \"PARTITION (10 lines/chunk, 7 chunks):\\n  [Lines 1-10] The study
+        investigates the impact of regular exercise on mental health in adults aged
+        25-65, finding significant improvements in anxiety and depression for those
+        exercising at least 150 minutes weekly, based on a trial with 500 participants
+        over a year.\\n  [Lines 11-20] The document begins with an introduction highlighting
+        the global impact of mental health disorders and proposes exercise as a potential
+        non-drug treatment, citing mixed results from earlier studies. The aim of
+        the study is to establish clear evidence using rigorous methodologies. In
+        the methods section, it details the recruitment of 500 adults of varied gender
+        between the ages of 25 and 65.\\n  [Lines 21-30] The study outlined exclusion
+        criteria like pre-existing cardiovascular conditions. Participants were randomly
+        assigned to either an exercise group, which engaged in over 150 minutes of
+        moderate exercise per week, or a control group that maintained usual activity
+        levels. The intervention lasted for 12 months, including monthly check-ins.
+        The primary outcomes measured were depression (using PHQ-9) and anxiety (using
+        GAD-7).\\n  [Lines 31-40] The results section outlines the primary and secondary
+        outcomes of the study. The exercise group demonstrated a 45% reduction in
+        depression scores and a 38% reduction in anxiety scores, both statistically
+        significant (p<0.001). The effect sizes for depression were large (Cohen''s
+        d = 0.8). Assessments for secondary outcomes, including quality of life and
+        sleep quality, were conducted at three points: baseline, 6 months, and 12
+        months.\\n  [Lines 41-50] The exercise group experienced a significant improvement
+        in quality of life and sleep quality, with a 52% increase compared to baseline
+        and a 78% adherence rate over 12 months. Subgroup analysis revealed consistent
+        benefits across age groups and genders, with greater improvements noted in
+        participants with higher baseline severity. Outdoor exercise yielded marginally
+        better outcomes than indoor exercise.\\n  [Lines 51-60] The findings indicate
+        that exercise is an effective mental health intervention, with effect sizes
+        similar to antidepressants. However, self-reported adherence to exercise presents
+        limitations. The conclusion emphasizes that regular physical exercise enhances
+        mental health and recommends that healthcare providers prescribe exercise
+        while public health initiatives should promote it to alleviate the mental
+        health burden.\\n  [Lines 61-65] The references include a range of studies
+        from the World Health Organization on mental health statistics to various
+        meta-analyses and reviews on exercise, depression, physical activity guidelines,
+        and anxiety interventions.\"\n  ]\n}\n```\n\nRespond with the corresponding
+        output schema fields wrapped in a ```json ``` block,\nstarting with the heading
+        `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '9811'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 11:41:48 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3119'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3138'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9990'
+      X-Ratelimit-Remaining-Tokens:
+      - '197682'
+      X-Ratelimit-Reset-Requests:
+      - 1m23.375s
+      X-Ratelimit-Reset-Tokens:
+      - 695ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9af2b858e014ac-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CuzjVMF3dQZvFCK8Xnejn1rifmnmh",
+          "object": "chat.completion",
+          "created": 1767699705,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"reasoning\": \"The user has requested a comprehensive summary of all sections from the document. Given that the entire document consists of 65 lines, and we already have a detailed breakdown of the contents from the previous actions, the most efficient action is to 'Finish' the task by providing a final answer that summarizes the key findings and implications from the entire document.\",\n  \"action\": {\n    \"_type\": \"Finish\",\n    \"answer\": \"The study provides evidence that regular exercise significantly reduces anxiety and depression among adults aged 25-65. The intervention, involving over 150 minutes of moderate exercise per week, led to a 45% reduction in depression and a 38% reduction in anxiety, both statistically significant. It highlights the important role of exercise as a non-drug treatment for mental health and recommends incorporating exercise into healthcare practices and public health initiatives.\"\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1954,
+            "completion_tokens": 187,
+            "total_tokens": 2141,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 11:41:48 GMT
+recorded_with: VCR 6.3.1
