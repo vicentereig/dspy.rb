@@ -60,13 +60,6 @@ RSpec.describe DSPy::NaiveRLM do
     end
   end
 
-  describe DSPy::NaiveRLM::Relevance do
-    it 'defines relevance levels' do
-      expect(DSPy::NaiveRLM::Relevance::High.serialize).to eq('high')
-      expect(DSPy::NaiveRLM::Relevance::None.serialize).to eq('none')
-    end
-  end
-
   describe DSPy::NaiveRLM::Navigator do
     subject(:navigator) { described_class.new(max_iterations: 5) }
 
@@ -117,9 +110,9 @@ RSpec.describe DSPy::NaiveRLM do
     end
 
     describe '#named_predictors' do
-      it 'returns selector and summarizer' do
+      it 'returns only selector' do
         predictors = navigator.named_predictors
-        expect(predictors.map(&:first)).to contain_exactly('selector', 'summarizer')
+        expect(predictors.map(&:first)).to contain_exactly('selector')
       end
     end
 
@@ -309,32 +302,18 @@ RSpec.describe DSPy::NaiveRLM do
           output_props = DSPy::NaiveRLM::SelectAction.output_struct_class.props
 
           expect(output_props).to have_key(:reasoning)
+          expect(output_props).to have_key(:notes)
           expect(output_props).to have_key(:action)
           # Action is now a T.any union type, not individual optional fields
-          expect(output_props.keys).to contain_exactly(:reasoning, :action)
+          expect(output_props.keys).to contain_exactly(:reasoning, :notes, :action)
         end
 
-        it 'has a concise description' do
-          expect(DSPy::NaiveRLM::SelectAction.description).to include('navigate a document')
-        end
-      end
-
-      describe DSPy::NaiveRLM::SummarizeChunk do
-        it 'has required input fields' do
-          input_props = DSPy::NaiveRLM::SummarizeChunk.input_struct_class.props
-
-          expect(input_props).to have_key(:query)
-          expect(input_props).to have_key(:chunk_context)
-          expect(input_props).to have_key(:chunk_text)
-        end
-
-        it 'has required output fields' do
-          output_props = DSPy::NaiveRLM::SummarizeChunk.output_struct_class.props
-
-          expect(output_props).to have_key(:summary)
-          expect(output_props).to have_key(:relevance)
+        it 'has a description explaining navigation' do
+          expect(DSPy::NaiveRLM::SelectAction.description).to include('Navigate a document')
+          expect(DSPy::NaiveRLM::SelectAction.description).to include('Finish')
         end
       end
+
     end
   end
 end

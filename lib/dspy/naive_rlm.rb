@@ -38,7 +38,7 @@ module DSPy
       end
 
       class Finish < T::Struct
-        const :answer, String, description: 'Final answer to the query'
+        const :answer, String, description: 'Your complete answer to the query, synthesizing all relevant information you found'
       end
     end
 
@@ -50,46 +50,26 @@ module DSPy
       const :max_iterations_reached, T::Boolean, default: false
     end
 
-    # Relevance scoring for summarized chunks
-    class Relevance < T::Enum
-      enums do
-        High = new('high')
-        Medium = new('medium')
-        Low = new('low')
-        None = new('none')
-      end
-    end
-
     # Signature for LLM to select next action
     class SelectAction < DSPy::Signature
-      description "Select next action to navigate a document and answer a query."
+      description <<~DESC.strip
+        Navigate a document to answer a query. You can only see a small window at a time.
+        Use Peek/Grep/Partition to explore, then Finish with your answer once you have enough information.
+        IMPORTANT: When you have gathered sufficient information to answer the query, you MUST use Finish.
+        Do not keep exploring indefinitely - synthesize what you've learned and provide your answer.
+      DESC
 
       input do
-        const :query, String, description: 'What the user wants to know'
-        const :document_stats, String, description: 'Document metadata: total lines, etc.'
-        const :context_window, String, description: 'Currently visible content (preview or last action result)'
-        const :history, T::Array[String], default: [], description: 'Previous actions and their results (summaries)'
+        const :query, String, description: 'The question to answer about the document'
+        const :document_stats, String, description: 'Document metadata (e.g., total lines)'
+        const :context_window, String, description: 'Currently visible content from last action'
+        const :history, T::Array[String], default: [], description: 'Actions taken so far and what was found'
       end
 
       output do
-        const :reasoning, String, description: 'Why this action will help answer the query'
+        const :reasoning, String, description: 'Your reasoning: what have you learned? Do you have enough to answer? If not, what should you explore next?'
+        const :notes, String, description: 'Key findings from the current context window that are relevant to answering the query. Record important facts, quotes, or data points here so you remember them.'
         const :action, T.any(Actions::Peek, Actions::Grep, Actions::Partition, Actions::Finish)
-      end
-    end
-
-    # Signature for summarizing extracted chunks
-    class SummarizeChunk < DSPy::Signature
-      description 'Summarize a chunk of document content, focusing on information relevant to the query.'
-
-      input do
-        const :query, String, description: 'What the user wants to know'
-        const :chunk_context, String, description: 'Where this chunk is from (e.g., Lines 450-480)'
-        const :chunk_text, String, description: 'The extracted text to summarize'
-      end
-
-      output do
-        const :summary, String, description: 'Concise summary of relevant information found'
-        const :relevance, Relevance, description: 'How relevant this chunk is to the query'
       end
     end
 
@@ -102,7 +82,6 @@ module DSPy
       DEFAULT_GREP_CONTEXT = 10
       DEFAULT_MAX_GREP_MATCHES = 5
       DEFAULT_PARTITION_SIZE = 500
-      SUMMARIZE_THRESHOLD = 500
 
       sig { returns(Integer) }
       attr_reader :max_iterations
@@ -112,15 +91,11 @@ module DSPy
         super()
         @max_iterations = max_iterations
         @selector = T.let(DSPy::ChainOfThought.new(SelectAction), DSPy::ChainOfThought)
-        @summarizer = T.let(DSPy::Predict.new(SummarizeChunk), DSPy::Predict)
       end
 
       sig { override.returns(T::Array[[String, DSPy::Module]]) }
       def named_predictors
-        [
-          ['selector', @selector],
-          ['summarizer', @summarizer]
-        ]
+        [['selector', @selector]]
       end
 
       sig { params(kwargs: T.untyped).returns(T.untyped).override }
@@ -143,6 +118,7 @@ module DSPy
           )
 
           action = decision.action
+          notes = decision.notes
 
           case action
           when Actions::Finish
@@ -155,8 +131,7 @@ module DSPy
           when Actions::Peek
             result = execute_peek(lines, action.start_line, action.end_line)
             current_window = result[:text]
-            summary = summarize_if_large(result[:text], query, result[:context])
-            history << "PEEK #{result[:context]}: #{summary}"
+            history << "PEEK #{result[:context]} - Notes: #{notes}"
 
           when Actions::Grep
             pattern = action.pattern
@@ -166,33 +141,17 @@ module DSPy
               history << "GREP '#{pattern}': No matches found"
               current_window = preview
             else
-              summaries = matches.map do |match|
-                chunk_result = @summarizer.call(
-                  query: query,
-                  chunk_context: match[:context],
-                  chunk_text: match[:text]
-                )
-                "[#{match[:context]}] #{chunk_result.summary} (#{chunk_result.relevance.serialize})"
-              end
-              history << "GREP '#{pattern}': #{matches.length} matches\n  #{summaries.join("\n  ")}"
+              history << "GREP '#{pattern}': #{matches.length} matches - Notes: #{notes}"
               current_window = format_grep_results(matches)
             end
 
           when Actions::Partition
             chunk_size = action.chunk_size
             chunks = partition_lines(lines, chunk_size)
+            chunk_ranges = chunks.map { |c| c[:context] }
 
-            summaries = chunks.filter_map do |chunk|
-              chunk_result = @summarizer.call(
-                query: query,
-                chunk_context: chunk[:context],
-                chunk_text: chunk[:text]
-              )
-              "[#{chunk[:context]}] #{chunk_result.summary}" unless chunk_result.relevance == Relevance::None
-            end
-
-            history << "PARTITION (#{chunk_size} lines/chunk, #{chunks.length} chunks):\n  #{summaries.join("\n  ")}"
-            current_window = summaries.join("\n")
+            history << "PARTITION: #{chunks.length} chunks (#{chunk_ranges.join(', ')}) - Notes: #{notes}"
+            current_window = "Document partitioned into #{chunks.length} chunks. Use PEEK to examine specific ranges:\n#{chunk_ranges.join("\n")}"
           end
         end
 
@@ -294,18 +253,6 @@ module DSPy
       sig { params(matches: T::Array[T::Hash[Symbol, T.untyped]]).returns(String) }
       def format_grep_results(matches)
         matches.map { |m| "--- #{m[:context]} ---\n#{m[:text]}" }.join("\n\n")
-      end
-
-      sig { params(text: String, query: String, context: String).returns(String) }
-      def summarize_if_large(text, query, context)
-        return text if text.length < SUMMARIZE_THRESHOLD
-
-        result = @summarizer.call(
-          query: query,
-          chunk_context: context,
-          chunk_text: text
-        )
-        result.summary
       end
 
       sig { params(history: T::Array[String]).returns(String) }
