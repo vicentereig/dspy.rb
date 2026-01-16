@@ -9,8 +9,8 @@ breadcrumb:
   url: "/advanced/stateful-agents/"
 nav:
   prev:
-    name: Memory Systems
-    url: "/advanced/memory-systems/"
+    name: LangChain Comparison
+    url: "/advanced/dspy-vs-langchain/"
   next:
     name: Custom Toolsets
     url: "/advanced/custom-toolsets/"

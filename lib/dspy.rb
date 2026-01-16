@@ -225,7 +225,6 @@ require_relative 'dspy/events/subscribers'
 require_relative 'dspy/events/subscriber_mixin'
 require_relative 'dspy/chain_of_thought'
 require_relative 'dspy/re_act'
-require_relative 'dspy/naive_rlm'
 require_relative 'dspy/evals'
 require_relative 'dspy/scores'
 require_relative 'dspy/teleprompt/teleprompter'
@@ -249,7 +248,6 @@ begin
 rescue LoadError
 end
 require_relative 'dspy/tools'
-require_relative 'dspy/memory'
 
 begin
   require 'dspy/datasets'

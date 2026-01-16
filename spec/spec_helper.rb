@@ -35,30 +35,6 @@ DSPy.configure do |c|
   c.logger = Dry.Logger(:dspy, formatter: :string) { |s| s.add_backend(stream: "log/test.log") }
 end
 
-# Pre-download embedding model for tests
-begin
-  require 'dspy/memory/local_embedding_engine'
-
-  # Allow HTTP connections temporarily to download the model
-  original_allow_setting = WebMock.net_connect_allowed?
-  WebMock.allow_net_connect!
-
-  # Pre-download the model so it's available for tests
-  DSPy::Memory::LocalEmbeddingEngine.new
-
-  puts "✓ Embedding model pre-downloaded successfully"
-rescue => e
-  puts "⚠ Could not pre-download embedding model: #{e.message}"
-ensure
-  # Restore original WebMock settings but allow telemetry endpoints
-  if original_allow_setting
-    WebMock.allow_net_connect!
-  else
-    # Block all network connections - no telemetry allowed in tests
-    WebMock.disable_net_connect!
-  end
-end
-
 def require_api_key!
   skip "Requires API key to be set: #{api_key_name}" unless ENV[api_key_name]
 end

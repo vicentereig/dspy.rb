@@ -392,7 +392,6 @@ puts result.response
 ```
 
 For more details on creating tools and toolsets, see the [Toolsets documentation](../toolsets).
-For advanced memory patterns, see the [Memory Systems documentation](../../advanced/memory-systems).
 
 ### Module Using CodeAct for Dynamic Programming
 

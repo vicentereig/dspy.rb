@@ -19,14 +19,13 @@ DSPy.rb brings software engineering best practices to LLM development. Instead o
 7. [Rich Types](#complex-types)
 8. [Multimodal Support](#multimodal-support)
 9. [Agent Systems](#agent-systems)
-10. [Memory Systems](#memory-systems)
-11. [Toolsets](#toolsets)
-12. [Optimization](#optimization)
-13. [Production Features](#production-features)
-14. [Testing Strategies](#testing-strategies)
-15. [API Reference](#api-reference)
-16. [Integration Guides](#integration-guides)
-17. [Examples](#examples)
+10. [Toolsets](#toolsets)
+11. [Optimization](#optimization)
+12. [Production Features](#production-features)
+13. [Testing Strategies](#testing-strategies)
+14. [API Reference](#api-reference)
+15. [Integration Guides](#integration-guides)
+16. [Examples](#examples)
 
 ## Overview
 
@@ -1029,68 +1028,6 @@ class CustomAgent < DSPy::Module
       confidence: validation.confidence
     }
   end
-end
-```
-
-## Memory Systems
-
-### Basic Memory Operations
-
-```ruby
-# Initialize memory
-DSPy::Memory.configure do |config|
-  config.storage_adapter = :in_memory  # or :redis
-end
-
-# Store memory
-memory_id = DSPy::Memory.manager.store_memory(
-  "User prefers dark mode",
-  user_id: "user123",
-  tags: ["preferences", "ui"]
-)
-
-# Retrieve memory
-memory = DSPy::Memory.manager.retrieve_memory(memory_id)
-
-# Search memories
-memories = DSPy::Memory.manager.search_memories(
-  user_id: "user123",
-  tags: ["preferences"]
-)
-```
-
-### Memory with Agents
-
-```ruby
-class PersonalAssistant < DSPy::Module
-  def initialize
-    super
-    memory_tools = DSPy::Tools::MemoryToolset.to_tools
-
-    @agent = DSPy::ReAct.new(
-      AssistantSignature,
-      tools: memory_tools
-    )
-  end
-
-  def forward(user_message:, user_id:)
-    @agent.call(
-      user_message: user_message,
-      user_id: user_id
-    )
-  end
-end
-```
-
-### Redis Storage
-
-```ruby
-require 'redis'
-
-DSPy::Memory.configure do |config|
-  config.storage_adapter = :redis
-  config.redis_client = Redis.new(url: ENV['REDIS_URL'])
-  config.redis_namespace = 'dspy:memory'
 end
 ```
 
