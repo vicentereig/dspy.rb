@@ -20,16 +20,36 @@ module DSPy
           return schema unless schema.is_a?(Hash)
 
           result = schema.dup
+
+          # Add additionalProperties: false to any object type
           result[:additionalProperties] = false if result[:type] == "object"
 
+          # Process nested properties
           if result[:properties].is_a?(Hash)
             result[:properties] = result[:properties].transform_values do |v|
               add_additional_properties_false(v)
             end
           end
 
+          # Process array items
           if result[:items].is_a?(Hash)
             result[:items] = add_additional_properties_false(result[:items])
+          elsif result[:items].is_a?(Array)
+            result[:items] = result[:items].map { |item| add_additional_properties_false(item) }
+          end
+
+          # Process oneOf, anyOf, allOf arrays
+          [:oneOf, :anyOf, :allOf].each do |key|
+            if result[key].is_a?(Array)
+              result[key] = result[key].map { |item| add_additional_properties_false(item) }
+            end
+          end
+
+          # Process definitions
+          [:definitions, :$defs].each do |key|
+            if result[key].is_a?(Hash)
+              result[key] = result[key].transform_values { |v| add_additional_properties_false(v) }
+            end
           end
 
           result

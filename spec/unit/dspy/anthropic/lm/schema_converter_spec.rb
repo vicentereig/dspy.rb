@@ -94,6 +94,49 @@ RSpec.describe DSPy::Anthropic::LM::SchemaConverter do
       end
     end
 
+    context 'when handling union types (oneOf)' do
+      # Define named classes so sorbet-schema generates oneOf properly
+      before(:all) do
+        unless defined?(TestEmail)
+          TestEmail = Class.new(T::Struct) do
+            const :address, String
+            const :verified, T::Boolean
+          end
+        end
+        unless defined?(TestPhone)
+          TestPhone = Class.new(T::Struct) do
+            const :number, String
+            const :country_code, String
+          end
+        end
+      end
+
+      let(:signature_class) do
+        Class.new(DSPy::Signature) do
+          output do
+            const :contact, T.any(TestEmail, TestPhone)
+          end
+        end
+      end
+
+      it 'adds additionalProperties: false to all objects in oneOf' do
+        result = described_class.to_beta_format(signature_class)
+
+        # Check top level
+        expect(result[:additionalProperties]).to eq(false)
+
+        # Check that oneOf is present
+        contact_property = result[:properties][:contact]
+        expect(contact_property).to have_key(:oneOf)
+
+        # Check each option in the union
+        contact_property[:oneOf].each do |option|
+          expect(option[:type]).to eq('object')
+          expect(option[:additionalProperties]).to eq(false)
+        end
+      end
+    end
+
     context 'when handling deeply nested structures' do
       let(:user_class) do
         Class.new(T::Struct) do
@@ -196,6 +239,108 @@ RSpec.describe DSPy::Anthropic::LM::SchemaConverter do
       result = described_class.add_additional_properties_false(schema)
 
       expect(result[:items][:additionalProperties]).to eq(false)
+    end
+
+    it 'processes oneOf schemas recursively' do
+      schema = {
+        type: 'object',
+        properties: {
+          contact: {
+            oneOf: [
+              {
+                type: 'object',
+                properties: { email: { type: 'string' } }
+              },
+              {
+                type: 'object',
+                properties: { phone: { type: 'string' } }
+              }
+            ]
+          }
+        }
+      }
+
+      result = described_class.add_additional_properties_false(schema)
+
+      expect(result[:additionalProperties]).to eq(false)
+      expect(result[:properties][:contact][:oneOf][0][:additionalProperties]).to eq(false)
+      expect(result[:properties][:contact][:oneOf][1][:additionalProperties]).to eq(false)
+    end
+
+    it 'processes anyOf schemas recursively' do
+      schema = {
+        type: 'object',
+        anyOf: [
+          {
+            type: 'object',
+            properties: { foo: { type: 'string' } }
+          },
+          {
+            type: 'object',
+            properties: { bar: { type: 'number' } }
+          }
+        ]
+      }
+
+      result = described_class.add_additional_properties_false(schema)
+
+      expect(result[:anyOf][0][:additionalProperties]).to eq(false)
+      expect(result[:anyOf][1][:additionalProperties]).to eq(false)
+    end
+
+    it 'processes allOf schemas recursively' do
+      schema = {
+        type: 'object',
+        allOf: [
+          {
+            type: 'object',
+            properties: { id: { type: 'string' } }
+          },
+          {
+            type: 'object',
+            properties: { name: { type: 'string' } }
+          }
+        ]
+      }
+
+      result = described_class.add_additional_properties_false(schema)
+
+      expect(result[:allOf][0][:additionalProperties]).to eq(false)
+      expect(result[:allOf][1][:additionalProperties]).to eq(false)
+    end
+
+    it 'processes definitions recursively' do
+      schema = {
+        type: 'object',
+        properties: { user: { '$ref': '#/definitions/User' } },
+        definitions: {
+          User: {
+            type: 'object',
+            properties: { name: { type: 'string' } }
+          }
+        }
+      }
+
+      result = described_class.add_additional_properties_false(schema)
+
+      expect(result[:definitions][:User][:additionalProperties]).to eq(false)
+    end
+
+    it 'processes $defs recursively' do
+      schema = {
+        type: 'object',
+        properties: { user: { '$ref': '#/$defs/User' } },
+        '$defs': {
+          User: {
+            type: 'object',
+            properties: { name: { type: 'string' } }
+          }
+        }
+      }
+
+      result = described_class.add_additional_properties_false(schema)
+
+      expect(result[:'$defs'][:User][:additionalProperties]).to eq(false)
     end
   end
 end
