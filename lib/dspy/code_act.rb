@@ -420,7 +420,7 @@ module DSPy
         [final_result, ""]
       rescue SyntaxError => e
         [nil, "Error: #{e.message}"]
-      rescue => e
+      rescue StandardError => e
         [nil, "Error: #{e.message}"]
       ensure
         $stdout = original_stdout if original_stdout

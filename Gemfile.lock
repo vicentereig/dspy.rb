@@ -11,7 +11,7 @@ PATH
       sorbet-runtime (~> 0.5)
       sorbet-schema (~> 0.3)
       sorbet-toon (~> 0.1)
-    dspy-anthropic (1.0.1)
+    dspy-anthropic (1.0.2)
       anthropic
       dspy (>= 0.30)
     dspy-datasets (1.0.1)

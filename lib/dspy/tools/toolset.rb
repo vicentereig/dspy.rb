@@ -187,7 +187,7 @@ module DSPy
 
             @instance.send(@method_name, **kwargs)
           end
-        rescue => e
+        rescue StandardError => e
           "Error: #{e.message}"
         end
       end

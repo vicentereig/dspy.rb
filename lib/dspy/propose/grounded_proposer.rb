@@ -160,7 +160,7 @@ module DSPy
               DSPy.current_lm,
               verbose: @config.verbose
             )
-          rescue => e
+          rescue StandardError => e
             DSPy.logger.warn("Failed to generate dataset summary: #{e.message}")
             @dataset_summary = nil
           end
@@ -189,7 +189,7 @@ module DSPy
         # This is a simplified version - could be enhanced with method_source gem
         code = "Program: #{klass.name}\nSource: #{file}:#{line}"
         code
-      rescue => e
+      rescue StandardError => e
         DSPy.logger.warn("Could not extract program source: #{e.message}")
         nil
       end
@@ -506,7 +506,7 @@ module DSPy
             instruction = result.instruction.strip
 
             candidates << instruction if instruction.length > 0
-          rescue => error
+          rescue StandardError => error
             DSPy.logger.warn("Failed to generate instruction candidate #{i + 1}: #{error.message}")
           end
         end

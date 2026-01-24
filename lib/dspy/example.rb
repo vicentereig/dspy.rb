@@ -178,7 +178,7 @@ module DSPy
             id: example_data[:id] || "example_#{index}"
           )
           examples << example
-        rescue => e
+        rescue StandardError => e
           errors << "Example #{index}: #{e.message}"
         end
       end

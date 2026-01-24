@@ -127,7 +127,7 @@ module DSPy
                   metadata: typed_metadata
                 )
               end
-            rescue => e
+            rescue StandardError => e
               # Check for specific image-related errors in the message
               error_msg = e.message.to_s
 

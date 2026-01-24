@@ -684,7 +684,7 @@ module DSPy
               break
             end
 
-          rescue => error
+          rescue StandardError => error
             finalize_trial_log_entry(
               trial_logs,
               trials_completed,
@@ -1080,7 +1080,7 @@ module DSPy
           best_idx = acquisition_scores.each_with_index.max_by { |score, _| score }[1]
           candidates[best_idx]
           
-        rescue => e
+        rescue StandardError => e
           # If GP fails for any reason, fall back to adaptive selection
           DSPy.logger.warn("Bayesian optimization failed: #{e.message}. Falling back to adaptive selection.")
           select_candidate_adaptive(candidates, state, trial_idx)

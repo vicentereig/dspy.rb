@@ -73,7 +73,7 @@ module DSPy
 
           # Trigger immediate export if batch size reached
           trigger_export_if_batch_full
-        rescue => e
+        rescue StandardError => e
           DSPy.log('observability.enqueue_error', error: e.message)
         end
       end
@@ -92,7 +92,7 @@ module DSPy
           future.value!(timeout)
 
           result
-        rescue => e
+        rescue StandardError => e
           DSPy.log('observability.shutdown_error', error: e.message, class: e.class.name)
           OpenTelemetry::SDK::Trace::Export::FAILURE
         ensure
@@ -131,7 +131,7 @@ module DSPy
 
             schedule_async_export(export_all: true)
           end
-        rescue => e
+        rescue StandardError => e
           DSPy.log('observability.export_task_error', error: e.message, class: e.class.name)
         end
       end
@@ -150,7 +150,7 @@ module DSPy
         end
 
         future.value!(timeout || @shutdown_timeout)
-      rescue => e
+      rescue StandardError => e
         DSPy.log('observability.export_error', error: e.message, class: e.class.name)
         OpenTelemetry::SDK::Trace::Export::FAILURE
       end
@@ -160,7 +160,7 @@ module DSPy
 
         @export_executor.post do
           export_queued_spans_internal(export_all: export_all)
-        rescue => e
+        rescue StandardError => e
           DSPy.log('observability.batch_export_error', error: e.message, class: e.class.name)
         end
       end
@@ -240,7 +240,7 @@ module DSPy
             return result
           end
         end
-      rescue => e
+      rescue StandardError => e
         DSPy.log('observability.export_error', error: e.message, class: e.class.name)
         OpenTelemetry::SDK::Trace::Export::FAILURE
       end

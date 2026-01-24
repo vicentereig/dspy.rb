@@ -259,7 +259,7 @@ module DSPy
           emit_register_complete_event(signature_version)
           signature_version
 
-        rescue => error
+        rescue StandardError => error
           emit_register_error_event(signature_name, version, error)
           raise
         end
@@ -313,7 +313,7 @@ module DSPy
           emit_deploy_complete_event(deployed_version)
           deployed_version
 
-        rescue => error
+        rescue StandardError => error
           emit_deploy_error_event(signature_name, version, error)
           nil
         end
@@ -363,7 +363,7 @@ module DSPy
           emit_rollback_error_event(signature_name, "No previous version to rollback to")
           nil
 
-        rescue => error
+        rescue StandardError => error
           emit_rollback_error_event(signature_name, error.message)
           nil
         end

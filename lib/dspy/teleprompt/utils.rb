@@ -360,7 +360,7 @@ module DSPy
               )
               successful_demos << demo
             end
-          rescue => e
+          rescue StandardError => e
             # Continue on errors
             DSPy.logger.warn("Bootstrap error: #{e.message}") if DSPy.logger
           end
@@ -513,7 +513,7 @@ module DSPy
               emit_bootstrap_example_event(index, false, "Prediction did not match expected output")
             end
 
-          rescue => error
+          rescue StandardError => error
             error_count += 1
             failed << example
             emit_bootstrap_example_event(index, false, error.message)

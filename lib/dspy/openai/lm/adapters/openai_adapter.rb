@@ -101,7 +101,7 @@ module DSPy
                 usage: usage_struct,
                 metadata: metadata
               )
-            rescue => e
+            rescue StandardError => e
               # Check for specific error types and messages
               error_msg = e.message.to_s
 

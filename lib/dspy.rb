@@ -141,7 +141,7 @@ module DSPy
       # Events are instant moments in time, not ongoing operations
       span = DSPy::Observability.start_span(event_name, flattened_attributes)
       DSPy::Observability.finish_span(span) if span
-    rescue => e
+    rescue StandardError => e
       # Log error but don't let it break the event system
       # Use emit_log directly to avoid infinite recursion
       emit_log('event.span_creation_error', {

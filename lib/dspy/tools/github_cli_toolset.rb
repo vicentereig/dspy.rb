@@ -105,7 +105,7 @@ module DSPy
         else
           "Failed to list issues: #{result[:error]}"
         end
-      rescue => e
+      rescue StandardError => e
         "Error listing issues: #{e.message}"
       end
 
@@ -140,7 +140,7 @@ module DSPy
         else
           "Failed to list pull requests: #{result[:error]}"
         end
-      rescue => e
+      rescue StandardError => e
         "Error listing pull requests: #{e.message}"
       end
 
@@ -159,7 +159,7 @@ module DSPy
         else
           "Failed to get issue: #{result[:error]}"
         end
-      rescue => e
+      rescue StandardError => e
         "Error getting issue: #{e.message}"
       end
 
@@ -178,7 +178,7 @@ module DSPy
         else
           "Failed to get pull request: #{result[:error]}"
         end
-      rescue => e
+      rescue StandardError => e
         "Error getting pull request: #{e.message}"
       end
 
@@ -214,7 +214,7 @@ module DSPy
         else
           "API request failed: #{result[:error]}"
         end
-      rescue => e
+      rescue StandardError => e
         "Error making API request: #{e.message}"
       end
 
@@ -231,7 +231,7 @@ module DSPy
         else
           "Failed to fetch traffic views: #{result[:error]}"
         end
-      rescue => e
+      rescue StandardError => e
         "Error fetching traffic views: #{e.message}"
       end
 
@@ -248,7 +248,7 @@ module DSPy
         else
           "Failed to fetch traffic clones: #{result[:error]}"
         end
-      rescue => e
+      rescue StandardError => e
         "Error fetching traffic clones: #{e.message}"
       end
 

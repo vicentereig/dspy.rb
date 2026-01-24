@@ -128,7 +128,7 @@ module DSPy
                 usage: usage_struct,
                 metadata: typed_metadata
               )
-            rescue => e
+            rescue StandardError => e
               handle_gemini_error(e)
             end
           end

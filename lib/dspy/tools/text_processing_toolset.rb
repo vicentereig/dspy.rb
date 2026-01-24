@@ -52,7 +52,7 @@ module DSPy
         else
           result
         end
-      rescue => e
+      rescue StandardError => e
         "Error running grep: #{e.message}"
       end
 
@@ -92,7 +92,7 @@ module DSPy
         else
           result
         end
-      rescue => e
+      rescue StandardError => e
         "Error running ripgrep: #{e.message}"
       end
 

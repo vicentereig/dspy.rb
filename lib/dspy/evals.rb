@@ -387,7 +387,7 @@ module DSPy
           Concurrent::Promises.future_on(executor) do
             program_for_thread = fork_program_for_thread
             [:ok, item[:index], safe_call(item[:example], program: program_for_thread, track_state: false)]
-          rescue => e
+          rescue StandardError => e
             [:error, item[:index], e]
           end
         end
@@ -426,7 +426,7 @@ module DSPy
 
     def safe_call(example, program: @program, track_state: true)
       call_with_program(program, example, track_state: track_state)
-    rescue => e
+    rescue StandardError => e
       build_error_result(example, e)
     end
 
@@ -452,7 +452,7 @@ module DSPy
             passed = !!metric_result
             metrics[:passed] = passed
           end
-        rescue => e
+        rescue StandardError => e
           passed = false
           metrics[:error] = e.message
           metrics[:passed] = false
@@ -484,7 +484,7 @@ module DSPy
       ) do
         begin
           perform_call(example, trace: trace, program: program)
-        rescue => e
+        rescue StandardError => e
           build_error_result(example, e, trace: trace)
         end
       end.then do |result|
@@ -691,7 +691,7 @@ module DSPy
       if @export_scores
         export_example_score(example, result)
       end
-    rescue => e
+    rescue StandardError => e
       DSPy.log('evals.example.observation_error', error: e.message)
     end
 
@@ -709,7 +709,7 @@ module DSPy
       if @export_scores
         export_batch_score(batch_result)
       end
-    rescue => e
+    rescue StandardError => e
       DSPy.log('evals.batch.observation_error', error: e.message)
     end
 
@@ -722,7 +722,7 @@ module DSPy
         score_value,
         comment: "Example: #{example_id || 'unknown'}, passed: #{result.passed}"
       )
-    rescue => e
+    rescue StandardError => e
       DSPy.log('evals.score_export_error', error: e.message)
     end
 
@@ -732,7 +732,7 @@ module DSPy
         batch_result.pass_rate,
         comment: "Batch: #{batch_result.passed_examples}/#{batch_result.total_examples} passed"
       )
-    rescue => e
+    rescue StandardError => e
       DSPy.log('evals.batch_score_export_error', error: e.message)
     end
 
