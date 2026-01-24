@@ -33,38 +33,11 @@ module DSPy
       }
     end
   end
-  # Base class for ReAct thought generation - will be customized per input type
-  class ThoughtBase < DSPy::Signature
-    description "Generate a thought about what to do next to process the given inputs."
-
-    output do
-      const :thought, String,
-        description: "Reasoning about what to do next, considering the history and observations."
-      const :action, String,
-        description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
-      const :tool_input, ToolInput,
-        description: "Input for the chosen tool action. Required when action is a tool name. MUST be a JSON object matching the tool's parameter schema. Set to null when action is \"finish\"."
-      const :final_answer, T.nilable(String),
-        description: "The final answer to return. Required when action is \"finish\". Must match the expected output type. Set to null when action is a tool name."
-    end
-  end
 
   class NextStep < T::Enum
     enums do
       Continue = new("continue")
       Finish = new("finish")
-    end
-  end
-
-  # Base class for observation processing - will be customized per input type
-  class ReActObservationBase < DSPy::Signature
-    description "Process the observation from a tool and decide what to do next."
-
-    output do
-      const :interpretation, String,
-        description: "Interpretation of the observation"
-      const :next_step, NextStep,
-        description: "What to do next: '#{NextStep::Continue}' or '#{NextStep::Finish}'"
     end
   end
 
@@ -780,9 +753,6 @@ module DSPy
       end
     end
 
-    # Alias for backward compatibility
-    alias string_compatible_type? string_type?
-
     # Get a readable type name from a Sorbet type object
     sig { params(type_object: T.untyped).returns(String) }
     def type_name(type_object)
@@ -852,34 +822,6 @@ module DSPy
         tool.dynamic_call({})
       else
         tool.dynamic_call(tool_input)
-      end
-    end
-
-    sig { params(output: T.untyped).void }
-    def validate_output_schema!(output)
-      # Validate that output is an instance of the enhanced output struct
-      unless output.is_a?(@enhanced_output_struct)
-        raise "Output must be an instance of #{@enhanced_output_struct}, got #{output.class}"
-      end
-
-      # Validate original signature output fields are present
-      @original_signature_class.output_struct_class.props.each do |field_name, _prop|
-        unless output.respond_to?(field_name)
-          raise "Missing required field: #{field_name}"
-        end
-      end
-
-      # Validate ReAct-specific fields
-      unless output.respond_to?(:history) && output.history.is_a?(Array)
-        raise "Missing or invalid history field"
-      end
-
-      unless output.respond_to?(:iterations) && output.iterations.is_a?(Integer)
-        raise "Missing or invalid iterations field"
-      end
-
-      unless output.respond_to?(:tools_used) && output.tools_used.is_a?(Array)
-        raise "Missing or invalid tools_used field"
       end
     end
 

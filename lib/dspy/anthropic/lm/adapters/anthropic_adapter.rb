@@ -26,7 +26,7 @@ module DSPy
             if contains_images?(normalized_messages)
               DSPy::LM::VisionModels.validate_vision_support!('anthropic', model)
               # Convert messages to Anthropic format with proper image handling
-              normalized_messages = format_multimodal_messages(normalized_messages)
+              normalized_messages = format_multimodal_messages(normalized_messages, 'anthropic')
             end
 
             # Anthropic requires system message to be separate from messages
@@ -266,33 +266,6 @@ module DSPy
             end
 
             [system_message, user_messages]
-          end
-
-          def format_multimodal_messages(messages)
-            messages.map do |msg|
-              if msg[:content].is_a?(Array)
-                # Convert multimodal content to Anthropic format
-                formatted_content = msg[:content].map do |item|
-                  case item[:type]
-                  when 'text'
-                    { type: 'text', text: item[:text] }
-                  when 'image'
-                    # Validate image compatibility before formatting
-                    item[:image].validate_for_provider!('anthropic')
-                    item[:image].to_anthropic_format
-                  else
-                    item
-                  end
-                end
-
-                {
-                  role: msg[:role],
-                  content: formatted_content
-                }
-              else
-                msg
-              end
-            end
           end
         end
       end

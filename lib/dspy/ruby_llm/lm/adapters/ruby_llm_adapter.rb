@@ -52,7 +52,7 @@ module DSPy
             # Validate vision support if images are present
             if contains_images?(normalized_messages)
               validate_vision_support!
-              normalized_messages = format_multimodal_messages(normalized_messages)
+              normalized_messages = format_multimodal_messages(normalized_messages, provider)
             end
 
             chat_instance = create_chat_instance
@@ -357,32 +357,6 @@ module DSPy
           rescue DSPy::LM::IncompatibleImageFeatureError
             # If DSPy doesn't know about the model, let RubyLLM handle it
             # RubyLLM has its own model registry with capability detection
-          end
-
-          def format_multimodal_messages(messages)
-            messages.map do |msg|
-              if msg[:content].is_a?(Array)
-                formatted_content = msg[:content].map do |item|
-                  case item[:type]
-                  when 'text'
-                    { type: 'text', text: item[:text] }
-                  when 'image'
-                    # Validate and format image for provider
-                    image = item[:image]
-                    if image.respond_to?(:validate_for_provider!)
-                      image.validate_for_provider!(provider)
-                    end
-                    item
-                  else
-                    item
-                  end
-                end
-
-                { role: msg[:role], content: formatted_content }
-              else
-                msg
-              end
-            end
           end
         end
       end

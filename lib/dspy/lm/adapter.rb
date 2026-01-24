@@ -57,6 +57,45 @@ module DSPy
           content.is_a?(Array) && content.any? { |item| item[:type] == 'image' }
         end
       end
+
+      # Format multimodal messages for a specific provider
+      # @param messages [Array<Hash>] Array of message hashes
+      # @param provider_name [String] Provider name for image validation and formatting
+      # @return [Array<Hash>] Messages with images formatted for the provider
+      def format_multimodal_messages(messages, provider_name)
+        messages.map do |msg|
+          if msg[:content].is_a?(Array)
+            formatted_content = msg[:content].map do |item|
+              case item[:type]
+              when 'text'
+                { type: 'text', text: item[:text] }
+              when 'image'
+                format_image_for_provider(item[:image], provider_name)
+              else
+                item
+              end
+            end
+            { role: msg[:role], content: formatted_content }
+          else
+            msg
+          end
+        end
+      end
+
+      # Format an image for a specific provider
+      # @param image [DSPy::Image] The image to format
+      # @param provider_name [String] Provider name (openai, anthropic, gemini, etc.)
+      # @return [Hash] Provider-specific image format
+      def format_image_for_provider(image, provider_name)
+        image.validate_for_provider!(provider_name)
+        format_method = "to_#{provider_name}_format"
+        if image.respond_to?(format_method)
+          image.send(format_method)
+        else
+          # For providers without specific format methods, return the item as-is
+          { type: 'image', image: image }
+        end
+      end
     end
   end
 end
