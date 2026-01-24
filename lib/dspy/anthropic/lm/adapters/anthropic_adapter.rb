@@ -139,6 +139,8 @@ module DSPy
                 raise DSPy::LM::AdapterError, "Anthropic rate limit exceeded: #{error_msg}. Please wait and try again."
               elsif error_msg.include?('authentication') || error_msg.include?('API key')
                 raise DSPy::LM::AdapterError, "Anthropic authentication failed: #{error_msg}. Check your API key."
+              elsif error_msg.include?('content filtering') || error_msg.include?('blocked')
+                raise DSPy::Anthropic::ContentFilterError, "Anthropic content filtered: #{error_msg}"
               else
                 # Generic error handling
                 raise DSPy::LM::AdapterError, "Anthropic adapter error: #{e.message}"
