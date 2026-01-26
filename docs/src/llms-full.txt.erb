@@ -1734,8 +1734,20 @@ DSPy.log('custom.event', data: 'value', context: 'info')
 DSPy.event('custom.event', { data: 'value', context: 'info' })
 ```
 
-**Event Subscription:**
+**Two Subscription Patterns:**
 
+1. **Module-scoped subscriptions** (preferred for agents):
+```ruby
+class MyAgent < DSPy::Module
+  subscribe 'lm.tokens', :track_tokens, scope: :descendants
+
+  def track_tokens(_event, attrs)
+    @total_tokens += attrs.fetch(:total_tokens, 0)
+  end
+end
+```
+
+2. **Global subscriptions** (for observability integrations):
 ```ruby
 # Subscribe to specific events
 subscription_id = DSPy.events.subscribe('llm.*') do |event_name, attributes|

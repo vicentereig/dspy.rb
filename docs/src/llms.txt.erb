@@ -337,6 +337,27 @@ optimized_program = result.optimized_program
 - Swap predictors without changing logic
 - Build reusable components
 
+### Event System
+DSPy provides two ways to subscribe to runtime events:
+
+**Module-scoped subscriptions** (preferred for agents):
+```ruby
+class MyAgent < DSPy::Module
+  subscribe 'lm.tokens', :track_tokens, scope: :descendants
+
+  def track_tokens(_event, attrs)
+    @total_tokens += attrs.fetch(:total_tokens, 0)
+  end
+end
+```
+
+**Global subscriptions** (for observability integrations):
+```ruby
+DSPy.events.subscribe('score.create') do |event, attrs|
+  # Handle cross-cutting concerns
+end
+```
+
 ### Observability
 - Langfuse integration available when `dspy-o11y` + `dspy-o11y-langfuse` gems are installed and env vars are set
 - Structured logging with span tracking
