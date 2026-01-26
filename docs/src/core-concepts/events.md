@@ -55,27 +55,32 @@ Notes:
 - `DSPy.events.unsubscribe(id)` removes a listener by subscription ID.
 - `DSPy.events.clear_listeners` is handy in tests to avoid cross-contamination.
 
-For richer lifecycle management inherit from `DSPy::Events::BaseSubscriber`:
+For custom tracking, create a class that manages subscriptions:
 
 ```ruby
-class TokenBudgetTracker < DSPy::Events::BaseSubscriber
+class TokenBudgetTracker
   def initialize(budget:)
-    super()
     @budget = budget
     @usage = 0
+    @subscriptions = []
     subscribe
   end
 
   def subscribe
-    add_subscription('lm.tokens') do |_event, attrs|
+    @subscriptions << DSPy.events.subscribe('lm.tokens') do |_event, attrs|
       @usage += attrs.fetch(:total_tokens, 0)
       warn("Budget hit") if @usage >= @budget
     end
   end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
+  end
 end
 ```
 
-Call `subscriber.unsubscribe` when you are done.
+Call `tracker.unsubscribe` when you are done.
 
 ## Module-Scoped Subscribers
 

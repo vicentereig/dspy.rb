@@ -584,19 +584,19 @@ class InstrumentedTool < DSPy::Tools::Base
 end
 
 # Track tool performance with event subscribers
-class ToolPerformanceTracker < DSPy::Events::BaseSubscriber
+class ToolPerformanceTracker
   attr_reader :tool_stats
-  
+
   def initialize
-    super
     @tool_stats = Hash.new { |h, k| h[k] = { calls: 0, total_duration: 0, errors: 0 } }
+    @subscriptions = []
     subscribe
   end
-  
+
   def subscribe
-    add_subscription('tool.*') do |event_name, attributes|
+    @subscriptions << DSPy.events.subscribe('tool.*') do |event_name, attributes|
       tool_name = attributes[:tool_name]
-      
+
       case event_name
       when 'tool.completed'
         @tool_stats[tool_name][:calls] += 1
@@ -605,6 +605,11 @@ class ToolPerformanceTracker < DSPy::Events::BaseSubscriber
         @tool_stats[tool_name][:errors] += 1
       end
     end
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 

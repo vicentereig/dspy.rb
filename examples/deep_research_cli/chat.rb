@@ -19,68 +19,73 @@ module Examples
   module DeepResearchCLI
     DEFAULT_MODEL = ENV.fetch('DEEP_RESEARCH_MODEL', 'openai/gpt-4.1')
 
-    class StatusBoard < DSPy::Events::BaseSubscriber
+    class StatusBoard
       extend T::Sig
 
       sig { params(updater: T.proc.params(arg0: String).void).void }
       def initialize(updater)
-        super()
         @updater = updater
         @status = "Starting"
         @input_tokens = 0
         @output_tokens = 0
         @start_time = Time.now
+        @subscriptions = []
       end
 
       attr_reader :input_tokens, :output_tokens, :status
 
       def subscribe
-        add_subscription('deep_research.section.started') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_research.section.started') do |_, attrs|
           update_status("Section #{truncate(value_for(attrs, :title))} (attempt #{value_for(attrs, :attempt)})")
         end
 
-        add_subscription('deep_research.section.qa_retry') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_research.section.qa_retry') do |_, attrs|
           update_status("Retrying #{truncate(value_for(attrs, :title))}")
         end
 
-        add_subscription('deep_research.section.approved') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_research.section.approved') do |_, attrs|
           update_status("Approved #{truncate(value_for(attrs, :title))}")
         end
 
-        add_subscription('deep_research.report.ready') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_research.report.ready') do |_, attrs|
           update_status("Report ready (#{value_for(attrs, :section_count)} sections)")
         end
 
-        add_subscription('deep_search.loop.started') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.loop.started') do |_, attrs|
           update_status("Searching #{truncate(value_for(attrs, :query))}")
         end
 
-        add_subscription('deep_search.fetch.started') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.fetch.started') do |_, attrs|
           update_status("Fetching #{host_for(value_for(attrs, :url))}")
         end
 
-        add_subscription('deep_search.fetch.completed') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.fetch.completed') do |_, attrs|
           update_status("Fetched (notes +#{value_for(attrs, :notes_added)})")
         end
 
-        add_subscription('deep_search.fetch.failed') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.fetch.failed') do |_, attrs|
           update_status("Fetch failed #{host_for(value_for(attrs, :url))}")
         end
 
-        add_subscription('deep_search.reason.decision') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.reason.decision') do |_, attrs|
           decision = value_for(attrs, :decision)
           next unless decision
 
           update_status("Decision: #{decision}")
         end
 
-        add_subscription('lm.tokens') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('lm.tokens') do |_, attrs|
           next unless relevant_module?(attrs)
 
           @input_tokens += value_for(attrs, :input_tokens).to_i
           @output_tokens += value_for(attrs, :output_tokens).to_i
           refresh
         end
+      end
+
+      def unsubscribe
+        @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+        @subscriptions.clear
       end
 
       def relevant_module?(attrs)

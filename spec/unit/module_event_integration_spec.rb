@@ -53,77 +53,87 @@ RSpec.describe 'DSPy Module Event Integration' do
   
   it 'demonstrates custom subscriber for module events' do
     # Example: Custom subscriber that tracks module performance
-    class ModulePerformanceTracker < DSPy::Events::BaseSubscriber
+    class ModulePerformanceTracker
       attr_reader :module_stats
-      
+
       def initialize
-        super
         @module_stats = Hash.new { |h, k| h[k] = { total_calls: 0, total_duration: 0, avg_duration: 0 } }
+        @subscriptions = []
         subscribe
       end
-      
+
       def subscribe
         # Listen to all module completion events
-        add_subscription('*.complete') do |event_name, attributes|
+        @subscriptions << DSPy.events.subscribe('*.complete') do |event_name, attributes|
           module_name = event_name.split('.').first
           duration = attributes[:duration_ms] || 0
-          
+
           stats = @module_stats[module_name]
           stats[:total_calls] += 1
           stats[:total_duration] += duration
           stats[:avg_duration] = stats[:total_duration] / stats[:total_calls].to_f
         end
       end
+
+      def unsubscribe
+        @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+        @subscriptions.clear
+      end
     end
-    
+
     tracker = ModulePerformanceTracker.new
-    
+
     # Simulate module events (these would normally come from actual module execution)
     DSPy.event('chain_of_thought.complete', duration_ms: 500)
     DSPy.event('chain_of_thought.complete', duration_ms: 700)
     DSPy.event('react.complete', duration_ms: 1200)
     DSPy.event('codeact.complete', duration_ms: 800)
-    
+
     # Check tracking results
     expect(tracker.module_stats['chain_of_thought'][:total_calls]).to eq(2)
     expect(tracker.module_stats['chain_of_thought'][:avg_duration]).to eq(600.0)
     expect(tracker.module_stats['react'][:total_calls]).to eq(1)
     expect(tracker.module_stats['react'][:avg_duration]).to eq(1200.0)
-    
+
     tracker.unsubscribe
   end
   
   it 'shows how to track signature usage across modules' do
     # Example: Track which signatures are being used most
-    class SignatureUsageTracker < DSPy::Events::BaseSubscriber
+    class SignatureUsageTracker
       attr_reader :signature_counts
-      
+
       def initialize
-        super
         @signature_counts = Hash.new(0)
+        @subscriptions = []
         subscribe
       end
-      
+
       def subscribe
-        add_subscription('*') do |event_name, attributes|
+        @subscriptions << DSPy.events.subscribe('*') do |event_name, attributes|
           if attributes[:signature_name]
             @signature_counts[attributes[:signature_name]] += 1
           end
         end
       end
+
+      def unsubscribe
+        @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+        @subscriptions.clear
+      end
     end
-    
+
     tracker = SignatureUsageTracker.new
-    
+
     # Simulate events with signature names (as modules would emit)
     DSPy.event('module.forward', signature_name: 'QuestionAnswering')
     DSPy.event('chain_of_thought.complete', signature_name: 'QuestionAnswering')
     DSPy.event('module.forward', signature_name: 'SentimentAnalysis')
     DSPy.event('react.complete', signature_name: 'QuestionAnswering')
-    
+
     expect(tracker.signature_counts['QuestionAnswering']).to eq(3)
     expect(tracker.signature_counts['SentimentAnalysis']).to eq(1)
-    
+
     tracker.unsubscribe
   end
 end
