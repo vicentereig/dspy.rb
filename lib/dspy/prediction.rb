@@ -122,9 +122,10 @@ module DSPy
               converted[key] = nil
             end
           elsif is_enum_type?(prop_type) && value.is_a?(String)
-            # Convert string to enum
+            # Convert string to enum (case-insensitive for structured_outputs: false)
             enum_class = extract_enum_class(prop_type)
-            converted[key] = enum_class.deserialize(value)
+            result = DSPy::Mixins::TypeCoercion.deserialize_enum(enum_class, value)
+            converted[key] = result || value
           elsif value.is_a?(Hash) && needs_struct_conversion?(prop_type)
             # Regular struct field that needs conversion
             converted[key] = convert_to_struct(value, prop_type)
@@ -188,60 +189,12 @@ module DSPy
 
     sig { params(type: T.untyped).returns(T::Boolean) }
     def is_enum_type?(type)
-      return false if type.nil?
-      
-      case type
-      when T::Types::Simple
-        # Handle regular enum types
-        begin
-          raw_type = type.raw_type
-          return false unless raw_type.is_a?(Class)
-          result = raw_type < T::Enum
-          return result == true # Force conversion to boolean
-        rescue StandardError
-          return false
-        end
-      when T::Private::Types::SimplePairUnion, T::Types::Union
-        # Handle T.nilable enum types
-        # Find the non-nil type and check if it's an enum
-        non_nil_types = if type.respond_to?(:types)
-          type.types.reject { |t| t.respond_to?(:raw_type) && t.raw_type == NilClass }
-        else
-          []
-        end
-        
-        # For nilable types, we expect exactly one non-nil type
-        return false unless non_nil_types.size == 1
-        
-        non_nil_type = non_nil_types.first
-        return is_enum_type?(non_nil_type) # Recursively check
-      else
-        return false
-      end
+      DSPy::Mixins::TypeCoercion.enum_type?(type)
     end
 
     sig { params(type: T.untyped).returns(T.untyped) }
     def extract_enum_class(type)
-      case type
-      when T::Types::Simple
-        # Regular enum type
-        type.raw_type
-      when T::Private::Types::SimplePairUnion, T::Types::Union
-        # Nilable enum type - find the non-nil type
-        non_nil_types = if type.respond_to?(:types)
-          type.types.reject { |t| t.respond_to?(:raw_type) && t.raw_type == NilClass }
-        else
-          []
-        end
-        
-        if non_nil_types.size == 1
-          extract_enum_class(non_nil_types.first)
-        else
-          raise ArgumentError, "Unable to extract enum class from complex union type: #{type.inspect}"
-        end
-      else
-        raise ArgumentError, "Not an enum type: #{type.inspect}"
-      end
+      DSPy::Mixins::TypeCoercion.extract_enum_class(type)
     end
 
     sig { params(union_type: T::Types::Union, discriminator_type: T.untyped).returns(T::Hash[String, T.untyped]) }
@@ -387,8 +340,10 @@ module DSPy
           if prop_info
             prop_type = prop_info[:type_object] || prop_info[:type]
             if v.is_a?(String) && is_enum_type?(prop_type)
-              # Convert string to enum
-              converted_hash[k] = prop_type.raw_type.deserialize(v)
+              # Convert string to enum (case-insensitive for structured_outputs: false)
+              enum_class = extract_enum_class(prop_type)
+              result = DSPy::Mixins::TypeCoercion.deserialize_enum(enum_class, v)
+              converted_hash[k] = result || v
             elsif v.is_a?(Hash) && needs_struct_conversion?(prop_type)
               converted_hash[k] = convert_to_struct(v, prop_type)
             elsif v.is_a?(Array) && needs_array_conversion?(prop_type)
@@ -488,8 +443,9 @@ module DSPy
             convert_to_struct(element, element_type)
           end
         elsif element.is_a?(String) && is_enum_type?(element_type)
-          # Convert string to enum
-          element_type.raw_type.deserialize(element)
+          # Convert string to enum (case-insensitive for structured_outputs: false)
+          enum_class = extract_enum_class(element_type)
+          DSPy::Mixins::TypeCoercion.deserialize_enum(enum_class, element) || element
         else
           element
         end
@@ -539,7 +495,9 @@ module DSPy
                 if prop_info
                   prop_type = prop_info[:type_object] || prop_info[:type]
                   if v.is_a?(String) && is_enum_type?(prop_type)
-                    converted_hash[k] = prop_type.raw_type.deserialize(v)
+                    enum_class = extract_enum_class(prop_type)
+                    result = DSPy::Mixins::TypeCoercion.deserialize_enum(enum_class, v)
+                    converted_hash[k] = result || v
                   elsif v.is_a?(Hash) && needs_struct_conversion?(prop_type)
                     converted_hash[k] = convert_to_struct(v, prop_type)
                   elsif v.is_a?(Array) && needs_array_conversion?(prop_type)

@@ -9,6 +9,62 @@ module DSPy
     module TypeCoercion
       extend T::Sig
 
+      # Centralized enum deserialization with case-insensitive fallback.
+      # Uses try_deserialize for O(1) exact match, then a lazily-built
+      # case-insensitive lookup hash as fallback for LLM casing variations.
+      #
+      # Returns the enum instance on match, or nil if no match found.
+      sig { params(enum_class: T.untyped, value: T.untyped).returns(T.nilable(T::Enum)) }
+      def self.deserialize_enum(enum_class, value)
+        return value if value.is_a?(enum_class)
+
+        str = value.to_s
+        result = enum_class.try_deserialize(str)
+        return result if result
+
+        @ci_enum_cache ||= {}
+        ci_map = (@ci_enum_cache[enum_class] ||=
+          enum_class.values.each_with_object({}) { |v, h| h[v.serialize.downcase.freeze] = v }.freeze)
+
+        ci_map[str.downcase]
+      end
+
+      # Module-level enum type detection (delegates to instance method)
+      sig { params(type: T.untyped).returns(T::Boolean) }
+      def self.enum_type?(type)
+        return false unless type
+
+        case type
+        when Class
+          !!(type < T::Enum)
+        when T::Types::Simple
+          type.raw_type.is_a?(Class) && !!(type.raw_type < T::Enum)
+        when T::Types::Union
+          non_nil = type.types.reject { |t| t.is_a?(T::Types::Simple) && t.raw_type == NilClass }
+          non_nil.size == 1 && enum_type?(non_nil.first)
+        else
+          false
+        end
+      rescue StandardError
+        false
+      end
+
+      # Module-level enum class extraction (delegates to instance method)
+      sig { params(prop_type: T.untyped).returns(T.class_of(T::Enum)) }
+      def self.extract_enum_class(prop_type)
+        case prop_type
+        when Class
+          return prop_type if prop_type < T::Enum
+        when T::Types::Simple
+          return prop_type.raw_type if prop_type.raw_type.is_a?(Class) && prop_type.raw_type < T::Enum
+        when T::Types::Union
+          non_nil = prop_type.types.reject { |t| t.is_a?(T::Types::Simple) && t.raw_type == NilClass }
+          return extract_enum_class(non_nil.first) if non_nil.size == 1
+        end
+
+        raise ArgumentError, "Not an enum type: #{prop_type.inspect}"
+      end
+
       private
 
       # Coerces output attributes to match their expected types
@@ -57,32 +113,16 @@ module DSPy
         end
       end
 
-      # Checks if a type is an enum type
+      # Checks if a type is an enum type (handles Class, Simple, and nilable unions)
       sig { params(type: T.untyped).returns(T::Boolean) }
       def enum_type?(type)
-        return false unless type
-        
-        if type.is_a?(Class)
-          !!(type < T::Enum)
-        elsif type.is_a?(T::Types::Simple)
-          !!(type.raw_type < T::Enum)
-        else
-          false
-        end
-      rescue StandardError
-        false
+        DSPy::Mixins::TypeCoercion.enum_type?(type)
       end
 
-      # Extracts the enum class from a type
+      # Extracts the enum class from a type (handles Class, Simple, and nilable unions)
       sig { params(prop_type: T.untyped).returns(T.class_of(T::Enum)) }
       def extract_enum_class(prop_type)
-        if prop_type.is_a?(Class) && prop_type < T::Enum
-          prop_type
-        elsif prop_type.is_a?(T::Types::Simple) && prop_type.raw_type < T::Enum
-          prop_type.raw_type
-        else
-          T.cast(prop_type, T.class_of(T::Enum))
-        end
+        DSPy::Mixins::TypeCoercion.extract_enum_class(prop_type)
       end
 
       # Checks if a type matches a simple type (like Float, Integer)
@@ -252,7 +292,7 @@ module DSPy
         # Convert string keys to enum instances if key_type is an enum
         result = if enum_type?(key_type)
           enum_class = extract_enum_class(key_type)
-          value.transform_keys { |k| enum_class.deserialize(k.to_s) }
+          value.transform_keys { |k| DSPy::Mixins::TypeCoercion.deserialize_enum(enum_class, k) || k }
         else
           # For non-enum keys, coerce them to the expected type
           value.transform_keys { |k| coerce_value_to_type(k, key_type) }
@@ -411,14 +451,10 @@ module DSPy
       sig { params(value: T.untyped, prop_type: T.untyped).returns(T.untyped) }
       def coerce_enum_value(value, prop_type)
         enum_class = extract_enum_class(prop_type)
-        
-        # If value is already an instance of the enum class, return it as-is
-        return value if value.is_a?(enum_class)
-        
-        # Otherwise, try to deserialize from string
-        enum_class.deserialize(value.to_s)
-      rescue ArgumentError, KeyError => e
-        DSPy.logger.debug("Failed to coerce to enum #{enum_class}: #{e.message}")
+        result = DSPy::Mixins::TypeCoercion.deserialize_enum(enum_class, value)
+        return result if result
+
+        DSPy.logger.debug("Failed to coerce to enum #{enum_class}: no match for #{value.inspect}")
         value
       end
     end

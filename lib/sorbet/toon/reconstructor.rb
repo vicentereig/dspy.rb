@@ -151,10 +151,7 @@ module Sorbet
         end
 
         def deserialize_enum(enum_class, value)
-          return value if value.is_a?(enum_class)
-          return enum_class.deserialize(value) if enum_class.respond_to?(:deserialize)
-
-          enum_class.values.find { |member| member.serialize == value } || value
+          DSPy::Mixins::TypeCoercion.deserialize_enum(enum_class, value) || value
         end
 
         def coerce_hash_key(key, key_type)
