@@ -337,7 +337,19 @@ module DSPy
             [key, val]
           end
         end.to_h
-        
+
+        # Strip nil values for non-nilable fields that have defaults.
+        # LLMs in advisory mode may return null for unused fields.
+        # Removing the key lets Sorbet use the field's default value.
+        coerced_hash.reject! do |key, val|
+          next false unless val.nil?
+          prop_info = struct_props[key]
+          next false unless prop_info
+          prop_type = prop_info[:type_object] || prop_info[:type]
+          has_default = prop_info.key?(:default) || prop_info[:fully_optional]
+          !is_nilable_type?(prop_type) && has_default
+        end
+
         # Create the struct instance
         struct_class.new(**coerced_hash)
       rescue ArgumentError => e
