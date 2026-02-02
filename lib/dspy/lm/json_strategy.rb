@@ -137,11 +137,12 @@ module DSPy
 
       # Convert signature to Anthropic tool schema
       # Uses strict: true for constrained decoding (Anthropic structured outputs)
+      # Anthropic strict mode requires ALL properties in required at every level.
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def convert_to_anthropic_tool_schema
         output_fields = signature_class.output_field_descriptors
 
-        {
+        schema = {
           name: "json_output",
           description: "Output the result in the required JSON format",
           strict: true,
@@ -152,12 +153,37 @@ module DSPy
             additionalProperties: false
           }
         }
+
+        # Anthropic strict mode: ALL properties must be in required at every level.
+        # Non-required properties get auto-wrapped in null unions by the grammar compiler,
+        # which counts against the 16-union-parameter limit.
+        enforce_all_required(schema[:input_schema])
+
+        schema
       end
 
       # Build required field list, excluding fields that have defaults
       sig { params(fields: T::Hash[Symbol, T.untyped]).returns(T::Array[String]) }
       def build_required_from_fields(fields)
         fields.reject { |_name, descriptor| descriptor.has_default }.keys.map(&:to_s)
+      end
+
+      # Recursively enforce that all properties are in required and
+      # additionalProperties is false, as required by Anthropic strict mode.
+      sig { params(schema: T::Hash[Symbol, T.untyped]).void }
+      def enforce_all_required(schema)
+        return unless schema.is_a?(Hash)
+
+        if schema[:type] == "object" && schema[:properties]
+          schema[:required] = schema[:properties].keys.map(&:to_s)
+          schema[:additionalProperties] = false
+          schema[:properties].each_value { |v| enforce_all_required(v) }
+        elsif schema[:type] == "array" && schema[:items]
+          enforce_all_required(schema[:items])
+        elsif schema[:type].is_a?(Array)
+          # type: ["array", "null"] — check items if present
+          enforce_all_required(schema[:items]) if schema[:items]
+        end
       end
 
       # Build JSON schema properties from output fields
