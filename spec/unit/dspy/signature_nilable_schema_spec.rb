@@ -183,7 +183,7 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
       schema = NilableUnionSchemaSignature.output_json_schema
 
       expect(schema[:properties][:choice]).to include({
-        oneOf: [
+        anyOf: [
           {
             type: 'object',
             properties: {

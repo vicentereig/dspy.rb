@@ -195,10 +195,10 @@ module DSPy
             end
           else
             # Not nilable SimplePairUnion - this is a regular T.any() union
-            # Generate oneOf schema for all types
+            # Generate anyOf schema for all types (oneOf not supported by Anthropic strict mode)
             if type.respond_to?(:types) && type.types.length > 1
               {
-                oneOf: type.types.map { |t| type_to_json_schema_internal(t, visited, definitions) },
+                anyOf: type.types.map { |t| type_to_json_schema_internal(t, visited, definitions) },
                 description: "Union of multiple types"
               }
             else
@@ -237,14 +237,14 @@ module DSPy
             # Non-nilable single type union (shouldn't happen in practice)
             type_to_json_schema_internal(non_nil_types.first, visited, definitions)
           elsif non_nil_types.size > 1
-            # Handle complex unions with oneOf for better JSON schema compliance
+            # Handle complex unions with anyOf (oneOf not supported by Anthropic strict mode)
             base_schema = {
-              oneOf: non_nil_types.map { |t| type_to_json_schema_internal(t, visited, definitions) },
+              anyOf: non_nil_types.map { |t| type_to_json_schema_internal(t, visited, definitions) },
               description: "Union of multiple types"
             }
             if is_nilable
               # Add null as an option for complex nilable unions
-              base_schema[:oneOf] << { type: "null" }
+              base_schema[:anyOf] << { type: "null" }
             end
             base_schema
           else
