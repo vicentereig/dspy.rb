@@ -121,7 +121,7 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
 
     it 'generates correct JSON schema for T.nilable(CustomStruct)' do
       schema = NilableStructSchemaSignature.output_json_schema
-      
+
       expect(schema[:properties][:data]).to eq({
         type: ['object', 'null'],
         properties: {
@@ -133,7 +133,8 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
           count: { type: 'integer' }
         },
         required: ['_type', 'value', 'count'],
-        description: "#{TestStruct.name} struct"
+        description: "#{TestStruct.name} struct",
+        additionalProperties: false
       })
     end
   end
@@ -180,7 +181,7 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
 
     it 'generates correct JSON schema for T.nilable(T.any(...))' do
       schema = NilableUnionSchemaSignature.output_json_schema
-      
+
       expect(schema[:properties][:choice]).to include({
         oneOf: [
           {
@@ -191,17 +192,19 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
               value_a: { type: 'string' }
             },
             required: ['_type', 'type', 'value_a'],
-            description: "#{UnionTypeA.name} struct"
+            description: "#{UnionTypeA.name} struct",
+            additionalProperties: false
           },
           {
-            type: 'object', 
+            type: 'object',
             properties: {
               _type: { type: 'string', const: 'UnionTypeB' },
               type: { type: 'string' },
               value_b: { type: 'integer' }
             },
             required: ['_type', 'type', 'value_b'],
-            description: "#{UnionTypeB.name} struct"
+            description: "#{UnionTypeB.name} struct",
+            additionalProperties: false
           },
           { type: 'null' }
         ],
@@ -228,7 +231,7 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
 
     it 'generates correct schema for nested struct with nilable fields' do
       schema = NestedNilableSignature.output_json_schema
-      
+
       # Check the nilable wrapper struct
       expect(schema[:properties][:wrapper]).to eq({
         type: ['object', 'null'],
@@ -242,7 +245,8 @@ RSpec.describe 'DSPy::Signature T.nilable JSON Schema Generation' do
           }
         },
         required: ['_type', 'name'],
-        description: "#{SchemaNestedStruct.name} struct"
+        description: "#{SchemaNestedStruct.name} struct",
+        additionalProperties: false
       })
     end
 

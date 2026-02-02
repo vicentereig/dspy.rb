@@ -136,6 +136,7 @@ module DSPy
       end
 
       # Convert signature to Anthropic tool schema
+      # Uses strict: true for constrained decoding (Anthropic structured outputs)
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def convert_to_anthropic_tool_schema
         output_fields = signature_class.output_field_descriptors
@@ -143,12 +144,20 @@ module DSPy
         {
           name: "json_output",
           description: "Output the result in the required JSON format",
+          strict: true,
           input_schema: {
             type: "object",
             properties: build_properties_from_fields(output_fields),
-            required: output_fields.keys.map(&:to_s)
+            required: build_required_from_fields(output_fields),
+            additionalProperties: false
           }
         }
+      end
+
+      # Build required field list, excluding fields that have defaults
+      sig { params(fields: T::Hash[Symbol, T.untyped]).returns(T::Array[String]) }
+      def build_required_from_fields(fields)
+        fields.reject { |_name, descriptor| descriptor.has_default }.keys.map(&:to_s)
       end
 
       # Build JSON schema properties from output fields

@@ -335,7 +335,8 @@ module DSPy
           type: "object",
           properties: properties,
           required: required,
-          description: "#{struct_name} struct"
+          description: "#{struct_name} struct",
+          additionalProperties: false
         }
 
         # Add this struct's schema to definitions for $defs
