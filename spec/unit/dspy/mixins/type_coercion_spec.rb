@@ -137,6 +137,37 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         expect(result).to eq(hash_value)
       end
 
+      it 'parses JSON string values into structs via _type discriminator' do
+        json_string = '{"_type": "SearchAction", "query": "test query", "max_results": 10}'
+
+        result = instance.test_coerce(json_string, union_type)
+
+        expect(result).to be_a(TestStructs::SearchAction)
+        expect(result.query).to eq("test query")
+        expect(result.max_results).to eq(10)
+      end
+
+      it 'parses JSON string with enum fields in union types' do
+        union_with_enum = T.any(TestStructs::TaskAction, TestStructs::AnswerAction)
+        json_string = '{"_type": "TaskAction", "title": "Important task", "priority": "high"}'
+
+        result = instance.test_coerce(json_string, union_with_enum)
+
+        expect(result).to be_a(TestStructs::TaskAction)
+        expect(result.title).to eq("Important task")
+        expect(result.priority).to eq(TestStructs::Priority::High)
+      end
+
+      it 'returns non-JSON strings unchanged' do
+        result = instance.test_coerce("not json at all", union_type)
+        expect(result).to eq("not json at all")
+      end
+
+      it 'returns JSON array strings unchanged (not a Hash)' do
+        result = instance.test_coerce('[1, 2, 3]', union_type)
+        expect(result).to eq('[1, 2, 3]')
+      end
+
       it 'ignores extra fields not defined in the struct when converting union types' do
         # This tests the fix for issue #59
         hash_value = {

@@ -349,6 +349,17 @@ module DSPy
       # Coerces a union value by using _type discriminator
       sig { params(value: T.untyped, union_type: T.untyped).returns(T.untyped) }
       def coerce_union_value(value, union_type)
+        # Anthropic tool use may return complex oneOf union fields as JSON strings
+        # instead of nested objects. Parse them back into Hashes for coercion.
+        if value.is_a?(String)
+          begin
+            parsed = JSON.parse(value)
+            value = parsed if parsed.is_a?(Hash)
+          rescue JSON::ParserError
+            # Not JSON — fall through
+          end
+        end
+
         return value unless value.is_a?(Hash)
 
         # Check for _type discriminator field
