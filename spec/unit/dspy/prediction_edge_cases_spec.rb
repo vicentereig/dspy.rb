@@ -557,4 +557,53 @@ RSpec.describe 'DSPy::Prediction edge cases' do
       expect { prediction.result.nested_extra }.to raise_error(NoMethodError)
     end
   end
+
+  describe '#to_json' do
+    it 'serializes predictions with nested T::Struct values to valid JSON' do
+      prediction = DSPy::Prediction.new(
+        DeepNestedSignature.output_schema,
+        data: {
+          title: 'Top Level',
+          nested: {
+            name: 'Middle Level',
+            nested: {
+              value: 'Bottom Level',
+              number: 42
+            }
+          }
+        }
+      )
+
+      # This should work without raising an error
+      json_string = JSON.generate(prediction)
+
+      # Verify it's valid JSON that can be parsed back
+      parsed = JSON.parse(json_string)
+      expect(parsed['data']['title']).to eq('Top Level')
+      expect(parsed['data']['nested']['name']).to eq('Middle Level')
+      expect(parsed['data']['nested']['nested']['value']).to eq('Bottom Level')
+      expect(parsed['data']['nested']['nested']['number']).to eq(42)
+    end
+
+    it 'works with prediction.to_json directly' do
+      prediction = DSPy::Prediction.new(
+        DeepNestedSignature.output_schema,
+        data: {
+          title: 'Test',
+          nested: {
+            name: 'Nested',
+            nested: {
+              value: 'Deep',
+              number: 123
+            }
+          }
+        }
+      )
+
+      json_string = prediction.to_json
+
+      parsed = JSON.parse(json_string)
+      expect(parsed['data']['title']).to eq('Test')
+    end
+  end
 end
