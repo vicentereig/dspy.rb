@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require_relative 'utils/serialization'
+
 module DSPy
   class Prediction
     extend T::Sig
@@ -55,6 +57,11 @@ module DSPy
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def to_h
       @_struct.serialize
+    end
+
+    sig { params(args: T.untyped).returns(String) }
+    def to_json(*args)
+      DSPy::Utils::Serialization.deep_serialize(to_h).to_json(*args)
     end
 
     private
