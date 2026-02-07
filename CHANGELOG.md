@@ -7,8 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.34.3] - 2026-02-05
+
+### Added
+- **Anthropic Strict Mode** – Enabled constrained decoding for Anthropic models with proper JSON schema compliance
+- **ContentFilterError** – New error type for handling Anthropic content filtering responses gracefully
+
+### Fixed
+- **Union Type Schemas** – Changed from `oneOf` to `anyOf` for union type JSON schemas (required for Anthropic strict mode)
+- **Struct Field Defaults** – Strip nil values for non-nilable struct fields that have defaults
+- **Anthropic Required Properties** – Enforce all properties in `required` array for strict mode compliance
+- **Union Type Coercion** – Parse JSON string values correctly in union type coercion
+- **T::Enum Deserialization** – Centralized with case-insensitive fallback for robustness
+- **Documentation** – Correct `DSPy::Module::Callbacks` reference in Rails integration guide
+
 ### Changed
-- Removed unused `Prompt#to_messages`, `LM#validate_messages!`, and legacy subscription counter/state fields.
+- **Type Coercion Consolidation** – Centralized type introspection into `TypeCoercion` mixin
+- **Code Cleanup** – Removed unused Memory System, `SubscriberMixin`, `BaseSubscriber`, and dead code
+- **Adapter Refactoring** – Extracted shared multimodal formatting to base adapter class
+
+### Sibling Gem Updates
+- `dspy-anthropic` 1.0.3 – ContentFilterError, strict mode support
+- `dspy-schema` 1.0.2 – anyOf schema generation, additionalProperties: false
+- `dspy-openai` 1.0.2 – Adapter refactoring
+- `dspy-gemini` 1.0.2 – Adapter refactoring
+- `dspy-code_act` 1.0.2 – Code cleanup
+- `dspy-evals` 1.0.2 – Evaluation improvements
+- `dspy-o11y` 1.0.2 – Async span processor improvements
 
 ## [0.34.2] - 2026-01-02
 
