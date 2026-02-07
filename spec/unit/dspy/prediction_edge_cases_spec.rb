@@ -311,13 +311,13 @@ RSpec.describe 'DSPy::Prediction edge cases' do
         end
       end
 
-      # This should raise an error since 'yellow' is not a valid enum value
-      expect {
-        DSPy::Prediction.new(
-          InvalidEnumSignature.output_schema,
-          color: 'yellow'
-        )
-      }.to raise_error(KeyError)
+      # Invalid enum values degrade gracefully (return original string)
+      # rather than crashing with KeyError
+      prediction = DSPy::Prediction.new(
+        InvalidEnumSignature.output_schema,
+        color: 'yellow'
+      )
+      expect(prediction.color).to eq('yellow')
     end
   end
 

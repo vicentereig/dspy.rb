@@ -22,6 +22,38 @@ last_modified_at: 2025-10-26 00:00:00 +0000
 
 DSPy.rb ships with a structured event bus so agents, tooling, and monitoring stacks can react to everything that happens at runtime. This page explains how to emit events, listen globally, scope listeners to specific modules, and cleanly tear everything down.
 
+## Two Subscription Patterns
+
+DSPy provides two ways to subscribe to events, each suited to different use cases:
+
+### Pattern 1: Module-Scoped Subscriptions (Preferred for Agents)
+
+Use the `subscribe` DSL inside your modules. Subscriptions automatically scope to the module instance and its descendants:
+
+```ruby
+class MyAgent < DSPy::Module
+  subscribe 'lm.tokens', :track_tokens, scope: :descendants
+
+  def track_tokens(_event, attrs)
+    @total_tokens += attrs.fetch(:total_tokens, 0)
+  end
+end
+```
+
+**When to use:** Agent code, modules with internal state, anything where subscription lifetime should match module lifetime.
+
+### Pattern 2: Global Subscriptions (For Observability/Integrations)
+
+Use `DSPy.events.subscribe` directly for cross-cutting concerns:
+
+```ruby
+subscription_id = DSPy.events.subscribe('score.create') do |event, attrs|
+  Langfuse.export_score(attrs)
+end
+```
+
+**When to use:** Observability exporters (Langfuse, Datadog), centralized logging, metrics collection, or any cross-cutting concern that spans multiple modules.
+
 ## Emitting Events
 
 Use `DSPy.event` whenever something noteworthy happens:
@@ -55,27 +87,32 @@ Notes:
 - `DSPy.events.unsubscribe(id)` removes a listener by subscription ID.
 - `DSPy.events.clear_listeners` is handy in tests to avoid cross-contamination.
 
-For richer lifecycle management inherit from `DSPy::Events::BaseSubscriber`:
+For custom tracking, create a class that manages subscriptions:
 
 ```ruby
-class TokenBudgetTracker < DSPy::Events::BaseSubscriber
+class TokenBudgetTracker
   def initialize(budget:)
-    super()
     @budget = budget
     @usage = 0
+    @subscriptions = []
     subscribe
   end
 
   def subscribe
-    add_subscription('lm.tokens') do |_event, attrs|
+    @subscriptions << DSPy.events.subscribe('lm.tokens') do |_event, attrs|
       @usage += attrs.fetch(:total_tokens, 0)
       warn("Budget hit") if @usage >= @budget
     end
   end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
+  end
 end
 ```
 
-Call `subscriber.unsubscribe` when you are done.
+Call `tracker.unsubscribe` when you are done.
 
 ## Module-Scoped Subscribers
 

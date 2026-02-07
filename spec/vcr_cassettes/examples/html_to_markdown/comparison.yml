@@ -1,0 +1,322 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=Bbf1oTLCXCgwADvrtB84K3ppU41MAAEBAAAnIQEAATetAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAACNU2kAA9WSXW/TMBRA/0rk5zqyHSdxI/VldGhDatmg7GWdKse5aUMdOyTOoFT977jahgBt2tBaCR5zv86N77neImXr2hqUbZF0rq3y3kG3/wLjKrcJjawBZWj88WITtjkaoJXt3H2wq+pchtoqqX3ivmHZV4XPTb6vN9PPazY9+3by6ZSKy6uTy9mpHl9efXg3I7GYzs7JZLykk/EpR7vdAGm79NzrLdJwC9pPOJ++fe/HuqqGzsm6QRlNk5SIiMXDIRehEAPkU51c7ndxrVSwqIrRHLGSM8hTggsKCnMBCZalYJizgiaMybSUbI6CyjS9Wzi7BtONKElIYHv3S4izwFkn9c8SSliwBLOQVdhtOge1Z0njVq1tKuUH3uda+NL7jcPaFqB9idKyLwCvZLXuMccxZoTFlBDqW4qu2YRdtTTS9S344jNX65mdyHZd2K8my95Ycwut+z3sG/3wXsOikW41ut5WRRbMUckh4mUaYaA5x1wlEc5ppHBEh3EiyihXJZmjQeAX6rp9w/6oWXbRQlEpt89omYPOAlPp3c0DorXWjY5BeABokOVRAZ2yDYy20ih/lnZzd8+/oRXQuFUW0F3g1TTOn0nX4Z0VczQ3aDd4ibUJI1SEdJgeVNt4+Ke20X+mbZzEMRGlxMVQRZjTNMVCAMG8zHNFSxCcy9dpe1DCY9oeBfCkti+lHUjbiCRpSKlgh/VWPO8t/ae9lXGqSkaZf/wox9y/Fh76F8MqiXnMS5qr/X+/xtuDEh7z9iiAJ719Ke1Zb292Nz8A2G3vaLkIAAA=
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - Bbf1oTLCXCgwADvrtB84K3ppU41MAAEBAAAnIQEAATetAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 08:27:44 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9b6028e58ecf43d7-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 30 Dec 2025 08:27:44 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"          <article>\\n            <h1>Ruby
+        DSPy Guide</h1>\\n            <p>Learn to build <strong>type-safe</strong>
+        LLM applications with <em>structured outputs</em>.</p>\\n            <h2>Features</h2>\\n            <ul>\\n              <li>Structured
+        outputs with Sorbet types</li>\\n              <li>Union types for flexible
+        responses</li>\\n              <li>Recursive type support</li>\\n            </ul>\\n            <h2>Example</h2>\\n            <pre><code
+        class=\\\"language-ruby\\\">\\nclass MySignature < DSPy::Signature\\n  output
+        do\\n    const :result, String\\n  end\\nend\\n            </code></pre>\\n            <p>Visit
+        <a href=\\\"https://github.com/vicentereig/dspy.rb\\\">the repository</a>
+        for more.</p>\\n          </article>\\n\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"document":{"type":"object","properties":{"_type":{"type":"string","const":"MarkdownDocument"},"nodes":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"ASTNode"},"node_type":{"type":"string","enum":["heading","paragraph","code_block","blockquote","horizontal_rule","list","list_item","table","table_row","table_cell","text","bold","italic","code","link","image","line_break","strikethrough","footnote_ref","footnote_def","task_list_item"]},"text":{"type":["string","null"]},"level":{"type":["integer","null"]},"language":{"type":["string","null"]},"url":{"type":["string","null"]},"alt":{"type":["string","null"]},"title":{"type":["string","null"]},"ordered":{"type":["boolean","null"]},"checked":{"type":["boolean","null"]},"align":{"type":["string","null"]},"header":{"type":["boolean","null"]},"id":{"type":["string","null"]},"children":{"type":["array","null"],"items":{"$ref":"#/definitions/ASTNode","description":"Recursive
+        reference to HtmlToMarkdown::ASTNode"}}},"required":["_type","node_type"],"description":"HtmlToMarkdown::ASTNode
+        struct"}}},"required":["_type","nodes"],"description":"HtmlToMarkdown::MarkdownDocument
+        struct"}},"required":["document"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"html\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Raw HTML content to parse into Markdown AST\"\n    }\n  },\n  \"required\":
+        [\n    \"html\"\n  ]\n}\n```\n\nYour objective is: Parse HTML content into
+        a Markdown Abstract Syntax Tree (AST).\n\nConvert HTML elements to their Markdown
+        AST node equivalents:\n- <h1>-<h6> -> Heading node with level 1-6\n- <p> ->
+        Paragraph node with inline children\n- <strong> or <b> -> Bold node\n- <em>
+        or <i> -> Italic node\n- <code> -> Code node (inline)\n- <pre><code> -> CodeBlock
+        node with optional language\n- <a href=\"url\"> -> Link node with url and
+        text children\n- <img src=\"url\" alt=\"text\"> -> Image node\n- <ul> or <ol>
+        -> List node (ordered: true/false)\n- <li> -> ListItem node\n- <blockquote>
+        -> Blockquote node\n- <hr> -> HorizontalRule node\n- <del> or <s> -> Strikethrough
+        node\n\nStructure rules:\n- Block elements (Heading, Paragraph, CodeBlock,
+        List, Blockquote, HorizontalRule) are top-level nodes\n- Inline elements (Text,
+        Bold, Italic, Code, Link, Image, Strikethrough) appear as children of block
+        elements\n- Preserve text content exactly, including whitespace\n- Nested
+        structures (lists within lists, formatting within formatting) use the children
+        array\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3725'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 08:27:48 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T08:27:44Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T08:27:48Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T08:27:43Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '538000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T08:27:44Z'
+      Request-Id:
+      - req_011CWcZ9v9nzf4bCx6a5pc42
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '4672'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b6028dd3e2442a5-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01YRKS2kAsShrwcJ9ava2NhH","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_013Ao4Tz4NRZDujmY6y4Daav","name":"json_output","input":{"document":{"_type":"MarkdownDocument","nodes":[{"_type":"ASTNode","node_type":"heading","level":1,"children":[{"_type":"ASTNode","node_type":"text","text":"Ruby
+        DSPy Guide"}]},{"_type":"ASTNode","node_type":"paragraph","children":[{"_type":"ASTNode","node_type":"text","text":"Learn
+        to build "},{"_type":"ASTNode","node_type":"bold","children":[{"_type":"ASTNode","node_type":"text","text":"type-safe"}]},{"_type":"ASTNode","node_type":"text","text":"
+        LLM applications with "},{"_type":"ASTNode","node_type":"italic","children":[{"_type":"ASTNode","node_type":"text","text":"structured
+        outputs"}]},{"_type":"ASTNode","node_type":"text","text":"."}]},{"_type":"ASTNode","node_type":"heading","level":2,"children":[{"_type":"ASTNode","node_type":"text","text":"Features"}]},{"_type":"ASTNode","node_type":"list","ordered":false,"children":[{"_type":"ASTNode","node_type":"list_item","children":[{"_type":"ASTNode","node_type":"text","text":"Structured
+        outputs with Sorbet types"}]},{"_type":"ASTNode","node_type":"list_item","children":[{"_type":"ASTNode","node_type":"text","text":"Union
+        types for flexible responses"}]},{"_type":"ASTNode","node_type":"list_item","children":[{"_type":"ASTNode","node_type":"text","text":"Recursive
+        type support"}]}]},{"_type":"ASTNode","node_type":"heading","level":2,"children":[{"_type":"ASTNode","node_type":"text","text":"Example"}]},{"_type":"ASTNode","node_type":"code_block","language":"ruby","text":"class
+        MySignature < DSPy::Signature\n  output do\n    const :result, String\n  end\nend"},{"_type":"ASTNode","node_type":"paragraph","children":[{"_type":"ASTNode","node_type":"text","text":"Visit
+        "},{"_type":"ASTNode","node_type":"link","url":"https://github.com/vicentereig/dspy.rb","children":[{"_type":"ASTNode","node_type":"text","text":"the
+        repository"}]},{"_type":"ASTNode","node_type":"text","text":" for more."}]}]}}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":1720,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1111,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 08:27:48 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"          <article>\\n            <h1>Ruby
+        DSPy Guide</h1>\\n            <p>Learn to build <strong>type-safe</strong>
+        LLM applications with <em>structured outputs</em>.</p>\\n            <h2>Features</h2>\\n            <ul>\\n              <li>Structured
+        outputs with Sorbet types</li>\\n              <li>Union types for flexible
+        responses</li>\\n              <li>Recursive type support</li>\\n            </ul>\\n            <h2>Example</h2>\\n            <pre><code
+        class=\\\"language-ruby\\\">\\nclass MySignature < DSPy::Signature\\n  output
+        do\\n    const :result, String\\n  end\\nend\\n            </code></pre>\\n            <p>Visit
+        <a href=\\\"https://github.com/vicentereig/dspy.rb\\\">the repository</a>
+        for more.</p>\\n          </article>\\n\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"markdown":{"type":"string"}},"required":["markdown"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"html\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Raw HTML content to convert to Markdown\"\n    }\n  },\n  \"required\":
+        [\n    \"html\"\n  ]\n}\n```\n\nYour objective is: Convert HTML content directly
+        to Markdown string format.\n\nApply standard Markdown conversions:\n- Headers:
+        <h1> -> # , <h2> -> ## , etc.\n- Bold: <strong> or <b> -> **text**\n- Italic:
+        <em> or <i> -> *text*\n- Inline code: <code> -> `code`\n- Code blocks: <pre><code
+        class=\"language-X\"> -> ```X\\ncode\\n```\n- Links: <a href=\"url\">text</a>
+        -> [text](url)\n- Images: <img src=\"url\" alt=\"text\"> -> ![text](url)\n-
+        Unordered lists: <ul><li> -> - item\n- Ordered lists: <ol><li> -> 1. item\n-
+        Blockquotes: <blockquote> -> > text\n- Horizontal rules: <hr> -> ---\n- Strikethrough:
+        <del> or <s> -> ~~text~~\n\nPreserve:\n- Text content exactly as written\n-
+        Paragraph breaks between block elements\n- Proper nesting of formatting (bold
+        within italic, etc.)\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2291'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 08:27:49 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T08:27:48Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T08:27:49Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T08:27:48Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '539000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T08:27:48Z'
+      Request-Id:
+      - req_011CWcZAGg5NdusA7uxGkWDm
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '891'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b6028fb5a6142a5-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_0146zw3oHh4aevFSMNCPxZjk","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_0127HkMcYx2vqjuoB3BHAFcR","name":"json_output","input":{"markdown":"#
+        Ruby DSPy Guide\n\nLearn to build **type-safe** LLM applications with *structured
+        outputs*.\n\n## Features\n\n- Structured outputs with Sorbet types\n- Union
+        types for flexible responses\n- Recursive type support\n\n## Example\n\n```ruby\nclass
+        MySignature < DSPy::Signature\n  output do\n    const :result, String\n  end\nend\n```\n\nVisit
+        [the repository](https://github.com/vicentereig/dspy.rb) for more."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":1258,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":142,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 08:27:49 GMT
+recorded_with: VCR 6.3.1

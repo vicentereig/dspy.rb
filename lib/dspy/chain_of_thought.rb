@@ -47,7 +47,8 @@ module DSPy
         output_schema: @signature_class.output_json_schema,
         few_shot_examples: new_prompt.few_shot_examples,
         signature_class_name: @signature_class.name,
-        schema_format: new_prompt.schema_format
+        schema_format: new_prompt.schema_format,
+        data_format: new_prompt.data_format
       )
       
       instance.instance_variable_set(:@prompt, enhanced_prompt)
@@ -93,7 +94,7 @@ module DSPy
       
       # Create a temporary Predict instance with our enhanced signature to get the prediction
       predict_instance = DSPy::Predict.new(@signature_class)
-      predict_instance.config.lm = self.lm  # Use the same LM configuration
+      predict_instance.configure { |c| c.lm = self.lm }  # Use the same LM configuration
       
       # Call predict's forward method, which will create the Predict span
       prediction_result = predict_instance.forward(**input_values)

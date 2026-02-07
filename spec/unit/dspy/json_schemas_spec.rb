@@ -98,7 +98,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
     end
   end
 
-  describe 'Complex Union Types with oneOf' do
+  describe 'Complex Union Types with anyOf' do
     class UnionTypeSignature < DSPy::Signature
       description "AI agent with flexible input/output types"
 
@@ -115,17 +115,17 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
       end
     end
 
-    it 'generates oneOf schemas for complex union types' do
+    it 'generates anyOf schemas for complex union types' do
       input_schema = UnionTypeSignature.input_json_schema
 
-      expect(input_schema[:properties][:query]).to include(:oneOf)
-      expect(input_schema[:properties][:query][:oneOf]).to contain_exactly(
+      expect(input_schema[:properties][:query]).to include(:anyOf)
+      expect(input_schema[:properties][:query][:anyOf]).to contain_exactly(
         { type: "string" },
         { type: "object", additionalProperties: { type: "string" }, description: "A mapping where keys are Strings and values are strings" }
       )
 
-      expect(input_schema[:properties][:limit]).to include(:oneOf)
-      expect(input_schema[:properties][:limit][:oneOf]).to contain_exactly(
+      expect(input_schema[:properties][:limit]).to include(:anyOf)
+      expect(input_schema[:properties][:limit][:anyOf]).to contain_exactly(
         { type: "integer" },
         { type: "string" }
       )
@@ -248,7 +248,7 @@ RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage' do
 
       # Test hash with union values
       expect(input_schema[:properties][:config][:type]).to eq("object")
-      expect(input_schema[:properties][:config][:additionalProperties]).to include(:oneOf)
+      expect(input_schema[:properties][:config][:additionalProperties]).to include(:anyOf)
     end
   end
 

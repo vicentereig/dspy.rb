@@ -53,7 +53,7 @@ module DSPy
             if contains_images?(normalized_messages)
               DSPy::LM::VisionModels.validate_vision_support!('gemini', model)
               # Convert messages to Gemini format with proper image handling
-              normalized_messages = format_multimodal_messages(normalized_messages)
+              normalized_messages = format_multimodal_messages(normalized_messages, 'gemini')
             end
 
             # Convert DSPy message format to Gemini format
@@ -128,7 +128,7 @@ module DSPy
                 usage: usage_struct,
                 metadata: typed_metadata
               )
-            rescue => e
+            rescue StandardError => e
               handle_gemini_error(e)
             end
           end
@@ -174,34 +174,6 @@ module DSPy
             return "" unless parts.is_a?(Array)
 
             parts.map { |part| part['text'] }.compact.join
-          end
-
-          # Format multimodal messages for Gemini
-          def format_multimodal_messages(messages)
-            messages.map do |msg|
-              if msg[:content].is_a?(Array)
-                # Convert multimodal content to Gemini format
-                formatted_content = msg[:content].map do |item|
-                  case item[:type]
-                  when 'text'
-                    { type: 'text', text: item[:text] }
-                  when 'image'
-                    # Validate image compatibility before formatting
-                    item[:image].validate_for_provider!('gemini')
-                    item[:image].to_gemini_format
-                  else
-                    item
-                  end
-                end
-
-                {
-                  role: msg[:role],
-                  content: formatted_content
-                }
-              else
-                msg
-              end
-            end
           end
 
           # Handle Gemini-specific errors

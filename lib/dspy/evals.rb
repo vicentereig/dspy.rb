@@ -254,25 +254,7 @@ module DSPy
     # Evaluate program on a single example
     sig { params(example: T.untyped, trace: T.nilable(T.untyped)).returns(EvaluationResult) }
     def call(example, trace: nil)
-      run_callbacks(:before, :call, example: example)
-
-      DSPy::Context.with_span(
-        operation: 'evaluation.example',
-        'dspy.module' => 'Evaluator',
-        'evaluation.program' => @program.class.name,
-        'evaluation.has_metric' => !@metric.nil?
-      ) do
-        begin
-          perform_call(example, trace: trace)
-        rescue => e
-          build_error_result(example, e, trace: trace)
-        end
-      end.then do |result|
-        @last_example_result = result
-        emit_example_observation(example, result)
-        run_callbacks(:after, :call, example: example, result: result)
-        result
-      end
+      call_with_program(@program, example, trace: trace, track_state: true)
     end
 
     # Evaluate program on multiple examples
@@ -403,8 +385,9 @@ module DSPy
 
         futures = batch.map do |item|
           Concurrent::Promises.future_on(executor) do
-            [:ok, item[:index], safe_call(item[:example])]
-          rescue => e
+            program_for_thread = fork_program_for_thread
+            [:ok, item[:index], safe_call(item[:example], program: program_for_thread, track_state: false)]
+          rescue StandardError => e
             [:error, item[:index], e]
           end
         end
@@ -441,18 +424,18 @@ module DSPy
       results.compact
     end
 
-    def safe_call(example)
-      call(example)
-    rescue => e
+    def safe_call(example, program: @program, track_state: true)
+      call_with_program(program, example, track_state: track_state)
+    rescue StandardError => e
       build_error_result(example, e)
     end
 
-    def perform_call(example, trace:)
+    def perform_call(example, trace:, program:)
       # Extract input from example - support both hash and object formats
       input_values = extract_input_values(example)
 
       # Run prediction
-      prediction = @program.call(**input_values)
+      prediction = program.call(**input_values)
 
       # Calculate metrics if provided
       metrics = {}
@@ -469,7 +452,7 @@ module DSPy
             passed = !!metric_result
             metrics[:passed] = passed
           end
-        rescue => e
+        rescue StandardError => e
           passed = false
           metrics[:error] = e.message
           metrics[:passed] = false
@@ -488,6 +471,34 @@ module DSPy
         metrics: metrics,
         passed: passed
       )
+    end
+
+    def call_with_program(program, example, trace: nil, track_state: true)
+      run_callbacks(:before, :call, example: example)
+
+      DSPy::Context.with_span(
+        operation: 'evaluation.example',
+        'dspy.module' => 'Evaluator',
+        'evaluation.program' => program.class.name,
+        'evaluation.has_metric' => !@metric.nil?
+      ) do
+        begin
+          perform_call(example, trace: trace, program: program)
+        rescue StandardError => e
+          build_error_result(example, e, trace: trace)
+        end
+      end.then do |result|
+        @last_example_result = result if track_state
+        emit_example_observation(example, result)
+        run_callbacks(:after, :call, example: example, result: result)
+        result
+      end
+    end
+
+    def fork_program_for_thread
+      return @program if @program.nil?
+      return @program.dup_for_thread if @program.respond_to?(:dup_for_thread)
+      @program.dup
     end
 
     def build_error_result(example, error, trace: nil)
@@ -680,7 +691,7 @@ module DSPy
       if @export_scores
         export_example_score(example, result)
       end
-    rescue => e
+    rescue StandardError => e
       DSPy.log('evals.example.observation_error', error: e.message)
     end
 
@@ -698,7 +709,7 @@ module DSPy
       if @export_scores
         export_batch_score(batch_result)
       end
-    rescue => e
+    rescue StandardError => e
       DSPy.log('evals.batch.observation_error', error: e.message)
     end
 
@@ -711,7 +722,7 @@ module DSPy
         score_value,
         comment: "Example: #{example_id || 'unknown'}, passed: #{result.passed}"
       )
-    rescue => e
+    rescue StandardError => e
       DSPy.log('evals.score_export_error', error: e.message)
     end
 
@@ -721,7 +732,7 @@ module DSPy
         batch_result.pass_rate,
         comment: "Batch: #{batch_result.passed_examples}/#{batch_result.total_examples} passed"
       )
-    rescue => e
+    rescue StandardError => e
       DSPy.log('evals.batch_score_export_error', error: e.message)
     end
 

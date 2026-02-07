@@ -103,6 +103,24 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
         adapter.chat(messages: messages)
       }.to raise_error(DSPy::LM::AdapterError, 'Anthropic adapter error: API Error')
     end
+
+    it 'raises ContentFilterError for content filtering errors' do
+      allow(mock_messages).to receive(:create)
+        .and_raise(StandardError, 'Output blocked by content filtering policy')
+
+      expect {
+        adapter.chat(messages: messages)
+      }.to raise_error(DSPy::Anthropic::ContentFilterError, /Anthropic content filtered/)
+    end
+
+    it 'raises ContentFilterError when response is blocked' do
+      allow(mock_messages).to receive(:create)
+        .and_raise(StandardError, 'Request blocked due to safety concerns')
+
+      expect {
+        adapter.chat(messages: messages)
+      }.to raise_error(DSPy::Anthropic::ContentFilterError, /Anthropic content filtered/)
+    end
   end
 
   describe '#extract_system_message' do

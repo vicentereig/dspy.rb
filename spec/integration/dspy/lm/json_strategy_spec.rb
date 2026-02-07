@@ -58,7 +58,7 @@ RSpec.describe DSPy::LM::JSONStrategy do
     before do
       # Mock output field descriptors
       allow(signature_class).to receive(:output_field_descriptors).and_return(
-        { name: double(type: String) }
+        { name: double(type: String, has_default: false) }
       )
       allow(DSPy::TypeSystem::SorbetJsonSchema).to receive(:type_to_json_schema)
         .and_return({ type: 'string' })
@@ -71,7 +71,10 @@ RSpec.describe DSPy::LM::JSONStrategy do
       strategy.prepare_request(messages, request_params)
 
       expect(request_params[:tools]).to be_an(Array)
-      expect(request_params[:tools].first[:name]).to eq('json_output')
+      tool = request_params[:tools].first
+      expect(tool[:name]).to eq('json_output')
+      expect(tool[:strict]).to eq(true)
+      expect(tool[:input_schema][:additionalProperties]).to eq(false)
       expect(request_params[:tool_choice]).to eq({ type: 'tool', name: 'json_output' })
     end
 

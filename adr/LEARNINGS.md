@@ -156,6 +156,26 @@ output do
 end
 ```
 
+### Centralized Case-Insensitive Enum Deserialization (#210, January 2026)
+
+**Problem**: T::Enum deserialization was spread across 6+ call sites in 3 files (prediction.rb, type_coercion.rb, reconstructor.rb) with inconsistent behavior. When `structured_outputs: false`, LLMs return enum values in unexpected casing (e.g., `"BOCM"` instead of `"bocm"`), causing `KeyError` crashes.
+
+**Root Cause**: Prediction had its own duplicate `is_enum_type?` and `extract_enum_class` methods (~55 lines), and 3 of its 4 deserialization paths used `prop_type.raw_type.deserialize(v)` directly — bypassing nilable enum handling and error recovery.
+
+**Solution**: Centralized all enum deserialization into `TypeCoercion.deserialize_enum(enum_class, value)`:
+- Uses `try_deserialize` (O(1) hash lookup) for exact match
+- Falls back to a lazily-built case-insensitive lookup hash (cached per enum class)
+- Returns `nil` on no match (callers decide how to handle)
+- No exceptions for control flow (30x faster than rescue/retry pattern)
+
+**Key Pattern**:
+```ruby
+# All 6 call sites now delegate to:
+DSPy::Mixins::TypeCoercion.deserialize_enum(enum_class, value)
+```
+
+**Architectural Takeaway**: When adding behavior that affects multiple deserialization paths (predictions, tools, TOON), centralize the logic into a module-level method. Duplicating across paths creates behavioral divergence that compounds over time.
+
 ### Token Usage Type Safety with T::Struct (July 2025)
 
 **Problem Solved**: 

@@ -1,0 +1,125 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"<article>\\n  <h1>Test Article</h1>\\n  <p>This
+        has <strong>bold</strong> and <em>italic</em> text.</p>\\n  <ul>\\n    <li>Item
+        one</li>\\n    <li>Item two</li>\\n  </ul>\\n</article>\\n\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: Respond with ONLY valid
+        JSON. No markdown formatting, no code blocks, no explanations. Start your
+        response with ''{'' and end with ''}''."}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        input schema fields are:\n```baml\nclass HtmlToMarkdown::ConvertHtmlToMarkdownInput
+        {\n  html string\n}\n```\nYour output schema fields are:\n```baml\nclass HtmlToMarkdown::ConvertHtmlToMarkdownOutput
+        {\n  markdown string\n}\n```\n\nAll interactions will be structured in the
+        following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Convert HTML content directly to Markdown string format.\n\nApply
+        standard Markdown conversions:\n- Headers: <h1> -> # , <h2> -> ## , etc.\n-
+        Bold: <strong> or <b> -> **text**\n- Italic: <em> or <i> -> *text*\n- Inline
+        code: <code> -> `code`\n- Code blocks: <pre><code class=\"language-X\"> ->
+        ```X\\ncode\\n```\n- Links: <a href=\"url\">text</a> -> [text](url)\n- Images:
+        <img src=\"url\" alt=\"text\"> -> ![text](url)\n- Unordered lists: <ul><li>
+        -> - item\n- Ordered lists: <ol><li> -> 1. item\n- Blockquotes: <blockquote>
+        -> > text\n- Horizontal rules: <hr> -> ---\n- Strikethrough: <del> or <s>
+        -> ~~text~~\n\nPreserve:\n- Text content exactly as written\n- Paragraph breaks
+        between block elements\n- Proper nesting of formatting (bold within italic,
+        etc.)\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1971'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 10:18:29 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T10:18:29Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T10:18:29Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T10:18:28Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T10:18:29Z'
+      Request-Id:
+      - req_011CWchbmejNFXqLgGBsc1bY
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '804'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b60cb1a7d2dccf1-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01R3ycut5f57oMVBGSPA9g8q","type":"message","role":"assistant","content":[{"type":"text","text":"##
+        Output values\n```json\n{\n  \"markdown\": \"# Test Article\\n\\nThis has
+        **bold** and *italic* text.\\n\\n- Item one\\n- Item two\"\n}\n```"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":567,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":51,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 10:18:29 GMT
+recorded_with: VCR 6.3.1

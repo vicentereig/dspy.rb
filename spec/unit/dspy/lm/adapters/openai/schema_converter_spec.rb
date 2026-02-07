@@ -320,6 +320,72 @@ RSpec.describe DSPy::OpenAI::LM::SchemaConverter do
     end
   end
   
+  describe 'recursive types with $defs' do
+    # Define recursive type at module level for proper self-reference
+    before(:all) do
+      # Create recursive struct class
+      Object.send(:remove_const, :RecursiveTreeNode) if defined?(RecursiveTreeNode)
+      eval <<-RUBY
+        class RecursiveTreeNode < T::Struct
+          const :value, String
+          const :children, T.nilable(T::Array[RecursiveTreeNode])
+        end
+      RUBY
+    end
+
+    let(:recursive_signature_class) do
+      Class.new(DSPy::Signature) do
+        description "Process a tree structure"
+
+        input do
+          const :prompt, String, description: "Instructions"
+        end
+
+        output do
+          const :tree, RecursiveTreeNode, description: "A recursive tree structure"
+        end
+      end
+    end
+
+    it 'uses $defs format instead of definitions for recursive references' do
+      result = described_class.to_openai_format(recursive_signature_class)
+      schema = result[:json_schema][:schema]
+
+      # The schema should have a $defs section at the root
+      expect(schema).to have_key(:"$defs")
+      expect(schema[:"$defs"]).to have_key(:RecursiveTreeNode)
+
+      # Any $ref should use #/$defs/ format, not #/definitions/
+      schema_json = JSON.generate(schema)
+      expect(schema_json).not_to include('#/definitions/')
+      expect(schema_json).to include('#/$defs/') if schema_json.include?('$ref')
+    end
+
+    it 'generates valid schema with recursive $refs resolved' do
+      result = described_class.to_openai_format(recursive_signature_class)
+      schema = result[:json_schema][:schema]
+
+      # The tree property should reference the $defs
+      tree_schema = schema[:properties][:tree]
+
+      # For recursive types, we expect either:
+      # 1. Direct $ref to #/$defs/RecursiveTreeNode, or
+      # 2. Object with children containing $ref
+      if tree_schema[:"$ref"]
+        expect(tree_schema[:"$ref"]).to eq("#/$defs/RecursiveTreeNode")
+      else
+        # Should be an object with children that have $ref
+        expect(tree_schema[:type]).to eq("object")
+        children_schema = tree_schema[:properties][:children]
+        expect(children_schema).to be_a(Hash)
+        # Children array items should reference the type
+        if children_schema[:items] && children_schema[:items][:"$ref"]
+          expect(children_schema[:items][:"$ref"]).to eq("#/$defs/RecursiveTreeNode")
+        end
+      end
+    end
+  end
+
   describe '.all_have_discriminators?' do
     it 'returns true when all schemas have const properties' do
       schemas = [

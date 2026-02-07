@@ -5,6 +5,9 @@ require 'dry-configurable'
 require 'dry/logger'
 require 'securerandom'
 
+# Extensions to core classes (must be loaded early)
+require_relative 'dspy/ext/struct_descriptions'
+
 require_relative 'dspy/version'
 require_relative 'dspy/errors'
 require_relative 'dspy/type_serializer'
@@ -138,7 +141,7 @@ module DSPy
       # Events are instant moments in time, not ongoing operations
       span = DSPy::Observability.start_span(event_name, flattened_attributes)
       DSPy::Observability.finish_span(span) if span
-    rescue => e
+    rescue StandardError => e
       # Log error but don't let it break the event system
       # Use emit_log directly to avoid infinite recursion
       emit_log('event.span_creation_error', {
@@ -218,8 +221,6 @@ require_relative 'dspy/lm'
 require_relative 'dspy/image'
 require_relative 'dspy/prediction'
 require_relative 'dspy/predict'
-require_relative 'dspy/events/subscribers'
-require_relative 'dspy/events/subscriber_mixin'
 require_relative 'dspy/chain_of_thought'
 require_relative 'dspy/re_act'
 require_relative 'dspy/evals'
@@ -245,7 +246,6 @@ begin
 rescue LoadError
 end
 require_relative 'dspy/tools'
-require_relative 'dspy/memory'
 
 begin
   require 'dspy/datasets'

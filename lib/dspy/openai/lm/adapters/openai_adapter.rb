@@ -27,7 +27,7 @@ module DSPy
             if contains_images?(normalized_messages)
               DSPy::LM::VisionModels.validate_vision_support!('openai', model)
               # Convert messages to OpenAI format with proper image handling
-              normalized_messages = format_multimodal_messages(normalized_messages)
+              normalized_messages = format_multimodal_messages(normalized_messages, 'openai')
             end
 
             # Handle O1 model restrictions - convert system messages to user messages
@@ -101,7 +101,7 @@ module DSPy
                 usage: usage_struct,
                 metadata: metadata
               )
-            rescue => e
+            rescue StandardError => e
               # Check for specific error types and messages
               error_msg = e.message.to_s
 
@@ -141,33 +141,6 @@ module DSPy
 
           def supports_structured_outputs?
             DSPy::OpenAI::LM::SchemaConverter.supports_structured_outputs?(model)
-          end
-
-          def format_multimodal_messages(messages)
-            messages.map do |msg|
-              if msg[:content].is_a?(Array)
-                # Convert multimodal content to OpenAI format
-                formatted_content = msg[:content].map do |item|
-                  case item[:type]
-                  when 'text'
-                    { type: 'text', text: item[:text] }
-                  when 'image'
-                    # Validate image compatibility before formatting
-                    item[:image].validate_for_provider!('openai')
-                    item[:image].to_openai_format
-                  else
-                    item
-                  end
-                end
-
-                {
-                  role: msg[:role],
-                  content: formatted_content
-                }
-              else
-                msg
-              end
-            end
           end
 
           # Check if model is an O1 reasoning model (includes O1, O3, O4 series)

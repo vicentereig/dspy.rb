@@ -135,14 +135,22 @@ The executor-driven telemetry design ensures observability doesn't slow down you
 The event system supports custom analytics:
 
 ```ruby
-class TokenBudgetTracker < DSPy::Events::BaseSubscriber
-  def subscribe
-    add_subscription('llm.*') do |event_name, attributes|
+class TokenBudgetTracker
+  def initialize(budget_limit:)
+    @budget_limit = budget_limit
+    @total_tokens = 0
+    @subscriptions = []
+    @subscriptions << DSPy.events.subscribe('llm.*') do |event_name, attributes|
       tokens = attributes['gen_ai.usage.total_tokens'] || 0
       @total_tokens += tokens
-      
+
       raise BudgetExceededError if @total_tokens > @budget_limit
     end
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 ```

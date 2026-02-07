@@ -77,6 +77,7 @@ RSpec.describe DSPy::LM do
       allow(prompt_double).to receive(:render_system_prompt).and_return('You are a helpful assistant')
       allow(prompt_double).to receive(:render_user_prompt).with(anything).and_return('Question: What is AI?\nAnswer:')
       allow(prompt_double).to receive(:to_h).and_return({})
+      allow(prompt_double).to receive(:data_format).and_return(:json)
       allow(module_double).to receive(:signature_class).and_return(signature_class)
       allow(module_double).to receive(:prompt).and_return(prompt_double)
       allow(module_double).to receive(:system_signature).and_return('You are a helpful assistant')
@@ -178,6 +179,25 @@ RSpec.describe DSPy::LM do
           expect(args[:signature]).to be_nil
         end
         expect(result).to eq('This is a raw response without JSON')
+      end
+
+      it 'accepts symbol roles and string keys' do
+        messages = [
+          { role: :system, content: 'You are a helpful assistant' },
+          { 'role' => :user, 'content' => 'What is 2+2?' }
+        ]
+
+        allow(mock_adapter).to receive(:chat).and_call_original
+
+        lm.raw_chat(messages)
+
+        expect(mock_adapter).to have_received(:chat) do |**args|
+          expect(args[:messages]).to eq([
+            { role: 'system', content: 'You are a helpful assistant' },
+            { role: 'user', content: 'What is 2+2?' }
+          ])
+          expect(args[:signature]).to be_nil
+        end
       end
     end
 
@@ -390,6 +410,7 @@ RSpec.describe DSPy::LM do
         allow(prompt_double).to receive(:render_system_prompt).and_return('You are a helpful assistant')
         allow(prompt_double).to receive(:render_user_prompt).with(anything).and_return('Question: What is AI?\nAnswer:')
         allow(prompt_double).to receive(:to_h).and_return({})
+        allow(prompt_double).to receive(:data_format).and_return(:json)
         allow(module_double).to receive(:signature_class).and_return(signature_class_double)
         allow(module_double).to receive(:prompt).and_return(prompt_double)
         allow(module_double).to receive(:system_signature).and_return('You are a helpful assistant')

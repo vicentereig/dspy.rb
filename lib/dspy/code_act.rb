@@ -420,38 +420,10 @@ module DSPy
         [final_result, ""]
       rescue SyntaxError => e
         [nil, "Error: #{e.message}"]
-      rescue => e
+      rescue StandardError => e
         [nil, "Error: #{e.message}"]
       ensure
         $stdout = original_stdout if original_stdout
-      end
-    end
-
-    sig { params(output: T.untyped).void }
-    def validate_output_schema!(output)
-      # Validate that output is an instance of the enhanced output struct
-      unless output.is_a?(@enhanced_output_struct)
-        raise "Output must be an instance of #{@enhanced_output_struct}, got #{output.class}"
-      end
-
-      # Validate original signature output fields are present
-      @original_signature_class.output_struct_class.props.each do |field_name, _prop|
-        unless output.respond_to?(field_name)
-          raise "Missing required field: #{field_name}"
-        end
-      end
-
-      # Validate CodeAct-specific fields
-      unless output.respond_to?(:history) && output.history.is_a?(Array)
-        raise "Missing or invalid history field"
-      end
-
-      unless output.respond_to?(:iterations) && output.iterations.is_a?(Integer)
-        raise "Missing or invalid iterations field"
-      end
-
-      unless output.respond_to?(:execution_context) && output.execution_context.is_a?(Hash)
-        raise "Missing or invalid execution_context field"
       end
     end
 

@@ -11,6 +11,11 @@ RSpec.describe DSPy::Module, '#configure LM propagation' do
     allow(global_lm).to receive(:is_a?).with(DSPy::LM).and_return(true)
     allow(instance_lm).to receive(:is_a?).with(DSPy::LM).and_return(true)
     allow(child_lm).to receive(:is_a?).with(DSPy::LM).and_return(true)
+
+    [global_lm, instance_lm, child_lm].each do |lm|
+      allow(lm).to receive(:schema_format).and_return(:json)
+      allow(lm).to receive(:data_format).and_return(:json)
+    end
   end
 
   # Simple test signature for creating predictors

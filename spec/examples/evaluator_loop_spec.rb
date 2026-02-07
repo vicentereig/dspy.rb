@@ -68,8 +68,31 @@ RSpec.describe EvaluatorLoop::SalesPitchWriterLoop do
     end
   end
 
-  it 'halts when the budget is exhausted mid-loop', vcr: { cassette_name: 'examples/evaluator_loop/two_iterations' } do
-    loop_module = build_loop(token_budget_limit: 800)
+  it 'halts when the budget is exhausted mid-loop' do
+    generator = DSPy::Predict.new(EvaluatorLoop::GenerateLinkedInArticle)
+    evaluator = DSPy::Predict.new(EvaluatorLoop::EvaluateLinkedInArticle)
+
+    draft = Struct.new(:post, :hooks).new('draft', ['hook'])
+    evaluation_struct = Struct.new(:decision, :feedback, :recommendations, :self_score)
+    evaluation = evaluation_struct.new(
+      EvaluatorLoop::EvaluationDecision::NeedsRevision,
+      'feedback',
+      [],
+      0.5
+    )
+
+    loop_module = described_class.new(
+      generator: generator,
+      evaluator: evaluator,
+      token_budget_limit: 800
+    )
+
+    allow(generator).to receive(:call) do |**_args|
+      loop_module.send(:count_tokens, 'lm.tokens', input_tokens: 500, output_tokens: 400)
+      draft
+    end
+
+    allow(evaluator).to receive(:call).and_return(evaluation)
 
     result = loop_module.call(
       topic_seed: topic_seed,

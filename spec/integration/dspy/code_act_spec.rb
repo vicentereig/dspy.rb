@@ -270,11 +270,6 @@ RSpec.describe 'DSPy::CodeAct' do
   describe 'enhanced output struct validation' do
     let(:agent) { DSPy::CodeAct.new(CodeActMathProblem) }
 
-    it 'validates enhanced output struct has required fields' do
-      # Test that validation method exists and works
-      expect(agent.private_methods).to include(:validate_output_schema!)
-    end
-
     it 'generates example output with correct structure' do
       example = agent.send(:generate_example_output)
       expect(example).to have_key(:history)

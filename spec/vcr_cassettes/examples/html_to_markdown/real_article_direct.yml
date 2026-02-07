@@ -1,0 +1,225 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BVgysVH_r92iADvrtB84K3ppU8OsAAEBAAAnIQEAADIcAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1767097212314.919,"message":"trace_id=\"d46d4975-4b77-4181-9210-746443347370\"
+        input_tokens=1258 output_tokens=1651 total_tokens=2909 gen_ai.system=\"openai\"
+        gen_ai.request.model=\"gpt-4o-mini\" dspy.signature=\"HtmlToMarkdown::ParseHtmlToAst\"
+        module_path=[{id: \"8654c639-07eb-4810-80ee-a3187af99f5e\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"8654c639-07eb-4810-80ee-a3187af99f5e\", class:
+        \"DSPy::Predict\", label: nil} module_leaf={id: \"8654c639-07eb-4810-80ee-a3187af99f5e\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"8654c639-07eb-4810-80ee-a3187af99f5e\",
+        depth: 1} event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BVgysVH_r92iADvrtB84K3ppU8OsAAEBAAAnIQEAADIcAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 12:20:13 GMT
+      Content-Type:
+      - application/json; charset=UTF-8
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9b617d728b448c69-EWR
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Nr-Rate-Limited:
+      - allowed
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Vary:
+      - accept-encoding
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 30 Dec 2025 12:20:13 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"            <article>\\n              <h1>Tangle:
+        Building an ML Experimentation Platform</h1>\\n\\n              <p>Your experiment
+        finally finished. Six hours later, your teammate asks you to reproduce it.\\n              You
+        <strong>can''t remember</strong> which notebook version you used or what parameters
+        were set.</p>\\n\\n              <h2>The Problem</h2>\\n              <p>ML
+        development faces <em>six critical challenges</em>:</p>\\n              <ul>\\n                <li><strong>Manual
+        query tracking</strong> leads to lost experiments</li>\\n                <li>Notebook
+        accumulation creates confusion</li>\\n                <li>Repeated data preparation
+        wastes time</li>\\n                <li>Irreproducibility blocks collaboration</li>\\n                <li>Slow
+        deployments delay production</li>\\n                <li>Lack of team sharing
+        silos knowledge</li>\\n              </ul>\\n\\n              <h2>Architecture
+        Components</h2>\\n              <p>Tangle uses a <code>component</code>-based
+        architecture:</p>\\n\\n              <h3>Components</h3>\\n              <p>Reusable
+        YAML-based units that function like pure functions:</p>\\n              <pre><code
+        class=\\\"language-yaml\\\">name: train-model\\ninputs:\\n  - name: dataset\\n    type:
+        path\\n  - name: epochs\\n    type: int\\noutputs:\\n  - name: model\\n    type:
+        path</code></pre>\\n\\n              <h3>Execution Example</h3>\\n              <pre><code
+        class=\\\"language-python\\\">from tangle import Pipeline\\n\\npipeline =
+        Pipeline.from_yaml(\\\"training.yaml\\\")\\nresult = pipeline.run(\\n    dataset=\\\"./data/train.csv\\\",\\n    epochs=100\\n)\\nprint(f\\\"Model
+        saved: {result.model}\\\")</code></pre>\\n\\n              <h2>Key Features</h2>\\n              <ol>\\n                <li><strong>Content-based
+        caching</strong>: Reuses computations across team runs</li>\\n                <li><strong>Language-neutral</strong>:
+        Supports Python, Shell, JavaScript, Rust, Go, and more</li>\\n                <li><strong>Visual
+        editor</strong>: Drag-and-drop DAG interface</li>\\n              </ol>\\n\\n              <blockquote>\\n                <p>Tangle
+        reduced our iteration time by 60% and made every experiment fully reproducible.</p>\\n              </blockquote>\\n\\n              <h2>Getting
+        Started</h2>\\n              <p>Check out the <a href=\\\"https://github.com/shopify/tangle\\\">GitHub
+        repository</a> or try the\\n              <a href=\\\"https://huggingface.co/spaces/shopify/tangle\\\">HuggingFace
+        Space</a>.</p>\\n\\n              <hr>\\n\\n              <p><em>This article
+        was written by the ML Platform team at Shopify.</em></p>\\n            </article>\\n\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"markdown":{"type":"string"}},"required":["markdown"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"html\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Raw HTML content to convert to Markdown\"\n    }\n  },\n  \"required\":
+        [\n    \"html\"\n  ]\n}\n```\n\nYour objective is: Convert HTML content directly
+        to Markdown string format.\n\nApply standard Markdown conversions:\n- Headers:
+        <h1> -> # , <h2> -> ## , etc.\n- Bold: <strong> or <b> -> **text**\n- Italic:
+        <em> or <i> -> *text*\n- Inline code: <code> -> `code`\n- Code blocks: <pre><code
+        class=\"language-X\"> -> ```X\\ncode\\n```\n- Links: <a href=\"url\">text</a>
+        -> [text](url)\n- Images: <img src=\"url\" alt=\"text\"> -> ![text](url)\n-
+        Unordered lists: <ul><li> -> - item\n- Ordered lists: <ol><li> -> 1. item\n-
+        Blockquotes: <blockquote> -> > text\n- Horizontal rules: <hr> -> ---\n- Strikethrough:
+        <del> or <s> -> ~~text~~\n\nPreserve:\n- Text content exactly as written\n-
+        Paragraph breaks between block elements\n- Proper nesting of formatting (bold
+        within italic, etc.)\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '4215'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 12:20:14 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T12:20:13Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T12:20:15Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T12:20:12Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '539000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T12:20:13Z'
+      Request-Id:
+      - req_011CWcrtB5sf7Jhyi3Mtzr71
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '2177'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b617d6c09865e39-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01Xopvbyb1gLHYDpLPp8HQpe","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_01DX3TCkswXAYyoPF23KntyS","name":"json_output","input":{"markdown":"#
+        Tangle: Building an ML Experimentation Platform\n\nYour experiment finally
+        finished. Six hours later, your teammate asks you to reproduce it. You **can''t
+        remember** which notebook version you used or what parameters were set.\n\n##
+        The Problem\n\nML development faces *six critical challenges*:\n\n- **Manual
+        query tracking** leads to lost experiments\n- Notebook accumulation creates
+        confusion\n- Repeated data preparation wastes time\n- Irreproducibility blocks
+        collaboration\n- Slow deployments delay production\n- Lack of team sharing
+        silos knowledge\n\n## Architecture Components\n\nTangle uses a `component`-based
+        architecture:\n\n### Components\n\nReusable YAML-based units that function
+        like pure functions:\n\n```yaml\nname: train-model\ninputs:\n  - name: dataset\n    type:
+        path\n  - name: epochs\n    type: int\noutputs:\n  - name: model\n    type:
+        path\n```\n\n### Execution Example\n\n```python\nfrom tangle import Pipeline\n\npipeline
+        = Pipeline.from_yaml(\"training.yaml\")\nresult = pipeline.run(\n    dataset=\"./data/train.csv\",\n    epochs=100\n)\nprint(f\"Model
+        saved: {result.model}\")\n```\n\n## Key Features\n\n1. **Content-based caching**:
+        Reuses computations across team runs\n2. **Language-neutral**: Supports Python,
+        Shell, JavaScript, Rust, Go, and more\n3. **Visual editor**: Drag-and-drop
+        DAG interface\n\n> Tangle reduced our iteration time by 60% and made every
+        experiment fully reproducible.\n\n## Getting Started\n\nCheck out the [GitHub
+        repository](https://github.com/shopify/tangle) or try the [HuggingFace Space](https://huggingface.co/spaces/shopify/tangle).\n\n---\n\n*This
+        article was written by the ML Platform team at Shopify.*"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":1767,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":454,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 12:20:14 GMT
+recorded_with: VCR 6.3.1

@@ -99,7 +99,7 @@ module DSPy
           prompt_tokens_details: prompt_details,
           completion_tokens_details: completion_details
         )
-      rescue => e
+      rescue StandardError => e
         DSPy.logger.debug("Failed to create OpenAI usage: #{e.message}")
         nil
       end
@@ -133,7 +133,7 @@ module DSPy
           output_tokens: output_tokens,
           total_tokens: total_tokens
         )
-      rescue => e
+      rescue StandardError => e
         DSPy.logger.debug("Failed to create Anthropic usage: #{e.message}")
         nil
       end
@@ -150,7 +150,7 @@ module DSPy
           output_tokens: output_tokens,
           total_tokens: total_tokens
         )
-      rescue => e
+      rescue StandardError => e
         DSPy.logger.debug("Failed to create Gemini usage: #{e.message}")
         nil
       end
@@ -167,7 +167,7 @@ module DSPy
           output_tokens: output_tokens,
           total_tokens: total_tokens
         )
-      rescue => e
+      rescue StandardError => e
         DSPy.logger.debug("Failed to create generic usage: #{e.message}")
         nil
       end

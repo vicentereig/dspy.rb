@@ -9,7 +9,6 @@ require_relative "deep_research/errors"
 require_relative "deep_research/signatures"
 require_relative "deep_research/section_queue"
 require_relative "deep_research/module"
-require_relative "deep_research_with_memory"
 
 module DSPy
   module DeepResearch

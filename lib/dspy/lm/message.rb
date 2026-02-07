@@ -154,7 +154,7 @@ module DSPy
           content: formatted_content,
           name: data[:name]&.to_s
         )
-      rescue => e
+      rescue StandardError => e
         DSPy.logger.debug("Failed to create Message: #{e.message}")
         nil
       end

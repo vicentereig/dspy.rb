@@ -25,8 +25,10 @@ module DSPy
 
         sig { params(signature_class: T.class_of(DSPy::Signature), name: T.nilable(String), strict: T::Boolean).returns(T::Hash[Symbol, T.untyped]) }
         def self.to_openai_format(signature_class, name: nil, strict: true)
-          # Get the output JSON schema from the signature class
-          output_schema = signature_class.output_json_schema
+          # Get the output JSON schema with definitions for recursive types
+          schema_result = signature_class.output_json_schema_with_defs
+          output_schema = schema_result.schema
+          definitions = schema_result.definitions
 
           # Convert oneOf to anyOf where safe, or raise error for unsupported cases
           output_schema = convert_oneof_to_anyof_if_safe(output_schema)
@@ -38,6 +40,21 @@ module DSPy
             properties: output_schema[:properties] || {},
             required: openai_required_fields(signature_class, output_schema)
           }
+
+          # Add $defs section if there are definitions (for recursive types)
+          if definitions && !definitions.empty?
+            # Convert string keys to symbols and apply OpenAI strict mode requirements
+            processed_defs = definitions.transform_keys(&:to_sym).transform_values do |def_schema|
+              if strict && def_schema[:type] == "object"
+                # Apply the same transformations as the main schema
+                schema = add_additional_properties_recursively(def_schema)
+                fix_nested_struct_required_fields(schema)
+              else
+                def_schema
+              end
+            end
+            dspy_schema[:"$defs"] = processed_defs
+          end
 
           # Generate a schema name if not provided
           schema_name = name || generate_schema_name(signature_class)

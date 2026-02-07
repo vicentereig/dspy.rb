@@ -10,7 +10,6 @@ require 'cli/ui'
 require 'dotenv'
 
 require 'dspy/deep_research'
-require 'dspy/deep_research_with_memory'
 require 'dspy/deep_search'
 require 'dspy/observability'
 
@@ -19,76 +18,74 @@ Dotenv.load(File.expand_path('../../.env', __dir__))
 module Examples
   module DeepResearchCLI
     DEFAULT_MODEL = ENV.fetch('DEEP_RESEARCH_MODEL', 'openai/gpt-4.1')
-    MEMORY_LIMIT  = 5
 
-    class StatusBoard < DSPy::Events::BaseSubscriber
+    class StatusBoard
       extend T::Sig
 
       sig { params(updater: T.proc.params(arg0: String).void).void }
       def initialize(updater)
-        super()
         @updater = updater
         @status = "Starting"
         @input_tokens = 0
         @output_tokens = 0
         @start_time = Time.now
+        @subscriptions = []
       end
 
       attr_reader :input_tokens, :output_tokens, :status
 
       def subscribe
-        add_subscription('deep_research.section.started') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_research.section.started') do |_, attrs|
           update_status("Section #{truncate(value_for(attrs, :title))} (attempt #{value_for(attrs, :attempt)})")
         end
 
-        add_subscription('deep_research.section.qa_retry') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_research.section.qa_retry') do |_, attrs|
           update_status("Retrying #{truncate(value_for(attrs, :title))}")
         end
 
-        add_subscription('deep_research.section.approved') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_research.section.approved') do |_, attrs|
           update_status("Approved #{truncate(value_for(attrs, :title))}")
         end
 
-        add_subscription('deep_research.report.ready') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_research.report.ready') do |_, attrs|
           update_status("Report ready (#{value_for(attrs, :section_count)} sections)")
         end
 
-        add_subscription('deep_search.loop.started') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.loop.started') do |_, attrs|
           update_status("Searching #{truncate(value_for(attrs, :query))}")
         end
 
-        add_subscription('deep_search.fetch.started') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.fetch.started') do |_, attrs|
           update_status("Fetching #{host_for(value_for(attrs, :url))}")
         end
 
-        add_subscription('deep_search.fetch.completed') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.fetch.completed') do |_, attrs|
           update_status("Fetched (notes +#{value_for(attrs, :notes_added)})")
         end
 
-        add_subscription('deep_search.fetch.failed') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.fetch.failed') do |_, attrs|
           update_status("Fetch failed #{host_for(value_for(attrs, :url))}")
         end
 
-        add_subscription('deep_search.reason.decision') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('deep_search.reason.decision') do |_, attrs|
           decision = value_for(attrs, :decision)
           next unless decision
 
           update_status("Decision: #{decision}")
         end
 
-        add_subscription('deep_research.memory.updated') do |_, attrs|
-          size = value_for(attrs, :size)
-          limit = value_for(attrs, :memory_limit)
-          update_status("Memory updated (#{size}/#{limit})")
-        end
-
-        add_subscription('lm.tokens') do |_, attrs|
+        @subscriptions << DSPy.events.subscribe('lm.tokens') do |_, attrs|
           next unless relevant_module?(attrs)
 
           @input_tokens += value_for(attrs, :input_tokens).to_i
           @output_tokens += value_for(attrs, :output_tokens).to_i
           refresh
         end
+      end
+
+      def unsubscribe
+        @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+        @subscriptions.clear
       end
 
       def relevant_module?(attrs)
@@ -201,17 +198,13 @@ module Examples
 
     def parse_options(argv)
       options = {
-        dry_run: false,
-        memory_limit: MEMORY_LIMIT
+        dry_run: false
       }
 
       OptionParser.new do |parser|
         parser.banner = 'Usage: chat.rb [options]'
         parser.on('--dry-run', 'Run with stubbed DeepResearch module (no network requests)') do
           options[:dry_run] = true
-        end
-        parser.on('--memory-limit=COUNT', Integer, 'Number of transcripts to keep in memory') do |value|
-          options[:memory_limit] = value
         end
         parser.on('-h', '--help', 'Show this message') do
           puts parser
@@ -259,21 +252,15 @@ module Examples
       DSPy::Observability.configure!
     end
 
-    def build_agent(dry_run:, memory_limit:)
-      module_instance =
-        if dry_run
-          DryRunDeepResearch.new
-        else
-          DSPy::DeepResearch::Module.new
-        end
-
-      DSPy::DeepResearchWithMemory.new(
-        deep_research_module: module_instance,
-        memory_limit: memory_limit
-      )
+    def build_agent(dry_run:)
+      if dry_run
+        DryRunDeepResearch.new
+      else
+        DSPy::DeepResearch::Module.new
+      end
     end
 
-    def render_result(result, agent, brief)
+    def render_result(result, brief)
       CLI::UI::Frame.open("Deep Research Report") do
         CLI::UI::Frame.divider("Brief")
         puts CLI::UI.fmt("{{cyan:#{brief}}}")
@@ -290,7 +277,6 @@ module Examples
       end
 
       render_sections(result)
-      render_memory(agent)
     end
 
     def render_sections(result)
@@ -301,22 +287,6 @@ module Examples
 
           CLI::UI::Frame.divider("Section Citations")
           section.citations.each { |citation| puts "• #{citation}" }
-        end
-      end
-    end
-
-    def render_memory(agent)
-      history = agent.memory
-      return if history.empty?
-
-      CLI::UI::Frame.open("Recent Memory (#{history.length}/#{agent.memory_limit})") do
-        history.reverse.each_with_index do |entry, index|
-          CLI::UI::Frame.divider("Run ##{history.length - index}")
-          puts CLI::UI.fmt("{{bold:Brief}}: #{entry[:brief]}")
-          puts CLI::UI.fmt("{{bold:Report}}: #{truncate_text(entry[:report], 200)}")
-          unless entry[:citations].empty?
-            puts CLI::UI.fmt("{{bold:Citations}}: #{entry[:citations].join(', ')}")
-          end
         end
       end
     end
@@ -357,10 +327,9 @@ module Examples
       end
 
       if result
-        render_result(result, agent, brief)
+        render_result(result, brief)
       else
-        CLI::UI.puts(CLI::UI.fmt("{{red:Token budget exceeded before an answer was synthesized. Displaying collected memory for reference.}}"))
-        render_memory(agent)
+        CLI::UI.puts(CLI::UI.fmt("{{red:Token budget exceeded before an answer was synthesized.}}"))
       end
     end
 
@@ -379,10 +348,7 @@ CLI::UI::StdoutRouter.enable
 CLI::UI.frame_style = :box
 
 Examples::DeepResearchCLI.ensure_configuration!(dry_run: options[:dry_run])
-agent = Examples::DeepResearchCLI.build_agent(
-  dry_run: options[:dry_run],
-  memory_limit: options[:memory_limit]
-)
+agent = Examples::DeepResearchCLI.build_agent(dry_run: options[:dry_run])
 
 Examples::DeepResearchCLI.prompt_loop(agent)
 

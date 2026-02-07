@@ -26,7 +26,7 @@ module DSPy
             if contains_images?(normalized_messages)
               DSPy::LM::VisionModels.validate_vision_support!('anthropic', model)
               # Convert messages to Anthropic format with proper image handling
-              normalized_messages = format_multimodal_messages(normalized_messages)
+              normalized_messages = format_multimodal_messages(normalized_messages, 'anthropic')
             end
 
             # Anthropic requires system message to be separate from messages
@@ -127,7 +127,7 @@ module DSPy
                   metadata: typed_metadata
                 )
               end
-            rescue => e
+            rescue StandardError => e
               # Check for specific image-related errors in the message
               error_msg = e.message.to_s
 
@@ -139,6 +139,8 @@ module DSPy
                 raise DSPy::LM::AdapterError, "Anthropic rate limit exceeded: #{error_msg}. Please wait and try again."
               elsif error_msg.include?('authentication') || error_msg.include?('API key')
                 raise DSPy::LM::AdapterError, "Anthropic authentication failed: #{error_msg}. Check your API key."
+              elsif error_msg.include?('content filtering') || error_msg.include?('blocked')
+                raise DSPy::Anthropic::ContentFilterError, "Anthropic content filtered: #{error_msg}"
               else
                 # Generic error handling
                 raise DSPy::LM::AdapterError, "Anthropic adapter error: #{e.message}"
@@ -264,33 +266,6 @@ module DSPy
             end
 
             [system_message, user_messages]
-          end
-
-          def format_multimodal_messages(messages)
-            messages.map do |msg|
-              if msg[:content].is_a?(Array)
-                # Convert multimodal content to Anthropic format
-                formatted_content = msg[:content].map do |item|
-                  case item[:type]
-                  when 'text'
-                    { type: 'text', text: item[:text] }
-                  when 'image'
-                    # Validate image compatibility before formatting
-                    item[:image].validate_for_provider!('anthropic')
-                    item[:image].to_anthropic_format
-                  else
-                    item
-                  end
-                end
-
-                {
-                  role: msg[:role],
-                  content: formatted_content
-                }
-              else
-                msg
-              end
-            end
           end
         end
       end

@@ -3,6 +3,7 @@
 require 'sorbet-runtime'
 require 'dry-configurable'
 require 'securerandom'
+require 'weakref'
 require_relative 'context'
 require_relative 'callbacks'
 require_relative 'type_serializer'
@@ -24,15 +25,20 @@ module DSPy
 
     DEFAULT_MODULE_SUBSCRIPTION_SCOPE = SubcriptionScope::Descendants
 
+    # Hook to wrap forward methods with instrumentation.
+    # Uses a Set-based guard (not boolean) to prevent re-wrapping when
+    # other hooks (like Callbacks) also use define_method.
     module ForwardOverrideHooks
       def method_added(method_name)
         super
 
         return unless method_name == :forward
         return if self == DSPy::Module
-        return if @_wrapping_forward
 
-        @_wrapping_forward = true
+        # Use Set-based guard - persists across hook invocations
+        @_forward_instrumented ||= Set.new
+        return if @_forward_instrumented.include?(object_id)
+        @_forward_instrumented << object_id
 
         original = instance_method(:forward)
         define_method(:forward) do |*args, **kwargs, &block|
@@ -40,8 +46,6 @@ module DSPy
             original.bind(self).call(*args, **kwargs, &block)
           end
         end
-      ensure
-        @_wrapping_forward = false
       end
     end
 
@@ -71,6 +75,35 @@ module DSPy
 
       private
 
+      def build_subscription_callback(weakref, subscription_id_ref, spec)
+        scope = spec[:scope] || DEFAULT_MODULE_SUBSCRIPTION_SCOPE
+        handler = spec[:handler]
+        block = spec[:block]
+
+        ->(event_name, attributes) do
+          target = begin
+            weakref.__getobj__
+          rescue WeakRef::RefError
+            nil
+          end
+
+          unless target
+            subscription_id = subscription_id_ref[:id]
+            DSPy.events.unsubscribe(subscription_id) if subscription_id
+            DSPy.logger&.debug(event: 'module.subscription.auto_unsubscribe', subscription_id: subscription_id)
+            return
+          end
+
+          return unless target.send(:module_event_within_scope?, attributes, scope)
+
+          if handler
+            target.send(handler, event_name, attributes)
+          else
+            target.instance_exec(event_name, attributes, &block)
+          end
+        end
+      end
+
       def validate_subscription_scope!(scope)
         T.must(scope)
       end
@@ -97,7 +130,8 @@ module DSPy
     create_after_callback :forward
     create_around_callback :forward
 
-    # The main forward method that users will call is generic and type parameterized
+    # The main forward method that users will call is generic and type parameterized.
+    # Instrument here only when subclasses don't override forward.
     sig do
       type_parameters(:I, :O)
         .params(
@@ -106,10 +140,14 @@ module DSPy
         .returns(T.type_parameter(:O))
     end
     def forward(**input_values)
-      instrument_forward_call([], input_values) do
-        result = forward_untyped(**input_values)
-        T.cast(result, T.type_parameter(:O))
+      result = if self.class.instance_method(:forward).owner == DSPy::Module
+        instrument_forward_call([], input_values) do
+          forward_untyped(**input_values)
+        end
+      else
+        forward_untyped(**input_values)
       end
+      T.cast(result, T.type_parameter(:O))
     end
 
     # The implementation method that subclasses must override
@@ -294,7 +332,27 @@ module DSPy
       @module_subscriptions_registered = false
     end
 
+    sig { returns(T.self_type) }
+    def dup_for_thread
+      cloned = dup
+      cloned.instance_variable_set(:@module_subscription_ids, [])
+      cloned.instance_variable_set(:@module_subscriptions_registered, false)
+      cloned.instance_variable_set(:@module_scope_id, SecureRandom.uuid)
+      cloned.send(:reset_thread_state)
+      cloned
+    end
+
     private
+
+    def reset_thread_state
+      instance_variables.each do |ivar|
+        value = instance_variable_get(ivar)
+        case value
+        when Array, Hash, Set
+          instance_variable_set(ivar, value.dup)
+        end
+      end
+    end
 
     # Propagate LM configuration to child predictors recursively
     # Skips children that already have an explicit LM configured
@@ -322,28 +380,15 @@ module DSPy
 
       @module_subscription_ids ||= []
       specs.each do |spec|
-        callback = build_subscription_callback(spec)
+        weakref = WeakRef.new(self)
+        subscription_id_ref = { id: nil }
+        callback = self.class.send(:build_subscription_callback, weakref, subscription_id_ref, spec)
         subscription_id = DSPy.events.subscribe(spec[:pattern], &callback)
+        subscription_id_ref[:id] = subscription_id
         @module_subscription_ids << subscription_id
       end
 
       @module_subscriptions_registered = true
-    end
-
-    def build_subscription_callback(spec)
-      scope = spec[:scope] || DEFAULT_MODULE_SUBSCRIPTION_SCOPE
-      handler = spec[:handler]
-      block = spec[:block]
-
-      proc do |event_name, attributes|
-        next unless module_event_within_scope?(attributes, scope)
-
-        if handler
-          send(handler, event_name, attributes)
-        else
-          instance_exec(event_name, attributes, &block)
-        end
-      end
     end
 
     def module_event_within_scope?(attributes, scope)

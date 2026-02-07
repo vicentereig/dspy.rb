@@ -1,0 +1,553 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BZxnDr7pcT85ADvrtB84K3ppXQ_AAAEBAAAnIQEAAAbtAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAGcPXWkAA91VbW/bNhD+K4I+m4JEUXwR4ABtk2EdFrdps36JA4OiTjIXStQkOqhn+L+PWpw0yzLMSeu26DfeHXn33PEePBebUNmmsW2Yb0LpXK+LlYNhtKB12q2jVjYQ5uHx+7frqC/CSbi0g9s5B90UMjJWSeMDuwf1Spc+dvrn1Xr2+xWe/fzx5W8nCT/78PLs/MQcn31498t5nPHZ+ev49LhOTo9PSLjdTkJja1/3YhMauAbjM7ye/fTGp3W6gcHJpgvzhFHGYkooE5RELCaT0McGWY9gXC8VLHQ5nYeMAYM0A1RgLBFhqkKigBgJzhWFqmCZUPMwcMseZDk+STiPg0oX0I8WGa0e/lj5uqPdanNneiS9W4yY/nbrtlt5015BO0w9PBzYlbvnwhwHzjpp7hwxIUEN7ULqaFgPDhqP13bQSu0R7QK7YlFjSzA+XncOEYsa3Y6XyqFbR4OuW+lWPfjw+Dd5PpP6Gt79eprn78GAci+U07b1932WlYFFJ91yerHRZR74CcVMMVYpRDkZJ1RKJCjNEPNHlSqZ4iqeh5NAGTkM44OHNWbyWtfS2X68ZWQBJg/8QLaTYFcBc0gyiClSAjNECChU8KpEVUmyLGFZwln2SIVXS6nbN9X50q7qpfuv5CIpqkqxDJWiSj18mfoPzmIkqeQEx7KsKH4k+dseSq0eZr28nVBvrZseekC3xQzIanqIdm4LDMqv1XQjW+VXqV/fLOC+rR3t831H++IuoXPLPEi3gad26/zKmia6IcQ8nLfhdrIv62mUpYwfiPaY7Ev7p1JQWedJLQfb6rb2yaAbpuSB10Bbe4Zm9CawlMPiLjh1/Qp+ICJ/e8odoquvx7x7pMKfSKVGcAtbLdwNvHvL5UW+M+DgCXRjSULjiHOBD0Q3gfkzVTZ7oLKJJ+4/VDYRcfYdqKySuCrTOEVZgQkitEiQIFQgJbOEZkowIdnzNZBwLAUjiCkoECmEQIX/DsTSolSYiaSkxedp4CHgPyp/X7KT/yXhPl0d7Qvp3yR8jrKNVEsinqY/hLCljwtbivFThO0Qy/dNt/yQdT5r2e/tcfIMMbncXv4FoTuwEkYOAAA=
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BZxnDr7pcT85ADvrtB84K3ppXQ_AAAEBAAAnIQEAAAbtAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '0'
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Tue, 06 Jan 2026 13:34:31 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Served-By:
+      - cache-mad22029-MAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 Jan 2026 13:34:32 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer about the document\"\n    },\n    \"document_stats\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Document metadata
+        (e.g., total lines)\"\n    },\n    \"context_window\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Currently visible content from last
+        action\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Actions
+        taken so far and what was found\"\n    }\n  },\n  \"required\": [\n    \"query\",\n    \"document_stats\",\n    \"context_window\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    },\n    \"notes\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Key findings from the current context
+        window that are relevant to answering the query. Record important facts, quotes,
+        or data points here so you remember them.\"\n    },\n    \"action\": {\n      \"oneOf\":
+        [\n        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"_type\":
+        {\n              \"type\": \"string\",\n              \"const\": \"Peek\"\n            },\n            \"start_line\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Start
+        line (1-indexed)\"\n            },\n            \"end_line\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"End line (1-indexed)\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"start_line\",\n            \"end_line\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Peek struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Grep\"\n            },\n            \"pattern\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Regex
+        pattern to search for\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"pattern\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Grep struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Partition\"\n            },\n            \"chunk_size\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Lines
+        per chunk for parallel summarization\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"chunk_size\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Partition struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Finish\"\n            },\n            \"answer\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Your
+        complete answer to the query, synthesizing all relevant information you found\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"answer\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Finish struct\"\n        }\n      ],\n      \"description\":
+        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"reasoning\",\n    \"notes\",\n    \"action\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Navigate a document to answer a query. You can only see a small
+        window at a time.\nUse Peek/Grep/Partition to explore, then Finish with your
+        answer once you have enough information.\nIMPORTANT: When you have gathered
+        sufficient information to answer the query, you MUST use Finish.\nDo not keep
+        exploring indefinitely - synthesize what you''ve learned and provide your
+        answer. Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"query\":
+        \"Provide a comprehensive summary of all sections\",\n  \"document_stats\":
+        \"Total lines: 65\",\n  \"context_window\": \"1: Title: Effects of Exercise
+        on Mental Health\\n2: Authors: Dr. Sarah Johnson, Dr. Michael Chen\\n3: Published:
+        Journal of Health Psychology, 2024\\n4: \\n5: Abstract\\n6: This study examines
+        the relationship between regular physical exercise\\n7: and mental health
+        outcomes in adults aged 25-65. We conducted a\\n8: randomized controlled trial
+        with 500 participants over 12 months.\\n9: Results show significant improvements
+        in anxiety and depression scores\\n10: among participants who exercised at
+        least 150 minutes per week.\\n11: \\n12: 1. Introduction\\n13: Mental health
+        disorders affect millions of people worldwide.\\n14: Exercise has been proposed
+        as a non-pharmacological intervention.\\n15: Previous studies have shown mixed
+        results regarding efficacy.\\n16: This study aims to provide definitive evidence
+        through rigorous methodology.\\n17: \\n18: 2. Methods\\n19: 2.1 Participants\\n20:
+        We recruited 500 adults (250 male, 250 female) aged 25-65.\\n21: Exclusion
+        criteria included pre-existing cardiovascular conditions.\\n22: Participants
+        were randomly assigned to exercise or control groups.\\n23: \\n24: 2.2 Intervention\\n25:
+        Exercise group: 150+ minutes moderate exercise per week\\n26: Control group:
+        Maintained usual activity levels\\n27: Duration: 12 months with monthly check-ins\\n28:
+        \\n29: 2.3 Measurements\\n30: Primary outcomes: PHQ-9 (depression), GAD-7
+        (anxiety)\\n31: Secondary outcomes: Quality of life (SF-36), sleep quality\\n32:
+        Assessments conducted at baseline, 6 months, and 12 months\\n33: \\n34: 3.
+        Results\\n35: 3.1 Primary Outcomes\\n36: Exercise group showed 45% reduction
+        in depression scores (p<0.001)\\n37: Anxiety scores decreased by 38% in exercise
+        group (p<0.001)\\n38: Effect sizes were large (Cohen''s d = 0.8 for depression)\\n39:
+        \\n40: 3.2 Secondary Outcomes\\n41: Quality of life improved significantly
+        in exercise group\\n42: Sleep quality improved by 52% compared to baseline\\n43:
+        Adherence rate was 78% for the full 12 months\\n44: \\n45: 3.3 Subgroup Analysis\\n46:
+        Benefits were consistent across age groups and genders\\n47: Participants
+        with higher baseline severity showed greater improvements\\n48: Outdoor exercise
+        showed marginally better outcomes than indoor\\n49: \\n50: 4. Discussion\\n51:
+        Our findings strongly support exercise as mental health intervention.\\n52:
+        The effect sizes observed are comparable to antidepressant medications.\\n53:
+        Limitations include self-reported exercise adherence.\\n54: Future research
+        should explore optimal exercise types and durations.\\n55: \\n56: 5. Conclusion\\n57:
+        Regular physical exercise significantly improves mental health outcomes.\\n58:
+        Healthcare providers should consider exercise prescriptions for patients.\\n59:
+        Public health initiatives promoting exercise could reduce mental health burden.\\n60:
+        \\n61: References\\n62: 1. World Health Organization (2023) Mental Health
+        Statistics\\n63: 2. Smith et al. (2022) Exercise and Depression Meta-analysis\\n64:
+        3. Johnson & Lee (2021) Physical Activity Guidelines Review\\n65: 4. Chen
+        et al. (2020) Anxiety Interventions Systematic Review\\n...\\n[65 total lines]\",\n  \"history\":
+        []\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '8149'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 13:34:35 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '3606'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '3627'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9998'
+      X-Ratelimit-Remaining-Tokens:
+      - '198115'
+      X-Ratelimit-Reset-Requests:
+      - 16.801s
+      X-Ratelimit-Reset-Tokens:
+      - 565ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9b97e55d625d1f-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Cv1UdCkwx0x0dOM5e62BVNKPYAZ4V",
+          "object": "chat.completion",
+          "created": 1767706471,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"reasoning\": \"The document appears to be structured with a title, authors, abstract, sections covering the introduction, methods, results, discussion, conclusion, and references. To provide a comprehensive summary of all sections, I need to gather the main points from each section. Given the total lines and current window, I will first peek at specific sections to collect relevant facts, quotes, and data points.\",\n  \"notes\": \"Summary from the current context window: The study investigates the impact of exercise on mental health in adults aged 25-65, showing positive outcomes in anxiety and depression. The methods section details participant recruitment and intervention criteria. I'll need to explore further to complete the summary, especially the results and discussion.\",\n  \"action\": {\n    \"_type\": \"Peek\",\n    \"start_line\": 12,\n    \"end_line\": 29\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1762,
+            "completion_tokens": 186,
+            "total_tokens": 1948,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_8bbc38b4db"
+        }
+  recorded_at: Tue, 06 Jan 2026 13:34:35 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BZxnDr7pcT85ADvrtB84K3ppXQ_AAAEBAAAnIQEAAAbtAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1767706475005.9941,"message":"trace_id=\"77e7e35e-b22a-47cf-9be0-988c6efb759c\"
+        thread_id=1880 fiber_id=4960 request_id=nil request_start_time=nil input_tokens=1762
+        output_tokens=186 total_tokens=1948 gen_ai.system=\"openai\" gen_ai.request.model=\"gpt-4o-mini\"
+        dspy.signature=\"DSPy::NaiveRLM::SelectAction\" module_path=[{id: \"4509db0b-a9d8-4517-88e9-7aa3592c73bc\",
+        class: \"DSPy::ChainOfThought\", label: nil}, {id: \"6c4c34d7-2dc1-480e-b710-fff52548672d\",
+        class: \"DSPy::Predict\", label: nil}] module_root={id: \"4509db0b-a9d8-4517-88e9-7aa3592c73bc\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"6c4c34d7-2dc1-480e-b710-fff52548672d\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"4509db0b-a9d8-4517-88e9-7aa3592c73bc>6c4c34d7-2dc1-480e-b710-fff52548672d\",
+        depth: 2} event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1767706475006.927,"message":"trace_id=\"77e7e35e-b22a-47cf-9be0-988c6efb759c\"
+        thread_id=1880 fiber_id=4240 request_id=nil request_start_time=nil dspy.signature=\"DSPy::NaiveRLM::SelectAction\"
+        cot.reasoning_steps=1 cot.reasoning_length=401 cot.has_reasoning=true module_path=[{id:
+        \"4509db0b-a9d8-4517-88e9-7aa3592c73bc\", class: \"DSPy::ChainOfThought\",
+        label: nil}] module_root={id: \"4509db0b-a9d8-4517-88e9-7aa3592c73bc\", class:
+        \"DSPy::ChainOfThought\", label: nil} module_leaf={id: \"4509db0b-a9d8-4517-88e9-7aa3592c73bc\",
+        class: \"DSPy::ChainOfThought\", label: nil} module_scope={ancestry_token:
+        \"4509db0b-a9d8-4517-88e9-7aa3592c73bc\", depth: 1} event=\"chain_of_thought.reasoning_complete\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BZxnDr7pcT85ADvrtB84K3ppXQ_AAAEBAAAnIQEAAAbtAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Tue, 06 Jan 2026 13:34:36 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-toj-leto2350050-TOJ
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 Jan 2026 13:34:37 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"query\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The question to answer about the document\"\n    },\n    \"document_stats\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Document metadata
+        (e.g., total lines)\"\n    },\n    \"context_window\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Currently visible content from last
+        action\"\n    },\n    \"history\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Actions
+        taken so far and what was found\"\n    }\n  },\n  \"required\": [\n    \"query\",\n    \"document_stats\",\n    \"context_window\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    },\n    \"notes\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Key findings from the current context
+        window that are relevant to answering the query. Record important facts, quotes,
+        or data points here so you remember them.\"\n    },\n    \"action\": {\n      \"oneOf\":
+        [\n        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"_type\":
+        {\n              \"type\": \"string\",\n              \"const\": \"Peek\"\n            },\n            \"start_line\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Start
+        line (1-indexed)\"\n            },\n            \"end_line\": {\n              \"type\":
+        \"integer\",\n              \"description\": \"End line (1-indexed)\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"start_line\",\n            \"end_line\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Peek struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Grep\"\n            },\n            \"pattern\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Regex
+        pattern to search for\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"pattern\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Grep struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Partition\"\n            },\n            \"chunk_size\":
+        {\n              \"type\": \"integer\",\n              \"description\": \"Lines
+        per chunk for parallel summarization\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"chunk_size\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Partition struct\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"_type\": {\n              \"type\":
+        \"string\",\n              \"const\": \"Finish\"\n            },\n            \"answer\":
+        {\n              \"type\": \"string\",\n              \"description\": \"Your
+        complete answer to the query, synthesizing all relevant information you found\"\n            }\n          },\n          \"required\":
+        [\n            \"_type\",\n            \"answer\"\n          ],\n          \"description\":
+        \"DSPy::NaiveRLM::Actions::Finish struct\"\n        }\n      ],\n      \"description\":
+        \"Union of multiple types\"\n    }\n  },\n  \"required\": [\n    \"reasoning\",\n    \"notes\",\n    \"action\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Navigate a document to answer a query. You can only see a small
+        window at a time.\nUse Peek/Grep/Partition to explore, then Finish with your
+        answer once you have enough information.\nIMPORTANT: When you have gathered
+        sufficient information to answer the query, you MUST use Finish.\nDo not keep
+        exploring indefinitely - synthesize what you''ve learned and provide your
+        answer. Think step by step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"query\":
+        \"Provide a comprehensive summary of all sections\",\n  \"document_stats\":
+        \"Total lines: 65\",\n  \"context_window\": \"12: 1. Introduction\\n13: Mental
+        health disorders affect millions of people worldwide.\\n14: Exercise has been
+        proposed as a non-pharmacological intervention.\\n15: Previous studies have
+        shown mixed results regarding efficacy.\\n16: This study aims to provide definitive
+        evidence through rigorous methodology.\\n17: \\n18: 2. Methods\\n19: 2.1 Participants\\n20:
+        We recruited 500 adults (250 male, 250 female) aged 25-65.\\n21: Exclusion
+        criteria included pre-existing cardiovascular conditions.\\n22: Participants
+        were randomly assigned to exercise or control groups.\\n23: \\n24: 2.2 Intervention\\n25:
+        Exercise group: 150+ minutes moderate exercise per week\\n26: Control group:
+        Maintained usual activity levels\\n27: Duration: 12 months with monthly check-ins\\n28:
+        \\n29: 2.3 Measurements\",\n  \"history\": [\n    \"PEEK [12-29] - Notes:
+        Summary from the current context window: The study investigates the impact
+        of exercise on mental health in adults aged 25-65, showing positive outcomes
+        in anxiety and depression. The methods section details participant recruitment
+        and intervention criteria. I''ll need to explore further to complete the summary,
+        especially the results and discussion.\"\n  ]\n}\n```\n\nRespond with the
+        corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.36.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.36.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '6198'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 06 Jan 2026 13:34:37 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - "<OPENAI_ORGANIZATION>"
+      Openai-Processing-Ms:
+      - '2738'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '2820'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '198592'
+      X-Ratelimit-Reset-Requests:
+      - 21.666s
+      X-Ratelimit-Reset-Tokens:
+      - 422ms
+      X-Request-Id:
+      - "<REQUEST_ID>"
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=<REDACTED>
+      - _cfuvid=<REDACTED>
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9b97fd1d695d1f-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-Cv1UhU8xEbnxWzrlhtDkx819uyLcw",
+          "object": "chat.completion",
+          "created": 1767706475,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"reasoning\": \"I have gathered information about the introduction and methods sections of the study. The introduction outlines the problem and the purpose of the study, while the methods section details the participant demographics and the intervention setup. To provide a comprehensive summary, I need to explore further into the results and discussion sections.\",\n  \"notes\": \"The document discusses the efficacy of exercise as a non-pharmacological intervention for mental health disorders. The study recruits 500 participants and describes methods of intervention and measurement.\",\n  \"action\": {\n    \"_type\": \"Peek\",\n    \"start_line\": 30,\n    \"end_line\": 50\n  }\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1278,
+            "completion_tokens": 141,
+            "total_tokens": 1419,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Tue, 06 Jan 2026 13:34:37 GMT
+recorded_with: VCR 6.3.1

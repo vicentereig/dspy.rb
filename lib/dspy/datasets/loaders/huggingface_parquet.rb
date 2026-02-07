@@ -123,7 +123,7 @@ module DSPy
           fetch_with_redirects(URI(url)) do |response|
             File.binwrite(destination, response.body)
           end
-        rescue => e
+        rescue StandardError => e
           File.delete(destination) if File.exist?(destination)
           raise
         end

@@ -182,7 +182,7 @@ module DSPy
         else
           ResponseMetadata.new(**common_fields)
         end
-      rescue => e
+      rescue StandardError => e
         DSPy.logger.debug("Failed to create response metadata: #{e.message}")
         # Fallback to basic metadata
         ResponseMetadata.new(

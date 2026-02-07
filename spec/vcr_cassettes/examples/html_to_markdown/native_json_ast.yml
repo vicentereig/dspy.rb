@@ -1,0 +1,186 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BT2mcs7ZjmVyADvrtB84K3ppU784AAEBAAAnIQEAABanAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        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
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BT2mcs7ZjmVyADvrtB84K3ppU784AAEBAAAnIQEAABanAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Tue, 30 Dec 2025 12:00:18 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-nyc-kteb1890042-NYC
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 30 Dec 2025 12:00:18 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"<article>\\n  <h1>Test Article</h1>\\n  <p>This
+        has <strong>bold</strong> and <em>italic</em> text.</p>\\n  <ul>\\n    <li>Item
+        one</li>\\n    <li>Item two</li>\\n  </ul>\\n</article>\\n\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"document":{"type":"object","properties":{"_type":{"type":"string","const":"MarkdownDocument"},"nodes":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"ASTNode"},"node_type":{"type":"string","enum":["heading","paragraph","code_block","blockquote","horizontal_rule","list","list_item","table","table_row","table_cell","text","bold","italic","code","link","image","line_break","strikethrough","footnote_ref","footnote_def","task_list_item"]},"text":{"type":"string"},"level":{"type":"integer"},"language":{"type":"string"},"url":{"type":"string"},"alt":{"type":"string"},"title":{"type":"string"},"ordered":{"type":"boolean"},"checked":{"type":"boolean"},"align":{"type":"string"},"header":{"type":"boolean"},"id":{"type":"string"},"children":{"type":"array","items":{"$ref":"#/$defs/ASTNode"}}},"required":["_type","node_type","text","level","language","url","alt","title","ordered","checked","align","header","id","children"],"description":"HtmlToMarkdown::ASTNode
+        struct"}}},"required":["_type","nodes"],"description":"HtmlToMarkdown::MarkdownDocument
+        struct"}},"required":["document"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"html\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Raw HTML content to parse into Markdown AST\"\n    }\n  },\n  \"required\":
+        [\n    \"html\"\n  ]\n}\n```\n\nYour objective is: Parse HTML content into
+        a Markdown Abstract Syntax Tree (AST).\n\nConvert HTML elements to their Markdown
+        AST node equivalents:\n- <h1>-<h6> -> Heading node with level 1-6\n- <p> ->
+        Paragraph node with inline children\n- <strong> or <b> -> Bold node\n- <em>
+        or <i> -> Italic node\n- <code> -> Code node (inline)\n- <pre><code> -> CodeBlock
+        node with optional language\n- <a href=\"url\"> -> Link node with url and
+        text children\n- <img src=\"url\" alt=\"text\"> -> Image node\n- <ul> or <ol>
+        -> List node (ordered: true/false)\n- <li> -> ListItem node\n- <blockquote>
+        -> Blockquote node\n- <hr> -> HorizontalRule node\n- <del> or <s> -> Strikethrough
+        node\n\nStructure rules:\n- Block elements (Heading, Paragraph, CodeBlock,
+        List, Blockquote, HorizontalRule) are top-level nodes\n- Inline elements (Text,
+        Bold, Italic, Code, Link, Image, Strikethrough) appear as children of block
+        elements\n- Preserve text content exactly, including whitespace\n- Nested
+        structures (lists within lists, formatting within formatting) use the children
+        array\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3076'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 12:00:22 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T12:00:17Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '88000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T12:00:23Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T12:00:16Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '537000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T12:00:17Z'
+      Request-Id:
+      - req_011CWcqMz9bpDw16BMFFYjT8
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '6336'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b61603619c18c69-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01S7vmX3PEREXKna2MtKK5Pu","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_01WwcCekpy2q9jtELk7eQ3Z9","name":"json_output","input":{"document":{"_type":"MarkdownDocument","nodes":[{"_type":"ASTNode","node_type":"heading","level":1,"text":"Test
+        Article","language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":true,"id":"","children":[{"_type":"ASTNode","node_type":"text","text":"Test
+        Article","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[]}]},{"_type":"ASTNode","node_type":"paragraph","text":"This
+        has bold and italic text.","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[{"_type":"ASTNode","node_type":"text","text":"This
+        has ","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[]},{"_type":"ASTNode","node_type":"bold","text":"bold","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[{"_type":"ASTNode","node_type":"text","text":"bold","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[]}]},{"_type":"ASTNode","node_type":"text","text":"
+        and ","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[]},{"_type":"ASTNode","node_type":"italic","text":"italic","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[{"_type":"ASTNode","node_type":"text","text":"italic","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[]}]},{"_type":"ASTNode","node_type":"text","text":"
+        text.","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[]}]},{"_type":"ASTNode","node_type":"list","text":"","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[{"_type":"ASTNode","node_type":"list_item","text":"Item
+        one","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[{"_type":"ASTNode","node_type":"text","text":"Item
+        one","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[]}]},{"_type":"ASTNode","node_type":"list_item","text":"Item
+        two","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[{"_type":"ASTNode","node_type":"text","text":"Item
+        two","level":0,"language":"","url":"","alt":"","title":"","ordered":false,"checked":false,"align":"","header":false,"id":"","children":[]}]}]}]}}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":1556,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1664,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 12:00:22 GMT
+recorded_with: VCR 6.3.1

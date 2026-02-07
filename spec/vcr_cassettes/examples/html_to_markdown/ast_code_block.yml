@@ -1,0 +1,124 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"<pre><code class=\\\"language-ruby\\\">def
+        hello; puts \\\"world\\\"; end</code></pre>\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"document":{"type":"object","properties":{"_type":{"type":"string","const":"MarkdownDocument"},"nodes":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"ASTNode"},"node_type":{"type":"string","enum":["heading","paragraph","code_block","blockquote","horizontal_rule","list","list_item","table","table_row","table_cell","text","bold","italic","code","link","image","line_break","strikethrough","footnote_ref","footnote_def","task_list_item"]},"text":{"type":["string","null"]},"level":{"type":["integer","null"]},"language":{"type":["string","null"]},"url":{"type":["string","null"]},"alt":{"type":["string","null"]},"title":{"type":["string","null"]},"ordered":{"type":["boolean","null"]},"checked":{"type":["boolean","null"]},"align":{"type":["string","null"]},"header":{"type":["boolean","null"]},"id":{"type":["string","null"]},"children":{"type":["array","null"],"items":{"$ref":"#/definitions/ASTNode","description":"Recursive
+        reference to HtmlToMarkdown::ASTNode"}}},"required":["_type","node_type"],"description":"HtmlToMarkdown::ASTNode
+        struct"}}},"required":["_type","nodes"],"description":"HtmlToMarkdown::MarkdownDocument
+        struct"}},"required":["document"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"html\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Raw HTML content to parse into Markdown AST\"\n    }\n  },\n  \"required\":
+        [\n    \"html\"\n  ]\n}\n```\n\nYour objective is: Parse HTML content into
+        a Markdown Abstract Syntax Tree (AST).\n\nConvert HTML elements to their Markdown
+        AST node equivalents:\n- <h1>-<h6> -> Heading node with level 1-6\n- <p> ->
+        Paragraph node with inline children\n- <strong> or <b> -> Bold node\n- <em>
+        or <i> -> Italic node\n- <code> -> Code node (inline)\n- <pre><code> -> CodeBlock
+        node with optional language\n- <a href=\"url\"> -> Link node with url and
+        text children\n- <img src=\"url\" alt=\"text\"> -> Image node\n- <ul> or <ol>
+        -> List node (ordered: true/false)\n- <li> -> ListItem node\n- <blockquote>
+        -> Blockquote node\n- <hr> -> HorizontalRule node\n- <del> or <s> -> Strikethrough
+        node\n\nStructure rules:\n- Block elements (Heading, Paragraph, CodeBlock,
+        List, Blockquote, HorizontalRule) are top-level nodes\n- Inline elements (Text,
+        Bold, Italic, Code, Link, Image, Strikethrough) appear as children of block
+        elements\n- Preserve text content exactly, including whitespace\n- Nested
+        structures (lists within lists, formatting within formatting) use the children
+        array\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3054'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 08:27:34 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T08:27:34Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T08:27:35Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T08:27:34Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '539000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T08:27:34Z'
+      Request-Id:
+      - req_011CWcZ9DATisJKguRaAXSCk
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '950'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b6028a17e7d7721-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01UyhoZLw62xizQU1oDVc7GR","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_01VVzk13VFf8497pE8iYGx1p","name":"json_output","input":{"document":{"_type":"MarkdownDocument","nodes":[{"_type":"ASTNode","node_type":"code_block","language":"ruby","text":"def
+        hello; puts \"world\"; end"}]}}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":1522,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":106,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 08:27:34 GMT
+recorded_with: VCR 6.3.1

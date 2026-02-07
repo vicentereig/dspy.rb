@@ -42,15 +42,11 @@ module DSPy
 
     def chat(inference_module, input_values, &block)
       # Capture the current DSPy context before entering Sync block
-      parent_context = DSPy::Context.current.dup
+      parent_context = DSPy::Context.current
       
       Sync do
-        # Properly restore the context in the new fiber created by Sync
-        # We need to set both thread and fiber storage for the new context system
-        thread_key = :"dspy_context_#{Thread.current.object_id}"
-        Thread.current[thread_key] = parent_context
-        Thread.current[:dspy_context] = parent_context  # Keep for backward compatibility
-        Fiber[:dspy_context] = parent_context
+        # Isolate fiber context while preserving trace/module ancestry
+        Fiber[:dspy_context] = DSPy::Context.fork_context(parent_context)
         
         signature_class = inference_module.signature_class
         
@@ -136,29 +132,6 @@ module DSPy
       response
     end
 
-    # Determines if LM-level events should be emitted using smart consolidation
-    def should_emit_lm_events?
-      # Emit LM events only if we're not in a nested context (smart consolidation)
-      !is_nested_context?
-    end
-
-    # Determines if we're in a nested context where higher-level events are being emitted
-    def is_nested_context?
-      caller_locations = caller_locations(1, 30)
-      return false if caller_locations.nil?
-      
-      # Look for higher-level DSPy modules in the call stack
-      # We consider ChainOfThought and ReAct as higher-level modules
-      higher_level_modules = caller_locations.select do |loc|
-        loc.path.include?('chain_of_thought') || 
-        loc.path.include?('re_act') ||
-        loc.path.include?('react')
-      end
-      
-      # If we have higher-level modules in the call stack, we're in a nested context
-      higher_level_modules.any?
-    end
-
     def parse_model_id(model_id)
       unless model_id.include?('/')
         raise ArgumentError, "model_id must include provider (e.g., 'openai/gpt-4', 'anthropic/claude-3'). Legacy format without provider is no longer supported."
@@ -173,7 +146,7 @@ module DSPy
 
       # Determine if structured outputs will be used and wrap prompt if so
       base_prompt = inference_module.prompt
-      prompt = if will_use_structured_outputs?(inference_module.signature_class)
+      prompt = if will_use_structured_outputs?(inference_module.signature_class, data_format: base_prompt.data_format)
         StructuredOutputsPrompt.new(**base_prompt.to_h)
       else
         base_prompt
@@ -198,8 +171,9 @@ module DSPy
       messages
     end
 
-    def will_use_structured_outputs?(signature_class)
+    def will_use_structured_outputs?(signature_class, data_format: nil)
       return false unless signature_class
+      return false if data_format == :toon
 
       adapter_class_name = adapter.class.name
 
@@ -354,8 +328,9 @@ module DSPy
         })
         
         # Add timing and request correlation if available
-        request_id = Thread.current[:dspy_request_id]
-        start_time = Thread.current[:dspy_request_start_time]
+        context = DSPy::Context.current
+        request_id = context[:request_id]
+        start_time = context[:request_start_time]
         
         if request_id
           event_attributes['request_id'] = request_id
@@ -411,53 +386,21 @@ module DSPy
       end
     end
 
-    public
-
-    def validate_messages!(messages)
-      unless messages.is_a?(Array)
-        raise ArgumentError, "messages must be an array"
-      end
-      
-      messages.each_with_index do |message, index|
-        # Accept both Message objects and hash format for backward compatibility
-        if message.is_a?(Message)
-          # Already validated by type system
-          next
-        elsif message.is_a?(Hash) && message.key?(:role) && message.key?(:content)
-          # Legacy hash format - validate role
-          valid_roles = %w[system user assistant]
-          unless valid_roles.include?(message[:role])
-            raise ArgumentError, "Invalid role at index #{index}: #{message[:role]}. Must be one of: #{valid_roles.join(', ')}"
-          end
-        else
-          raise ArgumentError, "Message at index #{index} must be a Message object or hash with :role and :content"
-        end
-      end
-    end
-
     def execute_raw_chat(messages, &streaming_block)
       # Generate unique request ID for tracking
       request_id = SecureRandom.hex(8)
       start_time = Time.now
-      
-      # Store request context for correlation
-      Thread.current[:dspy_request_id] = request_id
-      Thread.current[:dspy_request_start_time] = start_time
-      
-      begin
+
+      DSPy::Context.with_request(request_id, start_time) do
         response = instrument_lm_request(messages, 'RawPrompt') do
           # Convert messages to hash format for adapter
           hash_messages = messages_to_hash_array(messages)
           # Direct adapter call, no strategies or JSON parsing
           adapter.chat(messages: hash_messages, signature: nil, &streaming_block)
         end
-        
+
         # Return raw response content, not parsed JSON
         response.content
-      ensure
-        # Clean up thread-local storage
-        Thread.current[:dspy_request_id] = nil
-        Thread.current[:dspy_request_start_time] = nil
       end
     end
     
@@ -475,23 +418,28 @@ module DSPy
       messages.each_with_index do |msg, index|
         if msg.is_a?(Message)
           normalized << msg
-        elsif msg.is_a?(Hash)
-          # Validate hash has required fields
-          unless msg.key?(:role) && msg.key?(:content)
+        elsif msg.is_a?(Hash) || msg.respond_to?(:to_h)
+          data = msg.is_a?(Hash) ? msg : msg.to_h
+          unless data.is_a?(Hash)
+            raise ArgumentError, "Message at index #{index} must be a Message object or hash with :role and :content"
+          end
+
+          normalized_hash = data.transform_keys(&:to_sym)
+          unless normalized_hash.key?(:role) && normalized_hash.key?(:content)
             raise ArgumentError, "Message at index #{index} must have :role and :content"
           end
-          
-          # Validate role
+
+          role = normalized_hash[:role].to_s
           valid_roles = %w[system user assistant]
-          unless valid_roles.include?(msg[:role])
-            raise ArgumentError, "Invalid role at index #{index}: #{msg[:role]}. Must be one of: #{valid_roles.join(', ')}"
+          unless valid_roles.include?(role)
+            raise ArgumentError, "Invalid role at index #{index}: #{normalized_hash[:role]}. Must be one of: #{valid_roles.join(', ')}"
           end
-          
-          # Create Message object
-          message = MessageFactory.create(msg)
+
+          message = MessageFactory.create(normalized_hash)
           if message.nil?
             raise ArgumentError, "Failed to create Message from hash at index #{index}"
           end
+
           normalized << message
         else
           raise ArgumentError, "Message at index #{index} must be a Message object or hash with :role and :content"

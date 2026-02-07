@@ -157,7 +157,7 @@ module DSPy
 
               observations += output.observations
             end
-          rescue => e
+          rescue StandardError => e
             if verbose
               puts "Error during observation refinement: #{e.message}. Using observations from past round for summary."
             end

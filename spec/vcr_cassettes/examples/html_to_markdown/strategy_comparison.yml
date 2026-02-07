@@ -1,0 +1,407 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BfmQda-p-gzAADvrtB84K3ppU6dQAAEBAAAnIQEAAUKYAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1767089908240.621,"message":"trace_id=\"14f90368-29f5-414e-ba87-c1723bebbcd2\"
+        input_tokens=850 output_tokens=432 total_tokens=1282 gen_ai.system=\"anthropic\"
+        gen_ai.request.model=\"claude-haiku-4-5-20251001\" dspy.signature=\"HtmlToMarkdown::ParseHtmlToAst\"
+        module_path=[{id: \"81d82ead-2e0e-4019-97e5-306634bb18fc\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"81d82ead-2e0e-4019-97e5-306634bb18fc\", class:
+        \"DSPy::Predict\", label: nil} module_leaf={id: \"81d82ead-2e0e-4019-97e5-306634bb18fc\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"81d82ead-2e0e-4019-97e5-306634bb18fc\",
+        depth: 1} event=\"lm.tokens\"\n"},{"level":"INFO","timestamp":1767089909456.851,"message":"trace_id=\"14f90368-29f5-414e-ba87-c1723bebbcd2\"
+        input_tokens=567 output_tokens=51 total_tokens=618 gen_ai.system=\"anthropic\"
+        gen_ai.request.model=\"claude-haiku-4-5-20251001\" dspy.signature=\"HtmlToMarkdown::ConvertHtmlToMarkdown\"
+        module_path=[{id: \"8544017b-96f8-40f2-8d88-f7154cf97205\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"8544017b-96f8-40f2-8d88-f7154cf97205\", class:
+        \"DSPy::Predict\", label: nil} module_leaf={id: \"8544017b-96f8-40f2-8d88-f7154cf97205\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"8544017b-96f8-40f2-8d88-f7154cf97205\",
+        depth: 1} event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BfmQda-p-gzAADvrtB84K3ppU6dQAAEBAAAnIQEAAUKYAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Tue, 30 Dec 2025 10:18:31 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-nyc-kteb1890037-NYC
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 30 Dec 2025 10:18:32 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"<article>\\n  <h1>Strategy Comparison
+        Test</h1>\\n  <p>Testing <strong>bold</strong>, <em>italic</em>, and <code>code</code>.</p>\\n  <pre><code
+        class=\\\"language-ruby\\\">puts \\\"hello\\\"</code></pre>\\n  <ul>\\n    <li>First
+        item</li>\\n    <li>Second item</li>\\n  </ul>\\n</article>\\n\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"document":{"type":"object","properties":{"_type":{"type":"string","const":"MarkdownDocument"},"nodes":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"ASTNode"},"node_type":{"type":"string","enum":["heading","paragraph","code_block","blockquote","horizontal_rule","list","list_item","table","table_row","table_cell","text","bold","italic","code","link","image","line_break","strikethrough","footnote_ref","footnote_def","task_list_item"]},"text":{"type":["string","null"]},"level":{"type":["integer","null"]},"language":{"type":["string","null"]},"url":{"type":["string","null"]},"alt":{"type":["string","null"]},"title":{"type":["string","null"]},"ordered":{"type":["boolean","null"]},"checked":{"type":["boolean","null"]},"align":{"type":["string","null"]},"header":{"type":["boolean","null"]},"id":{"type":["string","null"]},"children":{"type":["array","null"],"items":{"$ref":"#/definitions/ASTNode","description":"Recursive
+        reference to HtmlToMarkdown::ASTNode"}}},"required":["_type","node_type"],"description":"HtmlToMarkdown::ASTNode
+        struct"}}},"required":["_type","nodes"],"description":"HtmlToMarkdown::MarkdownDocument
+        struct"}},"required":["document"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"html\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Raw HTML content to parse into Markdown AST\"\n    }\n  },\n  \"required\":
+        [\n    \"html\"\n  ]\n}\n```\n\nYour objective is: Parse HTML content into
+        a Markdown Abstract Syntax Tree (AST).\n\nConvert HTML elements to their Markdown
+        AST node equivalents:\n- <h1>-<h6> -> Heading node with level 1-6\n- <p> ->
+        Paragraph node with inline children\n- <strong> or <b> -> Bold node\n- <em>
+        or <i> -> Italic node\n- <code> -> Code node (inline)\n- <pre><code> -> CodeBlock
+        node with optional language\n- <a href=\"url\"> -> Link node with url and
+        text children\n- <img src=\"url\" alt=\"text\"> -> Image node\n- <ul> or <ol>
+        -> List node (ordered: true/false)\n- <li> -> ListItem node\n- <blockquote>
+        -> Blockquote node\n- <hr> -> HorizontalRule node\n- <del> or <s> -> Strikethrough
+        node\n\nStructure rules:\n- Block elements (Heading, Paragraph, CodeBlock,
+        List, Blockquote, HorizontalRule) are top-level nodes\n- Inline elements (Text,
+        Bold, Italic, Code, Link, Image, Strikethrough) appear as children of block
+        elements\n- Preserve text content exactly, including whitespace\n- Nested
+        structures (lists within lists, formatting within formatting) use the children
+        array\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3260'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 10:18:34 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T10:18:31Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T10:18:34Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T10:18:30Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '538000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T10:18:31Z'
+      Request-Id:
+      - req_011CWchbriL8P2LtfC9M9FA2
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '4311'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b60cb21dee97cea-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_011n2aNdoQM8SCg7pbzpKw3r","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_019kYZbhFXHprzMnMC15GZKF","name":"json_output","input":{"document":{"_type":"MarkdownDocument","nodes":[{"_type":"ASTNode","node_type":"heading","level":1,"children":[{"_type":"ASTNode","node_type":"text","text":"Strategy
+        Comparison Test"}]},{"_type":"ASTNode","node_type":"paragraph","children":[{"_type":"ASTNode","node_type":"text","text":"Testing
+        "},{"_type":"ASTNode","node_type":"bold","children":[{"_type":"ASTNode","node_type":"text","text":"bold"}]},{"_type":"ASTNode","node_type":"text","text":",
+        "},{"_type":"ASTNode","node_type":"italic","children":[{"_type":"ASTNode","node_type":"text","text":"italic"}]},{"_type":"ASTNode","node_type":"text","text":",
+        and "},{"_type":"ASTNode","node_type":"code","text":"code"},{"_type":"ASTNode","node_type":"text","text":"."}]},{"_type":"ASTNode","node_type":"code_block","language":"ruby","text":"puts
+        \"hello\""},{"_type":"ASTNode","node_type":"list","ordered":false,"children":[{"_type":"ASTNode","node_type":"list_item","children":[{"_type":"ASTNode","node_type":"text","text":"First
+        item"}]},{"_type":"ASTNode","node_type":"list_item","children":[{"_type":"ASTNode","node_type":"text","text":"Second
+        item"}]}]}]}}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":1603,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":708,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 10:18:34 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BfmQda-p-gzAADvrtB84K3ppU6dQAAEBAAAnIQEAAUKYAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1767089914149.139,"message":"trace_id=\"14f90368-29f5-414e-ba87-c1723bebbcd2\"
+        input_tokens=1603 output_tokens=708 total_tokens=2311 gen_ai.system=\"anthropic\"
+        gen_ai.request.model=\"claude-haiku-4-5-20251001\" dspy.signature=\"HtmlToMarkdown::ParseHtmlToAst\"
+        module_path=[{id: \"72b1ca1c-6fc6-4422-98cf-ceb6cd903e79\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"72b1ca1c-6fc6-4422-98cf-ceb6cd903e79\", class:
+        \"DSPy::Predict\", label: nil} module_leaf={id: \"72b1ca1c-6fc6-4422-98cf-ceb6cd903e79\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"72b1ca1c-6fc6-4422-98cf-ceb6cd903e79\",
+        depth: 1} event=\"lm.tokens\"\n"}]}]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BfmQda-p-gzAADvrtB84K3ppU6dQAAEBAAAnIQEAAUKYAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Tue, 30 Dec 2025 10:18:36 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-nyc-kteb1890037-NYC
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 30 Dec 2025 10:18:36 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"<article>\\n  <h1>Strategy Comparison
+        Test</h1>\\n  <p>Testing <strong>bold</strong>, <em>italic</em>, and <code>code</code>.</p>\\n  <pre><code
+        class=\\\"language-ruby\\\">puts \\\"hello\\\"</code></pre>\\n  <ul>\\n    <li>First
+        item</li>\\n    <li>Second item</li>\\n  </ul>\\n</article>\\n\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: Respond with ONLY valid
+        JSON. No markdown formatting, no code blocks, no explanations. Start your
+        response with ''{'' and end with ''}''."}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        input schema fields are:\n```baml\nclass HtmlToMarkdown::ParseHtmlToAstInput
+        {\n  html string\n}\n```\nYour output schema fields are:\n```baml\nenum NodeType
+        {\n  \"heading\"\n  \"paragraph\"\n  \"code_block\"\n  \"blockquote\"\n  \"horizontal_rule\"\n  \"list\"\n  \"list_item\"\n  \"table\"\n  \"table_row\"\n  \"table_cell\"\n  \"text\"\n  \"bold\"\n  \"italic\"\n  \"code\"\n  \"link\"\n  \"image\"\n  \"line_break\"\n  \"strikethrough\"\n  \"footnote_ref\"\n  \"footnote_def\"\n  \"task_list_item\"\n}\n\nclass
+        ASTNode {\n  node_type NodeType\n  text string?\n  level int?\n  language
+        string?\n  url string?\n  alt string?\n  title string?\n  ordered (bool)?\n  checked
+        (bool)?\n  align string?\n  header (bool)?\n  id string?\n  children ASTNode[]?\n}\n\nclass
+        MarkdownDocument {\n  nodes ASTNode[]\n}\n\nclass HtmlToMarkdown::ParseHtmlToAstOutput
+        {\n  document MarkdownDocument\n}\n```\n\nAll interactions will be structured
+        in the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Parse HTML content into a Markdown Abstract Syntax Tree
+        (AST).\n\nConvert HTML elements to their Markdown AST node equivalents:\n-
+        <h1>-<h6> -> Heading node with level 1-6\n- <p> -> Paragraph node with inline
+        children\n- <strong> or <b> -> Bold node\n- <em> or <i> -> Italic node\n-
+        <code> -> Code node (inline)\n- <pre><code> -> CodeBlock node with optional
+        language\n- <a href=\"url\"> -> Link node with url and text children\n- <img
+        src=\"url\" alt=\"text\"> -> Image node\n- <ul> or <ol> -> List node (ordered:
+        true/false)\n- <li> -> ListItem node\n- <blockquote> -> Blockquote node\n-
+        <hr> -> HorizontalRule node\n- <del> or <s> -> Strikethrough node\n\nStructure
+        rules:\n- Block elements (Heading, Paragraph, CodeBlock, List, Blockquote,
+        HorizontalRule) are top-level nodes\n- Inline elements (Text, Bold, Italic,
+        Code, Link, Image, Strikethrough) appear as children of block elements\n-
+        Preserve text content exactly, including whitespace\n- Nested structures (lists
+        within lists, formatting within formatting) use the children array\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3019'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 10:18:37 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T10:18:35Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T10:18:37Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T10:18:34Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '539000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T10:18:35Z'
+      Request-Id:
+      - req_011CWchcCqJXqFt2Hte9sEUr
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '2279'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b60cb3f4a685ed0-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01JeTNumRQQ8PsUKgpXWnH2G","type":"message","role":"assistant","content":[{"type":"text","text":"##
+        Output values\n```json\n{\n  \"document\": {\n    \"nodes\": [\n      {\n        \"node_type\":
+        \"heading\",\n        \"text\": \"Strategy Comparison Test\",\n        \"level\":
+        1,\n        \"children\": [\n          {\n            \"node_type\": \"text\",\n            \"text\":
+        \"Strategy Comparison Test\"\n          }\n        ]\n      },\n      {\n        \"node_type\":
+        \"paragraph\",\n        \"children\": [\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \"Testing \"\n          },\n          {\n            \"node_type\":
+        \"bold\",\n            \"children\": [\n              {\n                \"node_type\":
+        \"text\",\n                \"text\": \"bold\"\n              }\n            ]\n          },\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \", \"\n          },\n          {\n            \"node_type\":
+        \"italic\",\n            \"children\": [\n              {\n                \"node_type\":
+        \"text\",\n                \"text\": \"italic\"\n              }\n            ]\n          },\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \", and \"\n          },\n          {\n            \"node_type\":
+        \"code\",\n            \"text\": \"code\"\n          },\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \".\"\n          }\n        ]\n      },\n      {\n        \"node_type\":
+        \"code_block\",\n        \"text\": \"puts \\\"hello\\\"\",\n        \"language\":
+        \"ruby\"\n      },\n      {\n        \"node_type\": \"list\",\n        \"ordered\":
+        false,\n        \"children\": [\n          {\n            \"node_type\": \"list_item\",\n            \"children\":
+        [\n              {\n                \"node_type\": \"text\",\n                \"text\":
+        \"First item\"\n              }\n            ]\n          },\n          {\n            \"node_type\":
+        \"list_item\",\n            \"children\": [\n              {\n                \"node_type\":
+        \"text\",\n                \"text\": \"Second item\"\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n```"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":879,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":518,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 10:18:36 GMT
+recorded_with: VCR 6.3.1

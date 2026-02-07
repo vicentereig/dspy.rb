@@ -54,10 +54,16 @@ DSPy.event('llm.generate', provider: 'openai', tokens: 150)
 # Event listening  
 DSPy.events.subscribe('llm.*') { |name, attrs| track_usage(attrs) }
 
-# Custom subscribers
-class MyTracker < DSPy::Events::BaseSubscriber
-  def subscribe
-    add_subscription('optimization.*') { |name, attrs| handle_trial(attrs) }
+# Custom tracking (pattern for reusable subscribers)
+class MyTracker
+  def initialize
+    @subscriptions = []
+    @subscriptions << DSPy.events.subscribe('optimization.*') { |name, attrs| handle_trial(attrs) }
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 ```
@@ -109,20 +115,25 @@ DSPy.events.unsubscribe(subscription_id)
 ### Custom Subscribers
 
 ```ruby
-class TokenTracker < DSPy::Events::BaseSubscriber
+class TokenTracker
   attr_reader :total_tokens
-  
+
   def initialize
-    super
     @total_tokens = 0
+    @subscriptions = []
     subscribe
   end
-  
+
   def subscribe
-    add_subscription('llm.*') do |event_name, attributes|
+    @subscriptions << DSPy.events.subscribe('llm.*') do |event_name, attributes|
       tokens = attributes['gen_ai.usage.total_tokens'] || 0
       @total_tokens += tokens
     end
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 
@@ -340,31 +351,35 @@ DSPy::Events::OptimizationEvent.new(
 ### Token Budget Tracking
 
 ```ruby
-# From spec/support/event_subscriber_examples.rb
-class TokenBudgetTracker < DSPy::Events::BaseSubscriber
+class TokenBudgetTracker
   attr_reader :total_tokens, :total_cost
-  
+
   def initialize(budget_limit: 10000)
-    super
     @budget_limit = budget_limit
     @total_tokens = 0
     @total_cost = 0.0
+    @subscriptions = []
     subscribe
   end
-  
+
   def subscribe
-    add_subscription('llm.*') do |event_name, attributes|
+    @subscriptions << DSPy.events.subscribe('llm.*') do |event_name, attributes|
       prompt_tokens = attributes['gen_ai.usage.prompt_tokens'] || 0
       completion_tokens = attributes['gen_ai.usage.completion_tokens'] || 0
       @total_tokens += prompt_tokens + completion_tokens
-      
+
       # Calculate cost (example pricing)
       model = attributes['gen_ai.request.model']
       cost_per_1k = model == 'gpt-4' ? 0.03 : 0.002
       @total_cost += (@total_tokens / 1000.0) * cost_per_1k
     end
   end
-  
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
+  end
+
   def budget_exceeded?
     @total_tokens > @budget_limit
   end
@@ -377,19 +392,18 @@ tracker = TokenBudgetTracker.new(budget_limit: 5000)
 ### Optimization Progress Tracking
 
 ```ruby
-# From spec/unit/module_event_integration_spec.rb
-class OptimizationTracker < DSPy::Events::BaseSubscriber
+class OptimizationTracker
   attr_reader :trials, :best_score
-  
+
   def initialize
-    super
     @trials = []
     @best_score = nil
+    @subscriptions = []
     subscribe
   end
-  
+
   def subscribe
-    add_subscription('optimization.*') do |event_name, attributes|
+    @subscriptions << DSPy.events.subscribe('optimization.*') do |event_name, attributes|
       case event_name
       when 'optimization.trial_complete'
         score = attributes[:score]
@@ -397,6 +411,11 @@ class OptimizationTracker < DSPy::Events::BaseSubscriber
         @best_score = score if !@best_score || score > @best_score
       end
     end
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 
@@ -407,28 +426,32 @@ tracker = OptimizationTracker.new
 ### Module Performance Tracking
 
 ```ruby
-# From spec/unit/module_event_integration_spec.rb  
-class ModulePerformanceTracker < DSPy::Events::BaseSubscriber
+class ModulePerformanceTracker
   attr_reader :module_stats
-  
+
   def initialize
-    super
-    @module_stats = Hash.new { |h, k| 
-      h[k] = { total_calls: 0, total_duration: 0, avg_duration: 0 } 
+    @module_stats = Hash.new { |h, k|
+      h[k] = { total_calls: 0, total_duration: 0, avg_duration: 0 }
     }
+    @subscriptions = []
     subscribe
   end
-  
+
   def subscribe
-    add_subscription('*.complete') do |event_name, attributes|
+    @subscriptions << DSPy.events.subscribe('*.complete') do |event_name, attributes|
       module_name = event_name.split('.').first
       duration = attributes[:duration_ms] || 0
-      
+
       stats = @module_stats[module_name]
       stats[:total_calls] += 1
       stats[:total_duration] += duration
       stats[:avg_duration] = stats[:total_duration] / stats[:total_calls].to_f
     end
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 
@@ -442,29 +465,34 @@ tracker = ModulePerformanceTracker.new
 
 ```ruby
 # Route different events to different systems
-class EventRouter < DSPy::Events::BaseSubscriber
+class EventRouter
   def initialize(datadog_client:, slack_webhook:)
-    super
     @datadog = datadog_client
     @slack = slack_webhook
+    @subscriptions = []
     subscribe
   end
-  
+
   def subscribe
     # Send LLM events to Datadog for cost tracking
-    add_subscription('llm.*') do |event_name, attributes|
+    @subscriptions << DSPy.events.subscribe('llm.*') do |event_name, attributes|
       @datadog.increment('dspy.llm.requests', tags: [
         "provider:#{attributes['gen_ai.system']}",
         "model:#{attributes['gen_ai.request.model']}"
       ])
     end
-    
+
     # Send optimization events to Slack
-    add_subscription('optimization.trial_complete') do |event_name, attributes|
+    @subscriptions << DSPy.events.subscribe('optimization.trial_complete') do |event_name, attributes|
       if attributes[:score] > 0.9
-        @slack.send("🎉 Trial #{attributes[:trial_number]} achieved #{attributes[:score]} score!")
+        @slack.send("Trial #{attributes[:trial_number]} achieved #{attributes[:score]} score!")
       end
     end
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 ```
@@ -472,22 +500,26 @@ end
 ### Custom Analytics
 
 ```ruby
-# From spec/unit/event_system_spec.rb (Thread and Fiber Safety tests)
-class EventAnalytics < DSPy::Events::BaseSubscriber
+class EventAnalytics
   def initialize
-    super
     @analytics = Concurrent::Hash.new
+    @subscriptions = []
     subscribe
   end
-  
+
   def subscribe
-    add_subscription('*') do |event_name, attributes|
+    @subscriptions << DSPy.events.subscribe('*') do |event_name, attributes|
       # Thread-safe analytics collection
       category = event_name.split('.').first
       @analytics.compute(category) { |old_val| (old_val || 0) + 1 }
     end
   end
-  
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
+  end
+
   def report
     @analytics.to_h
   end
@@ -540,7 +572,7 @@ end
 
 3. **Handle Listener Errors**: Event system isolates failures
    ```ruby
-   add_subscription('llm.*') do |name, attrs|
+   DSPy.events.subscribe('llm.*') do |name, attrs|
      risky_operation(attrs)
    rescue => e
      # Error logged automatically, other listeners continue

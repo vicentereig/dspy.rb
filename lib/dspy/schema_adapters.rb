@@ -46,7 +46,7 @@ module DSPy
         begin
           result = from_hash(struct_class, hash_data)
           [true, result]
-        rescue => e
+        rescue StandardError => e
           [false, [e.message]]
         end
       end

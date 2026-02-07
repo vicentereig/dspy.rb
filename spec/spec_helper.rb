@@ -8,6 +8,9 @@ ENV['DSPY_DEEP_RESEARCH_QA_MODEL'] ||= 'openai/o4-mini'
 ENV['DSPY_DEEP_RESEARCH_SYNTH_MODEL'] ||= 'openai/gpt-4.1'
 ENV['DSPY_DEEP_RESEARCH_REPORTER_MODEL'] ||= 'openai/gpt-4.1'
 
+# Ensure fixture/model JSON files load consistently across locales.
+Encoding.default_external = Encoding::UTF_8
+
 require 'byebug'
 require 'dotenv/load'
 require 'vcr'
@@ -30,30 +33,6 @@ Dir[File.join(File.dirname(__FILE__), 'support', '**', '*.rb')].sort.each { |f| 
 
 DSPy.configure do |c|
   c.logger = Dry.Logger(:dspy, formatter: :string) { |s| s.add_backend(stream: "log/test.log") }
-end
-
-# Pre-download embedding model for tests
-begin
-  require 'dspy/memory/local_embedding_engine'
-
-  # Allow HTTP connections temporarily to download the model
-  original_allow_setting = WebMock.net_connect_allowed?
-  WebMock.allow_net_connect!
-
-  # Pre-download the model so it's available for tests
-  DSPy::Memory::LocalEmbeddingEngine.new
-
-  puts "✓ Embedding model pre-downloaded successfully"
-rescue => e
-  puts "⚠ Could not pre-download embedding model: #{e.message}"
-ensure
-  # Restore original WebMock settings but allow telemetry endpoints
-  if original_allow_setting
-    WebMock.allow_net_connect!
-  else
-    # Block all network connections - no telemetry allowed in tests
-    WebMock.disable_net_connect!
-  end
 end
 
 def require_api_key!

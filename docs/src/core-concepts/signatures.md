@@ -481,10 +481,12 @@ puts result.keywords             # => ["APIs", "technical", "document"]
 ### Automatic Type Conversion (v0.9.0+)
 
 DSPy automatically converts LLM JSON responses to the proper Ruby types:
-- **Enums**: Strings are converted to T::Enum instances
+- **Enums**: Strings are converted to T::Enum instances (case-insensitive matching — `"BOCM"` matches `new('bocm')`)
 - **Structs**: Nested hashes become T::Struct objects
 - **Arrays**: Elements are converted recursively
 - **Defaults**: Missing fields use their default values
+
+> **Note:** Enum matching is case-insensitive to handle LLMs returning values in different casing (e.g., `"POSITIVE"` instead of `"positive"`). With `structured_outputs: true`, providers enforce exact values. With `structured_outputs: false`, case-insensitive fallback prevents runtime errors from casing mismatches.
 
 See [Rich Types](/advanced/complex-types/#automatic-type-conversion-with-dspy-prediction) for detailed information.
 

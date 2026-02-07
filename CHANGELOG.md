@@ -7,6 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.34.3] - 2026-02-05
+
+### Added
+- **Anthropic Strict Mode** – Enabled constrained decoding for Anthropic models with proper JSON schema compliance
+- **ContentFilterError** – New error type for handling Anthropic content filtering responses gracefully
+
+### Fixed
+- **Union Type Schemas** – Changed from `oneOf` to `anyOf` for union type JSON schemas (required for Anthropic strict mode)
+- **Struct Field Defaults** – Strip nil values for non-nilable struct fields that have defaults
+- **Anthropic Required Properties** – Enforce all properties in `required` array for strict mode compliance
+- **Union Type Coercion** – Parse JSON string values correctly in union type coercion
+- **T::Enum Deserialization** – Centralized with case-insensitive fallback for robustness
+- **Documentation** – Correct `DSPy::Module::Callbacks` reference in Rails integration guide
+
+### Changed
+- **Type Coercion Consolidation** – Centralized type introspection into `TypeCoercion` mixin
+- **Code Cleanup** – Removed unused Memory System, `SubscriberMixin`, `BaseSubscriber`, and dead code
+- **Adapter Refactoring** – Extracted shared multimodal formatting to base adapter class
+
+### Sibling Gem Updates
+- `dspy-anthropic` 1.0.3 – ContentFilterError, strict mode support
+- `dspy-schema` 1.0.2 – anyOf schema generation, additionalProperties: false
+- `dspy-openai` 1.0.2 – Adapter refactoring
+- `dspy-gemini` 1.0.2 – Adapter refactoring
+- `dspy-code_act` 1.0.2 – Code cleanup
+- `dspy-evals` 1.0.2 – Evaluation improvements
+- `dspy-o11y` 1.0.2 – Async span processor improvements
+
+## [0.34.2] - 2026-01-02
+
+### Fixed
+- **Async context isolation** - Fiber-local DSPy::Context now avoids shared span/module stacks while preserving trace lineage.
+- **Raw chat normalization** - Accept symbol roles and string-keyed hashes in `LM#raw_chat` message arrays.
+
+### Changed
+- Removed unused LM event consolidation helpers.
+
+## [0.34.1] - 2025-12-30
+
+### Fixed
+- **Recursive Schema `$ref` Format** (#201) - Changed JSON Schema `$ref` format from `#/definitions/` to `#/$defs/` for OpenAI and Gemini structured outputs compatibility
+  - Recursive types now work correctly with all major LLM providers
+  - Schema generator properly tracks and outputs `$defs` section
+
+### Added
+- **T::Struct Field Descriptions** - New `description:` kwarg for T::Struct `const`/`prop` fields
+  - Field descriptions flow to JSON Schema for better LLM understanding
+  - Access via `YourStruct.field_descriptions[:field_name]`
+  - Implemented via `DSPy::Ext::StructDescriptions` module prepended to T::Struct
+
+- **HTML to Markdown Example** - Comprehensive example demonstrating:
+  - Recursive AST types with `$defs`
+  - Field descriptions for complex schemas
+  - Hierarchical (two-phase) parsing pattern
+  - Comparison of structured vs direct string approaches
+
+### Documentation
+- Updated llms.txt and llms-full.txt with recursive types and field descriptions
+- New best practice: use `default: []` instead of `T.nilable(T::Array[...])` for OpenAI compatibility
+
 ## [0.34.0] - 2025-12-23
 
 ### Added

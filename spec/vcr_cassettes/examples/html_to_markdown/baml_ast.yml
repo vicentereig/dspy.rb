@@ -1,0 +1,201 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BfmQda-p-gzAADvrtB84K3ppU6dQAAEBAAAnIQEAAUKYAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAPKmU2kAA9WZW2/bNhhA/4qh51Dg/WIgD+uSoR2QrN2yvsRBwJscLbLkSXQ3L/B/H42kw6LYqwJTgecHASZFHhI8+PSRvH7IbLNYNHU2fch0CG1pVsF323++DmVY57Ve+Gyanf3ycZ23JjvJ7pouPBV25cLovGqsrmLFU4P5qnSx7uKv+/Xlb/f48v2f7349R/LT53efrs6rs0+ff/7xCjJ5efUBXpzN0cXZOc02m5OsauaRe/2QVf6Lr2IPHy5/+Cl2G8qF74JeLLMpElxAqRREDMMcYo5OsljZ6fl2NKHV1t+W7nSWIVooSLgEWBUMUEQ9MFoKYJHAxHhjrMOzbFLWy1W4Dc29r7tTxBCeNKvwryKM+SQ0QVf/vCOInMx9favLvFt3wS8iTNfhrm2WpY09PtW1/vdVHHS+aJyv4iu20ivnwZ0u71eAAgYwxAxBiGIT1y3XeVfOax1WrY8vvw+L6qq50O29a/6op9OPuu38Y+F3XYgtYq+ryt8udbg7vX4o3XQyy6gXRBDOAeU4PiiRQHJKgJeWSVIgqqGZZSeTOJKu2zbYLmjsu/WutGFbU2njq+mkLqvNzVdE2zThdAzCV0DldTEqoLPN0p8+6NrG9WjXjwv5Gprzy3A3naDNJGpZh7g+1SJ/1GGWzepsczLUWJFTiFRSY/ELY4XqGSshOk5jteO0wE4AYTgCVBAdZyziUljpkbNWaSMOMzYpYZexowD2GjuUlsxYQnOE2bjCItgPsRwfaYjVTFHBGARSeQ2oshQoQgogFI7fs4jDyh0obErCTmHHAOwXdiAtmbAU5hwRktZY3jOWINYPsfRIQyxXDgnqDDA0BgvKrQBSFhBAYrCxmDls5WHGJiXsMnYUwF5jh9LSGctzLmVaYVE/JyD9nEBweJzCFpwQryAHBMZUjKrtjKWEQNvIoR56DclhwiYl7BJ2FMBeYYfSkgnLcC5ESl9hdPG5rxT3dEUQv7mu3zf1F9+G58V7rHVxqpgaCgouMKAMxXkr7wH3ilqIhTXaHmZtUsIua0cB7LV2KC2dtTJPfFgAmeprS/5v2urCeoggQAzauANmDhjBBIh5mYWcW02EPlDblISd2o4B2K/tQFoybTnNcVpp5belfftc9jXSWi0LbLEFjutiuwn2QGNCgScESugYRxYeJm1Swi5pRwHslXYoLZm0AuYy7R5M4H6KgOLvubhYkiPdhFnjoeMcAaKlAhTG2RrkCqCVVowz7CVSBxqbkrDT2DEA+40dSEtnLM4ZTBpo8YtAi15ktRS+/SbsdVktN1Z7BXgRYwZllgOlkQSEGWGhkYXQBx53JSXszmpHAPxHVjuMlshbyiTMKUl7eCBoz1umaC/QIn6k57NCukJCSQDGehs3MAKaEAsQIRyhAmtPDkwNkhJ2CTsKYK+wQ2mJhGUc45wolTTSoheXtqx/PIu4OOpASwS3FBUObG+1AeVIAFUoBmDBUPwMakbxgRdhSQm7vB0FsNfbobRvenuzufkbyqLIwQEhAAA=
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BfmQda-p-gzAADvrtB84K3ppU6dQAAEBAAAnIQEAAUKYAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '1'
+      Date:
+      - Tue, 30 Dec 2025 10:18:27 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-nyc-kteb1890037-NYC
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 30 Dec 2025 10:18:26 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"html\": \"<article>\\n  <h1>Test Article</h1>\\n  <p>This
+        has <strong>bold</strong> and <em>italic</em> text.</p>\\n  <ul>\\n    <li>Item
+        one</li>\\n    <li>Item two</li>\\n  </ul>\\n</article>\\n\"\n}\n```\n\nRespond
+        with the corresponding output schema fields wrapped in a ```json ``` block,\nstarting
+        with the heading `## Output values`.\n\nIMPORTANT: Respond with ONLY valid
+        JSON. No markdown formatting, no code blocks, no explanations. Start your
+        response with ''{'' and end with ''}''."}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        input schema fields are:\n```baml\nclass HtmlToMarkdown::ParseHtmlToAstInput
+        {\n  html string\n}\n```\nYour output schema fields are:\n```baml\nenum NodeType
+        {\n  \"heading\"\n  \"paragraph\"\n  \"code_block\"\n  \"blockquote\"\n  \"horizontal_rule\"\n  \"list\"\n  \"list_item\"\n  \"table\"\n  \"table_row\"\n  \"table_cell\"\n  \"text\"\n  \"bold\"\n  \"italic\"\n  \"code\"\n  \"link\"\n  \"image\"\n  \"line_break\"\n  \"strikethrough\"\n  \"footnote_ref\"\n  \"footnote_def\"\n  \"task_list_item\"\n}\n\nclass
+        ASTNode {\n  node_type NodeType\n  text string?\n  level int?\n  language
+        string?\n  url string?\n  alt string?\n  title string?\n  ordered (bool)?\n  checked
+        (bool)?\n  align string?\n  header (bool)?\n  id string?\n  children ASTNode[]?\n}\n\nclass
+        MarkdownDocument {\n  nodes ASTNode[]\n}\n\nclass HtmlToMarkdown::ParseHtmlToAstOutput
+        {\n  document MarkdownDocument\n}\n```\n\nAll interactions will be structured
+        in the following way, with the appropriate values filled in.\n## Input values\n```json\n{input_values}\n```\n##
+        Output values\nRespond exclusively with the output schema fields in the json
+        block below.\n```json\n{output_values}\n```\n\nIn adhering to this structure,
+        your objective is: Parse HTML content into a Markdown Abstract Syntax Tree
+        (AST).\n\nConvert HTML elements to their Markdown AST node equivalents:\n-
+        <h1>-<h6> -> Heading node with level 1-6\n- <p> -> Paragraph node with inline
+        children\n- <strong> or <b> -> Bold node\n- <em> or <i> -> Italic node\n-
+        <code> -> Code node (inline)\n- <pre><code> -> CodeBlock node with optional
+        language\n- <a href=\"url\"> -> Link node with url and text children\n- <img
+        src=\"url\" alt=\"text\"> -> Image node\n- <ul> or <ol> -> List node (ordered:
+        true/false)\n- <li> -> ListItem node\n- <blockquote> -> Blockquote node\n-
+        <hr> -> HorizontalRule node\n- <del> or <s> -> Strikethrough node\n\nStructure
+        rules:\n- Block elements (Heading, Paragraph, CodeBlock, List, Blockquote,
+        HorizontalRule) are top-level nodes\n- Inline elements (Text, Bold, Italic,
+        Code, Link, Image, Strikethrough) appear as children of block elements\n-
+        Preserve text content exactly, including whitespace\n- Nested structures (lists
+        within lists, formatting within formatting) use the children array\n"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.15.1
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.15.1
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.4.5
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2913'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 30 Dec 2025 10:18:28 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-30T10:18:26Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-30T10:18:28Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-30T10:18:26Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-30T10:18:26Z'
+      Request-Id:
+      - req_011CWchbaTnH1zp9FWWPopn5
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '2162'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b60cb0a1ab843d3-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_01TThDzXQn825CBPNcJ4H5Sz","type":"message","role":"assistant","content":[{"type":"text","text":"##
+        Output values\n```json\n{\n  \"document\": {\n    \"nodes\": [\n      {\n        \"node_type\":
+        \"heading\",\n        \"text\": \"Test Article\",\n        \"level\": 1,\n        \"children\":
+        [\n          {\n            \"node_type\": \"text\",\n            \"text\":
+        \"Test Article\"\n          }\n        ]\n      },\n      {\n        \"node_type\":
+        \"paragraph\",\n        \"children\": [\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \"This has \"\n          },\n          {\n            \"node_type\":
+        \"bold\",\n            \"children\": [\n              {\n                \"node_type\":
+        \"text\",\n                \"text\": \"bold\"\n              }\n            ]\n          },\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \" and \"\n          },\n          {\n            \"node_type\":
+        \"italic\",\n            \"children\": [\n              {\n                \"node_type\":
+        \"text\",\n                \"text\": \"italic\"\n              }\n            ]\n          },\n          {\n            \"node_type\":
+        \"text\",\n            \"text\": \" text.\"\n          }\n        ]\n      },\n      {\n        \"node_type\":
+        \"list\",\n        \"ordered\": false,\n        \"children\": [\n          {\n            \"node_type\":
+        \"list_item\",\n            \"children\": [\n              {\n                \"node_type\":
+        \"text\",\n                \"text\": \"Item one\"\n              }\n            ]\n          },\n          {\n            \"node_type\":
+        \"list_item\",\n            \"children\": [\n              {\n                \"node_type\":
+        \"text\",\n                \"text\": \"Item two\"\n              }\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}\n```"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":850,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":432,"service_tier":"standard"}}'
+  recorded_at: Tue, 30 Dec 2025 10:18:28 GMT
+recorded_with: VCR 6.3.1

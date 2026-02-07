@@ -33,38 +33,11 @@ module DSPy
       }
     end
   end
-  # Base class for ReAct thought generation - will be customized per input type
-  class ThoughtBase < DSPy::Signature
-    description "Generate a thought about what to do next to process the given inputs."
-
-    output do
-      const :thought, String,
-        description: "Reasoning about what to do next, considering the history and observations."
-      const :action, String,
-        description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
-      const :tool_input, ToolInput,
-        description: "Input for the chosen tool action. Required when action is a tool name. MUST be a JSON object matching the tool's parameter schema. Set to null when action is \"finish\"."
-      const :final_answer, T.nilable(String),
-        description: "The final answer to return. Required when action is \"finish\". Must match the expected output type. Set to null when action is a tool name."
-    end
-  end
 
   class NextStep < T::Enum
     enums do
       Continue = new("continue")
       Finish = new("finish")
-    end
-  end
-
-  # Base class for observation processing - will be customized per input type
-  class ReActObservationBase < DSPy::Signature
-    description "Process the observation from a tool and decide what to do next."
-
-    output do
-      const :interpretation, String,
-        description: "Interpretation of the observation"
-      const :next_step, NextStep,
-        description: "What to do next: '#{NextStep::Continue}' or '#{NextStep::Finish}'"
     end
   end
 
@@ -731,113 +704,6 @@ module DSPy
       end
     end
 
-    # Checks if a type is a scalar (primitives that don't need special serialization)
-    sig { params(type_object: T.untyped).returns(T::Boolean) }
-    def scalar_type?(type_object)
-      case type_object
-      when T::Types::Simple
-        scalar_classes = [String, Integer, Float, Numeric, TrueClass, FalseClass]
-        scalar_classes.any? { |klass| type_object.raw_type == klass || type_object.raw_type <= klass }
-      when T::Types::Union
-        # Union is scalar if all its types are scalars
-        type_object.types.all? { |t| scalar_type?(t) }
-      else
-        false
-      end
-    end
-
-    # Checks if a type is structured (arrays, hashes, structs that need type preservation)
-    sig { params(type_object: T.untyped).returns(T::Boolean) }
-    def structured_type?(type_object)
-      return true if type_object.is_a?(T::Types::TypedArray)
-      return true if type_object.is_a?(T::Types::TypedHash)
-
-      if type_object.is_a?(T::Types::Simple)
-        raw_type = type_object.raw_type
-        return true if raw_type.respond_to?(:<=) && raw_type <= T::Struct
-      end
-
-      # For union types (like T.nilable(T::Array[...])), check if any non-nil type is structured
-      if type_object.is_a?(T::Types::Union)
-        non_nil_types = type_object.types.reject { |t| t.is_a?(T::Types::Simple) && t.raw_type == NilClass }
-        return non_nil_types.any? { |t| structured_type?(t) }
-      end
-
-      false
-    end
-
-    # Checks if a type is String or compatible with String (e.g., T.any(String, ...) or T.nilable(String))
-    sig { params(type_object: T.untyped).returns(T::Boolean) }
-    def string_type?(type_object)
-      case type_object
-      when T::Types::Simple
-        type_object.raw_type == String
-      when T::Types::Union
-        # Check if any of the union types is String
-        type_object.types.any? { |t| t.is_a?(T::Types::Simple) && t.raw_type == String }
-      else
-        false
-      end
-    end
-
-    # Alias for backward compatibility
-    alias string_compatible_type? string_type?
-
-    # Get a readable type name from a Sorbet type object
-    sig { params(type_object: T.untyped).returns(String) }
-    def type_name(type_object)
-      case type_object
-      when T::Types::TypedArray
-        element_type = type_object.type
-        "T::Array[#{type_name(element_type)}]"
-      when T::Types::TypedHash
-        "T::Hash"
-      when T::Types::Simple
-        type_object.raw_type.to_s
-      when T::Types::Union
-        types_str = type_object.types.map { |t| type_name(t) }.join(', ')
-        "T.any(#{types_str})"
-      else
-        type_object.to_s
-      end
-    end
-
-    # Returns an appropriate default value for a given Sorbet type
-    # This is used when max iterations is reached without a successful completion
-    sig { params(type_object: T.untyped).returns(T.untyped) }
-    def default_value_for_type(type_object)
-      # Handle TypedArray (T::Array[...])
-      if type_object.is_a?(T::Types::TypedArray)
-        return []
-      end
-
-      # Handle TypedHash (T::Hash[...])
-      if type_object.is_a?(T::Types::TypedHash)
-        return {}
-      end
-
-      # Handle simple types
-      case type_object
-      when T::Types::Simple
-        raw_type = type_object.raw_type
-        case raw_type.to_s
-        when 'String' then ''
-        when 'Integer' then 0
-        when 'Float' then 0.0
-        when 'TrueClass', 'FalseClass' then false
-        else
-          # For T::Struct types, return nil as fallback
-          nil
-        end
-      when T::Types::Union
-        # For unions, return nil (assuming it's nilable) or first non-nil default
-        nil
-      else
-        # Default fallback for unknown types
-        nil
-      end
-    end
-
     # Tool execution method
     sig { params(action: String, tool_input: ToolInput).returns(T.untyped) }
     def execute_action(action, tool_input)
@@ -852,34 +718,6 @@ module DSPy
         tool.dynamic_call({})
       else
         tool.dynamic_call(tool_input)
-      end
-    end
-
-    sig { params(output: T.untyped).void }
-    def validate_output_schema!(output)
-      # Validate that output is an instance of the enhanced output struct
-      unless output.is_a?(@enhanced_output_struct)
-        raise "Output must be an instance of #{@enhanced_output_struct}, got #{output.class}"
-      end
-
-      # Validate original signature output fields are present
-      @original_signature_class.output_struct_class.props.each do |field_name, _prop|
-        unless output.respond_to?(field_name)
-          raise "Missing required field: #{field_name}"
-        end
-      end
-
-      # Validate ReAct-specific fields
-      unless output.respond_to?(:history) && output.history.is_a?(Array)
-        raise "Missing or invalid history field"
-      end
-
-      unless output.respond_to?(:iterations) && output.iterations.is_a?(Integer)
-        raise "Missing or invalid iterations field"
-      end
-
-      unless output.respond_to?(:tools_used) && output.tools_used.is_a?(Array)
-        raise "Missing or invalid tools_used field"
       end
     end
 

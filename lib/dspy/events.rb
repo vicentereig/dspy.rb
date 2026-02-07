@@ -11,7 +11,6 @@ module DSPy
   class EventRegistry
     def initialize
       @listeners = {}
-      @subscription_counter = 0
       @mutex = Mutex.new
     end
 
@@ -53,7 +52,7 @@ module DSPy
       matching_listeners.each do |id, listener|
         begin
           listener[:block].call(event_name, attributes)
-        rescue => e
+        rescue StandardError => e
           # Log the error but continue processing other listeners
           # Use emit_log directly to avoid infinite recursion
           DSPy.send(:emit_log, 'event.listener.error', {

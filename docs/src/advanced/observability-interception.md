@@ -50,25 +50,25 @@ The new event system provides clean, simple observability without monkey-patchin
 ### Token Cost Tracking
 
 ```ruby
-# From spec/support/event_subscriber_examples.rb
-class TokenCostTracker < DSPy::Events::BaseSubscriber
+class TokenCostTracker
   def initialize
-    super
     @costs = Hash.new(0.0)
-    subscribe
-  end
-  
-  def subscribe
-    add_subscription('llm.*') do |event_name, attributes|
+    @subscriptions = []
+    @subscriptions << DSPy.events.subscribe('llm.*') do |event_name, attributes|
       model = attributes['gen_ai.request.model']
       input_tokens = attributes['gen_ai.usage.prompt_tokens'] || 0
       output_tokens = attributes['gen_ai.usage.completion_tokens'] || 0
-      
+
       cost = calculate_cost(model, input_tokens, output_tokens)
       @costs[model] += cost
-      
+
       puts "#{model}: $#{cost.round(4)} (total: $#{@costs[model].round(2)})"
     end
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 
@@ -79,25 +79,25 @@ tracker = TokenCostTracker.new
 ### Rate Limiting
 
 ```ruby
-# Simple, testable rate limiter
-class RateLimiter < DSPy::Events::BaseSubscriber
+class RateLimiter
   def initialize(limit: 100)
-    super
     @requests = Hash.new(0)
     @limit = limit
-    subscribe
-  end
-  
-  def subscribe
-    add_subscription('llm.generate') do |event_name, attributes|
+    @subscriptions = []
+    @subscriptions << DSPy.events.subscribe('llm.generate') do |event_name, attributes|
       model = attributes['gen_ai.request.model']
       key = "#{model}:#{Time.now.to_i / 60}"
-      
+
       @requests[key] += 1
       if @requests[key] > @limit
         DSPy.event('rate_limit.exceeded', model: model, count: @requests[key])
       end
     end
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 ```
@@ -105,9 +105,10 @@ end
 ### Audit Logging
 
 ```ruby
-class AuditLogger < DSPy::Events::BaseSubscriber
-  def subscribe
-    add_subscription('llm.*') do |event_name, attributes|
+class AuditLogger
+  def initialize
+    @subscriptions = []
+    @subscriptions << DSPy.events.subscribe('llm.*') do |event_name, attributes|
       AuditLog.create!(
         event: event_name,
         model: attributes['gen_ai.request.model'],
@@ -116,6 +117,11 @@ class AuditLogger < DSPy::Events::BaseSubscriber
         timestamp: Time.current
       )
     end
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 ```
@@ -153,12 +159,18 @@ end
 DSPy::Context.singleton_class.prepend(ContextInterceptor)
 ```
 
-### After (Simple)  
+### After (Simple)
 ```ruby
 # Clean subscriber pattern
-class MyTracker < DSPy::Events::BaseSubscriber
-  def subscribe
-    add_subscription('llm.*') { |name, attrs| handle_event(attrs) }
+class MyTracker
+  def initialize
+    @subscriptions = []
+    @subscriptions << DSPy.events.subscribe('llm.*') { |name, attrs| handle_event(attrs) }
+  end
+
+  def unsubscribe
+    @subscriptions.each { |id| DSPy.events.unsubscribe(id) }
+    @subscriptions.clear
   end
 end
 

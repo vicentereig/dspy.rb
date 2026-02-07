@@ -64,8 +64,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "sorbet-toon", "~> 0.1"
   spec.add_dependency "dspy-schema", "~> 1.0.0"
 
-  # Local embeddings
-  spec.add_dependency "informers", "~> 1.2"
-
   # Development dependencies are already specified in the Gemfile
 end

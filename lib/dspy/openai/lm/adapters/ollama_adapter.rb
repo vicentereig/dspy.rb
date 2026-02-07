@@ -37,7 +37,7 @@ module DSPy
             # as it may not fully support OpenAI's response_format spec
             begin
               super
-            rescue => e
+            rescue StandardError => e
               # If structured output fails, retry with enhanced prompting
               if @structured_outputs_enabled && signature && e.message.include?('response_format')
                 DSPy.logger.debug("Ollama structured output failed, falling back to enhanced prompting")

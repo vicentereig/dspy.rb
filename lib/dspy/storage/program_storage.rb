@@ -198,7 +198,7 @@ module DSPy
           emit_save_complete_event(saved_program)
           saved_program
           
-        rescue => error
+        rescue StandardError => error
           emit_save_error_event(program_id, error)
           raise
         end
@@ -223,7 +223,7 @@ module DSPy
           emit_load_complete_event(saved_program)
           saved_program
           
-        rescue => error
+        rescue StandardError => error
           emit_load_error_event(program_id, error)
           nil
         end

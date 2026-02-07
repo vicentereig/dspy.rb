@@ -7,42 +7,44 @@ module DSPy
   class Context
     class << self
       def current
-        # Use Thread storage as primary source to ensure thread isolation
-        # Fiber storage is used for OpenTelemetry context propagation within the same thread
-        
-        # Create a unique key for this thread to ensure isolation
-        thread_key = :"dspy_context_#{Thread.current.object_id}"
-        
-        # Always check thread-local storage first for proper isolation
-        if Thread.current[thread_key]
-          # Thread has context, ensure fiber inherits it for OpenTelemetry propagation
-          Fiber[:dspy_context] = Thread.current[thread_key]
-          Thread.current[:dspy_context] = Thread.current[thread_key]  # Keep for backward compatibility
-          return Thread.current[thread_key]
-        end
-        
-        # Check if current fiber has context that was set by this same thread
-        # This handles cases where context was set via OpenTelemetry propagation within the thread
-        if Fiber[:dspy_context] && Thread.current[:dspy_context] == Fiber[:dspy_context]
-          # This fiber context was set by this thread, safe to use
-          Thread.current[thread_key] = Fiber[:dspy_context]
+        # Prefer fiber-local context for async safety; fall back to thread root context.
+        fiber_context = Fiber[:dspy_context]
+        if fiber_context && fiber_context[:thread_id] == Thread.current.object_id
+          return fiber_context if fiber_context[:fiber_id] == Fiber.current.object_id
+
+          Fiber[:dspy_context] = fork_context(fiber_context)
           return Fiber[:dspy_context]
         end
-        
-        # No existing context or context belongs to different thread - create new one
-        context = {
-          trace_id: SecureRandom.uuid,
-          span_stack: [],
-          otel_span_stack: [],
-          module_stack: []
-        }
-        
-        # Set in both Thread and Fiber storage
+
+        thread_key = :"dspy_context_#{Thread.current.object_id}"
+        thread_context = Thread.current[thread_key]
+
+        if thread_context
+          Fiber[:dspy_context] = fork_context(thread_context)
+          return Fiber[:dspy_context]
+        end
+
+        context = build_context
         Thread.current[thread_key] = context
-        Thread.current[:dspy_context] = context  # Keep for backward compatibility
+        Thread.current[:dspy_context] = context  # Backward compatibility (thread root)
         Fiber[:dspy_context] = context
-        
         context
+      end
+
+      def with_request(request_id, start_time)
+        previous_request_id = current[:request_id]
+        previous_start_time = current[:request_start_time]
+
+        current[:request_id] = request_id
+        current[:request_start_time] = start_time
+        yield
+      ensure
+        current[:request_id] = previous_request_id
+        current[:request_start_time] = previous_start_time
+      end
+
+      def fork_context(parent_context)
+        clone_context(parent_context)
       end
       
       def with_span(operation:, **attributes)
@@ -217,6 +219,31 @@ module DSPy
         defined?(Async::Task) && Async::Task.current?
       rescue
         false
+      end
+
+      def build_context
+        {
+          trace_id: SecureRandom.uuid,
+          thread_id: Thread.current.object_id,
+          fiber_id: Fiber.current.object_id,
+          span_stack: [],
+          otel_span_stack: [],
+          module_stack: [],
+          request_id: nil,
+          request_start_time: nil
+        }
+      end
+
+      def clone_context(context)
+        cloned = context.dup
+        cloned[:span_stack] = Array(context[:span_stack]).dup
+        cloned[:otel_span_stack] = Array(context[:otel_span_stack]).dup
+        cloned[:module_stack] = Array(context[:module_stack]).map { |entry| entry.dup }
+        cloned[:thread_id] = Thread.current.object_id
+        cloned[:fiber_id] = Fiber.current.object_id
+        cloned[:request_id] = context[:request_id]
+        cloned[:request_start_time] = context[:request_start_time]
+        cloned
       end
 
       def sanitize_span_attributes(attributes)

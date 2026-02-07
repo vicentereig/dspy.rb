@@ -374,7 +374,7 @@ end
 
 ## Using Lifecycle Callbacks with Rails Patterns
 
-DSPy modules support Rails-style lifecycle callbacks (`before`, `after`, `around`) that work seamlessly with Rails patterns. For complete callback documentation, see the [Modules documentation](/core-concepts/modules/#lifecycle-callbacks).
+DSPy modules support Rails-style lifecycle callbacks (`before`, `after`, `around`) that work seamlessly with Rails patterns. For complete callback documentation, see the [Module Runtime Context documentation](/core-concepts/module-runtime-context/#lifecycle-callbacks).
 
 ### Callbacks with Service Objects
 
@@ -382,18 +382,17 @@ Use callbacks to add instrumentation, logging, or state management to service ob
 
 ```ruby
 # app/services/content_analyzer.rb
-class ContentAnalyzer < ApplicationService
-  include DSPy::Module::Callbacks
-
+class ContentAnalyzer < DSPy::Module
   before :log_analysis_start
   after :log_analysis_end
   around :with_performance_tracking
 
   def initialize
+    super  # Required for DSPy::Module
     @analyzer = DSPy::Predict.new(AnalysisSignature)
   end
 
-  def call(content)
+  def forward(content:)  # Use forward, not call - callbacks hook into forward
     @content = content
     result = @analyzer.call(content: content)
 
@@ -403,7 +402,7 @@ class ContentAnalyzer < ApplicationService
       topics: result.topics
     )
 
-    Success(result)
+    result  # Return result directly
   end
 
   private
@@ -418,18 +417,17 @@ class ContentAnalyzer < ApplicationService
 
   def with_performance_tracking
     start_time = Time.current
-
     result = yield
-
     duration = Time.current - start_time
     Rails.logger.info("Analysis took #{duration} seconds")
-
-    # Track metrics in your APM
     StatsD.timing('content_analyzer.duration', duration * 1000)
-
     result
   end
 end
+
+# Usage - call works because DSPy::Module aliases call to forward
+analyzer = ContentAnalyzer.new
+result = analyzer.call(content: "Some content")
 ```
 
 ### Callbacks with ActiveRecord Integration

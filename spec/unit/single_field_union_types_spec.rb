@@ -60,14 +60,14 @@ RSpec.describe "Single-field union types" do
         end
       end
 
-      it "generates oneOf schema with _type fields for each struct" do
+      it "generates anyOf schema with _type fields for each struct" do
         schema = UnionTypeTestSignature.output_json_schema
 
         action_schema = schema[:properties][:action]
-        expect(action_schema).to have_key(:oneOf)
-        expect(action_schema[:oneOf].length).to eq(2)
+        expect(action_schema).to have_key(:anyOf)
+        expect(action_schema[:anyOf].length).to eq(2)
 
-        spawn_schema = action_schema[:oneOf].find { |s| s[:properties][:_type][:const] == "UnionTypeSpawnTask" }
+        spawn_schema = action_schema[:anyOf].find { |s| s[:properties][:_type][:const] == "UnionTypeSpawnTask" }
         expect(spawn_schema).not_to be_nil
         expect(spawn_schema[:properties]).to include(
           _type: { type: "string", const: "UnionTypeSpawnTask" },
@@ -76,7 +76,7 @@ RSpec.describe "Single-field union types" do
         )
         expect(spawn_schema[:required]).to include("_type", "task_description", "assignee")
 
-        complete_schema = action_schema[:oneOf].find { |s| s[:properties][:_type][:const] == "UnionTypeCompleteTask" }
+        complete_schema = action_schema[:anyOf].find { |s| s[:properties][:_type][:const] == "UnionTypeCompleteTask" }
         expect(complete_schema).not_to be_nil
         expect(complete_schema[:properties]).to include(
           _type: { type: "string", const: "UnionTypeCompleteTask" },
