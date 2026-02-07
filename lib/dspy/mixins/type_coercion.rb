@@ -88,6 +88,10 @@ module DSPy
         case prop_type
         when ->(type) { union_type?(type) }
           coerce_union_value(value, prop_type)
+        when ->(type) { is_nilable_type?(type) }
+          # Unwrap T.nilable(X) to coerce as X (nil already handled above)
+          inner_type = prop_type.types.find { |t| t != T::Utils.coerce(NilClass) }
+          coerce_value_to_type(value, inner_type)
         when ->(type) { array_type?(type) }
           coerce_array_value(value, prop_type)
         when ->(type) { hash_type?(type) }
@@ -305,6 +309,16 @@ module DSPy
       # Coerces a struct value from a hash
       sig { params(value: T.untyped, prop_type: T.untyped).returns(T.untyped) }
       def coerce_struct_value(value, prop_type)
+        # Anthropic tool use may return struct fields as JSON strings
+        if value.is_a?(String)
+          begin
+            parsed = JSON.parse(value)
+            value = parsed if parsed.is_a?(Hash)
+          rescue JSON::ParserError
+            # Not JSON — fall through
+          end
+        end
+
         return value unless value.is_a?(Hash)
 
         struct_class = if prop_type.is_a?(Class)

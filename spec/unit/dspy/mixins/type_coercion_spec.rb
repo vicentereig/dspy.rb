@@ -191,6 +191,70 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
       end
     end
 
+    context 'with nilable struct types (T.nilable)' do
+      it 'coerces Hash to struct through T.nilable wrapper' do
+        nilable_type = T.nilable(TestStructs::AnswerAction)
+        hash_value = {
+          "_type" => "AnswerAction",
+          "content" => "Nilable test",
+          "confidence" => 0.85
+        }
+
+        result = instance.test_coerce(hash_value, nilable_type)
+
+        expect(result).to be_a(TestStructs::AnswerAction)
+        expect(result.content).to eq("Nilable test")
+        expect(result.confidence).to eq(0.85)
+      end
+
+      it 'parses JSON string to struct through T.nilable wrapper' do
+        nilable_type = T.nilable(TestStructs::SearchAction)
+        json_string = '{"_type": "SearchAction", "query": "nilable query", "max_results": 20}'
+
+        result = instance.test_coerce(json_string, nilable_type)
+
+        expect(result).to be_a(TestStructs::SearchAction)
+        expect(result.query).to eq("nilable query")
+        expect(result.max_results).to eq(20)
+      end
+
+      it 'returns nil unchanged for nilable types' do
+        nilable_type = T.nilable(TestStructs::AnswerAction)
+
+        result = instance.test_coerce(nil, nilable_type)
+
+        expect(result).to be_nil
+      end
+
+      it 'coerces nested structs within nilable wrapper' do
+        nilable_type = T.nilable(TestStructs::Person)
+        hash_value = {
+          "_type" => "Person",
+          "name" => "Jane Doe",
+          "address" => {
+            "_type" => "Address",
+            "street" => "789 Elm St",
+            "city" => "Testville"
+          }
+        }
+
+        result = instance.test_coerce(hash_value, nilable_type)
+
+        expect(result).to be_a(TestStructs::Person)
+        expect(result.name).to eq("Jane Doe")
+        expect(result.address).to be_a(TestStructs::Address)
+        expect(result.address.city).to eq("Testville")
+      end
+
+      it 'coerces simple types through nilable wrapper' do
+        nilable_float = T.nilable(Float)
+
+        result = instance.test_coerce("3.14", nilable_float)
+
+        expect(result).to eq(3.14)
+      end
+    end
+
     context 'with existing type handling' do
       it 'still handles simple types correctly' do
         # Use T::Utils.coerce to get proper Sorbet type objects
