@@ -229,16 +229,14 @@ end
 class ResearchAssistant < DSPy::Module
   def initialize
     super
-    
+
     # Use a toolset (multiple tools from one class)
-    memory_tools = DSPy::Tools::MemoryToolset.to_tools
-    
+    text_tools = DSPy::Tools::TextProcessingToolset.to_tools
+
     # You can also create custom tools with Sorbet signatures
     # See the ReAct Agent Tutorial for custom tool examples
-    
-    @tools = memory_tools
-    
-    @predictor = DSPy::ReAct.new(ResearchSignature, tools: @tools)
+
+    @predictor = DSPy::ReAct.new(ResearchSignature, tools: text_tools)
   end
 
   def forward(query:)
@@ -247,148 +245,92 @@ class ResearchAssistant < DSPy::Module
 end
 ```
 
-### Complete Example: Personal Assistant with Memory
+### Complete Example: Code Analysis Agent
 
-Here's a complete example showing how to build a personal assistant that uses memory and toolsets:
+Here's a complete example showing how to build a code analysis agent using text processing tools:
 
 ```ruby
-class PersonalAssistantSignature < DSPy::Signature
-  description "Personal assistant that remembers user preferences and context"
-  
+class CodeAnalysisSignature < DSPy::Signature
+  description "Analyze source code and answer questions about it"
+
   input do
-    const :user_message, String
-    const :user_id, String
+    const :source_code, String
+    const :question, String
   end
-  
+
   output do
-    const :response, String
-    const :action_taken, String
+    const :answer, String
+    const :relevant_lines, T::Array[String]
   end
 end
 
-class PersonalAssistant < DSPy::Module
+class CodeAnalyzer < DSPy::Module
   def initialize
     super
-    
-    # Get all memory tools for the agent
-    memory_tools = DSPy::Tools::MemoryToolset.to_tools
-    
-    # Create the ReAct agent with memory capabilities
+
+    # Text processing tools for code analysis
+    text_tools = DSPy::Tools::TextProcessingToolset.to_tools
+
     @agent = DSPy::ReAct.new(
-      PersonalAssistantSignature,
-      tools: memory_tools
+      CodeAnalysisSignature,
+      tools: text_tools
     )
   end
-  
-  def forward(user_message:, user_id:)
-    # The agent can now use memory tools to:
-    # - Store user preferences
-    # - Retrieve past conversations
-    # - Search for relevant information
-    @agent.call(user_message: user_message, user_id: user_id)
+
+  def forward(source_code:, question:)
+    @agent.call(source_code: source_code, question: question)
   end
 end
 
 # Usage
-assistant = PersonalAssistant.new
+analyzer = CodeAnalyzer.new
 
-# User sets a preference
-result = assistant.call(
-  user_message: "I prefer dark mode for all applications",
-  user_id: "user123"
+result = analyzer.call(
+  source_code: File.read("app/models/user.rb"),
+  question: "What validations are defined?"
 )
-puts result.response
-# => "I've saved your preference for dark mode. I'll remember this for future recommendations."
-
-# Later, user asks about UI preferences
-result = assistant.call(
-  user_message: "What UI preferences do I have?",
-  user_id: "user123"
-)
-puts result.response
-# => "Based on what you've told me, you prefer dark mode for all applications."
+puts result.answer
+puts result.relevant_lines
 ```
 
-### Building a Stateful Customer Service Agent
+### Building a GitHub Issue Triage Agent
 
 ```ruby
-class CustomerServiceSignature < DSPy::Signature
-  description "Customer service agent with conversation history"
-  
+class TriageSignature < DSPy::Signature
+  description "Triage GitHub issues by analyzing their content"
+
   input do
-    const :customer_query, String
-    const :customer_id, String
+    const :repo, String
   end
-  
+
   output do
-    const :response, String
-    const :escalation_needed, T::Boolean
-    const :issue_resolved, T::Boolean
+    const :summary, String
+    const :urgent_count, Integer
   end
 end
 
-class CustomerServiceAgent < DSPy::Module
+class IssueTriage < DSPy::Module
   def initialize
     super
-    
-    # Memory for conversation history and customer data
-    memory_tools = DSPy::Tools::MemoryToolset.to_tools
-    
+
+    # GitHub CLI tools for issue management
+    gh_tools = DSPy::Tools::GithubCliToolset.to_tools
+
     @agent = DSPy::ReAct.new(
-      CustomerServiceSignature,
-      tools: memory_tools
+      TriageSignature,
+      tools: gh_tools
     )
   end
-  
-  def forward(customer_query:, customer_id:)
-    # Agent can:
-    # - Store conversation history
-    # - Remember customer issues
-    # - Track resolution status
-    # - Access previous interactions
-    result = @agent.call(
-      customer_query: customer_query,
-      customer_id: customer_id
-    )
-    
-    # Store conversation for future reference
-    store_conversation(customer_id, customer_query, result.response)
-    
-    result
-  end
-  
-  private
-  
-  def store_conversation(customer_id, query, response)
-    timestamp = Time.now.to_i
-    DSPy::Memory.manager.store_memory(
-      {
-        query: query,
-        response: response,
-        timestamp: timestamp
-      }.to_json,
-      user_id: customer_id,
-      tags: ["conversation", "customer_support"]
-    )
+
+  def forward(repo:)
+    @agent.call(repo: repo)
   end
 end
 
 # Usage
-agent = CustomerServiceAgent.new
-
-# First interaction
-result = agent.call(
-  customer_query: "My order hasn't arrived and it's been 10 days",
-  customer_id: "cust456"
-)
-
-# Follow-up interaction - agent remembers previous context
-result = agent.call(
-  customer_query: "Any update on my missing order?",
-  customer_id: "cust456"
-)
-puts result.response
-# => "I can see from our previous conversation that your order was delayed. Let me check the latest status..."
+triage = IssueTriage.new
+result = triage.call(repo: "vicentereig/dspy.rb")
+puts result.summary
 ```
 
 For more details on creating tools and toolsets, see the [Toolsets documentation](../toolsets).
@@ -428,7 +370,7 @@ class CustomAgent < DSPy::Module
     
     # Initialize your custom inference components
     @planner = DSPy::ChainOfThought.new(PlanningSignature)
-    @executor = DSPy::CodeAct.new(ExecutionSignature)
+    @executor = DSPy::CodeAct.new(ExecutionSignature)  # Requires the dspy-code_act gem
     @validator = DSPy::Predict.new(ValidationSignature)
   end
 

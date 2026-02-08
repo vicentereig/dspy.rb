@@ -598,6 +598,8 @@ class AnalyzeContent < DSPy::Signature
 end
 ```
 
+**Tip**: For array fields in structs, prefer `T::Array[X], default: []` over `T.nilable(T::Array[X])`. The nilable form causes schema issues with OpenAI structured outputs.
+
 ## Automatic Type Conversion with DSPy::Prediction
 
 DSPy.rb v0.9.0+ includes automatic type conversion that transforms LLM JSON responses into properly typed Ruby objects. This happens transparently when using DSPy modules.

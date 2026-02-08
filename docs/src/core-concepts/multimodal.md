@@ -16,19 +16,15 @@ DSPy.rb supports multimodal inputs, allowing you to work with both text and imag
 ## Vision-Capable Models
 
 ### OpenAI Models
-- `gpt-4-vision-preview`
-- `gpt-4-turbo`
 - `gpt-4o` and `gpt-4o-mini`
 
 ### Anthropic Models
-- Claude 3 series (Opus, Sonnet, Haiku)
+- Claude 4 series (Opus, Sonnet)
 - Claude 3.5 series (Sonnet, Haiku)
-- Claude 4 (latest)
 
 ### Google Gemini Models
-- `gemini-1.5-flash` (fast, efficient)
-- `gemini-1.5-pro` (advanced reasoning)
-- `gemini-1.0-pro` (previous generation)
+- `gemini-2.5-flash` (fast, efficient)
+- `gemini-2.5-pro` (advanced reasoning)
 
 ## Working with Images
 
@@ -259,7 +255,7 @@ Google Gemini models are designed with multimodal capabilities from the ground u
 
 ```ruby
 # Configure Gemini model
-lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'])
+lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'])
 
 # Load and encode image as base64
 File.open('product_image.jpg', 'rb') do |file|
@@ -353,7 +349,7 @@ end
 
 begin
   # Attempt to use URL with Gemini (not supported)
-  gemini_lm = DSPy::LM.new('gemini/gemini-1.5-flash', api_key: ENV['GEMINI_API_KEY'])
+  gemini_lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'])
   image = DSPy::Image.new(url: 'https://example.com/image.jpg')
   
   gemini_lm.raw_chat do |messages|

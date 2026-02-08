@@ -137,26 +137,18 @@ result.answer     # => "60 km/h"
 Build agents that use tools to accomplish tasks:
 
 ```ruby
-class SearchTool < DSPy::Tools::Tool
+class SearchTool < DSPy::Tools::Base
   tool_name "search"
-  description "Search for information"
+  tool_description "Search for information"
 
-  input do
-    const :query, String
-  end
-
-  output do
-    const :results, T::Array[String]
-  end
-
+  sig { params(query: String).returns(String) }
   def call(query:)
     # Your search implementation
-    { results: ["Result 1", "Result 2"] }
+    "Result 1, Result 2"
   end
 end
 
-toolset = DSPy::Tools::Toolset.new(tools: [SearchTool.new])
-agent = DSPy::ReAct.new(signature: ResearchTask, tools: toolset, max_iterations: 5)
+agent = DSPy::ReAct.new(ResearchTask, tools: [SearchTool.new], max_iterations: 5)
 result = agent.call(question: "What's the latest on Ruby 3.4?")
 ```
 
@@ -201,7 +193,7 @@ The [examples/](examples/) directory has runnable code for common patterns:
 - Prompt optimization
 
 ```bash
-bundle exec ruby examples/first_predictor.rb
+bundle exec ruby examples/basic_search_agent.rb
 ```
 
 ## Optional Gems

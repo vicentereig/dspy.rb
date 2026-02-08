@@ -62,7 +62,6 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 ### Current Limitations
 
 - **Streaming**: Supported via block streaming on OpenAI, Anthropic, and Gemini adapters; modules return concatenated content only (no token-by-token callbacks).
-- **Function/Tool Calling**: Anthropic adapter accepts `tools:`; OpenAI and Gemini adapters do not yet expose tool specs.
 - **Image URLs**: Only OpenAI supports direct URL references.
 - **Local Models**: Limited multimodal support through Ollama.
 - **Batch Processing**: Single request processing only.
@@ -118,12 +117,12 @@ end
 
 # Or configure with Anthropic
 DSPy.configure do |c|
-  c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+  c.lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
 end
 
 # Or configure with Google Gemini
 DSPy.configure do |c|
-  c.lm = DSPy::LM.new('gemini/gemini-1.5-pro', api_key: ENV['GEMINI_API_KEY'])
+  c.lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'])
 end
 
 # Or use Ollama for local models
@@ -465,7 +464,7 @@ See [`docs/src/core-concepts/module-runtime-context.md`](/core-concepts/module-r
 ```ruby
 module = DSPy::ChainOfThought.new(SignatureClass)
 module.configure do |config|
-  config.lm = DSPy::LM.new('anthropic/claude-3-sonnet',
+  config.lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514',
     api_key: ENV['ANTHROPIC_API_KEY']
   )
 end
@@ -503,12 +502,11 @@ Tool-using agent with reasoning:
 ```ruby
 # Define tools (you would implement CalculatorTool)
 calculator = YourCalculatorTool.new
-memory_tools = DSPy::Tools::MemoryToolset.to_tools
 
 # Create agent
 agent = DSPy::ReAct.new(
   ResearchSignature,
-  tools: [calculator, *memory_tools],
+  tools: [calculator],
   max_iterations: 10
 )
 
@@ -836,7 +834,7 @@ end
 
 **Anthropic (base64 only):**
 ```ruby
-lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
 
 # Must use base64 or raw data
 File.open('image.jpg', 'rb') do |file|
@@ -871,7 +869,7 @@ end
 
 # Provider compatibility error
 begin
-  anthropic_lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+  anthropic_lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
   image = DSPy::Image.new(url: 'https://example.com/image.jpg')
 
   anthropic_lm.raw_chat do |messages|
@@ -986,11 +984,10 @@ class ResearchAssistant < DSPy::Module
 
     # Create tools (implement as needed for your use case)
     calculator = YourCalculatorTool.new
-    memory_tools = DSPy::Tools::MemoryToolset.to_tools
 
     @agent = DSPy::ReAct.new(
       ResearchSignature,
-      tools: [calculator, *memory_tools]
+      tools: [calculator]
     )
   end
 
@@ -1376,17 +1373,11 @@ agent = DSPy::ReAct.new(
 ### Built-in Toolsets
 
 ```ruby
-# Memory toolset with persistent storage
-memory_tools = DSPy::Tools::MemoryToolset.to_tools
-# Includes: memory_store, memory_retrieve, memory_search,
-#          memory_list, memory_update, memory_delete,
-#          memory_clear, memory_count, memory_get_metadata
-
 # Text processing toolset
 text_tools = DSPy::Tools::TextProcessingToolset.to_tools
-# Includes: summarize, extract_keywords, count_tokens,
-#          translate, format_markdown, extract_entities,
-#          sentiment_analysis, clean_text, compare_texts
+
+# GitHub CLI toolset
+github_tools = DSPy::Tools::GithubCliToolset.to_tools
 ```
 
 ### Automatic Type Conversion
@@ -1698,9 +1689,9 @@ end
 ```ruby
 begin
   result = predictor.call(input: data)
-rescue DSPy::Errors::ValidationError => e
+rescue DSPy::ValidationError => e
   puts "Invalid input: #{e.message}"
-rescue DSPy::Errors::LMError => e
+rescue DSPy::LM::Error => e
   puts "LLM error: #{e.message}"
   # Implement retry logic
 end
@@ -2168,12 +2159,10 @@ class SupportAgent < DSPy::Module
   def initialize
     super
 
-    memory_tools = DSPy::Tools::MemoryToolset.to_tools
-
     @triage = DSPy::ChainOfThought.new(EmailTriage)
     @agent = DSPy::ReAct.new(
       SupportResponse,
-      tools: memory_tools
+      tools: []  # Add your tools here
     )
   end
 
@@ -2405,17 +2394,6 @@ items = ["text1", "text2", "text3"]
 
 results = items.map do |item|
   predictor.call(text: item)
-end
-```
-
-### Connection Pooling
-
-```ruby
-# Configure HTTP client
-DSPy::LM.configure do |config|
-  config.http_timeout = 30
-  config.max_retries = 3
-  config.retry_delay = 1
 end
 ```
 

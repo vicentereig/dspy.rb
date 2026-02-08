@@ -24,14 +24,15 @@ When working with external libraries in this codebase, **ALWAYS check the docume
 #### Runtime Dependencies (from gemspec):
 - **dry-configurable** (~> 1.0) - Configuration management ([docs](https://dry-rb.org/gems/dry-configurable/1.0/))
 - **dry-logger** (~> 1.0) - Structured logging ([docs](https://dry-rb.org/gems/dry-logger/1.0/))
-- **dry-monitor** (~> 1.0) - Event monitoring ([docs](https://dry-rb.org/gems/dry-monitor/1.0/))
-- **async** (~> 2.23) - Concurrent programming ([docs](https://github.com/socketry/async/tree/v2.23.0))
-- **openai** (~> 0.16.0) - Official OpenAI SDK ([docs](https://github.com/openai/openai-ruby/tree/v0.16.0))
-- **anthropic** (~> 1.5.0) - Official Anthropic SDK ([docs](https://github.com/anthropics/anthropic-sdk-ruby/tree/v1.5.0))
+- **async** (~> 2.29) - Concurrent programming ([docs](https://github.com/socketry/async))
+- **concurrent-ruby** (~> 1.3) - Thread-safe data structures
 - **sorbet-runtime** (~> 0.5) - Runtime type checking ([docs](https://sorbet.org/))
-- **polars-df** (~> 0.20.0) - DataFrame library ([docs](https://github.com/ankane/polars-ruby/tree/v0.20.0))
-- **informers** (~> 1.2) - Local embeddings ([docs](https://github.com/ankane/informers))
 - **sorbet-schema** (~> 0.3) - Schema validation ([docs](https://github.com/maxveldink/sorbet-schema))
+- **sorbet-baml** (~> 0.5) - BAML schema format support
+- **sorbet-toon** (~> 0.1) - TOON schema format support
+- **dspy-schema** (~> 1.0.0) - Schema generation
+
+Note: LLM provider SDKs (openai, anthropic, gemini-ai) ship in separate adapter gems (dspy-openai, dspy-anthropic, dspy-gemini, dspy-ruby_llm).
 
 #### Development Dependencies:
 - **rspec** (~> 3.12) - Testing framework
@@ -52,7 +53,6 @@ When working with external libraries in this codebase, **ALWAYS check the docume
   - [Signatures](docs/src/core-concepts/signatures.md)
   - [Modules](docs/src/core-concepts/modules.md)
   - [Predictors](docs/src/core-concepts/predictors.md)
-  - [Memory](docs/src/core-concepts/memory.md)
   - [Toolsets](docs/src/core-concepts/toolsets.md)
   - [CodeAct Agent](docs/src/core-concepts/codeact.md)
   - [Multimodal](docs/src/core-concepts/multimodal.md)
@@ -60,7 +60,6 @@ When working with external libraries in this codebase, **ALWAYS check the docume
 - [Features](docs/src/features/)
 - [Advanced Topics](docs/src/advanced/index.md)
   - [Complex Types](docs/src/advanced/complex-types.md)
-  - [Memory Systems](docs/src/advanced/memory-systems.md)
   - [Custom Toolsets](docs/src/advanced/custom-toolsets.md)
   - [Custom Metrics](docs/src/advanced/custom-metrics.md)
   - [Pipelines](docs/src/advanced/pipelines.md)

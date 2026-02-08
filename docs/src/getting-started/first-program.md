@@ -69,8 +69,8 @@ class QuestionAnswering < DSPy::Signature
   end
   
   output do
-    const :answer, String, desc: "A clear, concise answer"
-    const :confidence, Float, desc: "How confident are you? (0.0-1.0)"
+    const :answer, String, description: "A clear, concise answer"
+    const :confidence, Float, description: "How confident are you? (0.0-1.0)"
   end
 end
 
@@ -98,8 +98,8 @@ class QuestionAnswering < DSPy::Signature
   end
   
   output do
-    const :answer, String, desc: "A clear, concise answer"
-    const :confidence, Float, desc: "How confident are you? (0.0-1.0)"
+    const :answer, String, description: "A clear, concise answer"
+    const :confidence, Float, description: "How confident are you? (0.0-1.0)"
   end
 end
 ```
@@ -131,17 +131,26 @@ Let's enhance our Q&A system to handle different types of questions:
 ```ruby
 class SmartQuestionAnswering < DSPy::Signature
   description "Answer questions with appropriate depth and context"
-  
+
+  class QuestionType < T::Enum
+    enums do
+      Factual = new('factual')
+      Analytical = new('analytical')
+      Creative = new('creative')
+      Unclear = new('unclear')
+    end
+  end
+
   input do
     const :question, String
-    const :context, String, desc: "Additional context if available"
+    const :context, String, description: "Additional context if available"
   end
-  
+
   output do
-    const :answer, String, desc: "A clear, appropriately detailed answer"
-    const :confidence, Float, desc: "Confidence level (0.0-1.0)"
-    const :question_type, String, enum: ["factual", "analytical", "creative", "unclear"]
-    const :sources_needed, T::Boolean, desc: "Would this benefit from external sources?"
+    const :answer, String, description: "A clear, appropriately detailed answer"
+    const :confidence, Float, description: "Confidence level (0.0-1.0)"
+    const :question_type, QuestionType
+    const :sources_needed, T::Boolean, description: "Would this benefit from external sources?"
   end
 end
 
@@ -158,36 +167,45 @@ analytical_result = smart_qa.call(
   context: "We're discussing historical patterns of civilizational decline"
 )
 
-puts factual_result.question_type     # "factual"
+puts factual_result.question_type     # => #<QuestionType::Factual>
 puts factual_result.sources_needed    # false
-puts analytical_result.question_type  # "analytical" 
+puts analytical_result.question_type  # => #<QuestionType::Analytical>
 puts analytical_result.sources_needed # true
 ```
 
-## Making It More Sophisticated with Advanced Sorbet Types
+## Advanced Sorbet Types
 
-Let's enhance our Q&A system to handle different types of questions using more Sorbet types:
+Let's enhance our Q&A system using more Sorbet type features:
 
 ```ruby
-class SmartQuestionAnswering < DSPy::Signature
+class AdvancedQA < DSPy::Signature
   description "Answer questions with appropriate depth and context"
-  
+
+  class QuestionType < T::Enum
+    enums do
+      Factual = new('factual')
+      Analytical = new('analytical')
+      Creative = new('creative')
+      Unclear = new('unclear')
+    end
+  end
+
   input do
     const :question, String
-    const :context, T.nilable(String), desc: "Additional context if available"
-    const :max_length, T.nilable(Integer), default: 100
+    const :context, T.nilable(String), description: "Additional context if available"
+    const :max_length, Integer, default: 100
   end
-  
+
   output do
-    const :answer, String, desc: "A clear, appropriately detailed answer"
-    const :confidence, Float, desc: "Confidence level (0.0-1.0)"
-    const :question_type, T.any(String, Symbol), enum: [:factual, :analytical, :creative, :unclear]
-    const :sources_needed, T::Boolean, desc: "Would this benefit from external sources?"
-    const :follow_up_questions, T::Array[String], desc: "Suggested follow-up questions"
+    const :answer, String, description: "A clear, appropriately detailed answer"
+    const :confidence, Float, description: "Confidence level (0.0-1.0)"
+    const :question_type, QuestionType
+    const :sources_needed, T::Boolean, description: "Would this benefit from external sources?"
+    const :follow_up_questions, T::Array[String], description: "Suggested follow-up questions"
   end
 end
 
-smart_qa = DSPy::Predict.new(SmartQuestionAnswering)
+smart_qa = DSPy::Predict.new(AdvancedQA)
 
 # The Sorbet types provide runtime validation
 result = smart_qa.call(
@@ -196,17 +214,16 @@ result = smart_qa.call(
   max_length: 200
 )
 
-puts result.question_type        # :analytical
+puts result.question_type        # => #<QuestionType::Analytical>
 puts result.sources_needed       # true
 puts result.follow_up_questions  # ["What were the economic factors?", "How did military issues contribute?"]
 ```
 
 Notice how we're using **idiomatic Ruby with full Sorbet type support**:
 - `T.nilable(String)` for optional fields
-- `T.any(String, Symbol)` for flexible types
+- `T::Enum` for constrained values
 - `T::Array[String]` for typed arrays
 - `T::Boolean` for boolean validation
-- `enum:` for constrained values
 - `default:` for optional parameters
 
 This isn't just type checking—it's **runtime validation** that ensures your LLM responses conform to your Ruby interfaces.
@@ -248,7 +265,7 @@ class TravelPlanner < DSPy::Signature
   
   input do
     const :destination, String
-    const :duration, Integer, desc: "Number of days"
+    const :duration, Integer, description: "Number of days"
     const :budget, T.nilable(Float)
   end
   
@@ -281,16 +298,25 @@ Real systems need to handle edge cases gracefully:
 ```ruby
 class RobustQuestionAnswering < DSPy::Signature
   description "Answer questions with error handling and uncertainty"
-  
+
+  class AnswerStatus < T::Enum
+    enums do
+      Answered = new('answered')
+      Uncertain = new('uncertain')
+      InsufficientInfo = new('insufficient_info')
+      UnclearQuestion = new('unclear_question')
+    end
+  end
+
   input do
     const :question, String
   end
-  
+
   output do
-    const :answer, String, desc: "Best available answer"
-    const :confidence, Float, desc: "Confidence level (0.0-1.0)"
-    const :status, String, enum: ["answered", "uncertain", "insufficient_info", "unclear_question"]
-    const :clarification_needed, T.nilable(String), desc: "What clarification would help?"
+    const :answer, String, description: "Best available answer"
+    const :confidence, Float, description: "Confidence level (0.0-1.0)"
+    const :status, AnswerStatus
+    const :clarification_needed, T.nilable(String), description: "What clarification would help?"
   end
 end
 
@@ -310,11 +336,11 @@ Here's the beautiful part—you can now test AI behavior systematically:
 
 ```ruby
 # spec/qa_system_spec.rb
-RSpec.describe "Question Answering System" do
+RSpec.describe "Question Answering System", vcr: true do
   let(:qa_system) { DSPy::Predict.new(QuestionAnswering) }
-  
+
   describe "factual questions" do
-    it "answers basic facts confidently" do
+    it "answers basic facts confidently", vcr: { cassette_name: "qa_basic_facts" } do
       result = qa_system.call(question: "What is 2 + 2?")
       
       expect(result.answer).to eq("4")
@@ -377,15 +403,15 @@ Before moving on, take a moment to think about this transformation:
 You've just experienced the foundation of structured AI programming. From here, you can:
 
 ### **🔧 Deepen Your Understanding**
-**[Core Concepts →](/foundations/)**  
+**[Core Concepts →](/core-concepts/)**
 *Learn about Chain of Thought, ReAct agents, and module composition*
 
 ### **🏗️ Build More Complex Systems**
-**[System Building →](/systems/)**  
+**[Pipelines →](/advanced/pipelines/)**
 *Chain multiple reasoning steps into powerful workflows*
 
 ### **🤝 Create AI That Uses Tools**
-**[Collaboration Patterns →](/collaboration/)**  
+**[Toolsets →](/core-concepts/toolsets/)**
 *Build agents that can interact with external systems*
 
 ## The Path Forward

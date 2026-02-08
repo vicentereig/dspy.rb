@@ -214,7 +214,7 @@ DSPy.rb supports multiple LLM providers:
 config.lm = DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY'])
 
 # Anthropic
-config.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+config.lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
 
 # Per-module language model configuration
 predictor = DSPy::Predict.new(ClassifyText)
