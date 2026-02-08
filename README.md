@@ -193,7 +193,7 @@ The [examples/](examples/) directory has runnable code for common patterns:
 - Prompt optimization
 
 ```bash
-bundle exec ruby examples/first_predictor.rb
+bundle exec ruby examples/basic_search_agent.rb
 ```
 
 ## Optional Gems

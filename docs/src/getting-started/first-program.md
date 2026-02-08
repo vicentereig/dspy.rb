@@ -336,11 +336,11 @@ Here's the beautiful part—you can now test AI behavior systematically:
 
 ```ruby
 # spec/qa_system_spec.rb
-RSpec.describe "Question Answering System" do
+RSpec.describe "Question Answering System", vcr: true do
   let(:qa_system) { DSPy::Predict.new(QuestionAnswering) }
-  
+
   describe "factual questions" do
-    it "answers basic facts confidently" do
+    it "answers basic facts confidently", vcr: { cassette_name: "qa_basic_facts" } do
       result = qa_system.call(question: "What is 2 + 2?")
       
       expect(result.answer).to eq("4")

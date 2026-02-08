@@ -78,7 +78,7 @@ end
 
 # Create module with instance-level LM
 classifier = Classifier.new
-classifier.config.lm = DSPy::LM.new("anthropic/claude-3-sonnet-20240229", api_key: ENV['ANTHROPIC_API_KEY'])
+classifier.config.lm = DSPy::LM.new("anthropic/claude-sonnet-4-20250514", api_key: ENV['ANTHROPIC_API_KEY'])
 
 # Instance-level LM takes precedence
 result1 = classifier.call(text: "Test") # Uses Claude Sonnet

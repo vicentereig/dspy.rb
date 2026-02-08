@@ -464,7 +464,7 @@ See [`docs/src/core-concepts/module-runtime-context.md`](/core-concepts/module-r
 ```ruby
 module = DSPy::ChainOfThought.new(SignatureClass)
 module.configure do |config|
-  config.lm = DSPy::LM.new('anthropic/claude-3-sonnet',
+  config.lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514',
     api_key: ENV['ANTHROPIC_API_KEY']
   )
 end
@@ -834,7 +834,7 @@ end
 
 **Anthropic (base64 only):**
 ```ruby
-lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
 
 # Must use base64 or raw data
 File.open('image.jpg', 'rb') do |file|
@@ -869,7 +869,7 @@ end
 
 # Provider compatibility error
 begin
-  anthropic_lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+  anthropic_lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
   image = DSPy::Image.new(url: 'https://example.com/image.jpg')
 
   anthropic_lm.raw_chat do |messages|

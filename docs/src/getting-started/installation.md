@@ -81,7 +81,7 @@ DSPy.rb uses structured logging for observability. The logs can be parsed and se
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
   # or
-  c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+  c.lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
   # or use Ollama for local models
   c.lm = DSPy::LM.new('ollama/llama3.2')
   # or use OpenRouter for access to multiple providers (auto-fallback enabled)
@@ -157,7 +157,7 @@ end
 4. Use in DSPy:
    ```ruby
    DSPy.configure do |c|
-     c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+     c.lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
    end
    ```
 
