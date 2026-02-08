@@ -558,6 +558,35 @@ RSpec.describe 'DSPy::Prediction edge cases' do
     end
   end
 
+  describe '#to_h' do
+    it 'returns deep-serialized hash without nested struct instances' do
+      prediction = DSPy::Prediction.new(
+        DeepNestedSignature.output_schema,
+        data: {
+          title: 'Top Level',
+          nested: {
+            name: 'Middle',
+            nested: { value: 'Deep', number: 42 }
+          }
+        }
+      )
+
+      hash = prediction.to_h
+      expect(hash['data']).to be_a(Hash)
+      expect(hash['data']['nested']).to be_a(Hash)
+      expect(hash['data']['nested']['nested']).to be_a(Hash)
+      expect(hash['data']['nested']['nested']['value']).to eq('Deep')
+    end
+
+    it 'excludes _prediction_marker from output' do
+      prediction = DSPy::Prediction.new(nil, name: 'test', age: 30)
+
+      hash = prediction.to_h
+      expect(hash).not_to have_key(:_prediction_marker)
+      expect(hash).not_to have_key('_prediction_marker')
+    end
+  end
+
   describe '#to_json' do
     it 'serializes predictions with nested T::Struct values to valid JSON' do
       prediction = DSPy::Prediction.new(
@@ -574,36 +603,29 @@ RSpec.describe 'DSPy::Prediction edge cases' do
         }
       )
 
-      # This should work without raising an error
       json_string = JSON.generate(prediction)
 
-      # Verify it's valid JSON that can be parsed back
       parsed = JSON.parse(json_string)
       expect(parsed['data']['title']).to eq('Top Level')
       expect(parsed['data']['nested']['name']).to eq('Middle Level')
       expect(parsed['data']['nested']['nested']['value']).to eq('Bottom Level')
       expect(parsed['data']['nested']['nested']['number']).to eq(42)
+      expect(parsed).not_to have_key('_prediction_marker')
     end
 
-    it 'works with prediction.to_json directly' do
+    it 'produces identical output via JSON.generate and .to_json' do
       prediction = DSPy::Prediction.new(
         DeepNestedSignature.output_schema,
         data: {
           title: 'Test',
           nested: {
             name: 'Nested',
-            nested: {
-              value: 'Deep',
-              number: 123
-            }
+            nested: { value: 'Deep', number: 123 }
           }
         }
       )
 
-      json_string = prediction.to_json
-
-      parsed = JSON.parse(json_string)
-      expect(parsed['data']['title']).to eq('Test')
+      expect(JSON.generate(prediction)).to eq(prediction.to_json)
     end
   end
 end

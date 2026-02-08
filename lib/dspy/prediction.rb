@@ -56,12 +56,14 @@ module DSPy
 
     sig { returns(T::Hash[Symbol, T.untyped]) }
     def to_h
-      @_struct.serialize
+      hash = DSPy::Utils::Serialization.deep_serialize(@_struct.serialize)
+      hash.delete('_prediction_marker')
+      hash
     end
 
     sig { params(args: T.untyped).returns(String) }
     def to_json(*args)
-      DSPy::Utils::Serialization.deep_serialize(to_h).to_json(*args)
+      to_h.to_json(*args)
     end
 
     private
