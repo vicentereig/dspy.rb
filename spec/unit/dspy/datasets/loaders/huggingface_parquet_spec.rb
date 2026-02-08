@@ -4,7 +4,7 @@ loader_available = begin
   require 'dspy/datasets'
   require 'dspy/datasets/loaders/huggingface_parquet'
   true
-rescue LoadError
+rescue LoadError, NameError
   false
 end
 

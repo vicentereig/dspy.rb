@@ -88,10 +88,15 @@ module DSPy
         case prop_type
         when ->(type) { union_type?(type) }
           coerce_union_value(value, prop_type)
-        when ->(type) { is_nilable_type?(type) }
+        when ->(type) { nilable_type?(type) }
           # Unwrap T.nilable(X) to coerce as X (nil already handled above)
-          inner_type = prop_type.types.find { |t| t != T::Utils.coerce(NilClass) }
-          coerce_value_to_type(value, inner_type)
+          non_nil_types = prop_type.types.reject { |t| t == T::Utils.coerce(NilClass) }
+          if non_nil_types.size == 1
+            coerce_value_to_type(value, non_nil_types.first)
+          else
+            # T.any(A, B, NilClass) — rebuild as T.any(A, B) and coerce as union
+            coerce_union_value(value, T::Types::Union.new(non_nil_types))
+          end
         when ->(type) { array_type?(type) }
           coerce_array_value(value, prop_type)
         when ->(type) { hash_type?(type) }
@@ -165,12 +170,12 @@ module DSPy
       # Checks if a type is a union type (T.any)
       sig { params(type: T.untyped).returns(T::Boolean) }
       def union_type?(type)
-        type.is_a?(T::Types::Union) && !is_nilable_type?(type)
+        type.is_a?(T::Types::Union) && !nilable_type?(type)
       end
 
       # Checks if a type is nilable (contains NilClass)
       sig { params(type: T.untyped).returns(T::Boolean) }
-      def is_nilable_type?(type)
+      def nilable_type?(type)
         type.is_a?(T::Types::Union) && type.types.any? { |t| t == T::Utils.coerce(NilClass) }
       end
 
@@ -306,18 +311,23 @@ module DSPy
         result.transform_values { |v| coerce_value_to_type(v, value_type) }
       end
 
+      # Attempts to parse a JSON string into a Hash.
+      # Returns the parsed Hash on success, or the original value otherwise.
+      sig { params(value: T.untyped).returns(T.untyped) }
+      def try_parse_json_to_hash(value)
+        return value unless value.is_a?(String)
+
+        parsed = JSON.parse(value)
+        parsed.is_a?(Hash) ? parsed : value
+      rescue JSON::ParserError
+        value
+      end
+
       # Coerces a struct value from a hash
       sig { params(value: T.untyped, prop_type: T.untyped).returns(T.untyped) }
       def coerce_struct_value(value, prop_type)
         # Anthropic tool use may return struct fields as JSON strings
-        if value.is_a?(String)
-          begin
-            parsed = JSON.parse(value)
-            value = parsed if parsed.is_a?(Hash)
-          rescue JSON::ParserError
-            # Not JSON — fall through
-          end
-        end
+        value = try_parse_json_to_hash(value)
 
         return value unless value.is_a?(Hash)
 
@@ -361,7 +371,7 @@ module DSPy
           next false unless prop_info
           prop_type = prop_info[:type_object] || prop_info[:type]
           has_default = prop_info.key?(:default) || prop_info[:fully_optional]
-          !is_nilable_type?(prop_type) && has_default
+          !nilable_type?(prop_type) && has_default
         end
 
         # Create the struct instance
@@ -377,14 +387,7 @@ module DSPy
       def coerce_union_value(value, union_type)
         # Anthropic tool use may return complex oneOf union fields as JSON strings
         # instead of nested objects. Parse them back into Hashes for coercion.
-        if value.is_a?(String)
-          begin
-            parsed = JSON.parse(value)
-            value = parsed if parsed.is_a?(Hash)
-          rescue JSON::ParserError
-            # Not JSON — fall through
-          end
-        end
+        value = try_parse_json_to_hash(value)
 
         return value unless value.is_a?(Hash)
 
