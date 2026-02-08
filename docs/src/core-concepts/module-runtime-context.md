@@ -523,7 +523,7 @@ class StatefulModule < DSPy::Module
     @user_id = user_id
     @predictor = DSPy::ReAct.new(
       AssistantSignature,
-      tools: DSPy::Tools::MemoryToolset.to_tools
+      tools: DSPy::Tools::TextProcessingToolset.to_tools
     )
   end
 

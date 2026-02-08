@@ -44,27 +44,24 @@ agent = DSPy::ReAct.new(
 )
 ```
 
-## Memory Toolset Example
+## Text Processing Toolset Example
 
-The included `MemoryToolset` shows how to implement a working toolset:
+The included `TextProcessingToolset` shows how to implement a working toolset:
 
 ```ruby
-memory = DSPy::Tools::MemoryToolset.new
-
 # The LLM sees these individual tools:
-# - memory_store
-# - memory_retrieve
-# - memory_search
-# - memory_list
-# - memory_update
-# - memory_delete
-# - memory_clear
-# - memory_count
-# - memory_get_metadata
+# - text_processing_grep
+# - text_wc
+# - text_rg
+# - text_processing_extract_lines
+# - text_processing_filter_lines
+# - text_processing_unique_lines
+# - text_processing_sort_lines
+# - text_processing_summarize_text
 
 agent = DSPy::ReAct.new(
-  signature: QASignature,
-  tools: memory.class.to_tools
+  AnalyzeText,
+  tools: DSPy::Tools::TextProcessingToolset.to_tools
 )
 ```
 
@@ -124,19 +121,18 @@ This generates:
 }
 ```
 
-## Memory Operations
+## Text Processing Operations
 
-The `MemoryToolset` provides these operations:
+The `TextProcessingToolset` provides these operations:
 
-- `store(key:, value:, tags: nil)` - Store key-value pairs with optional tags
-- `retrieve(key:)` - Get value by key
-- `search(pattern:, in_keys: true, in_values: true)` - Pattern-based search
-- `list_keys()` - List all keys
-- `update(key:, value:)` - Update existing memory
-- `delete(key:)` - Delete by key
-- `clear()` - Remove all memories
-- `count()` - Count stored items
-- `get_metadata(key:)` - Get metadata (timestamps, access count)
+- `grep(text:, pattern:, ignore_case: true, count_only: false)` - Search for patterns in text
+- `word_count(text:, lines_only: false, words_only: false, chars_only: false)` - Count lines, words, characters
+- `ripgrep(text:, pattern:, context: 0)` - Fast text search with context
+- `extract_lines(text:, start_line:, end_line: nil)` - Extract specific line ranges
+- `filter_lines(text:, pattern:, invert: false)` - Filter lines by pattern
+- `unique_lines(text:, preserve_order: true)` - Get unique lines
+- `sort_lines(text:, reverse: false, numeric: false)` - Sort lines
+- `summarize_text(text:)` - Generate statistical summary
 
 ## LLM Usage
 

@@ -88,9 +88,9 @@ This document provides a comprehensive comparison between the original DSPy Pyth
 
 #### Ruby DSPy
 - **ReAct** with full tool integration
-- **MemoryToolset** - Tools for memory operations
 - **TextProcessingToolset** - Text manipulation tools
-- More structured tool system with Sorbet types
+- **GithubCliToolset** - GitHub CLI integration tools
+- Structured tool system with Sorbet types
 
 ### Production Features
 
