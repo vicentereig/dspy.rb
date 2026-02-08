@@ -82,6 +82,44 @@ RSpec.describe DSPy::Utils::Serialization do
       end
     end
 
+    context 'with T::Enum objects' do
+      class SerializationColor < T::Enum
+        enums do
+          Red = new('red')
+          Green = new('green')
+          Blue = new('blue')
+        end
+      end
+
+      class SerializationStructWithEnum < T::Struct
+        const :name, String
+        const :color, SerializationColor
+      end
+
+      it 'serializes a T::Enum to its string value' do
+        result = described_class.deep_serialize(SerializationColor::Red)
+        expect(result).to eq('red')
+      end
+
+      it 'serializes T::Enum inside a hash' do
+        hash = { status: SerializationColor::Green, label: 'test' }
+        result = described_class.deep_serialize(hash)
+        expect(result).to eq({ status: 'green', label: 'test' })
+      end
+
+      it 'serializes T::Enum inside a T::Struct' do
+        struct = SerializationStructWithEnum.new(name: 'item', color: SerializationColor::Blue)
+        result = described_class.deep_serialize(struct)
+        expect(result).to eq({ 'name' => 'item', 'color' => 'blue' })
+      end
+
+      it 'serializes T::Enum inside an array' do
+        array = [SerializationColor::Red, SerializationColor::Green]
+        result = described_class.deep_serialize(array)
+        expect(result).to eq(['red', 'green'])
+      end
+    end
+
     context 'with primitive values' do
       it 'returns strings unchanged' do
         result = described_class.deep_serialize('hello')
