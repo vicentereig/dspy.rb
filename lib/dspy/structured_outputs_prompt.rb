@@ -80,7 +80,7 @@ module DSPy
 
       sections << "## Input Values"
       sections << "```json"
-      sections << JSON.pretty_generate(serialize_for_json(input_values))
+      sections << JSON.pretty_generate(DSPy::Utils::Serialization.deep_serialize(input_values))
       sections << "```"
 
       sections.join("\n")

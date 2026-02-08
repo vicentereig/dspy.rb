@@ -26,12 +26,6 @@ module DSPy
           obj
         end
       end
-
-      # Serializes an object to JSON with proper T::Struct handling
-      sig { params(obj: T.untyped).returns(String) }
-      def self.to_json(obj)
-        deep_serialize(obj).to_json
-      end
     end
   end
 end
