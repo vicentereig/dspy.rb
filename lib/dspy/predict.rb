@@ -304,7 +304,7 @@ module DSPy
         next unless prop_type
 
         # For nilable fields with nil values, ensure proper handling
-        if value.nil? && is_nilable_type?(prop_type)
+        if value.nil? && nilable_type?(prop_type)
           # For nilable fields, nil is valid - keep it as is
           next
         elsif value.nil? && prop_info[:fully_optional]

@@ -177,8 +177,8 @@ result = agent.call(question: "What's the latest on Ruby 3.4?")
 A [Claude Skill](https://github.com/vicentereig/dspy-rb-skill) is available to help you build DSPy.rb applications:
 
 ```bash
-# Claude Code
-git clone https://github.com/vicentereig/dspy-rb-skill ~/.claude/skills/dspy-rb
+# Claude Code — install from the vicentereig/engineering marketplace
+claude install-skill vicentereig/engineering --skill dspy-rb
 ```
 
 For Claude.ai Pro/Max, download the [skill ZIP](https://github.com/vicentereig/dspy-rb-skill/archive/refs/heads/main.zip) and upload via Settings > Skills.

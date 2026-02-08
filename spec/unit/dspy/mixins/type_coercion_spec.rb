@@ -255,6 +255,52 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
       end
     end
 
+    context 'with multi-type nilable unions (T.any(A, B, NilClass))' do
+      let(:nilable_union) { T.any(TestStructs::SearchAction, TestStructs::AnswerAction, NilClass) }
+
+      it 'coerces to the correct struct via _type discriminator' do
+        hash_value = {
+          "_type" => "SearchAction",
+          "query" => "multi-nilable test",
+          "max_results" => 3
+        }
+
+        result = instance.test_coerce(hash_value, nilable_union)
+
+        expect(result).to be_a(TestStructs::SearchAction)
+        expect(result.query).to eq("multi-nilable test")
+        expect(result.max_results).to eq(3)
+      end
+
+      it 'coerces to the other union branch via _type discriminator' do
+        hash_value = {
+          "_type" => "AnswerAction",
+          "content" => "multi-nilable answer",
+          "confidence" => 0.77
+        }
+
+        result = instance.test_coerce(hash_value, nilable_union)
+
+        expect(result).to be_a(TestStructs::AnswerAction)
+        expect(result.content).to eq("multi-nilable answer")
+        expect(result.confidence).to eq(0.77)
+      end
+
+      it 'returns nil unchanged' do
+        result = instance.test_coerce(nil, nilable_union)
+        expect(result).to be_nil
+      end
+
+      it 'parses JSON string to struct through multi-type nilable union' do
+        json_string = '{"_type": "AnswerAction", "content": "json nilable", "confidence": 0.5}'
+
+        result = instance.test_coerce(json_string, nilable_union)
+
+        expect(result).to be_a(TestStructs::AnswerAction)
+        expect(result.content).to eq("json nilable")
+      end
+    end
+
     context 'with existing type handling' do
       it 'still handles simple types correctly' do
         # Use T::Utils.coerce to get proper Sorbet type objects
@@ -444,6 +490,35 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         expect(result[1]).to be_a(TestStructs::AnswerAction)
         expect(result[1].content).to eq("Second answer")
         expect(result[1].confidence).to eq(0.8)
+      end
+    end
+
+    context 'with JSON string to non-nilable struct' do
+      it 'parses JSON string directly into a struct' do
+        struct_type = TestStructs::SearchAction
+        json_string = '{"query": "direct json", "max_results": 7}'
+
+        result = instance.test_coerce(json_string, struct_type)
+
+        expect(result).to be_a(TestStructs::SearchAction)
+        expect(result.query).to eq("direct json")
+        expect(result.max_results).to eq(7)
+      end
+
+      it 'returns non-JSON strings unchanged for struct types' do
+        struct_type = TestStructs::SearchAction
+
+        result = instance.test_coerce("not json", struct_type)
+
+        expect(result).to eq("not json")
+      end
+
+      it 'returns JSON array strings unchanged for struct types' do
+        struct_type = TestStructs::SearchAction
+
+        result = instance.test_coerce('[1, 2, 3]', struct_type)
+
+        expect(result).to eq('[1, 2, 3]')
       end
     end
 
