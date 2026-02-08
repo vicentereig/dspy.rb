@@ -62,7 +62,6 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 ### Current Limitations
 
 - **Streaming**: Supported via block streaming on OpenAI, Anthropic, and Gemini adapters; modules return concatenated content only (no token-by-token callbacks).
-- **Function/Tool Calling**: Anthropic adapter accepts `tools:`; OpenAI and Gemini adapters do not yet expose tool specs.
 - **Image URLs**: Only OpenAI supports direct URL references.
 - **Local Models**: Limited multimodal support through Ollama.
 - **Batch Processing**: Single request processing only.
@@ -118,12 +117,12 @@ end
 
 # Or configure with Anthropic
 DSPy.configure do |c|
-  c.lm = DSPy::LM.new('anthropic/claude-3-sonnet', api_key: ENV['ANTHROPIC_API_KEY'])
+  c.lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
 end
 
 # Or configure with Google Gemini
 DSPy.configure do |c|
-  c.lm = DSPy::LM.new('gemini/gemini-1.5-pro', api_key: ENV['GEMINI_API_KEY'])
+  c.lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'])
 end
 
 # Or use Ollama for local models
@@ -1690,9 +1689,9 @@ end
 ```ruby
 begin
   result = predictor.call(input: data)
-rescue DSPy::Errors::ValidationError => e
+rescue DSPy::ValidationError => e
   puts "Invalid input: #{e.message}"
-rescue DSPy::Errors::LMError => e
+rescue DSPy::LM::Error => e
   puts "LLM error: #{e.message}"
   # Implement retry logic
 end
@@ -2395,17 +2394,6 @@ items = ["text1", "text2", "text3"]
 
 results = items.map do |item|
   predictor.call(text: item)
-end
-```
-
-### Connection Pooling
-
-```ruby
-# Configure HTTP client
-DSPy::LM.configure do |config|
-  config.http_timeout = 30
-  config.max_retries = 3
-  config.retry_delay = 1
 end
 ```
 

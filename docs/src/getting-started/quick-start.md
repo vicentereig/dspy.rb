@@ -232,28 +232,22 @@ class WeatherReport < DSPy::Signature
   end
 end
 
-# Any object that responds to #call can be a tool
-# Best practice: Use Sorbet signatures for better LLM tool usage
-class WeatherTool
-  extend T::Sig
+# Tools inherit from DSPy::Tools::Base with Sorbet signatures
+class WeatherTool < DSPy::Tools::Base
+  tool_name "weather"
+  tool_description "Get weather for a location"
 
-  sig { params(location: String).returns(T::Hash[Symbol, T.untyped]) }
+  sig { params(location: String).returns(String) }
   def call(location:)
     # In real app, this would call an API
-    { temperature: 72, conditions: "sunny" }
+    "72°F and sunny in #{location}"
   end
 end
 
-# Lambda tools for simple operations
-calculator = ->(expression:) { eval(expression) }
-
-# Use with ReAct agent
+# Use with ReAct agent (tools is an array of Base instances)
 agent = DSPy::ReAct.new(
   WeatherReport,
-  tools: {
-    weather: WeatherTool.new,
-    calculate: calculator
-  }
+  tools: [WeatherTool.new]
 )
 ```
 

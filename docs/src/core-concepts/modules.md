@@ -428,7 +428,7 @@ class CustomAgent < DSPy::Module
     
     # Initialize your custom inference components
     @planner = DSPy::ChainOfThought.new(PlanningSignature)
-    @executor = DSPy::CodeAct.new(ExecutionSignature)
+    @executor = DSPy::CodeAct.new(ExecutionSignature)  # Requires the dspy-code_act gem
     @validator = DSPy::Predict.new(ValidationSignature)
   end
 
