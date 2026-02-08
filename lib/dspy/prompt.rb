@@ -5,6 +5,7 @@ require 'sorbet-runtime'
 require 'sorbet/toon'
 
 require_relative 'few_shot_example'
+require_relative 'utils/serialization'
 require_relative 'schema/sorbet_toon_adapter'
 
 module DSPy
@@ -241,7 +242,7 @@ module DSPy
       else
         sections << "## Input Values"
         sections << "```json"
-        sections << JSON.pretty_generate(serialize_for_json(input_values))
+        sections << JSON.pretty_generate(DSPy::Utils::Serialization.deep_serialize(input_values))
         sections << "```"
         sections << ""
         sections << "Respond with the corresponding output schema fields wrapped in a ```json ``` block,"
@@ -374,51 +375,6 @@ module DSPy
       # For production use, sorbet-baml should be available
       "# BAML schema generation requires sorbet-baml gem\n" \
       "# Please install: gem install sorbet-baml"
-    end
-
-    # Recursively serialize complex objects for JSON representation
-    sig { params(obj: T.untyped).returns(T.untyped) }
-    def serialize_for_json(obj)
-      case obj
-      when T::Struct
-        # Convert T::Struct to hash using to_h method if available
-        if obj.respond_to?(:to_h)
-          serialize_for_json(obj.to_h)
-        else
-          # Fallback: serialize using struct properties
-          serialize_struct_to_hash(obj)
-        end
-      when Hash
-        # Recursively serialize hash values
-        obj.transform_values { |v| serialize_for_json(v) }
-      when Array
-        # Recursively serialize array elements
-        obj.map { |item| serialize_for_json(item) }
-      when T::Enum
-        # Serialize enums to their string representation
-        obj.serialize
-      else
-        # For basic types (String, Integer, Float, Boolean, etc.), return as-is
-        obj
-      end
-    end
-
-    # Fallback method to serialize T::Struct to hash when to_h is not available
-    sig { params(struct_obj: T::Struct).returns(T::Hash[Symbol, T.untyped]) }
-    def serialize_struct_to_hash(struct_obj)
-      result = {}
-      
-      # Use struct's props method to get all properties
-      if struct_obj.class.respond_to?(:props)
-        struct_obj.class.props.each do |prop_name, _prop_info|
-          if struct_obj.respond_to?(prop_name)
-            value = struct_obj.public_send(prop_name)
-            result[prop_name] = serialize_for_json(value)
-          end
-        end
-      end
-      
-      result
     end
 
     def toon_data_format_enabled?

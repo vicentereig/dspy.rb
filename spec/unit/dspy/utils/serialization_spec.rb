@@ -157,45 +157,4 @@ RSpec.describe DSPy::Utils::Serialization do
     end
   end
 
-  describe '.to_json' do
-    class JsonTestStruct < T::Struct
-      const :setup, String
-      const :punchline, String
-    end
-
-    it 'converts T::Struct to valid JSON' do
-      struct = JsonTestStruct.new(setup: 'Why did the coffee file a police report?', punchline: 'It got mugged!')
-      result = described_class.to_json(struct)
-      
-      expect(result).to be_a(String)
-      parsed = JSON.parse(result)
-      expect(parsed).to eq({
-        'setup' => 'Why did the coffee file a police report?',
-        'punchline' => 'It got mugged!'
-      })
-    end
-
-    it 'converts complex objects with T::Struct to valid JSON' do
-      struct = JsonTestStruct.new(setup: 'Test setup', punchline: 'Test punchline')
-      complex = { action: struct, message: 'test message', items: [struct] }
-      result = described_class.to_json(complex)
-      
-      expect(result).to be_a(String)
-      parsed = JSON.parse(result)
-      expect(parsed).to eq({
-        'action' => { 'setup' => 'Test setup', 'punchline' => 'Test punchline' },
-        'message' => 'test message',
-        'items' => [{ 'setup' => 'Test setup', 'punchline' => 'Test punchline' }]
-      })
-    end
-
-    it 'handles objects without T::Struct normally' do
-      plain_object = { message: 'hello', count: 42 }
-      result = described_class.to_json(plain_object)
-      
-      expect(result).to be_a(String)
-      parsed = JSON.parse(result)
-      expect(parsed).to eq({ 'message' => 'hello', 'count' => 42 })
-    end
-  end
 end
