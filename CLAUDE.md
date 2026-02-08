@@ -163,7 +163,7 @@ gem push dspy-VERSION.gem
 - **C-4 (SHOULD)** Prefer simple, composable, testable methods.
 - **C-5 (MUST)** Use Sorbet type annotations for critical interfaces
 - **C-6 (MUST)** Use Ruby 3.3 features appropriately: `Data` class, pattern matching, etc.
-- **C-7 (SHOULD NOT)** Add comments except for critical caveats; rely on self-explanatory code.
+- **C-7 (SHOULD NOT)** Add inline comments except for critical caveats; rely on self-explanatory code. YARD docs on public APIs are encouraged.
 - **C-8 (SHOULD)** Default to simple classes; use modules for shared behavior and mixins. 
 - **C-9 (SHOULD NOT)** Extract a new method unless it will be reused elsewhere.
 

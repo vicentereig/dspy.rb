@@ -156,6 +156,7 @@ See [CLAUDE.md](CLAUDE.md) for detailed development best practices.
 When changing APIs or adding features, update the docs:
 
 - **User docs:** `docs/src/**/*.md`
+- **API docs:** Inline YARD comments in code
 - **Examples:** Add to `examples/` directory
 
 The documentation site is in `docs/` and built with Bridgetown. Always verify your changes build successfully.
