@@ -6,7 +6,7 @@ Thanks for contributing to DSPy.rb. This guide gets you from zero to running tes
 
 ### Prerequisites
 
-- Ruby 3.3 or later
+- Ruby (see `.ruby-version` for the pinned version; minimum 3.3.0)
 - Bundler 2.0+
 
 ### System Dependencies
@@ -52,8 +52,8 @@ cd dspy.rb
 bundle install
 
 # Set up API keys for testing
-export OPENAI_API_KEY=your-openai-api-key
-export ANTHROPIC_API_KEY=your-anthropic-api-key
+cp .env.sample .env
+# Edit .env with your OPENAI_API_KEY and ANTHROPIC_API_KEY
 ```
 
 ## Running Tests
@@ -109,7 +109,7 @@ bundle exec rspec spec/path/to/file_spec.rb
    bundle install
 
    # Verify the build works
-   BRIDGETOWN_ENV=production npm run build
+   BRIDGETOWN_ENV=production bun run build
    ```
 
    The build should complete without errors. If successful, the site will be in `output/`.
@@ -144,8 +144,8 @@ See [CLAUDE.md](CLAUDE.md) for detailed development best practices.
 
 ## Project Structure
 
-- `lib/dspy/` - Core library code
-- `lib/dspy/*/` - Sibling gems (datasets, miprov2, etc.)
+- `lib/dspy/` - Core library code (modules, LM adapters, tools, etc.)
+- `lib/dspy/datasets/`, `lib/dspy/miprov2/` - Optional sibling gems with their own gemspecs
 - `spec/unit/` - Fast unit tests
 - `spec/integration/` - LLM integration tests with VCR
 - `docs/` - Documentation site
@@ -156,7 +156,6 @@ See [CLAUDE.md](CLAUDE.md) for detailed development best practices.
 When changing APIs or adding features, update the docs:
 
 - **User docs:** `docs/src/**/*.md`
-- **API docs:** Inline YARD comments in code
 - **Examples:** Add to `examples/` directory
 
 The documentation site is in `docs/` and built with Bridgetown. Always verify your changes build successfully.
