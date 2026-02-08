@@ -13,6 +13,8 @@ module DSPy
         when T::Struct
           # Use the serialize method to convert to a plain hash
           deep_serialize(obj.serialize)
+        when T::Enum
+          obj.serialize
         when Hash
           # Recursively serialize hash values
           obj.transform_values { |v| deep_serialize(v) }
