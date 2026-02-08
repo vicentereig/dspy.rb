@@ -40,14 +40,13 @@ gem 'dspy', github: 'vicentereig/dspy.rb'
 
 ## Required Dependencies
 
-DSPy.rb requires Ruby 3.3+ and automatically installs these dependencies:
+DSPy.rb requires Ruby 3.3+ and automatically installs these core dependencies:
 
-- **Core dependencies**: dry-configurable (~> 1.0), dry-logger (~> 1.0), async (~> 2.29)
-- **LLM provider clients**: openai (~> 0.22.0), anthropic (~> 1.5.0), gemini-ai (~> 4.3)
-- **Sorbet integration**: sorbet-runtime (~> 0.5), sorbet-schema (~> 0.3)
-- **Other**: informers (~> 1.2), opentelemetry-sdk (~> 1.8)
+- **Core**: dry-configurable (~> 1.0), dry-logger (~> 1.0), async (~> 2.29), concurrent-ruby (~> 1.3)
+- **Sorbet integration**: sorbet-runtime (~> 0.5), sorbet-schema (~> 0.3), sorbet-baml (~> 0.5), sorbet-toon (~> 0.1)
+- **Schema**: dspy-schema (~> 1.0.0)
 
-You don't need to add these to your Gemfile—they're installed automatically when you install dspy.
+LLM provider SDKs are **not** included in the core gem. Add the adapter gems you need (see below).
 
 ## Provider Adapter Gems
 

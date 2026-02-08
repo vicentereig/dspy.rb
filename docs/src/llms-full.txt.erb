@@ -503,12 +503,11 @@ Tool-using agent with reasoning:
 ```ruby
 # Define tools (you would implement CalculatorTool)
 calculator = YourCalculatorTool.new
-memory_tools = DSPy::Tools::MemoryToolset.to_tools
 
 # Create agent
 agent = DSPy::ReAct.new(
   ResearchSignature,
-  tools: [calculator, *memory_tools],
+  tools: [calculator],
   max_iterations: 10
 )
 
@@ -986,11 +985,10 @@ class ResearchAssistant < DSPy::Module
 
     # Create tools (implement as needed for your use case)
     calculator = YourCalculatorTool.new
-    memory_tools = DSPy::Tools::MemoryToolset.to_tools
 
     @agent = DSPy::ReAct.new(
       ResearchSignature,
-      tools: [calculator, *memory_tools]
+      tools: [calculator]
     )
   end
 
@@ -1376,17 +1374,11 @@ agent = DSPy::ReAct.new(
 ### Built-in Toolsets
 
 ```ruby
-# Memory toolset with persistent storage
-memory_tools = DSPy::Tools::MemoryToolset.to_tools
-# Includes: memory_store, memory_retrieve, memory_search,
-#          memory_list, memory_update, memory_delete,
-#          memory_clear, memory_count, memory_get_metadata
-
 # Text processing toolset
 text_tools = DSPy::Tools::TextProcessingToolset.to_tools
-# Includes: summarize, extract_keywords, count_tokens,
-#          translate, format_markdown, extract_entities,
-#          sentiment_analysis, clean_text, compare_texts
+
+# GitHub CLI toolset
+github_tools = DSPy::Tools::GithubCliToolset.to_tools
 ```
 
 ### Automatic Type Conversion
@@ -2168,12 +2160,10 @@ class SupportAgent < DSPy::Module
   def initialize
     super
 
-    memory_tools = DSPy::Tools::MemoryToolset.to_tools
-
     @triage = DSPy::ChainOfThought.new(EmailTriage)
     @agent = DSPy::ReAct.new(
       SupportResponse,
-      tools: memory_tools
+      tools: []  # Add your tools here
     )
   end
 
