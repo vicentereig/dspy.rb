@@ -179,6 +179,22 @@ module DSPy
         type.is_a?(T::Types::Union) && type.types.any? { |t| t == T::Utils.coerce(NilClass) }
       end
 
+      # Checks if a union type is a simple nilable struct (T.nilable(SomeStruct))
+      # Returns true only if the union has exactly 2 types: NilClass and a Struct
+      sig { params(union_type: T.untyped).returns(T::Boolean) }
+      def nilable_struct_union?(union_type)
+        return false unless union_type.is_a?(T::Types::Union)
+
+        types = union_type.types
+        return false unless types.size == 2
+
+        # One type must be NilClass, the other must be a struct
+        has_nil = types.any? { |t| t == T::Utils.coerce(NilClass) }
+        struct_type = types.find { |t| t != T::Utils.coerce(NilClass) && struct_type?(t) }
+
+        has_nil && !struct_type.nil?
+      end
+
       # Checks if a type is a scalar (primitives that don't need special serialization)
       sig { params(type_object: T.untyped).returns(T::Boolean) }
       def scalar_type?(type_object)
@@ -391,7 +407,16 @@ module DSPy
 
         return value unless value.is_a?(Hash)
 
-        # Check for _type discriminator field
+        # Handle nilable struct unions (T.nilable(SomeStruct)) without _type discriminator
+        # LLMs don't provide _type for simple nilable structs, so we can directly coerce
+        if nilable_struct_union?(union_type)
+          struct_type = union_type.types.find { |t|
+            t != T::Utils.coerce(NilClass) && struct_type?(t)
+          }
+          return coerce_struct_value(value, struct_type) if struct_type
+        end
+
+        # Check for _type discriminator field (required for true multi-type unions)
         type_name = value[:_type] || value["_type"]
         return value unless type_name
 
