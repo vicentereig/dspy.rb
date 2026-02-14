@@ -301,6 +301,91 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
       end
     end
 
+    context 'with nilable struct unions without _type discriminator (smart union handling)' do
+      it 'coerces Hash to struct without _type discriminator' do
+        nilable_type = T.nilable(TestStructs::AnswerAction)
+        hash_value = {
+          "content" => "No discriminator needed",
+          "confidence" => 0.95
+        }
+
+        result = instance.test_coerce(hash_value, nilable_type)
+
+        expect(result).to be_a(TestStructs::AnswerAction)
+        expect(result.content).to eq("No discriminator needed")
+        expect(result.confidence).to eq(0.95)
+      end
+
+      it 'strips _type field from nilable struct union if present' do
+        nilable_type = T.nilable(TestStructs::SearchAction)
+        hash_value = {
+          "_type" => "SearchAction",
+          "query" => "test query",
+          "max_results" => 15
+        }
+
+        result = instance.test_coerce(hash_value, nilable_type)
+
+        expect(result).to be_a(TestStructs::SearchAction)
+        expect(result.query).to eq("test query")
+        expect(result.max_results).to eq(15)
+        # Verify _type was stripped
+        expect(result).not_to respond_to(:_type)
+      end
+
+      it 'returns nil when value is nil for nilable struct' do
+        nilable_type = T.nilable(TestStructs::AnswerAction)
+
+        result = instance.test_coerce(nil, nilable_type)
+
+        expect(result).to be_nil
+      end
+
+      it 'handles nested structs in nilable struct unions without _type' do
+        nilable_type = T.nilable(TestStructs::Person)
+        hash_value = {
+          "name" => "John Smith",
+          "address" => {
+            "street" => "456 Pine St",
+            "city" => "Newtown"
+          }
+        }
+
+        result = instance.test_coerce(hash_value, nilable_type)
+
+        expect(result).to be_a(TestStructs::Person)
+        expect(result.name).to eq("John Smith")
+        expect(result.address).to be_a(TestStructs::Address)
+        expect(result.address.street).to eq("456 Pine St")
+        expect(result.address.city).to eq("Newtown")
+      end
+
+      it 'parses JSON string without _type for nilable struct' do
+        nilable_type = T.nilable(TestStructs::SearchAction)
+        json_string = '{"query": "no type field", "max_results": 25}'
+
+        result = instance.test_coerce(json_string, nilable_type)
+
+        expect(result).to be_a(TestStructs::SearchAction)
+        expect(result.query).to eq("no type field")
+        expect(result.max_results).to eq(25)
+      end
+
+      it 'uses default values for optional struct fields' do
+        nilable_type = T.nilable(TestStructs::SearchAction)
+        hash_value = {
+          "query" => "minimal query"
+          # max_results omitted, should use default of 5
+        }
+
+        result = instance.test_coerce(hash_value, nilable_type)
+
+        expect(result).to be_a(TestStructs::SearchAction)
+        expect(result.query).to eq("minimal query")
+        expect(result.max_results).to eq(5)  # Default value
+      end
+    end
+
     context 'with existing type handling' do
       it 'still handles simple types correctly' do
         # Use T::Utils.coerce to get proper Sorbet type objects
