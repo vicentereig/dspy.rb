@@ -218,6 +218,14 @@ module DSPy
       def extract_json_from_content(content)
         return content if content.nil? || content.empty?
 
+        # Fix Anthropic Beta API bug with optional fields producing invalid JSON
+        # When some output fields are optional and not returned, Anthropic's structured outputs
+        # can produce trailing comma+brace: {"field1": {...},} instead of {"field1": {...}}
+        # This workaround removes the invalid trailing syntax before JSON parsing
+        if content =~ /,\s*\}\s*$/
+          content = content.sub(/,(\s*\}\s*)$/, '\1')
+        end
+
         # Try 1: Check for ```json code block (with or without preceding text)
         if content.include?('```json')
           json_match = content.match(/```json\s*\n(.*?)\n```/m)
