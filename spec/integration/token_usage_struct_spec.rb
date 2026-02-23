@@ -50,13 +50,50 @@ RSpec.describe 'Token usage with T::Struct' do
         output_tokens: 40,
         total_tokens: 120
       }
-      
+
       usage = DSPy::LM::UsageFactory.create('anthropic', usage_data)
-      
-      expect(usage).to be_a(DSPy::LM::Usage)
+
+      expect(usage).to be_a(DSPy::LM::AnthropicUsage)
       expect(usage.input_tokens).to eq(80)
       expect(usage.output_tokens).to eq(40)
       expect(usage.total_tokens).to eq(120)
+      expect(usage.cache_creation_input_tokens).to be_nil
+      expect(usage.cache_read_input_tokens).to be_nil
+    end
+
+    it 'creates Anthropic usage with cache fields' do
+      usage_data = {
+        input_tokens: 80,
+        output_tokens: 40,
+        total_tokens: 120,
+        cache_creation_input_tokens: 500,
+        cache_read_input_tokens: 200
+      }
+
+      usage = DSPy::LM::UsageFactory.create('anthropic', usage_data)
+
+      expect(usage).to be_a(DSPy::LM::AnthropicUsage)
+      expect(usage.input_tokens).to eq(80)
+      expect(usage.output_tokens).to eq(40)
+      expect(usage.total_tokens).to eq(120)
+      expect(usage.cache_creation_input_tokens).to eq(500)
+      expect(usage.cache_read_input_tokens).to eq(200)
+    end
+
+    it 'creates Anthropic usage with zero cache fields' do
+      usage_data = {
+        input_tokens: 80,
+        output_tokens: 40,
+        total_tokens: 120,
+        cache_creation_input_tokens: 0,
+        cache_read_input_tokens: 0
+      }
+
+      usage = DSPy::LM::UsageFactory.create('anthropic', usage_data)
+
+      expect(usage).to be_a(DSPy::LM::AnthropicUsage)
+      expect(usage.cache_creation_input_tokens).to eq(0)
+      expect(usage.cache_read_input_tokens).to eq(0)
     end
   end
 
@@ -92,21 +129,70 @@ RSpec.describe 'Token usage with T::Struct' do
         total_tokens: 150,
         prompt_tokens_details: { cached_tokens: 0 }
       )
-      
+
       response = DSPy::LM::Response.new(
         content: '{"answer": "test"}',
         usage: usage,
         metadata: { provider: 'openai' }
       )
-      
-      # Token extraction is now internal to LM, test through actual LM usage
+
       lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: 'test-key')
       tokens = lm.send(:extract_token_usage, response)
-      
+
       expect(tokens).to eq({
         input_tokens: 100,
         output_tokens: 50,
         total_tokens: 150
+      })
+    end
+
+    it 'extracts cache fields from AnthropicUsage struct' do
+      usage = DSPy::LM::AnthropicUsage.new(
+        input_tokens: 80,
+        output_tokens: 40,
+        total_tokens: 120,
+        cache_creation_input_tokens: 500,
+        cache_read_input_tokens: 200
+      )
+
+      response = DSPy::LM::Response.new(
+        content: '{"answer": "test"}',
+        usage: usage,
+        metadata: { provider: 'anthropic' }
+      )
+
+      lm = DSPy::LM.new('anthropic/claude-sonnet-4-5-20250514', api_key: 'test-key')
+      tokens = lm.send(:extract_token_usage, response)
+
+      expect(tokens).to eq({
+        input_tokens: 80,
+        output_tokens: 40,
+        total_tokens: 120,
+        cache_creation_input_tokens: 500,
+        cache_read_input_tokens: 200
+      })
+    end
+
+    it 'omits nil cache fields from AnthropicUsage extraction' do
+      usage = DSPy::LM::AnthropicUsage.new(
+        input_tokens: 80,
+        output_tokens: 40,
+        total_tokens: 120
+      )
+
+      response = DSPy::LM::Response.new(
+        content: '{"answer": "test"}',
+        usage: usage,
+        metadata: { provider: 'anthropic' }
+      )
+
+      lm = DSPy::LM.new('anthropic/claude-sonnet-4-5-20250514', api_key: 'test-key')
+      tokens = lm.send(:extract_token_usage, response)
+
+      expect(tokens).to eq({
+        input_tokens: 80,
+        output_tokens: 40,
+        total_tokens: 120
       })
     end
   end

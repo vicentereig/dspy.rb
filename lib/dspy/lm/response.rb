@@ -118,7 +118,7 @@ module DSPy
       extend T::Sig
       
       const :content, String
-      const :usage, T.nilable(T.any(Usage, OpenAIUsage)), default: nil
+      const :usage, T.nilable(T.any(Usage, OpenAIUsage, AnthropicUsage)), default: nil
       const :metadata, T.any(ResponseMetadata, OpenAIResponseMetadata, AnthropicResponseMetadata, GeminiResponseMetadata, T::Hash[Symbol, T.untyped])
       
       sig { returns(String) }
