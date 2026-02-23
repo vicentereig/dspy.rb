@@ -305,6 +305,12 @@ module DSPy
             span.set_attribute('gen_ai.usage.prompt_tokens', usage.input_tokens) if usage.input_tokens
             span.set_attribute('gen_ai.usage.completion_tokens', usage.output_tokens) if usage.output_tokens
             span.set_attribute('gen_ai.usage.total_tokens', usage.total_tokens) if usage.total_tokens
+            if usage.respond_to?(:cache_creation_input_tokens) && usage.cache_creation_input_tokens
+              span.set_attribute('gen_ai.usage.cache_creation_input_tokens', usage.cache_creation_input_tokens)
+            end
+            if usage.respond_to?(:cache_read_input_tokens) && usage.cache_read_input_tokens
+              span.set_attribute('gen_ai.usage.cache_read_input_tokens', usage.cache_read_input_tokens)
+            end
           end
         end
 
@@ -356,11 +362,16 @@ module DSPy
       
       # Handle Usage struct objects
       if response.usage.respond_to?(:input_tokens)
-        return {
+        result = {
           input_tokens: response.usage.input_tokens,
           output_tokens: response.usage.output_tokens,
           total_tokens: response.usage.total_tokens
-        }.compact
+        }
+        if response.usage.respond_to?(:cache_creation_input_tokens)
+          result[:cache_creation_input_tokens] = response.usage.cache_creation_input_tokens
+          result[:cache_read_input_tokens] = response.usage.cache_read_input_tokens
+        end
+        return result.compact
       end
       
       # Handle hash-based usage (for VCR compatibility)

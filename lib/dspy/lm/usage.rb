@@ -45,11 +45,34 @@ module DSPy
       end
     end
     
+    # Anthropic-specific usage information with cache token fields
+    class AnthropicUsage < T::Struct
+      extend T::Sig
+
+      const :input_tokens, Integer
+      const :output_tokens, Integer
+      const :total_tokens, Integer
+      const :cache_creation_input_tokens, T.nilable(Integer), default: nil
+      const :cache_read_input_tokens, T.nilable(Integer), default: nil
+
+      sig { returns(Hash) }
+      def to_h
+        base = {
+          input_tokens: input_tokens,
+          output_tokens: output_tokens,
+          total_tokens: total_tokens
+        }
+        base[:cache_creation_input_tokens] = cache_creation_input_tokens if cache_creation_input_tokens
+        base[:cache_read_input_tokens] = cache_read_input_tokens if cache_read_input_tokens
+        base
+      end
+    end
+
     # Factory for creating appropriate usage objects
     module UsageFactory
       extend T::Sig
       
-      sig { params(provider: String, usage_data: T.untyped).returns(T.nilable(T.any(Usage, OpenAIUsage))) }
+      sig { params(provider: String, usage_data: T.untyped).returns(T.nilable(T.any(Usage, OpenAIUsage, AnthropicUsage))) }
       def self.create(provider, usage_data)
         return nil if usage_data.nil?
         
@@ -121,17 +144,19 @@ module DSPy
         nil
       end
       
-      sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.nilable(Usage)) }
+      sig { params(data: T::Hash[Symbol, T.untyped]).returns(T.nilable(AnthropicUsage)) }
       def self.create_anthropic_usage(data)
         # Anthropic uses input_tokens/output_tokens
         input_tokens = data[:input_tokens] || 0
         output_tokens = data[:output_tokens] || 0
         total_tokens = data[:total_tokens] || (input_tokens + output_tokens)
-        
-        Usage.new(
+
+        AnthropicUsage.new(
           input_tokens: input_tokens,
           output_tokens: output_tokens,
-          total_tokens: total_tokens
+          total_tokens: total_tokens,
+          cache_creation_input_tokens: data[:cache_creation_input_tokens],
+          cache_read_input_tokens: data[:cache_read_input_tokens]
         )
       rescue StandardError => e
         DSPy.logger.debug("Failed to create Anthropic usage: #{e.message}")
