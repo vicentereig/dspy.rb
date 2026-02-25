@@ -119,18 +119,18 @@ RSpec.describe DSPy::Anthropic::LM::SchemaConverter do
         end
       end
 
-      it 'adds additionalProperties: false to all objects in oneOf' do
+      it 'adds additionalProperties: false to all objects in anyOf' do
         result = described_class.to_beta_format(signature_class)
 
         # Check top level
         expect(result[:additionalProperties]).to eq(false)
 
-        # Check that oneOf is present
+        # Check that anyOf is present
         contact_property = result[:properties][:contact]
-        expect(contact_property).to have_key(:oneOf)
+        expect(contact_property).to have_key(:anyOf)
 
         # Check each option in the union
-        contact_property[:oneOf].each do |option|
+        contact_property[:anyOf].each do |option|
           expect(option[:type]).to eq('object')
           expect(option[:additionalProperties]).to eq(false)
         end
