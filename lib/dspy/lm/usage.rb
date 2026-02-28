@@ -62,8 +62,8 @@ module DSPy
           output_tokens: output_tokens,
           total_tokens: total_tokens
         }
-        base[:cache_creation_input_tokens] = cache_creation_input_tokens if cache_creation_input_tokens
-        base[:cache_read_input_tokens] = cache_read_input_tokens if cache_read_input_tokens
+        base[:cache_creation_input_tokens] = cache_creation_input_tokens unless cache_creation_input_tokens.nil?
+        base[:cache_read_input_tokens] = cache_read_input_tokens unless cache_read_input_tokens.nil?
         base
       end
     end

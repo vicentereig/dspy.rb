@@ -144,6 +144,29 @@ RSpec.describe DSPy::LM::JSONStrategy do
         expect(result).to eq('{"name": "Jane"}')
       end
     end
+
+    it 'repairs trailing comma before closing brace in Anthropic JSON content' do
+      response = DSPy::LM::Response.new(
+        content: '{"answer":"ok",}',
+        usage: nil,
+        metadata: {}
+      )
+
+      result = strategy.extract_json(response)
+      expect(result).to eq('{"answer":"ok"}')
+      expect { JSON.parse(result) }.not_to raise_error
+    end
+
+    it 'leaves valid Anthropic JSON content unchanged' do
+      response = DSPy::LM::Response.new(
+        content: '{"answer":"ok"}',
+        usage: nil,
+        metadata: {}
+      )
+
+      result = strategy.extract_json(response)
+      expect(result).to eq('{"answer":"ok"}')
+    end
   end
 
   describe 'with Gemini adapter' do

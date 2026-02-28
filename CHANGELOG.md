@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removes tool-calling overhead for JSON extraction
   - Simplifies extraction logic to match OpenAI/Gemini pattern
   - **BREAKING**: Requires `anthropic` gem >= 1.16.2 and a supported model: `claude-sonnet-4-5`, `claude-haiku-4-5`, `claude-opus-4-1`, or `claude-opus-4-5`
+- **Anthropic Usage Struct Enhancements** - Added `AnthropicUsage` with `cache_creation_input_tokens` and `cache_read_input_tokens` fields surfaced in LM usage and telemetry extraction.
+- **Nilable Struct Union Coercion** - `TypeCoercion` now coerces `T.nilable(T::Struct)` values without requiring a `_type` discriminator.
+
+### Fixed
+- **Anthropic Cache Token Zero Values** - Preserve explicit `0` cache token values in usage hashes and tracing span attributes.
+- **Cross-Platform Lockfile Compatibility** - Restored non-macOS lockfile platforms to keep Linux/CI installs reproducible.
+- **Anthropic Trailing Comma Regression Coverage** - Added JSON strategy regression tests for malformed `,}` responses and unchanged valid JSON.
 
 ### Removed
 - **Tool-based JSON extraction for Anthropic** - Deleted `convert_to_anthropic_tool_schema`, `build_properties_from_fields`, and `extract_anthropic_tool_json` methods in favor of Beta API
