@@ -23,6 +23,20 @@ class SentimentClassifier < DSPy::Signature
   end
 end
 
+class SentimentClassifierWithDescriptions < DSPy::Signature
+  description "Classify sentiment with field descriptions."
+
+  input do
+    const :sentence, String, description: "The text to analyze for sentiment"
+  end
+
+  output do
+    const :sentiment, Sentiment, description: "The detected sentiment classification"
+    const :confidence, Float, description: "Confidence score between 0.0 and 1.0"
+    const :reasoning, T.nilable(String), default: nil, description: "Brief explanation of why this sentiment was chosen"
+  end
+end
+
 class SentimentClassifierWithDefaults < DSPy::Signature
   description "Classify sentiment of a given sentence with optional fields."
 
@@ -110,6 +124,33 @@ RSpec.describe DSPy::Signature do
 
       expect(output_struct.sentiment).to eq(Sentiment::Positive)
       expect(output_struct.confidence).to eq(0.95)
+    end
+  end
+
+  describe 'field descriptions on struct classes' do
+    it 'populates field_descriptions on input struct class' do
+      descriptions = SentimentClassifierWithDescriptions.input_struct_class.field_descriptions
+      expect(descriptions[:sentence]).to eq("The text to analyze for sentiment")
+    end
+
+    it 'populates field_descriptions on output struct class' do
+      descriptions = SentimentClassifierWithDescriptions.output_struct_class.field_descriptions
+      expect(descriptions[:sentiment]).to eq("The detected sentiment classification")
+      expect(descriptions[:confidence]).to eq("Confidence score between 0.0 and 1.0")
+      expect(descriptions[:reasoning]).to eq("Brief explanation of why this sentiment was chosen")
+    end
+
+    it 'has empty field_descriptions when no descriptions are provided' do
+      expect(SentimentClassifier.input_struct_class.field_descriptions).to eq({})
+      expect(SentimentClassifier.output_struct_class.field_descriptions).to eq({})
+    end
+
+    it 'preserves defaults alongside descriptions' do
+      output_struct = SentimentClassifierWithDescriptions.output_struct_class.new(
+        sentiment: Sentiment::Positive,
+        confidence: 0.95
+      )
+      expect(output_struct.reasoning).to be_nil
     end
   end
 

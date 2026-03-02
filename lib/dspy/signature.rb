@@ -58,11 +58,10 @@ module DSPy
         Class.new(T::Struct) do
           extend T::Sig
           descriptors.each do |name, descriptor|
-            if descriptor.has_default
-              const name, descriptor.type, default: descriptor.default_value
-            else
-              const name, descriptor.type
-            end
+            opts = {}
+            opts[:default] = descriptor.default_value if descriptor.has_default
+            opts[:description] = descriptor.description if descriptor.description
+            const name, descriptor.type, **opts
           end
         end
       end
