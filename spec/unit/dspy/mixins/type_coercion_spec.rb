@@ -665,7 +665,7 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         result = instance.test_coerce(ruby_hash_string, hash_type)
 
         expect(result).to be_a(Hash)
-        expect(result).to eq({ "query" => "AI safety", "max_results" => "10" })
+        expect(result).to eq({ "query" => "AI safety", "max_results" => 10 })
       end
 
       it 'coerces string hash values inside a struct with T::Hash field' do
@@ -680,7 +680,7 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         expect(result).to be_a(TestStructs::SearchResult)
         expect(result.query).to eq("AI safety research")
         expect(result.metadata).to be_a(Hash)
-        expect(result.metadata).to eq({ "source" => "arxiv", "year" => "2024" })
+        expect(result.metadata).to eq({ "source" => "arxiv", "year" => 2024 })
       end
     end
 
