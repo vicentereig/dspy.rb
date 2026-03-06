@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'sorbet-runtime'
+require 'yaml'
 
 module DSPy
   module Mixins
@@ -308,9 +309,14 @@ module DSPy
       # Coerces a hash value, converting keys and values as needed
       sig { params(value: T.untyped, prop_type: T.untyped).returns(T.untyped) }
       def coerce_hash_value(value, prop_type)
-        return value unless value.is_a?(Hash)
         return value unless prop_type.is_a?(T::Types::TypedHash)
-        
+
+        if value.is_a?(String)
+          parsed = YAML.safe_load(value, permitted_classes: [Symbol, Date, Time])
+          value = parsed if parsed.is_a?(Hash)
+        end
+        return value unless value.is_a?(Hash)
+
         key_type = prop_type.keys
         value_type = prop_type.values
         
