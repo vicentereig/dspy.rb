@@ -27,6 +27,11 @@ module TestStructs
     const :priority, TestStructs::Priority  # Enum field
   end
 
+  class SearchResult < T::Struct
+    const :query, String
+    const :metadata, T::Hash[String, T.untyped], default: {}
+  end
+
   # Test nested struct coercion
   class Address < T::Struct
     const :street, String
@@ -604,6 +609,78 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         result = instance.test_coerce('[1, 2, 3]', struct_type)
 
         expect(result).to eq('[1, 2, 3]')
+      end
+    end
+
+    context 'with hash types' do
+      let(:hash_type) { T::Hash[String, T.untyped] }
+
+      it 'passes through a Hash value unchanged when types already match' do
+        hash_value = { "query" => "AI safety research", "max_results" => 5 }
+        result = instance.test_coerce(hash_value, hash_type)
+
+        expect(result).to be_a(Hash)
+        expect(result).to eq({ "query" => "AI safety research", "max_results" => 5 })
+      end
+
+      it 'coerces hash values to their expected types' do
+        typed_hash = T::Hash[String, Integer]
+        hash_value = { "score" => "42", "count" => "10" }
+        result = instance.test_coerce(hash_value, typed_hash)
+
+        expect(result).to eq({ "score" => 42, "count" => 10 })
+      end
+
+      it 'coerces symbol keys to string keys' do
+        hash_value = { query: "AI safety research" }
+        result = instance.test_coerce(hash_value, hash_type)
+
+        expect(result).to eq({ "query" => "AI safety research" })
+      end
+
+      it 'returns non-hash-like strings unchanged with debug log' do
+        result = instance.test_coerce("not a hash", hash_type)
+
+        expect(result).to eq("not a hash")
+      end
+
+      it 'parses a JSON string into a Hash when expected type is T::Hash' do
+        json_string = '{"query": "AI safety research"}'
+        result = instance.test_coerce(json_string, hash_type)
+
+        expect(result).to be_a(Hash)
+        expect(result).to eq({ "query" => "AI safety research" })
+      end
+
+      it 'parses a Ruby-style hash string into a Hash' do
+        ruby_hash_string = "{query: AI safety research}"
+        result = instance.test_coerce(ruby_hash_string, hash_type)
+
+        expect(result).to be_a(Hash)
+        expect(result).to eq({ "query" => "AI safety research" })
+      end
+
+      it 'parses a multi-entry Ruby-style hash string' do
+        ruby_hash_string = "{query: AI safety, max_results: 10}"
+        result = instance.test_coerce(ruby_hash_string, hash_type)
+
+        expect(result).to be_a(Hash)
+        expect(result).to eq({ "query" => "AI safety", "max_results" => "10" })
+      end
+
+      it 'coerces string hash values inside a struct with T::Hash field' do
+        struct_type = TestStructs::SearchResult
+        hash_value = {
+          "query" => "AI safety research",
+          "metadata" => "{source: arxiv, year: 2024}"
+        }
+
+        result = instance.test_coerce(hash_value, struct_type)
+
+        expect(result).to be_a(TestStructs::SearchResult)
+        expect(result.query).to eq("AI safety research")
+        expect(result.metadata).to be_a(Hash)
+        expect(result.metadata).to eq({ "source" => "arxiv", "year" => "2024" })
       end
     end
 
