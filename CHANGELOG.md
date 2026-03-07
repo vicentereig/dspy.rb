@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.34.4] - 2026-03-07
+
 ### Changed
 - **Anthropic Beta API Structured Outputs** (#198) - Migrated from tool-based extraction to Anthropic's Beta API structured outputs
   - Uses `output_format` parameter with JSON schema for guaranteed conformance
@@ -20,9 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Anthropic Cache Token Zero Values** - Preserve explicit `0` cache token values in usage hashes and tracing span attributes.
 - **Cross-Platform Lockfile Compatibility** - Restored non-macOS lockfile platforms to keep Linux/CI installs reproducible.
 - **Anthropic Trailing Comma Regression Coverage** - Added JSON strategy regression tests for malformed `,}` responses and unchanged valid JSON.
+- **Hash String Coercion** (#236) - `TypeCoercion` now parses string values for `T::Hash[...]` fields, including inline hash syntax emitted by enhanced prompting / TOON flows.
+- **Malformed Inline Hash Fallback** - Invalid hash-like strings now fall back unchanged instead of raising `Psych::SyntaxError` during coercion.
 
 ### Removed
 - **Tool-based JSON extraction for Anthropic** - Deleted `convert_to_anthropic_tool_schema`, `build_properties_from_fields`, and `extract_anthropic_tool_json` methods in favor of Beta API
+
+### Sibling Gem Updates
+- `dspy-anthropic` 1.0.4 – Beta API structured outputs, cache token usage fields, trailing-comma hardening
+- `dspy-gemini` 1.0.3 – Gemini 3 Flash Preview structured output schema support
+- `dspy-o11y` 1.0.3 – Root-call trace metadata lifecycle and explicit span completion/error status improvements
+- `dspy-datasets` 1.0.2 – Relaxed `red-parquet` dependency bounds for newer Arrow installs
 
 ## [0.34.3] - 2026-02-05
 
