@@ -311,10 +311,7 @@ module DSPy
       def coerce_hash_value(value, prop_type)
         return value unless prop_type.is_a?(T::Types::TypedHash)
 
-        if value.is_a?(String)
-          parsed = YAML.safe_load(value, permitted_classes: [Symbol, Date, Time])
-          value = parsed if parsed.is_a?(Hash)
-        end
+        value = try_parse_string_to_hash(value)
         return value unless value.is_a?(Hash)
 
         key_type = prop_type.keys
@@ -331,6 +328,23 @@ module DSPy
         
         # Coerce values to their expected types
         result.transform_values { |v| coerce_value_to_type(v, value_type) }
+      end
+
+      # Attempts to parse a string into a Hash.
+      # Returns the parsed Hash on success, or the original value otherwise.
+      sig { params(value: T.untyped).returns(T.untyped) }
+      def try_parse_string_to_hash(value)
+        return value unless value.is_a?(String)
+
+        parsed = begin
+          JSON.parse(value)
+        rescue JSON::ParserError
+          YAML.safe_load(value, permitted_classes: [Symbol, Date, Time])
+        end
+
+        parsed.is_a?(Hash) ? parsed : value
+      rescue Psych::SyntaxError
+        value
       end
 
       # Attempts to parse a JSON string into a Hash.

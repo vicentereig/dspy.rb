@@ -644,6 +644,12 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         expect(result).to eq("not a hash")
       end
 
+      it 'returns malformed hash-like strings unchanged' do
+        result = instance.test_coerce("{query: [}", hash_type)
+
+        expect(result).to eq("{query: [}")
+      end
+
       it 'parses a JSON string into a Hash when expected type is T::Hash' do
         json_string = '{"query": "AI safety research"}'
         result = instance.test_coerce(json_string, hash_type)
