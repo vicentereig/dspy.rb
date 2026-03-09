@@ -23,6 +23,30 @@ RSpec.describe 'Sorbet::Toon.decode with signatures' do
         const :sources, T::Array[Source]
       end
     end
+
+    class PersonSignature < DSPy::Signature
+      input do
+        const :query, String
+      end
+
+      output do
+        const :name, String
+        const :nickname, T.nilable(String)
+      end
+    end
+
+    class ProfileSignature < DSPy::Signature
+      input do
+        const :query, String
+      end
+
+      output do
+        const :name, String
+        const :nickname, T.nilable(String)
+        const :metadata, T.nilable(T::Hash[String, String])
+        const :source, T.nilable(Source)
+      end
+    end
   end
 
   let(:signature) { SorbetToonSignatureSpec::ReportSignature }
@@ -49,6 +73,56 @@ RSpec.describe 'Sorbet::Toon.decode with signatures' do
     expect(result.sources.length).to eq(2)
     expect(result.sources.first).to be_a(SorbetToonSignatureSpec::Source)
     expect(result.sources.last.notes).to eq('top pick')
+  end
+
+  it 'treats empty key-value as nil for nilable string fields' do
+    payload = <<~TOON
+      name: Ada
+      nickname:
+    TOON
+
+    result = Sorbet::Toon.decode(
+      payload,
+      signature: SorbetToonSignatureSpec::PersonSignature,
+      role: :output
+    )
+
+    expect(result.name).to eq('Ada')
+    expect(result.nickname).to be_nil
+  end
+
+  it 'preserves empty key-value as empty hash for nilable hash fields' do
+    payload = <<~TOON
+      name: Ada
+      nickname:
+      metadata:
+    TOON
+
+    result = Sorbet::Toon.decode(
+      payload,
+      signature: SorbetToonSignatureSpec::ProfileSignature,
+      role: :output
+    )
+
+    expect(result.name).to eq('Ada')
+    expect(result.nickname).to be_nil
+    expect(result.metadata).to eq({})
+  end
+
+  it 'treats empty key-value as nil for nilable struct with required fields' do
+    payload = <<~TOON
+      name: Ada
+      source:
+    TOON
+
+    result = Sorbet::Toon.decode(
+      payload,
+      signature: SorbetToonSignatureSpec::ProfileSignature,
+      role: :output
+    )
+
+    expect(result.name).to eq('Ada')
+    expect(result.source).to be_nil
   end
 
   it 'rehydrates using explicit struct_class without signature' do
