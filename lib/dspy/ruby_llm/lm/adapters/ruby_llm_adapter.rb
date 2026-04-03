@@ -49,6 +49,8 @@ module DSPy
           def chat(messages:, signature: nil, &block)
             normalized_messages = normalize_messages(messages)
 
+            validate_document_support!(normalized_messages)
+
             # Validate vision support if images are present
             if contains_images?(normalized_messages)
               validate_vision_support!
@@ -255,12 +257,23 @@ module DSPy
                   elsif item[:image_url]
                     attachments << item[:image_url][:url]
                   end
+                when 'document'
+                  document = item[:document]
+                  attachments << document.to_ruby_llm_attachment if document
                 end
               end
               content = text_parts.join("\n")
             end
 
             [content.to_s, attachments]
+          end
+
+          def validate_document_support!(messages)
+            return unless contains_documents?(messages)
+            return if provider == 'anthropic'
+
+            raise DSPy::LM::IncompatibleDocumentFeatureError,
+                  "RubyLLM document inputs are currently supported only when the underlying provider is Anthropic."
           end
 
           def map_response(ruby_llm_response)

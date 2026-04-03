@@ -1,0 +1,89 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":[{"type":"text","text":"Reply
+        with the revenue figure only."},{"type":"document","source":{"type":"base64","media_type":"application/pdf","data":"JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCA2MCA+PgpzdHJlYW0KQlQgL0YxIDEyIFRmIDEwMCA3MDAgVGQgKFJldmVudWU6ICQxLjJNLiBHcm93dGg6IDE1JS4pIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI0MSAwMDAwMCBuIAowMDAwMDAwMzUxIDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNDIxCiUlRU9GCg=="}}]}],"stream":false,"max_tokens":64000,"system":[{"type":"text","text":"You
+        extract financial metrics from PDF documents."}]}'
+    headers:
+      User-Agent:
+      - Faraday v2.14.0
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      Anthropic-Version:
+      - '2023-06-01'
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 03 Apr 2026 19:45:48 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '2000000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '1999000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2026-04-03T19:45:47Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '400000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '400000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2026-04-03T19:45:48Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '4000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '3999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2026-04-03T19:45:47Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '2400000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '2399000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2026-04-03T19:45:47Z'
+      Request-Id:
+      - "<REQUEST_ID>"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - "<ANTHROPIC_ORGANIZATION>"
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '1045'
+      Vary:
+      - Accept-Encoding
+      Server-Timing:
+      - x-originResponse;dur=1047
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - _cfuvid=<REDACTED>
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9e6a935d68349051-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-sonnet-4-20250514","id":"msg_01V2s6FGqLpx7eQ9ZPwwmbQr","type":"message","role":"assistant","content":[{"type":"text","text":"$1.2M"}],"stop_reason":"end_turn","stop_sequence":null,"stop_details":null,"usage":{"input_tokens":1608,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":8,"service_tier":"standard","inference_geo":"not_available"}}'
+  recorded_at: Fri, 03 Apr 2026 19:45:48 GMT
+recorded_with: VCR 6.3.1

@@ -1,17 +1,17 @@
 ---
 layout: docs
 title: Multimodal Support
-description: Process images and text with DSPy.rb's multimodal capabilities. Support
-  for OpenAI and Anthropic vision models with type-safe image analysis and structured
-  outputs.
+description: Process images and PDF documents with DSPy.rb's multimodal capabilities.
+  Support for OpenAI, Anthropic, and Gemini vision models plus Anthropic PDF document
+  inputs.
 nav_order: 7
 parent: Core Concepts
 date: 2025-08-13 00:00:00 +0000
-last_modified_at: 2025-08-26 00:00:00 +0000
+last_modified_at: 2026-04-01 00:00:00 +0000
 ---
 # Multimodal Support
 
-DSPy.rb supports multimodal inputs, allowing you to work with both text and images in your AI applications. This feature enables powerful use cases like image analysis, visual question answering, and object detection.
+DSPy.rb supports multimodal inputs, allowing you to work with text, images, and PDF documents in your AI applications. This enables use cases like image analysis, visual question answering, and document-aware extraction.
 
 ## Vision-Capable Models
 
@@ -25,6 +25,91 @@ DSPy.rb supports multimodal inputs, allowing you to work with both text and imag
 ### Google Gemini Models
 - `gemini-2.5-flash` (fast, efficient)
 - `gemini-2.5-pro` (advanced reasoning)
+
+## PDF Document Support
+
+PDF document inputs currently have a narrower contract than images:
+
+- `DSPy::Document` supports PDF documents only (`application/pdf`)
+- Direct document support works with Anthropic models
+- RubyLLM document support works only when the underlying provider is Anthropic
+- `Predict` supports exactly one top-level document input per call
+- Mixed image and document `Predict` inputs are not supported in this release
+
+### Creating Documents
+
+```ruby
+# From URL
+document = DSPy::Document.new(
+  url: 'https://example.com/report.pdf'
+)
+
+# From base64 data
+document = DSPy::Document.new(
+  base64: pdf_base64,
+  content_type: 'application/pdf'
+)
+
+# From byte data
+File.open('report.pdf', 'rb') do |file|
+  document = DSPy::Document.new(
+    data: file.read.bytes,
+    content_type: 'application/pdf'
+  )
+end
+```
+
+### Using Documents with Raw Chat
+
+```ruby
+lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
+
+document = DSPy::Document.new(
+  url: 'https://example.com/report.pdf'
+)
+
+response = lm.raw_chat do |messages|
+  messages.system('You are a financial analyst.')
+  messages.user_with_document('Summarize the key metrics in this PDF.', document)
+end
+```
+
+### Using Documents with Predict
+
+`Predict` can attach one top-level `DSPy::Document` input and preserve a placeholder in the rendered prompt:
+
+```ruby
+class DocumentSummary < DSPy::Signature
+  description 'Extract a summary from a PDF document'
+
+  input do
+    const :document, DSPy::Document, description: 'PDF document to summarize'
+    const :focus, String, description: 'What to focus on'
+  end
+
+  output do
+    const :summary, String, description: 'Document summary'
+  end
+end
+
+predictor = DSPy::Predict.new(DocumentSummary)
+result = predictor.call(
+  document: document,
+  focus: 'financial metrics'
+)
+
+puts result.summary
+```
+
+### Using Documents Through RubyLLM
+
+```ruby
+lm = DSPy::LM.new('ruby_llm/claude-sonnet-4-5', api_key: ENV['ANTHROPIC_API_KEY'])
+
+response = lm.raw_chat do |messages|
+  messages.user_with_document('Extract the revenue numbers.', document)
+end
+```
 
 ## Working with Images
 

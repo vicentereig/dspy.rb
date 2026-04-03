@@ -1,0 +1,120 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":[{"type":"text","text":"What
+        are the key metrics in this document?"},{"type":"document","source":{"type":"base64","media_type":"application/pdf","data":"JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCA2MCA+PgpzdHJlYW0KQlQgL0YxIDEyIFRmIDEwMCA3MDAgVGQgKFJldmVudWU6ICQxLjJNLiBHcm93dGg6IDE1JS4pIFRqIEVUCmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL0Jhc2VGb250IC9IZWx2ZXRpY2EgPj4KZW5kb2JqCnhyZWYKMCA2CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAwOSAwMDAwMCBuIAowMDAwMDAwMDU4IDAwMDAwIG4gCjAwMDAwMDAxMTUgMDAwMDAgbiAKMDAwMDAwMDI0MSAwMDAwMCBuIAowMDAwMDAwMzUxIDAwMDAwIG4gCnRyYWlsZXIKPDwgL1NpemUgNiAvUm9vdCAxIDAgUiA+PgpzdGFydHhyZWYKNDIxCiUlRU9GCg=="}}]}],"max_tokens":4096,"temperature":0.0,"system":"You
+        are a financial analyst. Extract key metrics from documents."}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.16.2
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.16.2
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.7
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '1153'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 01 Apr 2026 21:22:04 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '2000000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '1999000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2026-04-01T21:22:01Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '400000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '400000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2026-04-01T21:22:04Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '4000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '3999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2026-04-01T21:21:59Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '2400000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '2399000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2026-04-01T21:22:01Z'
+      Request-Id:
+      - req_011CZdkceioet3kimoWUkwR2
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - e42c7c12-5f62-403b-8724-263d1acb45f9
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '5100'
+      Vary:
+      - Accept-Encoding
+      Server-Timing:
+      - x-originResponse;dur=5102
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - _cfuvid=<REDACTED>
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9e5aa58d0de86a4e-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-sonnet-4-20250514","id":"msg_011crWTAhrgz87eQHxw3VmqK","type":"message","role":"assistant","content":[{"type":"text","text":"Based
+        on the document provided, I can identify the following key financial metrics:\n\n##
+        Key Metrics Extracted:\n\n**Revenue Metrics:**\n- **Revenue**: $1.2M (1.2
+        million dollars)\n- **Growth Rate**: 15%\n\n## Summary:\nThe document contains
+        limited but essential financial information showing the company''s current
+        revenue performance and growth trajectory. The 15% growth rate suggests positive
+        business momentum, though additional context (such as the time period for
+        this growth rate, profit margins, expenses, or comparative industry benchmarks)
+        would be needed for a more comprehensive financial analysis.\n\n**Note**:
+        This appears to be a brief financial summary. For a complete financial analysis,
+        additional metrics such as profit margins, operating expenses, EBITDA, cash
+        flow, and other key performance indicators would typically be required."}],"stop_reason":"end_turn","stop_sequence":null,"stop_details":null,"usage":{"input_tokens":1615,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":176,"service_tier":"standard","inference_geo":"not_available"}}'
+  recorded_at: Wed, 01 Apr 2026 21:22:04 GMT
+recorded_with: VCR 6.3.1

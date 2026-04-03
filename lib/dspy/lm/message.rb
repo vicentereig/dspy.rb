@@ -59,6 +59,8 @@ module DSPy
               { type: 'text', text: item[:text] }
             when 'image'
               item[:image].to_openai_format
+            when 'document'
+              item[:document].to_openai_format
             else
               item
             end
@@ -83,6 +85,8 @@ module DSPy
               { type: 'text', text: item[:text] }
             when 'image'
               item[:image].to_anthropic_format
+            when 'document'
+              item[:document].to_anthropic_format
             else
               item
             end

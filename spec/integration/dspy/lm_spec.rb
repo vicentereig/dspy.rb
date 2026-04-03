@@ -432,6 +432,50 @@ RSpec.describe DSPy::LM do
         expect(messages[1].role).to eq(DSPy::LM::Message::Role::User)
         expect(messages[1].content).to eq('Question: What is AI?\nAnswer:')
       end
+
+      it 'preserves a document field placeholder and attaches the document' do
+        doc = DSPy::Document.new(url: 'https://example.com/report.pdf')
+        allow(lm).to receive(:provider).and_return('anthropic')
+        allow(inference_module.prompt).to receive(:render_user_prompt) do |inputs|
+          "prompt=#{inputs.inspect}"
+        end
+
+        messages = lm.send(:build_messages, inference_module, {
+          document: doc,
+          question: 'What is in the report?'
+        })
+
+        expect(messages[1].content[0]).to eq(
+          type: 'text',
+          text: 'prompt={:document=>"[attached pdf document]", :question=>"What is in the report?"}'
+        )
+        expect(messages[1].content[1]).to eq(type: 'document', document: doc)
+      end
+
+      it 'raises for multiple top-level documents' do
+        allow(lm).to receive(:provider).and_return('anthropic')
+
+        expect {
+          lm.send(:build_messages, inference_module, {
+            document_a: DSPy::Document.new(url: 'https://example.com/a.pdf'),
+            document_b: DSPy::Document.new(url: 'https://example.com/b.pdf')
+          })
+        }.to raise_error(DSPy::LM::IncompatibleDocumentFeatureError, /Only one top-level DSPy::Document input/)
+      end
+
+      it 'raises for nested document inputs inside T::Struct values' do
+        wrapper_class = stub_const('NestedDocumentWrapper', Class.new(T::Struct) do
+          const :document, DSPy::Document
+        end)
+
+        allow(lm).to receive(:provider).and_return('anthropic')
+
+        expect {
+          lm.send(:build_messages, inference_module, {
+            wrapper: wrapper_class.new(document: DSPy::Document.new(url: 'https://example.com/report.pdf'))
+          })
+        }.to raise_error(DSPy::LM::IncompatibleDocumentFeatureError, /Only one top-level DSPy::Document input/)
+      end
     end
   end
 end

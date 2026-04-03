@@ -58,6 +58,17 @@ module DSPy
         end
       end
 
+      def contains_documents?(messages)
+        messages.any? do |msg|
+          content = msg[:content] || msg.content
+          content.is_a?(Array) && content.any? { |item| item[:type] == 'document' }
+        end
+      end
+
+      def contains_media?(messages)
+        contains_images?(messages) || contains_documents?(messages)
+      end
+
       # Format multimodal messages for a specific provider
       # @param messages [Array<Hash>] Array of message hashes
       # @param provider_name [String] Provider name for image validation and formatting
@@ -71,6 +82,8 @@ module DSPy
                 { type: 'text', text: item[:text] }
               when 'image'
                 format_image_for_provider(item[:image], provider_name)
+              when 'document'
+                format_document_for_provider(item[:document], provider_name)
               else
                 item
               end
@@ -94,6 +107,16 @@ module DSPy
         else
           # For providers without specific format methods, return the item as-is
           { type: 'image', image: image }
+        end
+      end
+
+      def format_document_for_provider(document, provider_name)
+        document.validate_for_provider!(provider_name)
+        format_method = "to_#{provider_name}_format"
+        if document.respond_to?(format_method)
+          document.send(format_method)
+        else
+          { type: 'document', document: document }
         end
       end
     end
