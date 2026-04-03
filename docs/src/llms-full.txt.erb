@@ -758,7 +758,7 @@ The generated JSON Schema includes these descriptions, helping LLMs understand f
 
 ## Multimodal Support
 
-DSPy.rb provides comprehensive support for text and image inputs through its unified `DSPy::Image` interface, enabling vision-capable LLM applications across multiple providers.
+DSPy.rb provides multimodal support for text, images, and PDF documents. Images work across the vision-capable providers below. PDF documents currently have a narrower scope: Anthropic directly, plus Anthropic through RubyLLM.
 
 ### Image Input Types
 
@@ -887,6 +887,55 @@ end
 - **OpenAI**: URLs and base64, supports `detail` parameter
 - **Anthropic**: Base64 and raw data only, no `detail` parameter
 - **Signatures**: Image fields in signatures are not yet supported; use raw chat for vision.
+
+### PDF Documents
+
+Use `DSPy::Document` for PDF inputs:
+
+```ruby
+document = DSPy::Document.new(
+  base64: pdf_base64,
+  content_type: "application/pdf"
+)
+```
+
+Current document support is intentionally narrow:
+
+- **Format**: PDF only (`application/pdf`)
+- **Anthropic**: Supported for `raw_chat`
+- **RubyLLM**: Supported only when the underlying provider is Anthropic
+- **Predict**: Supports one top-level `DSPy::Document` input
+- **Mixed media in Predict**: Not supported for document + image combinations
+
+Raw chat example:
+
+```ruby
+lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
+
+response = lm.raw_chat do |messages|
+  messages.user_with_document('Summarize this PDF.', document)
+end
+```
+
+Predict example:
+
+```ruby
+class DocumentSummary < DSPy::Signature
+  description "Extract a summary from a PDF document"
+
+  input do
+    const :document, DSPy::Document, description: "PDF document to summarize"
+    const :focus, String, description: "What to focus on"
+  end
+
+  output do
+    const :summary, String, description: "Document summary"
+  end
+end
+
+predictor = DSPy::Predict.new(DocumentSummary)
+result = predictor.call(document: document, focus: "financial metrics")
+```
 
 ### Structured Multimodal Signatures
 

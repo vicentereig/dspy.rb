@@ -52,7 +52,9 @@ module DSPy
             # Validate vision support if images are present
             if contains_images?(normalized_messages)
               DSPy::LM::VisionModels.validate_vision_support!('gemini', model)
-              # Convert messages to Gemini format with proper image handling
+            end
+
+            if contains_media?(normalized_messages)
               normalized_messages = format_multimodal_messages(normalized_messages, 'gemini')
             end
 

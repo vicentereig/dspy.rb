@@ -1,0 +1,127 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":[{"type":"text","text":"##
+        Input Values\n```json\n{\n  \"document\": \"[attached pdf document]\",\n  \"focus\":
+        \"financial metrics\"\n}\n```\n\nRespond with the corresponding output schema
+        fields wrapped in a ```json ``` block,\nstarting with the heading `## Output
+        values`."},{"type":"document","source":{"type":"base64","media_type":"application/pdf","data":"JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDAgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAxMDAgNzAwIFRkIChRNCBSZXZlbnVlOiAkMS4yTS4gWWVhci1vdmVyLXllYXIgZ3Jvd3RoOiAxNSUuIEFjdGl2ZSB1c2VyczogNTAsMDAwLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTIgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjIKJSVFT0YK"}}]}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"document\": {\n      \"type\": \"string\",\n      \"description\":
+        \"The document to summarize\"\n    },\n    \"focus\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What to focus on\"\n    }\n  },\n  \"required\": [\n    \"document\",\n    \"focus\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Document summary\"\n    }\n  },\n  \"required\": [\n    \"summary\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Extract a summary from a document"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.16.2
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.16.2
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.7
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '2447'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 01 Apr 2026 21:22:08 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '2000000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '1999000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2026-04-01T21:22:07Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '400000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '400000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2026-04-01T21:22:08Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '4000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '3999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2026-04-01T21:22:05Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '2400000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '2399000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2026-04-01T21:22:07Z'
+      Request-Id:
+      - req_011CZdkd35xpNUZWpvgA7CBW
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - e42c7c12-5f62-403b-8724-263d1acb45f9
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '3855'
+      Vary:
+      - Accept-Encoding
+      Server-Timing:
+      - x-originResponse;dur=3857
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - _cfuvid=<REDACTED>
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9e5aa5ad6c06429b-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-sonnet-4-20250514","id":"msg_01CFd8vjd3cnb1U94xsRp4t8","type":"message","role":"assistant","content":[{"type":"text","text":"##
+        Output values\n```json\n{\n  \"summary\": \"The document reports key financial
+        metrics showing Q4 revenue of $1.2 million with a strong year-over-year growth
+        rate of 15%. The company also maintains an active user base of 50,000 users,
+        indicating solid business performance and growth trajectory.\"\n}\n```"}],"stop_reason":"end_turn","stop_sequence":null,"stop_details":null,"usage":{"input_tokens":1974,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":77,"service_tier":"standard","inference_geo":"not_available"}}'
+  recorded_at: Wed, 01 Apr 2026 21:22:08 GMT
+recorded_with: VCR 6.3.1

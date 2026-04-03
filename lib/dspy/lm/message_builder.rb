@@ -68,6 +68,20 @@ module DSPy
         )
         self
       end
+
+      sig { params(text: String, document: DSPy::Document).returns(MessageBuilder) }
+      def user_with_document(text, document)
+        content_array = [
+          { type: 'text', text: text },
+          { type: 'document', document: document }
+        ]
+
+        @messages << Message.new(
+          role: Message::Role::User,
+          content: content_array
+        )
+        self
+      end
       
       # For backward compatibility, allow conversion to hash array
       sig { returns(T::Array[T::Hash[Symbol, T.untyped]]) }

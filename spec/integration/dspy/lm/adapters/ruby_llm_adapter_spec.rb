@@ -157,6 +157,95 @@ RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter do
       expect(content).to be_nil
       expect(attachments).to be_empty
     end
+
+    it 'extracts a document URL attachment for anthropic' do
+      allow(RubyLLM).to receive(:models).and_return(double('models', find: double(provider: :anthropic)))
+      adapter = described_class.new(model: 'claude-sonnet-4-5', api_key: 'test-key')
+      messages = [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: 'Analyze this document' },
+            { type: 'document', document: DSPy::Document.new(url: 'https://example.com/report.pdf') }
+          ]
+        }
+      ]
+
+      content, attachments = adapter.send(:prepare_message_content, messages)
+
+      expect(content).to eq('Analyze this document')
+      expect(attachments).to eq(['https://example.com/report.pdf'])
+    end
+
+    it 'extracts a document base64 attachment for anthropic' do
+      allow(RubyLLM).to receive(:models).and_return(double('models', find: double(provider: :anthropic)))
+      adapter = described_class.new(model: 'claude-sonnet-4-5', api_key: 'test-key')
+      pdf_data = TestDocuments.create_minimal_pdf(text: 'RubyLLM inline PDF')
+      messages = [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: 'Analyze this document' },
+            {
+              type: 'document',
+              document: DSPy::Document.new(
+                base64: Base64.strict_encode64(pdf_data),
+                content_type: 'application/pdf'
+              )
+            }
+          ]
+        }
+      ]
+
+      content, attachments = adapter.send(:prepare_message_content, messages)
+
+      expect(content).to eq('Analyze this document')
+      expect(attachments.length).to eq(1)
+      expect(attachments.first.path).to eq('document.pdf')
+      expect(attachments.first.read).to eq(pdf_data)
+    end
+  end
+
+  describe 'document support' do
+    it 'raises for non-anthropic document usage' do
+      adapter = described_class.new(model: 'gpt-4o', api_key: 'test-key')
+      messages = [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: 'Analyze this document' },
+            { type: 'document', document: DSPy::Document.new(url: 'https://example.com/report.pdf') }
+          ]
+        }
+      ]
+
+      expect {
+        adapter.chat(messages: messages)
+      }.to raise_error(DSPy::LM::IncompatibleDocumentFeatureError, /supported only when the underlying provider is Anthropic/)
+    end
+
+    it 'passes Anthropic document attachments to ask' do
+      allow(RubyLLM).to receive(:models).and_return(double('models', find: double(provider: :anthropic)))
+      adapter = described_class.new(model: 'claude-sonnet-4-5', api_key: 'test-key')
+      messages = [
+        { role: 'system', content: 'You are helpful' },
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: 'Analyze this document' },
+            { type: 'document', document: DSPy::Document.new(url: 'https://example.com/report.pdf') }
+          ]
+        }
+      ]
+
+      expect(mock_chat).to receive(:with_instructions).with('You are helpful').and_return(mock_chat)
+      expect(mock_chat).to receive(:ask).with(
+        'Analyze this document',
+        with: ['https://example.com/report.pdf']
+      ).and_return(mock_message)
+
+      adapter.chat(messages: messages)
+    end
   end
 
   describe 'multi-turn conversations' do

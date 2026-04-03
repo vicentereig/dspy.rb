@@ -25,7 +25,10 @@ module DSPy
             # Validate vision support if images are present
             if contains_images?(normalized_messages)
               DSPy::LM::VisionModels.validate_vision_support!('anthropic', model)
-              # Convert messages to Anthropic format with proper image handling
+            end
+
+            # Convert multimodal messages to Anthropic format
+            if contains_media?(normalized_messages)
               normalized_messages = format_multimodal_messages(normalized_messages, 'anthropic')
             end
 
@@ -40,7 +43,7 @@ module DSPy
             has_tools = extra_params.key?(:tools) && !extra_params[:tools].empty?
 
             # Apply JSON prefilling if needed for better Claude JSON compliance (but not for tool use or Beta API)
-            unless has_tools || output_format || contains_images?(normalized_messages)
+            unless has_tools || output_format || contains_media?(normalized_messages)
               user_messages = prepare_messages_for_json(user_messages, system_message)
             end
 
