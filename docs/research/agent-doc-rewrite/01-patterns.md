@@ -24,11 +24,11 @@ Why this system:
 
 ## Pattern 1: Typed Contracts First
 
-### What?
+### Definition
 
 Start with a `DSPy::Signature` that defines the agent boundary with real Ruby types: inputs, outputs, enums, and structs.
 
-### So What?
+### Why It Matters
 
 This is the first moment where DSPy.rb stops being "prompt engineering in Ruby" and becomes software design:
 
@@ -37,19 +37,19 @@ This is the first moment where DSPy.rb stops being "prompt engineering in Ruby" 
 - outputs become objects the rest of the app can trust
 - tests can assert on behavior instead of string fragments
 
-### What Not?
+### Next Move
 
-- Do not begin with a giant prompt string.
-- Do not return free-form JSON blobs when the output shape is knowable.
-- Do not hide critical branching decisions inside prose when they can be enums or unions.
+- Type the output of one existing agent before you touch optimization.
+- Replace one free-form string field with a struct or enum where the shape is already known.
+- Use the contract to define what "done" means for the agent.
 
 ## Pattern 2: Tools Beat Prompt Mazes
 
-### What?
+### Definition
 
 Expose capabilities as typed tools or toolsets instead of embedding every possible action in a monolithic prompt.
 
-### So What?
+### Why It Matters
 
 Tool schemas make the agent legible:
 
@@ -58,19 +58,19 @@ Tool schemas make the agent legible:
 - capability changes happen in Ruby, not in fragile prompt text
 - the agent loop can stay small because execution lives in tools
 
-### What Not?
+### Next Move
 
-- Do not model a multi-capability agent as one signature with dozens of nullable fields.
-- Do not make the model "pretend" to use tools by describing side effects in text.
-- Do not pass around untyped hashes when a `T::Struct` or tool schema can do the job.
+- Extract the first two capabilities your prompt is currently pretending to have.
+- Turn those capabilities into typed tools with real return values.
+- Let tool schemas narrow the action space instead of prompt text.
 
 ## Pattern 3: Navigation And Synthesis Are Different Jobs
 
-### What?
+### Definition
 
 Use one primitive to explore and collect evidence, then another to turn that evidence into the user-visible answer.
 
-### So What?
+### Why It Matters
 
 This prevents one of the most common agent failures: the model answers too early because it confuses internal context with the final response.
 
@@ -79,19 +79,19 @@ The strongest real-world pattern here is:
 - inner loop: gather, compare, search, fetch, narrow
 - final step: synthesize only after the loop explicitly requests finish
 
-### What Not?
+### Next Move
 
-- Do not ask the same predictor to both decide the next step and write the final answer.
-- Do not let the model treat raw context windows as user-facing output.
-- Do not rely on "be careful" prompt language when phase separation can be encoded in architecture.
+- Split one multi-step agent into exploration and synthesis responsibilities.
+- Remove final-answer generation from the inner loop.
+- Make visibility boundaries explicit in signatures and field descriptions.
 
 ## Pattern 4: State Is A Type
 
-### What?
+### Definition
 
 Represent budget, iteration count, fetched documents, active context, and phase transitions with typed structs.
 
-### So What?
+### Why It Matters
 
 Explicit state makes the agent resumable, inspectable, and composable:
 
@@ -100,19 +100,19 @@ Explicit state makes the agent resumable, inspectable, and composable:
 - easier to pass between modules
 - easier to test without the model in the loop
 
-### What Not?
+### Next Move
 
-- Do not let state leak into instance variables with no formal shape.
-- Do not store important loop control data only in natural language history.
-- Do not overload the prompt with state the runtime should own directly.
+- Create one typed state object for loop control.
+- Move fetched ids, evidence, and budgets into that struct.
+- Use it as the checkpoint and resume boundary.
 
 ## Pattern 5: Async Is Part Of The Architecture
 
-### What?
+### Definition
 
 When the agent needs to fan out across independent I/O, use Ruby async primitives as part of the design, not as an afterthought.
 
-### So What?
+### Why It Matters
 
 This is one of the clearest "modern Ruby" advantages:
 
@@ -121,19 +121,19 @@ This is one of the clearest "modern Ruby" advantages:
 - agents stay responsive under imperfect networks
 - async becomes a tool for agent quality, not just performance
 
-### What Not?
+### Next Move
 
-- Do not serialize obviously parallel fetches.
-- Do not bury concurrency inside opaque infrastructure if the tutorial is teaching how agents actually work.
-- Do not promise async benefits without showing the architectural seam where concurrency enters.
+- Find the first obviously independent fetch batch.
+- Add async fan-out there and nowhere else yet.
+- Measure responsiveness and throughput after the change.
 
 ## Pattern 6: Step-Level Observability Is Non-Negotiable
 
-### What?
+### Definition
 
 Emit step events for selection, tool calls, checkpoints, and synthesis.
 
-### So What?
+### Why It Matters
 
 The tutorial should show that a production agent needs an audit trail:
 
@@ -145,19 +145,19 @@ The tutorial should show that a production agent needs an audit trail:
 
 This is the difference between a demo and a system you can operate.
 
-### What Not?
+### Next Move
 
-- Do not reduce observability to token counts and latency charts.
-- Do not present traces as optional polish.
-- Do not hide intermediate reasoning and tool execution if the page is arguing for auditable agents.
+- Add step events for selection, tool calls, and synthesis.
+- Preserve enough detail to explain what the agent did after the fact.
+- Treat traces as part of the product, not an optional dashboard.
 
 ## Pattern 7: Bounded Loops, Not Magical Autonomy
 
-### What?
+### Definition
 
 Use explicit budgets: iterations, recursion depth, fetch limits, or timeouts.
 
-### So What?
+### Why It Matters
 
 Real agents need autonomy with rails:
 
@@ -166,11 +166,11 @@ Real agents need autonomy with rails:
 - they surface incomplete work
 - they remain affordable
 
-### What Not?
+### Next Move
 
-- Do not present "autonomous" as "unbounded."
-- Do not depend on the model to self-regulate forever.
-- Do not leave the reader without a concrete list of budgets to set.
+- Set explicit iteration, recursion, or time budgets.
+- Decide what the agent returns when it runs out of room.
+- Make bounded behavior visible in tests and traces.
 
 ## Tutorial Spine
 
@@ -185,11 +185,11 @@ The single page should teach this progression:
 7. Add async fan-out.
 8. Add observability and tests.
 
-Every major section should use:
+Every major section should answer:
 
-- `What?`
-- `So What?`
-- `What Not?`
+- what it is
+- why it matters
+- what to do next
 
 That pattern matches the intended audience:
 

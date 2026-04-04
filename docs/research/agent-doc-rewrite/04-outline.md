@@ -54,9 +54,9 @@ Purpose:
 
 Subsections:
 
-- What?
-- So What?
-- What Not?
+- explain what it is
+- explain why it matters
+- end with what to do next
 
 ### 2. The Agent We Are Building
 
@@ -188,11 +188,11 @@ Candidates:
 
 ## Writing Rules
 
-Every main section should include:
+Every main section should answer:
 
-- `What?`
-- `So What?`
-- `What Not?`
+- what it is
+- why it matters
+- what to do next
 
 Every implementation step should include:
 

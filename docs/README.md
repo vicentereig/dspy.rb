@@ -81,7 +81,7 @@ For the homepage:
 
 1. Edit `src/index.md`
 2. Keep major sections anchored and easy to scan
-3. Follow the `What? / So What? / What Not?` section pattern
+3. Make each section answer what it is, why it matters, and what to do next without repeating rigid subheads
 4. Prefer diffs and small code blocks over broad feature catalogs
 
 For secondary reference pages, continue using the existing page layouts and frontmatter conventions where appropriate.

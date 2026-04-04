@@ -39,8 +39,6 @@ toc:
 
 <h2 id="why-this-page-exists">Why This Page Exists</h2>
 
-**What?**
-
 This site used to look like a documentation website. It now starts with a single page because the shortest path to understanding DSPy.rb is not a taxonomy. It is one agent, built properly, step by step.
 
 The page is intentionally written for both humans and humans with agents:
@@ -50,9 +48,7 @@ The page is intentionally written for both humans and humans with agents:
 - explicit tradeoffs
 - no assumption that "advanced" concepts belong in a different room
 
-**So What?**
-
-If you can build one good agent, the rest of the framework starts making sense:
+That matters because once you can build one good agent, the rest of the framework starts making sense:
 
 - why signatures matter
 - why tool schemas beat prompt sprawl
@@ -62,11 +58,7 @@ If you can build one good agent, the rest of the framework starts making sense:
 
 This is the same reason Rails clicked for web apps. Once the architecture is visible, the abstractions stop feeling magical.
 
-**What Not?**
-
-- Not a docs portal with ten entry points and no argument.
-- Not a workflow cookbook.
-- Not a landing page pretending to be documentation.
+So the first move is simple: read this page top to bottom once, then come back to the sections you need when you are implementing.
 
 ---
 
@@ -118,13 +110,9 @@ class EvidenceBrief < DSPy::Signature
 end
 ```
 
-**What?**
-
 This is an agent, not a pipeline. It decides what to look at next based on what it has already found.
 
-**So What?**
-
-This example is rich enough to justify the architecture:
+That scope is deliberate. This example is rich enough to justify the architecture:
 
 - typed inputs and outputs
 - tools with real contracts
@@ -132,11 +120,7 @@ This example is rich enough to justify the architecture:
 - async fetches
 - step-level traces
 
-**What Not?**
-
-- Not a toy chatbot.
-- Not a sequential chain of fixed steps.
-- Not a "general AI assistant" with no bounded job.
+If you are adapting the tutorial to your own product, choose a similarly bounded evidence-first job before you touch prompts.
 
 ---
 
@@ -177,23 +161,15 @@ That is already better than a prompt string in a service object, but it is still
  end
 ```
 
-**What?**
-
 The signature becomes the agent contract. The output shape says what "done" looks like.
 
-**So What?**
-
-Now the rest of your code can depend on something real:
+That contract is the first real design move, because now the rest of your code can depend on something real:
 
 - UI code can render citations directly
 - tests can assert on evidence, not prose vibes
 - the model is asked for structure, not just eloquence
 
-**What Not?**
-
-- Do not wait until later to make the output typed.
-- Do not return a blob and promise to "clean it up downstream."
-- Do not make citations optional if evidence is the point of the agent.
+Start here on your own codebase: take one existing agent and type its output before you optimize anything else.
 
 ---
 
@@ -241,23 +217,15 @@ And the shift is architectural, not cosmetic:
 + result = agent.call(question: question)
 ```
 
-**What?**
-
 The agent is now connected to the world through typed interfaces.
 
-**So What?**
-
-This solves three problems immediately:
+This is where the agent becomes real, and it solves three problems immediately:
 
 - the model gets a real capability surface
 - the runtime validates tool arguments
 - your system stops relying on imaginary side effects hidden in prompt text
 
-**What Not?**
-
-- Do not stuff tool descriptions into the prompt and call that tool use.
-- Do not use untyped hashes for search hits if you already know the shape.
-- Do not make the tool layer return "whatever came back."
+The next move is to extract the first two capabilities your current prompt is pretending to have and turn them into typed tools.
 
 ---
 
@@ -283,11 +251,7 @@ class EvidenceBriefAgent < DSPy::Module
 end
 ```
 
-**What?**
-
 `DSPy::Module` is the orchestration seam. It is where dependencies, callbacks, per-instance configuration, and step wiring belong.
-
-**So What?**
 
 This is where the framework starts feeling like Ruby again:
 
@@ -296,11 +260,7 @@ This is where the framework starts feeling like Ruby again:
 - you can expose named predictors
 - you can test the loop as a real object
 
-**What Not?**
-
-- Do not leave the agent as a script full of globals.
-- Do not spread orchestration across controllers, jobs, and helpers.
-- Do not bury the actual loop under ad hoc service names with no DSPy boundary.
+So move the loop into a module and make `forward` the single public turn boundary.
 
 ---
 
@@ -371,11 +331,7 @@ The diff is the whole lesson:
 + end
 ```
 
-**What?**
-
 One predictor decides how to explore. Another predictor turns evidence into the final response.
-
-**So What?**
 
 This prevents a subtle but common failure mode: the loop answers too early because it cannot distinguish internal context from user-visible output.
 
@@ -384,11 +340,7 @@ It also gives you two clean places to tune:
 - exploration quality
 - answer quality
 
-**What Not?**
-
-- Do not ask the same predictor to navigate and to finish.
-- Do not rely on "only answer when ready" as the primary control mechanism.
-- Do not pass raw context windows directly to the user-facing layer.
+If your current agent both explores and answers, split it before you tune it.
 
 ---
 
@@ -420,11 +372,7 @@ end
 + )
 ```
 
-**What?**
-
 `TurnState` is the runtime truth of the loop.
-
-**So What?**
 
 Typed state unlocks the parts that usually get bolted on too late:
 
@@ -435,11 +383,7 @@ Typed state unlocks the parts that usually get bolted on too late:
 
 It also keeps the prompt honest. The model sees the parts of state it should see. The runtime owns the rest.
 
-**What Not?**
-
-- Do not put crucial loop state only in natural-language history.
-- Do not use raw hashes if the shape is stable.
-- Do not let state mutate in five places with no central type.
+Create one state struct for loop control next, and stop mutating invisible instance variables.
 
 ---
 
@@ -476,11 +420,7 @@ end
 + documents = fetch_candidates_concurrently(hits)
 ```
 
-**What?**
-
 Async enters where the agent has real independent work to do.
-
-**So What?**
 
 This is not decorative concurrency. It changes the shape of the system:
 
@@ -489,11 +429,7 @@ This is not decorative concurrency. It changes the shape of the system:
 - retries do less collateral damage
 - Ruby feels like a good fit for agents, not a compromise
 
-**What Not?**
-
-- Do not parallelize everything because you can.
-- Do not hide concurrency inside magic middleware if the tutorial is about architecture.
-- Do not serialize obviously independent I/O just because it is easier to explain.
+Identify the first genuinely independent fetch batch in your agent and parallelize only that seam.
 
 ---
 
@@ -530,11 +466,7 @@ end
 
 That is enough to wire traces, UI updates, checkpointing, or step timelines without rewriting the agent later.
 
-**What?**
-
 Observability becomes part of the loop contract.
-
-**So What?**
 
 This is where the auditability argument cashes out:
 
@@ -543,11 +475,7 @@ This is where the auditability argument cashes out:
 - tests can assert that the right steps happened
 - product teams can tell whether the agent stopped for a good reason
 
-**What Not?**
-
-- Do not treat observability as dashboards only.
-- Do not log only the final answer.
-- Do not add traces as an afterthought once production bugs arrive.
+Add one `on_step` callback now and emit selection, tool, and synthesis events before you need them.
 
 ---
 
