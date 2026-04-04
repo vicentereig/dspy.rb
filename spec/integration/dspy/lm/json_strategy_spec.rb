@@ -44,6 +44,65 @@ RSpec.describe DSPy::LM::JSONStrategy do
 
       expect(strategy.extract_json(response)).to eq('{"name": "John"}')
     end
+
+    it 'sanitizes raw control characters inside quoted string values' do
+      response = DSPy::LM::Response.new(
+        content: "{\"reasoning\":\"line1\nline2\tindent\rreturn\",\"answer\":\"ok\"}",
+        usage: nil,
+        metadata: {}
+      )
+
+      result = strategy.extract_json(response)
+
+      expect(JSON.parse(result)).to eq(
+        'reasoning' => "line1\nline2\tindent\rreturn",
+        'answer' => 'ok'
+      )
+    end
+
+    it 'sanitizes raw control characters inside fenced JSON blocks' do
+      response = DSPy::LM::Response.new(
+        content: "```json\n{\"reasoning\":\"line1\nline2\",\"answer\":\"ok\"}\n```",
+        usage: nil,
+        metadata: {}
+      )
+
+      result = strategy.extract_json(response)
+
+      expect(JSON.parse(result)).to eq(
+        'reasoning' => "line1\nline2",
+        'answer' => 'ok'
+      )
+    end
+
+    it 'does not double-escape already escaped JSON sequences' do
+      response = DSPy::LM::Response.new(
+        content: '{"reasoning":"line1\\nline2\\tindent\\rreturn","answer":"ok"}',
+        usage: nil,
+        metadata: {}
+      )
+
+      result = strategy.extract_json(response)
+
+      expect(result).to eq('{"reasoning":"line1\\nline2\\tindent\\rreturn","answer":"ok"}')
+      expect(JSON.parse(result)).to eq(
+        'reasoning' => "line1\nline2\tindent\rreturn",
+        'answer' => 'ok'
+      )
+    end
+
+    it 'does not repair malformed JSON outside quoted strings' do
+      response = DSPy::LM::Response.new(
+        content: '{"reasoning":"ok", oops}',
+        usage: nil,
+        metadata: {}
+      )
+
+      result = strategy.extract_json(response)
+
+      expect(result).to eq('{"reasoning":"ok", oops}')
+      expect { JSON.parse(result) }.to raise_error(JSON::ParserError)
+    end
   end
 
   describe 'with Anthropic adapter' do

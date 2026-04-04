@@ -136,58 +136,95 @@ module DSPy
       def extract_json_from_content(content)
         return content if content.nil? || content.empty?
 
-        # Fix Anthropic Beta API bug with optional fields producing invalid JSON
-        # When some output fields are optional and not returned, Anthropic's structured outputs
-        # can produce trailing comma+brace: {"field1": {...},} instead of {"field1": {...}}
-        # This workaround removes the invalid trailing syntax before JSON parsing
-        if content =~ /,\s*\}\s*$/
-          content = content.sub(/,(\s*\}\s*)$/, '\1')
-        end
-
         # Try 1: Check for ```json code block (with or without preceding text)
         if content.include?('```json')
           json_match = content.match(/```json\s*\n(.*?)\n```/m)
-          return json_match[1].strip if json_match
+          if json_match
+            normalized = normalize_json_candidate(json_match[1].strip)
+            return normalized if valid_json?(normalized)
+          end
         end
 
         # Try 2: Check for generic ``` code block
         if content.include?('```')
           code_match = content.match(/```\s*\n(.*?)\n```/m)
           if code_match
-            potential_json = code_match[1].strip
-            # Verify it's JSON
-            begin
-              JSON.parse(potential_json)
-              return potential_json
-            rescue JSON::ParserError
-              # Not valid JSON, continue
-            end
+            potential_json = normalize_json_candidate(code_match[1].strip)
+            return potential_json if valid_json?(potential_json)
           end
         end
 
         # Try 3: Try parsing entire content as JSON
-        begin
-          JSON.parse(content)
-          return content
-        rescue JSON::ParserError
-          # Not pure JSON, try extracting
-        end
+        normalized_content = normalize_json_candidate(content)
+        return normalized_content if valid_json?(normalized_content)
 
         # Try 4: Look for JSON object pattern in text (greedy match for nested objects)
         json_pattern = /\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\}/m
         json_match = content.match(json_pattern)
         if json_match
-          potential_json = json_match[0]
-          begin
-            JSON.parse(potential_json)
-            return potential_json
-          rescue JSON::ParserError
-            # Not valid JSON
-          end
+          potential_json = normalize_json_candidate(json_match[0])
+          return potential_json if valid_json?(potential_json)
         end
 
         # Return content as-is if no JSON found
         content
+      end
+
+      sig { params(content: String).returns(String) }
+      def normalize_json_candidate(content)
+        escape_control_characters_in_strings(remove_trailing_object_commas(content))
+      end
+
+      sig { params(content: String).returns(String) }
+      def remove_trailing_object_commas(content)
+        content.sub(/,(\s*\}\s*)$/, '\1')
+      end
+
+      sig { params(content: String).returns(T::Boolean) }
+      def valid_json?(content)
+        JSON.parse(content)
+        true
+      rescue JSON::ParserError
+        false
+      end
+
+      sig { params(content: String).returns(String) }
+      def escape_control_characters_in_strings(content)
+        escaped = +""
+        in_string = false
+        escaping = false
+
+        content.each_char do |char|
+          if in_string
+            if escaping
+              escaped << char
+              escaping = false
+              next
+            end
+
+            case char
+            when '\\'
+              escaped << char
+              escaping = true
+            when '"'
+              escaped << char
+              in_string = false
+            when "\n"
+              escaped << '\n'
+            when "\r"
+              escaped << '\r'
+            when "\t"
+              escaped << '\t'
+            else
+              escaped << (char.ord < 0x20 ? "" : char)
+            end
+          else
+            escaped << char
+            in_string = true if char == '"'
+          end
+        end
+
+        escaped
       end
     end
   end

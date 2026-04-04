@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **GEPA evaluation resilience** (#245) - Recoverable per-example GEPA failures now degrade to zero-score rows instead of aborting the entire optimization run.
+- **JSON control character sanitization** (#246) - Enhanced JSON extraction now escapes raw newlines, tabs, and carriage returns inside quoted string values before parsing, while leaving unrelated malformed JSON untouched.
+
 ## [0.34.4] - 2026-03-07
 
 ### Changed
