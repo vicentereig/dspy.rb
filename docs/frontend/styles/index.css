@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Newsreader:opsz,wght@6..72,400..700&display=swap');
 @import "syntax-highlighting.css";
 @import "mobile-enhancements.css";
 @import "mobile-navigation.css";
@@ -5,6 +6,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body.essay-docs {
+    font-family: "Manrope", system-ui, sans-serif;
+  }
+
+  body.essay-docs {
+    scroll-behavior: smooth;
+  }
+}
 
 /* Header anchor links - show # on hover for easy link copying */
 /* Using @layer components to prevent Tailwind from purging these styles */
@@ -14,11 +25,18 @@
   .prose h3[id],
   .prose h4[id],
   .prose h5[id],
-  .prose h6[id] {
+  .prose h6[id],
+  .essay-prose h1[id],
+  .essay-prose h2[id],
+  .essay-prose h3[id],
+  .essay-prose h4[id],
+  .essay-prose h5[id],
+  .essay-prose h6[id] {
     @apply relative;
   }
 
-  .prose .anchor-link {
+  .prose .anchor-link,
+  .essay-prose .anchor-link {
     @apply absolute text-gray-400 no-underline font-normal;
     left: -1.25em;
     opacity: 0;
@@ -30,12 +48,162 @@
   .prose h3:hover .anchor-link,
   .prose h4:hover .anchor-link,
   .prose h5:hover .anchor-link,
-  .prose h6:hover .anchor-link {
+  .prose h6:hover .anchor-link,
+  .essay-prose h1:hover .anchor-link,
+  .essay-prose h2:hover .anchor-link,
+  .essay-prose h3:hover .anchor-link,
+  .essay-prose h4:hover .anchor-link,
+  .essay-prose h5:hover .anchor-link,
+  .essay-prose h6:hover .anchor-link {
     opacity: 1;
   }
 
-  .prose .anchor-link:hover {
+  .prose .anchor-link:hover,
+  .essay-prose .anchor-link:hover {
     @apply text-red-600;
+  }
+
+  .essay-kicker {
+    @apply text-xs font-semibold uppercase text-stone-500;
+    letter-spacing: 0.24em;
+  }
+
+  .essay-hero {
+    font-family: "Newsreader", Georgia, serif;
+    @apply font-semibold text-stone-900;
+    font-size: 2.9rem;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+  }
+
+  @media (min-width: 640px) {
+    .essay-hero {
+      font-size: 4.5rem;
+    }
+  }
+
+  .essay-hero mark {
+    background: linear-gradient(120deg, rgba(190, 242, 100, 0.88) 0%, rgba(190, 242, 100, 0.88) 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.44em;
+    background-position: 0 85%;
+    color: inherit;
+    padding: 0;
+  }
+
+  .essay-callout {
+    @apply border border-stone-200 bg-white/85 px-5 py-4 text-base leading-7 text-stone-700;
+    border-radius: 1.5rem;
+    box-shadow: 0 18px 60px -40px rgba(28, 25, 23, 0.45);
+  }
+
+  .essay-callout p {
+    @apply m-0;
+  }
+
+  .essay-toc-link.is-active {
+    @apply bg-stone-900 text-white;
+  }
+
+  .essay-toc-link.is-active span {
+    @apply text-stone-300;
+  }
+
+  .essay-prose {
+    @apply max-w-none leading-8 text-stone-700;
+    font-size: 1.08rem;
+  }
+
+  .essay-prose h2,
+  .essay-prose h3,
+  .essay-prose h4 {
+    font-family: "Newsreader", Georgia, serif;
+    letter-spacing: -0.02em;
+    color: rgb(28 25 23);
+  }
+
+  .essay-prose h2 {
+    @apply mt-20 mb-5 font-semibold leading-tight;
+    font-size: 2.4rem;
+  }
+
+  .essay-prose h3 {
+    @apply mt-10 mb-3 font-semibold leading-tight;
+    font-size: 1.8rem;
+  }
+
+  .essay-prose p {
+    @apply my-5 leading-8 text-stone-700;
+  }
+
+  .essay-prose ul,
+  .essay-prose ol {
+    @apply my-5 pl-6;
+  }
+
+  .essay-prose li {
+    @apply my-2;
+  }
+
+  .essay-prose strong {
+    @apply font-semibold text-stone-900;
+  }
+
+  .essay-prose a {
+    color: rgb(180 83 9);
+    text-decoration: underline;
+    text-decoration-color: rgba(180, 83, 9, 0.35);
+    text-underline-offset: 0.2em;
+  }
+
+  .essay-prose a:hover {
+    text-decoration-color: rgba(180, 83, 9, 0.8);
+  }
+
+  .essay-prose blockquote {
+    @apply border border-stone-200 bg-white px-6 py-5 text-stone-700;
+    border-radius: 1.5rem;
+  }
+
+  .essay-prose code {
+    @apply rounded bg-stone-100 px-1.5 py-0.5 font-medium text-stone-900;
+    font-size: 0.92em;
+  }
+
+  .essay-prose code::before,
+  .essay-prose code::after {
+    content: "";
+  }
+
+  .essay-prose pre {
+    @apply overflow-x-auto border border-stone-900 bg-stone-950 text-stone-100;
+    border-radius: 1.5rem;
+    box-shadow: 0 30px 80px -44px rgba(28, 25, 23, 0.7);
+  }
+
+  .essay-prose pre code {
+    @apply bg-transparent p-0 text-sm font-normal text-inherit;
+  }
+
+  .essay-prose hr {
+    @apply my-10 border-stone-200;
+  }
+
+  .essay-prose table {
+    @apply my-8 w-full table-auto overflow-hidden rounded-2xl border border-stone-200 bg-white text-left text-base;
+  }
+
+  .essay-prose thead {
+    @apply bg-stone-100;
+  }
+
+  .essay-prose th,
+  .essay-prose td {
+    @apply border-b border-stone-200 px-4 py-3 align-top;
+  }
+
+  .essay-prose tbody tr:last-child td {
+    @apply border-b-0;
   }
 }
 

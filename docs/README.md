@@ -1,6 +1,8 @@
 # DSPy.rb Documentation Site
 
-This is the documentation website for DSPy.rb, built with Bridgetown and styled with TailwindUI components.
+This is the documentation website for DSPy.rb, built with Bridgetown.
+
+The site now centers on a **single long-form homepage tutorial** instead of the usual docs-portal structure. The homepage is the primary reading experience. The rest of the site remains as secondary reference material.
 
 ## 🚀 Quick Start
 
@@ -35,22 +37,22 @@ The built site will be in the `output/` directory.
 ## 📁 Structure
 
 - `src/` - Source files for the documentation
-  - `_layouts/` - Page layouts (home, docs)
-  - `getting-started/` - Getting started guides
-  - `core-concepts/` - Core concepts documentation
-  - `optimization/` - Optimization guides
-  - `advanced/` - Advanced topics
-  - `production/` - Production deployment guides
+  - `_layouts/` - Page layouts, including the long-form homepage layout
+  - `index.md` - The primary single-page agent tutorial
+  - `_articles/` - Supporting blog-style articles
+  - `getting-started/`, `core-concepts/`, `optimization/`, `advanced/`, `production/` - Secondary reference material
 - `frontend/` - JavaScript and CSS assets
 - `output/` - Built site (git ignored)
 
-## 🎨 Design System
+## 🎨 Design Direction
 
-The site uses TailwindUI components for a professional, consistent design:
-- Modern documentation layout with sidebar navigation
-- Responsive design for mobile and desktop
-- Syntax highlighting for code blocks
-- Type-safe typography with @tailwindcss/typography
+The homepage borrows from the `vicente.services` long-form blog style:
+
+- editorial typography instead of docs-portal chrome
+- a visible table of contents for long reading sessions
+- responsive single-page layout for desktop and mobile
+- syntax highlighting for code blocks
+- predictable anchor structure for human and agent readers
 
 ## 🚀 GitHub Pages Deployment
 
@@ -71,30 +73,18 @@ The site is configured for GitHub Pages deployment:
 
 ## 📝 Writing Documentation
 
-1. Create markdown files in the appropriate directory
-2. Add frontmatter with layout, title, and navigation info
-3. Use the `docs` layout for documentation pages
-4. Follow the established navigation structure
+Prefer adding or improving content in the homepage tutorial first.
 
-Example frontmatter:
-```yaml
----
-layout: docs
-title: Your Page Title
-description: Brief description for SEO
-breadcrumb:
-  - title: Parent Section
-    url: /parent-section/
-  - title: This Page
-    url: /parent-section/this-page/
-prev:
-  title: Previous Page
-  url: /previous-page/
-next:
-  title: Next Page
-  url: /next-page/
----
-```
+Reach for secondary pages only when the material is genuinely reference-heavy or too detailed for the main narrative.
+
+For the homepage:
+
+1. Edit `src/index.md`
+2. Keep major sections anchored and easy to scan
+3. Follow the `What? / So What? / What Not?` section pattern
+4. Prefer diffs and small code blocks over broad feature catalogs
+
+For secondary reference pages, continue using the existing page layouts and frontmatter conventions where appropriate.
 
 ## 🐛 Troubleshooting
 

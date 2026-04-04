@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+{% render "head" %}
+<body class="essay-docs min-h-screen bg-stone-50 text-stone-900 antialiased">
+  <div class="relative min-h-screen overflow-x-hidden">
+    <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.14),_transparent_52%),linear-gradient(180deg,_rgba(254,249,195,0.55),_rgba(248,250,252,0))]"></div>
+
+    <header class="sticky top-0 z-40 border-b border-stone-200/80 bg-stone-50/90 backdrop-blur">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-8">
+        <a href="{{ '/' | relative_url }}" class="flex min-w-0 items-center gap-3 text-sm font-semibold tracking-[0.18em] text-stone-800 uppercase">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-lg font-bold tracking-normal text-dspy-ruby">D</span>
+          <span class="truncate">DSPy.rb</span>
+        </a>
+
+        <nav class="flex items-center gap-4 text-sm text-stone-600">
+          <a href="#toc" class="hidden transition hover:text-stone-900 sm:inline">Contents</a>
+          <a href="{{ '/llms.txt' | relative_url }}" class="hidden transition hover:text-stone-900 sm:inline">llms.txt</a>
+          <a href="{{ '/blog/' | relative_url }}" class="hidden transition hover:text-stone-900 sm:inline">Articles</a>
+          <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer" class="rounded-full border border-stone-300 bg-white px-4 py-2 font-medium text-stone-900 transition hover:border-stone-400 hover:bg-stone-100">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-6 pb-16 pt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-14 lg:px-8 lg:pt-14">
+      <article class="min-w-0">
+        <header class="mx-auto max-w-3xl border-b border-stone-200 pb-12">
+          <p class="essay-kicker">A single-page tutorial for humans and agents</p>
+
+          {% assign title_words = page.title | split: " " %}
+          {% assign last_word = title_words | last %}
+          {% assign first_words = title_words | pop | join: " " %}
+
+          <h1 class="essay-hero mt-6">
+            {{ first_words }} <mark>{{ last_word }}</mark>
+          </h1>
+
+          <p class="mt-6 max-w-2xl text-xl leading-8 text-stone-600">
+            {{ page.description }}
+          </p>
+
+          <div class="mt-8 flex flex-wrap items-center gap-3 text-sm text-stone-500">
+            <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 font-medium text-amber-900">Agent tutorial</span>
+            <span>Updated {{ page.last_modified_at | date: "%B %d, %Y" }}</span>
+            <span class="hidden sm:inline">•</span>
+            <span>Type-safe, async, observable Ruby</span>
+          </div>
+
+          <div class="essay-callout mt-10">
+            <p>
+              <strong>Reading guide.</strong> Every major section answers <code>What?</code>, <code>So What?</code>, and <code>What Not?</code>.
+              Every implementation step shows a small diff so the architecture change is visible, not implied.
+            </p>
+          </div>
+        </header>
+
+        <div id="toc" class="essay-mobile-toc mx-auto mt-10 max-w-3xl lg:hidden">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">On this page</p>
+          <ol class="mt-4 space-y-2">
+            {% for item in page.toc %}
+              <li>
+                <a href="#{{ item.id }}" class="essay-toc-link block rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-medium text-stone-700 transition hover:border-stone-300 hover:text-stone-900">
+                  {{ forloop.index }}. {{ item.label }}
+                </a>
+              </li>
+            {% endfor %}
+          </ol>
+        </div>
+
+        <div class="essay-prose prose prose-lg mx-auto mt-10 max-w-3xl">
+          {{ content }}
+        </div>
+
+        <footer class="mx-auto mt-16 max-w-3xl border-t border-stone-200 pt-8 text-sm text-stone-500">
+          <p>
+            Want the machine-readable version? Read <a href="{{ '/llms.txt' | relative_url }}">llms.txt</a>.
+            Want the API and lower-level reference? The rest of the site still exists, but this page is now the front door.
+          </p>
+        </footer>
+      </article>
+
+      <aside class="hidden lg:block">
+        <div class="essay-toc sticky top-24 rounded-[1.75rem] border border-stone-200 bg-white/80 p-6 shadow-[0_24px_80px_-48px_rgba(28,25,23,0.4)] backdrop-blur">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">On this page</p>
+          <ol class="mt-5 space-y-2">
+            {% for item in page.toc %}
+              <li>
+                <a href="#{{ item.id }}" data-toc-link="{{ item.id }}" class="essay-toc-link block rounded-xl px-3 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-100 hover:text-stone-900">
+                  <span class="mr-2 text-stone-400">{{ forloop.index }}.</span>{{ item.label }}
+                </a>
+              </li>
+            {% endfor %}
+          </ol>
+        </div>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>

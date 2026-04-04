@@ -95,12 +95,14 @@ track404Errors()
 
 // Add anchor links to headers for easy link copying
 document.addEventListener('DOMContentLoaded', function() {
-  const article = document.querySelector('article.prose');
+  const article = document.querySelector('.essay-prose, article.prose, article .prose');
   if (!article) return;
 
   const headers = article.querySelectorAll('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]');
 
   headers.forEach(header => {
+    if (header.querySelector('.anchor-link')) return;
+
     const anchor = document.createElement('a');
     anchor.className = 'anchor-link';
     anchor.href = '#' + header.id;
@@ -130,4 +132,41 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+});
+
+// Highlight the active ToC item on long-form pages
+document.addEventListener('DOMContentLoaded', function() {
+  const tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'));
+  if (tocLinks.length === 0) return;
+
+  const sections = tocLinks
+    .map(link => document.getElementById(link.dataset.tocLink))
+    .filter(Boolean);
+
+  if (sections.length === 0) return;
+
+  const setActive = function(id) {
+    tocLinks.forEach(link => {
+      link.classList.toggle('is-active', link.dataset.tocLink === id);
+    });
+  };
+
+  const observer = new IntersectionObserver(
+    entries => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+      if (visible.length > 0) {
+        setActive(visible[0].target.id);
+      }
+    },
+    {
+      rootMargin: '-20% 0px -65% 0px',
+      threshold: [0, 1]
+    }
+  );
+
+  sections.forEach(section => observer.observe(section));
+  setActive(sections[0].id);
 });
