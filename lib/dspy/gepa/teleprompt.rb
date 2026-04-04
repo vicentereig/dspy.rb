@@ -133,35 +133,15 @@ module DSPy
           program = build_program(candidate, recorder: recorder)
 
           if capture_traces
-            trajectories = batch.map do |example|
-              recorder&.start_example
-              prediction = program.call(**example.input_values)
-              result = @metric.call(example, prediction)
-              score, feedback = extract_score_and_feedback(result)
-              trace_entries = recorder ? recorder.finish_example : []
-
-              {
-                example: example,
-                prediction: prediction,
-                score: score,
-                feedback: feedback,
-                trace: trace_entries
-              }
-            end
+            trajectories = batch.map { |example| evaluate_example(program, example, recorder: recorder) }
 
             scores = trajectories.map { |row| row[:score] }
             outputs = trajectories.map { |row| row[:prediction] }
             ::GEPA::Core::EvaluationBatch.new(outputs: outputs, scores: scores, trajectories: trajectories)
           else
-            evaluator = DSPy::Evals.new(program, metric: nil, num_threads: nil, max_errors: batch.length * 100, provide_traceback: false)
-            results = batch.map do |example|
-              prediction = program.call(**example.input_values)
-              result = @metric.call(example, prediction)
-              score, = extract_score_and_feedback(result)
-              [prediction, score]
-            end
-            outputs = results.map(&:first)
-            scores = results.map(&:last)
+            results = batch.map { |example| evaluate_example(program, example) }
+            outputs = results.map { |row| row[:prediction] }
+            scores = results.map { |row| row[:score] }
             ::GEPA::Core::EvaluationBatch.new(outputs: outputs, scores: scores, trajectories: nil)
           end
         end
@@ -382,6 +362,52 @@ module DSPy
 
             memo[key] = { expected: exp, actual: act }
           end
+        end
+
+        sig do
+          params(
+            program: DSPy::Module,
+            example: DSPy::Example,
+            recorder: T.nilable(T.untyped)
+          ).returns(T::Hash[Symbol, T.untyped])
+        end
+        def evaluate_example(program, example, recorder: nil)
+          recorder&.start_example
+          prediction = nil
+
+          begin
+            prediction = program.call(**example.input_values)
+            result = @metric.call(example, prediction)
+            score, feedback = extract_score_and_feedback(result)
+
+            {
+              example: example,
+              prediction: prediction,
+              score: score,
+              feedback: feedback,
+              trace: recorder ? recorder.finish_example : []
+            }
+          rescue StandardError => e
+            trace_entries = recorder ? recorder.finish_example : []
+            raise e unless recoverable_evaluation_error?(e)
+
+            {
+              example: example,
+              prediction: prediction,
+              score: 0.0,
+              feedback: e.message,
+              trace: trace_entries
+            }
+          end
+        end
+
+        sig { params(error: StandardError).returns(T::Boolean) }
+        def recoverable_evaluation_error?(error)
+          return true if error.is_a?(DSPy::PredictionInvalidError)
+          return true if error.is_a?(DSPy::ValidationError)
+          return true if error.is_a?(DSPy::DeserializationError)
+
+          error.is_a?(RuntimeError) && error.message.include?('Failed to parse LLM response as JSON')
         end
 
         sig { params(result: T.untyped).returns([Float, T.nilable(String)]) }

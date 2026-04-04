@@ -108,6 +108,35 @@ RSpec.describe DSPy::Teleprompt::GEPA do
     end
   end
 
+  class RecoverableFailureModule < DSPy::Module
+    extend T::Sig
+
+    sig { override.returns(T::Array[[String, DSPy::Module]]) }
+    def named_predictors
+      [['self', self]]
+    end
+
+    sig { returns(String) }
+    def instruction
+      'stable'
+    end
+
+    sig { params(new_instruction: String).returns(RecoverableFailureModule) }
+    def with_instruction(new_instruction)
+      new_instruction
+      self
+    end
+
+    sig { params(input_values: T.untyped).returns(T::Hash[Symbol, String]) }
+    def forward_untyped(**input_values)
+      if input_values[:question] == 'boom'
+        raise RuntimeError, 'Failed to parse LLM response as JSON: bad payload'
+      end
+
+      { answer: "stable #{input_values[:question]}" }
+    end
+  end
+
   class FakeReflectionLM
     attr_reader :calls
 
@@ -240,5 +269,60 @@ base reflection upgrade
     expect {
       adapter.build_program({ 'legacy' => 'new instruction' })
     }.to raise_error(DSPy::InstructionUpdateError, /LegacyPredictor/)
+  end
+
+  it 'assigns a zero score when prediction fails with a recoverable JSON parse error' do
+    resilient_metric = lambda do |example, prediction|
+      prediction[:answer] == example.expected_values[:answer] ? 1.0 : 0.0
+    end
+
+    batch = [
+      DSPy::Example.new(
+        signature_class: SimpleSignature,
+        input: { question: 'ok' },
+        expected: { answer: 'stable ok' }
+      ),
+      DSPy::Example.new(
+        signature_class: SimpleSignature,
+        input: { question: 'boom' },
+        expected: { answer: 'stable boom' }
+      )
+    ]
+
+    adapter = DSPy::Teleprompt::GEPA::PredictAdapter.new(RecoverableFailureModule.new, resilient_metric)
+    eval_batch = adapter.evaluate(batch, adapter.seed_candidate, capture_traces: false)
+
+    expect(eval_batch.outputs).to eq([{ answer: 'stable ok' }, nil])
+    expect(eval_batch.scores).to eq([1.0, 0.0])
+  end
+
+  it 'assigns a zero score and feedback when metric evaluation fails with a recoverable DSPy error' do
+    metric_with_recoverable_failure = lambda do |example, prediction|
+      if example.input_values[:question] == 'metric_boom'
+        raise DSPy::PredictionInvalidError.new({ output: 'metric parse failed' })
+      end
+
+      prediction[:answer] == example.expected_values[:answer] ? 1.0 : 0.0
+    end
+
+    batch = [
+      DSPy::Example.new(
+        signature_class: SimpleSignature,
+        input: { question: 'ok' },
+        expected: { answer: 'stable ok' }
+      ),
+      DSPy::Example.new(
+        signature_class: SimpleSignature,
+        input: { question: 'metric_boom' },
+        expected: { answer: 'stable metric_boom' }
+      )
+    ]
+
+    adapter = DSPy::Teleprompt::GEPA::PredictAdapter.new(EchoModule.new('stable'), metric_with_recoverable_failure)
+    eval_batch = adapter.evaluate(batch, adapter.seed_candidate, capture_traces: true)
+
+    expect(eval_batch.scores).to eq([1.0, 0.0])
+    expect(eval_batch.trajectories.last[:prediction]).to eq(answer: 'stable metric_boom')
+    expect(eval_batch.trajectories.last[:feedback]).to include('metric parse failed')
   end
 end
