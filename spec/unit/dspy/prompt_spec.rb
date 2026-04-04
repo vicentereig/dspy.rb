@@ -568,6 +568,22 @@ RSpec.describe DSPy::Prompt do
       expect(schema_section).not_to include('```json')
     end
 
+    it 'includes output field descriptions in rendered BAML output schema' do
+      prompt = DSPy::Prompt.new(
+        instruction: instruction,
+        input_schema: input_schema,
+        output_schema: output_schema,
+        schema_format: :baml,
+        signature_class: MathQA
+      )
+
+      system_prompt = prompt.render_system_prompt
+      baml_output = system_prompt[/Your output schema fields are:\n```baml\n(.*?)\n```/m, 1]
+
+      expect(baml_output).to include('answer string @description("The numerical answer")')
+      expect(baml_output).to include('explanation string @description("Step-by-step solution")')
+    end
+
     it 'renders JSON format in system prompt when schema_format is :json' do
       prompt = DSPy::Prompt.new(
         instruction: instruction,
