@@ -7,9 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Anthropic PDF document support** (#248) - Added `DSPy::Document` for PDF attachments in Anthropic-powered flows across `raw_chat`, `Predict`, and Anthropic via RubyLLM.
+  - `Predict` now supports a single top-level document input and preserves a placeholder in the rendered prompt while attaching the PDF separately.
+  - Added explicit compatibility errors for unsupported providers, multiple top-level documents, and mixed document/image payloads.
+
 ### Fixed
 - **GEPA evaluation resilience** (#245) - Recoverable per-example GEPA failures now degrade to zero-score rows instead of aborting the entire optimization run.
 - **JSON control character sanitization** (#246) - Enhanced JSON extraction now escapes raw newlines, tabs, and carriage returns inside quoted string values before parsing, while leaving unrelated malformed JSON untouched.
+
+### Documentation
+- **Multimodal guide refresh** (#248) - Clarified that PDF support is currently limited to Anthropic directly, Anthropic through RubyLLM, and single-document `Predict` flows.
+
+### Tests
+- **BAML output description regression coverage** (#244) - Added prompt-level coverage asserting rendered BAML output schemas keep output-field `@description(...)` annotations.
 
 ## [0.34.4] - 2026-03-07
 
