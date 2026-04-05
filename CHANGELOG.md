@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **GEPA evaluation resilience** (#245) - Recoverable per-example GEPA failures now degrade to zero-score rows instead of aborting the entire optimization run.
 - **JSON control character sanitization** (#246) - Enhanced JSON extraction now escapes raw newlines, tabs, and carriage returns inside quoted string values before parsing, while leaving unrelated malformed JSON untouched.
 
+### Changed
+- **Adapter SDK version floors** - Raised published minimum dependency versions for sibling adapter gems to the latest tested SDK releases: `openai >= 0.57.0`, `anthropic >= 1.28.0`, `ruby_llm >= 1.14.1`, and `gemini-ai >= 4.3.0`.
+- **Runtime version guardrail removal** - Removed adapter `require`-time SDK version guardrails in favor of expressing compatibility through gemspec dependency ranges and the repository lockfile.
+
 ### Documentation
 - **Multimodal guide refresh** (#248) - Clarified that PDF support is currently limited to Anthropic directly, Anthropic through RubyLLM, and single-document `Predict` flows.
 
