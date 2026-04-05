@@ -5,9 +5,6 @@ require 'ruby_llm'
 require 'dspy/lm/adapter'
 require 'dspy/lm/vision_models'
 
-require 'dspy/ruby_llm/guardrails'
-DSPy::RubyLLM::Guardrails.ensure_ruby_llm_installed!
-
 module DSPy
   module RubyLLM
     module LM

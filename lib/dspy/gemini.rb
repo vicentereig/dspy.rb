@@ -2,8 +2,5 @@
 
 require 'dspy/gemini/version'
 
-require 'dspy/gemini/guardrails'
-DSPy::Gemini::Guardrails.ensure_gemini_installed!
-
 require 'dspy/gemini/lm/adapters/gemini_adapter'
 require 'dspy/gemini/lm/schema_converter'
