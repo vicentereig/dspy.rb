@@ -2,133 +2,132 @@
 http_interactions:
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=metric_data&protocol_version=17&run_id=BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        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
-    headers:
-      Content-Encoding:
-      - gzip
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: Accepted
-    headers:
-      Date:
-      - Tue, 25 Nov 2025 16:30:23 GMT
-      Content-Type:
-      - application/json; charset=UTF-8
-      Content-Length:
-      - '0'
-      Connection:
-      - keep-alive
-      Cf-Ray:
-      - 9a4287bfda915930-EWR
-      Cf-Cache-Status:
-      - DYNAMIC
-      Server:
-      - cloudflare
-      Nr-Rate-Limited:
-      - allowed
-      Vary:
-      - accept-encoding
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
     body:
       encoding: UTF-8
-      string: ''
-  recorded_at: Tue, 25 Nov 2025 16:30:22 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-    body:
-      encoding: ASCII-8BIT
-      string: !binary |-
-        H4sIAJ7ZJWkAA92Vb2/bNhDGv4rA16bAvxIpwAVWJNsyNFmyZt2LOAgo8mRzlilPoop6hr/76NUZVmNADcQttr0Tj8e7eyD+Hj5ske1Wqy6gaotMjL2vxwjDfgUh+rjJg1kBqtDF29tN3tdoghbdEA/Bwa9qk7cmpPAhfT56l3auf19ubn5dspvvP7z++ZKqu3ev7+4v24u7dz/9cE+kurm/ItcXc3p9cSnQbjdBbTdPXR+2qIX30KYKVzff/pjKRr+CIZrVGlW0LARRitGyFDwnWukJSpuDme9nib2x8OTddIaUZNppSXFj6hILZRtca1vjkmtVa+HKghczlPmwHuNT7JYQhinTXGfdGP8WSp2y2EXTPgd4WZBsDuHJ+HzYDBFWqZkJcdF3a29TxcNeD7+Naeh81TloU4ptzegAD10IELHAEjPCJNFMpzNuWG/ywc+DiWMPKfvyvWlHE7v+Tdetq+qwhDc+LMFdhW/66G0L6WQqP7bwtDZxMX3YeldlMyQLR6xMqm3pbJIuDa5r1mDgpKC0VNopMkOTLI00DPsDR93emhaGWx/t4pfeR/gzus9vTQ1tlQXf7ibZ/7xXYRURmkjMmWI4fWmsCuWwSVeqqbkUBWWf9NqzUVW3PThv41HVx+ff1HddnH49Nc9tWzDN9EsIe24w2G4N060JNl35fvORlVNFvjpf0qniHKzjosrELktGE2ICrl3lHwGfoVlAu8mJHqRorrU8owVRXRxbEGfFpxbEmJYvsKCF8cvxLweihNATHOg7CNCf7kBCGZBlg1lNHBYlrbFhlGJBZG2FcwW3zblIrcGIxtUWWyo5FhIKrLWwuCkNY0oJ0ojmhaR+eTX/ROpZhX2e1BNEvjp1pANf7OV88Vzw8pxPfEHLI740I0dPvOTlv/2J/5qAFZRD0TS4dFxh4aDEOpkwttwUBKSVvPmPAnZOYWcC7MSRPgvY4+7xD73hdQTXCwAA
-    headers:
-      Content-Encoding:
-      - gzip
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: Accepted
-    headers:
-      Date:
-      - Tue, 25 Nov 2025 16:30:23 GMT
-      Content-Type:
-      - application/json; charset=UTF-8
-      Content-Length:
-      - '0'
-      Connection:
-      - keep-alive
-      Cf-Ray:
-      - 9a4287c258ff5930-EWR
-      Cf-Cache-Status:
-      - DYNAMIC
-      Server:
-      - cloudflare
-      Nr-Rate-Limited:
-      - allowed
-      X-Envoy-Upstream-Service-Time:
-      - '0'
-      Vary:
-      - accept-encoding
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Tue, 25 Nov 2025 16:30:23 GMT
-- request:
-    method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=get_agent_commands&protocol_version=17&run_id=BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
-    body:
-      encoding: UTF-8
-      string: '["BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI"]'
+      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1775416080846.2961,"message":"trace_id=\"6d82636a-867a-4efb-b834-42a9da5e3f62\"
+        thread_id=1824 fiber_id=4424 request_id=nil request_start_time=nil input_tokens=2739
+        output_tokens=684 total_tokens=3423 cache_creation_input_tokens=0 cache_read_input_tokens=0
+        gen_ai.system=\"anthropic\" gen_ai.request.model=\"claude-sonnet-4-5-20250929\"
+        dspy.signature=\"EvaluatorLoop::EvaluateLinkedInArticle\" module_path=[{id:
+        \"ea1f4127-133b-4db9-b234-2a5643438ac6\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
+        label: nil}, {id: \"cef5d964-f11a-4cc4-8d47-44a664949ea6\", class: \"DSPy::Predict\",
+        label: nil}] module_root={id: \"ea1f4127-133b-4db9-b234-2a5643438ac6\", class:
+        \"EvaluatorLoop::SalesPitchWriterLoop\", label: nil} module_leaf={id: \"cef5d964-f11a-4cc4-8d47-44a664949ea6\",
+        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"ea1f4127-133b-4db9-b234-2a5643438ac6>cef5d964-f11a-4cc4-8d47-44a664949ea6\",
+        depth: 2} event=\"lm.tokens\"\n"}]}]'
     headers:
       Content-Encoding:
       - identity
       Host:
       - collector.newrelic.com
       Nr-Utilizationmetadata:
-      - AQICFgAJc2ltYmEubGFuFwAJc2ltYmEubGFu
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
       Nr-Utilizationextra:
       - AQARAAUAAAAIAABgAA
       Nr-Session:
-      - BRfYeenmZ4zLADvrtB0vtKZpJdnEAAEBAAAnIQEAAPgVAgQfPOcaAwAGOS4yMS4wAAlzaW1iYS5sYW4AB0RTUHkucmI
+      - BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      X-Envoy-Upstream-Service-Time:
+      - '0'
+      Date:
+      - Sun, 05 Apr 2026 19:08:03 GMT
+      Server:
+      - envoy
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-mad22068-MAD
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Sun, 05 Apr 2026 19:08:04 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=metric_data&protocol_version=17&run_id=BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        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
+    headers:
+      Content-Encoding:
+      - gzip
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+      Nr-Agenttags:
+      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
+      Content-Type:
+      - application/octet-stream
+  response:
+    status:
+      code: 202
+      message: ''
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Nr-Rate-Limited:
+      - allowed
+      X-Served-By:
+      - cache-mad22068-MAD
+      Date:
+      - Sun, 05 Apr 2026 19:08:09 GMT
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Sun, 05 Apr 2026 19:08:09 GMT
+- request:
+    method: post
+    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=get_agent_commands&protocol_version=17&run_id=BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
+    body:
+      encoding: UTF-8
+      string: '["BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg"]'
+    headers:
+      Content-Encoding:
+      - identity
+      Host:
+      - collector.newrelic.com
+      Nr-Utilizationmetadata:
+      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
+      Nr-Utilizationextra:
+      - AQARAAUAAAAIAABgAA
+      Nr-Session:
+      - BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
       Nr-Agenttags:
       - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
       Accept-Encoding:
@@ -142,35 +141,31 @@ http_interactions:
   response:
     status:
       code: 200
-      message: OK
+      message: ''
     headers:
-      Date:
-      - Tue, 25 Nov 2025 16:30:23 GMT
-      Content-Type:
-      - text/plain
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Cf-Ray:
-      - 9a4287c3ac485930-EWR
-      Cf-Cache-Status:
-      - DYNAMIC
-      Server:
-      - cloudflare
+      Content-Length:
+      - '19'
+      Date:
+      - Sun, 05 Apr 2026 19:08:10 GMT
+      Content-Type:
+      - text/plain
       Nr-Rate-Limited:
       - allowed
       X-Envoy-Upstream-Service-Time:
-      - '1'
-      Vary:
-      - accept-encoding
+      - '0'
+      Server:
+      - istio-envoy
+      X-Served-By:
+      - cache-mad2200110-MAD
     body:
-      encoding: ASCII-8BIT
+      encoding: UTF-8
       string: '{"return_value":[]}'
-  recorded_at: Tue, 25 Nov 2025 16:30:23 GMT
+  recorded_at: Sun, 05 Apr 2026 19:08:10 GMT
 - request:
     method: post
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://api.anthropic.com/v1/messages?beta=true
     body:
       encoding: UTF-8
       string: '{"model":"claude-sonnet-4-5-20250929","messages":[{"role":"user","content":"##
@@ -185,11 +180,9 @@ http_interactions:
         {\n    \"cringe\": \"balanced\",\n    \"hustle\": \"maximal\",\n    \"vulnerability\":
         \"muted\"\n  },\n  \"structure_template\": \"story_lesson_cta\",\n  \"hashtag_band\":
         {\n    \"min\": 2,\n    \"max\": 5,\n    \"auto_brand\": true\n  },\n  \"length_cap\":
-        {\n    \"mode\": \"standard\",\n    \"tokens\": null,\n    \"characters\":
-        null\n  },\n  \"recommendations\": [],\n  \"hooks\": [\n    \"AI hiring revelation\",\n    \"Why
-        before how\"\n  ],\n  \"attempt\": 1\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
-        the result in the required JSON format","input_schema":{"type":"object","properties":{"decision":{"type":"string","enum":["approved","needs_revision"]},"feedback":{"type":"string"},"recommendations":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Recommendation"},"message":{"type":"string"},"source_attempt":{"type":"integer"},"severity":{"type":"string"}},"required":["_type","message","source_attempt","severity"],"description":"EvaluatorLoop::Recommendation
-        struct"}},"self_score":{"type":"number"},"reasoning":{"type":"string"}},"required":["decision","feedback","recommendations","self_score","reasoning"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        {\n    \"mode\": \"standard\"\n  },\n  \"recommendations\": [],\n  \"hooks\":
+        [\n    \"AI hiring revelation\",\n    \"Why before how\"\n  ],\n  \"attempt\":
+        1,\n  \"mindset\": \"skeptical\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"system":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"post\": {\n      \"type\": \"string\",\n      \"description\":
         \"Latest pitch draft from the generator.\"\n    },\n    \"topic_seed\": {\n      \"type\":
@@ -198,53 +191,65 @@ http_interactions:
         {\n          \"type\": \"string\"\n        },\n        \"take\": {\n          \"type\":
         \"string\",\n          \"enum\": [\n            \"contrarian\",\n            \"supportive\",\n            \"lessons_learned\"\n          ]\n        }\n      },\n      \"required\":
         [\n        \"_type\",\n        \"phrase\",\n        \"take\"\n      ],\n      \"description\":
-        \"Target topic phrase and take that should anchor the post.\"\n    },\n    \"vibe_toggles\":
-        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
-        {\n          \"type\": \"string\",\n          \"const\": \"VibeToggles\"\n        },\n        \"cringe\":
-        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"hustle\":
+        \"Target topic phrase and take that should anchor the post.\",\n      \"additionalProperties\":
+        false\n    },\n    \"vibe_toggles\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
+        \"VibeToggles\"\n        },\n        \"cringe\": {\n          \"type\": \"string\",\n          \"enum\":
+        [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"hustle\":
         {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        },\n        \"vulnerability\":
         {\n          \"type\": \"string\",\n          \"enum\": [\n            \"muted\",\n            \"balanced\",\n            \"maximal\"\n          ]\n        }\n      },\n      \"required\":
         [\n        \"_type\",\n        \"cringe\",\n        \"hustle\",\n        \"vulnerability\"\n      ],\n      \"description\":
-        \"Cringe/hustle/vulnerability slider values to enforce.\"\n    },\n    \"structure_template\":
-        {\n      \"type\": \"string\",\n      \"enum\": [\n        \"story_lesson_cta\",\n        \"listicle\",\n        \"question_hook\"\n      ],\n      \"description\":
+        \"Cringe/hustle/vulnerability slider values to enforce.\",\n      \"additionalProperties\":
+        false\n    },\n    \"structure_template\": {\n      \"type\": \"string\",\n      \"enum\":
+        [\n        \"story_lesson_cta\",\n        \"listicle\",\n        \"question_hook\"\n      ],\n      \"description\":
         \"Expected outline (story → lesson → CTA, listicle, etc.) for the pitch.\"\n    },\n    \"hashtag_band\":
         {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
         {\n          \"type\": \"string\",\n          \"const\": \"HashtagBand\"\n        },\n        \"min\":
         {\n          \"type\": \"integer\"\n        },\n        \"max\": {\n          \"type\":
         \"integer\"\n        },\n        \"auto_brand\": {\n          \"type\": \"boolean\"\n        }\n      },\n      \"required\":
         [\n        \"_type\",\n        \"min\",\n        \"max\",\n        \"auto_brand\"\n      ],\n      \"description\":
-        \"Allowed hashtag range and auto-brand toggle (for social pitches).\"\n    },\n    \"length_cap\":
-        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"_type\":
-        {\n          \"type\": \"string\",\n          \"const\": \"LengthCap\"\n        },\n        \"mode\":
-        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"standard\",\n            \"short\",\n            \"extended\"\n          ]\n        },\n        \"tokens\":
+        \"Allowed hashtag range and auto-brand toggle (for social pitches).\",\n      \"additionalProperties\":
+        false\n    },\n    \"length_cap\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
+        \"LengthCap\"\n        },\n        \"mode\": {\n          \"type\": \"string\",\n          \"enum\":
+        [\n            \"standard\",\n            \"short\",\n            \"extended\"\n          ]\n        },\n        \"tokens\":
         {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        },\n        \"characters\":
         {\n          \"type\": [\n            \"integer\",\n            \"null\"\n          ]\n        }\n      },\n      \"required\":
         [\n        \"_type\",\n        \"mode\"\n      ],\n      \"description\":
-        \"Requested length mode or explicit token/character caps for the pitch.\"\n    },\n    \"recommendations\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\":
-        {\n          \"_type\": {\n            \"type\": \"string\",\n            \"const\":
-        \"Recommendation\"\n          },\n          \"message\": {\n            \"type\":
-        \"string\"\n          },\n          \"source_attempt\": {\n            \"type\":
-        \"integer\"\n          },\n          \"severity\": {\n            \"type\":
-        \"string\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"message\",\n          \"source_attempt\",\n          \"severity\"\n        ],\n        \"description\":
-        \"EvaluatorLoop::Recommendation struct\"\n      },\n      \"description\":
-        \"History of edits already suggested to the generator.\"\n    },\n    \"hooks\":
-        {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\":
-        \"Hooks supplied by the generator for additional context.\"\n    },\n    \"attempt\":
+        \"Requested length mode or explicit token/character caps for the pitch.\",\n      \"additionalProperties\":
+        false\n    },\n    \"recommendations\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"Recommendation\"\n          },\n          \"message\":
+        {\n            \"type\": \"string\"\n          },\n          \"source_attempt\":
+        {\n            \"type\": \"integer\"\n          },\n          \"severity\":
+        {\n            \"type\": \"string\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"message\",\n          \"source_attempt\",\n          \"severity\"\n        ],\n        \"description\":
+        \"EvaluatorLoop::Recommendation struct\",\n        \"additionalProperties\":
+        false\n      },\n      \"description\": \"History of edits already suggested
+        to the generator.\"\n    },\n    \"hooks\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"string\"\n      },\n      \"description\": \"Hooks
+        supplied by the generator for additional context.\"\n    },\n    \"attempt\":
         {\n      \"type\": \"integer\",\n      \"description\": \"1-indexed attempt
-        counter for observability.\"\n    }\n  },\n  \"required\": [\n    \"post\",\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\",\n    \"hashtag_band\",\n    \"length_cap\",\n    \"recommendations\",\n    \"hooks\",\n    \"attempt\"\n  ]\n}\n```\n\nYour
-        objective is: You are a SKEPTICAL editor who rarely approves drafts on the
-        first attempt.\nYour role is to find genuine flaws and push for excellence.
-        Default to\n''needs_revision'' unless the post is truly exceptional. Approval
-        should be\nearned through demonstrated quality, not given by default. Think
-        step by step."}'
+        counter for observability.\"\n    },\n    \"mindset\": {\n      \"type\":
+        \"string\",\n      \"enum\": [\n        \"skeptical\",\n        \"balanced\",\n        \"lenient\"\n      ],\n      \"description\":
+        \"How critically to evaluate (skeptical: rarely approves, lenient: benefit
+        of doubt).\"\n    }\n  },\n  \"required\": [\n    \"post\",\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\",\n    \"hashtag_band\",\n    \"length_cap\",\n    \"recommendations\",\n    \"hooks\",\n    \"attempt\",\n    \"mindset\"\n  ]\n}\n```\n\nYour
+        objective is: Evaluate a sales pitch draft according to the specified editor
+        mindset. Think step by step.","output_format":{"type":"json_schema","schema":{"type":"object","properties":{"decision":{"type":"string","enum":["approved","needs_revision"],"description":"Whether
+        this draft is approved or needs another revision. Default to ''needs_revision''
+        unless the post truly meets all criteria for the given mindset."},"feedback":{"type":"string","description":"Narrative
+        explanation of the rubric score."},"recommendations":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Recommendation"},"message":{"type":"string"},"source_attempt":{"type":"integer"},"severity":{"type":"string"}},"required":["_type","message","source_attempt","severity"],"description":"EvaluatorLoop::Recommendation
+        struct","additionalProperties":false},"description":"Structured edits the
+        generator should apply next."},"self_score":{"type":"number","description":"Pitch
+        quality score between 0.0 and 1.0 inclusive."},"reasoning":{"type":"string","description":"Step
+        by step reasoning process"}},"required":["decision","feedback","recommendations","self_score","reasoning"],"additionalProperties":false}}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - application/json
       User-Agent:
-      - Anthropic::Client/Ruby 1.15.1
+      - Anthropic::Client/Ruby 1.28.0
       Host:
       - api.anthropic.com
       X-Stainless-Arch:
@@ -254,7 +259,7 @@ http_interactions:
       X-Stainless-Os:
       - MacOS
       X-Stainless-Package-Version:
-      - 1.15.1
+      - 1.28.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
@@ -265,19 +270,21 @@ http_interactions:
       - '2023-06-01'
       X-Api-Key:
       - "<ANTHROPIC_API_KEY>"
+      Anthropic-Beta:
+      - structured-outputs-2025-11-13
       X-Stainless-Retry-Count:
       - '0'
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '7217'
+      - '7823'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Tue, 25 Nov 2025 16:30:49 GMT
+      - Sun, 05 Apr 2026 19:08:25 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -289,46 +296,52 @@ http_interactions:
       Anthropic-Ratelimit-Input-Tokens-Remaining:
       - '449000'
       Anthropic-Ratelimit-Input-Tokens-Reset:
-      - '2025-11-25T16:30:20Z'
+      - '2026-04-05T19:08:05Z'
       Anthropic-Ratelimit-Output-Tokens-Limit:
       - '90000'
       Anthropic-Ratelimit-Output-Tokens-Remaining:
-      - '89000'
+      - '90000'
       Anthropic-Ratelimit-Output-Tokens-Reset:
-      - '2025-11-25T16:30:50Z'
+      - '2026-04-05T19:08:26Z'
       Anthropic-Ratelimit-Requests-Limit:
       - '1000'
       Anthropic-Ratelimit-Requests-Remaining:
       - '999'
       Anthropic-Ratelimit-Requests-Reset:
-      - '2025-11-25T16:30:18Z'
-      Retry-After:
-      - '43'
+      - '2026-04-05T19:08:01Z'
       Anthropic-Ratelimit-Tokens-Limit:
       - '540000'
       Anthropic-Ratelimit-Tokens-Remaining:
-      - '538000'
+      - '539000'
       Anthropic-Ratelimit-Tokens-Reset:
-      - '2025-11-25T16:30:20Z'
+      - '2026-04-05T19:08:05Z'
       Request-Id:
-      - req_011CVUveEFwuDQEXgJskMkda
+      - req_011CZm9dkDvwqwa7oNEHwAW9
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
       - '008b8384-4ae5-436d-a319-c5a07111a158'
-      X-Envoy-Upstream-Service-Time:
-      - '31877'
-      Cf-Cache-Status:
-      - DYNAMIC
-      X-Robots-Tag:
-      - none
       Server:
       - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '24709'
+      Vary:
+      - Accept-Encoding
+      Server-Timing:
+      - x-originResponse;dur=24712
+      Set-Cookie:
+      - _cfuvid=<REDACTED>
+      X-Robots-Tag:
+      - none
+      Cf-Cache-Status:
+      - DYNAMIC
+      Content-Security-Policy:
+      - default-src 'none'; frame-ancestors 'none'
       Cf-Ray:
-      - 9a4287a2e88260e6-EWR
+      - 9e7ad6caad04cbbe-MAD
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC01LTIwMjUwOTI5IiwiaWQiOiJtc2dfMDE0eGltNXU2RHhMcUxZTm9XeTZ3WlJ2IiwidHlwZSI6Im1lc3NhZ2UiLCJyb2xlIjoiYXNzaXN0YW50IiwiY29udGVudCI6W3sidHlwZSI6InRvb2xfdXNlIiwiaWQiOiJ0b29sdV8wMU1yTEY3U1ZWSHNLNEQxWWRvNjU1WWEiLCJuYW1lIjoianNvbl9vdXRwdXQiLCJpbnB1dCI6eyJkZWNpc2lvbiI6Im5lZWRzX3JldmlzaW9uIiwicmVhc29uaW5nIjoiVGhpcyBpcyBhdHRlbXB0ICMxLCBhbmQgd2hpbGUgdGhlIHBvc3QgaGFzIGEgY2xlYXIgc3RydWN0dXJlLCBpdCBzdWZmZXJzIGZyb20gc2V2ZXJhbCBzaWduaWZpY2FudCBpc3N1ZXMgdGhhdCBwcmV2ZW50IGl0IGZyb20gYmVpbmcgZXhjZXB0aW9uYWw6XG5cbjEuICoqV2VhayBjb250cmFyaWFuIGFuZ2xlKio6IFRoZSB0b3BpYyBzZWVkIGRlbWFuZHMgYSBcImNvbnRyYXJpYW5cIiB0YWtlIG9uIFwiQUkgaGlyaW5nIGxlc3NvbnMsXCIgYnV0IHRoaXMgcG9zdCBkZWxpdmVycyBnZW5lcmljIGhpcmluZyBhZHZpY2UgdGhhdCdzIGJlZW4gY2lyY3VsYXRpbmcgb24gTGlua2VkSW4gZm9yIHllYXJzLiBcIkN1cmlvc2l0eSBiZWF0cyBjcmVkZW50aWFsc1wiIGFuZCBcImNvbW11bmljYXRpb24gbWF0dGVyc1wiIGFyZSBtYWluc3RyZWFtIHBsYXRpdHVkZXMsIG5vdCBjb250cmFyaWFuIGluc2lnaHRzLiBUaGUgQUkgYW5nbGUgaXMgYmFyZWx5IHByZXNlbnTigJRqdXN0IG1lbnRpb25lZCBpbiB0aGUgb3BlbmluZyBsaW5lIGFuZCBoYXNodGFnLlxuXG4yLiAqKlZhZ3VlLCB1bnN1YnN0YW50aWF0ZWQgY2xhaW1zKio6IFwiQWZ0ZXIgaW50ZXJ2aWV3aW5nIDUwKyBjYW5kaWRhdGVzXCIgc291bmRzIGltcHJlc3NpdmUgYnV0IGxhY2tzIGFueSBjb25jcmV0ZSBldmlkZW5jZSBvciBtZW1vcmFibGUgZXhhbXBsZXMuIFdoYXQgc3BlY2lmaWMgcXVlc3Rpb24gcmV2ZWFsZWQgY3VyaW9zaXR5PyBXaGF0IGNvbW11bmljYXRpb24gYnJlYWtkb3duIGNvc3Qgc29tZW9uZSBhbiBvZmZlcj8gVGhlIFwicmV2ZWxhdGlvblwiIGlzIHRvbGQsIG5vdCBzaG93bi5cblxuMy4gKipMaXN0aWNsZSBtYXNxdWVyYWRpbmcgYXMgc3RvcnkqKjogVGhlIHN0cnVjdHVyZV90ZW1wbGF0ZSBjYWxscyBmb3IgXCJzdG9yeV9sZXNzb25fY3RhLFwiIGJ1dCB0aGlzIHJlYWRzIG1vcmUgbGlrZSBhIGxpc3RpY2xlIHdpdGggYSB0aGluIG5hcnJhdGl2ZSB3cmFwcGVyLiBUaGUgXCJzdG9yeVwiIGlzIG9uZSBzZW50ZW5jZSAoXCJJIGhhZCBhIHJldmVsYXRpb25cIiksIGZvbGxvd2VkIGltbWVkaWF0ZWx5IGJ5IGJ1bGxldCBwb2ludHMuIFRoZXJlJ3Mgbm8gYWN0dWFsIG5hcnJhdGl2ZSBhcmMsIHRlbnNpb24sIG9yIHRyYW5zZm9ybWF0aW9uLlxuXG40LiAqKkh1c3RsZSB2aWJlIHVuZGVyZGVsaXZlcmVkKio6IFdpdGggXCJtYXhpbWFsXCIgaHVzdGxlIHJlcXVlc3RlZCwgSSdkIGV4cGVjdCBtb3JlIGVuZXJneSwgdXJnZW5jeSwgYW5kIGFjdGlvbi1vcmllbnRlZCBsYW5ndWFnZS4gVGhpcyBmZWVscyBjb250ZW1wbGF0aXZlIGFuZCBwYXNzaXZlIChcIkkgcmVhbGl6ZWQsXCIgXCJJIGxlYXJuZWRcIikuIFdoZXJlJ3MgdGhlIGRyaXZlPyBUaGUgbW9tZW50dW0/XG5cbjUuICoqR2VuZXJpYyBDVEEqKjogXCJXaGF0J3MgeW91ciBob3QgdGFrZSBvbiBoaXJpbmcgaW4gdGVjaD9cIiBpcyB0aGUgTGlua2VkSW4gZXF1aXZhbGVudCBvZiBcInRob3VnaHRzP1wiIEl0J3MgbGF6eSBlbmdhZ2VtZW50IGJhaXQgdGhhdCBkb2Vzbid0IHRpZSBiYWNrIHRvIHRoZSBjb250cmFyaWFuIHByZW1pc2Ugb3IgaW52aXRlIG1lYW5pbmdmdWwgZGlzY3Vzc2lvbi5cblxuNi4gKipNaXNzZWQgQUkgb3Bwb3J0dW5pdHkqKjogR2l2ZW4gdGhlIHRvcGljIGlzIFwiQUkgaGlyaW5nIGxlc3NvbnMsXCIgdGhlcmUncyBhIG1hc3NpdmUgbWlzc2VkIG9wcG9ydHVuaXR5IHRvIGRpc2N1c3MgQUkgdG9vbHMgaW4gaGlyaW5nLCBiaWFzIGluIEFJIHNjcmVlbmluZywgb3IgaG93IEFJIGlzIGNoYW5naW5nIHdoYXQgd2UgbG9vayBmb3IgaW4gY2FuZGlkYXRlcy4gSW5zdGVhZCwgXCJBSVwiIGFwcGVhcnMgdG8gYmUgd2luZG93IGRyZXNzaW5nLiIsImZlZWRiYWNrIjoiVGhpcyBkcmFmdCBuZWVkcyBzaWduaWZpY2FudCBzdHJlbmd0aGVuaW5nIGJlZm9yZSBhcHByb3ZhbC4gVGhlIGNvcmUgaXNzdWUgaXMgdGhhdCBpdCBwcm9taXNlcyBhIGNvbnRyYXJpYW4gcmV2ZWxhdGlvbiBhYm91dCBBSSBoaXJpbmcgYnV0IGRlbGl2ZXJzIGdlbmVyaWMgaGlyaW5nIGFkdmljZSB0aGF0IGNvdWxkIGhhdmUgYmVlbiB3cml0dGVuIGluIDIwMTUuIFxuXG4qKkNyaXRpY2FsIGdhcHM6Kipcbi0gVGhlIGNvbnRyYXJpYW4gYW5nbGUgaXMgbWlzc2luZy4gVGhlc2UgbGVzc29ucyBhcmUgTGlua2VkSW4gY29uc2Vuc3VzLCBub3QgYm9sZCB0YWtlcy5cbi0gVGhlIEFJIGVsZW1lbnQgaXMgc3VwZXJmaWNpYWzigJRpdCdzIG1lbnRpb25lZCBidXQgbm90IGV4cGxvcmVkIG9yIGludGVncmF0ZWQgaW50byB0aGUgaW5zaWdodHMuXG4tIFRoZSBzdG9yeSBpcyB0b2xkIGluIHN1bW1hcnkgcmF0aGVyIHRoYW4gc2hvd24gdGhyb3VnaCBzcGVjaWZpYywgbWVtb3JhYmxlIGRldGFpbHMuXG4tIFRoZSBtYXhpbWFsIGh1c3RsZSB2aWJlIG5lZWRzIG1vcmUgcHVuY2gsIHVyZ2VuY3ksIGFuZCBjb252aWN0aW9uLlxuXG4qKldoYXQgd291bGQgbWFrZSB0aGlzIHdvcms6Kipcbi0gQSBnZW51aW5lbHkgY29udHJhcmlhbiBpbnNpZ2h0IChlLmcuLCBcIkFJIGhpcmluZyB0b29scyBhcmUgbWFraW5nIHVzIHdvcnNlIGF0IGhpcmluZ1wiIG9yIFwiVGhlIGJlc3QgQUkgZW5naW5lZXJzIEkndmUgaGlyZWQgaGFkIHplcm8gQUkgZXhwZXJpZW5jZVwiKVxuLSBBIHNwZWNpZmljLCB2aXZpZCBhbmVjZG90ZSB0aGF0IHByb3ZlcyB0aGUgcG9pbnQgKG9uZSBjYW5kaWRhdGUsIG9uZSBtb21lbnQsIG9uZSBzdXJwcmlzaW5nIG91dGNvbWUpXG4tIFN0cm9uZ2VyIGNvbm5lY3Rpb24gYmV0d2VlbiB0aGUgc3RvcnkgYW5kIHRoZSBBSSBoaXJpbmcgY29udGV4dFxuLSBNb3JlIGVuZXJnZXRpYywgZGVjaXNpdmUgbGFuZ3VhZ2UgdGhhdCBtYXRjaGVzIHRoZSBtYXhpbWFsIGh1c3RsZSByZXF1aXJlbWVudFxuLSBBIENUQSB0aGF0IGNoYWxsZW5nZXMgY29udmVudGlvbmFsIHdpc2RvbSByYXRoZXIgdGhhbiBhc2tpbmcgZm9yIGdlbmVyaWMgXCJob3QgdGFrZXNcIiIsInNlbGZfc2NvcmUiOjQuNSwicmVjb21tZW5kYXRpb25zIjpbeyJfdHlwZSI6IlJlY29tbWVuZGF0aW9uIiwibWVzc2FnZSI6IlN0cmVuZ3RoZW4gdGhlIGNvbnRyYXJpYW4gYW5nbGUgc2lnbmlmaWNhbnRseS4gQ3VycmVudCBsZXNzb25zIChjdXJpb3NpdHkgPiBjcmVkZW50aWFscywgY29tbXVuaWNhdGlvbiBtYXR0ZXJzLCBjdWx0dXJlIGZpdCByZWRlZmluZWQpIGFyZSBtYWluc3RyZWFtIExpbmtlZEluIHdpc2RvbS4gRGVsaXZlciBhIGdlbnVpbmVseSBzdXJwcmlzaW5nIG9yIGNvbnRyb3ZlcnNpYWwgaW5zaWdodCBhYm91dCBBSSBoaXJpbmcgdGhhdCBjaGFsbGVuZ2VzIGNvbnZlbnRpb25hbCB0aGlua2luZy4gQ29uc2lkZXI6IFdoYXQgd291bGQgbWFrZSBhIGhpcmluZyBtYW5hZ2VyIHVuY29tZm9ydGFibGU/IFdoYXQgZ29lcyBhZ2FpbnN0IGN1cnJlbnQgYmVzdCBwcmFjdGljZXM/Iiwic291cmNlX2F0dGVtcHQiOjEsInNldmVyaXR5IjoiY3JpdGljYWwifSx7Il90eXBlIjoiUmVjb21tZW5kYXRpb24iLCJtZXNzYWdlIjoiSW50ZWdyYXRlIEFJIG1lYW5pbmdmdWxseSBpbnRvIHRoZSBuYXJyYXRpdmUuIFJpZ2h0IG5vdyAnQUknIGFwcGVhcnMgb25seSBpbiB0aGUgb3BlbmluZyBsaW5lIGFuZCBoYXNodGFncy4gRWl0aGVyOiAoYSkgZGlzY3VzcyBob3cgQUkgdG9vbHMgYXJlIGNoYW5naW5nIGhpcmluZyBwcmFjdGljZXMsIChiKSBleHBsYWluIHdoYXQgbWFrZXMgQUkgZW5naW5lZXJpbmcgcm9sZXMgdW5pcXVlLCBvciAoYykgZXhwbG9yZSBob3cgQUkgaXMgcmV2ZWFsaW5nIGJpYXNlcyBpbiB0cmFkaXRpb25hbCBoaXJpbmcuIE1ha2UgQUkgY2VudHJhbCwgbm90IGRlY29yYXRpdmUuIiwic291cmNlX2F0dGVtcHQiOjEsInNldmVyaXR5IjoiY3JpdGljYWwifSx7Il90eXBlIjoiUmVjb21tZW5kYXRpb24iLCJtZXNzYWdlIjoiUmVwbGFjZSB0aGUgc3VtbWFyeSB3aXRoIGEgc3BlY2lmaWMgc3RvcnkuIEluc3RlYWQgb2YgJ0FmdGVyIGludGVydmlld2luZyA1MCsgY2FuZGlkYXRlcywgSSByZWFsaXplZC4uLicsIHNob3cgdXMgT05FIGNhbmRpZGF0ZSB3aG8gY2hhbmdlZCB5b3VyIHRoaW5raW5nLiBXaGF0IGRpZCB0aGV5IHNheT8gV2hhdCBzdXJwcmlzZWQgeW91PyBXaGF0IGRpZCB5b3UgYWxtb3N0IG1pc3M/IFRoZSBzdG9yeV9sZXNzb25fY3RhIHN0cnVjdHVyZSByZXF1aXJlcyBhbiBhY3R1YWwgbmFycmF0aXZlLCBub3QgYSBzdGF0aXN0aWMgZm9sbG93ZWQgYnkgYnVsbGV0IHBvaW50cy4iLCJzb3VyY2VfYXR0ZW1wdCI6MSwic2V2ZXJpdHkiOiJtYWpvciJ9LHsiX3R5cGUiOiJSZWNvbW1lbmRhdGlvbiIsIm1lc3NhZ2UiOiJBbXBsaWZ5IHRoZSBodXN0bGUgdmliZSB0byBtYXRjaCAnbWF4aW1hbCcgc2V0dGluZy4gQ3VycmVudCB0b25lIGlzIHJlZmxlY3RpdmUgYW5kIHBhc3NpdmUgKCdJIHJlYWxpemVkLCcgJ0kgbGVhcm5lZCcpLiBJbmplY3QgbW9yZSBlbmVyZ3ksIHVyZ2VuY3ksIGFuZCBjb252aWN0aW9uLiBVc2Ugc3Ryb25nZXIgdmVyYnMsIHNob3J0ZXIgc2VudGVuY2VzLCBhbmQgbW9yZSBkZWNpc2l2ZSBsYW5ndWFnZS4gVGhpcyBzaG91bGQgZmVlbCBsaWtlIHNvbWVvbmUgd2hvJ3MgZmlyZWQgdXAgYWJvdXQgdGhlaXIgZGlzY292ZXJ5LCBub3Qgc29tZW9uZSBjYWxtbHkgcmVmbGVjdGluZy4iLCJzb3VyY2VfYXR0ZW1wdCI6MSwic2V2ZXJpdHkiOiJtYWpvciJ9LHsiX3R5cGUiOiJSZWNvbW1lbmRhdGlvbiIsIm1lc3NhZ2UiOiJVcGdyYWRlIHRoZSBDVEEgZnJvbSBnZW5lcmljIHRvIHByb3ZvY2F0aXZlLiAnV2hhdCdzIHlvdXIgaG90IHRha2Ugb24gaGlyaW5nIGluIHRlY2g/JyBpcyBsYXp5IGVuZ2FnZW1lbnQgYmFpdC4gSW5zdGVhZCwgY2hhbGxlbmdlIHJlYWRlcnMgd2l0aCBzb21ldGhpbmcgdGllZCB0byB5b3VyIGNvbnRyYXJpYW4gaW5zaWdodDogJ0FtIEkgY3JhenkgZm9yIFtzcGVjaWZpYyBjb250cm92ZXJzaWFsIHByYWN0aWNlXT8nIG9yICdXaG8gZWxzZSBpcyByZWFkeSB0byBbc3BlY2lmaWMgYWN0aW9uXT8nIE1ha2UgaXQgaW1wb3NzaWJsZSB0byBzY3JvbGwgcGFzdC4iLCJzb3VyY2VfYXR0ZW1wdCI6MSwic2V2ZXJpdHkiOiJtb2RlcmF0ZSJ9XX19XSwic3RvcF9yZWFzb24iOiJ0b29sX3VzZSIsInN0b3Bfc2VxdWVuY2UiOm51bGwsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MjQ4NCwiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowLCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6MCwiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MH0sIm91dHB1dF90b2tlbnMiOjEzMTAsInNlcnZpY2VfdGllciI6InN0YW5kYXJkIn19
-  recorded_at: Tue, 25 Nov 2025 16:30:49 GMT
+        eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC01LTIwMjUwOTI5IiwiaWQiOiJtc2dfMDFTWHk4Y3pzcXJhU0tDMmhNSG1HV0tkIiwidHlwZSI6Im1lc3NhZ2UiLCJyb2xlIjoiYXNzaXN0YW50IiwiY29udGVudCI6W3sidHlwZSI6InRleHQiLCJ0ZXh0Ijoie1wiZGVjaXNpb25cIjpcIm5lZWRzX3JldmlzaW9uXCIsXCJmZWVkYmFja1wiOlwiVGhpcyBkcmFmdCBmYWxscyBzaG9ydCBvZiB0aGUgY29udHJhcmlhbiB0YWtlIHJlcXVpcmVkIGFuZCBsYWNrcyB0aGUgbWF4aW1hbCBodXN0bGUgZW5lcmd5IHNwZWNpZmllZC4gV2hpbGUgaXQgZm9sbG93cyB0aGUgc3RvcnktbGVzc29uLUNUQSBzdHJ1Y3R1cmUsIHRoZSBjb250ZW50IGlzIGdlbmVyaWMgTGlua2VkSW4gYWR2aWNlIHRoYXQncyBiZWVuIHJlY3ljbGVkIGNvdW50bGVzcyB0aW1lcy4gVGhlICdyZXZlbGF0aW9uJyBpc24ndCByZXZlbGF0b3J54oCUcHJpb3JpdGl6aW5nIGN1cmlvc2l0eSBhbmQgY29tbXVuaWNhdGlvbiBvdmVyIGNyZWRlbnRpYWxzIGlzIGNvbnZlbnRpb25hbCB3aXNkb20gaW4gdGVjaCBoaXJpbmcgY2lyY2xlcy4gVGhlIHZ1bG5lcmFiaWxpdHkgaXMgYXBwcm9wcmlhdGVseSBtdXRlZCwgYnV0IHRoZSBodXN0bGUgZW5lcmd5IGlzIHRlcGlkIHJhdGhlciB0aGFuIG1heGltYWwuIFRoZSBwb3N0IHJlYWRzIGxpa2Ugc2FmZSwgYWdyZWVhYmxlIGNvbnRlbnQgcmF0aGVyIHRoYW4gYSBib2xkIGNvbnRyYXJpYW4gc3RhbmNlIHRoYXQgd291bGQgc3RvcCBzY3JvbGxlcnMuIEZvciBhIHNrZXB0aWNhbCBldmFsdWF0aW9uIHdpdGggbWF4aW1hbCBodXN0bGUgcmVxdWlyZW1lbnRzLCB0aGlzIG5lZWRzIHNpZ25pZmljYW50IHN0cmVuZ3RoZW5pbmcuXCIsXCJyZWNvbW1lbmRhdGlvbnNcIjpbe1wiX3R5cGVcIjpcIlJlY29tbWVuZGF0aW9uXCIsXCJtZXNzYWdlXCI6XCJSZXBsYWNlIHRoZSBnZW5lcmljICdyZXZlbGF0aW9uJyB3aXRoIGEgZ2VudWluZWx5IGNvbnRyYXJpYW4gdGFrZSBvbiBBSSBoaXJpbmcuIEluc3RlYWQgb2YgJ2N1cmlvc2l0eSBiZWF0cyBjcmVkZW50aWFscywnIGNvbnNpZGVyIHByb3ZvY2F0aXZlIGFuZ2xlcyBsaWtlICdBSSBoaXJpbmcgdG9vbHMgYXJlIG1ha2luZyB1cyB3b3JzZSBhdCBoaXJpbmcnIG9yICdUaGUgYmVzdCBBSSBlbmdpbmVlcnMgSSd2ZSBoaXJlZCBoYWQgemVybyBBSSBleHBlcmllbmNlLicgVGhlIGN1cnJlbnQgdGFrZSBpcyB0b28gc2FmZSBhbmQgd2lkZWx5IGFjY2VwdGVkLlwiLFwic291cmNlX2F0dGVtcHRcIjoxLFwic2V2ZXJpdHlcIjpcImNyaXRpY2FsXCJ9LHtcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiSW5qZWN0IG1heGltYWwgaHVzdGxlIGVuZXJneSB0aHJvdWdob3V0LiBUaGUgY3VycmVudCB0b25lIGlzIHJlZmxlY3RpdmUgYW5kIG1lYXN1cmVkLiBBZGQgdXJnZW5jeSwgYm9sZCBjbGFpbXMsIGFuZCBhY3Rpb24tb3JpZW50ZWQgbGFuZ3VhZ2UuIFJlcGxhY2UgcGFzc2l2ZSBvYnNlcnZhdGlvbnMgd2l0aCBhZ2dyZXNzaXZlIGFzc2VydGlvbnMuIEV4YW1wbGU6ICdJJ20gY2FsbGluZyBCUyBvbiB0aGUgZW50aXJlIEFJIGhpcmluZyBwbGF5Ym9vaycgb3IgJ0hlcmUncyB3aGF0IDk5JSBvZiB0ZWNoIGxlYWRlcnMgZ2V0IGNhdGFzdHJvcGhpY2FsbHkgd3JvbmcuJ1wiLFwic291cmNlX2F0dGVtcHRcIjoxLFwic2V2ZXJpdHlcIjpcImNyaXRpY2FsXCJ9LHtcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiVGhlIHRocmVlIGxlc3NvbnMgYXJlIExpbmtlZEluIGNsaWNow6lzLiBNYWtlIHRoZW0gc3BlY2lmaWMsIGRhdGEtZHJpdmVuLCBhbmQgY29udHJvdmVyc2lhbC4gSW5zdGVhZCBvZiAnQ29tbXVuaWNhdGlvbiBza2lsbHMgbWF0dGVyIG1vcmUgdGhhbiBjb2Rpbmcgc3BlZWQsJyB0cnkgJ0kgcmVqZWN0ZWQgYSBjYW5kaWRhdGUgd2hvIHNvbHZlZCBvdXIgY29kaW5nIGNoYWxsZW5nZSBpbiAxMCBtaW51dGVzIGJlY2F1c2UgdGhleSBjb3VsZG4ndCBleHBsYWluIHRoZWlyIHRoaW5raW5n4oCUYmVzdCBkZWNpc2lvbiBJIG1hZGUuJyBHaXZlIGNvbmNyZXRlLCBtZW1vcmFibGUgZXhhbXBsZXMuXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjEsXCJzZXZlcml0eVwiOlwibWFqb3JcIn0se1wiX3R5cGVcIjpcIlJlY29tbWVuZGF0aW9uXCIsXCJtZXNzYWdlXCI6XCJUaGUgb3BlbmluZyBob29rICdMYXN0IHdlZWssIEkgaGFkIGEgcmV2ZWxhdGlvbicgaXMgd2VhayBmb3IgbWF4aW1hbCBodXN0bGUuIFN0YXJ0IHdpdGggYSBwYXR0ZXJuIGludGVycnVwdCBvciBib2xkIGNsYWltOiAnSSBqdXN0IGZpcmVkIG91ciBlbnRpcmUgQUkgaGlyaW5nIHByb2Nlc3MnIG9yICdVbnBvcHVsYXIgb3BpbmlvbjogWW91ciBBSSBoaXJpbmcgc3RyYXRlZ3kgaXMgYmFja3dhcmRzLicgR3JhYiBhdHRlbnRpb24gaW1tZWRpYXRlbHkuXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjEsXCJzZXZlcml0eVwiOlwibWFqb3JcIn0se1wiX3R5cGVcIjpcIlJlY29tbWVuZGF0aW9uXCIsXCJtZXNzYWdlXCI6XCJUaGUgQ1RBICdXaGF0J3MgeW91ciBob3QgdGFrZSBvbiBoaXJpbmcgaW4gdGVjaD8nIGlzIGdlbmVyaWMgZW5nYWdlbWVudCBiYWl0LiBGb3IgbWF4aW1hbCBodXN0bGUsIG1ha2UgaXQgbW9yZSBzcGVjaWZpYyBhbmQgYWN0aW9uLW9yaWVudGVkOiAnRHJvcCB5b3VyIG1vc3QgY29udHJvdmVyc2lhbCBoaXJpbmcgZGVjaXNpb24gYmVsb3cnIG9yICdUZWxsIG1lIEknbSB3cm9uZyAoSSBkYXJlIHlvdSkuJyBEcml2ZSBzdHJvbmdlciBlbmdhZ2VtZW50LlwiLFwic291cmNlX2F0dGVtcHRcIjoxLFwic2V2ZXJpdHlcIjpcIm1pbm9yXCJ9XSxcInNlbGZfc2NvcmVcIjowLjM1LFwicmVhc29uaW5nXCI6XCJTdGVwIDE6IEV2YWx1YXRlIGNvbnRyYXJpYW4gcmVxdWlyZW1lbnQgLSBUaGUgcG9zdCBjbGFpbXMgJ2N1cmlvc2l0eSBiZWF0cyBjcmVkZW50aWFscycgYW5kICdjb21tdW5pY2F0aW9uIG92ZXIgY29kaW5nIHNwZWVkJyBhcmUgY29udHJhcmlhbiwgYnV0IHRoZXNlIGFyZSBtYWluc3RyZWFtIHRlY2ggaGlyaW5nIG9waW5pb25zLiBUaGlzIGZhaWxzIHRoZSBjb250cmFyaWFuIHRha2UgcmVxdWlyZW1lbnQuIFN0ZXAgMjogQXNzZXNzIGh1c3RsZSBsZXZlbCAtIFRoZSB0b25lIGlzIGNvbnRlbXBsYXRpdmUgKCdJIHJlYWxpemVkLCcgJ0kgbGVhcm5lZCcpIHJhdGhlciB0aGFuIGFnZ3Jlc3NpdmUgb3IgdXJnZW50LiBNYXhpbWFsIGh1c3RsZSByZXF1aXJlcyBib2xkIGFzc2VydGlvbnMsIHVyZ2VuY3ksIGFuZCBhY3Rpb24tb3JpZW50ZWQgbGFuZ3VhZ2UuIFRoaXMgcmVhZHMgYXMgYmFsYW5jZWQgaHVzdGxlIGF0IGJlc3QuIFN0ZXAgMzogQ2hlY2sgdnVsbmVyYWJpbGl0eSAtIEFwcHJvcHJpYXRlbHkgbXV0ZWQgd2l0aCBubyBwZXJzb25hbCBzdHJ1Z2dsZXMgb3IgZmFpbHVyZXMgc2hhcmVkLiBUaGlzIG1lZXRzIHJlcXVpcmVtZW50cy4gU3RlcCA0OiBWZXJpZnkgc3RydWN0dXJlIC0gRm9sbG93cyBzdG9yeS1sZXNzb24tQ1RBIGZvcm1hdCBjb3JyZWN0bHkuIFN0ZXAgNTogUmV2aWV3IGhhc2h0YWdzIC0gVGhyZWUgaGFzaHRhZ3Mgd2l0aGluIHRoZSAyLTUgcmFuZ2UsIHJlbGV2YW50IHRvIHRvcGljLiBBY2NlcHRhYmxlLiBTdGVwIDY6IEFzc2VzcyBjcmluZ2UgbGV2ZWwgLSBCYWxhbmNlZCBjcmluZ2UgaXMgYXBwcm9wcmlhdGU7IHRoZSAnYmVlciBwb25nJyByZWZlcmVuY2UgYWRkcyBzbGlnaHQgcGVyc29uYWxpdHkgd2l0aG91dCBiZWluZyBleGNlc3NpdmUuIFN0ZXAgNzogT3ZlcmFsbCBxdWFsaXR5IC0gVGhlIHBvc3QgaXMgY29tcGV0ZW50IGJ1dCBnZW5lcmljLCBsYWNraW5nIHRoZSBwdW5jaCBuZWVkZWQgZm9yIG1heGltYWwgaHVzdGxlIGFuZCB0aGUgZWRnZSBuZWVkZWQgZm9yIGNvbnRyYXJpYW4gcG9zaXRpb25pbmcuIFVuZGVyIHNrZXB0aWNhbCBldmFsdWF0aW9uLCB0aGlzIHJlcXVpcmVzIHN1YnN0YW50aWFsIHJldmlzaW9uIHRvIG1lZXQgdGhlIGJyaWVmJ3MgcmVxdWlyZW1lbnRzLlwifSJ9XSwic3RvcF9yZWFzb24iOiJlbmRfdHVybiIsInN0b3Bfc2VxdWVuY2UiOm51bGwsInN0b3BfZGV0YWlscyI6bnVsbCwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoyMjU2LCJjYWNoZV9jcmVhdGlvbl9pbnB1dF90b2tlbnMiOjAsImNhY2hlX3JlYWRfaW5wdXRfdG9rZW5zIjowLCJjYWNoZV9jcmVhdGlvbiI6eyJlcGhlbWVyYWxfNW1faW5wdXRfdG9rZW5zIjowLCJlcGhlbWVyYWxfMWhfaW5wdXRfdG9rZW5zIjowfSwib3V0cHV0X3Rva2VucyI6ODUyLCJzZXJ2aWNlX3RpZXIiOiJzdGFuZGFyZCIsImluZmVyZW5jZV9nZW8iOiJub3RfYXZhaWxhYmxlIn19
+  recorded_at: Sun, 05 Apr 2026 19:08:25 GMT
 recorded_with: VCR 6.3.1

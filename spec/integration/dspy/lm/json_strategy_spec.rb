@@ -123,33 +123,26 @@ RSpec.describe DSPy::LM::JSONStrategy do
         .and_return({ type: 'string' })
     end
 
-    it 'prepares request with Anthropic tool use format' do
+    it 'prepares request with Anthropic beta structured output format' do
       messages = [{ role: 'user', content: 'Hello' }]
       request_params = {}
 
       strategy.prepare_request(messages, request_params)
 
-      expect(request_params[:tools]).to be_an(Array)
-      tool = request_params[:tools].first
-      expect(tool[:name]).to eq('json_output')
-      expect(tool[:strict]).to eq(true)
-      expect(tool[:input_schema][:additionalProperties]).to eq(false)
-      expect(request_params[:tool_choice]).to eq({ type: 'tool', name: 'json_output' })
+      expect(request_params[:output_format]).to be_a(Anthropic::Models::Beta::BetaJSONOutputFormat)
+      expect(request_params[:output_format].type.to_s).to eq("json_schema")
+      expect(request_params[:betas]).to eq(["structured-outputs-2025-11-13"])
     end
 
-    it 'extracts JSON from tool use response' do
-      # Use Anthropic metadata structure
-      metadata = DSPy::LM::AnthropicResponseMetadata.new(
-        provider: 'anthropic',
-        model: 'claude-3-5-sonnet',
-        stop_reason: 'tool_use',
-        tool_calls: [{ name: 'json_output', input: { name: 'John' } }]
-      )
-
+    it 'extracts JSON from beta structured output content' do
       response = DSPy::LM::Response.new(
-        content: '',
+        content: '{"name":"John"}',
         usage: nil,
-        metadata: metadata
+        metadata: DSPy::LM::AnthropicResponseMetadata.new(
+          provider: 'anthropic',
+          model: 'claude-3-5-sonnet',
+          stop_reason: 'end_turn'
+        )
       )
 
       result = strategy.extract_json(response)
@@ -161,14 +154,14 @@ RSpec.describe DSPy::LM::JSONStrategy do
         allow(anthropic_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(true)
       end
 
-      it 'uses tool-based extraction' do
+      it 'uses beta structured outputs' do
         messages = [{ role: 'user', content: 'Hello' }]
         request_params = {}
 
         strategy.prepare_request(messages, request_params)
 
-        expect(request_params[:tools]).to be_an(Array)
-        expect(request_params[:tool_choice]).to eq({ type: 'tool', name: 'json_output' })
+        expect(request_params[:output_format]).to be_a(Anthropic::Models::Beta::BetaJSONOutputFormat)
+        expect(request_params[:betas]).to eq(["structured-outputs-2025-11-13"])
       end
     end
 
@@ -177,15 +170,14 @@ RSpec.describe DSPy::LM::JSONStrategy do
         allow(anthropic_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(false)
       end
 
-      it 'skips tool-based extraction' do
+      it 'skips beta structured outputs' do
         messages = [{ role: 'user', content: 'Hello' }]
         request_params = {}
 
         strategy.prepare_request(messages, request_params)
 
-        expect(request_params[:tools]).to be_nil
-        expect(request_params[:tool_choice]).to be_nil
-        expect(messages.last[:content]).not_to include('use the json_output tool')
+        expect(request_params[:output_format]).to be_nil
+        expect(request_params[:betas]).to be_nil
       end
 
       it 'uses enhanced prompting extraction' do

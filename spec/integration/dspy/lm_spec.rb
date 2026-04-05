@@ -447,7 +447,7 @@ RSpec.describe DSPy::LM do
 
         expect(messages[1].content[0]).to eq(
           type: 'text',
-          text: 'prompt={:document=>"[attached pdf document]", :question=>"What is in the report?"}'
+          text: 'prompt={document: "[attached pdf document]", question: "What is in the report?"}'
         )
         expect(messages[1].content[1]).to eq(type: 'document', document: doc)
       end
