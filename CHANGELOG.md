@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-04-11
+
+DSPy.rb 1.0.0 marks the end of the rapid stabilization cycle that ran from `0.30.0` through `0.34.4`.
+Across those releases, the project added TOON/BAML formatting, RubyLLM support, score reporting and Langfuse integrations, stricter Anthropic structured outputs, deeper observability, stronger type coercion, and the final multimodal PDF/document path that rounds out the core API.
+
+### Highlights
+- **A stable core release line** - The `0.30.x` through `0.34.x` series hardened the library's structured outputs, type system, observability, optimizer workflows, and adapter boundaries into a foundation ready for `1.0`.
+- **Broader provider and workflow coverage** - RubyLLM support, Anthropic strict/Beta structured outputs, TOON/BAML formatting, and multimodal document handling significantly widened the practical surface area of DSPy.rb without changing its core programming model.
+- **Better production ergonomics** - Langfuse score reporting, richer span metadata, safer coercion paths, and more resilient evaluation flows reduced the amount of edge-case glue required in real applications.
+
 ### Added
 - **Anthropic PDF document support** (#248) - Added `DSPy::Document` for PDF attachments in Anthropic-powered flows across `raw_chat`, `Predict`, and Anthropic via RubyLLM.
   - `Predict` now supports a single top-level document input and preserves a placeholder in the rendered prompt while attaching the PDF separately.
