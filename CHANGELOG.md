@@ -29,6 +29,7 @@ Across those releases, the project added TOON/BAML formatting, RubyLLM support, 
 ### Changed
 - **Adapter SDK version floors** - Raised published minimum dependency versions for sibling adapter gems to the latest tested SDK releases: `openai >= 0.57.0`, `anthropic >= 1.28.0`, `ruby_llm >= 1.14.1`, and `gemini-ai >= 4.3.0`.
 - **Runtime version guardrail removal** - Removed adapter `require`-time SDK version guardrails in favor of expressing compatibility through gemspec dependency ranges and the repository lockfile.
+- **Sibling gem compatibility refresh** - Republished the companion gems with `dspy 1.x`-compatible dependency ranges so adapter and search packages continue to install cleanly alongside the new stable core release.
 
 ### Documentation
 - **Multimodal guide refresh** (#248) - Clarified that PDF support is currently limited to Anthropic directly, Anthropic through RubyLLM, and single-document `Predict` flows.

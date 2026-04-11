@@ -9,6 +9,7 @@
 **Build reliable LLM applications in idiomatic Ruby using composable, type-safe modules.**
 
 DSPy.rb is the Ruby port of Stanford's [DSPy](https://dspy.ai). Instead of wrestling with brittle prompt strings, you define typed signatures and let the framework handle the rest. Prompts become functions. LLM calls become predictable.
+The `1.x` line is the stable release track for production Ruby LLM applications.
 
 ```ruby
 require 'dspy'

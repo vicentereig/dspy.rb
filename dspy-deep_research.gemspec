@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/vicentereig/dspy.rb"
   spec.metadata["changelog_uri"] = "https://github.com/vicentereig/dspy.rb/blob/main/CHANGELOG.md"
 
-  spec.add_dependency "dspy", "~> 0.30", ">= 0.30.1"
+  spec.add_dependency "dspy", ">= 0.30.1", "< 2.0"
   spec.add_dependency "dspy-deep_search", "= #{DSPy::DeepSearch::VERSION}"
   spec.add_dependency "sorbet-runtime", "~> 0.5"
 end

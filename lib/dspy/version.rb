@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module DSPy
-  VERSION = "0.34.4"
+  VERSION = "1.0.0"
 end

@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "dspy", "~> 0.30", ">= 0.30.1"
+  spec.add_dependency "dspy", ">= 0.30.1", "< 2.0"
   spec.add_dependency "ruby_llm", ">= 1.14.1", "< 2.0"
 
   spec.metadata["github_repo"] = "git@github.com:vicentereig/dspy.rb"

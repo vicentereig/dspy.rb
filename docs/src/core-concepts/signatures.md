@@ -420,7 +420,7 @@ BAML format requires the `sorbet-baml` gem:
 gem 'sorbet-baml'
 ```
 
-### TOON Schema + Data Format (New in v0.31.0-alpha)
+### TOON Schema + Data Format (New in v0.31.0)
 
 [TOON](https://github.com/toon-format/toon) is a table-oriented text format that keeps schemas readable while also shrinking the *actual* prompt values you send to the model. DSPy.rb exposes it via the new `sorbet-toon` integration.
 
@@ -441,7 +441,7 @@ end
 `schema_format: :toon` swaps the JSON/BAML block in the system prompt with a TOON-oriented field summary (ordered props, optional markers, tabular hints).  
 `data_format: :toon` tells DSPy to render the actual input values and required output template inside ```toon``` fences, and to parse the model’s reply back into hashes/structs.
 
-**Supported scenarios (v0.31.0-alpha):**
+**Supported scenarios:**
 
 - Enhanced prompting (`structured_outputs: false`).
 - Any signature built from Sorbet structs/enums/arrays/hashes.
