@@ -299,8 +299,10 @@ module DSPy
       # Coerces an array value, converting each element as needed
       sig { params(value: T.untyped, prop_type: T.untyped).returns(T.untyped) }
       def coerce_array_value(value, prop_type)
-        return value unless value.is_a?(Array)
         return value unless prop_type.is_a?(T::Types::TypedArray)
+
+        value = try_parse_string_to_array(value)
+        return value unless value.is_a?(Array)
 
         element_type = prop_type.type
         value.map { |element| coerce_value_to_type(element, element_type) }
@@ -344,6 +346,18 @@ module DSPy
 
         parsed.is_a?(Hash) ? parsed : value
       rescue Psych::SyntaxError
+        value
+      end
+
+      # Attempts to parse a JSON string into an Array.
+      # Returns the parsed Array on success, or the original value otherwise.
+      sig { params(value: T.untyped).returns(T.untyped) }
+      def try_parse_string_to_array(value)
+        return value unless value.is_a?(String)
+
+        parsed = JSON.parse(value)
+        parsed.is_a?(Array) ? parsed : value
+      rescue JSON::ParserError
         value
       end
 
