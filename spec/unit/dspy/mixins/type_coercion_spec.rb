@@ -407,6 +407,20 @@ RSpec.describe DSPy::Mixins::TypeCoercion do
         expect(result).to eq([1, 2, 3])
       end
 
+      it 'parses JSON array strings for typed arrays' do
+        array_type = T::Array[Integer]
+        result = instance.test_coerce('[1, 2, 3]', array_type)
+
+        expect(result).to eq([1, 2, 3])
+      end
+
+      it 'parses JSON array strings for typed enum arrays' do
+        array_type = T::Array[TestStructs::Priority]
+        result = instance.test_coerce('["low", "high"]', array_type)
+
+        expect(result).to eq([TestStructs::Priority::Low, TestStructs::Priority::High])
+      end
+
       it 'rejects integers when String is required (strict type safety)' do
         string_type = T::Utils.coerce(String)
         expect { instance.test_coerce(123, string_type) }.to raise_error(TypeError, /Cannot coerce Integer to String/)
