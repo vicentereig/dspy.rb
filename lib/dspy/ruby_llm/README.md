@@ -47,6 +47,25 @@ lm = DSPy::LM.new("ruby_llm/llama3.2", provider: 'ollama')
 
 The adapter detects the provider from RubyLLM's model registry. For models not in the registry, use the `provider:` option.
 
+### Governed OpenAI-compatible endpoints
+
+Because the adapter uses your RubyLLM configuration, Ruby and Rails apps can route DSPy calls through an OpenAI-compatible control plane such as [Tuning Engines](https://www.tuningengines.com/) without changing higher-level DSPy modules:
+
+```ruby
+RubyLLM.configure do |config|
+  config.openai_api_key = ENV.fetch('TUNING_ENGINES_API_KEY')
+  config.openai_api_base = 'https://api.tuningengines.com/v1'
+end
+
+lm = DSPy::LM.new(
+  "ruby_llm/#{ENV.fetch('TUNING_ENGINES_MODEL', 'gpt-4o-mini')}",
+  provider: 'openai',
+  assume_model_exists: true
+)
+```
+
+This keeps DSPy responsible for program structure and optimization while Tuning Engines centralizes model routing, policy controls, audit logs, traces, approvals, and cost visibility.
+
 ### Provider Override
 
 For custom deployments or models not in the registry, explicitly specify the provider:
