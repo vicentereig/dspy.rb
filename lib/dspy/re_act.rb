@@ -302,6 +302,16 @@ module DSPy
       action_enum_class = @action_enum_class
       input_context_type = signature_class.input_struct_class || String
 
+      # Carry the user signature's instructions into the loop prompt, then append the
+      # loop mechanics — mirroring Python DSPy's ReAct, which prepends
+      # signature.instructions to the react predictor's instructions. Without this the
+      # user's task description never reaches the LM: it is only set on the enhanced
+      # signature used for typing, which issues no LM calls.
+      thought_description = [
+        signature_class.description,
+        "Generate a thought about what to do next to process the given inputs."
+      ].compact.reject(&:empty?).join("\n\n")
+
       # Get the output field type for the final_answer field
       output_field_name = signature_class.output_struct_class.props.keys.first
       output_field_type = signature_class.output_struct_class.props[output_field_name][:type_object]
@@ -309,7 +319,7 @@ module DSPy
       # Create new class that inherits from DSPy::Signature
       Class.new(DSPy::Signature) do
         # Set description
-        description "Generate a thought about what to do next to process the given inputs."
+        description thought_description
 
         # Define input fields
         input do
