@@ -110,6 +110,8 @@ module DSPy
     end
 
     FINISH_ACTION = "finish"
+    THOUGHT_LOOP_INSTRUCTION = "Generate a thought about what to do next to process the given inputs."
+    OBSERVATION_LOOP_INSTRUCTION = "Process the observation from a tool and decide what to do next."
     sig { returns(T.class_of(DSPy::Signature)) }
     attr_reader :original_signature_class
 
@@ -198,7 +200,9 @@ module DSPy
     def with_instruction(instruction)
       clone = self.class.new(@original_signature_class, tools: @tools.values, max_iterations: @max_iterations)
       thought_generator = clone.instance_variable_get(:@thought_generator)
+      observation_processor = clone.instance_variable_get(:@observation_processor)
       clone.instance_variable_set(:@thought_generator, thought_generator.with_instruction(instruction))
+      clone.instance_variable_set(:@observation_processor, observation_processor.with_instruction(instruction))
       clone
     end
 
@@ -223,6 +227,14 @@ module DSPy
     end
 
     private
+
+    sig { params(signature_class: T.class_of(DSPy::Signature), loop_instruction: String).returns(String) }
+    def loop_description(signature_class, loop_instruction)
+      [
+        signature_class.description,
+        loop_instruction
+      ].compact.reject(&:empty?).join("\n\n")
+    end
 
     # Serialize value for LLM display
     sig { params(value: T.untyped).returns(T.untyped) }
@@ -307,10 +319,7 @@ module DSPy
       # signature.instructions to the react predictor's instructions. Without this the
       # user's task description never reaches the LM: it is only set on the enhanced
       # signature used for typing, which issues no LM calls.
-      thought_description = [
-        signature_class.description,
-        "Generate a thought about what to do next to process the given inputs."
-      ].compact.reject(&:empty?).join("\n\n")
+      thought_description = loop_description(signature_class, THOUGHT_LOOP_INSTRUCTION)
 
       # Get the output field type for the final_answer field
       output_field_name = signature_class.output_struct_class.props.keys.first
@@ -349,10 +358,12 @@ module DSPy
     sig { params(signature_class: T.class_of(DSPy::Signature), data_format: Symbol).returns(T.class_of(DSPy::Signature)) }
     def create_observation_signature(signature_class, data_format)
       input_context_type = signature_class.input_struct_class || String
+      observation_description = loop_description(signature_class, OBSERVATION_LOOP_INSTRUCTION)
+
       # Create new class that inherits from DSPy::Signature
       Class.new(DSPy::Signature) do
         # Set description
-        description "Process the observation from a tool and decide what to do next."
+        description observation_description
 
         # Define input fields
         input do

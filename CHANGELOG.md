@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-06-12
+
+### Fixed
+- **ReAct signature instructions** (#253) - ReAct now carries the user signature description into both internal loop prompts, so task instructions, personas, and behavioral constraints reach the LM while planning actions and while interpreting tool observations.
+- **Datasets CI with Arrow 23** - The Datasets GitHub Actions matrix now builds Arrow-backed native gems with C++20 flags, matching the current Apache Arrow headers used by `red-arrow`/`red-parquet`.
+
 ## [1.0.0] - 2026-04-11
 
 DSPy.rb 1.0.0 marks the end of the rapid stabilization cycle that ran from `0.30.0` through `0.34.4`.

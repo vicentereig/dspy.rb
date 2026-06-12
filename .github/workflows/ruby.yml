@@ -203,6 +203,10 @@ jobs:
         DSPY_WITH_O11Y_LANGFUSE: ${{ matrix.o11y_langfuse }}
       run: |
         bundle config set --local path vendor/bundle
+        if [ "${{ matrix.install_arrow }}" = "true" ]; then
+          # Arrow 23 headers use C++20 APIs such as std::span and std::popcount.
+          export MAKEFLAGS='CXXFLAGS=-fPIC\ -std=gnu++20'
+        fi
         bundle install --jobs 4
     - name: Run tests
       run: ${{ matrix.command }}
