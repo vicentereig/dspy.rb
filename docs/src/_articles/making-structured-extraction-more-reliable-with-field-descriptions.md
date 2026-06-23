@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Making Structured Extraction More Reliable with Field Descriptions"
-description: "How field-level descriptions help DSPy.rb produce more consistent structured extraction outputs."
+description: "Why field-level descriptions help Ruby LLM apps avoid valid-but-wrong structured extraction."
 date: 2026-06-23
 author: "Vicente Reig"
 category: "Signatures"
@@ -10,13 +10,15 @@ canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/making-struct
 image: /images/og/making-structured-extraction-more-reliable-with-field-descriptions.png
 ---
 
-A production user recently asked whether field-level `description:` text in `DSPy::Signature` is officially supported: [GitHub issue #254](https://github.com/vicentereig/dspy.rb/issues/254).
+Structured extraction fails when the model fills the right field with the wrong meaning.
 
-The short answer is yes.
+That is the annoying version of failure. The JSON is valid. The keys are present. The types pass. And the result is still quietly wrong, which is a terrible kind of wrong because it shows up later wearing a customer support ticket.
 
-The longer answer is yes, and this is exactly the kind of boring feature that matters once your LLM code leaves the demo phase and starts touching real business text. That is where the word "deadline" can mean an explicit cutoff date, a seasonal rule, a relative planning window, a late-application exception, or a polite little trap in paragraph seven.
+A production user recently asked whether field-level `description:` text in `DSPy::Signature` is officially supported: [GitHub issue #254](https://github.com/vicentereig/dspy.rb/issues/254). It is, and it matters more than it sounds, which is inconvenient because now the small question has become useful.
 
-In DSPy.rb, a signature is not just a list of field names and Ruby types. It is the contract between your application and the model. The type says what shape the answer must have. The field description says what the field means.
+Field descriptions are exactly the kind of boring feature that matters once your LLM code leaves the demo phase and starts touching real business text. That is where the word "deadline" can mean an explicit cutoff date, a seasonal rule, a relative planning window, a late-application exception, or a polite little trap in paragraph seven.
+
+In DSPy.rb, a signature is not just a list of field names and Ruby types. It is the contract between your application and the model. The type says what shape the answer must have. The field description says what the field actually means.
 
 That distinction matters.
 
@@ -68,7 +70,7 @@ end
 
 The enum types do useful work. They constrain `country` and `category` so your code does not have to interpret whatever the model felt like calling the United Kingdom that day. That is already a win.
 
-But the field description does a different job. A field named `application_deadline_note` gets you part of the way there. It does not tell the model whether to include exceptions, relative guidance, seasonal conditions, late-application rules, or whether to stay grounded in the source text.
+But the field description does a different job. A field named `application_deadline_note` gets you part of the way there. It does not tell the model whether to include exceptions, relative guidance, seasonal conditions, late-application rules, or whether to stay grounded in the source text. The name points at the drawer. The description labels what is allowed inside.
 
 That is what `description:` is for.
 
@@ -94,7 +96,7 @@ end
 
 Those descriptions are not decorative. They are where the domain rules live.
 
-They tell the model what to include, what to exclude, how cautious to be, and what to do when the source is silent. Without them, you are asking the model to infer production semantics from a snake_case field name. The model is good at many things. "Read my mind through a variable name" should not be one of the jobs we assign it.
+They tell the model what to include, what to exclude, how cautious to be, and what to do when the source is silent. Without them, you are asking the model to infer production semantics from a snake_case field name. That is not engineering. That is a trust fall with JSON.
 
 ## What DSPy.rb Does with Descriptions
 
@@ -108,7 +110,7 @@ The relevant implementation is intentionally plain:
 - [`DSPy::Ext::StructDescriptions`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/ext/struct_descriptions.rb) supports `description:` on plain `T::Struct` `const` and `prop` fields too.
 - The specs cover storing descriptions and emitting them into schemas.
 
-This is not an accidental keyword that wandered in through an unlocked side door. It is part of the API surface.
+This is not an accidental keyword that wandered in through an unlocked side door, looked around, and got a badge. It is part of the API surface.
 
 ## Where the Description Goes
 
@@ -149,7 +151,7 @@ const :deadline, T.nilable(String),
   description: "Application deadline stated in the source text. Include explicit dates, relative windows, seasonal rules, and exceptions. Return nil if no deadline is provided."
 ```
 
-The second version gives the model a job. The first version gives it a shrug wearing a lanyard.
+The second version gives the model a job. The first version gives it a shrug wearing a lanyard and asks everyone to act surprised when the output gets weird.
 
 ## The Small Habit That Pays Off
 
@@ -162,7 +164,7 @@ const :field_name, Type,
 
 Use the signature-level `description` for the overall task. Use field-level `description:` for the rules that belong to each field.
 
-That is the habit. It is small, but it compounds. Your schemas become clearer. Your prompts become less mysterious. Your extraction code has fewer private assumptions hiding between the lines.
+That is the habit. It is small, but it compounds. Your schemas become clearer. Your prompts become less mysterious. Your extraction code has fewer private assumptions hiding between the lines, where private assumptions go to become outages with good posture.
 
 Write your field descriptions like you are explaining the field to a smart coworker who is new to the domain and has no patience for vibes.
 
