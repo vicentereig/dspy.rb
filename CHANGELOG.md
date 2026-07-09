@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`DSPy::Reasoning` config abstraction & Anthropic `temperature`/`max_tokens` fix** (#256, ref #247) - Newer Anthropic models (Sonnet 5, Opus 4.7/4.8, Fable 5, Mythos 5) reject a non-default `temperature`; `DSPy::LM.new` for Anthropic now omits it automatically for those models, even without touching `reasoning:`.
+  - Added `DSPy::Reasoning` (`.low`/`.medium`/`.high`/`.xhigh`/`.max`/`.budget(n)`/`.adaptive`/`.disabled`), a typed value object passed via `reasoning:` to `DSPy::LM.new`. Anthropic-only for now; maps to `output_config.effort` and `thinking`.
+  - Added `temperature:` and `max_tokens:` as first-class `DSPy::LM.new` options for Anthropic (`temperature:` supports a three-state sentinel: not-passed / explicit value / explicit `nil`).
+  - Added an explicit, per-model-family capability registry (`DSPy::Anthropic::LM::ModelCapabilities`) that validates `reasoning:`/`temperature:` combinations at construction time and raises `DSPy::LM::ConfigurationError` for unsupported ones (e.g. `.xhigh` on a model that doesn't support it, or `.budget(n)` outside `[1024, max_tokens)`).
+  - See the new [Reasoning Effort & Temperature](docs/src/advanced/reasoning.md) guide and [ADR-019](adr/019-anthropic-reasoning-temperature-config.md).
+
+### Changed
+- **Anthropic structured outputs migrated off the deprecated Beta API** - `dspy-anthropic` now builds `output_config: { format:, effort: }` on the stable (non-beta) `client.messages.create`/`stream`, replacing the deprecated `output_format`/`betas` Beta API shape. This lets structured outputs and `reasoning:` compose under a single request shape instead of competing for separate ones.
+
 ## [1.0.1] - 2026-06-12
 
 ### Fixed

@@ -76,6 +76,36 @@ client = OpenAI::Client.new(api_key: "key")
 response = client.chat.completions.create(model: "gpt-4", messages: [...])
 ```
 
+### Error: `temperature` is deprecated for this model (Anthropic)
+
+**Problem**: Newer Claude models (Sonnet 5, Opus 4.7/4.8, Fable 5, Mythos 5, and others) reject a non-default `temperature`:
+
+```
+400 invalid_request_error: `temperature` is deprecated for this model.
+```
+
+**Solution**: Upgrade to a version of `dspy-anthropic` that includes the [#256](https://github.com/vicentereig/dspy.rb/issues/256) fix. The adapter now automatically omits `temperature` for affected models, even if you never pass it yourself. If you're still on an older version, or you want to be explicit, pass `temperature: nil`:
+
+```ruby
+DSPy::LM.new(
+  "anthropic/claude-sonnet-5",
+  api_key: ENV["ANTHROPIC_API_KEY"],
+  temperature: nil
+)
+```
+
+See [Reasoning Effort & Temperature](/advanced/reasoning/) for the full `temperature:`/`max_tokens:`/`reasoning:` configuration surface.
+
+### Error: `DSPy::LM::ConfigurationError` for `DSPy::Reasoning`
+
+**Problem**: You passed a `DSPy::Reasoning` mode (e.g. `.xhigh`, `.budget(n)`) that the target Anthropic model doesn't support:
+
+```
+DSPy::LM::ConfigurationError: claude-opus-4-6 does not support DSPy::Reasoning.xhigh.
+```
+
+**Solution**: This is a deliberate, eager validation — it's cheaper to fail at `DSPy::LM.new` construction time than after a request round-trip. Check [Reasoning Effort & Temperature](/advanced/reasoning/) for which effort tiers and thinking modes each model family supports, and adjust your `DSPy::Reasoning` call or target model accordingly.
+
 ## API Key Issues
 
 ### Error: DSPy::LM::MissingAPIKeyError
@@ -118,11 +148,11 @@ DSPy.configure do |config|
   #   structured_outputs: true
   # )
 
-  # Anthropic structured outputs
+  # Anthropic with native structured outputs (default, recommended)
   # config.lm = DSPy::LM.new(
   #   "anthropic/claude-sonnet-4-5-20250929",
   #   api_key: ENV["ANTHROPIC_API_KEY"],
-  #   structured_outputs: true
+  #   structured_outputs: true  # Default - uses output_config.format
   # )
 
   # Anthropic with enhanced prompting (alternative)
@@ -134,7 +164,7 @@ DSPy.configure do |config|
 end
 ```
 
-Provider capabilities vary by model and SDK version. A provider prefix alone does not establish native schema support.
+Provider capabilities vary by model and SDK version. A provider prefix alone does not establish native schema support. With `anthropic` 1.28.0 or newer, `structured_outputs: true` uses native `output_config.format`; `false` uses enhanced prompting extraction.
 
 ## Application State Issues
 

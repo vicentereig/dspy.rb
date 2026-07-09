@@ -38,7 +38,7 @@ module DSPy
           # OpenAI/Ollama: try to extract JSON from various formats
           extract_json_from_content(response.content)
         elsif adapter_class_name.include?('AnthropicAdapter')
-          # Anthropic: Beta API returns JSON in content, same as OpenAI/Gemini
+          # Anthropic: structured output returns JSON in content, same as OpenAI/Gemini
           extract_json_from_content(response.content)
         elsif adapter_class_name.include?('GeminiAdapter')
           # Gemini: try to extract JSON from various formats
@@ -97,14 +97,17 @@ module DSPy
 
         return unless structured_outputs_enabled
 
-        # Use Anthropic Beta API structured outputs
+        # Structured outputs live under the stable (non-beta) `output_config.format`
+        # shape. `output_format`/`betas` are deprecated by Anthropic in favor of
+        # this (see ADR under paul_docs/agent_docs/256/adr_reasoning_config.md);
+        # the adapter merges this with any `reasoning:`-derived effort into a
+        # single `output_config:` hash before calling the Anthropic client.
         schema = DSPy::Anthropic::LM::SchemaConverter.to_beta_format(signature_class)
 
-        request_params[:output_format] = ::Anthropic::Models::Beta::BetaJSONOutputFormat.new(
+        request_params[:output_format] = ::Anthropic::Models::JSONOutputFormat.new(
           type: :json_schema,
           schema: schema
         )
-        request_params[:betas] = ["structured-outputs-2025-11-13"]
       end
 
       # Gemini preparation

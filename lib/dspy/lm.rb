@@ -6,6 +6,7 @@ require 'securerandom'
 
 # Load adapter infrastructure
 require_relative 'lm/errors'
+require_relative 'lm/reasoning'
 require_relative 'lm/response'
 require_relative 'lm/adapter'
 require_relative 'lm/adapter_factory'
