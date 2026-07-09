@@ -123,15 +123,15 @@ RSpec.describe DSPy::LM::JSONStrategy do
         .and_return({ type: 'string' })
     end
 
-    it 'prepares request with Anthropic beta structured output format' do
+    it 'prepares request with Anthropic structured output format (non-beta output_config.format shape)' do
       messages = [{ role: 'user', content: 'Hello' }]
       request_params = {}
 
       strategy.prepare_request(messages, request_params)
 
-      expect(request_params[:output_format]).to be_a(Anthropic::Models::Beta::BetaJSONOutputFormat)
+      expect(request_params[:output_format]).to be_a(Anthropic::Models::JSONOutputFormat)
       expect(request_params[:output_format].type.to_s).to eq("json_schema")
-      expect(request_params[:betas]).to eq(["structured-outputs-2025-11-13"])
+      expect(request_params).not_to have_key(:betas)
     end
 
     it 'extracts JSON from beta structured output content' do
@@ -154,14 +154,13 @@ RSpec.describe DSPy::LM::JSONStrategy do
         allow(anthropic_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(true)
       end
 
-      it 'uses beta structured outputs' do
+      it 'uses structured outputs' do
         messages = [{ role: 'user', content: 'Hello' }]
         request_params = {}
 
         strategy.prepare_request(messages, request_params)
 
-        expect(request_params[:output_format]).to be_a(Anthropic::Models::Beta::BetaJSONOutputFormat)
-        expect(request_params[:betas]).to eq(["structured-outputs-2025-11-13"])
+        expect(request_params[:output_format]).to be_a(Anthropic::Models::JSONOutputFormat)
       end
     end
 
@@ -170,14 +169,13 @@ RSpec.describe DSPy::LM::JSONStrategy do
         allow(anthropic_adapter).to receive(:instance_variable_get).with(:@structured_outputs_enabled).and_return(false)
       end
 
-      it 'skips beta structured outputs' do
+      it 'skips structured outputs' do
         messages = [{ role: 'user', content: 'Hello' }]
         request_params = {}
 
         strategy.prepare_request(messages, request_params)
 
         expect(request_params[:output_format]).to be_nil
-        expect(request_params[:betas]).to be_nil
       end
 
       it 'uses enhanced prompting extraction' do

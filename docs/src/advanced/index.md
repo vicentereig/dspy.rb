@@ -23,4 +23,7 @@ Choose the package that owns an adapter or optional subsystem, then keep package
 ### [Module Runtime Context](./module-runtime-context/)
 Control language-model resolution and propagation when an integration needs call-scoped behavior. Add cross-cutting call behavior in [Module Lifecycle Callbacks](./module-lifecycle-callbacks/).
 
+### [Reasoning Effort & Temperature](./reasoning/)
+Configure Anthropic extended thinking, effort tiers, and model-aware `temperature`/`max_tokens` handling.
+
 The complete generated surface remains available in [llms-full.txt](/dspy.rb/llms-full.txt) when you need a single reference document.

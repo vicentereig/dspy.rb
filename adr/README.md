@@ -30,6 +30,7 @@ Each ADR is a sequentially numbered Markdown file with a descriptive name and fo
 | [009](009-gepa-telemetry-phase0.md) | GEPA Telemetry Phase 0 Plan | Accepted | 2025-10-19 | Initial telemetry system for GEPA optimizer |
 | [010](010-miprov2-packaging.md) | MIPROv2 Packaging | Accepted | 2025-10-21 | Packaging strategy for MIPROv2 gem with native dependencies |
 | [011](011-ci-matrix-bundler-caching.md) | CI Matrix Bundler Caching Strategy | Accepted | 2025-10-23 | Solution for bundler caching conflicts in GitHub Actions matrix builds |
+| [019](019-anthropic-reasoning-temperature-config.md) | `DSPy::Reasoning` Config Abstraction & Anthropic `temperature`/`max_tokens` Fix | Accepted | 2026-07-09 | Shared `DSPy::Reasoning` value object plus Anthropic effort/thinking mapping, model-capability registry, and model-aware `temperature`/`max_tokens` handling (fixes #256) |
 
 ## Creating a New ADR
 

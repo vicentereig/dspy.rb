@@ -38,6 +38,108 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
       adapter = described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', structured_outputs: false)
       expect(adapter.instance_variable_get(:@structured_outputs_enabled)).to be false
     end
+
+    it 'defaults max_tokens to 4096' do
+      adapter = described_class.new(model: 'claude-3-sonnet', api_key: 'test-key')
+      expect(adapter.instance_variable_get(:@max_tokens)).to eq(4096)
+    end
+
+    it 'accepts a custom max_tokens' do
+      adapter = described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', max_tokens: 16_384)
+      expect(adapter.instance_variable_get(:@max_tokens)).to eq(16_384)
+    end
+
+    describe 'reasoning: validation against model capabilities' do
+      it 'raises ConfigurationError for .budget on a model that only supports adaptive thinking' do
+        expect {
+          described_class.new(model: 'claude-sonnet-5', api_key: 'test-key', reasoning: DSPy::Reasoning.budget(2000))
+        }.to raise_error(DSPy::LM::ConfigurationError, /does not support manual thinking budgets/)
+      end
+
+      it 'raises ConfigurationError for a budget below the documented 1024 minimum' do
+        expect {
+          described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', reasoning: DSPy::Reasoning.budget(512))
+        }.to raise_error(DSPy::LM::ConfigurationError, />= 1024/)
+      end
+
+      it 'raises ConfigurationError when budget_tokens >= max_tokens' do
+        expect {
+          described_class.new(
+            model: 'claude-3-sonnet', api_key: 'test-key',
+            reasoning: DSPy::Reasoning.budget(4096), max_tokens: 4096
+          )
+        }.to raise_error(DSPy::LM::ConfigurationError, /less than max_tokens/)
+      end
+
+      it 'allows .budget within range on a model with manual budget support' do
+        expect {
+          described_class.new(
+            model: 'claude-3-sonnet', api_key: 'test-key',
+            reasoning: DSPy::Reasoning.budget(2000), max_tokens: 4096
+          )
+        }.not_to raise_error
+      end
+
+      it 'raises ConfigurationError for .adaptive on a model without adaptive thinking support' do
+        expect {
+          described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', reasoning: DSPy::Reasoning.adaptive)
+        }.to raise_error(DSPy::LM::ConfigurationError, /does not support adaptive thinking/)
+      end
+
+      it 'allows .adaptive on a model with adaptive thinking support' do
+        expect {
+          described_class.new(model: 'claude-opus-4-8', api_key: 'test-key', reasoning: DSPy::Reasoning.adaptive)
+        }.not_to raise_error
+      end
+
+      it 'raises ConfigurationError for .disabled on a model where thinking is always on' do
+        expect {
+          described_class.new(model: 'claude-fable-5', api_key: 'test-key', reasoning: DSPy::Reasoning.disabled)
+        }.to raise_error(DSPy::LM::ConfigurationError, /always on/)
+      end
+
+      it 'allows .disabled on a model that supports disabling thinking' do
+        expect {
+          described_class.new(model: 'claude-opus-4-8', api_key: 'test-key', reasoning: DSPy::Reasoning.disabled)
+        }.not_to raise_error
+      end
+
+      it 'raises ConfigurationError for any effort tier on a model with no effort support at all' do
+        expect {
+          described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', reasoning: DSPy::Reasoning.low)
+        }.to raise_error(DSPy::LM::ConfigurationError, /does not support DSPy::Reasoning effort tiers/)
+      end
+
+      it 'allows low/medium/high effort on a model with effort support' do
+        expect {
+          described_class.new(model: 'claude-opus-4-5', api_key: 'test-key', reasoning: DSPy::Reasoning.high)
+        }.not_to raise_error
+      end
+
+      it 'raises ConfigurationError for .xhigh on a model without xhigh support' do
+        expect {
+          described_class.new(model: 'claude-opus-4-5', api_key: 'test-key', reasoning: DSPy::Reasoning.xhigh)
+        }.to raise_error(DSPy::LM::ConfigurationError, /does not support DSPy::Reasoning.xhigh/)
+      end
+
+      it 'allows .xhigh on a model with xhigh support' do
+        expect {
+          described_class.new(model: 'claude-sonnet-5', api_key: 'test-key', reasoning: DSPy::Reasoning.xhigh)
+        }.not_to raise_error
+      end
+
+      it 'raises ConfigurationError for .max on a model without max support' do
+        expect {
+          described_class.new(model: 'claude-opus-4-5', api_key: 'test-key', reasoning: DSPy::Reasoning.max)
+        }.to raise_error(DSPy::LM::ConfigurationError, /does not support DSPy::Reasoning.max/)
+      end
+
+      it 'allows .max on a model with max support' do
+        expect {
+          described_class.new(model: 'claude-sonnet-5', api_key: 'test-key', reasoning: DSPy::Reasoning.max)
+        }.not_to raise_error
+      end
+    end
   end
 
   describe '#chat' do
@@ -58,7 +160,7 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
                           to_h: { 'total_tokens' => 30 }))
     end
 
-    context 'standard API (without output_format)' do
+    context 'default request shape' do
       it 'makes successful API call and returns normalized response' do
         expect(mock_messages).to receive(:create).with(
           model: 'claude-3-sonnet',
@@ -79,84 +181,193 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
         expect(result.metadata.model).to eq('claude-3-sonnet')
         expect(result.metadata.response_id).to eq('msg-123')
       end
+
+      it 'uses the configured max_tokens instead of a hardcoded value' do
+        adapter = described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', max_tokens: 8192)
+
+        expect(mock_messages).to receive(:create).with(
+          hash_including(max_tokens: 8192)
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
     end
 
-    context 'Beta API (with output_format)' do
-      let(:mock_beta) { double('Anthropic::Beta') }
-      let(:mock_beta_messages) { double('Anthropic::Beta::Messages') }
+    context 'structured outputs (non-beta output_config.format)' do
       let(:output_format) do
         double('OutputFormat', type: :json_schema, schema: { type: 'object' })
       end
 
-      before do
-        allow(mock_client).to receive(:beta).and_return(mock_beta)
-        allow(mock_beta).to receive(:messages).and_return(mock_beta_messages)
-      end
-
-      it 'routes to beta.messages.create when output_format is present' do
-        expect(mock_beta_messages).to receive(:create).with(
+      it 'sends output_format nested under output_config, not as a top-level/beta param' do
+        expect(mock_messages).to receive(:create).with(
           model: 'claude-3-sonnet',
           messages: [{ role: 'user', content: 'Hello' }],
           system: 'You are helpful',
           max_tokens: 4096,
           temperature: 0.0,
-          output_format: output_format,
-          betas: ['structured-outputs-2025-11-13']
+          output_config: { format: output_format }
         ).and_return(mock_response)
 
-        result = adapter.chat(
-          messages: messages,
-          output_format: output_format,
-          betas: ['structured-outputs-2025-11-13']
-        )
+        result = adapter.chat(messages: messages, output_format: output_format)
 
         expect(result).to be_a(DSPy::LM::Response)
         expect(result.content).to eq('Hello back!')
       end
 
-      it 'routes to beta.messages.stream when output_format is present with block' do
+      it 'never calls the beta messages endpoint' do
+        allow(mock_client).to receive(:messages).and_return(mock_messages)
+        expect(mock_client).not_to receive(:beta)
+        allow(mock_messages).to receive(:create).and_return(mock_response)
+
+        adapter.chat(messages: messages, output_format: output_format)
+      end
+
+      it 'streams via the non-beta client when output_format is present with a block' do
         block_called = false
         test_block = proc { |chunk| block_called = true }
 
-        expect(mock_beta_messages).to receive(:stream).with(
-          model: 'claude-3-sonnet',
-          messages: [{ role: 'user', content: 'Hello' }],
-          system: 'You are helpful',
-          max_tokens: 4096,
-          temperature: 0.0,
-          stream: true,
-          output_format: output_format,
-          betas: ['structured-outputs-2025-11-13']
+        expect(mock_messages).to receive(:stream).with(
+          hash_including(output_config: { format: output_format }, stream: true)
         ).and_yield(
           double('Chunk',
                  delta: double('Delta', text: 'Hello'),
                  respond_to?: ->(method) { method == :delta })
         )
 
-        result = adapter.chat(
-          messages: messages,
-          output_format: output_format,
-          betas: ['structured-outputs-2025-11-13'],
-          &test_block
-        )
+        result = adapter.chat(messages: messages, output_format: output_format, &test_block)
 
         expect(block_called).to be true
         expect(result).to be_a(DSPy::LM::Response)
       end
 
-      it 'does not apply JSON prefilling when using Beta API' do
-        # Should not call prepare_messages_for_json when output_format is present
+      it 'does not apply JSON prefilling when output_format is present' do
         expect(adapter).not_to receive(:prepare_messages_for_json)
 
-        expect(mock_beta_messages).to receive(:create).with(
-          hash_including(output_format: output_format)
+        expect(mock_messages).to receive(:create).with(
+          hash_including(output_config: { format: output_format })
         ).and_return(mock_response)
 
-        adapter.chat(
-          messages: messages,
-          output_format: output_format,
-          betas: ['structured-outputs-2025-11-13']
-        )
+        adapter.chat(messages: messages, output_format: output_format)
+      end
+    end
+
+    context 'reasoning: effort tiers merged into output_config' do
+      let(:adapter) { described_class.new(model: 'claude-opus-4-5', api_key: 'test-key', reasoning: DSPy::Reasoning.high) }
+
+      it 'sends output_config.effort even without a structured-output format' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(output_config: { effort: :high })
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+
+      it 'combines effort and format under a single output_config when both are present' do
+        output_format = double('OutputFormat', type: :json_schema, schema: { type: 'object' })
+
+        expect(mock_messages).to receive(:create).with(
+          hash_including(output_config: { format: output_format, effort: :high })
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages, output_format: output_format)
+      end
+    end
+
+    context 'reasoning: manual budget sends a thinking param' do
+      let(:adapter) { described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', reasoning: DSPy::Reasoning.budget(2000)) }
+
+      it 'sends thinking: {type: :enabled, budget_tokens: ...}' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(thinking: { type: :enabled, budget_tokens: 2000 })
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+
+      it 'omits the implicit default temperature because thinking is active' do
+        expect(mock_messages).to receive(:create).with(
+          hash_excluding(:temperature)
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+    end
+
+    context 'reasoning: adaptive thinking' do
+      let(:adapter) { described_class.new(model: 'claude-opus-4-8', api_key: 'test-key', reasoning: DSPy::Reasoning.adaptive) }
+
+      it 'sends thinking: {type: :adaptive}' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(thinking: { type: :adaptive })
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+    end
+
+    context 'reasoning: disabled thinking' do
+      let(:adapter) { described_class.new(model: 'claude-opus-4-8', api_key: 'test-key', reasoning: DSPy::Reasoning.disabled) }
+
+      it 'sends thinking: {type: :disabled}' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(thinking: { type: :disabled })
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+    end
+
+    context 'reasoning: disabled thinking on a model without fixed sampling' do
+      let(:adapter) { described_class.new(model: 'claude-opus-4-6', api_key: 'test-key', reasoning: DSPy::Reasoning.disabled) }
+
+      it 'still applies the legacy default temperature since thinking is not actually active' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(temperature: 0.0)
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+    end
+
+    context 'temperature handling (#256)' do
+      it 'defaults to 0.0 when not passed and the model has no restrictions' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(temperature: 0.0)
+        ).and_return(mock_response)
+
+        described_class.new(model: 'claude-3-sonnet', api_key: 'test-key').chat(messages: messages)
+      end
+
+      it 'omits temperature by default on a fixed-sampling model (e.g. claude-sonnet-5)' do
+        expect(mock_messages).to receive(:create).with(
+          hash_excluding(:temperature)
+        ).and_return(mock_response)
+
+        described_class.new(model: 'claude-sonnet-5', api_key: 'test-key').chat(messages: messages)
+      end
+
+      it 'sends an explicit temperature even on a fixed-sampling model' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(temperature: 0.7)
+        ).and_return(mock_response)
+
+        described_class.new(model: 'claude-sonnet-5', api_key: 'test-key', temperature: 0.7).chat(messages: messages)
+      end
+
+      it 'omits temperature when explicitly set to nil' do
+        expect(mock_messages).to receive(:create).with(
+          hash_excluding(:temperature)
+        ).and_return(mock_response)
+
+        described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', temperature: nil).chat(messages: messages)
+      end
+
+      it 'sends an explicit temperature of 0.0 verbatim (distinct from "not passed")' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(temperature: 0.0)
+        ).and_return(mock_response)
+
+        described_class.new(model: 'claude-sonnet-5', api_key: 'test-key', temperature: 0.0).chat(messages: messages)
       end
     end
 
