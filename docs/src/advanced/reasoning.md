@@ -67,7 +67,9 @@ DSPy.configure { |c| c.lm = lm }
 
 ### Effort tiers vs. extended thinking
 
-Effort (`.low`/`.medium`/`.high`/`.xhigh`/`.max`) and extended thinking (`.budget`/`.adaptive`/`.disabled`) are independent Anthropic features. `DSPy::Reasoning` only lets you set one *or* the other per `DSPy::LM` instance — you can't currently request "effort: high AND adaptive thinking on" in a single value. If you need both, that's a real limitation of the current API; please open an issue if it blocks you.
+Effort (`.low`/`.medium`/`.high`/`.xhigh`/`.max`) and extended thinking (`.budget`/`.adaptive`/`.disabled`) are independent Anthropic features. `DSPy::Reasoning` only lets you set one *or* the other per value — you can't construct a single `DSPy::Reasoning` that means "effort: high AND a manual thinking budget." If you need both, that's a real limitation of the current API; please open an issue if it blocks you.
+
+That said, on **opt-in-adaptive model families** (Opus 4.7/4.8, Opus/Sonnet 4.6), the adapter automatically adds `thinking: { type: "adaptive" }` whenever you pass an effort tier. Anthropic's docs are explicit that these models run *without* thinking unless that flag is set, independent of `output_config.effort` — so without this, `DSPy::Reasoning.high` on Opus 4.8 would silently change token spend without engaging the model's actual reasoning. On models where thinking is already on by default (Sonnet 5) or always on (Fable 5, Mythos 5), or where adaptive thinking isn't available at all (Opus 4.5), effort tiers are sent as-is with no implicit `thinking` param.
 
 ### Model support varies by family
 
@@ -117,14 +119,14 @@ If you never pass `temperature:` or `reasoning:` at all, existing code keeps wor
 
 ```ruby
 DSPy::LM.new(
-  "anthropic/claude-opus-4-8",
+  "anthropic/claude-opus-4-6",
   api_key: ENV["ANTHROPIC_API_KEY"],
   max_tokens: 16_384,
   reasoning: DSPy::Reasoning.budget(8_000)
 )
 ```
 
-Increase it when using `DSPy::Reasoning.budget(n)` with a large token budget, since Anthropic requires `budget_tokens < max_tokens`.
+Increase it when using `DSPy::Reasoning.budget(n)` with a large token budget, since Anthropic requires `budget_tokens < max_tokens`. Note that `.budget(n)` requires a model where manual thinking budgets are still supported (e.g. Opus/Sonnet 4.6); newer models like Opus 4.7/4.8 or Sonnet 5 are adaptive-only and reject manual budgets — use `DSPy::Reasoning.adaptive` or an effort tier on those instead.
 
 ## Structured outputs compose with reasoning
 

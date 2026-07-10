@@ -33,6 +33,24 @@ module DSPy
     const :adaptive, T::Boolean, default: false
     const :disabled, T::Boolean, default: false
 
+    sig { params(args: T.untyped).void }
+    def initialize(**args)
+      super
+
+      active = {
+        effort: !effort.nil?,
+        budget_tokens: !budget_tokens.nil?,
+        adaptive: adaptive,
+        disabled: disabled
+      }.select { |_, set| set }.keys
+
+      if active.size > 1
+        raise DSPy::LM::ConfigurationError,
+          "DSPy::Reasoning represents exactly one reasoning mode at a time " \
+          "(effort, budget_tokens, adaptive, or disabled), but #{active.size} were set: #{active.join(', ')}."
+      end
+    end
+
     class << self
       extend T::Sig
 

@@ -99,9 +99,13 @@ The namespace is `DSPy::Reasoning` (top-level), matching the maintainer's own #2
 
 It is a discriminated union: exactly one reasoning mode is set per instance. A single value can't express "effort X *and* adaptive thinking on" simultaneously — this matches the maintainer's own #247 examples, but is a real expressiveness limit (see Consequences).
 
+**Revised during PR #257 review**: the "exactly one mode" invariant above was initially only true for the factory methods (`.low`, `.budget`, etc.) — nothing stopped a caller from bypassing them with `DSPy::Reasoning.new(effort: ..., budget_tokens: ...)` directly, which the adapter would then have translated into two independent, contradictory request params. `DSPy::Reasoning#initialize` now counts how many of `effort/budget_tokens/adaptive/disabled` are actually set (non-nil/non-`false`) and raises `DSPy::LM::ConfigurationError` if more than one is, regardless of construction path. Zero modes set (i.e. `DSPy::Reasoning.new` with no args) is still valid and behaves like `reasoning: nil` — only *multiple* simultaneous modes are rejected.
+
 ### 3. Anthropic effort mapping: real mapping, not a blanket raise
 
-`.low/.medium/.high/.xhigh/.max` map to `output_config: { effort: <value> }`. This does **not** touch `thinking` — per the docs, effort works with or without thinking enabled, and auto-injecting a `thinking` key would be undocumented, invented behavior for models where thinking defaults to off.
+`.low/.medium/.high/.xhigh/.max` map to `output_config: { effort: <value> }`.
+
+**Revised during PR #257 review** (`vicentereig`, 2026-07-09): the initial implementation deliberately left `thinking` untouched for effort-only reasoning, reasoning that effort works with or without thinking per the docs. That's true in general, but it missed a model-specific detail: on **opt-in-adaptive** families (`capability.adaptive_thinking == :opt_in`; Opus 4.7/4.8, Opus/Sonnet 4.6), Anthropic's own Opus 4.8 migration guidance states requests run *without* thinking unless `thinking: { type: "adaptive" }` is explicitly set — independent of `output_config.effort`. Without that, `DSPy::Reasoning.high` on those models silently changed only the non-thinking token budget, which contradicts the public API's name. The adapter now auto-adds `thinking: { type: "adaptive" }` alongside `output_config.effort` specifically for `:opt_in` models; `:default_on`/`:always_on` models (already thinking) and models with `adaptive_thinking: false` (can't think at all) are unaffected.
 
 `.low/.medium/.high` are validated against `capability.effort` (raises for models that predate the effort parameter entirely, e.g. pre-4.5 models). `.xhigh` and `.max` are additionally validated against `capability.xhigh_effort`/`capability.max_effort` and raise `DSPy::LM::ConfigurationError` for families that don't support them (e.g. `.xhigh` on `claude-opus-4-6`).
 
@@ -202,15 +206,17 @@ Effective `temperature` sent on each request:
 
 | Caller passed | Behavior |
 |---|---|
-| nothing (`NOT_SET`) | omit the key if `capability.fixed_sampling` **or** this request sends an active `thinking` key (i.e. `reasoning:` is `.budget(n)` or `.adaptive`); otherwise legacy default `0.0` |
-| `temperature: nil` | always omitted, regardless of model or `reasoning:` |
-| `temperature: <float>` | always sent as given, regardless of model or `reasoning:` (fails loudly via the API's own 400 if incompatible — we don't second-guess an explicit value) |
+| nothing (`NOT_SET`), and no per-call `temperature:` on that specific `#chat` call | omit the key if `capability.fixed_sampling` **or** this request sends an active `thinking` key (i.e. `reasoning:` is `.budget(n)`/`.adaptive`, or an effort tier on an `:opt_in` model — see §3); otherwise legacy default `0.0` |
+| `temperature: nil` (constructor or per-call) | always omitted, regardless of model or `reasoning:` |
+| `temperature: <float>` (constructor or per-call) | always sent as given, regardless of model or `reasoning:` (fails loudly via the API's own 400 if incompatible — we don't second-guess an explicit value) |
+
+**Revised during PR #257 review**: a per-call `temperature:` passed to `#chat` (as opposed to the constructor) is now checked *before* falling back to `effective_temperature`, and takes priority over it — including over an explicit constructor-level `temperature:`. Pre-#256, per-call params always won because they were merged into `request_params` last; the original #256 patch reversed that by unconditionally overwriting `request_params[:temperature]` with `effective_temperature` right after the merge, silently dropping any per-call override. Fixed by checking `extra_params.key?(:temperature)` first and only computing `effective_temperature` when the call itself didn't specify one.
 
 Two independent reasons feed the implicit omission:
 1. **Model-level**: `claude-sonnet-5`/`claude-opus-4-7`/`claude-opus-4-8`/`claude-fable-5`/`claude-mythos-5` reject non-default `temperature` on *every* request, thinking or not (`capability.fixed_sampling`). This directly fixes #256's default-path case.
-2. **Feature-level, model-independent**: Anthropic's extended-thinking docs state that *"Thinking isn't compatible with `temperature` or `top_k` modifications."* So whenever `reasoning:` produces an active `thinking` key (`.budget(n)`, `.adaptive`), the implicit `temperature: 0.0` default is omitted even on classic models like `claude-opus-4-6` where `fixed_sampling` is `false`. `.disabled` does **not** trigger this (thinking is explicitly off, so classic temperature behavior applies). `.low/.medium/.high/.xhigh/.max` (effort-only, no `thinking` key) also do **not** trigger this — they leave the model's own `temperature` behavior untouched unless the model is separately `fixed_sampling`.
+2. **Feature-level, model-independent**: Anthropic's extended-thinking docs state that *"Thinking isn't compatible with `temperature` or `top_k` modifications."* So whenever `reasoning:` produces an active `thinking` key (`.budget(n)`, `.adaptive`, or — per the §3 revision — an effort tier on an `:opt_in` model), the implicit `temperature: 0.0` default is omitted even on classic models like `claude-opus-4-6` where `fixed_sampling` is `false`. `.disabled` does **not** trigger this (thinking is explicitly off, so classic temperature behavior applies). Effort tiers on non-`:opt_in` models also do **not** trigger this — they leave the model's own `temperature` behavior untouched unless the model is separately `fixed_sampling`.
 
-This satisfies requirement #5 from the maintainer: the *default* call path (no `reasoning:`, no `temperature:`) now omits the parameter automatically for the fixed-sampling models, fixing the reported bug even for users who never touch the new `reasoning:` API — and it also fixes the same class of bug for anyone who *does* use `.budget(n)`/`.adaptive` on an older model.
+This satisfies requirement #5 from the maintainer: the *default* call path (no `reasoning:`, no `temperature:`) now omits the parameter automatically for the fixed-sampling models, fixing the reported bug even for users who never touch the new `reasoning:` API — and it also fixes the same class of bug for anyone who *does* use `.budget(n)`/`.adaptive`/an opt-in effort tier on an applicable model.
 
 ### 7. `max_tokens`: general constructor kwarg
 
@@ -225,6 +231,8 @@ This satisfies requirement #5 from the maintainer: the *default* call path (no `
 - `.disabled` raises if `capability.thinking_disable == false` (Fable 5, Mythos 5, Mythos Preview).
 - `.xhigh`/`.max` raise if the corresponding capability flag is false.
 - `.low/.medium/.high` raise if `capability.effort == false` (unrecognized/old models via `DEFAULT`).
+- `DSPy::Reasoning.new(...)` itself raises `ConfigurationError` if more than one of `effort/budget_tokens/adaptive/disabled` is set (added in the PR #257 review; see §2).
+- `reasoning:` on any non-Anthropic provider (OpenAI, Gemini, Ollama, OpenRouter, RubyLLM) raises `DSPy::LM::ConfigurationError` from `DSPy::LM::AdapterFactory.create`, checked once centrally before the adapter is constructed — added in the PR #257 review so all providers fail the same way, instead of a raw `ArgumentError` (adapters with no `reasoning:` keyword) or silent no-op (`RubyLLMAdapter`'s `**options`).
 
 All validated in the constructor (`DSPy::LM.new(...)` time), not on first request — cheap failure, matches "fail loudly."
 
@@ -267,9 +275,9 @@ All validated in the constructor (`DSPy::LM.new(...)` time), not on first reques
 | `DSPy::Reasoning` | Request shape | Model-capability gate |
 |---|---|---|
 | `nil` (not passed) | *(no `thinking`/`output_config.effort`)* | — |
-| `.low/.medium/.high` | `output_config: { effort: <value> }` | `capability.effort` |
-| `.xhigh` | `output_config: { effort: 'xhigh' }` | `capability.xhigh_effort` |
-| `.max` | `output_config: { effort: 'max' }` | `capability.max_effort` |
+| `.low/.medium/.high` | `output_config: { effort: <value> }`, plus `thinking: { type: 'adaptive' }` if `capability.adaptive_thinking == :opt_in` | `capability.effort` |
+| `.xhigh` | `output_config: { effort: 'xhigh' }`, plus `thinking: { type: 'adaptive' }` if `capability.adaptive_thinking == :opt_in` | `capability.xhigh_effort` |
+| `.max` | `output_config: { effort: 'max' }`, plus `thinking: { type: 'adaptive' }` if `capability.adaptive_thinking == :opt_in` | `capability.max_effort` |
 | `.budget(n)` | `thinking: { type: 'enabled', budget_tokens: n }` | `capability.manual_budget` truthy; `1024 <= n < max_tokens` |
 | `.adaptive` | `thinking: { type: 'adaptive' }` | `capability.adaptive_thinking` truthy |
 | `.disabled` | `thinking: { type: 'disabled' }` | `capability.thinking_disable` |
