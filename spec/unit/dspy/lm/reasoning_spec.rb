@@ -84,4 +84,47 @@ RSpec.describe DSPy::Reasoning do
       )
     end
   end
+
+  describe 'one-mode invariant (PR #257 review)' do
+    it 'allows constructing a struct with no mode set at all (equivalent to reasoning: nil)' do
+      expect { described_class.new }.not_to raise_error
+    end
+
+    it 'allows constructing a struct with exactly one mode set directly' do
+      expect { described_class.new(effort: described_class::Effort::High) }.not_to raise_error
+      expect { described_class.new(budget_tokens: 2_000) }.not_to raise_error
+      expect { described_class.new(adaptive: true) }.not_to raise_error
+      expect { described_class.new(disabled: true) }.not_to raise_error
+    end
+
+    it 'raises ConfigurationError when effort and budget_tokens are both set' do
+      expect {
+        described_class.new(effort: described_class::Effort::High, budget_tokens: 2_000)
+      }.to raise_error(DSPy::LM::ConfigurationError, /exactly one/i)
+    end
+
+    it 'raises ConfigurationError when effort and adaptive are both set' do
+      expect {
+        described_class.new(effort: described_class::Effort::High, adaptive: true)
+      }.to raise_error(DSPy::LM::ConfigurationError, /exactly one/i)
+    end
+
+    it 'raises ConfigurationError when budget_tokens and disabled are both set' do
+      expect {
+        described_class.new(budget_tokens: 2_000, disabled: true)
+      }.to raise_error(DSPy::LM::ConfigurationError, /exactly one/i)
+    end
+
+    it 'raises ConfigurationError when adaptive and disabled are both set' do
+      expect {
+        described_class.new(adaptive: true, disabled: true)
+      }.to raise_error(DSPy::LM::ConfigurationError, /exactly one/i)
+    end
+
+    it 'raises ConfigurationError for three modes set at once' do
+      expect {
+        described_class.new(effort: described_class::Effort::Low, budget_tokens: 2_000, adaptive: true)
+      }.to raise_error(DSPy::LM::ConfigurationError, /exactly one/i)
+    end
+  end
 end

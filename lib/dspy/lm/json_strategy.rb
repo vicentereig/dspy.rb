@@ -99,9 +99,9 @@ module DSPy
 
         # Structured outputs live under the stable (non-beta) `output_config.format`
         # shape. `output_format`/`betas` are deprecated by Anthropic in favor of
-        # this (see ADR under paul_docs/agent_docs/256/adr_reasoning_config.md);
-        # the adapter merges this with any `reasoning:`-derived effort into a
-        # single `output_config:` hash before calling the Anthropic client.
+        # this (see adr/019-anthropic-reasoning-temperature-config.md); the adapter
+        # merges this with any `reasoning:`-derived effort into a single
+        # `output_config:` hash before calling the Anthropic client.
         schema = DSPy::Anthropic::LM::SchemaConverter.to_beta_format(signature_class)
 
         request_params[:output_format] = ::Anthropic::Models::JSONOutputFormat.new(

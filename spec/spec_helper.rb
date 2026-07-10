@@ -64,18 +64,20 @@ VCR.configure do |config|
     end
   end
 
-  # Organization IDs in Anthropic responses
+  # Organization IDs in Anthropic responses. Anthropic has used both
+  # `Anthropic-Organization` and (newer) `Anthropic-Organization-Id` header
+  # names across API versions — filter both so a real org UUID never lands
+  # in a committed cassette regardless of which one the live API returns.
   config.filter_sensitive_data('<ANTHROPIC_ORGANIZATION>') do |interaction|
-    if interaction.response.headers['Anthropic-Organization']
-      interaction.response.headers['Anthropic-Organization'].first
-    end
+    interaction.response.headers['Anthropic-Organization']&.first ||
+      interaction.response.headers['Anthropic-Organization-Id']&.first
   end
 
-  # Request IDs that might be sensitive
+  # Request IDs that might be sensitive. Same header-name drift as above:
+  # `X-Request-Id` (older) vs. `Request-Id` (current Anthropic API).
   config.filter_sensitive_data('<REQUEST_ID>') do |interaction|
-    if interaction.response.headers['X-Request-Id']
-      interaction.response.headers['X-Request-Id'].first
-    end
+    interaction.response.headers['X-Request-Id']&.first ||
+      interaction.response.headers['Request-Id']&.first
   end
 
   # Filter out cookies - use a more comprehensive approach
@@ -102,9 +104,17 @@ VCR.configure do |config|
       interaction.response.headers['Anthropic-Organization'] = ['<ANTHROPIC_ORGANIZATION>']
     end
 
+    if interaction.response.headers['Anthropic-Organization-Id']
+      interaction.response.headers['Anthropic-Organization-Id'] = ['<ANTHROPIC_ORGANIZATION>']
+    end
+
     # Redact request IDs
     if interaction.response.headers['X-Request-Id']
       interaction.response.headers['X-Request-Id'] = ['<REQUEST_ID>']
+    end
+
+    if interaction.response.headers['Request-Id']
+      interaction.response.headers['Request-Id'] = ['<REQUEST_ID>']
     end
 
     # Filter NewRelic license keys in URLs

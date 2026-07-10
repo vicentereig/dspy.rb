@@ -55,13 +55,20 @@ module DSPy
               user_messages = prepare_messages_for_json(user_messages, system_message)
             end
 
+            # A per-call `temperature:` (passed to #chat, e.g. via a strategy or a
+            # direct caller) takes priority over the adapter's own default/effective
+            # temperature — restores pre-#256 override semantics. `nil` here means
+            # "omit the key", same as the constructor-level sentinel.
+            per_call_temperature_given = extra_params.key?(:temperature)
+            per_call_temperature = extra_params.delete(:temperature)
+
             request_params = {
               model: model,
               messages: user_messages,
               max_tokens: @max_tokens
             }.merge(extra_params)
 
-            temperature = effective_temperature
+            temperature = per_call_temperature_given ? per_call_temperature : effective_temperature
             request_params[:temperature] = temperature unless temperature.nil?
 
             request_params[:thinking] = @thinking_param if @thinking_param
@@ -183,8 +190,16 @@ module DSPy
           end
 
           # `nil` reasoning => no `thinking` param at all (classic behavior).
-          # Effort-only reasoning (.low/.medium/.high/.xhigh/.max) also returns nil
-          # here; it's handled entirely by #build_effort_param/#build_output_config.
+          #
+          # Effort-only reasoning (.low/.medium/.high/.xhigh/.max) normally
+          # returns nil here too — #build_effort_param/#build_output_config
+          # handle `output_config.effort` on their own. The one exception is
+          # "opt-in adaptive" model families (Opus 4.7/4.8, Opus/Sonnet 4.6):
+          # per Anthropic's docs, those models run *without* thinking unless
+          # `thinking: { type: "adaptive" }` is explicitly set, regardless of
+          # `output_config.effort`. Without this, `DSPy::Reasoning.high` would
+          # silently not enable any actual reasoning on those models — see
+          # PR #257 review.
           def build_thinking_param(reasoning)
             return nil if reasoning.nil?
 
@@ -197,6 +212,8 @@ module DSPy
             elsif reasoning.disabled
               validate_thinking_disable!
               { type: :disabled }
+            elsif reasoning.effort && @capability.adaptive_thinking == :opt_in
+              { type: :adaptive }
             end
           end
 

@@ -16,6 +16,13 @@ module DSPy
 
       PROVIDERS_WITH_EXTRA_OPTIONS = %w[openai anthropic ollama gemini openrouter ruby_llm].freeze
 
+      # `reasoning:` is currently implemented only for the Anthropic adapter
+      # (see adr/019-anthropic-reasoning-temperature-config.md). Checked here,
+      # once, so every provider fails the same way instead of each adapter
+      # either raising a raw ArgumentError (no `reasoning:` keyword declared)
+      # or silently ignoring it (RubyLLMAdapter's `**options`).
+      REASONING_SUPPORTED_PROVIDERS = %w[anthropic].freeze
+
       class AdapterData < Data.define(:class_name, :gem_name)
         def self.from_prefix(provider_prefix)
           if ADAPTER_MAP.key?(provider_prefix)
@@ -37,7 +44,8 @@ module DSPy
         def create(model_id, api_key:, **options)
           provider, model = parse_model_id(model_id)
           adapter_class = get_adapter_class(provider)
-          
+          ensure_reasoning_supported!(provider, options)
+
           # Pass provider-specific options
           adapter_options = { model: model, api_key: api_key }
           # Some providers accept additional options
@@ -47,6 +55,15 @@ module DSPy
         end
 
         private
+
+        def ensure_reasoning_supported!(provider, options)
+          return unless options.key?(:reasoning) && !options[:reasoning].nil?
+          return if REASONING_SUPPORTED_PROVIDERS.include?(provider)
+
+          raise DSPy::LM::ConfigurationError,
+            "reasoning: is currently supported only by the Anthropic adapter " \
+            "(got provider: #{provider.inspect}). See adr/019-anthropic-reasoning-temperature-config.md."
+        end
 
         # Parse model_id to determine provider and model
         def parse_model_id(model_id)

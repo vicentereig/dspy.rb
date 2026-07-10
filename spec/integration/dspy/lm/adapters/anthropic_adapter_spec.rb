@@ -273,6 +273,71 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
       end
     end
 
+    context 'reasoning: effort tiers on an opt-in adaptive model (PR #257 review)' do
+      # Opus 4.7/4.8 (and Opus/Sonnet 4.6) ship with adaptive thinking *opt-in*:
+      # per Anthropic's docs, requests run without thinking unless
+      # `thinking: { type: "adaptive" }` is explicitly set, independent of
+      # `output_config.effort`. So DSPy::Reasoning.high/.xhigh/.max must also
+      # turn on thinking here, or the "reasoning" name would be misleading.
+      let(:adapter) { described_class.new(model: 'claude-opus-4-8', api_key: 'test-key', reasoning: DSPy::Reasoning.high) }
+
+      it 'sends both thinking: {type: :adaptive} and output_config.effort' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(
+            thinking: { type: :adaptive },
+            output_config: { effort: :high }
+          )
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+
+      it 'does so for every effort tier on an opt-in model, not just .high' do
+        [
+          [DSPy::Reasoning.low, :low],
+          [DSPy::Reasoning.medium, :medium],
+          [DSPy::Reasoning.xhigh, :xhigh],
+          [DSPy::Reasoning.max, :max]
+        ].each do |reasoning, expected_effort|
+          adapter = described_class.new(model: 'claude-opus-4-8', api_key: 'test-key', reasoning: reasoning)
+
+          expect(mock_messages).to receive(:create).with(
+            hash_including(thinking: { type: :adaptive }, output_config: { effort: expected_effort })
+          ).and_return(mock_response)
+
+          adapter.chat(messages: messages)
+        end
+      end
+
+      it 'omits the implicit default temperature, since thinking becomes active' do
+        expect(mock_messages).to receive(:create).with(
+          hash_excluding(:temperature)
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+
+      it 'does not add a thinking param for effort tiers on a default-on adaptive model (e.g. claude-sonnet-5)' do
+        adapter = described_class.new(model: 'claude-sonnet-5', api_key: 'test-key', reasoning: DSPy::Reasoning.high)
+
+        expect(mock_messages).to receive(:create).with(
+          hash_excluding(:thinking)
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+
+      it 'does not add a thinking param for effort tiers on a model without adaptive thinking at all (e.g. claude-opus-4-5)' do
+        adapter = described_class.new(model: 'claude-opus-4-5', api_key: 'test-key', reasoning: DSPy::Reasoning.high)
+
+        expect(mock_messages).to receive(:create).with(
+          hash_excluding(:thinking)
+        ).and_return(mock_response)
+
+        adapter.chat(messages: messages)
+      end
+    end
+
     context 'reasoning: manual budget sends a thinking param' do
       let(:adapter) { described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', reasoning: DSPy::Reasoning.budget(2000)) }
 
@@ -368,6 +433,31 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
         ).and_return(mock_response)
 
         described_class.new(model: 'claude-sonnet-5', api_key: 'test-key', temperature: 0.0).chat(messages: messages)
+      end
+
+      it 'preserves a per-call temperature: passed to #chat instead of applying the implicit default (PR #257 review)' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(temperature: 0.7)
+        ).and_return(mock_response)
+
+        described_class.new(model: 'claude-3-sonnet', api_key: 'test-key').chat(messages: messages, temperature: 0.7)
+      end
+
+      it 'preserves an explicit per-call temperature: nil, distinct from the constructor default' do
+        expect(mock_messages).to receive(:create).with(
+          hash_excluding(:temperature)
+        ).and_return(mock_response)
+
+        described_class.new(model: 'claude-3-sonnet', api_key: 'test-key').chat(messages: messages, temperature: nil)
+      end
+
+      it 'lets a per-call temperature: override an explicit constructor-level temperature' do
+        expect(mock_messages).to receive(:create).with(
+          hash_including(temperature: 0.9)
+        ).and_return(mock_response)
+
+        described_class.new(model: 'claude-3-sonnet', api_key: 'test-key', temperature: 0.2)
+          .chat(messages: messages, temperature: 0.9)
       end
     end
 

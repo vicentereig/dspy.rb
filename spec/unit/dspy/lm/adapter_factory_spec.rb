@@ -50,6 +50,38 @@ RSpec.describe DSPy::LM::AdapterFactory do
       described_class.create('openai/gpt-4', api_key: 'test-key')
     end
 
+    describe 'reasoning: is currently Anthropic-only (PR #257 review)' do
+      it 'raises ConfigurationError for openai/ when reasoning: is passed' do
+        expect {
+          described_class.create('openai/gpt-4', api_key: 'test-key', reasoning: DSPy::Reasoning.high)
+        }.to raise_error(DSPy::LM::ConfigurationError, /reasoning:.*only.*Anthropic/i)
+      end
+
+      it 'raises ConfigurationError for gemini/ when reasoning: is passed' do
+        expect {
+          described_class.create('gemini/gemini-2.5-pro', api_key: 'test-key', reasoning: DSPy::Reasoning.high)
+        }.to raise_error(DSPy::LM::ConfigurationError, /reasoning:.*only.*Anthropic/i)
+      end
+
+      it 'raises ConfigurationError for ruby_llm/ when reasoning: is passed, instead of silently ignoring it' do
+        expect {
+          described_class.create('ruby_llm/claude-opus-4-8', api_key: 'test-key', reasoning: DSPy::Reasoning.high)
+        }.to raise_error(DSPy::LM::ConfigurationError, /reasoning:.*only.*Anthropic/i)
+      end
+
+      it 'does not raise for anthropic/ when reasoning: is passed' do
+        expect {
+          described_class.create('anthropic/claude-opus-4-8', api_key: 'test-key', reasoning: DSPy::Reasoning.high)
+        }.not_to raise_error
+      end
+
+      it 'does not raise for providers when reasoning: is not passed at all' do
+        expect {
+          described_class.create('openai/gpt-4', api_key: 'test-key')
+        }.not_to raise_error
+      end
+    end
+
     it 'passes Openrouter-specific options to the adapter' do
       adapter = described_class.create(
         'openrouter/x-ai/grok-4-fast:free',

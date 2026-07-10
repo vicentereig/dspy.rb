@@ -36,6 +36,18 @@ RSpec.describe DSPy::LM do
         described_class.new('unsupported/model', api_key: 'test-key')
       }.to raise_error(DSPy::LM::UnsupportedProviderError)
     end
+
+    it 'raises ConfigurationError for reasoning: on a non-Anthropic provider (PR #257 review)' do
+      expect {
+        described_class.new('openai/gpt-4', api_key: 'test-key', reasoning: DSPy::Reasoning.high)
+      }.to raise_error(DSPy::LM::ConfigurationError, /reasoning:.*only.*Anthropic/i)
+    end
+
+    it 'accepts reasoning: for the Anthropic provider' do
+      lm = described_class.new('anthropic/claude-opus-4-8', api_key: 'test-key', reasoning: DSPy::Reasoning.high)
+
+      expect(lm.instance_variable_get('@adapter')).to be_a(DSPy::Anthropic::LM::Adapters::AnthropicAdapter)
+    end
   end
 
   describe '#chat' do
