@@ -6,6 +6,10 @@ on:
   pull_request:
     branches:
       - '*'
+
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -36,6 +40,20 @@ jobs:
           code_act: '0'
           schema: '1'
           gepa: '0'
+          o11y: '1'
+          o11y_langfuse: '1'
+        - name: DSPy Integration
+          gem: dspy
+          command: bundle exec rspec --format documentation --pattern 'spec/**/*_spec.rb'
+            --exclude-pattern 'spec/unit/**/*_spec.rb'
+          install_arrow: 'true'
+          install_openblas: 'true'
+          datasets: '1'
+          miprov2: '1'
+          evals: '1'
+          code_act: '1'
+          schema: '1'
+          gepa: '1'
           o11y: '1'
           o11y_langfuse: '1'
         - name: DSPy DeepSearch
@@ -224,5 +242,5 @@ jobs:
         GEMINI_API_KEY: test-gemini-key-for-vcr
         OPENROUTER_API_KEY: test-openrouter-key-for-vcr
         EXA_API_KEY: test-exa-key-for-vcr
-        LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
-        LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+        LANGFUSE_PUBLIC_KEY: test-langfuse-public-key-for-vcr
+        LANGFUSE_SECRET_KEY: test-langfuse-secret-key-for-vcr

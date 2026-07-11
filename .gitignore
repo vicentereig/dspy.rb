@@ -26,6 +26,8 @@ examples/*_report.html
 .idea
 .byebug_history
 .env
+.env.*
+!.env.sample
 *.gem
 notes/
 .rspec_status
