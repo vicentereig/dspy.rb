@@ -53,6 +53,8 @@ VCR.configure do |config|
   config.filter_sensitive_data('<OPENROUTER_API_KEY>') { ENV['OPENROUTER_API_KEY'] }
   config.filter_sensitive_data('<EXA_API_KEY>') { ENV['EXA_API_KEY'] }
   config.filter_sensitive_data('<NEW_RELIC_LICENSE_KEY>') { ENV['NEW_RELIC_LICENSE_KEY'] }
+  config.filter_sensitive_data('<LANGFUSE_PUBLIC_KEY>') { ENV['LANGFUSE_PUBLIC_KEY'] }
+  config.filter_sensitive_data('<LANGFUSE_SECRET_KEY>') { ENV['LANGFUSE_SECRET_KEY'] }
 
   # Filter out sensitive headers and response data
   # Organization IDs in OpenAI responses
@@ -78,6 +80,10 @@ VCR.configure do |config|
 
   # Filter out cookies - use a more comprehensive approach
   config.before_record do |interaction|
+    %w[Authorization Proxy-Authorization X-Api-Key Cookie].each do |header|
+      interaction.request.headers[header] = ['<REDACTED>'] if interaction.request.headers[header]
+    end
+
     # Redact Set-Cookie headers
     if interaction.response.headers['Set-Cookie']
       interaction.response.headers['Set-Cookie'] = interaction.response.headers['Set-Cookie'].map do |cookie|
