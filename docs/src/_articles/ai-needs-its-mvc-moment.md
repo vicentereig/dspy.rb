@@ -20,15 +20,15 @@ That's the problem.
 
 ## The Discipline We Already Know
 
-I lived through the early 2000s web era. Every team built things differently, and every project was a mess in its own special way. Then Rails arrived, and the key insight wasn't MVC—it was that web development was just programming, and programming already had answers for managing complexity.
+I lived through the early 2000s web era. Every team built things differently, and every project was a mess in its own special way. Then Rails arrived. Its useful insight wasn't MVC itself. Web development was programming, and programming already had ways to manage complexity.
 
-We're making the same mistake with AI. We've convinced ourselves that because LLMs were new, we need new rules. And turns out the old boring rules still work wonders.
+We're making the same mistake with AI. Because LLMs are new, we've assumed they need new rules. The old boring rules still apply: explicit contracts, tests, traces, and repeatable evaluation.
 
-We're also moving past the chatbot era. Everyone built chatbots that pushed the cognitive load onto users—figure out what to ask, interpret the response, decide if it's right. The next step is repeatable reasoning systems that do the work reliably, every time.
+Chatbots push the cognitive load onto users: figure out what to ask, interpret the response, and decide whether it's right. Repeatable workflows move some of that work into code, where we can define outputs and test behavior.
 
 ## What This Actually Looks Like
 
-Here's disciplined LLM development:
+Start with an explicit contract:
 
 ```ruby
 class CustomerIntent < DSPy::Signature
@@ -43,39 +43,39 @@ result = classifier.call(message: "My payment failed")
 # => result.intent == Intent::Billing, result.urgency == Urgency::High
 ```
 
-A contract that governs the relationship with the LLM.
+A signature defines the values the LLM receives and the values the application expects back.
 
-When the LLM returns `"high"` as a string instead of `Urgency::High`, the framework catches it. Before production. Because that's what type systems do. Just plain and boring engineering.
+When the LLM returns a value that cannot become an `Urgency` value, the framework rejects it before application code uses it. Because that's what type systems do. Just plain and boring engineering.
 
-The prompt becomes an implementation detail. You can [optimize it automatically](/optimization/prompt-optimization/). You can swap models without changing application code. You can write tests that actually test behavior, not string matching.
+The prompt becomes an implementation detail behind the signature. You can [optimize it automatically](/optimization/prompt-optimization/), change models without changing the call site, and test the returned behavior instead of matching prompt strings.
 
 ## The Questions You Can't Answer Today
 
-Walk into most organizations building with LLMs and ask:
+The production failure raises questions the prompt alone cannot answer:
 
-Can you reproduce the failure from last Tuesday? No structured traces. No replay capability. Just Slack threads full of theories.
+Can you reproduce the failure from last Tuesday? Without structured traces or replay, all you have is a Slack thread full of theories.
 
-When the agent hallucinated, which reasoning step went wrong? Multi-step workflows with no observability into what the system decided, why it decided it, or where the logic broke.
+When a multi-step workflow returned the wrong result, which step failed? Without traces, you cannot see the intermediate decisions or where the result changed course.
 
-Did that prompt change help or hurt? "90% accuracy" based on vibes and a handful of test cases. No systematic evaluation. No regression testing.
+Did the prompt change help or hurt? "90% accuracy" based on vibes and a handful of test cases does not show whether the change regressed cases the team already handled.
 
-Do you know how the model reached that prediction, regardless of whether it was accurate? Most teams can't answer this even when things go right.
+What request, response, and intermediate results produced the prediction? Without that record, even a correct answer is hard to inspect.
 
-These are table stakes for any production system. We've been solving them for decades in traditional software.
+Traditional software already gives us the relevant discipline: capture execution, test behavior, and compare changes against known cases.
 
 ## Standardized Patterns Enable Tooling
 
-When your code follows standardized patterns, the tooling can actually help. [Signatures](/core-concepts/signatures/) define contracts. [Modules](/core-concepts/modules/) compose behavior. The framework knows the structure of your application, so when something goes wrong, you trace it in minutes instead of days.
+Patterns give tooling something concrete to inspect. [Signatures](/core-concepts/signatures/) define inputs and outputs. [Modules](/core-concepts/modules/) compose behavior. Traces can then record each module call, its inputs, and its outputs.
 
-[Evaluation](/optimization/evaluation/) becomes a CI/CD step. Before deploying a prompt change, you prove it won't regress.
+[Evaluation](/optimization/evaluation/) can run in CI against a fixed set of examples. It cannot prove that a prompt change will never regress, but it can catch regressions in the cases you chose to keep.
 
 ## What Now
 
-Pick one classifier or extractor your team maintains. Define it as a [Signature](/core-concepts/signatures/). Add one [evaluation metric](/advanced/custom-metrics/). Deploy it with [tracing enabled](/production/observability/).
+Pick one classifier or extractor your team maintains. Define it as a [Signature](/core-concepts/signatures/). Add an [evaluation metric](/advanced/custom-metrics/) tied to the behavior you care about. Run a fixed example set before changes, then deploy with [tracing enabled](/production/observability/).
 
 See what changes when you treat LLM code like real software.
 
-The debugging sessions get shorter. The "works on my machine" prompts disappear. Vibes give way to actual metrics.
+When the next failure arrives, you have a trace to inspect, a case to add to the evaluation set, and a result you can compare against the next change.
 
 ---
 
