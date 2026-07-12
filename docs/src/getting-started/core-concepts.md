@@ -18,7 +18,7 @@ last_modified_at: 2025-08-08 00:00:00 +0000
 ---
 # Core Concepts
 
-DSPy.rb is built around composable, type-safe modules that make LLM programming predictable and reliable. This guide covers the fundamental concepts you need to understand to build effective DSPy applications.
+DSPy.rb uses signatures to declare tasks and modules to execute them. Ruby composes modules into programs; `ReAct` adds a tool-selection loop when the model should choose the next action.
 
 ## Signatures: Defining LLM Interfaces
 
@@ -48,7 +48,7 @@ class ClassifyText < DSPy::Signature
 end
 ```
 
-### Key Features
+### What the Signature Provides
 
 - **Type Safety**: Signatures use Sorbet types to ensure runtime type checking
 - **Structured Outputs**: Define complex output schemas with enums, objects, and arrays
@@ -93,7 +93,7 @@ puts result.solution   # => "20 apples"
 
 ### DSPy::ReAct
 
-Combines reasoning with action - perfect for agents that need to use tools:
+`ReAct` runs a bounded loop in which the model can select typed tools:
 
 ```ruby
 class Calculator < DSPy::Tools::Base
@@ -132,7 +132,7 @@ result = agent.call(problem: "What is (15 + 7) * 3?")
 puts result.answer # => 66.0 or "66"
 ```
 
-## Modules: Composing Complex Workflows
+## Modules: Composing Ruby Programs
 
 Modules let you compose multiple predictors into sophisticated pipelines.
 
@@ -254,7 +254,7 @@ See the [benchmarking guide](/optimization/benchmarking-raw-prompts/) for detail
 
 ## Error Handling and Validation
 
-DSPy provides comprehensive error handling:
+DSPy.rb raises typed configuration, validation, and provider errors:
 
 ```ruby
 begin
@@ -314,8 +314,8 @@ output do
 end
 ```
 
-### 4. Compose Thoughtfully
-Break complex workflows into reusable components:
+### 4. Keep Control Flow Explicit
+Compose fixed steps as reusable Ruby modules. Use an agent only when the model has a useful action to choose:
 
 ```ruby
 class EmailProcessor < DSPy::Module
@@ -342,8 +342,8 @@ end
 
 - **[Signatures & Types](../../core-concepts/signatures)** - Deep dive into signature design
 - **[Predictors](../../core-concepts/predictors)** - Master the different predictor types
-- **[Modules & Pipelines](../../core-concepts/modules)** - Build complex workflows
-- **[Examples & Validation](../../core-concepts/examples)** - Create robust training data
+- **[Modules & Pipelines](../../core-concepts/modules)** - Compose modules with Ruby
+- **[Examples & Validation](../../core-concepts/examples)** - Create evaluation and few-shot data
 
 ## Common Patterns
 
@@ -386,4 +386,4 @@ class RobustProcessor < DSPy::Module
 end
 ```
 
-Understanding these core concepts will enable you to build reliable LLM applications with DSPy.rb. The type system keeps you safe, the modular design keeps your code clean, and the optimization tools help you achieve production-ready performance.
+Signatures define tasks, modules execute them, and Ruby owns the program's control flow. Evaluation measures the complete program; optimizers can search its supported instructions and demonstrations.

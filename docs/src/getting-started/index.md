@@ -1,8 +1,8 @@
 ---
 layout: docs
-title: "DSPy Ruby Tutorial: Get Started in 5 Minutes (2025 Guide)"
+title: "DSPy.rb Tutorial: Getting Started"
 name: Getting Started
-description: "Quick start guide for DSPy.rb. Install, configure, and build your first LLM application in Ruby. No Python required. Works with OpenAI & Anthropic."
+description: "Install DSPy.rb and build a typed LLM program with Ruby."
 breadcrumb:
 - name: Getting Started
   url: "/getting-started/"
@@ -11,22 +11,23 @@ last_modified_at: 2025-07-11 00:00:00 +0000
 ---
 # Getting Started with DSPy.rb
 
-Welcome to DSPy.rb! This guide will help you get up and running with building reliable LLM applications in Ruby.
+Install DSPy.rb, configure a provider, and run a typed prediction in Ruby.
 
 ## What is DSPy.rb?
 
-DSPy.rb is a Ruby framework for building predictable LLM applications using composable, type-safe modules. Instead of wrestling with prompt engineering, you define clear interfaces and let the framework handle the complexity.
+DSPy.rb is a Ruby framework for programming LLM systems. Signatures declare typed tasks. Modules choose execution strategies. Ruby composes modules into programs, while agents use tools where the model should choose the next action.
 
-## Key Features
+## The Programming Model
 
-- **Type-safe interfaces** using Sorbet for compile-time checking
-- **Composable modules** for building complex reasoning chains
-- **Systematic testing** with comprehensive test coverage
-- **Production-ready** with Rails and Ruby ecosystem integration
+- **Signatures** declare typed inputs and outputs.
+- **Modules** run a task with `Predict`, `ChainOfThought`, `ReAct`, or custom logic.
+- **Ruby programs** compose modules with explicit control flow.
+- **Agents and tools** delegate bounded action choices to the model.
+- **Evaluation and optimizers** measure programs and compile better instructions or demonstrations from evidence.
 
 ## Quick Example
 
-Here's a simple example of defining an LLM interface with DSPy.rb:
+This signature declares a classifier's inputs and typed result:
 
 ```ruby
 class EmailCategory < T::Enum

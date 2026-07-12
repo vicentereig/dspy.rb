@@ -18,7 +18,7 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Examples
 
-Examples are type-safe training and evaluation data objects. DSPy.rb provides two types of examples: basic examples for evaluation and few-shot examples for prompt enhancement.
+Examples hold typed inputs and expected outputs for evaluation. `FewShotExample` also represents demonstrations that a predictor can include in provider-facing prompts.
 
 ## Creating Basic Examples
 
@@ -75,7 +75,7 @@ examples = [
 
 ## Type Safety and Validation
 
-Examples are automatically validated against your signature's type constraints:
+DSPy.rb validates example values against the signature's type constraints when the object is created:
 
 ```ruby
 # This will raise a validation error
@@ -353,4 +353,4 @@ example = DSPy::Example.new(
 )
 ```
 
-Examples provide the foundation for evaluation and few-shot prompting with type safety through Sorbet integration.
+Use evaluation examples to define acceptable behavior. Use few-shot examples when a predictor or optimizer needs demonstrations; the two roles need not use the same dataset.

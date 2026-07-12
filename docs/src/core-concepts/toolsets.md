@@ -1,7 +1,7 @@
 ---
 layout: docs
 name: Toolsets
-description: Group related tools in a single class for agent integration
+description: Group related typed Ruby operations for ReAct agents
 breadcrumb:
 - name: Core Concepts
   url: "/core-concepts/"
@@ -18,7 +18,7 @@ date: 2025-07-11 00:00:00 +0000
 ---
 # Toolsets
 
-DSPy.rb's Toolset pattern lets you group related tools in a single class. Instead of creating separate tool classes for each operation, you can expose multiple methods from one class as individual tools.
+`DSPy::Tools::Toolset` groups related Ruby methods and exposes selected methods as individual tools.
 
 ## When to Use Toolsets
 
@@ -59,11 +59,11 @@ agent = DSPy::ReAct.new(
 )
 ```
 
-**Why Sorbet Signatures Matter**: Type signatures (`sig { ... }`) enable [DSPy.rb](https://github.com/vicentereig/dspy.rb) to generate accurate JSON schemas that describe your tools to the LLM. This dramatically improves the LLM's ability to use tools correctly by:
+Sorbet signatures (`sig { ... }`) let [DSPy.rb](https://github.com/vicentereig/dspy.rb) generate the JSON schemas presented to the model. They provide:
 - Providing precise parameter types and descriptions
 - Indicating which parameters are required vs optional
 - Supporting rich types (enums, structs, arrays, unions)
-- Preventing runtime errors from type mismatches
+- Runtime coercion and validation at the tool boundary
 
 ## Text Processing Toolset Example
 
@@ -106,7 +106,7 @@ agent = DSPy::ReAct.new(
 1. **Toolset class** defines methods and exposes them as tools
 2. **ToolProxy** wraps each method to act like a standard tool
 3. **Schema generation** uses Sorbet signatures to create JSON schemas
-4. **ReAct integration** works with existing agents
+4. **ReAct integration** presents the generated tools to the agent loop
 
 ## DSL Methods
 
@@ -134,7 +134,7 @@ tool :search,
 
 ## Type Safety
 
-DSPy.rb supports a comprehensive range of Sorbet types for tools and toolsets with automatic JSON schema generation and type coercion:
+Toolsets support these Sorbet types for JSON Schema generation and runtime coercion:
 
 ### Basic Types
 
@@ -406,11 +406,11 @@ end
 
 The toolset pattern works well for grouping related operations. The `TextProcessingToolset` provides text manipulation utilities, while the `GithubCliToolset` wraps GitHub CLI operations.
 
-For production use, implement custom toolsets that integrate with your domain-specific backends by extending the `Toolset` base class.
+Custom toolsets can wrap domain services by extending `Toolset`. The application remains responsible for authorization, side effects, timeouts, and failures.
 
 ## Design Decisions
 
-**Explicit Tool Exposure**: The `tool` DSL requires explicit method declaration rather than auto-exposing all public methods. This ensures:
+**Explicit Tool Exposure**: The `tool` DSL exposes only declared methods. This provides:
 - Clear documentation for each tool via the `description` parameter
 - Intentional tool interface design
 - Proper schema descriptions for LLM consumption

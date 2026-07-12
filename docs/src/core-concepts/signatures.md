@@ -2,7 +2,7 @@
 layout: docs
 title: "DSPy Signatures: Type-Safe LLM Interfaces in Ruby"
 name: Signatures
-description: "Define type-safe contracts between your Ruby code and LLMs using Sorbet structs. Input/output validation, automatic prompt generation, and IDE autocomplete support. No more string parsing."
+description: "Declare typed inputs and outputs for DSPy.rb modules with Sorbet."
 breadcrumb:
 - name: Core Concepts
   url: "/core-concepts/"
@@ -62,7 +62,7 @@ end
 
 ## Date and Time Types
 
-DSPy.rb provides comprehensive support for date and time types with automatic serialization/deserialization:
+DSPy.rb serializes and deserializes these date and time types:
 
 ```ruby
 class EventScheduler < DSPy::Signature
@@ -250,7 +250,7 @@ result = search.call(query: "Ruby programming")
    - Make APIs more user-friendly
    
 2. **Output Defaults**: Applied when LLM response is missing fields
-   - Improve robustness when LLMs omit optional fields  
+   - Supply declared values when a response omits optional fields
    - Prevent errors from incomplete responses
 
 ## Practical Examples
@@ -397,7 +397,7 @@ class TextClassifierOutput {
 
 **Token Savings: 84.4%** (verified by integration tests)
 
-For rich signatures with nested types, BAML saves 80-85% of prompt tokens used for schema definitions in Enhanced Prompting mode.
+For rich signatures with nested types, BAML can reduce the characters used for schema guidance in Enhanced Prompting mode. Measure token counts with the tokenizer for the model you deploy.
 
 **Note**: BAML format applies only to Enhanced Prompting mode (`structured_outputs: false`). When using Structured Outputs mode (`structured_outputs: true`), OpenAI's native API receives the JSON Schema directly and BAML format has no effect.
 
@@ -606,4 +606,4 @@ class ConfigurableAnalysis < DSPy::Signature
 end
 ```
 
-Signatures provide the basic contract between your application and language models with type safety through Sorbet integration.
+Signatures declare the task boundary. Modules decide how to execute it, and runtime validation rejects values that cannot be converted to the declared Sorbet types.

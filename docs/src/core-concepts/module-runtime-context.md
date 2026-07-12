@@ -19,11 +19,11 @@ last_modified_at: 2025-10-07 00:00:00 +0000
 ---
 # Module Runtime Context
 
-Keep module behavior predictable in production by managing language model overrides, instrumentation hooks, and cross-cutting runtime concerns.
+Module runtime context controls language-model resolution and lifecycle callbacks for a module call.
 
 ## Fiber-Local LM Context
 
-DSPy.rb supports temporary language model overrides using fiber-local storage through `DSPy.with_lm`. This is particularly useful for optimization workflows, testing different models, or using specialized models for specific tasks.
+`DSPy.with_lm` temporarily overrides the language model in fiber-local storage. Use it in optimization, model comparisons, or a Ruby program whose modules require different models.
 
 ### Basic Usage
 
@@ -105,8 +105,8 @@ result4 = classifier2.call(text: "Test") # Uses gpt-4o (global)
 # Fast model for quick iterations
 fast_model = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
 
-# Powerful model for final results
-powerful_model = DSPy::LM.new("anthropic/claude-3-opus-20240229", api_key: ENV['ANTHROPIC_API_KEY'])
+# More capable model for final results
+capable_model = DSPy::LM.new("anthropic/claude-3-opus-20240229", api_key: ENV['ANTHROPIC_API_KEY'])
 
 # Local model for privacy-sensitive tasks
 local_model = DSPy::LM.new("ollama/llama3.1:8b", base_url: "http://localhost:11434")
@@ -121,8 +121,8 @@ DSPy.with_lm(fast_model) do
   puts "Fast model accuracy: #{calculate_accuracy(test_results)}"
 end
 
-# Use powerful model for production
-DSPy.with_lm(powerful_model) do
+# Use the more capable model
+DSPy.with_lm(capable_model) do
   production_result = classifier.call(text: user_input)
   send_response(production_result)
 end

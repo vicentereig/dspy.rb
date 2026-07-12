@@ -7,21 +7,21 @@ date: 2025-06-28 00:00:00 +0000
 ---
 # Your First Structured AI Program
 
-*From prompt strings to reliable systems in 10 minutes*
+Build a typed question-answering program, then extend it with richer result types and tools.
 
 ## What We're Building
 
-Instead of throwing you into complex examples, let's start with something simple but transformative: a Q&A system that actually works predictably.
+This tutorial starts with a small Q&A program. Its signature declares the result shape; the module runs it.
 
-By the end of this tutorial, you'll have built an AI system that:
+By the end, the program will:
 - Has a clear, typed interface
-- Returns structured, predictable results
+- Return structured, validated results
 - Can be tested systematically
-- Handles errors gracefully
+- Represent uncertainty in its output
 
 ## Setting Up
 
-First, let's set up DSPy.rb in your project:
+Add DSPy.rb and configure one language model:
 
 ```ruby
 # Gemfile
@@ -36,11 +36,11 @@ DSPy.configure do |config|
 end
 ```
 
-## The Old Way vs. The New Way
+## Replace the Prompt String with a Task Contract
 
-Let's start by seeing the difference between prompt engineering and structured programming:
+The first version hides its contract in a string:
 
-### **The Fragile Approach**
+### The Prompt String
 
 ```ruby
 # What most of us start with
@@ -57,7 +57,7 @@ answer = ask_question("What is the capital of France?")
 puts answer  # "Paris" or "The capital of France is Paris." or "**Paris**" or...
 ```
 
-### **The Structured Approach**
+### The Typed Program
 
 ```ruby
 # Define exactly what you want
@@ -74,10 +74,10 @@ class QuestionAnswering < DSPy::Signature
   end
 end
 
-# Create a reliable system
+# Create the module
 qa_system = DSPy::Predict.new(QuestionAnswering)
 
-# Use it predictably
+# Run it
 result = qa_system.call(question: "What is the capital of France?")
 puts result.answer      # "Paris"
 puts result.confidence  # 0.95
@@ -104,7 +104,7 @@ class QuestionAnswering < DSPy::Signature
 end
 ```
 
-This signature acts like a contract—the AI system knows exactly what it should produce.
+The signature supplies the task description and the input and output schemas used for the provider request and response validation.
 
 ### **2. Predictable Module Creation**
 
@@ -112,7 +112,7 @@ This signature acts like a contract—the AI system knows exactly what it should
 qa_system = DSPy::Predict.new(QuestionAnswering)
 ```
 
-`DSPy::Predict` takes your signature and creates a module that can reliably execute that reasoning pattern.
+`DSPy::Predict` takes the signature and creates a module that performs one prediction.
 
 ### **3. Structured Results**
 
@@ -121,12 +121,12 @@ result = qa_system.call(question: "What is the capital of France?")
 
 # You get structured data back
 result.answer      # Always a string
-result.confidence  # Always a float between 0.0 and 1.0
+result.confidence  # A Float; the description requests a value from 0.0 to 1.0
 ```
 
-## Making It More Sophisticated
+## Add Richer Result Types
 
-Let's enhance our Q&A system to handle different types of questions:
+Enums and optional fields make the result contract more precise:
 
 ```ruby
 class SmartQuestionAnswering < DSPy::Signature
@@ -226,11 +226,11 @@ Notice how we're using **idiomatic Ruby with full Sorbet type support**:
 - `T::Boolean` for boolean validation
 - `default:` for optional parameters
 
-This isn't just type checking—it's **runtime validation** that ensures your LLM responses conform to your Ruby interfaces.
+DSPy.rb validates these types at runtime and rejects responses that cannot be converted to the declared Ruby interface.
 
 ## Building ReAct Agents with Ruby Types
 
-DSPy.rb's ReAct agents also use idiomatic Ruby type definitions for tools:
+`ReAct` uses Sorbet signatures to describe Ruby tools to the model:
 
 ```ruby
 # Define tools with clear Ruby interfaces and Sorbet type signatures
@@ -278,7 +278,7 @@ end
 
 # Create a ReAct agent with typed tools
 planner = DSPy::ReAct.new(
-  signature: TravelPlanner,
+  TravelPlanner,
   tools: [WeatherTool.new]
 )
 
@@ -289,11 +289,11 @@ result = planner.call(
 )
 ```
 
-The beauty here is that **everything is typed Ruby**—no YAML configs, no JSON schemas, just Ruby classes with Sorbet types that provide both static analysis and runtime validation.
+The application owns the tool implementation and its side effects. `ReAct` owns the bounded loop in which the model selects a tool or returns the final result.
 
 ## Adding Error Handling
 
-Real systems need to handle edge cases gracefully:
+Represent expected uncertainty in the signature. Rescue transport and configuration failures separately in application code:
 
 ```ruby
 class RobustQuestionAnswering < DSPy::Signature
@@ -332,7 +332,7 @@ puts vague_result.confidence            # 0.1
 
 ## Testing Your System
 
-Here's the beautiful part—you can now test AI behavior systematically:
+RSpec can verify deterministic behavior. Use evaluation examples and metrics for model behavior that cannot be asserted as an exact string:
 
 ```ruby
 # spec/qa_system_spec.rb
@@ -374,57 +374,22 @@ RSpec.describe "Question Answering System", vcr: true do
 end
 ```
 
-## What You've Accomplished
+## What the Program Contains
 
-In just a few minutes, you've:
-
-1. **Moved from strings to structure** - Clear interfaces instead of prompt manipulation
-2. **Gained predictability** - Know exactly what format you'll get back
-3. **Enabled systematic testing** - Can verify AI behavior like any other code
-4. **Built error handling** - System degrades gracefully with uncertain inputs
-5. **Created transparency** - Can see confidence levels and reasoning
-
-## Reflection Questions
-
-Before moving on, take a moment to think about this transformation:
-
-**About Your Current Approach:**
-- How much time do you typically spend debugging prompt formatting?
-- What AI systems have you built that feel fragile or unpredictable?
-- How do you currently test AI behavior in your applications?
-
-**About This New Approach:**
-- What surprises you most about structured AI programming?
-- How might this change your approach to building AI features?
-- What kinds of AI systems would you build if reliability wasn't a concern?
+The program now has a typed task contract, a prediction module, explicit uncertainty fields, a tool boundary, and tests. Typed output validation constrains the result shape; it does not prove that the answer is correct.
 
 ## Your Next Steps
 
-You've just experienced the foundation of structured AI programming. From here, you can:
-
-### **🔧 Deepen Your Understanding**
+### Deepen Your Understanding
 **[Core Concepts →](/core-concepts/)**
 *Learn about Chain of Thought, ReAct agents, and module composition*
 
-### **🏗️ Build More Complex Systems**
+### Compose Modules
 **[Pipelines →](/advanced/pipelines/)**
-*Chain multiple reasoning steps into powerful workflows*
+*Compose fixed reasoning steps with Ruby control flow*
 
-### **🤝 Create AI That Uses Tools**
+### Add Tools
 **[Toolsets →](/core-concepts/toolsets/)**
 *Build agents that can interact with external systems*
 
-## The Path Forward
-
-This simple Q&A system demonstrates the fundamental shift from prompt engineering to AI programming. As you continue learning, you'll discover how to:
-
-- **Chain reasoning steps** for complex problems
-- **Build agents** that use tools effectively
-- **Create self-improving systems** that optimize over time
-- **Compose modules** into sophisticated applications
-
-But the core principle remains the same: **clear interfaces, predictable behavior, systematic testing**.
-
----
-
-*"Every complex AI system starts with a simple, reliable foundation. You've just built yours."*
+The signature declares the task, while `Predict` and `ReAct` choose different execution strategies. Keep known control flow in Ruby. Give the model tools when it must choose the next action, and keep permissions, budgets, errors, and termination in the surrounding application.

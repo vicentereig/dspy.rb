@@ -11,7 +11,7 @@ last_modified_at: 2026-04-01 00:00:00 +0000
 ---
 # Multimodal Support
 
-DSPy.rb supports multimodal inputs, allowing you to work with text, images, and PDF documents in your AI applications. This enables use cases like image analysis, visual question answering, and document-aware extraction.
+DSPy.rb can pass images and supported PDF documents through raw chat or typed signatures. Provider and input-shape limits differ, so choose the adapter before designing the signature.
 
 ## Vision-Capable Models
 
@@ -198,15 +198,15 @@ end
 
 ## Structured Multimodal Signatures
 
-DSPy.rb supports powerful structured signatures that can analyze images and extract detailed information with type safety.
+Structured signatures can declare typed outputs for image analysis.
 
 ### Image Analysis with Structured Output
 
-Extract comprehensive information from images including colors, objects, mood, and more:
+This signature extracts colors, objects, mood, and style:
 
 ```ruby
 class ImageAnalysis < DSPy::Signature
-  description "Analyze images comprehensively to extract objects, colors, mood, and style"
+  description "Extract objects, colors, mood, and style from images"
 
   class DetailLevel < T::Enum
     enums do
