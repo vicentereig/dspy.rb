@@ -273,13 +273,14 @@ examples = [
 
 # Use with DSPy::Evals
 predictor = DSPy::Predict.new(ClassifyText)
-evaluator = DSPy::Evals.new(metric: :exact_match)
-
-results = evaluator.evaluate(examples: examples) do |example|
-  predictor.call(example.input_values)
+exact_sentiment = lambda do |example, prediction|
+  example.expected_values[:sentiment] == prediction.sentiment
 end
 
-puts results.score  # Accuracy score
+evaluator = DSPy::Evals.new(predictor, metric: exact_sentiment)
+results = evaluator.evaluate(examples)
+
+puts results.pass_rate  # Fraction of examples that passed
 ```
 
 ## Usage with ChainOfThought

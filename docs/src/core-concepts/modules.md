@@ -106,7 +106,7 @@ puts result.reasoning
 
 ## Runtime Context Guidance
 
-See [Module Runtime Context](/core-concepts/module-runtime-context/) for fiber-local language model overrides and lifecycle callbacks.
+See [Module Runtime Context](/dspy.rb/core-concepts/module-runtime-context/) for fiber-local language model overrides and lifecycle callbacks.
 
 
 ## Manual Module Composition

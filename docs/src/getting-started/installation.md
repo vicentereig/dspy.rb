@@ -7,12 +7,13 @@ breadcrumb:
   url: "/getting-started/"
 - name: Installation
   url: "/getting-started/installation/"
-prev:
-  name: Getting Started
-  url: "/getting-started/"
-next:
-  name: Quick Start
-  url: "/getting-started/quick-start/"
+nav:
+  prev:
+    name: Getting Started
+    url: "/getting-started/"
+  next:
+    name: Quick Start
+    url: "/getting-started/quick-start/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-26 00:00:00 +0000
 ---
@@ -374,5 +375,5 @@ puts "DSPy is working. Response: #{result.response}"
 
 ### Getting Help
 
-- Check the [documentation](../README.md)
-- Report issues on GitHub
+- Check [Troubleshooting]({{ '/production/troubleshooting/' | relative_url }})
+- [Report an issue on GitHub](https://github.com/vicentereig/dspy.rb/issues)

@@ -171,7 +171,24 @@ MIPROv2 writes two main artifacts under `examples/ade_optimizer_miprov2/results/
 - `summary.json` — baseline vs. optimized metrics, trial budget, elapsed time, random seed.
 - `metrics.csv` — accuracy, precision, recall, and F1 per run (easy to plot or import into spreadsheets).
 
-Inside the console you’ll also see a best-in-class instruction snippet. Paste it into your production prompt, or serialize the `optimized_program` with `DSPy::Serializer` and check it into Git.
+Inside the console you’ll also see the best instruction found during the run. To persist the complete optimized program, store it with the optimization result:
+
+```ruby
+storage = DSPy::Storage::ProgramStorage.new(
+  storage_path: "./dspy_storage"
+)
+
+saved = storage.save_program(
+  result.optimized_program,
+  result,
+  metadata: { dataset: "ade-v1" }
+)
+
+loaded = storage.load_program(saved.program_id)
+loaded_program = loaded.program
+```
+
+The program and signature classes must be loaded when you restore the artifact, and the program class must implement `.from_h`. Evaluate `loaded_program` against the held-out set before promoting it.
 
 ## Fits multi-stage programs too
 
@@ -187,7 +204,7 @@ If your pipeline mixes tools and plain LLM calls, the metric sees only the final
 
 The Stanford team behind MIPROv2 observed three practices that translate well to Ruby apps[^miprov2-paper]:
 
-1. **Ground proposals in real data** — They seed candidates with dataset summaries and bootstrap few-shot examples. In our Ruby port, this happens automatically via `DatasetSummaryGenerator` and the bootstrap phase, so give the optimizer clean examples and it will stay truthful.
+1. **Ground proposals in real data** — They seed candidates with dataset summaries and bootstrap few-shot examples. DSPy.rb's implementation does this through `DatasetSummaryGenerator` and the bootstrap phase, so the quality of the examples matters.
 2. **Stochastic evaluation keeps the loop affordable** — Mini-batching during evaluation mimics a noisy but cheaper fitness function. Use the presets’ defaults unless you have a strict budget; then lower `minibatch_size` to stretch API calls.
 3. **Meta-learning improves over time** — MIPROv2 adjusts which proposal strategies to favor based on past wins. You only see the payoff (better instructions, fewer useless trials), so let multi-trial runs finish before judging the outcome.
 

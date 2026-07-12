@@ -827,7 +827,7 @@ end
 
 Schema length does not establish output quality. Compare token usage, validation failures, and task metrics before choosing a format.
 
-See the [Schema Formats section in Signatures](/core-concepts/signatures/#schema-formats) for detailed comparison.
+See the [Schema Formats section in Signatures](/dspy.rb/core-concepts/signatures/#schema-formats) for detailed comparison.
 
 ## Best Practices
 
@@ -984,7 +984,7 @@ result2 = predictor.call(input: "more text")
 **Provider Optimization:**
 Different providers handle rich types differently:
 - **OpenAI Structured Outputs**: Excellent for 1-3 level nesting
-- **Anthropic**: Robust JSON extraction handles most complexity
+- **Anthropic**: JSON extraction supports the nested examples shown here
 - **Enhanced Prompting**: Fallback for any provider, handles simpler structures better
 
 ### Troubleshooting Rich Types

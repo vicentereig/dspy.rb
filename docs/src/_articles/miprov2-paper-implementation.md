@@ -2,101 +2,78 @@
 layout: blog
 title: "MIPROv2 Paper: How Stanford's Prompt Optimization Works in Ruby"
 date: 2025-12-20
-description: "Deep dive into the MIPROv2 paper (arXiv:2406.11695) from Stanford. Learn how Bayesian optimization, dataset summarization, and instruction bootstrapping combine to improve LLM prompts automatically. Ruby implementation included."
+description: "How MIPROv2 compiles instructions and demonstrations from examples, metrics, and measured program behavior in DSPy.rb."
 author: "Vicente Reig"
 canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/miprov2-paper-implementation/"
 image: /images/og/miprov2-paper-implementation.png
 reading_time: "8 min read"
 ---
 
-Stanford's MIPROv2 paper[^miprov2-paper] introduces a systematic approach to prompt optimization that eliminates guesswork. Instead of manually tweaking prompts, you define a metric and let the optimizer find instructions that actually improve your scores. This article breaks down the key ideas from the paper and shows how DSPy.rb implements them.
+MIPROv2 starts after you have defined a program and the behavior you will accept. Given training examples, a validation set, and a metric, it searches over instructions and few-shot demonstrations supported by the program. The result is an optimized program artifact, not a prompt someone edited by hand.
 
-## The Problem MIPROv2 Solves
+Stanford's MIPROv2 paper[^miprov2-paper] describes the method for multi-stage language-model programs. DSPy.rb implements the same broad phases with a Ruby optimizer and a different Bayesian search backend.
 
-Traditional prompt engineering is trial-and-error. You write a prompt, test it on a few examples, adjust wording, and repeat. This approach has three fundamental issues:
+## What MIPROv2 Compiles
 
-1. **No systematic exploration**: You only test the prompts you think of
-2. **Evaluation blind spots**: Manual testing rarely covers edge cases
-3. **Multi-stage complexity**: When your program has multiple LLM calls, improvements to one stage can hurt another
+A DSPy program may contain one predictor or several. Each predictor has parameters such as its instruction and demonstrations. MIPROv2 proposes candidate values for those parameters, runs the complete program, and scores the final behavior with your metric.
 
-MIPROv2 treats prompt optimization as a search problem. Given a program with typed signatures, a dataset, and a metric, it systematically proposes and evaluates instruction candidates until it finds one that maximizes your objective.
+That separation matters in a multi-stage program. A locally plausible instruction can make the final result worse. MIPROv2 evaluates candidates through the program's end-to-end objective rather than treating prompt wording as its own goal.
 
-## Key Ideas from the Paper
+You still choose the objective. Weak examples and a metric that rewards the wrong behavior will produce a well-optimized mistake.
 
-### 1. Dataset Summarization
+## The Search In Five Phases
 
-Before generating instruction candidates, MIPROv2 analyzes your training examples to understand the task:
+### Summarize The Dataset
 
-```ruby
-# DSPy.rb's DatasetSummaryGenerator creates context for instruction proposals
-summary = DSPy::Teleprompt::DatasetSummaryGenerator.new.generate(
-  trainset: examples,
-  signature: ADETextClassifier
-)
-# => "This dataset contains clinical sentences labeled for adverse drug events..."
-```
+DSPy.rb's grounded proposer can summarize the training examples and program structure before proposing instructions. The current API performs this inside MIPROv2; `DatasetSummaryGenerator` remains an internal collaborator rather than a public `DSPy::Teleprompt` object.
 
-This summary grounds instruction proposals in your actual data, preventing the optimizer from suggesting prompts that don't match your domain.
+The summary gives the proposal model evidence about the task. It cannot guarantee that every proposal fits the domain, so candidates still have to survive evaluation.
 
-### 2. Instruction Bootstrapping
+### Bootstrap Demonstrations
 
-The optimizer generates multiple instruction candidates per trial, then selects the best:
+MIPROv2 builds candidate few-shot sets from labeled and bootstrapped examples. These settings control the size of that search surface:
 
 ```ruby
-DSPy::Teleprompt::MIPROv2.new(metric: metric).tap do |opt|
-  opt.configure do |config|
-    config.num_instruction_candidates = 3  # Candidates per trial
-    config.bootstrap_sets = 2               # Few-shot demo batches
-  end
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+optimizer.configure do |config|
+  config.num_instruction_candidates = 3
+  config.bootstrap_sets = 2
+  config.max_bootstrapped_examples = 2
+  config.max_labeled_examples = 4
 end
 ```
 
-The paper found that generating 3-5 candidates per trial balances exploration with compute cost. More candidates increase the chance of finding a good prompt, but each requires evaluation.
+More candidates and demonstration sets increase cost. They widen the search; they do not guarantee a better result.
 
-### 3. Bayesian Optimization
+### Propose Instructions
 
-MIPROv2 uses Gaussian Process surrogate models to guide the search. Instead of random exploration, it:
+The grounded proposer uses the signature, program structure, dataset summary, examples, and previous trial information to generate instruction candidates. Developers still write task and field descriptions. MIPROv2 compiles those descriptions and the available evidence into candidate provider-facing instructions.
 
-1. Maintains a model of which instruction features lead to higher scores
-2. Proposes candidates that balance exploitation (similar to past winners) with exploration (novel regions)
-3. Updates the model after each trial based on observed performance
+### Search Candidate Combinations
 
-This adaptive search is why MIPROv2 often finds better prompts in fewer trials than random search.
+The paper's reference implementation uses Optuna's TPE sampler. DSPy.rb's `:bayesian` strategy encodes candidate combinations, fits a Gaussian Process, and selects candidates with an Upper Confidence Bound acquisition function. The `:greedy` and `:adaptive` strategies are also available.
 
-> **Implementation note:** DSPy.rb uses Gaussian Process regression with an Upper Confidence Bound (UCB) acquisition function. Python DSPy takes a different approach, using Optuna's TPE (Tree-structured Parzen Estimator) sampler. Both are valid Bayesian optimization strategies—GP excels at modeling smooth objective landscapes, while TPE handles high-dimensional categorical spaces efficiently.
-
-### 4. Mini-batch Evaluation
-
-Evaluating every candidate on your full validation set is expensive. The paper introduces stochastic evaluation:
+The backends differ, and neither is universally better. Their behavior and cost depend on the candidate space and evaluation noise.
 
 ```ruby
-config.minibatch_size = 10  # Evaluate on 10 examples per trial
+optimizer.configure do |config|
+  config.optimization_strategy = :bayesian
+  config.num_trials = 12
+  config.minibatch_size = 10
+end
 ```
 
-Mini-batches provide noisy but cheap fitness signals. The Bayesian optimizer handles the noise, extracting signal from multiple trials. This lets you run more trials within the same API budget.
+When `num_threads` is greater than `1`, `minibatch_size` sets the chunk size for parallel candidate evaluation. DSPy.rb evaluates every chunk and combines the results, so each candidate still sees the complete evaluation set. The setting changes scheduling while preserving the evidence and model calls used for an observation.
 
-### 5. Per-Predictor Optimization
+### Evaluate The Complete Program
 
-For multi-stage programs (like ReAct agents), MIPROv2 optimizes each predictor independently while measuring end-to-end performance:
+For programs that expose multiple predictors, MIPROv2 can apply separate instruction and demonstration candidates to each predictor. The metric still sees the program's final prediction.
 
-```ruby
-# A ReAct agent has multiple predictors
-react_agent = DSPy::ReAct.new(TaskSignature, tools: toolset)
+This also applies to a `ReAct` module that exposes several predictors. MIPROv2 can optimize supported predictor parameters; it leaves the program's control flow and tool policy unchanged.
 
-# MIPROv2 optimizes thought_generator, observation_processor separately
-# but evaluates using your end-to-end metric
-result = optimizer.compile(react_agent, trainset: train, valset: val)
-```
+## Install The Optional Gem
 
-The optimizer credits improvements to specific predictors, so you can see which stage needed better instructions.
-
-## DSPy.rb Implementation
-
-The Ruby port faithfully implements the paper's algorithms while adapting to Ruby idioms. Here's how to use it:
-
-### Installation
-
-MIPROv2 ships as a separate gem to keep the Gaussian Process dependencies optional:
+MIPROv2 ships separately so applications that do not use its numerical dependencies do not have to install them.
 
 ```ruby
 # Gemfile
@@ -104,13 +81,16 @@ gem "dspy"
 gem "dspy-miprov2"
 ```
 
-### Basic Usage
-
 ```ruby
 require "dspy"
 require "dspy/miprov2"
+```
 
-# Define your task with a typed signature
+## Compile A Classifier
+
+The signature declares the task. The metric defines acceptable behavior.
+
+```ruby
 class SentimentClassifier < DSPy::Signature
   description "Classify the sentiment of customer feedback"
 
@@ -119,86 +99,87 @@ class SentimentClassifier < DSPy::Signature
   end
 
   output do
-    const :sentiment, SentimentLabel  # Positive, Negative, Neutral
+    const :sentiment, SentimentLabel
     const :confidence, Float
   end
 end
 
-# Create baseline program
 program = DSPy::Predict.new(SentimentClassifier)
 
-# Define your success metric
-metric = proc do |example, prediction|
+metric = lambda do |example, prediction|
   prediction.sentiment == example.expected_values[:sentiment]
 end
 
-# Configure MIPROv2 with a preset
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
-optimizer.configure { |c| c.auto_preset = :medium }  # 12 trials
+optimizer.configure do |config|
+  config.auto_preset = DSPy::Teleprompt::AutoPreset::Medium
+end
 
-# Run optimization
-result = optimizer.compile(program, trainset: train, valset: val)
+result = optimizer.compile(
+  program,
+  trainset: train,
+  valset: validation
+)
 
-# Use the optimized program
-optimized = result.optimized_program
+optimized_program = result.optimized_program
+puts "Best validation score: #{result.best_score_value}"
 ```
 
-### Preset Reference
+Keep a test set outside the compile loop. The validation score selected the candidate. Estimating generalization requires independent data.
 
-The presets follow the paper's guidance on trial budgets:
+## Presets Are Budgets, Not Quality Levels
 
-| Preset | Trials | Instruction Candidates | Use Case |
-|--------|--------|------------------------|----------|
-| `light` | 6 | 3 | Quick prototyping, small datasets |
-| `medium` | 12 | 4 | Production pilots, balanced exploration |
-| `heavy` | 18 | 5 | Maximum accuracy, multi-stage programs |
+Current DSPy.rb presets allocate candidate budgets and configure instruction candidates, bootstrap sets, example limits, search strategy, and early stopping.
 
-### Inspecting Results
+| Preset | Candidate budget | Instruction candidates | Search strategy |
+|---|---:|---:|---|
+| `light` | 6 | 3 | greedy |
+| `medium` | 12 | 5 | adaptive |
+| `heavy` | 18 | 8 | Bayesian |
 
-MIPROv2 provides detailed optimization traces:
+For programs with multiple predictors, DSPy.rb derives the number of trials from the candidate budget and number of tunable variables. The budget is therefore more stable to document than a fixed trial count for every program.
+
+Use the smallest preset that can answer the current question. A larger budget spends more model calls and explores more combinations. Production readiness depends on the held-out result and the application's release criteria.
+
+## Inspect What Changed
+
+`MIPROv2Result` exposes the optimized program, best score, evaluated candidates, and optimization trace.
 
 ```ruby
-# Best score achieved
-puts result.best_score_value  # => 0.87
+puts result.best_score_value
 
-# Trial-by-trial logs
-result.optimization_trace[:trial_logs].each do |trial|
-  puts "Trial #{trial[:trial_num]}: #{trial[:score]}"
-  puts "  Instruction: #{trial[:instruction]}"
-end
-
-# Predictor-level insights (for multi-stage programs)
-result.metadata[:predictor_contributions].each do |predictor, improvement|
-  puts "#{predictor}: +#{improvement} points"
+result.optimization_trace[:trial_logs].each do |trial_id, trial|
+  puts "Trial #{trial_id}: #{trial[:score]}"
+  puts trial[:instruction]
 end
 ```
 
-## Results from the Paper
+The exact keys inside each serialized trial depend on the candidate and program shape. Inspect the trace your run produced before building reporting code around nested fields. DSPy.rb does not currently publish a `metadata[:predictor_contributions]` score that attributes improvement to individual predictors.
 
-The Stanford team evaluated MIPROv2 on several benchmarks:
+Evaluate `optimized_program` on the held-out test set and compare it with the baseline under the same metric. Persist the optimized program and enough run metadata to reproduce the decision: dataset version, model configuration, metric version, random seed, and budget.
 
-- **Multi-hop QA**: Up to 13% accuracy improvement over baseline prompts
-- **Mathematical reasoning**: 8% improvement on GSM8K
-- **Instruction following**: Significant gains on multi-stage programs
+## What The Paper Establishes
 
-The key finding: automatic optimization consistently outperforms expert-written prompts, especially on complex tasks where human intuition fails.
+The paper evaluates MIPROv2 across several language-model programs and tasks, comparing optimized programs with baselines under defined metrics.[^miprov2-paper] Those experiments motivate instruction and demonstration search. They do not promise a fixed improvement for a new Ruby application.
 
-## When to Use MIPROv2
+Your result depends on the task, model, examples, metric, candidate budget, and variance in model calls. Report the baseline, held-out score, cost, and run configuration rather than carrying a benchmark percentage into another domain.
 
-MIPROv2 shines when:
+## When To Use It
 
-1. **You have labeled examples**: The optimizer needs training data to evaluate candidates
-2. **Your metric is measurable**: Accuracy, F1, pass rate, or any numeric score
-3. **Manual tuning has plateaued**: Human intuition only takes you so far
-4. **Multi-stage programs**: Per-predictor optimization handles complex pipelines
+MIPROv2 is a reasonable fit when:
 
-For simple single-call tasks, start with [GEPA](https://oss.vicente.services/dspy.rb/optimization/gepa/) for faster iteration. Use MIPROv2 when you need the highest accuracy or have multiple predictors.
+- You have enough representative examples to separate training, validation, and test data.
+- The metric reflects behavior you are willing to optimize.
+- The program has instructions or demonstrations worth compiling.
+- The expected gain can justify repeated model calls.
+
+For a small single-predictor program, [GEPA](https://oss.vicente.services/dspy.rb/optimization/gepa/) may provide a more direct reflective optimization loop. Choose between optimizers by their supported parameters, evidence requirements, and budget, then verify the compiled program on held-out data.
 
 ## Further Reading
 
-- [MIPROv2 Documentation](https://oss.vicente.services/dspy.rb/optimization/miprov2/) - Complete usage guide
-- [GEPA Optimizer](https://oss.vicente.services/dspy.rb/optimization/gepa/) - Lighter-weight alternative
-- [Evaluation Framework](https://oss.vicente.services/dspy.rb/optimization/evaluation/) - Building metrics
-- [Getting Started](https://oss.vicente.services/dspy.rb/getting-started/) - New to DSPy.rb?
+- [MIPROv2 Documentation](https://oss.vicente.services/dspy.rb/optimization/miprov2/)
+- [GEPA Optimizer](https://oss.vicente.services/dspy.rb/optimization/gepa/)
+- [Evaluation Framework](https://oss.vicente.services/dspy.rb/optimization/evaluation/)
+- [Getting Started](https://oss.vicente.services/dspy.rb/getting-started/)
 
 [^miprov2-paper]: Opsahl-Ong, Krista, et al. *Optimizing Instructions and Demonstrations for Multi-Stage Language Model Programs.* arXiv:2406.11695v2, 2024. [Read the paper](https://arxiv.org/abs/2406.11695)

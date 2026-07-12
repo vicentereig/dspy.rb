@@ -47,7 +47,7 @@ A signature defines the values the LLM receives and the values the application e
 
 When the LLM returns a value that cannot become an `Urgency` value, the framework rejects it before application code uses it. Because that's what type systems do. Just plain and boring engineering.
 
-The prompt becomes an implementation detail behind the signature. You can [optimize it automatically](/optimization/prompt-optimization/), change models without changing the call site, and test the returned behavior instead of matching prompt strings.
+The prompt becomes an implementation detail behind the signature. You can [optimize it automatically](/dspy.rb/optimization/prompt-optimization/), change models without changing the call site, and test the returned behavior instead of matching prompt strings.
 
 ## The Questions You Can't Answer Today
 
@@ -65,13 +65,13 @@ Traditional software already gives us the relevant discipline: capture execution
 
 ## Standardized Patterns Enable Tooling
 
-Patterns give tooling something concrete to inspect. [Signatures](/core-concepts/signatures/) define inputs and outputs. [Modules](/core-concepts/modules/) compose behavior. Traces can then record each module call, its inputs, and its outputs.
+Patterns give tooling something concrete to inspect. [Signatures](/dspy.rb/core-concepts/signatures/) define inputs and outputs. [Modules](/dspy.rb/core-concepts/modules/) compose behavior. Traces can then record each module call, its inputs, and its outputs.
 
-[Evaluation](/optimization/evaluation/) can run in CI against a fixed set of examples. It cannot prove that a prompt change will never regress, but it can catch regressions in the cases you chose to keep.
+[Evaluation](/dspy.rb/optimization/evaluation/) can run in CI against a fixed set of examples. It cannot prove that a prompt change will never regress, but it can catch regressions in the cases you chose to keep.
 
 ## What Now
 
-Pick one classifier or extractor your team maintains. Define it as a [Signature](/core-concepts/signatures/). Add an [evaluation metric](/advanced/custom-metrics/) tied to the behavior you care about. Run a fixed example set before changes, then deploy with [tracing enabled](/production/observability/).
+Pick one classifier or extractor your team maintains. Define it as a [Signature](/dspy.rb/core-concepts/signatures/). Add an [evaluation metric](/dspy.rb/advanced/custom-metrics/) tied to the behavior you care about. Run a fixed example set before changes, then deploy with [tracing enabled](/dspy.rb/production/observability/).
 
 See what changes when you treat LLM code like real software.
 

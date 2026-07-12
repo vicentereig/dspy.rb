@@ -1,402 +1,149 @@
 ---
 layout: blog
-title: "DSPy.rb + Sidekiq: Non-blocking LLM Processing in Production"
-date: 2025-09-01
-description: "How DSPy.rb's async architecture enables efficient background processing with Sidekiq, avoiding thread blocking during LLM API calls"
+title: "DSPy.rb, Async, and Sidekiq: Concurrency Inside a Job"
+description: "How to run independent DSPy.rb calls concurrently inside one Sidekiq job, with explicit limits and accurate worker-thread semantics."
+date: 2025-09-10
 author: "Vicente Reig"
-tags: ["async", "sidekiq", "performance", "production", "concurrency"]
+category: "Architecture"
+reading_time: "8 min read"
 canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/dspy-async-sidekiq-integration/"
 image: /images/og/dspy-async-sidekiq-integration.png
+tags: ["sidekiq", "async", "concurrency", "background-jobs", "performance"]
 ---
 
-LLM API calls take 2-5 seconds each. In a Sidekiq worker processing hundreds of jobs, this can quickly exhaust your thread pool and create bottlenecks. DSPy.rb's async architecture solves this by using Ruby's `async` gem for non-blocking I/O operations.
+Sidekiq and Async solve different scheduling problems. Sidekiq runs jobs on a pool of native threads. Async can coordinate several independent operations inside one of those jobs.
 
-## How DSPy.rb Handles Async Operations
+An LLM call that waits inside an Async task does not release the Sidekiq thread to execute another job. The job still owns that worker thread until `perform` returns. The useful case is narrower: one job has several independent provider calls and wants their waits to overlap.
 
-### LM#chat Uses Sync Blocks Internally
+## The execution boundary in DSPy.rb
 
-Every DSPy predictor call uses `Sync` blocks for non-blocking HTTP requests:
+`DSPy::LM#chat` enters a `Sync` block and forks the current DSPy context before calling the adapter:
 
 ```ruby
-# From lib/dspy/lm.rb - DSPy's internal implementation
 def chat(inference_module, input_values, &block)
-  Sync do  # Non-blocking fiber context
-    signature_class = inference_module.signature_class
-    
-    # Build messages from inference module
-    messages = build_messages(inference_module, input_values)
-    
-    # Execute with instrumentation - HTTP calls don't block threads
-    response = instrument_lm_request(messages, signature_class.name) do
-      chat_with_strategy(messages, signature_class, &block)
-    end
-    
-    # Parse response
-    parse_response(response, input_values, signature_class)
+  parent_context = DSPy::Context.current
+
+  Sync do
+    Fiber[:dspy_context] = DSPy::Context.fork_context(parent_context)
+    chat_with_strategy(inference_module, input_values, &block)
   end
 end
 ```
 
-When you call `predictor.call()`, DSPy automatically wraps the HTTP request in a `Sync` block. This means:
+This gives the call an Async task context and isolates mutable trace stacks. It does not create sibling predictions, and it does not prove that every provider SDK yields during network I/O.
 
-- **HTTP requests don't block threads** - other work can proceed
-- **Fibers yield control** during I/O operations
-- **Concurrent operations** are possible within the same thread
+## Prefer one job per independent unit
 
-## The Sidekiq Threading Problem
-
-### Blocking Approach - Inefficient Thread Usage
+When documents are independent and job overhead is acceptable, enqueue one job per document. Sidekiq already supplies concurrency, retries, queue controls, and operational visibility at that boundary:
 
 ```ruby
-# ❌ Blocking approach - ties up worker thread during API calls
-class BlockingLLMProcessor
-  include Sidekiq::Worker
-  sidekiq_options concurrency: 5  # Only 5 workers can run
-  
-  def perform(task_id)
-    # Each call blocks the worker thread for 2-5 seconds
-    classification = classifier.call(text: input_text)     # Blocks ~2s
-    summary = summarizer.call(content: long_content)       # Blocks ~3s  
-    analysis = analyzer.call(data: classification)         # Blocks ~2s
-    
-    # Total: ~7s of blocked thread time per job
-    # With 5 workers = maximum 5 jobs can process concurrently
-    # Throughput: ~43 jobs/minute (5 workers * 60s / 7s per job)
-    
-    save_results(classification, summary, analysis)
-  end
-end
-```
+class AnalyzeDocumentJob
+  include Sidekiq::Job
 
-### Non-blocking Approach - Efficient Resource Utilization
-
-```ruby
-# ✅ Non-blocking approach - efficient thread utilization
-class AsyncLLMProcessor
-  include Sidekiq::Worker
-  sidekiq_options concurrency: 5
-  
-  def perform(task_id)
-    Async do |task|
-      # LLM calls can run concurrently, threads yield during I/O
-      classification_task = task.async { classifier.call(text: input_text) }
-      summary_task = task.async { summarizer.call(content: long_content) }
-      
-      # Wait for dependencies
-      classification = classification_task.wait
-      analysis_task = task.async { analyzer.call(data: classification) }
-      
-      # Collect results
-      summary = summary_task.wait
-      analysis = analysis_task.wait
-      
-      # Total wall-clock time: ~3s (longest single operation)
-      # Worker threads can handle other jobs during I/O waits
-      # Throughput: ~100 jobs/minute (much higher due to better utilization)
-      
-      save_results(classification, summary, analysis)
-    end.wait  # Ensure completion before worker finishes
-  end
-end
-```
-
-## Real-World Example: Document Processing Pipeline
-
-Here's a complete example processing documents with multiple LLM operations:
-
-```ruby
-require 'sidekiq'
-
-class DocumentProcessor
-  include Sidekiq::Worker
-  sidekiq_options queue: 'document_processing', retry: 2
-  
   def perform(document_id)
     document = Document.find(document_id)
-    document.update!(status: :processing)
-    
-    # Process with concurrent LLM operations
-    result = Async do |task|
-      # Stage 1: Parallel extraction (independent operations)
-      title_task = task.async { title_extractor.call(content: document.content) }
-      keywords_task = task.async { keyword_extractor.call(content: document.content) }
-      category_task = task.async { categorizer.call(content: document.content) }
-      
-      # Stage 2: Wait for extraction results
-      title = title_task.wait
-      keywords = keywords_task.wait  
-      category = category_task.wait
-      
-      # Stage 3: Dependent operations using extraction results
-      summary_task = task.async do
-        summarizer.call(
-          content: document.content,
-          title: title.title,
-          keywords: keywords.keywords
-        )
-      end
-      
-      quality_task = task.async do
-        quality_checker.call(
-          title: title.title,
-          category: category.category,
-          content: document.content
-        )
-      end
-      
-      # Wait for all results
-      summary = summary_task.wait
-      quality = quality_task.wait
-      
-      {
-        title: title,
-        keywords: keywords,
-        category: category,
-        summary: summary,
-        quality_score: quality.score
+    result = analyzer.call(content: document.content)
+    document.update!(analysis: result.analysis)
+  end
+
+  private
+
+  def analyzer
+    @analyzer ||= DSPy::Predict.new(DocumentAnalysis)
+  end
+end
+
+document_ids.each { |id| AnalyzeDocumentJob.perform_async(id) }
+```
+
+This keeps failure and retry scope small. One provider timeout does not require replaying an entire batch.
+
+The [production guide](/dspy.rb/production/) covers the broader deployment boundary. Use [observability](/dspy.rb/production/observability/) to inspect module and provider spans; it does not replace Sidekiq's job and retry metrics.
+
+## Concurrent calls inside one job
+
+Sometimes one job owns one record but needs several independent analyses before it can commit the result. Create the sibling tasks explicitly and wait for all of them:
+
+```ruby
+require 'async'
+require 'async/barrier'
+
+class DocumentEnrichmentJob
+  include Sidekiq::Job
+
+  def perform(document_id)
+    document = Document.find(document_id)
+
+    results = Sync do
+      barrier = Async::Barrier.new
+      tasks = {
+        summary: barrier.async { summarizer.call(content: document.content) },
+        topics: barrier.async { topic_classifier.call(content: document.content) },
+        sentiment: barrier.async { sentiment_analyzer.call(content: document.content) }
       }
-    end.wait
-    
-    # Save results and update status
+
+      barrier.wait
+      tasks.transform_values(&:result)
+    end
+
     document.update!(
-      processed_title: result[:title].title,
-      extracted_keywords: result[:keywords].keywords.join(', '),
-      category: result[:category].category,
-      summary: result[:summary].summary,
-      quality_score: result[:quality_score],
-      status: :completed
+      summary: results[:summary].summary,
+      topics: results[:topics].topics,
+      sentiment: results[:sentiment].sentiment
     )
-    
-  rescue => e
-    document.update!(status: :failed, error_message: e.message)
-    raise  # Let Sidekiq handle retry
-  end
-  
-  private
-  
-  # Memoize DSPy predictors to avoid recreation
-  def title_extractor
-    @title_extractor ||= DSPy::Predict.new(TitleExtractor)
-  end
-  
-  def keyword_extractor  
-    @keyword_extractor ||= DSPy::Predict.new(KeywordExtractor)
-  end
-  
-  def categorizer
-    @categorizer ||= DSPy::Predict.new(DocumentCategorizer)
-  end
-  
-  def summarizer
-    @summarizer ||= DSPy::ChainOfThought.new(DocumentSummarizer)
-  end
-  
-  def quality_checker
-    @quality_checker ||= DSPy::Predict.new(QualityChecker)
   end
 end
 ```
 
-## Performance Comparison
+The three calls can overlap only if their transports cooperate with Ruby's fiber scheduler. The Sidekiq thread remains occupied for the duration of the job.
 
-### Sequential vs Concurrent Processing
+Do not use this shape when one result feeds the next. Keep dependent module calls sequential so the control flow and failure point remain explicit.
 
-```ruby
-# Sequential approach (blocking)
-start_time = Time.now
-title = title_extractor.call(content: content)          # 2s
-keywords = keyword_extractor.call(content: content)     # 2s  
-category = categorizer.call(content: content)           # 2s
-summary = summarizer.call(title: title, content: content) # 3s
-# Total: 9 seconds wall-clock time
+## Bound concurrency
 
-# Concurrent approach (non-blocking)
-start_time = Time.now
-result = Async do |task|
-  # Stage 1: Independent operations (parallel)
-  title_task = task.async { title_extractor.call(content: content) }
-  keywords_task = task.async { keyword_extractor.call(content: content) }  
-  category_task = task.async { categorizer.call(content: content) }
-  
-  # Stage 2: Dependent operation (waits for title)
-  title = title_task.wait
-  summary_task = task.async { summarizer.call(title: title, content: content) }
-  
-  # Collect results
-  {
-    title: title,
-    keywords: keywords_task.wait,
-    category: category_task.wait,
-    summary: summary_task.wait
-  }
-end.wait
-# Total: ~3 seconds wall-clock time (longest single operation)
-```
+A Sidekiq process may already run many jobs at once. If every job launches a large number of provider calls, the effective concurrency is approximately Sidekiq concurrency multiplied by each job's child-task count. That can exhaust HTTP connections or provider rate limits quickly.
 
-## Sidekiq Configuration for DSPy.rb
-
-### Optimal Worker Configuration
+Put a fixed bound around fan-out. The exact primitive depends on the Async version and application architecture, but the limit should be deliberate and lower than the provider and connection-pool ceilings.
 
 ```ruby
-# config/initializers/sidekiq.rb
-Sidekiq.configure_server do |config|
-  config.concurrency = 10  # Increase since workers don't block during I/O
-end
+MAX_CALLS_PER_JOB = 3
 
-# Separate queues by priority and resource requirements
-Sidekiq.configure_client do |config|
-  config.default_queue_name = 'default'
-end
-
-# Queue configuration
-class LLMProcessor
-  include Sidekiq::Worker
-  sidekiq_options queue: 'llm_processing',    # LLM operations
-                  retry: 3,
-                  backtrace: true
-end
-
-class FastProcessor  
-  include Sidekiq::Worker
-  sidekiq_options queue: 'fast_processing',   # Quick operations
-                  retry: 5
-end
-```
-
-### Monitoring Async Performance
-
-```ruby
-# Add timing instrumentation to measure async benefits
-class InstrumentedProcessor
-  include Sidekiq::Worker
-  
-  def perform(task_id)
-    start_time = Time.now
-    
-    result = Async do |task|
-      # Track individual operation times
-      operations = []
-      
-      title_task = task.async do
-        op_start = Time.now
-        result = title_extractor.call(content: content)
-        operations << { operation: 'title_extraction', duration: Time.now - op_start }
-        result
-      end
-      
-      # ... other operations
-      
-      title_task.wait
-    end.wait
-    
-    total_time = Time.now - start_time
-    
-    # Log performance metrics
-    Sidekiq.logger.info("Processed #{task_id} in #{total_time}s with #{operations.length} LLM calls")
-    operations.each do |op|
-      Sidekiq.logger.info("  #{op[:operation]}: #{op[:duration]}s")
+documents.each_slice(MAX_CALLS_PER_JOB) do |slice|
+  Sync do
+    barrier = Async::Barrier.new
+    slice.each do |document|
+      barrier.async { analyzer.call(content: document.content) }
     end
+    barrier.wait
   end
 end
 ```
 
-## Best Practices
+This batches work; it is not a global limiter across Sidekiq threads or processes. Use a shared rate limiter when the provider quota is global.
 
-### 1. Design for Concurrency
+## Failure and retry boundaries
 
-Structure your DSPy pipelines to maximize concurrent operations:
+DSPy.rb v0.28.0 removed its former core retry strategy. Current behavior has several layers:
 
-```ruby
-# ✅ Good: Independent operations can run in parallel
-Async do |task|
-  extract_task = task.async { extract_entities(document) }
-  classify_task = task.async { classify_document(document) }
-  
-  entities = extract_task.wait
-  classification = classify_task.wait
-end
+- Sidekiq retries the whole job according to its job policy.
+- Provider SDK configuration may retry transport failures.
+- Your job decides whether a failed child task invalidates the whole result.
+- A few adapters have narrow compatibility fallbacks for rejected structured-output parameters; those are not general prediction retries.
 
-# ❌ Less efficient: Sequential dependencies
-classification = classify_document(document)  # Must finish first
-entities = extract_entities(document, classification)  # Depends on classification
-```
+Avoid retrying the same failure independently at every layer. Multiplicative retries are expensive and make elapsed time difficult to predict.
 
-### 2. Memoize DSPy Objects
+For partial results, collect outcomes explicitly and decide which fields are required before updating the record. For all-or-nothing work, let the task failure abort the job and make the database write idempotent.
 
-Create DSPy predictors once, reuse across jobs:
+## Measure the job, not an isolated sleep
 
-```ruby
-class EfficientProcessor
-  include Sidekiq::Worker
-  
-  private
-  
-  # ✅ Good: Memoized predictors
-  def summarizer
-    @summarizer ||= DSPy::ChainOfThought.new(Summarizer)
-  end
-  
-  # ❌ Bad: Creating new instances every time
-  def summarizer
-    DSPy::ChainOfThought.new(Summarizer)  # Expensive recreation
-  end
-end
-```
+Compare complete job runs through the deployed provider adapter. Record:
 
-### 3. Handle Failures Gracefully
+- Job wall-clock time.
+- Provider requests and rate-limit responses.
+- Sidekiq retries.
+- Connection-pool saturation.
+- Partial or failed child tasks.
 
-```ruby
-def perform(document_id)
-  Async do |task|
-    operations = [
-      task.async { safe_llm_call { title_extractor.call(content) } },
-      task.async { safe_llm_call { categorizer.call(content) } }
-    ]
-    
-    # Wait for all, handle partial failures
-    results = operations.map do |op_task|
-      begin
-        op_task.wait
-      rescue => e
-        Sidekiq.logger.warn("LLM operation failed: #{e.message}")
-        nil  # Partial failure, continue processing
-      end
-    end
-    
-    # Process non-nil results
-    results.compact.each { |result| save_result(result) }
-  end.wait
-end
+A three-call example can approach the duration of its slowest call when waits overlap, but `3 x 3 seconds` versus `3 seconds` is only an illustration. It is not a DSPy.rb performance guarantee.
 
-private
-
-def safe_llm_call(&block)
-  retries = 0
-  begin
-    yield
-  rescue => e
-    retries += 1
-    if retries < 3
-      sleep(retries * 0.5)  # Exponential backoff
-      retry
-    else
-      raise
-    end
-  end
-end
-```
-
-## Key Takeaways
-
-DSPy.rb's async architecture enables efficient background processing:
-
-- **Non-blocking I/O**: Worker threads can handle other jobs during LLM API waits
-- **Concurrent operations**: Multiple LLM calls can run simultaneously  
-- **Better throughput**: Significantly higher jobs/minute with proper async usage
-- **Resource efficiency**: More work with the same thread pool size
-
-Understanding these patterns is crucial for production DSPy.rb applications that need to process high volumes of LLM operations efficiently.
-
----
-
-*For more DSPy.rb production patterns, check out our [production guide](/dspy.rb/production/) and [observability documentation](/dspy.rb/production/observability/).*
+Use Sidekiq concurrency for independent jobs. Use Async inside a job only when that job contains independent waits and the extra failure and rate-limit complexity earns its place.

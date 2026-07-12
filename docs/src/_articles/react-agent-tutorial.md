@@ -23,7 +23,7 @@ This tutorial builds a research assistant with typed tools and a five-iteration 
 3. Call the Ruby tool and record its observation.
 4. Ask the model whether to use another tool or finish.
 
-The model chooses actions inside that loop. The application still owns the available tools, input types, maximum iterations, and side effects. Those boundaries are the agent's harness.
+The model chooses actions inside that loop. The application defines the available tools, input types, maximum iterations, and permitted side effects.
 
 ## Define typed tools
 
@@ -91,11 +91,11 @@ class DataAnalysisTool < DSPy::Tools::Base
 end
 ```
 
-The schema constrains tool arguments and lets DSPy.rb coerce them before invocation. It does not make a side effect safe. A database, HTTP, shell, or payment tool still needs its own authorization, timeouts, rate limits, and input policy.
+The schema constrains tool arguments and lets DSPy.rb coerce them before invocation. Safety belongs inside the operation: a database, HTTP, shell, or payment tool still needs authorization, timeouts, rate limits, and input policy.
 
 ## Define the task
 
-The signature describes the inputs and the final typed result. It does not prescribe the order of tool calls:
+The signature describes the inputs and the final typed result. The ReAct loop chooses the order of tool calls:
 
 ```ruby
 class ResearchDepth < T::Enum
@@ -158,15 +158,15 @@ Five iterations is both the explicit limit above and the current default. If the
 
 ## Inspect what the agent did
 
-The returned result includes `history` and `iterations`. Each history item is a `DSPy::HistoryEntry`:
+The returned result includes `history` and `iterations`. The agent uses `DSPy::HistoryEntry` objects internally, then exposes each public history entry as a hash with symbol keys:
 
 ```ruby
 result.history.each do |entry|
-  puts "Step: #{entry.step}"
-  puts "Thought: #{entry.thought}"
-  puts "Action: #{entry.action}"
-  puts "Tool input: #{entry.tool_input.inspect}"
-  puts "Observation: #{entry.observation.inspect}"
+  puts "Step: #{entry[:step]}"
+  puts "Thought: #{entry[:thought]}"
+  puts "Action: #{entry[:action]}"
+  puts "Tool input: #{entry[:tool_input].inspect}"
+  puts "Observation: #{entry[:observation].inspect}"
 end
 
 puts "Total iterations: #{result.iterations}"
@@ -218,4 +218,4 @@ Evaluate complete trajectories when tool choice matters. A correct final string 
 
 Use ReAct when the next operation depends on an observation and the model has a useful bounded choice among tools. Use a deterministic workflow when every step must run, the branch graph is already known, or audit requirements demand explicit transitions.
 
-A workflow can contain a ReAct handler. The surrounding Ruby code still owns budgets, permissions, persistence, fallback behavior, and evaluation. Giving the model one decision does not require giving it all of them.
+A workflow can contain a ReAct handler. Use one when the model needs to choose the next operation; keep the surrounding Ruby workflow when the sequence and branches are already known.

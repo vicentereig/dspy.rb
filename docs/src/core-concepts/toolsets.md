@@ -10,7 +10,7 @@ breadcrumb:
 nav:
   prev:
     name: Memory
-    url: "/core-concepts/memory/"
+    url: "/advanced/stateful-agents/"
   next:
     name: Predictors
     url: "/core-concepts/predictors/"

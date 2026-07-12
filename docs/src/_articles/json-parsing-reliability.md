@@ -1,229 +1,82 @@
 ---
 layout: blog
-title: "Stop Fighting JSON Parsing Errors in Your LLM Apps"
-date: 2025-07-11
-description: "How DSPy.rb's new reliability features make JSON extraction from LLMs actually reliable"
-author: "Vicente Reig"
+title: "Reducing JSON Parsing Failures in DSPy.rb"
+date: 2025-03-08
+description: "How provider-native structured outputs, prompt-based JSON, extraction, and runtime validation fit together in DSPy.rb."
+author: "Vicente Reig Rincon de Arellano"
 canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/json-parsing-reliability/"
 image: /images/og/json-parsing-reliability.png
 ---
 
-If you've built anything with LLMs, you know the pain. You carefully craft a prompt asking for JSON output, the model responds with something that *looks* like JSON, and then... `JSON::ParserError`. 
+An LM can return valid prose and still break an application that expects JSON. DSPy.rb narrows that boundary in three stages: request a structured response when the provider supports it, extract a JSON candidate when it does not, then construct the signature's declared Ruby values.
 
-Maybe it wrapped the JSON in markdown code blocks. Maybe it added a helpful explanation before the actual data. Maybe it just forgot a comma. Whatever the reason, you're now debugging string manipulation instead of building features.
+Each stage catches a different failure. None guarantees that the answer is correct.
 
-DSPy.rb just shipped reliability features that make this problem (mostly) go away.
-
-## The Problem We're Solving
-
-Here's what typically happens when you need structured data from an LLM:
+## Declare the Boundary
 
 ```ruby
-response = lm.chat(messages: [{
-  role: "user", 
-  content: "Extract product details as JSON: #{product_description}"
-}])
+class ProductInfo < DSPy::Signature
+  description "Extract product information from text"
 
-# This works... sometimes
-data = JSON.parse(response.content) # 💥 JSON::ParserError
-```
-
-You end up writing defensive code like this:
-
-```ruby
-# Please no more of this
-json_match = response.content.match(/```json\n(.*?)\n```/m) || 
-             response.content.match(/\{.*\}/m)
-             
-data = JSON.parse(json_match[1]) rescue nil
-```
-
-## The Solution: Provider-Optimized Strategies
-
-DSPy.rb now automatically selects the best JSON extraction strategy based on your LLM provider and model. No configuration needed - it just works.
-
-### For OpenAI and Gemini Users
-
-If you're using OpenAI's GPT-4/GPT-4o or Google's Gemini models, DSPy.rb automatically uses native structured outputs:
-
-```ruby
-# OpenAI structured outputs
-lm = DSPy::LM.new("openai/gpt-4o-mini", 
-                  api_key: ENV["OPENAI_API_KEY"],
-                  structured_outputs: true)
-
-# Gemini structured outputs (gemini-1.5-pro, gemini-1.5-flash, gemini-2.0-flash-exp)
-lm = DSPy::LM.new("gemini/gemini-1.5-flash", 
-                  api_key: ENV["GEMINI_API_KEY"],
-                  structured_outputs: true)
-
-class ProductExtractor < DSPy::Signature
   input do
-    const :description, String
+    const :text, String
   end
-  
+
   output do
     const :name, String
     const :price, Float
     const :in_stock, T::Boolean
   end
 end
-
-# This now returns guaranteed valid JSON
-predict = DSPy::Predict.new(ProductExtractor)
-result = predict.forward(description: "iPhone 15 Pro - $999, available now")
-# => { name: "iPhone 15 Pro", price: 999.0, in_stock: true }
 ```
 
-No more parsing errors. Both OpenAI and Gemini guarantee valid JSON when using their native structured output features.
+The signature supplies the output schema. `DSPy::Predict` uses it to build the request and to convert the parsed response.
 
-### For Anthropic Users
+## Prefer Native Structured Output When Available
 
-Claude users get the battle-tested 4-pattern extraction that handles Claude's various response formats:
+Provider adapters can translate the signature into provider-specific request fields:
 
-```ruby
-lm = DSPy::LM.new("anthropic/claude-3-haiku-20240307",
-                  api_key: ENV["ANTHROPIC_API_KEY"])
-
-# Same code, optimized extraction for Claude
-predict = DSPy::Predict.new(ProductExtractor)
-result = predict.forward(description: "MacBook Air M3 - $1199")
-```
-
-### For Everything Else
-
-Models without special support get enhanced prompting that explicitly asks for clean JSON and tries multiple extraction patterns:
-
-```ruby
-# Works with any model
-lm = DSPy::LM.new("ollama/llama2", base_url: "http://localhost:11434")
-```
-
-## Reliability Features That Actually Matter
-
-### Automatic Retries with Fallback
-
-Sometimes things fail. Networks hiccup. Models have bad days. DSPy.rb now retries intelligently:
-
-1. **First attempt** with the optimal strategy
-2. **Retry** with exponential backoff if parsing fails  
-3. **Fallback** to the next best strategy if retries exhausted
-4. **Progressive degradation** through all available strategies
-
-This happens automatically. You don't need to configure anything.
-
-### Smart Caching
-
-Schema conversion and capability detection are now cached:
-
-- **Schema caching**: OpenAI schemas cached for 1 hour
-- **Capability caching**: Model capabilities cached for 24 hours
-- **Thread-safe**: Works correctly in multi-threaded apps
-
-This means the second request is always faster than the first.
-
-### Better Error Messages
-
-When things do go wrong, you get useful errors:
-
-```
-Failed to parse LLM response as JSON: unexpected token. 
-Original content length: 156 chars
-```
-
-Not just "invalid JSON" - you get context to actually debug the issue.
-
-## Configuration Per Provider
-
-Enable native structured outputs for maximum reliability:
+- OpenAI-compatible adapters use `response_format` for models that DSPy.rb marks as supporting structured output.
+- Gemini uses `generation_config` with `response_mime_type: "application/json"` and `response_json_schema` for supported models.
+- Anthropic uses its structured-output request fields when `structured_outputs` is enabled.
 
 ```ruby
 DSPy.configure do |config|
-  # OpenAI: Native structured outputs (highly recommended)
   config.lm = DSPy::LM.new(
-    "openai/gpt-4o-mini",
-    api_key: ENV["OPENAI_API_KEY"],
+    'openai/gpt-4o-mini',
+    api_key: ENV.fetch('OPENAI_API_KEY'),
     structured_outputs: true
   )
+end
 
-  # Gemini: Native structured outputs (highly recommended)
-  # config.lm = DSPy::LM.new(
-  #   "gemini/gemini-2.5-flash",
-  #   api_key: ENV["GEMINI_API_KEY"],
-  #   structured_outputs: true
-  # )
+extractor = DSPy::Predict.new(ProductInfo)
+product = extractor.call(text: "The iPhone 15 Pro costs $999 and is available")
+```
 
-  # Anthropic: Tool-based extraction (default, recommended)
-  # config.lm = DSPy::LM.new(
-  #   "anthropic/claude-sonnet-4-5-20250929",
-  #   api_key: ENV["ANTHROPIC_API_KEY"],
-  #   structured_outputs: true  # Default
-  # )
+The option enables the adapter path; actual support still depends on the selected provider and model. OpenRouter and Ollama may retry a request without `response_format` when their OpenAI-compatible endpoint rejects that parameter.
 
-  # Anthropic: Enhanced prompting (alternative)
-  # config.lm = DSPy::LM.new(
-  #   "anthropic/claude-sonnet-4-5-20250929",
-  #   api_key: ENV["ANTHROPIC_API_KEY"],
-  #   structured_outputs: false
-  # )
+## Prompt-Based JSON Remains Available
+
+Set `structured_outputs: false` to keep the signature schema and output instructions in the prompt:
+
+```ruby
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new(
+    'anthropic/claude-sonnet-4-20250514',
+    api_key: ENV.fetch('ANTHROPIC_API_KEY'),
+    structured_outputs: false
+  )
 end
 ```
 
-## Real Performance Impact
+For JSON responses, `JSONStrategy` checks a `json` fence, a generic code fence, the complete response, and an embedded object. It accepts a candidate only when `JSON.parse` succeeds. It also removes a trailing comma immediately before the final object brace and escapes raw control characters inside strings.
 
-In our testing with production workloads:
+That normalization is deliberately narrow. DSPy.rb does not guess missing fields, rewrite arbitrary malformed JSON, or silently turn prose into application data.
 
-- **OpenAI + structured outputs**: Near-zero JSON parsing errors
-- **Gemini + structured outputs**: Near-zero JSON parsing errors
-- **Anthropic tool extraction**: <0.1% errors
-- **Enhanced prompting fallback**: ~0.5% errors
+## Validation Happens After Parsing
 
-The robust extraction strategies handle edge cases gracefully, providing reliable parsing across all providers.
+Valid JSON can still violate the signature. A missing field, unknown enum value, or incompatible nested object fails when DSPy.rb constructs the prediction. Conversely, a schema-valid response can still contain a bad classification or invented fact. Evaluate semantic behavior separately.
 
-## Migration is Seamless
+Current DSPy.rb core executes one prediction attempt. It does not include the automatic retry, fallback, or response cache described by older releases. Provider SDKs may have their own transport retry settings, and applications can add retry policy around failures they can classify safely.
 
-If you're already using DSPy.rb, you get these improvements automatically. Your existing code continues to work, just more reliably:
-
-```ruby
-# Existing code - no changes needed
-class SentimentAnalysis < DSPy::Signature
-  input do
-    const :text, String
-  end
-  
-  output do
-    const :sentiment, String
-    const :confidence, Float
-  end
-end
-
-# This is now more reliable
-analyzer = DSPy::Predict.new(SentimentAnalysis)
-result = analyzer.forward(text: "This library is amazing!")
-```
-
-## What's Next
-
-This is part of our broader push to make DSPy.rb the most reliable way to build LLM applications in Ruby. We're focusing on:
-
-1. **Streaming support** for real-time applications
-2. **Batch processing** optimizations  
-3. **Provider-specific optimizations** for Gemini, Cohere, and others
-
-## Try It Now
-
-```bash
-gem install dspy
-```
-
-Or in your Gemfile:
-
-```ruby
-gem 'dspy', '~> 0.9.0'
-```
-
-Check out the [documentation](https://oss.vicente.services/dspy.rb/) for more examples, or dive into the [reliability features guide](https://oss.vicente.services/dspy.rb/production/) for advanced usage.
-
----
-
-*Building something cool with DSPy.rb? I'd love to hear about it - [@vicentereig](https://twitter.com/vicentereig)*
+Use native structured output when the selected model supports it. Use prompt-based JSON when portability or an alternate data format matters. In both cases, keep the signature as the boundary and test the failures the application needs to handle.

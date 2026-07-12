@@ -121,7 +121,7 @@ puts result.best_score_value
 
 MIPROv2 searches over instructions and demonstrations. Its API returns an `OptimizationResult`; deploy or serialize `result.optimized_program`, not the optimizer itself.
 
-See [MIPROv2](/optimization/miprov2/) for budgets, presets, and multi-predictor programs.
+See [MIPROv2](/dspy.rb/optimization/miprov2/) for budgets, presets, and multi-predictor programs.
 
 ## Compile with GEPA
 
@@ -129,18 +129,30 @@ GEPA uses scalar scores and textual feedback to propose instruction changes. It 
 
 Use GEPA when your metric can explain a failure, not merely mark it wrong. The reflection model receives that feedback and uses it to propose the next candidate.
 
-See [GEPA](/optimization/gepa/) for its metric contract, reflection model, and evaluation budget.
+See [GEPA](/dspy.rb/optimization/gepa/) for its metric contract, reflection model, and evaluation budget.
 
 ## Store the Result
 
-Optimized programs can be serialized directly:
+`ProgramStorage` saves the optimized program together with the optimization result and metadata:
 
 ```ruby
-DSPy::Serializer.save(optimized_program, "sentiment-program.json")
-loaded_program = DSPy::Serializer.load("sentiment-program.json")
+storage = DSPy::Storage::ProgramStorage.new(
+  storage_path: "./dspy_storage"
+)
+
+saved = storage.save_program(
+  result.optimized_program,
+  result,
+  metadata: { dataset: "sentiment-v1" }
+)
+
+loaded = storage.load_program(saved.program_id)
+loaded_program = loaded.program
 ```
 
 Record the dataset version, metric version, model, optimizer configuration, and validation score beside the artifact. Those details explain what the optimized program was selected to do.
+
+Reloading reconstructs the program class named in the artifact. That class and its signature class must already be loaded, and the program class must implement `.from_h`. Evaluate `loaded_program` before promotion; persistence does not establish compatibility with a changed model, dependency, or application.
 
 ## Operational Limits
 

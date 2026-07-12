@@ -51,8 +51,9 @@ OpenAI namespace and will cause conflicts.
 # Remove this line:
 # gem 'ruby-openai'
 
-# DSPy already includes the official gem internally
+# Install core plus the OpenAI adapter, which depends on the official SDK
 gem 'dspy'
+gem 'dspy-openai'
 ```
 
 If the application needs both SDKs, isolate them in separate processes. Bundler groups help only when the conflicting gems are not loaded together.
@@ -62,7 +63,7 @@ If the application needs both SDKs, isolate them in separate processes. Bundler 
 **Problem**: Both gems use the `OpenAI` namespace, causing method conflicts and unexpected behavior.
 
 **Solution**: 
-1. Use only the official `openai` gem that DSPy depends on
+1. Use `dspy-openai`, which depends on the official `openai` gem
 2. If migration is needed, update your code to use the official SDK's API:
 
 ```ruby
@@ -135,34 +136,11 @@ end
 
 Provider capabilities vary by model and SDK version. A provider prefix alone does not establish native schema support.
 
-## Memory Issues
+## Application State Issues
 
-### Error: Memory storage full
+DSPy.rb does not provide a memory store. Keep conversation history, user preferences, and checkpoints in application-owned storage, then pass the relevant state into a signature as typed input.
 
-**Cause**: The application retained more memory records than its configured in-memory limit.
-
-**Solution**: Use the MemoryManager to handle memory with automatic compaction:
-
-```ruby
-# Basic memory manager with automatic compaction
-manager = DSPy::Memory::MemoryManager.new
-
-# Store a memory (compaction runs automatically when needed)
-manager.store_memory(
-  "User prefers dark mode",
-  user_id: "user_123",
-  tags: ["preference", "ui"]
-)
-
-# Manually trigger compaction if needed
-manager.compact_if_needed!(user_id: "user_123")
-
-# Force compaction (useful for cleanup)
-manager.force_compact!(user_id: "user_123")
-
-# Clear memories for a user
-manager.clear_memories(user_id: "user_123")
-```
+If retained state grows without bound, inspect the application's database, cache, or session store. Define retention and compaction rules there rather than relying on an in-process DSPy object.
 
 ## Performance Issues
 

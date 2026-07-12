@@ -1,19 +1,17 @@
 ---
 layout: blog
-title: "TOON vs CSV for LLM Prompts: Why Nested Data Needs a New Format"
+title: "TOON and CSV for Nested LLM Data"
 date: 2025-11-15
-description: "CSV breaks when you need nested relationships in LLM prompts. TOON (Token-Oriented Object Notation) preserves Ruby structs, arrays, and enums while cutting token costs. See the benchmark."
+description: "How TOON represents nested Sorbet structs and arrays that require flattening or extra conventions in CSV."
 author: "Vicente Reig Rincon de Arellano"
 canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/toon-vs-csv-nested-relationships/"
 image: /images/og/toon-vs-csv-nested-relationships.png
 reading_time: "3 min read"
 ---
 
-CSV is phenomenal for spreadsheets and OLAP imports, but it breaks down the moment you try to express nested relationships in an LLM prompt. Token-Oriented Object Notation (TOON)[^1] keeps the structural cues that Sorbet signatures describe—arrays of structs, nested arrays, enums—without reprinting every JSON key. The new unit spec in [`spec/sorbet/toon/books_serialization_spec.rb`](https://github.com/vicentereig/dspy.rb/blob/main/spec/sorbet/toon/books_serialization_spec.rb) captures a concrete example: a catalog of books, each with its own list of authors.
+CSV represents one table well. A catalog in which each book has several authors is not one table unless you flatten the relationship or split it across records. Token-Oriented Object Notation (TOON)[^1] can retain that nesting while using tabular rows for uniform arrays.
 
-## Rich types, zero prompt glue
-
-DSPy.rb leans on [Sorbet runtime types](https://oss.vicente.services/dspy.rb/core-concepts/signatures/) so you can model prompts like regular functions—define input parameters and return values, and let the serializers do the dirty work. Here's a classic "book has many authors" relationship straight out of the spec:
+The unit spec in [`spec/sorbet/toon/books_serialization_spec.rb`](https://github.com/vicentereig/dspy.rb/blob/main/spec/sorbet/toon/books_serialization_spec.rb) uses these Sorbet types:
 
 ```ruby
 class Author < T::Struct
@@ -28,7 +26,7 @@ class Book < T::Struct
 end
 ```
 
-## The TOON payload (as recorded in the spec)
+`Sorbet::Toon.encode` produces the following nested representation:
 
 ```text
 catalog[2]:
@@ -43,23 +41,11 @@ catalog[2]:
       Benjamin Pierce,TAPL
 ```
 
-Why this matters:
+`authors[2]{name,notable_work}` declares the row count and columns for the nested author array. The book fields remain grouped with that array. Plain CSV would need an agreed flattening scheme, repeated book columns, or a second table with join keys.
 
-- **Row grouping stays explicit.** `authors[2]{name,notable_work}` tells the model it is about to read a two-row table, not a comma-delimited blob.
-- **Type hints survive.** Because we rendered the payload via `Sorbet::Toon.encode`, both arrays know their element type (authors vs. books) without repeating keys.
-- **Decoder fidelity.** `Sorbet::Toon.decode` rebuilds the same nested hash/struct graph, so `Predict` can return `Book` objects without any CSV parsing heuristics.
+## Decoding the Structure
 
-## Takeaways
-
-- TOON is leaner than JSON but still hierarchical: arrays of structs format themselves as literal tables, so relationships remain obvious to both humans and models.
-- CSV can still transport raw facts, but you end up writing bespoke parsing logic (and telling the LLM how to interpret it) every time your schema nests.
-- When you already define signatures in Sorbet, just call `Sorbet::Toon.encode(payload)` and drop the resulting block into your prompt. The spec we added is a copy-pasteable reference for teammates who want to “see” the layout before adopting it.
-
-Next stop: record a VCR cassette using this signature so we can show TOON’s nested layout flowing through an actual Enhanced Prompting call. Until then, the spec stands as the living documentation for how TOON preserves rich relationships that CSV can’t.
-
-## Using these structs inside DSPy.rb
-
-Hooking the `Book`/`Author` structs into a real [predictor](https://oss.vicente.services/dspy.rb/core-concepts/predictors/) just takes a [signature](https://oss.vicente.services/dspy.rb/core-concepts/signatures/) and an LM configured for TOON:
+`Sorbet::Toon.decode` returns Ruby primitives by default. Pass a struct class or signature when the caller needs reconstructed Sorbet objects. Inside DSPy.rb, `data_format: :toon` supplies the output signature to the decoder before `Predict` constructs its prediction.
 
 ```ruby
 class SummarizeBookCatalog < DSPy::Signature
@@ -76,12 +62,10 @@ class SummarizeBookCatalog < DSPy::Signature
 end
 ```
 
-Wire up Gemini with BAML[^2]+TOON rendering:
-
 ```ruby
 DSPy.configure do |c|
   c.lm = DSPy::LM.new(
-    'google/gemini-2.5-flash',
+    'gemini/gemini-2.5-flash',
     api_key: ENV.fetch('GEMINI_API_KEY'),
     schema_format: :baml,
     data_format: :toon
@@ -89,26 +73,26 @@ DSPy.configure do |c|
 end
 ```
 
-Now your predictor automatically emits the nested TOON block:
-
 ```ruby
 librarian = DSPy::Predict.new(SummarizeBookCatalog)
-catalog_summary = librarian.call(
-  catalog: sample_books
-)
+catalog_summary = librarian.call(catalog: sample_books)
 
 puts catalog_summary.highlights
 catalog_summary.featured_authors.each { |author| puts author.name }
 ```
 
-Because TOON preserves the nested structure, Gemini receives a compact table for each book's authors and DSPy hands you typed structs on the way back. No CSV gymnastics, no extra parsing layer—just signatures, Sorbet types, and TOON keeping everything coherent.
+This path uses prompt-rendered TOON rather than provider-native JSON structured output. It removes the need for application-specific CSV flattening, but it still depends on the model returning valid TOON that matches the signature.
+
+## Choosing Between Them
+
+Use CSV for a genuinely flat table, especially when existing systems already produce and consume it. Use TOON when one payload mixes objects, nested arrays, and repeated records and you want one representation that preserves those boundaries.
+
+Neither format guarantees better model output. Compare token counts and evaluation results on the payloads and models that matter to the application.
 
 ## Related Resources
 
-- [Getting Started Guide](https://oss.vicente.services/dspy.rb/getting-started/) - New to DSPy.rb? Start here
-- [Signatures Documentation](https://oss.vicente.services/dspy.rb/core-concepts/signatures/) - Define type-safe LLM interfaces
-- [Predictors Documentation](https://oss.vicente.services/dspy.rb/core-concepts/predictors/) - Learn about Predict, ChainOfThought, and ReAct
-- [Toolsets Documentation](https://oss.vicente.services/dspy.rb/core-concepts/toolsets/) - Learn how to build tools that work with TOON-formatted data
+- [Signatures Documentation](https://oss.vicente.services/dspy.rb/core-concepts/signatures/)
+- [Predictors Documentation](https://oss.vicente.services/dspy.rb/core-concepts/predictors/)
+- [Rich Signatures, Lean Schemas](https://oss.vicente.services/dspy.rb/blog/articles/baml-schema-format/)
 
-[^1]: For a comprehensive introduction to TOON and how it pairs with BAML to cut prompt tokens in half, see [Cut Prompt Tokens in Half with BAML + TOON](https://oss.vicente.services/dspy.rb/blog/articles/toon-data-format/).
-[^2]: BAML (BoundaryML Schema Language) provides TypeScript-like schema syntax that's 83-85% more compact than JSON Schema. Learn more in [Rich Signatures, Lean Schemas](https://oss.vicente.services/dspy.rb/blog/articles/baml-schema-format/).
+[^1]: See [Compact Schemas and Payloads with BAML and TOON](https://oss.vicente.services/dspy.rb/blog/articles/toon-data-format/) for the DSPy.rb configuration.

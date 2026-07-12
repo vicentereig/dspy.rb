@@ -14,7 +14,7 @@ nav:
     url: "/core-concepts/module-runtime-context/"
   next:
     name: Memory
-    url: "/core-concepts/memory/"
+    url: "/advanced/stateful-agents/"
 date: 2025-10-26 00:00:00 +0000
 last_modified_at: 2025-10-26 00:00:00 +0000
 ---

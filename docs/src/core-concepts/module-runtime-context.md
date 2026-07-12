@@ -622,6 +622,6 @@ end
 
 ## Next Steps
 
-- Explore [Production Observability](/production/observability/) for full telemetry pipelines.
-- Combine callbacks with [Stateful Agents](/advanced/stateful-agents/) to scale conversational memory.
+- Explore [Production Observability](/dspy.rb/production/observability/) for full telemetry pipelines.
+- Combine callbacks with [Stateful Agents](/dspy.rb/advanced/stateful-agents/) to scale conversational memory.
 - Use the optimization guides under `/optimization/` once your modules expose the required instruction update contracts.

@@ -327,7 +327,7 @@ baml_result = baml_predictor.call(
 
 Do not infer output quality from schema length. Compare validation failures and task metrics beside token counts.
 
-See [Schema Formats](/core-concepts/signatures/#schema-formats) for detailed comparison.
+See [Schema Formats](/dspy.rb/core-concepts/signatures/#schema-formats) for detailed comparison.
 
 ## Best Practices
 

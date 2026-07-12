@@ -187,7 +187,7 @@ class FlexibleExtraction < DSPy::Signature
 end
 ```
 
-For more complex union types with structs and automatic type conversion, see the [Union Types section in Rich Types](/advanced/complex-types/#union-types).
+For more complex union types with structs and automatic type conversion, see the [Union Types section in Rich Types](/dspy.rb/advanced/complex-types/#union-types).
 
 ## Optional Fields
 
@@ -488,7 +488,7 @@ DSPy automatically converts LLM JSON responses to the proper Ruby types:
 
 > **Note:** Enum matching is case-insensitive to handle LLMs returning values in different casing (e.g., `"POSITIVE"` instead of `"positive"`). With `structured_outputs: true`, providers enforce exact values. With `structured_outputs: false`, case-insensitive fallback prevents runtime errors from casing mismatches.
 
-See [Rich Types](/advanced/complex-types/#automatic-type-conversion-with-dspy-prediction) for detailed information.
+See [Rich Types](/dspy.rb/advanced/complex-types/#automatic-type-conversion-with-dspyprediction) for detailed information.
 
 ## Testing Signatures
 

@@ -381,15 +381,15 @@ The program now has a typed task contract, a prediction module, explicit uncerta
 ## Your Next Steps
 
 ### Deepen Your Understanding
-**[Core Concepts →](/core-concepts/)**
+**[Core Concepts →](/dspy.rb/core-concepts/)**
 *Learn about Chain of Thought, ReAct agents, and module composition*
 
 ### Compose Modules
-**[Pipelines →](/advanced/pipelines/)**
+**[Pipelines →](/dspy.rb/advanced/pipelines/)**
 *Compose fixed reasoning steps with Ruby control flow*
 
 ### Add Tools
-**[Toolsets →](/core-concepts/toolsets/)**
+**[Toolsets →](/dspy.rb/core-concepts/toolsets/)**
 *Build agents that can interact with external systems*
 
 The signature declares the task, while `Predict` and `ReAct` choose different execution strategies. Keep known control flow in Ruby. Give the model tools when it must choose the next action, and keep permissions, budgets, errors, and termination in the surrounding application.

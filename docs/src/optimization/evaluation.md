@@ -62,7 +62,7 @@ exact_label = lambda do |example, prediction|
 end
 ```
 
-Boolean metrics count passing examples. Numeric metrics contribute to the aggregate score. Keep numeric ranges and thresholds explicit so readers can interpret the result.
+Boolean metrics count passing examples. To report a numeric score, return a hash with `:passed` and `:score`. Keep numeric ranges and thresholds explicit so readers can interpret the result.
 
 ## Run an Evaluation
 
@@ -85,6 +85,21 @@ puts "Score: #{result.score}"
 
 `BatchEvaluationResult#score` is expressed on a 0-100 scale. `pass_rate` is expressed on a 0-1 scale.
 
+`evaluate` also accepts `display_progress:`, `display_table:`, and `return_outputs:`. The current implementation always returns a `BatchEvaluationResult`; `return_outputs:` remains available for API compatibility.
+
+## Result Objects
+
+`BatchEvaluationResult` exposes:
+
+- `results`: one `EvaluationResult` per processed example
+- `aggregated_metrics`: pass counts plus average, minimum, and maximum numeric metrics
+- `total_examples`, `passed_examples`, and `pass_rate`
+- `score`: the average metric score multiplied by 100
+- `to_h`: a serializable representation
+- `to_polars`: a `Polars::DataFrame` when the optional `polars` dependency is installed
+
+The evaluator also keeps `last_example_result` and `last_batch_result` for inspection after a run.
+
 ## Inspect Failures
 
 Each `EvaluationResult` contains the example, prediction, trace, metric values, and pass status:
@@ -99,24 +114,26 @@ result.results.reject(&:passed).each do |failure|
 end
 ```
 
-Provider or program exceptions are recorded as failed results by the evaluator. Inspect the associated trace and logs for the original exception.
+Provider, program, and metric exceptions become failed results. Their `metrics` include `:error`, `:passed`, and `:score`. With `provide_traceback: true`, the evaluator also stores the first ten backtrace entries in `metrics[:traceback]`. The `trace` reader contains only a trace explicitly passed to `Evals#call`; use application traces and logs for provider or module execution details.
 
 ## Use Numeric Scores
 
-A metric can reward partial behavior:
+A metric hash can record a threshold decision, an aggregate score, and named component metrics:
 
 ```ruby
 quality = lambda do |example, prediction|
-  expected = example.expected_values
-
-  score = 0.0
-  score += 0.7 if prediction.answer == expected[:answer]
-  score += 0.3 if prediction.explanation.to_s.length >= 40
-  score
+  exact = prediction.label == example.expected_values[:label]
+  {
+    passed: exact,
+    score: exact ? 1.0 : 0.0,
+    label_match: exact ? 1.0 : 0.0
+  }
 end
 ```
 
 Do not combine unrelated concerns into one number without recording the components. A single score can hide a regression in the behavior that matters most.
+
+The batch result reports `label_match_avg`, `label_match_min`, and `label_match_max` under `aggregated_metrics`.
 
 ## Run in Parallel
 
@@ -133,6 +150,41 @@ result = evaluator.evaluate(examples)
 ```
 
 Parallel evaluation increases concurrent provider calls. Keep provider rate limits and the cost of the full dataset in view.
+
+`max_errors` stops scheduling new examples after the configured number of failed results. `failure_score` supplies the score for exceptions, and `provide_traceback` controls backtrace capture:
+
+```ruby
+evaluator = DSPy::Evals.new(
+  program,
+  metric: exact_label,
+  num_threads: 4,
+  max_errors: 3,
+  failure_score: 0.0,
+  provide_traceback: true
+)
+```
+
+With parallel evaluation, the evaluator finishes the current group of submitted examples before checking the limit again.
+
+## Callbacks and Events
+
+Subclasses can observe individual examples and complete batches:
+
+```ruby
+class AuditedEvals < DSPy::Evals
+  after_example do |payload|
+    warn "Failed example: #{payload[:example].id}" unless payload[:result].passed
+  end
+
+  after_batch do |payload|
+    warn "Evaluated #{payload[:result].total_examples} examples"
+  end
+end
+```
+
+Available class callbacks are `before_example`, `after_example`, `before_batch`, and `after_batch`. DSPy.rb also emits `evals.example.complete` and `evals.batch.complete` events.
+
+Set `export_scores: true` to send per-example and batch scores through `DSPy.score`; `score_name:` changes the exported score name. Export requires the corresponding scores and observability integration to be configured.
 
 ## Evaluate an Optimized Program
 

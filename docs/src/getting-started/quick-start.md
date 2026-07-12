@@ -7,12 +7,13 @@ breadcrumb:
   url: "/getting-started/"
 - name: Quick Start
   url: "/getting-started/quick-start/"
-prev:
-  name: Installation
-  url: "/getting-started/installation/"
-next:
-  name: Core Concepts
-  url: "/getting-started/core-concepts/"
+nav:
+  prev:
+    name: Installation
+    url: "/getting-started/installation/"
+  next:
+    name: Core Concepts
+    url: "/getting-started/core-concepts/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-08 00:00:00 +0000
 ---
@@ -22,7 +23,14 @@ Build a typed prediction, compose modules with Ruby, then add a tool-using agent
 
 ## Your First DSPy Program
 
-### Basic Prediction
+Add DSPy.rb and the OpenAI adapter to your Gemfile:
+
+```ruby
+gem 'dspy'
+gem 'dspy-openai'
+```
+
+Run `bundle install`, set `OPENAI_API_KEY`, and save this program as `classify.rb`:
 
 ```ruby
 require 'dspy'
@@ -52,23 +60,6 @@ end
 # Configure DSPy with your LLM
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-  # or use Google Gemini
-  # c.lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'])
-  # or use Ollama for local models
-  # c.lm = DSPy::LM.new('ollama/llama3.2')
-  # or use RubyLLM for unified multi-provider access
-  # c.lm = DSPy::LM.new('ruby_llm/gpt-4o')  # uses your existing RubyLLM config
-
-  # Optional: Use BAML schema format for 80%+ token savings (new in v0.13.0)
-  # c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'], schema_format: :baml)
-
-  # Optional: Use TOON schema + data format for fully TOON prompts
-  # c.lm = DSPy::LM.new(
-  #   'openai/gpt-4o-mini',
-  #   api_key: ENV['OPENAI_API_KEY'],
-  #   schema_format: :toon,  # schema guidance
-  #   data_format:   :toon   # actual input/output blocks (Enhanced Prompting only)
-  # )
 end
 
 # Create the predictor and run inference
@@ -78,6 +69,8 @@ result = classify.call(sentence: "This book was super fun to read!")
 puts result.sentiment    # => #<Sentiment::Positive>  
 puts result.confidence   # => 0.85
 ```
+
+Run it with `bundle exec ruby classify.rb`. Model output varies, but `sentiment` is always a `Classify::Sentiment` value and `confidence` is a `Float` when the prediction succeeds.
 
 ### Chain of Thought Reasoning
 
@@ -191,8 +184,8 @@ results = processor.process_batch([
   "It's okay, I guess."
 ])
 
-# Access results by enum value
-results[Classify::Sentiment::Positive]&.each { |r| puts r.sentence }
+# Count high-confidence positive predictions
+puts results.fetch(Classify::Sentiment::Positive, []).length
 ```
 
 ### Block-Based Configuration

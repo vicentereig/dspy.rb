@@ -132,4 +132,4 @@ A saved prompt artifact is only one part of an LM program. Record enough context
 
 `ProgramStorage` records DSPy.rb and Ruby versions automatically. The application must supply the rest as metadata.
 
-Save an artifact only after evaluating it. A serialized bad program is merely a bad program that starts faster.
+Evaluate an artifact before promoting it, and evaluate the loaded artifact again to catch incompatible code or serialization changes.

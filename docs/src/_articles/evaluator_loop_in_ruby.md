@@ -48,6 +48,8 @@ class GenerateLinkedInArticle < DSPy::Signature
     const :topic_seed, TopicSeed
     const :vibe_toggles, VibeToggles
     const :structure_template, StructureTemplate
+    const :hashtag_band, HashtagBand, default: HashtagBand.new
+    const :length_cap, LengthCap, default: LengthCap.new
     const :recommendations, T::Array[Recommendation], default: []
   end
 
@@ -64,6 +66,9 @@ class EvaluateLinkedInArticle < DSPy::Signature
     const :post, String
     const :topic_seed, TopicSeed
     const :vibe_toggles, VibeToggles
+    const :structure_template, StructureTemplate
+    const :hashtag_band, HashtagBand
+    const :length_cap, LengthCap
     const :recommendations, T::Array[Recommendation]
     const :hooks, T::Array[String]
     const :attempt, Integer

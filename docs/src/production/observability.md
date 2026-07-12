@@ -70,13 +70,13 @@ end
 
 ### Dedicated Export Worker
 
-Telemetry export happens on a `Concurrent::SingleThreadExecutor`, so your LLM workflows never compete with OTLP networking. The queue buffers spans as they finish, and the dedicated worker:
+Routine telemetry export runs on a `Concurrent::SingleThreadExecutor` instead of the thread that finishes the span. A bounded queue buffers completed spans, and the dedicated worker:
 
 - Drains spans in batches based on configurable thresholds
 - Applies exponential backoff on failures without blocking request threads
-- Shuts down cleanly during process exit while flushing remaining spans
+- Attempts to flush remaining spans during shutdown, up to the configured timeout
 
-This design keeps observability reliable while ensuring DSPy.rb stays out of your LLMs' way.
+The worker still consumes process resources. A full queue drops its oldest span, exporter failures can exhaust their retries, and shutdown can time out before every span is sent. The asynchronous boundary removes routine OTLP export from the request thread; it does not guarantee delivery or make LLM calls non-blocking.
 
 ## Quick Start
 
@@ -215,16 +215,29 @@ DSPy::ChainOfThought.new(signature).forward(question: "Explain gravity")
 ```
 
 **Retriever** (`retriever`):
-- Memory/document search operations
+- Application-owned document search operations
 - RAG retrieval steps
 - Similarity matching
 
 ```ruby
-# Automatically used for:
-memory_manager = DSPy::Memory::MemoryManager.new
-memory_manager.search_memories("find documents about Ruby")
-# Creates spans with langfuse.observation.type = 'retriever'
+class TracedRetriever
+  def initialize(document_store)
+    @document_store = document_store
+  end
+
+  def search(query, limit: 5)
+    DSPy::Context.with_span(
+      operation: 'retrieval.search',
+      **DSPy::ObservationType::Retriever.langfuse_attributes,
+      'retrieval.limit' => limit
+    ) do
+      @document_store.search(query, limit: limit)
+    end
+  end
+end
 ```
+
+DSPy.rb does not provide a document store. The wrapper instruments the retrieval client your application already owns.
 
 **Embedding** (`embedding`):
 - Text embedding generation
@@ -232,11 +245,24 @@ memory_manager.search_memories("find documents about Ruby")
 - Semantic encoding
 
 ```ruby
-# Automatically used for:
-embedding_engine = DSPy::Memory::LocalEmbeddingEngine.new
-embedding_engine.embed("Convert this text to vectors")
-# Creates spans with langfuse.observation.type = 'embedding'
+class TracedEmbeddingClient
+  def initialize(client)
+    @client = client
+  end
+
+  def embed(texts)
+    DSPy::Context.with_span(
+      operation: 'embedding.generate',
+      **DSPy::ObservationType::Embedding.langfuse_attributes,
+      'embedding.input_count' => texts.length
+    ) do
+      @client.embed(texts)
+    end
+  end
+end
 ```
+
+The same pattern works with any embedding client. Keep provider credentials and vector persistence in application code.
 
 ### Custom Observation Types
 

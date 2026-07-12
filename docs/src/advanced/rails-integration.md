@@ -374,7 +374,7 @@ end
 
 ## Using Lifecycle Callbacks with Rails Patterns
 
-DSPy modules support `before`, `after`, and `around` lifecycle callbacks. For callback order and arguments, see [Module Runtime Context](/core-concepts/module-runtime-context/#lifecycle-callbacks).
+DSPy modules support `before`, `after`, and `around` lifecycle callbacks. For callback order and arguments, see [Module Runtime Context](/dspy.rb/core-concepts/module-runtime-context/#lifecycle-callbacks).
 
 ### Callbacks with Service Objects
 

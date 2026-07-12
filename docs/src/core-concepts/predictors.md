@@ -287,7 +287,7 @@ service_agent = DSPy::ReAct.new(
 
 > CodeAct now ships separately as the `dspy-code_act` gem. Install it alongside `dspy` to access Think-Code-Observe agents that synthesize and execute Ruby code.
 
-- 📦 **Install**: `gem 'dspy-code_act', '~> 0.29'`
+- 📦 **Install**: `gem 'dspy-code_act', '~> 1.0'`
 - 📚 **Docs**: [`lib/dspy/code_act/README.md`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md)
 - 🧪 **Tests**: run via the `DSPy CodeAct` GitHub Actions job
 
