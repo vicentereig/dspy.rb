@@ -1,13 +1,13 @@
 ---
 layout: docs
 name: Toolsets Guide
-description: Comprehensive guide to building and using toolsets for agent workflows
+description: Build toolsets that expose related typed Ruby operations to ReAct agents
 date: 2025-07-11 00:00:00 +0000
 last_modified_at: 2025-08-13 00:00:00 +0000
 ---
 # Toolsets
 
-DSPy.rb's Toolset pattern lets you group related tools in a single class. Instead of creating separate tool classes for each operation, you can expose multiple methods from one class as individual tools.
+`DSPy::Tools::Toolset` groups related Ruby methods and exposes selected methods as individual tools.
 
 ## When to Use Toolsets
 
@@ -39,7 +39,7 @@ end
 # Use with ReAct agent
 toolset = MyToolset.new
 agent = DSPy::ReAct.new(
-  signature: MySignature,
+  MySignature,
   tools: toolset.class.to_tools
 )
 ```
@@ -70,7 +70,7 @@ agent = DSPy::ReAct.new(
 1. **Toolset class** defines methods and exposes them as tools
 2. **ToolProxy** wraps each method to act like a standard tool
 3. **Schema generation** uses Sorbet signatures to create JSON schemas
-4. **ReAct integration** works with existing agents
+4. **ReAct integration** presents the generated tools to the agent loop
 
 ## DSL Methods
 
@@ -176,20 +176,13 @@ end
 - Each method becomes a separate tool (no method chaining)
 - Shared state is isolated per toolset instance
 
-## Next Steps
+## Runtime Boundaries
 
-The toolset pattern is designed to support the planned memory system in issue #21. Future enhancements will include:
-
-- Instrumentation events for tool usage
-- Persistence backends for memory
-- Context engineering features
-- Auto-compaction for memory optimization
-
-But those features don't exist yet. For now, you get in-memory storage with the operations listed above.
+A tool schema tells the model how to call a method. It does not authorize the operation or isolate its side effects. The application must enforce permissions, validate external resources, handle failures, and bound the agent loop.
 
 ## Design Decisions
 
-**Explicit Tool Exposure**: The `tool` DSL requires explicit method declaration rather than auto-exposing all public methods. This ensures:
+**Explicit Tool Exposure**: The `tool` DSL exposes only declared methods. This provides:
 - Clear documentation for each tool via the `description` parameter
 - Intentional tool interface design
 - Proper schema descriptions for LLM consumption

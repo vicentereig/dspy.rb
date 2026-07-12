@@ -1,7 +1,7 @@
 ---
 layout: blog_home
 title: "Learning in Drublic"
-description: "No BS AI development: practical Ruby tutorials that actually work"
+description: "Engineering notes on typed LLM programs, agents, evaluation, and Ruby."
 ---
 
 <div class="text-center mb-8">

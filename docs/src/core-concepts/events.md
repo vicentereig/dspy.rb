@@ -20,13 +20,13 @@ last_modified_at: 2025-10-26 00:00:00 +0000
 ---
 # Event System
 
-DSPy.rb ships with a structured event bus so agents, tooling, and monitoring stacks can react to everything that happens at runtime. This page explains how to emit events, listen globally, scope listeners to specific modules, and cleanly tear everything down.
+DSPy.rb provides a structured event bus for module instrumentation and integrations. Emit events, subscribe globally or by module scope, and unsubscribe when the listener's lifetime ends.
 
 ## Two Subscription Patterns
 
 DSPy provides two ways to subscribe to events, each suited to different use cases:
 
-### Pattern 1: Module-Scoped Subscriptions (Preferred for Agents)
+### Pattern 1: Module-Scoped Subscriptions
 
 Use the `subscribe` DSL inside your modules. Subscriptions automatically scope to the module instance and its descendants:
 
@@ -40,7 +40,7 @@ class MyAgent < DSPy::Module
 end
 ```
 
-**When to use:** Agent code, modules with internal state, anything where subscription lifetime should match module lifetime.
+**When to use:** Modules with internal state or any listener whose lifetime should match a module instance.
 
 ### Pattern 2: Global Subscriptions (For Observability/Integrations)
 
@@ -73,7 +73,7 @@ Key points:
 
 ## Global Listeners
 
-To react to every event (the question everyone asks), subscribe directly to the registry:
+To receive every event, subscribe directly to the registry:
 
 ```ruby
 DSPy.events.subscribe('*') do |event_name, attrs|
@@ -116,7 +116,7 @@ Call `tracker.unsubscribe` when you are done.
 
 ## Module-Scoped Subscribers
 
-Every `DSPy::Module` can now declare listeners that automatically scope to its instance (and, by default, **all descendants** invoked inside it). Here is a grounded multi-module agent:
+Every `DSPy::Module` can declare listeners scoped to its instance and, by default, descendants invoked inside it:
 
 ```ruby
 class OutlineSignature < DSPy::Signature
@@ -204,4 +204,4 @@ Use this metadata to power Langfuse filters, scoped metrics, or custom routing.
 - **Testing:** Clear global listeners in `before`/`after` blocks and assert on collected events. For module-scoped specs, instantiate the module and inspect `registered_module_subscriptions`.
 - **Versioning:** These APIs ship in the main `dspy` gem. Upgrading the gem automatically brings the event bus and module listener features into every sub-gem (`dspy-code_act`, `dspy-o11y`, etc.) because they depend on the core runtime.
 
-With the event system in place you can observe anything—from token usage and Langfuse traces to custom domain signals—without scattering instrumentation across your agents.
+The event bus separates module behavior from token accounting, tracing exports, and custom domain instrumentation.

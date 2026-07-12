@@ -1,7 +1,7 @@
 ---
 layout: home
 title: "Stanford's DSPy Framework for Ruby | LLM Programming"
-description: "The Ruby port of Stanford's DSPy framework. Build type-safe, testable LLM applications with Sorbet. Automatic prompt optimization, structured outputs, and MIPROv2 support. Get started in minutes."
+description: "Program typed LLM systems in Ruby with signatures, modules, tools, evaluation, and optimization."
 date: 2025-06-28 00:00:00 +0000
 last_modified_at: 2025-09-01 00:00:00 +0000
 ---
@@ -13,11 +13,11 @@ last_modified_at: 2025-09-01 00:00:00 +0000
   </div>
   <div class="text-center">
     <p class="text-sm font-medium text-dspy-ruby mb-4">The Ruby port of Stanford's <a href="https://dspy.ai" rel="noopener noreferrer" class="underline hover:text-red-700">DSPy framework</a></p>
-    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Turn messy prompts into repeatable reasoning systems</h1>
-    <p class="mt-6 text-lg leading-8 text-gray-600">Stop copy-pasting prompts and hoping they work. DSPy.rb lets you write modular, testable, type-safe Ruby code that handles the LLM stuff for you.</p>
+    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Program LLM systems in Ruby</h1>
+    <p class="mt-6 text-lg leading-8 text-gray-600">Declare typed tasks, compose modules with Ruby, and give bounded agents tools when the model should choose the next action. DSPy.rb builds and can optimize the provider-facing prompts.</p>
     <div class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500">
       <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>Type-safe with Sorbet</span>
-      <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>Automatic prompt optimization</span>
+      <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>Evaluation and optimization</span>
       <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>OpenAI, Anthropic, Gemini, Ollama</span>
     </div>
     <div class="mt-10 flex items-center justify-center gap-x-6">
@@ -30,8 +30,8 @@ last_modified_at: 2025-09-01 00:00:00 +0000
 <div class="mx-auto max-w-5xl px-6 lg:px-8">
   <div class="mx-auto max-w-3xl">
     
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Why programmatic prompts?</h2>
-    <p class="text-lg text-gray-600 mb-12">Because prompt engineering without a system is a nightmare. DSPy.rb fixes this by letting you define what you want, not how to ask for it.</p>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Start with the task contract</h2>
+    <p class="text-lg text-gray-600 mb-12">A signature names the inputs, outputs, and types. A module chooses the execution strategy. Your Ruby code keeps control of composition, errors, state, and side effects.</p>
     
     <h3 class="text-xl font-semibold text-gray-900 mb-6">See it in action</h3>
     
@@ -137,7 +137,7 @@ irb> classification.category = "invalid"  # This would raise an error!
 ```
 </div>
     
-    <p class="text-lg text-gray-600 mt-12 mb-16">That's it. No prompt templates. No "You are a helpful assistant" nonsense. Just define what you want with real Ruby types and let DSPy handle the rest. Your category field can only ever be Technical, Billing, or General - not "technicall" or "TECHNICAL" or any other typo. The descriptions you add to fields become part of the prompt, guiding the LLM without you writing prompt engineering poetry. When you need to improve accuracy, you can optimize these programmatically with real data - not guesswork.</p>
+    <p class="text-lg text-gray-600 mt-12 mb-16">The result is a Ruby object whose category must be one of the declared enum values. Field descriptions guide the provider request without requiring a hand-built prompt template. Once the program has examples and a metric, an optimizer can search for better instructions and demonstrations.</p>
   </div>
 </div>
 
@@ -156,7 +156,7 @@ irb> classification.category = "invalid"  # This would raise an error!
         Type-safe from the start
       </div>
       <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
-        <p class="flex-auto">Catch errors before runtime. Your IDE knows what fields exist, what types they are, and what methods you can call. No more KeyError surprises in production.</p>
+        <p class="flex-auto">Signatures validate inputs and convert provider responses into declared Ruby types. Invalid outputs fail before application code uses them.</p>
       </div>
     </div>
     
@@ -168,7 +168,7 @@ irb> classification.category = "invalid"  # This would raise an error!
         Test like normal code
       </div>
       <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
-        <p class="flex-auto">Write RSpec tests for your LLM logic. Mock responses, test edge cases, measure accuracy. Your CI/CD pipeline just works - no special tooling needed.</p>
+        <p class="flex-auto">Use RSpec for deterministic behavior and evaluation sets for model behavior. Tests and metrics answer different questions.</p>
       </div>
     </div>
     
@@ -180,7 +180,7 @@ irb> classification.category = "invalid"  # This would raise an error!
         Optimize with data
       </div>
       <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
-        <p class="flex-auto">Stop guessing what prompts work. Feed your examples to the optimizer and let it find the best instructions and few-shot examples automatically. Science, not art.</p>
+        <p class="flex-auto">Give an optimizer examples and a metric. It can search instructions and demonstrations, then persist the resulting prompt artifacts.</p>
       </div>
     </div>
     
@@ -193,7 +193,7 @@ irb> classification.category = "invalid"  # This would raise an error!
         Compose and reuse
       </div>
       <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
-        <p class="flex-auto">Build complex workflows from simple modules. Chain them, compose them, swap them out. Your email classifier can feed into your priority ranker. Just like regular code.</p>
+        <p class="flex-auto">Compose modules with Ruby control flow. Keep fixed steps deterministic; use an agent when the model has a useful choice among tools or actions.</p>
       </div>
     </div>
     
@@ -202,10 +202,10 @@ irb> classification.category = "invalid"  # This would raise an error!
         <svg class="h-5 w-5 flex-none text-dspy-ruby" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
         </svg>
-        Control your prompts
+        Control the runtime
       </div>
       <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
-        <p class="flex-auto">Version control your LLM logic. Roll back when needed. A/B test different approaches. Know exactly what prompt is running in production. No more mystery meat.</p>
+        <p class="flex-auto">Ruby owns state, permissions, budgets, errors, and termination. Traces and persisted prompt artifacts make executions inspectable.</p>
       </div>
     </div>
     
@@ -216,10 +216,10 @@ irb> classification.category = "invalid"  # This would raise an error!
           <path d="M3.196 8.87l-.825.483a.75.75 0 000 1.294l7.25 4.25a.75.75 0 00.758 0l7.25-4.25a.75.75 0 000-1.294l-.825-.484-5.666 3.322a2.25 2.25 0 01-2.276 0L3.196 8.87z" />
           <path d="M10.38 1.103a.75.75 0 00-.76 0l-7.25 4.25a.75.75 0 000 1.294l7.25 4.25a.75.75 0 00.76 0l7.25-4.25a.75.75 0 000-1.294l-7.25-4.25z" />
         </svg>
-        Production ready
+        Observe behavior
       </div>
       <div class="mt-2 flex flex-auto flex-col text-base leading-7 text-gray-600">
-        <p class="flex-auto">Built-in observability, error handling, and performance monitoring. Track token usage, response times, and accuracy. Deploy with confidence.</p>
+        <p class="flex-auto">Modules emit events and tracing attributes. Optional integrations export spans; evaluation measures behavior against examples and metrics.</p>
       </div>
     </div>
   </div>

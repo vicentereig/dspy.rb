@@ -2,7 +2,7 @@
 layout: docs
 title: "DSPy Modules: Composable LLM Components in Ruby"
 name: Modules
-description: "Build reusable LLM components that compose like regular Ruby code. Chain operations, share state, and create complex workflows. Includes Predict, ChainOfThought, ReAct, and custom modules."
+description: "Build reusable LLM modules and compose them with ordinary Ruby control flow."
 breadcrumb:
 - name: Core Concepts
   url: "/core-concepts/"
@@ -20,15 +20,15 @@ last_modified_at: 2025-10-07 00:00:00 +0000
 ---
 # Modules
 
-DSPy.rb modules provide a foundation for building reusable LLM components. The `DSPy::Module` class serves as a base class for creating custom predictors that can be configured and tested.
+`DSPy::Module` is the reusable execution boundary in DSPy.rb. `Predict`, `ChainOfThought`, and `ReAct` are modules; applications can subclass `DSPy::Module` to compose them with Ruby.
 
 ## Overview
 
-DSPy modules enable:
-- **Custom Predictors**: Build specialized LLM components
-- **Configuration**: Per-instance, fiber-local, and global language model configuration
-- **Manual Composition**: Combine multiple modules through explicit method calls
-- **Type Safety**: Sorbet integration for type-safe interfaces
+Modules provide:
+- **Execution strategies** through built-in or custom modules
+- **Configuration** at the instance, fiber, or global level
+- **Composition** through explicit Ruby method calls and control flow
+- **Instrumentation** around each module call
 
 ## Basic Module Structure
 
@@ -106,7 +106,7 @@ puts result.reasoning
 
 ## Runtime Context Guidance
 
-Looking for fiber-local language model overrides, lifecycle callbacks, and runtime patterns? Head over to [Module Runtime Context](/core-concepts/module-runtime-context/).
+See [Module Runtime Context](/core-concepts/module-runtime-context/) for fiber-local language model overrides and lifecycle callbacks.
 
 
 ## Manual Module Composition
@@ -247,7 +247,7 @@ end
 
 ### Complete Example: Code Analysis Agent
 
-Here's a complete example showing how to build a code analysis agent using text processing tools:
+This `ReAct` module lets the model choose among text-processing tools while a bounded loop controls execution:
 
 ```ruby
 class CodeAnalysisSignature < DSPy::Signature

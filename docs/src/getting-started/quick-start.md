@@ -16,9 +16,9 @@ next:
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-08 00:00:00 +0000
 ---
-# Quick Start Guide
+# Quick Start
 
-Get up and running with DSPy.rb in minutes. This guide shows Ruby-idiomatic patterns for building AI applications.
+Build a typed prediction, compose modules with Ruby, then add a tool-using agent where the model needs to choose an action.
 
 ## Your First DSPy Program
 
@@ -102,7 +102,7 @@ puts result.reasoning  # => "There is only one way to get a sum of 2..."
 puts result.answer     # => "1/36"
 ```
 
-### Multi-stage Pipelines
+### Compose Modules with Ruby
 
 ```ruby
 class Outline < DSPy::Signature
@@ -214,7 +214,7 @@ DSPy.configure do |config|
 end
 ```
 
-### Duck Typing with Tools
+### Give an Agent a Typed Tool
 
 Create tools that follow Ruby's duck typing principles with proper type signatures:
 
@@ -251,7 +251,7 @@ agent = DSPy::ReAct.new(
 )
 ```
 
-**Note**: Sorbet type signatures help DSPy.rb generate accurate JSON schemas for the LLM, leading to more reliable tool usage and better handling of rich types.
+Sorbet signatures let DSPy.rb generate the tool schema presented to the model. The application still owns the tool implementation, side effects, permissions, and error handling.
 
 ## Key Concepts
 
@@ -273,18 +273,18 @@ class YourSignature < DSPy::Signature
 end
 ```
 
-### Predictors
+### Modules and Agents
 
-Predictors execute signatures:
+Modules choose how to execute a signature:
 
 - `DSPy::Predict` - Basic LLM completion
 - `DSPy::ChainOfThought` - Step-by-step reasoning
-- `DSPy::ReAct` - Tool-using agents
+- `DSPy::ReAct` - A bounded loop in which the model selects tools and actions
 - `DSPy::CodeAct` - Dynamic code execution agents (install the `dspy-code_act` gem)
 
-### Modules
+### Ruby Programs
 
-Modules compose multiple predictors into pipelines:
+Custom modules compose other modules with ordinary Ruby control flow:
 
 ```ruby
 class YourModule < DSPy::Module

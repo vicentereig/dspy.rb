@@ -50,7 +50,7 @@ LLM provider SDKs are **not** included in the core gem. Add the adapter gems you
 
 ## Provider Adapter Gems
 
-Provider SDKs now ship as side-loaded gems so you only install what you need. Add the adapter(s) that match the `DSPy::LM` providers you call:
+Provider SDKs ship in separate adapter gems. Add the adapters that match the `DSPy::LM` providers you call:
 
 ```ruby
 # Gemfile
@@ -197,7 +197,7 @@ end
      )
    end
    ```
-7. Models with native structured output support work seamlessly:
+7. Models with native structured output support can use the provider's schema API:
    ```ruby
    DSPy.configure do |c|
      c.lm = DSPy::LM.new('openrouter/x-ai/grok-4-fast:free',
@@ -301,7 +301,7 @@ end
 
 # Anthropic - tool extraction by default (can be disabled)
 DSPy.configure do |c|
-  # Use tool-based extraction (default, most reliable)
+  # Use tool-based extraction (default)
   c.lm = DSPy::LM.new(
     'anthropic/claude-sonnet-4-5-20250929',
     api_key: ENV['ANTHROPIC_API_KEY'],
@@ -345,7 +345,7 @@ end
 predictor = DSPy::Predict.new(TestSignature)
 result = predictor.call(message: "Hello, DSPy!")
 
-puts "✅ DSPy is working! Response: #{result.response}"
+puts "DSPy is working. Response: #{result.response}"
 ```
 
 ## Troubleshooting
@@ -376,4 +376,3 @@ puts "✅ DSPy is working! Response: #{result.response}"
 
 - Check the [documentation](../README.md)
 - Report issues on GitHub
-- Email the maintainer directly for urgent issues

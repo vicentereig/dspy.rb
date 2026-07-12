@@ -13,4 +13,4 @@ CodeAct is now packaged as the [`dspy-code_act`](https://github.com/vicentereig/
 - Review usage, safety guidelines, and advanced examples in `lib/dspy/code_act/README.md`.
 - GitHub Actions run the CodeAct specs separately from the DSPy core suite.
 
-If you previously relied on the old docs under `docs/`, please update bookmarks to the new README inside the gem. This keeps the DSPy core lean while letting CodeAct evolve independently.
+Update old bookmarks to the README inside the gem. CodeAct remains an agent because the model chooses code actions in a loop; the host application must provide the executor, isolation, permissions, and limits around that loop.

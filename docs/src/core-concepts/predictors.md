@@ -2,7 +2,7 @@
 layout: docs
 title: "DSPy Predictors: Predict, ChainOfThought, and ReAct"
 name: Predictors
-description: "Master DSPy.rb's execution engines: Predict for simple calls, ChainOfThought for reasoning, ReAct for tool use. Each returns typed Ruby objects with full observability and error handling."
+description: "Choose Predict for one typed call, ChainOfThought for an added reasoning field, or ReAct for bounded tool use."
 breadcrumb:
 - name: Core Concepts
   url: "/core-concepts/"
@@ -20,11 +20,11 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Predictors
 
-Predictors are the execution engines that take your signatures and generate structured results using language models. DSPy.rb provides three predictor types for different use cases.
+Predictors are modules that execute signatures. DSPy.rb provides `Predict` for one typed call, `ChainOfThought` for a typed call with an added reasoning field, and `ReAct` for a bounded tool-selection loop.
 
 ## DSPy::Predict
 
-The foundational predictor that executes signatures directly with the language model.
+Executes a signature with one language-model request and converts the response to the declared output type.
 
 ### Basic Usage
 
@@ -65,21 +65,17 @@ puts result.confidence   # => 0.92
 ```ruby
 # Basic usage - uses global language model
 predictor = DSPy::Predict.new(ClassifyText)
-
-# Basic usage - uses global language model
-predictor = DSPy::Predict.new(ClassifyText)
 ```
 
 ## DSPy::ChainOfThought
 
-Adds step-by-step reasoning to improve accuracy on complex tasks. The model first generates reasoning, then produces the final answer.
+Adds a `reasoning` field to the signature output. Whether that improves task quality is an evaluation question, not a property of the module.
 
 ### When to Use ChainOfThought
 
 - Complex analysis requiring multiple steps
 - Mathematical or logical reasoning
-- Tasks where showing work improves accuracy
-- When you need explainable AI decisions
+- Tasks where an explicit reasoning field helps the application or evaluator
 
 ### Basic Usage
 
@@ -142,7 +138,7 @@ puts result.recommendation
 
 ## DSPy::ReAct
 
-Combines reasoning with action - enables agents that use tools and make decisions based on external information.
+Runs a bounded loop in which the model chooses a typed tool call or submits the final result.
 
 ### Tool Definition
 
@@ -299,22 +295,14 @@ The APIs and architectural guidance in this chapter still apply, but the impleme
 
 ## Predictor Comparison
 
-### Performance Characteristics
+### Behavioral Characteristics
 
-| Predictor | Speed | Use Case | Token Usage | Concurrent Support |
-|-----------|-------|----------|-------------|-------------------|
-| **Predict** | Fastest | Simple classification, extraction | Low | ✅ Excellent |
-| **ChainOfThought** | Moderate | Complex reasoning, analysis | Medium-High | ✅ Excellent |
-| **ReAct** | Slower | Multi-step tasks, tool usage | High | ✅ Good |
-| **CodeAct** | Slowest | Dynamic programming, calculations | Very High | ✅ Good |
-
-### Concurrent Performance Gains
-
-When processing multiple independent inputs, concurrent execution can provide significant speedups:
-
-- **Simple tasks (Predict)**: 2-4x faster with 3-5 concurrent operations
-- **Complex reasoning (ChainOfThought)**: 2-3x faster with moderate concurrency
-- **Agent tasks (ReAct/CodeAct)**: 1.5-2.5x faster, limited by tool/code execution
+| Predictor | Model-directed steps | Best fit |
+|-----------|----------------------|----------|
+| **Predict** | One | Classification, extraction, transformation |
+| **ChainOfThought** | One, with a reasoning field | Tasks where explicit reasoning is useful |
+| **ReAct** | Up to `max_iterations` | Tool use where the model must choose the next action |
+| **CodeAct** | Up to its configured limit | Sandboxed code execution through the optional gem |
 
 ### Choosing the Right Predictor
 
@@ -455,7 +443,7 @@ end
 
 ## Concurrent Predictions
 
-For applications that need to process multiple predictions simultaneously, DSPy.rb supports concurrent execution using Ruby's `async` gem with `Async::Barrier` for synchronization.
+Applications can schedule independent predictions with Ruby's `async` gem and `Async::Barrier`. DSPy.rb does not create concurrent child tasks for a batch.
 
 ### When to Use Concurrent Predictions
 
@@ -516,17 +504,17 @@ Async do
 end
 ```
 
-### Performance Benefits
+### Measure the Transport
 
-Concurrent predictions can provide significant performance improvements:
+Concurrency can overlap waits only when the provider SDK and transport cooperate with Ruby's scheduler. Measure the adapters and workload you deploy:
 
 ```ruby
-# Sequential processing (slow)
+# Sequential processing
 sequential_start = Time.now
 results = documents.map { |doc| analyzer.call(content: doc) }
 sequential_time = Time.now - sequential_start
 
-# Concurrent processing (fast)  
+# Concurrent scheduling
 concurrent_start = Time.now
 Async do
   barrier = Async::Barrier.new
@@ -637,13 +625,13 @@ require 'async'
 require 'async/barrier'
 ```
 
-### Best Practices for Concurrent Predictions
+### Constraints for Concurrent Predictions
 
-1. **Use Async::Barrier** for proper synchronization of multiple concurrent operations
-2. **Handle errors gracefully** within each concurrent task to prevent one failure from affecting others
-3. **Monitor resource usage** - concurrent predictions increase memory and network usage
-4. **Consider rate limits** - some LLM providers have concurrent request limits
-5. **Profile performance gains** - measure actual speedup to validate the benefits
+1. Use `Async::Barrier` to join child tasks.
+2. Decide whether one failed task should cancel the batch or produce a partial result.
+3. Bound concurrency to provider rate limits and application resources.
+4. Verify that the selected provider transport yields cooperatively.
+5. Measure latency and throughput in the deployed environment.
 
 ## Best Practices
 

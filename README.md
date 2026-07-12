@@ -6,9 +6,9 @@
 [![Documentation](https://img.shields.io/badge/docs-oss.vicente.services%2Fdspy.rb-blue)](https://oss.vicente.services/dspy.rb/)
 [![Discord](https://img.shields.io/discord/1161519468141355160?label=discord&logo=discord&logoColor=white)](https://discord.gg/zWBhrMqn)
 
-**Build typed LLM applications in Ruby.**
+**Program typed LLM systems in Ruby.**
 
-DSPy.rb is the Ruby port of Stanford's [DSPy](https://dspy.ai). A signature declares the inputs and outputs of an LLM operation. DSPy.rb turns that signature into a prompt, calls the model, and validates the response.
+DSPy.rb is the Ruby port of Stanford's [DSPy](https://dspy.ai). A signature declares a task as typed inputs and outputs. Modules choose how to run it. Ruby composes modules into programs, and `ReAct` adds a bounded tool-using loop when the model should choose the next action. DSPy.rb builds the provider request and validates the result.
 
 The `1.x` series is the current stable release line.
 
@@ -36,7 +36,7 @@ result = summarizer.call(text: "DSPy.rb brings structured LLM programming to Rub
 puts result.summary
 ```
 
-No prompt templates. No JSON parsing. No prayer-based error handling.
+No hand-maintained prompt templates. No JSON parsing. No prayer-based error handling.
 
 ## Installation
 
@@ -160,7 +160,9 @@ result = agent.call(question: "What's the latest on Ruby 3.4?")
 
 | Capability | What it provides |
 | --- | --- |
-| Modules | `Predict`, `ChainOfThought`, ReAct agents, and composable pipelines |
+| Modules | `Predict`, `ChainOfThought`, bounded ReAct agents, and custom modules |
+| Programs | Compose modules with ordinary Ruby control flow |
+| Tools | Expose typed Ruby operations to ReAct agents |
 | Runtime types | Sorbet validation for enums, unions, and nested structs |
 | Multimodal input | `DSPy::Image` support for vision-capable models |
 | Observability | Optional `dspy-o11y-langfuse` integration with an asynchronous OpenTelemetry span exporter |
