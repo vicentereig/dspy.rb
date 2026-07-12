@@ -18,7 +18,7 @@ A production user recently asked whether field-level `description:` text in `DSP
 
 Field descriptions are exactly the kind of boring feature that matters once your LLM code leaves the demo phase and starts touching real business text. That is where the word "deadline" can mean an explicit cutoff date, a seasonal rule, a relative planning window, a late-application exception, or a polite little trap in paragraph seven.
 
-In DSPy.rb, a signature is not just a list of field names and Ruby types. It is the contract between your application and the model. The type says what shape the answer must have. The field description says what the field actually means.
+In DSPy.rb, a signature is the contract between your application and the model. The type says what shape the answer must have. The field description says what the field means.
 
 That distinction matters.
 
@@ -96,7 +96,7 @@ end
 
 Those descriptions are not decorative. They are where the domain rules live.
 
-They tell the model what to include, what to exclude, how cautious to be, and what to do when the source is silent. Without them, you are asking the model to infer production semantics from a snake_case field name. That is not engineering. That is a trust fall with JSON.
+They tell the model what to include, what to exclude, how cautious to be, and what to do when the source is silent. Without them, you are asking the model to infer production semantics from a snake_case field name.
 
 ## What DSPy.rb Does with Descriptions
 
@@ -123,7 +123,7 @@ The exact transport depends on provider and mode:
 - Anthropic Beta structured outputs receive descriptions through the generated JSON schema.
 - Gemini structured outputs use Gemini's supported schema subset. Descriptions remain part of DSPy metadata and prompt-based modes, but the provider-native Gemini schema path does not currently preserve every simple scalar or object field description in the final schema.
 
-So the practical recommendation is still simple: write good field descriptions. Providers differ in how much native schema metadata they consume, but your DSPy signature remains the right place to express field semantics.
+Write the field descriptions anyway. Providers differ in how much native schema metadata they consume, but the DSPy signature remains the place to express field semantics.
 
 ## How to Write Useful Field Descriptions
 
@@ -153,7 +153,7 @@ const :deadline, T.nilable(String),
 
 The second version gives the model a job. The first version gives it a shrug wearing a lanyard and asks everyone to act surprised when the output gets weird.
 
-## The Small Habit That Pays Off
+## Put Semantics Next to the Field
 
 You do not need a wall of prompt text to make extraction more reliable. Often the best improvement is smaller and closer to the data contract:
 
@@ -164,7 +164,7 @@ const :field_name, Type,
 
 Use the signature-level `description` for the overall task. Use field-level `description:` for the rules that belong to each field.
 
-That is the habit. It is small, but it compounds. Your schemas become clearer. Your prompts become less mysterious. Your extraction code has fewer private assumptions hiding between the lines, where private assumptions go to become outages with good posture.
+Keeping those rules in the signature makes the generated schema explicit and leaves fewer private assumptions in extraction code.
 
 Write your field descriptions like you are explaining the field to a smart coworker who is new to the domain and has no patience for vibes.
 
