@@ -93,7 +93,7 @@
 #mobile-menu-close:focus-visible,
 button[data-dropdown-toggle]:focus-visible,
 #mobile-menu a:focus-visible {
-  @apply outline-2 outline-red-600 outline-offset-2;
+  @apply outline-2 outline-dspy-coral outline-offset-2;
 }
 
 /* Smooth scrolling for anchor links */

@@ -5,7 +5,7 @@ description: "Program typed LLM systems in Ruby with signatures, modules, tools,
 date: 2025-06-28 00:00:00 +0000
 last_modified_at: 2025-09-01 00:00:00 +0000
 ---
-<div class="mx-auto max-w-2xl py-16 sm:py-24 lg:py-32">
+<div class="mx-auto max-w-2xl py-8 sm:py-16 lg:py-32">
   <div class="mb-6 flex justify-center sm:mb-8">
     <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
       Version {{ site.config.dspy_version }} is now available. <a href="{{ site.config.dspy_release_url }}" class="font-semibold text-dspy-coral hover:text-[#e05d3d]"><span class="absolute inset-0" aria-hidden="true"></span>See what's new <span aria-hidden="true">&rarr;</span></a>
@@ -233,7 +233,7 @@ irb> classification.category = "invalid"  # This would raise an error!
 
   <div class="mx-auto max-w-4xl">
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+      <div class="rounded-lg bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-900/5">
         <h3 class="text-lg font-semibold text-gray-900 mb-3">OpenAI</h3>
         <p class="text-sm text-gray-600 mb-4">GPT-4, GPT-4o, GPT-4o-mini, GPT-5, and more with native JSON mode</p>
 <div markdown="1">
@@ -249,7 +249,7 @@ end
 </div>
       </div>
 
-      <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+      <div class="rounded-lg bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-900/5">
         <h3 class="text-lg font-semibold text-gray-900 mb-3">Google Gemini</h3>
         <p class="text-sm text-gray-600 mb-4">Gemini 1.5 Pro, Flash, Gemini 2.0 with native structured outputs</p>
 <div markdown="1">
@@ -265,7 +265,7 @@ end
 </div>
       </div>
 
-      <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+      <div class="rounded-lg bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-900/5">
         <h3 class="text-lg font-semibold text-gray-900 mb-3">Anthropic Claude</h3>
         <p class="text-sm text-gray-600 mb-4">Claude 3.5, Claude 4 with tool-based extraction</p>
 <div markdown="1">
@@ -281,7 +281,7 @@ end
 </div>
       </div>
 
-      <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
+      <div class="rounded-lg bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-900/5">
         <h3 class="text-lg font-semibold text-gray-900 mb-3">Ollama (Local Models)</h3>
         <p class="text-sm text-gray-600 mb-4">Run Llama, Mistral, Gemma locally - free, no API key needed</p>
 <div markdown="1">

@@ -1,22 +1,16 @@
 /* Mobile-specific enhancements for better vertical rhythm and spacing */
 
-/* Ensure minimum touch target sizes across the site */
+/* Ensure minimum touch target sizes for navigation/form elements only */
 @media (max-width: 1024px) {
-  /* All interactive elements should meet 44px minimum */
-  button, 
-  a,
-  input,
-  select,
-  textarea,
-  [role="button"],
-  [tabindex="0"] {
+  nav a, nav button, header a, header button,
+  input, select, textarea, [role="button"], [tabindex="0"] {
     min-height: 44px;
     position: relative;
   }
 
-  /* Ensure proper tap target spacing */
-  button + button,
-  a + a {
+  /* Ensure proper tap target spacing in nav/header */
+  nav a + a, nav button + button,
+  header a + a, header button + button {
     margin-left: 8px;
   }
 
