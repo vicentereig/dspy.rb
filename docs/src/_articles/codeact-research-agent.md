@@ -9,7 +9,7 @@ reading_time: "4 min read"
 image: /images/og/codeact-research-agent.png
 ---
 
-[ReAct](/blog/articles/react-agent-tutorial/) lets a model choose among tools you wrote. [CodeAct](https://rubygems.org/gems/dspy-code_act) lets the model write the Ruby operation it wants to execute, inspect the result, and continue until it has an answer.
+[ReAct](/dspy.rb/blog/articles/react-agent-tutorial/) lets a model choose among tools you wrote. [CodeAct](https://rubygems.org/gems/dspy-code_act) lets the model write the Ruby operation it wants to execute, inspect the result, and continue until it has an answer.
 
 That flexibility changes the safety boundary. The current `dspy-code_act` implementation calls Ruby `eval` in the application process. The example below is suitable for controlled experiments with trusted input. It is not a sandbox for production or multi-tenant workloads.
 

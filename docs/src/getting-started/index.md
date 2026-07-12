@@ -6,6 +6,10 @@ description: "Install DSPy.rb and build a typed LLM program with Ruby."
 breadcrumb:
 - name: Getting Started
   url: "/getting-started/"
+nav:
+  next:
+    name: Installation
+    url: "/getting-started/installation/"
 date: 2025-06-28 00:00:00 +0000
 last_modified_at: 2025-07-11 00:00:00 +0000
 ---
@@ -15,15 +19,7 @@ Install DSPy.rb, configure a provider, and run a typed prediction in Ruby.
 
 ## What is DSPy.rb?
 
-DSPy.rb is a Ruby framework for programming LLM systems. Signatures declare typed tasks. Modules choose execution strategies. Ruby composes modules into programs, while agents use tools where the model should choose the next action.
-
-## The Programming Model
-
-- **Signatures** declare typed inputs and outputs.
-- **Modules** run a task with `Predict`, `ChainOfThought`, `ReAct`, or custom logic.
-- **Ruby programs** compose modules with explicit control flow.
-- **Agents and tools** delegate bounded action choices to the model.
-- **Evaluation and optimizers** measure programs and compile better instructions or demonstrations from evidence.
+DSPy.rb lets Ruby applications declare typed inputs and outputs for language-model calls. The tutorial starts with one prediction, then introduces composition, tools, evaluation, and optimization where each becomes useful.
 
 ## Quick Example
 

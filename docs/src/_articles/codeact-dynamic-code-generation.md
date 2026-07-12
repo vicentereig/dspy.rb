@@ -10,7 +10,7 @@ category: Article
 
 CodeAct now lives in the optional `dspy-code_act` gem. The agent lets a model choose and execute Ruby code over several bounded iterations; it is separate from DSPy.rb core because generated-code execution needs a different safety boundary from ordinary prediction.
 
-- Install: `gem 'dspy-code_act', '~> 0.29'`
+- Install: `gem 'dspy-code_act', '~> 1.0'`
 - Read the [CodeAct documentation](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md).
 - Inspect the [implementation](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act.rb).
 

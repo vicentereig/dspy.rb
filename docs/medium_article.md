@@ -1,58 +1,35 @@
-# Stop Wrestling with Prompts: How DSPy.rb Brings Software Engineering to LLM Development
+# DSPy Programming in Ruby
 
-You're staring at a prompt template for the third hour today. You tweak a word, test it, watch it fail mysteriously on edge cases, then start over. Sound familiar? If you're building with LLMs, you've been there. The traditional approach to prompt engineering feels like writing code with string concatenation—it works until it spectacularly doesn't.
+I started DSPy.rb because I wanted DSPy's programming model in Rails applications. Rewriting those applications in Python made little sense. Keeping prompts as growing strings inside Ruby made less sense each time a model changed its response format.
 
-Meet DSPy.rb, a Ruby port of Stanford's DSPy framework that transforms how we build with language models. Instead of crafting fragile prompts, you define what you want as typed signatures and let the framework handle the messy details. The result? LLM applications that actually scale and don't break when you sneeze.
+The first versions were a port. DSPy.rb has since become an independent Ruby-native implementation: it carries over signatures, modules, agents, evaluation, and optimization, but it does not promise API compatibility with Stanford's Python project or official affiliation with it.
 
-## Why DSPy.rb Exists: A Rails Developer's Dilemma
+The useful idea is the same. Describe an LLM task as a program with inputs, outputs, control flow, examples, and a metric. Prompts still exist, but they become parameters of that program instead of the architecture around it.
 
-When I first discovered Stanford's DSPy framework, I knew it was the future of LLM development. The programmatic approach, automatic optimization, and modular design solved every pain point I'd experienced with traditional prompting. There was just one problem: I was building Rails applications, not Python scripts.
+## Start With A Contract
 
-I faced two choices: rewrite my entire Rails application in Python to use DSPy, or surgically port DSPy's core concepts to Ruby. The first option meant abandoning years of Rails expertise, established patterns, and a thriving ecosystem. The second meant taking on the challenge of bringing Stanford's research to the Ruby world.
-
-That's how DSPy.rb was born—not as an academic exercise, but as a practical solution for Rails developers who needed DSPy's power without abandoning Ruby. The result is a framework that preserves DSPy's revolutionary approach while embracing Ruby idioms and integrating seamlessly with Rails applications.
-
-## The Prompt Engineering Nightmare
-
-Let's be honest about traditional prompting. You start simple:
+Consider sentiment classification. A direct API call often begins as a string:
 
 ```ruby
 prompt = "Classify the sentiment of this text: #{text}"
-response = openai_client.chat(messages: [{ role: "user", content: prompt }])
-# Hope the response is what you expect... 🤞
+response = client.chat(messages: [{ role: "user", content: prompt }])
 ```
 
-Then reality hits. You need confidence scores. The model occasionally returns "Positive sentiment detected" instead of just "positive". Sometimes it adds explanations you don't want. You patch with more instructions:
+Then the application needs a fixed label, a confidence score, parsing, and validation. Each requirement adds another instruction or another branch after the response.
+
+In DSPy.rb, a signature declares the boundary:
 
 ```ruby
-prompt = <<~PROMPT
-  Classify the sentiment of the following text as exactly one of: positive, negative, neutral
-  Only return the sentiment, nothing else.
-  Text: #{text}
-  
-  Important: Return only the sentiment word, no explanations or formatting.
-PROMPT
-```
-
-But it still breaks. You add examples, more rules, validation logic. Before you know it, you're maintaining 200-line prompt templates that nobody wants to touch. Testing becomes a nightmare. Versioning? Good luck.
-
-This is string concatenation thinking applied to AI. We can do better.
-
-## Enter Signatures: Define What You Want, Not How to Ask
-
-DSPy.rb flips this approach. Instead of crafting prompts, you define typed signatures that describe your task:
-
-```ruby
-require 'dspy'
+require "dspy"
 
 class ClassifySentiment < DSPy::Signature
   description "Classify the sentiment of a given text"
 
   class Sentiment < T::Enum
     enums do
-      Positive = new('positive')
-      Negative = new('negative') 
-      Neutral = new('neutral')
+      Positive = new("positive")
+      Negative = new("negative")
+      Neutral = new("neutral")
     end
   end
 
@@ -66,492 +43,301 @@ class ClassifySentiment < DSPy::Signature
   end
 end
 
-# Configure your LLM
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new(
+    "openai/gpt-4o-mini",
+    api_key: ENV.fetch("OPENAI_API_KEY")
+  )
 end
 
-# Create and use the predictor
 classifier = DSPy::Predict.new(ClassifySentiment)
-result = classifier.call(text: "This Ruby gem is fantastic!")
+result = classifier.call(text: "This Ruby gem is useful.")
 
-puts result.sentiment    # => #<Sentiment::Positive>
-puts result.confidence   # => 0.89
+puts result.sentiment
+puts result.confidence
 ```
 
-What just happened? You defined what you want (sentiment classification with confidence) using Ruby types. DSPy.rb generated the appropriate prompt, handled the LLM communication, parsed the response, and returned properly typed objects. No string wrangling, no parsing headaches.
+DSPy.rb turns the signature into provider instructions and a structured-output schema. It then coerces and validates the returned fields. A successful prediction exposes a `ClassifySentiment::Sentiment` and a `Float`; an invalid response raises before downstream code uses a malformed value.
 
-The signature acts as a contract. The framework knows how to prompt the model, what format to expect, and how to validate responses. When the model returns "Very positive!" instead of "positive", DSPy.rb handles the conversion automatically.
+The type boundary makes malformed output visible. Correctness still depends on the model, examples, and evaluation.
 
-## Modularity: Building Blocks That Actually Compose
+## Ruby Owns The Workflow
 
-Traditional prompting doesn't compose well. Combine two prompts and you get a mess. DSPy.rb is different—every component is a module you can reuse and combine.
-
-Need step-by-step reasoning? Wrap your signature with ChainOfThought:
+A signature describes one model interaction. A module combines interactions with ordinary Ruby control flow.
 
 ```ruby
-class SolveMathProblem < DSPy::Signature
-  description "Solve a math word problem"
-  
+class ExtractQuestion < DSPy::Signature
+  description "Extract the question that must be answered"
+
   input do
-    const :problem, String
+    const :request, String
   end
-  
+
   output do
-    const :answer, String
+    const :question, String
   end
 end
 
-# Chain of thought automatically adds reasoning
-math_solver = DSPy::ChainOfThought.new(SolveMathProblem)
-result = math_solver.call(problem: "If I buy 3 apples at $0.50 each and 2 oranges at $0.75 each, how much do I spend?")
+class AnswerQuestion < DSPy::Signature
+  description "Answer a question concisely"
 
-puts result.reasoning  # => "Let me solve this step by step..."
-puts result.answer     # => "$3.00"
-```
-
-Need an agent that can use tools? Use ReAct:
-
-```ruby
-class SearchAndAnswer < DSPy::Signature
-  description "Search for information and provide an answer"
-  
   input do
     const :question, String
   end
-  
+
   output do
     const :answer, String
   end
 end
 
-# ReAct adds tool-using capabilities
-agent = DSPy::ReAct.new(SearchAndAnswer, tools: [search_tool, calculator_tool])
-result = agent.call(question: "What's the population of Tokyo in 2024?")
+class QuestionAnswering < DSPy::Module
+  def initialize
+    @extract = DSPy::Predict.new(ExtractQuestion)
+    @answer = DSPy::ChainOfThought.new(AnswerQuestion)
+  end
+
+  def forward(request:)
+    extracted = @extract.call(request: request)
+    @answer.call(question: extracted.question)
+  end
+end
 ```
 
-For complex agentic workflows where your agent needs to choose between different action types dynamically, DSPy.rb's union types provide elegant solutions:
+Ruby decides the sequence. The same applies to branches, database reads, authorization checks, queues, and retries owned by the application or provider SDK. DSPy.rb does not need a special workflow language to express them.
+
+`DSPy::ChainOfThought` adds a typed `reasoning` field before the declared output fields. It changes the predictor used for one step; it does not take control of the surrounding program.
+
+## Give Agents Bounded Choices
+
+Some tasks cannot be written as a fixed sequence because the next operation depends on what the model learns. `DSPy::ReAct` provides that loop: the model selects a tool, DSPy.rb executes it, and the observation feeds the next step.
+
+Tools are Ruby objects with Sorbet signatures. DSPy.rb uses those signatures to produce the schemas shown to the model and to coerce arguments at the tool boundary.
 
 ```ruby
-# Define different action types
-class SearchAction < T::Struct
-  const :query, String
-  const :source, String
+class Calculator < DSPy::Tools::Base
+  extend T::Sig
+
+  tool_name "calculator"
+  tool_description "Calculate a percentage of a number"
+
+  sig { params(percentage: Float, value: Float).returns(Float) }
+  def call(percentage:, value:)
+    value * percentage / 100.0
+  end
 end
 
-class CalculateAction < T::Struct  
+class ResearchAnswer < DSPy::Signature
+  description "Answer a question using the available tools"
+
+  input do
+    const :question, String
+  end
+
+  output do
+    const :answer, String
+  end
+end
+
+agent = DSPy::ReAct.new(
+  ResearchAnswer,
+  tools: [Calculator.new],
+  max_iterations: 4
+)
+
+result = agent.call(question: "What is 15% of 250?")
+puts result.answer
+```
+
+The application still owns the important limits: which tools exist, what each tool may access, how arguments are validated, and how many iterations the loop may run. A model can choose among the capabilities it receives. It cannot acquire a capability that the Ruby program did not provide.
+
+For a choice that does not require tool execution, a union output is often enough:
+
+```ruby
+class SearchAction < T::Struct
+  const :query, String
+end
+
+class CalculateAction < T::Struct
   const :expression, String
 end
 
 class AnswerAction < T::Struct
-  const :response, String
+  const :answer, String
 end
 
-# Agent chooses action type automatically
-class AgentDecision < DSPy::Signature
-  description "Choose the appropriate action for the user's request"
-  
+class ChooseAction < DSPy::Signature
+  description "Choose the next action for a request"
+
   input do
     const :request, String
   end
-  
+
   output do
     const :action, T.any(SearchAction, CalculateAction, AnswerAction)
   end
 end
-
-agent = DSPy::Predict.new(AgentDecision)
-result = agent.call(request: "What's 15% of 250?")
-# => result.action will be properly typed as CalculateAction
 ```
 
-Learn more about this pattern in: [Union Types: The Secret to Cleaner AI Agent Workflows](https://oss.vicente.services/dspy.rb/blog/union-types-agentic-workflows/).
+The returned `action` is one of the declared Sorbet structs. Ruby can dispatch on its class and keep execution policy outside the model call. The [union types article](https://oss.vicente.services/dspy.rb/blog/articles/union-types-agentic-workflows/) develops this pattern; the [ReAct tutorial](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/) covers a complete tool loop.
 
-Want to dive deeper into building ReAct agents? Check out this step-by-step tutorial that walks through creating a research agent with multiple tools: [Building Smart Agents with DSPy.rb: A ReAct Tutorial](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/).
+## Evaluate The Program You Built
 
-These modules compose naturally. Want a math-solving agent with step-by-step reasoning? Combine them:
-
-```ruby
-class MathAgent < DSPy::Module
-  def initialize
-    @solver = DSPy::ReAct.new(
-      DSPy::ChainOfThought.new(SolveMathProblem), 
-      tools: [calculator_tool, search_tool]
-    )
-  end
-  
-  def call(problem:)
-    @solver.call(problem: problem)
-  end
-end
-```
-
-Each module handles one concern well. The result is LLM applications built from composable, testable pieces instead of monolithic prompt scripts.
-
-## The Magic: Automatic Prompt Optimization
-
-Here's where DSPy.rb gets interesting. Remember those hours tweaking prompts? The framework can do that automatically, and better than you can manually.
-
-Meet MIPROv2, the prompt optimizer that actually works:
+A type-valid answer can still be wrong. Evaluation begins with examples and a metric that represents the behavior the application needs.
 
 ```ruby
-# Your signature (same as before)
-class ClassifySentiment < DSPy::Signature
-  # ... definition ...
-end
-
-# Create some training examples
-training_examples = [
+examples = [
   DSPy::Example.new(
     signature_class: ClassifySentiment,
-    input: { text: "I love this product!" },
-    expected: { sentiment: ClassifySentiment::Sentiment::Positive, confidence: 0.9 }
+    input: { text: "I love this product." },
+    expected: {
+      sentiment: ClassifySentiment::Sentiment::Positive,
+      confidence: 0.9
+    }
   ),
   DSPy::Example.new(
     signature_class: ClassifySentiment,
-    input: { text: "Worst purchase ever" },
-    expected: { sentiment: ClassifySentiment::Sentiment::Negative, confidence: 0.95 }
-  )
-  # ... more examples
-]
-
-# Set up optimization
-program = DSPy::Predict.new(ClassifySentiment)
-metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
-optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
-
-# Let it optimize automatically
-result = optimizer.compile(program, trainset: training_examples)
-
-# Get your optimized predictor
-best_predictor = result.optimized_program
-puts "Improved from #{result.baseline_score} to #{result.best_score_value}"
-puts "Optimized instruction: #{best_predictor.prompt.instruction}"
-```
-
-MIPROv2 runs a three-phase optimization:
-
-1. **Bootstrap Phase**: Generates high-quality training examples with reasoning traces
-2. **Instruction Phase**: Tries different instruction phrasings and selects the best
-3. **Few-shot Phase**: Finds the optimal combination of examples to include
-
-The results are impressive. In testing, MIPROv2 consistently improves performance by 10-30% over manual prompts. More importantly, it finds optimizations humans miss—better phrasings, effective examples, and prompt structures that work reliably.
-
-DSPy.rb includes a comprehensive evaluation framework that goes beyond simple accuracy metrics. You can create custom metrics, track multiple performance dimensions, and get detailed evaluation reports. Learn more about building robust evaluation pipelines: [Evaluation Framework Guide](https://oss.vicente.services/dspy.rb/optimization/evaluation/).
-
-## Production-Ready From Day One
-
-DSPy.rb isn't just for experimentation. It's built for production:
-
-**Type Safety**: Sorbet integration means type errors at compile time, not runtime. No more discovering your LLM returned unexpected formats in production.
-
-**Observability**: Built-in OpenTelemetry support gives you traces, metrics, and logs out of the box:
-
-```ruby
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-  c.instrumentation.langfuse.api_key = ENV['LANGFUSE_API_KEY']  # Automatic tracing
-end
-```
-
-**Error Handling**: Automatic retries with exponential backoff. Strategy fallbacks when structured outputs fail. No more mysterious production failures.
-
-**Token Tracking**: Automatic cost monitoring with detailed usage analytics:
-
-```ruby
-result = classifier.call(text: "Some text")
-puts result.usage.total_tokens      # => 150
-puts result.usage.input_tokens      # => 75
-puts result.usage.output_tokens     # => 75
-```
-
-**Storage & Versioning**: Save optimized programs and reload them later:
-
-```ruby
-# Save optimized program
-storage = DSPy::ProgramStorage.new(path: "models/sentiment_classifier_v2.json")
-storage.save(best_predictor, metadata: { version: "2.1", accuracy: 0.94 })
-
-# Load in production
-loaded_predictor = storage.load("models/sentiment_classifier_v2.json")
-```
-
-**Advanced Memory Systems**: DSPy.rb includes sophisticated memory capabilities for building stateful applications:
-
-```ruby
-# Create a memory system with embeddings
-memory = DSPy::Memory.new(
-  store: DSPy::InMemoryStore.new,
-  embedding_engine: DSPy::LocalEmbeddingEngine.new
-)
-
-# Store conversational context
-memory.store("user_123", "Customer prefers technical explanations", 
-             metadata: { type: "preference", timestamp: Time.now })
-
-# Retrieve relevant memories
-relevant = memory.retrieve("user_123", "How should I explain this API error?")
-# => Returns contextually relevant memories based on semantic similarity
-```
-
-Memory systems enable building chatbots that remember context, recommendation engines that learn preferences, and agents that accumulate knowledge over time. The system supports automatic compaction, deduplication, and smart retrieval strategies. Learn more: [Memory Systems Guide](https://oss.vicente.services/dspy.rb/advanced/memory-systems/).
-
-## Ruby-Specific Advantages
-
-DSPy.rb isn't just a Python port—it's a Ruby-first framework that leverages Ruby's strengths:
-
-**Native Rails Integration**: DSPy modules work beautifully in Rails controllers and jobs:
-
-```ruby
-class EmailClassificationJob < ApplicationJob
-  def perform(email_id)
-    email = Email.find(email_id)
-    
-    result = @classifier.call(
-      subject: email.subject,
-      body: email.body
-    )
-    
-    email.update!(
-      category: result.category.serialize,
-      priority: result.priority.serialize,
-      confidence: result.confidence
-    )
-  end
-end
-```
-
-**Ruby Idioms**: Method chaining, blocks, and Ruby's expressive syntax make complex workflows readable:
-
-```ruby
-pipeline = DSPy::Pipeline.new
-  .add(EmailExtractor.new)
-  .add(DSPy::ChainOfThought.new(ClassifyEmail))
-  .add(PriorityAssigner.new)
-
-results = emails.map { |email| pipeline.call(email: email) }
-```
-
-**Metaprogramming**: Dynamic signature generation based on your models:
-
-```ruby
-class DynamicClassifier
-  def self.for_enum(enum_class)
-    Class.new(DSPy::Signature) do
-      description "Classify text into #{enum_class.name} categories"
-      
-      input { const :text, String }
-      output { const :category, enum_class }
-    end
-  end
-end
-
-# Generate classifiers from your enums
-sentiment_classifier = DSPy::Predict.new(
-  DynamicClassifier.for_enum(SentimentEnum)
-)
-```
-
-## Real-World Example: Customer Support Email Classifier
-
-Let's build something practical—an email classifier for customer support that routes tickets automatically.
-
-First, define the types we need:
-
-```ruby
-class Email < T::Struct
-  const :subject, String
-  const :from, String
-  const :body, String
-end
-
-class Category < T::Enum
-  enums do
-    Technical = new('technical')
-    Billing = new('billing') 
-    General = new('general')
-  end
-end
-
-class Priority < T::Enum
-  enums do
-    Low = new('low')
-    Medium = new('medium')
-    High = new('high')
-  end
-end
-```
-
-Now the signature:
-
-```ruby
-class ClassifyEmail < DSPy::Signature
-  description "Classify customer support emails by category and priority"
-  
-  input do
-    const :email, Email
-  end
-  
-  output do
-    const :category, Category
-    const :priority, Priority
-    const :summary, String, description: "One-line summary for dashboard"
-  end
-end
-```
-
-Set up the complete pipeline:
-
-```ruby
-class EmailProcessor < DSPy::Module
-  def initialize
-    # Use Chain of Thought for better reasoning
-    @classifier = DSPy::ChainOfThought.new(ClassifyEmail)
-  end
-  
-  def call(email:)
-    @classifier.call(email: email)
-  end
-end
-
-# Configure
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-  c.instrumentation.langfuse.api_key = ENV['LANGFUSE_API_KEY']
-end
-
-processor = EmailProcessor.new
-```
-
-Train and optimize:
-
-```ruby
-# Create training data
-training_examples = [
-  DSPy::Example.new(
-    signature_class: ClassifyEmail,
-    input: {
-      email: Email.new(
-        subject: "API returning 500 errors",
-        from: "dev@company.com",
-        body: "Our production API started returning 500s after the deploy..."
-      )
-    },
+    input: { text: "Worst purchase ever." },
     expected: {
-      category: Category::Technical,
-      priority: Priority::High,
-      summary: "Production API returning 500 errors after deploy"
+      sentiment: ClassifySentiment::Sentiment::Negative,
+      confidence: 0.9
     }
   )
-  # ... more examples
 ]
 
-# Optimize the classifier
-program = DSPy::Predict.new(ClassifyEmail)
-metric = proc { |example, prediction| prediction.category == example.expected_values[:category] }
-optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)  # balanced -> medium
-result = optimizer.compile(program, trainset: training_examples)
-# Note: metric is now used directly by MIPROv2
-  evaluator.evaluate(examples: examples) { |ex| predictor.call(email: ex.email) }.score
+exact_sentiment = lambda do |example, prediction|
+  prediction.sentiment == example.expected_values[:sentiment]
 end
 
-puts "Accuracy improved from #{result.baseline_score} to #{result.best_score_value}"
+evaluator = DSPy::Evals.new(classifier, metric: exact_sentiment)
+evaluation = evaluator.evaluate(examples)
+
+puts evaluation.score
+puts evaluation.pass_rate
 ```
 
-Use in production:
+The metric above deliberately ignores confidence. A production metric might score calibration, penalize a costly false positive, or combine several component metrics. That decision belongs to the application; the optimizer will search for whatever the metric rewards.
+
+Keep a held-out set. A better score on the examples used during optimization only proves that the search found those examples useful.
+
+## Optimize Instructions And Examples
+
+MIPROv2 searches over instructions and few-shot demonstrations for the predictors inside a program. It needs examples, a metric, and a budget. It returns the best candidate found during that search, not a universal improvement.
+
+MIPROv2 ships in a separate gem:
 
 ```ruby
-email = Email.new(
-  subject: "URGENT: Payment failed",
-  from: "customer@business.com", 
-  body: "My payment failed and I need this resolved ASAP for our launch tomorrow"
+# Gemfile
+gem "dspy"
+gem "dspy-openai"
+gem "dspy-miprov2"
+```
+
+```ruby
+program = DSPy::Predict.new(ClassifySentiment)
+
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: exact_sentiment)
+optimizer.configure do |config|
+  config.auto_preset = DSPy::Teleprompt::AutoPreset::Light
+end
+
+result = optimizer.compile(
+  program,
+  trainset: examples,
+  valset: examples
 )
 
-result = optimized_processor.call(email: email)
+optimized_program = result.optimized_program
+puts result.best_score_value
+```
 
-puts result.category  # => Category::Billing
-puts result.priority  # => Priority::High  
-puts result.summary   # => "Payment failure blocking customer launch"
-puts result.reasoning # => "The email mentions payment failure and urgency..."
+The repeated `examples` array keeps the snippet short; real work should separate training, validation, and held-out evaluation data. Search consumes model calls, and the result depends on the model, metric, examples, and budget. Measure the optimized program against data that did not select it.
 
-# Route automatically
-TicketRouter.route(
-  email: email,
-  category: result.category,
-  priority: result.priority,
-  summary: result.summary
+My [medical predictor experiment](https://vicente.services/blog/2025/08/11/training-medical-llm-predictors-process,-costs,-and-optimization-with-dspy.rb/) is a useful warning. Tiny validation sets produced suspiciously perfect scores. Larger samples exposed the precision-recall tradeoff that the small run had hidden.
+
+## Persist An Optimized Program
+
+Optimization is expensive enough that the selected artifact should not live only in process memory. `DSPy::Storage::ProgramStorage` records the program together with its optimization result and metadata.
+
+```ruby
+storage = DSPy::Storage::ProgramStorage.new(
+  storage_path: "./dspy_storage"
 )
+
+saved = storage.save_program(
+  result.optimized_program,
+  result,
+  metadata: { dataset: "sentiment-v1" }
+)
+
+loaded = storage.load_program(saved.program_id)
+loaded_program = loaded.program
 ```
 
-This classifier handles the complexity automatically—parsing email structure, understanding urgency indicators, and providing consistent categorization. In testing, MIPROv2 optimization improved accuracy from 73% to 89% over a manually crafted prompt.
+The program and signature classes must be loaded during restoration, and the program class must support the storage deserialization contract. Evaluate `loaded_program` again before promoting it because loading only reconstructs the saved artifact.
 
-For more advanced optimization examples, including medical LLM training with cost analysis and performance tracking, see my detailed case study: [Training Medical LLM Predictors: Process, Costs, and Optimization with DSPy.rb](https://vicente.services/blog/2025/08/11/training-medical-llm-predictors-process,-costs,-and-optimization-with-dspy.rb/).
+## Where The Ruby Implementation Differs
 
-## Getting Started
+DSPy.rb follows DSPy's programming model without translating its Python API line by line.
 
-Ready to try DSPy.rb? Getting started takes less than 5 minutes:
+- Signatures use Sorbet types such as `T::Struct`, `T::Enum`, arrays, and unions.
+- Provider adapters ship as separate gems, including `dspy-openai`, `dspy-anthropic`, and `dspy-gemini`.
+- Ruby methods and modules express fixed control flow.
+- `DSPy::Tools::Base` and `DSPy::Tools::Toolset` expose typed Ruby operations to agents.
+- Evaluation, callbacks, events, and optional OpenTelemetry integrations fit Ruby application boundaries.
+- Optimizers such as MIPROv2 and GEPA are DSPy.rb implementations with their own Ruby APIs and result objects.
 
-**Installation:**
-```bash
-gem install dspy
-```
+Those differences are intentional, but they make mechanical translation from Python examples unreliable. Start from the DSPy concept, then check the Ruby API.
 
-**Basic Setup:**
+## Try One Complete Program
+
+Add the core gem and one provider adapter:
+
 ```ruby
-require 'dspy'
-
-# Configure your provider
-DSPy.configure do |c|
-  # OpenAI (recommended for structured outputs)
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-  
-  # Or Anthropic
-  # c.lm = DSPy::LM.new('anthropic/claude-3-5-sonnet-20241022', api_key: ENV['ANTHROPIC_API_KEY'])
-  
-  # Or local with Ollama
-  # c.lm = DSPy::LM.new('ollama/llama3.2')
-end
+# Gemfile
+gem "dspy"
+gem "dspy-openai"
 ```
 
-**Your First Working Example:**
+Run `bundle install`, set `OPENAI_API_KEY`, and save the following as `classify.rb`:
+
 ```ruby
-class SimpleQA < DSPy::Signature
-  description "Answer questions accurately and concisely"
-  
-  input { const :question, String }
-  output { const :answer, String }
+require "dspy"
+
+class Classify < DSPy::Signature
+  description "Classify the sentiment of a sentence"
+
+  class Sentiment < T::Enum
+    enums do
+      Positive = new("positive")
+      Negative = new("negative")
+      Neutral = new("neutral")
+    end
+  end
+
+  input do
+    const :sentence, String
+  end
+
+  output do
+    const :sentiment, Sentiment
+  end
 end
 
-qa = DSPy::ChainOfThought.new(SimpleQA)
-result = qa.call(question: "What's the capital of France?")
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new(
+    "openai/gpt-4o-mini",
+    api_key: ENV.fetch("OPENAI_API_KEY")
+  )
+end
 
-puts result.answer     # => "Paris"
-puts result.reasoning  # => "France is a country in Europe, and its capital city is Paris..."
+classify = DSPy::Predict.new(Classify)
+prediction = classify.call(sentence: "The upgrade was easier than expected.")
+
+puts prediction.sentiment.serialize
 ```
 
-That's it. You're building with LLMs using actual software engineering practices.
+Run it with `bundle exec ruby classify.rb`. From there, add examples and a metric before adding an optimizer. Add an agent only when the model genuinely needs to choose the next operation; keep deterministic sequencing in Ruby.
 
-## The Path Forward
+Documentation: [oss.vicente.services/dspy.rb](https://oss.vicente.services/dspy.rb)
 
-DSPy.rb is actively developed with over 6,800 downloads and regular releases. The roadmap includes exciting developments:
-
-- **Advanced Optimizers**: SIMBA, BootstrapFinetune, and other Stanford DSPy algorithms
-- **Enhanced Observability**: Deeper OpenTelemetry integration for production monitoring  
-- **Native Reasoning Models**: First-class support for OpenAI's o1 and similar reasoning models
-- **Token Efficiency**: BAML-inspired strategies to reduce costs by 50-70%
-
-The framework is production-ready today, with companies using it for customer support, content generation, data extraction, and complex reasoning tasks.
-
-## Stop Wrestling, Start Building
-
-Traditional prompting treats LLMs like magic boxes you whisper to and hope for the best. DSPy.rb treats them like the powerful computing primitives they are—tools that integrate into solid software engineering practices.
-
-With typed signatures, automatic optimization, and production-ready features, DSPy.rb lets you focus on building great applications instead of debugging prompt strings. The 20 hours you'd spend tweaking prompts? Use them to ship features instead.
-
-The Ruby ecosystem now has a serious framework for LLM development. Give DSPy.rb a try on your next project—your future self will thank you.
-
-**Get started today:**
-- Documentation: [oss.vicente.services/dspy.rb](https://oss.vicente.services/dspy.rb)
-- Gem: `gem install dspy`
-
-*DSPy.rb is an idiomatic Ruby port of Stanford's DSPy framework, adapted for Ruby developers and enhanced with production-ready features. It's MIT licensed and actively maintained.*
+DSPy.rb is MIT licensed. It is an independent Ruby-native implementation of DSPy's programming model and is not officially affiliated with the original DSPy project.

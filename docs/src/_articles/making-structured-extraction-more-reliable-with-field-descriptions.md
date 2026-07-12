@@ -117,8 +117,8 @@ This is not an accidental keyword that wandered in through an unlocked side door
 The exact transport depends on provider and mode:
 
 - Enhanced prompting with JSON schema renders descriptions into the prompt schema.
-- [BAML schema format](/blog/articles/baml-schema-format/) preserves output descriptions as `@description(...)`.
-- [TOON schema format](/blog/articles/toon-data-format/) includes descriptions in human-readable field guidance.
+- [BAML schema format](/dspy.rb/blog/articles/baml-schema-format/) preserves output descriptions as `@description(...)`.
+- [TOON schema format](/dspy.rb/blog/articles/toon-data-format/) includes descriptions in human-readable field guidance.
 - OpenAI structured outputs receive descriptions through the generated JSON schema.
 - Anthropic Beta structured outputs receive descriptions through the generated JSON schema.
 - Gemini structured outputs use Gemini's supported schema subset. Descriptions remain part of DSPy metadata and prompt-based modes, but the provider-native Gemini schema path does not currently preserve every simple scalar or object field description in the final schema.

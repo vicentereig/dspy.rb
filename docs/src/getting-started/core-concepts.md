@@ -7,12 +7,13 @@ breadcrumb:
   url: "/getting-started/"
 - name: Core Concepts
   url: "/getting-started/core-concepts/"
-prev:
-  name: Quick Start
-  url: "/getting-started/quick-start/"
-next:
-  name: Signatures
-  url: "/core-concepts/signatures/"
+nav:
+  prev:
+    name: Quick Start
+    url: "/getting-started/quick-start/"
+  next:
+    name: Signatures
+    url: "/core-concepts/signatures/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-08 00:00:00 +0000
 ---
@@ -174,22 +175,16 @@ examples = [
   )
 ]
 
-# Use examples for evaluation
-evaluator = DSPy::Evals.new
-
 # Define metric
-exact_match = ->(example, prediction, trace) {
+exact_match = ->(example, prediction) {
   example.expected_values[:sentiment] == prediction.sentiment &&
   example.expected_values[:confidence] == prediction.confidence
 }
 
-results = evaluator.evaluate(
-  examples: examples,
-  signature_class: ClassifyText,
-  metric: exact_match
-) do |example|
-  classifier.call(**example.input_values)
-end
+# Evaluate a program against the examples
+classifier = DSPy::Predict.new(ClassifyText)
+evaluator = DSPy::Evals.new(classifier, metric: exact_match)
+results = evaluator.evaluate(examples)
 ```
 
 ## Configuration: Setting Up Your Environment
@@ -250,7 +245,7 @@ This is particularly useful for:
 - Gradual migration from existing prompt systems
 - Quick prototyping without signatures
 
-See the [benchmarking guide](/optimization/benchmarking-raw-prompts/) for detailed examples.
+See the [benchmarking guide](/dspy.rb/optimization/benchmarking-raw-prompts/) for detailed examples.
 
 ## Error Handling and Validation
 

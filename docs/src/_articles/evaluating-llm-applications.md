@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Evaluating LLM Applications: From Basic Metrics to Custom Quality Assessment"
-description: "Learn how to systematically test and measure your LLM applications using DSPy.rb's evaluation framework"
+description: "Define acceptable program behavior with examples and metrics, inspect failures, and use the same evidence to optimize DSPy.rb programs."
 date: 2025-06-01
 author: Vicente Reig
 tags: ["evaluation", "metrics", "testing", "quality"]
@@ -9,37 +9,23 @@ canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/evaluating-ll
 image: /images/og/evaluating-llm-applications.png
 ---
 
-Building reliable LLM applications requires more than just getting them to work—you need to measure how well they work. DSPy.rb's evaluation framework makes it easy to systematically test your applications, from simple accuracy checks to sophisticated quality assessments.
+An LLM program can return valid JSON and still be wrong. Evaluation defines the behavior you will accept: which examples matter, how predictions are scored, and which failures block a change.
 
-## Why Evaluation Matters
+DSPy.rb keeps that definition in ordinary Ruby. A program produces predictions, examples describe cases you care about, and a metric turns each prediction into evidence.
 
-When you're building with LLMs, "it works sometimes" isn't good enough for production. You need to know:
+## The Evaluation Contract
 
-- **How accurate** is your classifier across different types of inputs?
-- **How confident** should you be in the predictions?
-- **What happens** when the LLM encounters edge cases?
-- **How does performance change** when you modify prompts or switch models?
+Every evaluation needs three things:
 
-DSPy.rb's evaluation framework gives you concrete answers to these questions.
+1. A program to run.
+2. Examples with representative inputs and, when available, expected outputs.
+3. A metric that decides what counts as acceptable behavior.
 
-## The Evaluation Workflow
+The metric matters most. Exact match may be enough for a label. A generated report may need several bounded checks or a calibrated judge. A vague "quality" score only hides the decision you still need to make.
 
-Every evaluation in DSPy.rb follows the same pattern:
+## A Sentiment Program
 
-1. **Define what you're testing** (your predictor)
-2. **Choose how to measure success** (your metric)
-3. **Run the evaluation** against test data
-4. **Analyze the results**
-
-Let's see this in action with a practical example.
-
-## Example: Tweet Sentiment Classification
-
-We'll build a sentiment classifier for tweets and show different ways to evaluate it. The complete example is available in `examples/sentiment-evaluation/`.
-
-### 1. Define Your Task
-
-First, we create a type-safe signature for sentiment classification:
+This example classifies tweets as positive, negative, or neutral. The complete version lives in `examples/sentiment-evaluation/`.
 
 ```ruby
 class TweetSentiment < DSPy::Signature
@@ -47,9 +33,9 @@ class TweetSentiment < DSPy::Signature
 
   class Sentiment < T::Enum
     enums do
-      Positive = new('positive')
-      Negative = new('negative') 
-      Neutral = new('neutral')
+      Positive = new("positive")
+      Negative = new("negative")
+      Neutral = new("neutral")
     end
   end
 
@@ -64,7 +50,6 @@ class TweetSentiment < DSPy::Signature
   end
 end
 
-# Create a classifier module
 class SentimentClassifier < DSPy::Module
   def initialize
     super
@@ -77,217 +62,140 @@ class SentimentClassifier < DSPy::Module
 end
 ```
 
-### 2. Create Test Data
+The signature constrains the returned label to `TweetSentiment::Sentiment`. Correct labels and calibrated confidence require evidence from evaluation.
 
-For this example, we'll generate synthetic tweet data with known sentiments:
+## Use Examples You Can Defend
+
+Synthetic examples are useful for checking the evaluation code. They are weak evidence about production behavior. A real evaluation set should include human-reviewed examples, ambiguous cases, and inputs drawn from the distribution the program will see.
 
 ```ruby
 test_examples = [
-  { 
-    input: { tweet: "Great weather for hiking today! Perfect temperature 🌞" }, 
-    expected: { sentiment: "positive", confidence: 0.8 } 
+  {
+    input: { tweet: "Great weather for hiking today! Perfect temperature" },
+    expected: { sentiment: "positive", confidence: 0.8 }
   },
-  { 
-    input: { tweet: "Worst meal I've had in months. Cold food, slow service." }, 
-    expected: { sentiment: "negative", confidence: 0.9 } 
+  {
+    input: { tweet: "Worst meal I've had in months. Cold food, slow service." },
+    expected: { sentiment: "negative", confidence: 0.9 }
   },
-  { 
-    input: { tweet: "Finished reading the book. It was okay, nothing special." }, 
-    expected: { sentiment: "neutral", confidence: 0.6 } 
+  {
+    input: { tweet: "Finished reading the book. It was okay, nothing special." },
+    expected: { sentiment: "neutral", confidence: 0.6 }
   }
 ]
 ```
 
-## Basic Evaluation with Built-in Metrics
+## Start With The Decision You Care About
 
-The simplest way to evaluate is using DSPy.rb's built-in metrics:
+The built-in exact-match metric compares one field. Because this prediction returns a `T::Enum`, the custom metric below serializes the enum before comparing it with the expected string:
 
 ```ruby
+sentiment_accuracy = lambda do |example, prediction|
+  expected = example.dig(:expected, :sentiment)
+  actual = prediction&.sentiment&.serialize
+
+  expected == actual
+end
+
 classifier = SentimentClassifier.new
-
-# Use exact match for sentiment field
-metric = DSPy::Metrics.exact_match(field: :sentiment)
-evaluator = DSPy::Evals.new(classifier, metric: metric)
-
-result = evaluator.evaluate(test_examples, display_progress: true)
+evaluator = DSPy::Evals.new(classifier, metric: sentiment_accuracy)
+result = evaluator.evaluate(test_examples)
 
 puts "Accuracy: #{(result.pass_rate * 100).round(1)}%"
 puts "Passed: #{result.passed_examples}/#{result.total_examples}"
 ```
 
-This gives you a quick accuracy score, but sometimes you need more nuance.
+`pass_rate` is the fraction of examples whose metric passed. `score` on the batch result is already expressed as a percentage; do not multiply it by 100 again.
 
-## Custom Metrics for Domain-Specific Logic
+## Return A Score When Pass/Fail Is Not Enough
 
-Built-in metrics are great for common cases, but real applications often need custom logic. Here's how to create a custom metric that properly handles enum serialization:
+A metric may return a hash with both a threshold decision and a normalized score. Name each component so a future reader can challenge it.
 
 ```ruby
-sentiment_accuracy_metric = ->(example, prediction) do
-  return false unless prediction && prediction.respond_to?(:sentiment)
-  
-  expected_sentiment = example.dig(:expected, :sentiment)
-  actual_sentiment = prediction.sentiment.serialize
-  
-  expected_sentiment == actual_sentiment
+sentiment_quality = lambda do |example, prediction|
+  next { passed: false, score: 0.0 } unless prediction
+
+  expected_label = example.dig(:expected, :sentiment)
+  expected_confidence = example.dig(:expected, :confidence)
+
+  label_score = prediction.sentiment.serialize == expected_label ? 1.0 : 0.0
+  confidence_error = (prediction.confidence - expected_confidence).abs
+  confidence_score = [1.0 - confidence_error, 0.0].max
+
+  score = (label_score * 0.7) + (confidence_score * 0.3)
+  {
+    passed: label_score == 1.0 && confidence_error <= 0.2,
+    score: score,
+    label_score: label_score,
+    confidence_error: confidence_error
+  }
 end
 
-custom_evaluator = DSPy::Evals.new(classifier, metric: sentiment_accuracy_metric)
-custom_result = custom_evaluator.evaluate(test_examples, display_progress: true)
+quality_result = DSPy::Evals.new(
+  classifier,
+  metric: sentiment_quality
+).evaluate(test_examples)
+
+average = quality_result.aggregated_metrics[:score_avg]
+puts "Average score: #{(average * 100).round(1)}%"
 ```
 
-Custom metrics give you full control over what "correct" means in your domain.
+The weights and the `0.2` confidence tolerance are policy choices. Validate them against human decisions before using them as a release gate. This metric also avoids text length as a proxy for reasoning quality; a longer explanation earns nothing by itself.
 
-## Advanced Multi-Factor Quality Assessment
+## Inspect Individual Failures
 
-Sometimes accuracy isn't enough. You might want to evaluate multiple aspects of the prediction. Here's an advanced metric that considers accuracy, confidence appropriateness, and reasoning quality:
-
-```ruby
-sentiment_quality_metric = ->(example, prediction) do
-  return 0.0 unless prediction
-  
-  score = 0.0
-  
-  # Base accuracy (50% weight)
-  expected_sentiment = example.dig(:expected, :sentiment)
-  if prediction.respond_to?(:sentiment) && prediction.sentiment.serialize == expected_sentiment
-    score += 0.5
-  end
-  
-  # Confidence appropriateness (30% weight)
-  if prediction.respond_to?(:confidence) && prediction.confidence
-    expected_conf = example.dig(:expected, :confidence) || 0.5
-    conf_diff = (prediction.confidence - expected_conf).abs
-    conf_score = [1.0 - (conf_diff * 2), 0.0].max
-    score += conf_score * 0.3
-  end
-  
-  # Reasoning quality (20% weight)
-  if prediction.respond_to?(:reasoning) && prediction.reasoning && 
-     prediction.reasoning.length > 10
-    score += 0.2
-  end
-  
-  score
-end
-```
-
-This metric gives you a comprehensive quality score that considers multiple factors:
+Aggregate scores tell you whether behavior moved. Per-example results tell you where.
 
 ```ruby
-quality_evaluator = DSPy::Evals.new(classifier, metric: sentiment_quality_metric)
-quality_result = quality_evaluator.evaluate(test_examples, display_progress: true)
+quality_result.results.each do |example_result|
+  expected = example_result.example.dig(:expected, :sentiment)
+  predicted = example_result.prediction&.sentiment&.serialize
 
-puts "Quality Score: #{(quality_result.pass_rate * 100).round(1)}%"
-```
-
-## Detailed Result Analysis
-
-The evaluation framework doesn't just give you aggregate scores—you can dive into individual predictions:
-
-```ruby
-quality_result.results.each_with_index do |result, i|
-  tweet = test_examples[i][:input][:tweet]
-  expected = test_examples[i][:expected][:sentiment]
-  
-  puts "Tweet: #{tweet[0..60]}..."
   puts "Expected: #{expected}"
-  
-  if result.prediction
-    puts "Predicted: #{result.prediction.sentiment.serialize}"
-    puts "Confidence: #{result.prediction.confidence.round(2)}"
-    puts "Quality Score: #{result.metrics.round(2)}"
-  end
-  
-  puts "Status: #{result.passed? ? '✅ PASS' : '❌ FAIL'}"
-  puts ""
+  puts "Predicted: #{predicted || '(no prediction)'}"
+  puts "Score: #{example_result.metrics[:score].round(2)}"
+  puts "Error: #{example_result.metrics[:error]}" if example_result.metrics[:error]
 end
 ```
 
-This gives you insight into which types of examples your model handles well and which ones need improvement.
-
-## Error Handling
-
-Real applications need to handle failures gracefully. The evaluation framework makes this easy:
+`DSPy::Evals` catches program and metric exceptions. `max_errors` stops scheduling new examples after too many failed results, while `provide_traceback` controls whether error results include backtrace entries.
 
 ```ruby
-error_evaluator = DSPy::Evals.new(
-  classifier, 
-  metric: sentiment_accuracy_metric,
-  max_errors: 3,           # Stop after 3 errors
-  provide_traceback: true  # Include stack traces for debugging
+evaluator = DSPy::Evals.new(
+  classifier,
+  metric: sentiment_accuracy,
+  max_errors: 3,
+  provide_traceback: true
 )
-
-result = error_evaluator.evaluate(test_examples)
-
-# Check for errors
-error_count = result.results.count { |r| r.metrics[:error] }
-puts "#{error_count} examples failed with errors"
 ```
 
-## Integration with Optimization
+## Evaluation Drives Optimization
 
-The real power comes when you combine evaluation with optimization. You can use your custom metrics to guide prompt improvement:
+An optimizer uses the metric as its objective. It evaluates candidate program parameters, such as instructions and demonstrations supported by that optimizer, against your examples.
 
 ```ruby
 program = DSPy::Predict.new(TweetSentiment)
-metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
-optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
+optimizer = DSPy::Teleprompt::MIPROv2.new(metric: sentiment_accuracy)
 
-result = optimizer.compile(program, trainset: train_examples)
-# The metric proc is now used directly by MIPROv2 for optimization
+result = optimizer.compile(
+  program,
+  trainset: train_examples,
+  valset: validation_examples
+)
 
-puts "Best optimized quality score: #{result.best_score_value}"
+puts "Best validation score: #{result.best_score_value}"
+optimized_program = result.optimized_program
 ```
 
-## Running the Complete Example
+An optimizer follows the objective you give it. Omit an important failure mode, or reward the wrong behavior, and the search will favor the wrong program.
 
-The full working example is available in the repository. To try it:
+## Run The Example
 
 ```bash
 export OPENAI_API_KEY=your-api-key
-cd examples/sentiment-evaluation
-ruby sentiment_classifier.rb
+bundle exec ruby examples/sentiment-evaluation/sentiment_classifier.rb
 ```
 
-You'll see output like:
+The repository example still uses a small synthetic set. Treat its output as a demonstration of the API, not as evidence that the classifier is ready for a particular application.
 
-```
-🎭 Tweet Sentiment Classification Evaluation
-==================================================
-
-1️⃣ Basic Evaluation (Exact Match)
-Accuracy: 83.3%
-
-2️⃣ Custom Sentiment Accuracy  
-Custom Accuracy: 100.0%
-
-3️⃣ Advanced Quality Assessment
-Quality Score: 78.5%
-
-4️⃣ Detailed Result Analysis
-[Individual predictions with reasoning]
-
-5️⃣ Error Handling
-[Graceful error handling demonstration]
-```
-
-## Key Takeaways
-
-1. **Start Simple**: Begin with built-in metrics like `exact_match` to get baseline accuracy
-2. **Add Domain Logic**: Create custom metrics that understand your specific requirements
-3. **Consider Multiple Factors**: Advanced metrics can evaluate accuracy, confidence, reasoning quality, and more
-4. **Handle Errors Gracefully**: Production systems need robust error handling
-5. **Integrate with Optimization**: Use evaluation metrics to guide automated prompt improvement
-
-## Next Steps
-
-The evaluation framework supports many more features:
-
-- **Multiple Metrics**: Run several metrics simultaneously for comprehensive assessment
-- **Batch Processing**: Evaluate large datasets efficiently
-- **Integration with CI/CD**: Automate evaluation in your deployment pipeline
-- **Comparison Testing**: Compare different models, prompts, or configurations
-
-Check out the [comprehensive evaluation guide](/dspy.rb/optimization/evaluation/) and [custom metrics documentation](/dspy.rb/advanced/custom-metrics/) for more advanced techniques.
-
-Systematic evaluation is the foundation of reliable LLM applications. With DSPy.rb's evaluation framework, you can move from "it seems to work" to "I know exactly how well it works"—and that makes all the difference in production.
+The [evaluation guide](/dspy.rb/optimization/evaluation/) covers the complete API. See [custom metrics](/dspy.rb/advanced/custom-metrics/) when a boolean comparison cannot express the behavior you need.

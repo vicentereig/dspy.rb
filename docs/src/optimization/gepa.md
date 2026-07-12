@@ -42,7 +42,7 @@ GEPA runs in iterative loops:
 - **Ask the reflection LM** to propose an improved instruction.
 - **Accept or reject** the new candidate using Pareto dominance on score and novelty.
 
-The Ruby port ships with telemetry, merge proposers, and experiment tracking out of the box. You only need to provide three inputs: a DSPy module, a metric that returns `DSPy::Prediction`, and an optional `feedback_map`.
+DSPy.rb's GEPA implementation ships with telemetry, merge proposers, and experiment tracking out of the box. You only need to provide three inputs: a DSPy module, a metric that returns `DSPy::Prediction`, and an optional `feedback_map`.
 
 ## Quickstart (ADE demo)
 

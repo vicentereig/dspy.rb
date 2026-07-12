@@ -1,6 +1,6 @@
 ---
 layout: home
-title: "Stanford's DSPy Framework for Ruby | LLM Programming"
+title: "DSPy Programming for Ruby | Typed LLM Systems"
 description: "Program typed LLM systems in Ruby with signatures, modules, tools, evaluation, and optimization."
 date: 2025-06-28 00:00:00 +0000
 last_modified_at: 2025-09-01 00:00:00 +0000
@@ -12,7 +12,7 @@ last_modified_at: 2025-09-01 00:00:00 +0000
     </div>
   </div>
   <div class="text-center">
-    <p class="text-sm font-medium text-dspy-ruby mb-4">The Ruby port of Stanford's <a href="https://dspy.ai" rel="noopener noreferrer" class="underline hover:text-red-700">DSPy framework</a></p>
+    <p class="text-sm font-medium text-dspy-ruby mb-4">A Ruby-native implementation of <a href="https://dspy.ai" rel="noopener noreferrer" class="underline hover:text-red-700">DSPy's programming model</a></p>
     <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Program LLM systems in Ruby</h1>
     <p class="mt-6 text-lg leading-8 text-gray-600">Declare typed tasks, compose modules with Ruby, and give bounded agents tools when the model should choose the next action. DSPy.rb builds and can optimize the provider-facing prompts.</p>
     <div class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500">

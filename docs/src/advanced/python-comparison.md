@@ -11,7 +11,7 @@ date: 2025-07-11 00:00:00 +0000
 ---
 # DSPy and DSPy.rb
 
-DSPy.rb follows DSPy's central model: signatures declare tasks, modules choose execution strategies, ordinary code composes programs, and optimizers compile supported parameters against examples and metrics. DSPy.rb is a Ruby implementation, not an API-compatible port.
+DSPy.rb began as a port and still follows DSPy's central model: signatures declare tasks, modules choose execution strategies, ordinary code composes programs, and optimizers compile supported parameters against examples and metrics. It now evolves as an independent Ruby-native implementation, not an API-compatible port or an official DSPy project.
 
 Upstream DSPy changes faster and includes modules, integrations, and optimizers that DSPy.rb may not implement. Use the [official DSPy documentation](https://dspy.ai/) for the current Python API.
 

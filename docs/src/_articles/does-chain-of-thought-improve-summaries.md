@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Does Chain Of Thought Actually Improve Summaries? A Quick Experiment"
-description: "Does 'think step by step' actually help for simple tasks? Instead of running on assumptions and endlessly debating, run a quick experiment. Here's how."
+description: "Does 'think step by step' help a simple summarization task? Compare two DSPy.rb modules against the same examples and judge."
 date: 2025-12-01
 author: "Vicente Reig"
 category: "Evaluation"
@@ -11,20 +11,11 @@ canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/does-chain-of
 tags: ["evaluation", "chain-of-thought", "summarization", "llm-judge"]
 ---
 
-You're pairing with a coworker. They claim Chain Of Thought always produces better output. 
-You're skeptical. For simple tasks like summarization, does _think step by step_ really help? 
-Instead of running on blind assumptions, you two decide to run an experiment.
+You're pairing with a coworker. They claim Chain Of Thought always produces better output.
 
-With [DSPy.rb](https://github.com/vicentereig/dspy.rb), this takes about 50 lines of code.
+You're skeptical. For a short summarization task, does an extra reasoning step help enough to justify another model behavior? We ran the comparison instead of settling it by taste.
 
-## Setting Things up
-
-We need three things:
-1. A **summarization task** to compare
-2. An **LLM judge** to score quality
-3. An **evaluation harness** to run them both
-
-Let's build each piece.
+The experiment uses one signature, two [DSPy.rb](https://github.com/vicentereig/dspy.rb) modules, five Wikipedia excerpts, and the same LLM judge for every output.
 
 ```mermaid
 flowchart LR
@@ -32,7 +23,7 @@ flowchart LR
         E1["Wikipedia<br/>Articles"]
     end
 
-    subgraph Predictors["Same Signature, Different Approaches"]
+    subgraph Predictors["Same Signature, Different Modules"]
         P["DSPy::Predict<br/>(direct)"]
         C["DSPy::ChainOfThought<br/>(reasoning first)"]
     end
@@ -54,9 +45,9 @@ flowchart LR
     style J fill:#fff3e0,stroke:#ffb74d
 ```
 
-### One Task, Two Approaches
+## One Task, Two Modules
 
-A signature defines the task. Nothing fancy: just text in, summary out:
+The signature keeps the task fixed while the module changes how DSPy executes it.
 
 ```ruby
 class Summarize < DSPy::Signature
@@ -67,39 +58,37 @@ class Summarize < DSPy::Signature
   end
 
   output do
-    const :summary, String, description: "Concise summary preserving key concepts (2-3 sentences)"
+    const :summary, String,
+      description: "Concise summary preserving key concepts (2-3 sentences)"
   end
 end
-```
 
-Now we can create two predictors from the same signature:
-
-```ruby
 DSPy.configure do |config|
-  config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+  config.lm = DSPy::LM.new(
+    "openai/gpt-4o-mini",
+    api_key: ENV["OPENAI_API_KEY"]
+  )
 end
 
-prediction = DSPy::Predict.new(Summarize)
-puts prediction.summary
+direct = DSPy::Predict.new(Summarize)
+reasoned = DSPy::ChainOfThought.new(Summarize)
 
-cot_prediction = DSPy::ChainOfThought.new(Summarize)
-puts cot_prediction.summary
-puts cot_prediction.reasoning
+direct_result = direct.call(text: source_text)
+reasoned_result = reasoned.call(text: source_text)
 ```
 
-### Multi-Dimensional Quality Scoring
+This is a module comparison, not a prompt-string comparison. DSPy constructs the provider requests from the same signature; `ChainOfThought` adds its reasoning strategy.
 
-Here's where it gets interesting. Instead of manually reviewing summaries, we use another LLM to evaluate them.
-This G-Eval style approach scores multiple dimensions.
+## Define Acceptable Summary Behavior
 
-First, we define types to make our inputs explicit:
+There is no reference summary in this experiment. Another model scores each output for faithfulness, relevance, coherence, and fluency. The types make the judge's inputs and outputs explicit:
 
 ```ruby
 class EvaluatorMindset < T::Enum
   enums do
-    Critical = new('critical')   # Most should score 3-4, not 5
-    Balanced = new('balanced')   # Fair assessment across the range
-    Generous = new('generous')   # Benefit of the doubt
+    Critical = new("critical")
+    Balanced = new("balanced")
+    Generous = new("generous")
   end
 end
 
@@ -107,11 +96,7 @@ class GroundedSummary < T::Struct
   const :source_text, String
   const :summary, String
 end
-```
 
-Then the judge signature uses these types:
-
-```ruby
 class EvaluateSummary < DSPy::Signature
   description "Evaluate summary quality using G-Eval criteria according to the specified mindset."
 
@@ -135,19 +120,15 @@ class EvaluateSummary < DSPy::Signature
 end
 ```
 
-The `EvaluatorMindset` enum controls how critically the judge scores—the LLM receives this as a constrained choice. The `GroundedSummary` struct keeps the source and summary paired together. We use `DSPy::ChainOfThought` for the judge so it reasons through its evaluation.
-
-### Packaging the Judge for Evaluation
-
-A metric is a lambda that takes an example and prediction, returning evaluation results:
+The judge turns our definition of acceptable behavior into a metric result. It returns both a threshold decision and a normalized score:
 
 ```ruby
 def create_llm_judge_metric(judge_lm, mindset: EvaluatorMindset::Critical)
   judge = DSPy::ChainOfThought.new(EvaluateSummary)
-  judge.configure { |c| c.lm = DSPy::LM.new('openai/gpt-4.1', api_key: ENV['OPENAI_API_KEY']) }
+  judge.configure { |config| config.lm = judge_lm }
 
-  ->(example, prediction) do
-    eval_result = judge.call(
+  lambda do |example, prediction|
+    evaluation = judge.call(
       grounded_summary: GroundedSummary.new(
         source_text: example.input_values[:text],
         summary: prediction.summary
@@ -156,89 +137,77 @@ def create_llm_judge_metric(judge_lm, mindset: EvaluatorMindset::Critical)
     )
 
     {
-      passed: eval_result.overall_score >= 3.5,
-      score: eval_result.overall_score / 5.0,  # Normalize to 0-1
-      faithfulness: eval_result.faithfulness,
-      relevance: eval_result.relevance,
-      coherence: eval_result.coherence,
-      fluency: eval_result.fluency
+      passed: evaluation.overall_score >= 3.5,
+      score: evaluation.overall_score / 5.0,
+      faithfulness: evaluation.faithfulness,
+      relevance: evaluation.relevance,
+      coherence: evaluation.coherence,
+      fluency: evaluation.fluency
     }
+  rescue StandardError => e
+    { passed: false, score: 0.0, error: e.message }
   end
 end
 ```
 
-### Running Both Side by Side
+The `3.5` threshold and the judge's rubric are part of the experiment. They are not objective properties of summarization. A deployment decision would need judge calibration against human ratings and repeated runs to measure variance.
 
-`DSPy::Evals` unifies predictors, examples, and metrics. The API is dead simple:
+## Run Both Programs Against The Same Evidence
 
 ```ruby
-examples = wikipedia_articles.map do |doc|
+examples = wikipedia_articles.map do |document|
   DSPy::Example.new(
     signature_class: Summarize,
-    input: { text: doc[:text] },
-    expected: { summary: "" }  # LLM judge evaluates absolute quality
+    input: { text: document[:text] },
+    expected: { summary: "" }
   )
 end
 
-llm_judge_metric = create_llm_judge_metric(judge_lm)
+judge_lm = DSPy::LM.new(
+  "openai/gpt-4.1",
+  api_key: ENV["OPENAI_API_KEY"]
+)
+metric = create_llm_judge_metric(judge_lm)
 
-predict_evaluator = DSPy::Evals.new(predict, metric: llm_judge_metric)
-predict_result = predict_evaluator.evaluate(examples)
+direct_result = DSPy::Evals.new(
+  DSPy::Predict.new(Summarize),
+  metric: metric
+).evaluate(examples)
 
-cot_evaluator = DSPy::Evals.new(cot, metric: llm_judge_metric)
-cot_result = cot_evaluator.evaluate(examples)
+reasoned_result = DSPy::Evals.new(
+  DSPy::ChainOfThought.new(Summarize),
+  metric: metric
+).evaluate(examples)
 ```
 
-## The Results
+The placeholder expected summary is unused by this metric. It is present because `DSPy::Example` records the task's expected output shape.
 
-We ran both predictors on 5 Wikipedia articles (Photosynthesis, Byzantine Empire, Machine Learning, Great Barrier Reef, French Revolution) 
-using `gpt-4o-mini` as the summarizer and `gpt-4.1` as the judge.
+## What This Run Found
 
-```
+We ran both modules on five Wikipedia articles: Photosynthesis, Byzantine Empire, Machine Learning, Great Barrier Reef, and the French Revolution. `gpt-4o-mini` generated the summaries; `gpt-4.1` judged them.
+
+```text
 Predict avg score:        93.0%
 ChainOfThought avg score: 96.0%
 Improvement:              +3.0 percentage points
 ```
 
-The per-dimension breakdown tells a richer story:
+| Dimension | Predict | ChainOfThought | Difference |
+|---|---:|---:|---:|
+| Faithfulness | 4.4/5 | 4.8/5 | +0.4 |
+| Relevance | 4.4/5 | 4.4/5 | 0.0 |
+| Coherence | 4.8/5 | 5.0/5 | +0.2 |
+| Fluency | 5.0/5 | 5.0/5 | 0.0 |
 
-| Dimension    | Predict | CoT   | Δ    |
-|--------------|---------|-------|------|
-| Faithfulness | 4.4/5   | 4.8/5 | +0.4 |
-| Relevance    | 4.4/5   | 4.4/5 | +0.0 |
-| Coherence    | 4.8/5   | 5.0/5 | +0.2 |
-| Fluency      | 5.0/5   | 5.0/5 | +0.0 |
+In this run, ChainOfThought scored three percentage points higher, with the difference concentrated in faithfulness and coherence. Five documents and one judge run are not enough to establish a general advantage. The result is evidence for a follow-up experiment, not proof that ChainOfThought improves summaries.
 
-ChainOfThought's edge comes from **faithfulness** and **coherence**. The reasoning step seems to help the model avoid hallucinations and produce better-structured output. Relevance and fluency? Both approaches nail it.
-
-## 3 Points Better—Worth It?
-
-For summarization with a capable model like `gpt-4o-mini`, ChainOfThought provides a modest but real improvement—particularly in factual accuracy. The 3 percentage point gain might matter for production use cases where faithfulness is critical.
-
-But here's the thing: you don't have to guess anymore. The experiment took under an hour to build. The pattern works for any comparison:
-
-- Predict vs ChainOfThought
-- Different models (Claude vs GPT)
-- Different prompt strategies
-- Temperature variations
+The next useful run would add more documents, repeat judge calls, inspect disagreements manually, and record latency and token cost. A three-point score difference may disappear under that variance or cost more than it is worth.
 
 ## Run It Yourself
-
-The complete example is in the repo:
 
 ```bash
 export OPENAI_API_KEY=your-key
 bundle exec ruby examples/summarization_comparison.rb
 ```
 
-Tweak `DSPY_SUMMARIZER_MODEL` and `DSPY_JUDGE_MODEL` environment variables to experiment with different model combinations.
-
-## Takeaways
-
-1. **Signatures define the task** — same signature, different predictors
-2. **Sorbet types model your domain** — `T::Enum` for constrained choices, `T::Struct` for grouped inputs
-3. **LLM judges scale evaluation** — multi-dimensional scoring without manual review
-4. **DSPy::Evals unifies the workflow** — predictors, examples, and metrics in one API
-5. **Data beats blind assumptions** — 50 lines of code settles the ChainOfThought question
-
-Next time a coworker claims one approach is "obviously better," suggest an experiment. With DSPy.rb, you'll have results before the coffee gets cold.
+Use `DSPY_SUMMARIZER_MODEL` and `DSPY_JUDGE_MODEL` to compare other model combinations. Keep the examples and judge fixed when comparing modules, then change one experimental variable at a time.

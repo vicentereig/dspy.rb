@@ -43,7 +43,47 @@ Evaluation and optimizers operate on the resulting program. They do not remove t
 
 ## LangChain Ruby Model
 
-LangChain Ruby is useful when an application benefits from its provider, retrieval, loader, or tool integrations. Its APIs and available components are maintained by that project, so use its current documentation for executable examples.
+LangChain Ruby starts closer to provider and integration primitives. Its current API includes a common LLM interface, prompt templates, structured-output parsers, vector-store clients, document loaders, tools, and a conversational `Assistant`.
+
+The same question-answering task can be assembled from a prompt template and an LLM client:
+
+```ruby
+llm = Langchain::LLM::OpenAI.new(
+  api_key: ENV.fetch("OPENAI_API_KEY")
+)
+
+prompt = Langchain::Prompt::PromptTemplate.new(
+  template: "Answer from the context.\nContext: {context}\nQuestion: {question}",
+  input_variables: ["context", "question"]
+)
+
+response = llm.chat(
+  messages: [{
+    role: "user",
+    content: prompt.format(context: context, question: question)
+  }]
+)
+
+answer = response.chat_completion
+```
+
+This API leaves the prompt and response shape explicit. For structured data, LangChain Ruby provides `StructuredOutputParser`, which accepts a JSON Schema, adds format instructions to a prompt, and parses the response. `OutputFixingParser` can ask the model to repair a parsing failure. Its `Assistant` manages conversation messages and automatic or manual tool execution, while its vector-search clients cover ingestion and retrieval for several databases.
+
+See the project-maintained [LangChain Ruby README](https://github.com/patterns-ai-core/langchainrb#readme) and [API documentation](https://rubydoc.info/gems/langchainrb) for current provider and integration details.
+
+## Equivalent Concepts, Different Centers
+
+| Concern | DSPy.rb | LangChain Ruby |
+|---|---|---|
+| Task definition | Sorbet-backed signature with typed inputs and outputs | Prompt template, messages, and optional output parser |
+| Model access | Provider adapters behind `DSPy::LM` | Provider clients behind `Langchain::LLM` |
+| Structured results | Signature-derived schema and prediction coercion | JSON Schema supplied to `StructuredOutputParser` |
+| Tool use | `DSPy::ReAct` with typed Ruby tools and an iteration limit | `Langchain::Assistant` with tool definitions and conversation state |
+| Retrieval | Application-owned retrieval passed into modules | Vector-store clients, loaders, chunkers, and RAG helpers |
+| Evaluation | Program evaluation with application metrics | RAGAS evaluation for retrieval-augmented answers |
+| Optimization | Instructions and demonstrations compiled from examples and metrics | Prompt templates remain application-authored |
+
+These rows describe the projects' documented APIs, not feature parity. A custom Ruby application can build any of these boundaries around either library.
 
 ## Choose by the Boundary You Need
 
@@ -55,7 +95,7 @@ Choose DSPy.rb when:
 - Ruby should own deterministic orchestration around model calls.
 - A tool-using agent needs typed tools and an iteration bound.
 
-Consider LangChain Ruby when its maintained integrations remove application work you would otherwise own, especially around retrieval and document ingestion.
+Choose LangChain Ruby when its provider interface, prompt and parser objects, conversational assistant, or retrieval integrations match the application you need to assemble.
 
 The choice is not a general claim about speed, memory, or quality. Provider latency dominates many workloads, and prompt or token differences depend on the exact program. Benchmark the task with the same model, data, metric, and concurrency.
 
@@ -68,4 +108,4 @@ The choice is not a general claim about speed, memory, or quality. Provider late
 5. Evaluate the old and new paths on the same examples.
 6. Optimize only after the metric reflects the behavior you intend to ship.
 
-See [RAG](/advanced/rag/) for application-owned retrieval, [Pipelines](/advanced/pipelines/) for fixed composition, and [Program Optimization](/optimization/prompt-optimization/) for evaluation-driven compilation.
+See [RAG](/dspy.rb/advanced/rag/) for application-owned retrieval, [Pipelines](/dspy.rb/advanced/pipelines/) for fixed composition, and [Program Optimization](/dspy.rb/optimization/prompt-optimization/) for evaluation-driven compilation.

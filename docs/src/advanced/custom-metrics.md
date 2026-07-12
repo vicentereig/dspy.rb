@@ -72,7 +72,7 @@ DSPy::Scores::Evaluators.json_valid(
 )
 ```
 
-Each evaluator returns a `DSPy::Scores::ScoreEvent` that can be exported to Langfuse. See the [Observability guide](/production/observability/#score-reporting) for details on score export.
+Each evaluator returns a `DSPy::Scores::ScoreEvent` that can be exported to Langfuse. See the [Observability guide](/dspy.rb/production/observability/#score-reporting) for details on score export.
 
 ## Basic Custom Metrics
 

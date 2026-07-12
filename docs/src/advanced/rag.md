@@ -558,22 +558,22 @@ end
 ## Related Topics
 
 ### Core Concepts
-- **[Signatures](/core-concepts/signatures/)** - Learn how to design effective signatures for RAG systems
-- **[Modules](/core-concepts/modules/)** - Understand module composition for complex RAG pipelines
-- **[Memory](/core-concepts/memory/)** - Add persistent memory to your RAG applications
+- **[Signatures](/dspy.rb/core-concepts/signatures/)** - Learn how to design effective signatures for RAG systems
+- **[Modules](/dspy.rb/core-concepts/modules/)** - Understand module composition for complex RAG pipelines
+- **[Memory](/dspy.rb/advanced/stateful-agents/)** - Add persistent memory to your RAG applications
 
 ### Advanced Patterns  
-- **[Multi-stage Pipelines](/advanced/pipelines/)** - Build complex processing pipelines with multiple RAG stages
-- **[Custom Metrics](/advanced/custom-metrics/)** - Create domain-specific evaluation metrics for RAG systems
-- **[Rails Integration](/advanced/rails-integration/)** - Integrate RAG systems with Ruby on Rails applications
+- **[Multi-stage Pipelines](/dspy.rb/advanced/pipelines/)** - Build complex processing pipelines with multiple RAG stages
+- **[Custom Metrics](/dspy.rb/advanced/custom-metrics/)** - Create domain-specific evaluation metrics for RAG systems
+- **[Rails Integration](/dspy.rb/advanced/rails-integration/)** - Integrate RAG systems with Ruby on Rails applications
 
 ### Optimization
-- **[MIPROv2](/optimization/miprov2/)** - Use Bayesian optimization to tune multi-objective RAG systems
-- **[Evaluation](/optimization/evaluation/)** - Systematically test and measure RAG application performance
+- **[MIPROv2](/dspy.rb/optimization/miprov2/)** - Use Bayesian optimization to tune multi-objective RAG systems
+- **[Evaluation](/dspy.rb/optimization/evaluation/)** - Systematically test and measure RAG application performance
 
 ### Framework Comparison
-- **[DSPy.rb vs LangChain](/advanced/dspy-vs-langchain/)** - Compare RAG capabilities between Ruby frameworks
+- **[DSPy.rb vs LangChain](/dspy.rb/advanced/dspy-vs-langchain/)** - Compare RAG capabilities between Ruby frameworks
 
 ### Production
-- **[Observability](/production/observability/)** - Monitor and trace RAG applications in production
-- **[Troubleshooting](/production/troubleshooting/)** - Common RAG issues and solutions
+- **[Observability](/dspy.rb/production/observability/)** - Monitor and trace RAG applications in production
+- **[Troubleshooting](/dspy.rb/production/troubleshooting/)** - Common RAG issues and solutions

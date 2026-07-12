@@ -77,10 +77,10 @@ version = registry.register_version(
 puts "Registered version: #{version.version}"
 ```
 
-### Using RegistryManager for Automatic Integration
+### Registering an Optimization Result with RegistryManager
 
 ```ruby
-# Create registry manager for automatic optimization integration
+# Create a registry manager and enable optimization registration
 manager = DSPy::Registry::RegistryManager.new
 
 # Configure automatic behaviors
@@ -88,7 +88,7 @@ manager.integration_config.auto_register_optimizations = true
 manager.integration_config.auto_deploy_best_versions = true
 manager.integration_config.auto_deploy_threshold = 0.1  # 10% improvement
 
-# Automatically register optimization results
+# Register this result explicitly
 version = manager.register_optimization_result(
   result,
   signature_name: 'text_classifier',
@@ -197,26 +197,27 @@ manager.deploy_with_strategy('text_classifier', strategy: 'aggressive')
 manager.deploy_with_strategy('text_classifier', strategy: 'best_score')
 ```
 
-## Automatic Features
+## Optimization Integration
 
-### Auto-Registration of Optimizations
+### Manual Registration
 
 ```ruby
-# Configure automatic registration
+# Enable registration on this manager
 config = DSPy::Registry::RegistryManager::RegistryIntegrationConfig.new
 config.auto_register_optimizations = true
 
 manager = DSPy::Registry::RegistryManager.new(integration_config: config)
 
-# Now optimization results are automatically registered
 program = DSPy::Predict.new(ClassifyText)
 metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
 result = optimizer.compile(program, trainset: examples)
 
-# This happens automatically if configured:
+# register_optimization_result performs the registration when enabled
 version = manager.register_optimization_result(result)
 ```
+
+This example calls the manager explicitly. For optimizer-triggered registration, configure `DSPy::Registry::RegistryManager.instance` and set the optimizer's `save_intermediate_results` option. Optimizers use that singleton after a compile; a separately constructed manager does not receive those calls.
 
 ### Performance Monitoring and Rollback
 

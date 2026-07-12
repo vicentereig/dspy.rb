@@ -1,6 +1,6 @@
 ---
 layout: blog
-title: "Program of Thought: The Missing Link Between Reasoning and Code"
+title: "Program of Thought: Generated Code for Bounded Computation"
 description: "Program of Thought delegates computation to generated code. Here is how it differs from ChainOfThought and CodeAct, and why execution isolation matters."
 date: 2025-07-12
 author: "Vicente Reig"

@@ -8,7 +8,7 @@
 
 **Program typed LLM systems in Ruby.**
 
-DSPy.rb is the Ruby port of Stanford's [DSPy](https://dspy.ai). A signature declares a task as typed inputs and outputs. Modules choose how to run it. Ruby composes modules into programs, and `ReAct` adds a bounded tool-using loop when the model should choose the next action. DSPy.rb builds the provider request and validates the result.
+DSPy.rb brings [DSPy](https://dspy.ai)'s signature, module, agent, and optimizer model to Ruby, with Sorbet types and Ruby-native integrations. A signature declares a task as typed inputs and outputs. Modules choose how to run it. Ruby composes modules into programs, and `ReAct` adds a bounded tool-using loop when the model should choose the next action. DSPy.rb builds the provider request and validates the result.
 
 The `1.x` series is the current stable release line.
 

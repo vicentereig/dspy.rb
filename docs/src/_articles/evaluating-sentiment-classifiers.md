@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Evaluating Sentiment Classifiers: Beyond Simple Accuracy"
-description: "Learn how to systematically evaluate LLM applications using DSPy.rb's evaluation framework, from basic metrics to advanced quality assessment."
+description: "Build a sentiment evaluation that distinguishes label accuracy, confidence calibration, and execution failures."
 date: 2025-06-01
 author: Vicente Reig
 categories: [evaluation, sentiment-analysis, tutorial]
@@ -10,18 +10,13 @@ canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/evaluating-se
 image: /images/og/evaluating-sentiment-classifiers.png
 ---
 
-Building a sentiment classifier is one thing. Knowing if it actually works well is another. In this tutorial, we'll walk through DSPy.rb's evaluation framework using a practical sentiment classification example that goes beyond simple accuracy.
+A sentiment classifier can choose the right label and still be badly calibrated. It can also produce a valid enum for an input that should have been rejected. One accuracy number cannot describe all three behaviors.
 
-## What We're Building
+This tutorial defines separate checks for classification, confidence, and execution. The complete example is in `examples/sentiment-evaluation/sentiment_classifier.rb`.
 
-We'll create a tweet sentiment classifier that:
-- Classifies tweets as positive, negative, or neutral
-- Provides confidence scores and reasoning
-- Gets evaluated using multiple metrics to understand its true performance
+## Define The Program
 
-## Setting Up the Classifier
-
-First, let's define our signature. This is where DSPy.rb's type safety really shines:
+The signature constrains the output shape. Evaluation checks whether those typed values are useful.
 
 ```ruby
 class TweetSentiment < DSPy::Signature
@@ -29,9 +24,9 @@ class TweetSentiment < DSPy::Signature
 
   class Sentiment < T::Enum
     enums do
-      Positive = new('positive')
-      Negative = new('negative') 
-      Neutral = new('neutral')
+      Positive = new("positive")
+      Negative = new("negative")
+      Neutral = new("neutral")
     end
   end
 
@@ -45,13 +40,7 @@ class TweetSentiment < DSPy::Signature
     const :reasoning, String, description: "Brief explanation of the classification"
   end
 end
-```
 
-The enum ensures we only get valid sentiments back, and the additional fields (confidence and reasoning) give us more data to work with during evaluation.
-
-Now let's wrap it in a module that uses chain-of-thought reasoning:
-
-```ruby
 class SentimentClassifier < DSPy::Module
   def initialize
     super
@@ -64,197 +53,137 @@ class SentimentClassifier < DSPy::Module
 end
 ```
 
-## Creating Test Data
+## Assemble A Test Set
 
-For this example, we'll generate some synthetic tweet data. In a real application, you'd want to use actual tweets with human-labeled sentiments:
+The examples below are synthetic. They make the tutorial reproducible, but they do not represent the ambiguity, slang, sarcasm, and distribution shifts of real social data.
 
 ```ruby
 test_examples = [
-  { 
-    input: { tweet: "Great weather for hiking today! Perfect temperature 🌞" }, 
-    expected: { sentiment: "positive", confidence: 0.8 } 
+  {
+    input: { tweet: "Great weather for hiking today! Perfect temperature" },
+    expected: { sentiment: "positive", confidence: 0.8 }
   },
-  { 
-    input: { tweet: "Worst meal I've had in months. Cold food, slow service." }, 
-    expected: { sentiment: "negative", confidence: 0.9 } 
+  {
+    input: { tweet: "Worst meal I've had in months. Cold food, slow service." },
+    expected: { sentiment: "negative", confidence: 0.9 }
   },
-  { 
-    input: { tweet: "Finished reading the book. It was okay, nothing special." }, 
-    expected: { sentiment: "neutral", confidence: 0.6 } 
+  {
+    input: { tweet: "Finished reading the book. It was okay, nothing special." },
+    expected: { sentiment: "neutral", confidence: 0.6 }
   }
-  # ... more examples
 ]
 ```
 
-## Evaluation Level 1: Basic Accuracy
+For an application evaluation, replace these examples with reviewed data from the intended domain. Record disagreements between annotators rather than forcing uncertain cases into a clean label.
 
-Let's start with the simplest evaluation - exact match on the sentiment field:
+## Measure Label Accuracy
+
+Configure the model and compare the serialized enum with the expected label:
 
 ```ruby
-# Configure DSPy
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new(
+    "openai/gpt-4o-mini",
+    api_key: ENV["OPENAI_API_KEY"]
+  )
 end
 
 classifier = SentimentClassifier.new
 
-# Basic evaluation
-basic_metric = DSPy::Metrics.exact_match(field: :sentiment)
-basic_evaluator = DSPy::Evals.new(classifier, metric: basic_metric)
+sentiment_accuracy = lambda do |example, prediction|
+  expected = example.dig(:expected, :sentiment)
+  actual = prediction&.sentiment&.serialize
 
-result = basic_evaluator.evaluate(test_examples, display_progress: true)
-puts "Accuracy: #{(result.score * 100).round(1)}%"
-```
-
-This gives us a baseline - what percentage of tweets did we classify correctly? But there's a catch here: the built-in `exact_match` expects string values, but our signature returns an enum. So we need something smarter.
-
-## Evaluation Level 2: Custom Metrics
-
-Let's create a custom metric that properly handles our enum types:
-
-```ruby
-def sentiment_accuracy_metric
-  ->(example, prediction) do
-    return false unless prediction && prediction.respond_to?(:sentiment)
-    
-    expected_sentiment = example.dig(:expected, :sentiment)
-    actual_sentiment = prediction.sentiment.serialize  # Convert enum to string
-    
-    expected_sentiment == actual_sentiment
-  end
+  expected == actual
 end
 
-# Use the custom metric
-custom_evaluator = DSPy::Evals.new(classifier, metric: sentiment_accuracy_metric)
-custom_result = custom_evaluator.evaluate(test_examples, display_progress: true)
+result = DSPy::Evals.new(
+  classifier,
+  metric: sentiment_accuracy
+).evaluate(test_examples)
+
+puts "Accuracy: #{(result.pass_rate * 100).round(1)}%"
 ```
 
-This handles our enum correctly and gives us the true accuracy rate.
+The enum prevents an undeclared label from reaching application code. It does not make a declared label correct.
 
-## Evaluation Level 3: Quality Assessment
+## Evaluate Confidence Separately
 
-Simple accuracy doesn't tell the whole story. Let's create a metric that considers multiple factors:
+The expected confidence values in this tutorial are illustrative judgments. A real calibration test needs enough labeled predictions to compare confidence buckets with observed accuracy.
+
+For a small example, return both the label decision and the confidence error:
 
 ```ruby
-def sentiment_quality_metric
-  ->(example, prediction) do
-    return 0.0 unless prediction
-    
-    score = 0.0
-    
-    # Base accuracy (50% of total score)
-    expected_sentiment = example.dig(:expected, :sentiment)
-    if prediction.sentiment.serialize == expected_sentiment
-      score += 0.5
-    end
-    
-    # Confidence appropriateness (30% of total score)
-    if prediction.confidence
-      expected_conf = example.dig(:expected, :confidence) || 0.5
-      conf_diff = (prediction.confidence - expected_conf).abs
-      conf_score = [1.0 - (conf_diff * 2), 0.0].max
-      score += conf_score * 0.3
-    end
-    
-    # Reasoning quality (20% of total score)
-    if prediction.reasoning && 
-       prediction.reasoning.length > 10 && 
-       !prediction.reasoning.include?("I don't know")
-      score += 0.2
-    end
-    
-    score
-  end
+sentiment_quality = lambda do |example, prediction|
+  next { passed: false, score: 0.0 } unless prediction
+
+  expected_label = example.dig(:expected, :sentiment)
+  expected_confidence = example.dig(:expected, :confidence)
+  label_matches = prediction.sentiment.serialize == expected_label
+  confidence_error = (prediction.confidence - expected_confidence).abs
+
+  score = (label_matches ? 0.7 : 0.0) +
+    ([1.0 - confidence_error, 0.0].max * 0.3)
+
+  {
+    passed: label_matches && confidence_error <= 0.2,
+    score: score,
+    label_matches: label_matches ? 1.0 : 0.0,
+    confidence_error: confidence_error
+  }
 end
 ```
 
-This metric rewards:
-- **Correct classification** (50% weight) - the most important factor
-- **Appropriate confidence** (30% weight) - being confident when right, uncertain when it's a tough call
-- **Good reasoning** (20% weight) - providing substantial explanations
-
-## Running the Evaluation
-
-Here's how you'd run all three evaluations:
+This metric states its policy: label correctness carries 70 percent of the score, and confidence must fall within `0.2` of the reference value to pass. Those choices should come from the application's cost of false positives, false negatives, and abstentions.
 
 ```ruby
-# Quality evaluation
-quality_evaluator = DSPy::Evals.new(classifier, metric: sentiment_quality_metric)
-quality_result = quality_evaluator.evaluate(test_examples, display_progress: true)
+quality_result = DSPy::Evals.new(
+  classifier,
+  metric: sentiment_quality
+).evaluate(test_examples)
 
-puts "Quality Score: #{(quality_result.score * 100).round(1)}%"
+average = quality_result.aggregated_metrics[:score_avg]
+puts "Average score: #{(average * 100).round(1)}%"
+```
 
-# Analyze individual results
-quality_result.results.each_with_index do |result, i|
-  tweet = test_examples[i][:input][:tweet]
-  expected = test_examples[i][:expected][:sentiment]
-  
-  puts "\nTweet: #{tweet[0..60]}..."
+Do not use explanation length as a reasoning-quality metric. A long explanation can still be wrong, and hidden chain-of-thought is not required to evaluate the classifier's observable behavior.
+
+## Inspect Failures
+
+Each result keeps the example, prediction, pass decision, and metric data:
+
+```ruby
+quality_result.results.each do |example_result|
+  tweet = example_result.example.dig(:input, :tweet)
+  expected = example_result.example.dig(:expected, :sentiment)
+  predicted = example_result.prediction&.sentiment&.serialize
+
+  puts "Tweet: #{tweet}"
   puts "Expected: #{expected}"
-  
-  if result.prediction
-    puts "Predicted: #{result.prediction.sentiment.serialize}"
-    puts "Confidence: #{result.prediction.confidence.round(2)}"
-    puts "Reasoning: #{result.prediction.reasoning[0..80]}..."
-  else
-    puts "❌ Prediction failed"
-  end
-  puts "Status: #{result.passed? ? '✅ PASS' : '❌ FAIL'}"
+  puts "Predicted: #{predicted || '(no prediction)'}"
+  puts "Confidence error: #{example_result.metrics[:confidence_error]}"
+  puts "Error: #{example_result.metrics[:error]}" if example_result.metrics[:error]
 end
 ```
 
-## Handling Errors Gracefully
-
-Real-world data is messy. DSPy.rb's evaluation framework handles errors gracefully:
+Program and metric exceptions become failed evaluation results. You can bound a run with `max_errors` and retain backtraces for diagnosis:
 
 ```ruby
-error_evaluator = DSPy::Evals.new(
-  classifier, 
-  metric: sentiment_accuracy_metric,
-  max_errors: 2,          # Stop after 2 errors
-  provide_traceback: true # Include error details
+evaluator = DSPy::Evals.new(
+  classifier,
+  metric: sentiment_quality,
+  max_errors: 2,
+  provide_traceback: true
 )
-
-# This won't crash even with problematic inputs
-error_examples = [
-  { input: { tweet: "" }, expected: { sentiment: "neutral" } },  # Empty tweet
-  { input: { tweet: "Normal tweet" }, expected: { sentiment: "neutral" } }
-]
-
-result = error_evaluator.evaluate(error_examples, display_progress: true)
-
-# Check which examples had errors
-result.results.each do |r|
-  if r.metrics[:error]
-    puts "Error: #{r.metrics[:error]}"
-  end
-end
 ```
 
-## What You Learn From This
+An empty string is not guaranteed to raise an exception. If empty tweets are invalid in your application, validate that boundary explicitly and add an example that expects rejection.
 
-Running this evaluation gives you insights like:
-
-1. **Basic accuracy**: "We get 85% of sentiments right"
-2. **Confidence calibration**: "We're overconfident on neutral tweets"
-3. **Reasoning quality**: "Explanations are good for positive/negative but weak for neutral"
-4. **Error patterns**: "Empty tweets cause failures"
-
-## Key Takeaways
-
-1. **Start simple, then add complexity**: Basic accuracy first, then custom metrics
-2. **Multiple metrics tell a better story**: Accuracy + confidence + reasoning quality
-3. **Handle failures gracefully**: Real applications need error handling
-4. **Custom metrics are powerful**: Tailor evaluation to your specific domain
-
-## Running the Complete Example
-
-You can find the complete code in `examples/sentiment-evaluation/sentiment_classifier.rb`. To run it:
+## Run The Complete Example
 
 ```bash
-export OPENAI_API_KEY=your-key-here
-cd examples/sentiment-evaluation
-ruby sentiment_classifier.rb
+export OPENAI_API_KEY=your-key
+bundle exec ruby examples/sentiment-evaluation/sentiment_classifier.rb
 ```
 
-The evaluation framework is one of DSPy.rb's strongest features. It turns the usually-subjective process of "is my LLM app good?" into something measurable and systematic. Whether you're building sentiment classifiers, question-answering systems, or any other LLM application, proper evaluation is what separates experimental code from production-ready systems.
+The repository script demonstrates the evaluation API with synthetic data. Before using the metric as an optimization objective or deployment gate, replace its examples and thresholds with evidence from the application you are building.

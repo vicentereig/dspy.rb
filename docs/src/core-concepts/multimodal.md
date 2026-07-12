@@ -522,5 +522,5 @@ Both examples demonstrate:
 
 - Run the examples locally with your API keys
 - Explore custom signature designs for your use cases
-- Learn about [rich types](./complex-types.md) for advanced structured outputs
-- Check [provider documentation](../production/troubleshooting.md) for model-specific features
+- Learn about [rich types](/dspy.rb/advanced/complex-types/) for advanced structured outputs
+- Check [provider documentation](/dspy.rb/production/troubleshooting/) for model-specific features
