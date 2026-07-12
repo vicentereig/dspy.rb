@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "Let the Model Write Your Tools"
-description: "Building a research agent with CodeAct where the LLM generates Ruby code on the fly"
+description: "Build a CodeAct research agent that chooses and executes Ruby code inside a bounded loop, with an explicit warning about process isolation."
 date: 2025-11-27
 author: "Vicente Reig"
 category: "Tutorial"
@@ -9,11 +9,13 @@ reading_time: "4 min read"
 image: /images/og/codeact-research-agent.png
 ---
 
-[CodeAct](https://rubygems.org/gems/dspy-code_act) is a [DSPy.rb](https://github.com/vicentereig/dspy.rb) module that lets an LLM write and execute Ruby code to solve tasks. Instead of defining tools upfront, the agent generates code on the fly. This post walks through a minimal research agent that fetches data from web APIs.
+[ReAct](/blog/articles/react-agent-tutorial/) lets a model choose among tools you wrote. [CodeAct](https://rubygems.org/gems/dspy-code_act) lets the model write the Ruby operation it wants to execute, inspect the result, and continue until it has an answer.
 
-## The Signature
+That flexibility changes the safety boundary. The current `dspy-code_act` implementation calls Ruby `eval` in the application process. The example below is suitable for controlled experiments with trusted input. It is not a sandbox for production or multi-tenant workloads.
 
-First, define what the agent does:
+## Define the task
+
+The signature describes the research input and final output:
 
 ```ruby
 class ResearchQuery < DSPy::Signature
@@ -21,27 +23,27 @@ class ResearchQuery < DSPy::Signature
 
   input do
     const :query, String, description: "The research question or topic to investigate"
-    const :context, String, description: "Available libraries and guidelines"
+    const :context, String, description: "Available libraries and execution constraints"
   end
 
   output do
-    const :answer, String, description: "The answer based on research findings"
+    const :answer, String, description: "The answer supported by execution results"
   end
 end
 ```
 
-Nothing special here - just a standard signature with a query in and an answer out.
+The signature fixes the task boundary. CodeAct still lets the model choose the code and whether another iteration is needed.
 
-## The Context
+## Describe the execution context
 
-The `context` input is just a string describing what the agent can use. Here we explain that `Net::HTTP`, `URI`, and `JSON` are available, and list some useful API endpoints:
+The `context` field tells the model which libraries and endpoints are relevant:
 
 ```ruby
 RESEARCH_CONTEXT = <<~CONTEXT
   You have access to these Ruby libraries:
-  - Net::HTTP - for HTTP requests
-  - URI - for parsing URLs
-  - JSON - for parsing JSON responses
+  - Net::HTTP for HTTP requests
+  - URI for parsing URLs
+  - JSON for parsing JSON responses
 
   Useful APIs:
   - GitHub API: https://api.github.com/repos/{owner}/{repo}
@@ -49,21 +51,27 @@ RESEARCH_CONTEXT = <<~CONTEXT
 CONTEXT
 ```
 
-## Running the Agent
+This text guides code generation. It does not restrict what `eval` can access. A real execution policy must be enforced outside the generated program.
 
-Configure DSPy with your LLM, then create a CodeAct instance:
+## Run the agent
+
+Install the optional gem and configure an LM:
+
+```ruby
+gem 'dspy'
+gem 'dspy-code_act'
+```
 
 ```ruby
 DSPy.configure do |config|
-  config.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
+  config.lm = DSPy::LM.new(
+    'openai/gpt-4o-mini',
+    api_key: ENV['OPENAI_API_KEY']
+  )
 end
 
 agent = DSPy::CodeAct.new(ResearchQuery, max_iterations: 8)
-```
 
-Call the agent with your query:
-
-```ruby
 result = agent.call(
   query: "How many stars does rails/rails have?",
   context: RESEARCH_CONTEXT
@@ -72,48 +80,49 @@ result = agent.call(
 puts result.answer
 ```
 
-## What Happens
+CodeAct runs a Think-Code-Observe loop:
 
-The agent loops through three phases: **Think** (reason about the approach), **Code** (generate and execute Ruby), and **Observe** (decide if done or continue). Here's a real run:
+1. A predictor returns a thought and Ruby code.
+2. CodeAct executes the code and captures stdout or the evaluated result.
+3. A second predictor inspects the observation and chooses `continue` or `finish`.
+4. The loop stops at `finish` or `max_iterations`.
 
-```
-🔬 Research Query: How many stars does rails/rails have?
+The model owns the bounded action choice. The application owns the iteration limit, execution environment, network policy, credentials, and termination behavior around the loop.
 
-📋 Final Answer:
-The repository 'rails/rails' has 57915 stars.
+## Inspect a run
 
-🔍 Execution History (1 iterations):
-
-[Step 1]
-💭 Thought: To fetch the number of stars for the 'rails/rails' repository
-   on GitHub, I will use the GitHub API endpoint for repository information.
-
-💻 Code:
-   uri = URI.parse('https://api.github.com/repos/rails/rails')
-   http = Net::HTTP.new(uri.host, uri.port)
-   http.use_ssl = true
-   response = http.get(uri.request_uri)
-   data = JSON.parse(response.body)
-   stars = data['stargazers_count']
-   puts "rails/rails has #{stars} stars."
-
-✅ Result: rails/rails has 57915 stars.
-```
-
-The agent:
-1. Reasoned about which API to use
-2. Generated valid Ruby code with proper HTTPS handling
-3. Executed the code and captured the output
-4. Decided the task was complete after one iteration
-
-## Specializing via Signatures
-
-The signature defines what your agent does. Change the signature, get a different agent:
+A recorded run generated code equivalent to:
 
 ```ruby
-# A data analyst
+uri = URI.parse('https://api.github.com/repos/rails/rails')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+response = http.get(uri.request_uri)
+data = JSON.parse(response.body)
+puts "rails/rails has #{data['stargazers_count']} stars."
+```
+
+The result includes typed history entries:
+
+```ruby
+result.history.each do |entry|
+  puts "Step #{entry.step}"
+  puts entry.thought
+  puts entry.ruby_code
+  puts entry.execution_result
+  warn entry.error_message unless entry.error_message.empty?
+end
+```
+
+The star count in an old trace will become stale. The useful evidence is the selected endpoint, generated code, captured observation, and decision to finish.
+
+## Signatures specialize the loop
+
+Changing the signature changes the task and result contract without changing CodeAct's execution loop:
+
+```ruby
 class AnalyzeCSV < DSPy::Signature
-  description "Analyze CSV data and compute statistics"
+  description "Analyze CSV data and compute requested statistics."
 
   input do
     const :csv_data, String
@@ -125,95 +134,51 @@ class AnalyzeCSV < DSPy::Signature
     const :numbers, T::Array[Float]
   end
 end
-
-# A code explainer
-class ExplainCode < DSPy::Signature
-  description "Execute code snippets to understand their behavior"
-
-  input do
-    const :code, String
-    const :language, String
-  end
-
-  output do
-    const :explanation, String
-    const :output_example, String
-  end
-end
 ```
 
-Each signature produces a specialized agent. The `description` guides the LLM's approach, input fields define what data it receives, and output fields shape what it returns. CodeAct handles the execution loop - you just define the interface.
+The model still receives natural-language task and field descriptions. DSPy.rb turns those descriptions and the execution history into provider prompts; you do not maintain the multi-step prompt template yourself.
 
-## When to Use This
+## Choose CodeAct or ReAct
 
-CodeAct works well when you need flexible data fetching or transformation. The agent can combine APIs, parse responses, and compute derived values - all without you writing tool definitions.
+Use CodeAct when the useful operation cannot be enumerated cleanly in advance, such as exploratory transformations over trusted data. Use ReAct when the allowed operations are known and each tool can expose a narrow typed interface.
 
-Use [**ReAct**](/blog/articles/react-agent-tutorial/) instead when you have well-defined tools with clear interfaces, or need stricter control over what the agent can do.
+| Property | ReAct | CodeAct |
+|---|---|---|
+| Model selects | A declared tool and typed arguments | Ruby code to execute |
+| Authority boundary | Tool implementations | Execution environment |
+| Best fit | Known APIs and controlled side effects | Open-ended computation in isolation |
+| Primary risk | Overpowered tools | Arbitrary code execution |
 
-The tradeoff with CodeAct is safety: it uses `eval` to run generated code. Fine for experimentation, but add sandboxing before using with untrusted input.
+Prefer ReAct when either approach can solve the task. A smaller authority surface is easier to test.
 
-## Sandboxing Options
+## Isolation is part of the harness
 
-Ruby has no built-in safe sandbox (`$SAFE` was removed in Ruby 3.0). For production use with untrusted input, consider these alternatives:
+Timeouts and forbidden-string checks do not make `eval` safe. Generated Ruby can reach constants, loaded libraries, the filesystem, environment variables, network clients, and process APIs through many equivalent expressions.
 
-| Approach | Gem | How it works | Overhead |
-|----------|-----|--------------|----------|
-| Docker containers | [trusted-sandbox](https://github.com/vaharoni/trusted-sandbox) | Runs code in isolated containers with resource limits | ~100ms+ |
-| V8 engine | [ruby_box](https://github.com/alecdotninja/ruby_box) | Compiles Ruby to JS via Opal, executes in V8 | Fast, but limited Ruby compatibility |
-| Process isolation | [safe_ruby](https://github.com/ukutaht/safe_ruby) | Forks process with whitelisted methods | Moderate |
-| WebAssembly | [wasmer-ruby](https://github.com/wasmerio/wasmer-ruby) | Memory-safe WASM sandbox | Complex setup |
+For untrusted input, execute CodeAct in a disposable boundary with:
 
-For controlled experimentation, a lightweight approach with timeouts and pattern blocking:
+- A separate process or container.
+- No inherited application secrets.
+- An allowlisted network policy.
+- Read-only or ephemeral storage.
+- CPU, memory, wall-clock, and output limits.
+- A narrow protocol for returning observations.
 
-```ruby
-class SaferCodeAct < DSPy::CodeAct
-  FORBIDDEN = [/`.*`/, /system\s*\(/, /exec\s*\(/, /File\.(delete|write)/]
+Ruby's `$SAFE` mechanism was removed in Ruby 3.0. Container or virtual-machine isolation adds overhead, but that overhead is part of running generated code honestly.
 
-  def execute_ruby_code_safely(ruby_code)
-    return [nil, "Forbidden pattern"] if FORBIDDEN.any? { |p| ruby_code.match?(p) }
+## Try the example
 
-    Timeout.timeout(5) { super }
-  rescue Timeout::Error
-    [nil, "Timed out"]
-  end
-end
+The full script is [`examples/codeact_research_agent.rb`](https://github.com/vicentereig/dspy.rb/blob/main/examples/codeact_research_agent.rb):
+
+```bash
+bundle exec ruby examples/codeact_research_agent.rb \
+  "How many stars does rails/rails have?"
 ```
 
-This isn't a real sandbox - it's just guardrails. For untrusted input, use Docker or WASM.
-
-## Try It
-
-The full example is at `examples/codeact_research_agent.rb`:
-
-```
-$ bundle exec ruby examples/codeact_research_agent.rb "How many stars does rails/rails have?"
-
-🔬 Research Query: How many stars does rails/rails have?
-============================================================
-
-📋 Final Answer:
-------------------------------------------------------------
-The repository 'rails/rails' has 57915 stars.
-
-🔍 Execution History (1 iterations):
-------------------------------------------------------------
-
-[Step 1]
-💭 Thought: To fetch the number of stars for the 'rails/rails' repository on GitHub,
-   I will use the GitHub API endpoint for repository information.
-💻 Code:
-   uri = URI.parse('https://api.github.com/repos/rails/rails')
-   http = Net::HTTP.new(uri.host, uri.port)
-   http.use_ssl = true
-   response = http.get(uri.request_uri)
-   data = JSON.parse(response.body)
-   stars = data['stargazers_count']
-   puts "rails/rails has #{stars} stars."
-✅ Result: rails/rails has 57915 stars.
-```
-
-Or run it interactively:
+Run it interactively by omitting the question:
 
 ```bash
 bundle exec ruby examples/codeact_research_agent.rb
 ```
+
+Keep the demo local and controlled. Before connecting CodeAct to user input, move execution out of the application process and test the boundary as seriously as the agent loop.

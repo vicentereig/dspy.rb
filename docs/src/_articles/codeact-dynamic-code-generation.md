@@ -1,17 +1,17 @@
 ---
 layout: blog
 title: "CodeAct: Dynamic Code Generation"
-description: "CodeAct now ships as a standalone gem with dedicated README docs."
+description: "CodeAct is a tool-using agent loop that generates and executes Ruby code. It ships in the optional dspy-code_act gem."
 date: 2025-07-11 00:00:00 +0000
 last_modified_at: 2025-10-07 00:00:00 +0000
 category: Article
 ---
-# CodeAct article moved
+# CodeAct documentation moved
 
-Looking for the CodeAct deep dive? The feature now lives in the `dspy-code_act` gem.
+CodeAct now lives in the optional `dspy-code_act` gem. The agent lets a model choose and execute Ruby code over several bounded iterations; it is separate from DSPy.rb core because generated-code execution needs a different safety boundary from ordinary prediction.
 
-- 📦 Install: `gem 'dspy-code_act', '~> 0.29'`
-- 📚 Docs: [`lib/dspy/code_act/README.md`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md)
-- 🔧 Source: [`lib/dspy/code_act.rb`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act.rb)
+- Install: `gem 'dspy-code_act', '~> 0.29'`
+- Read the [CodeAct documentation](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md).
+- Inspect the [implementation](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act.rb).
 
-Separating CodeAct keeps `dspy` core slim while allowing the agent to iterate rapidly.
+The current implementation evaluates generated Ruby in the application process. Use it for controlled experiments unless you provide process or container isolation.
