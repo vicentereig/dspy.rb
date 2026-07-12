@@ -1,42 +1,48 @@
-/* Syntax highlighting styles for code blocks */
-/* Using high specificity selectors to override Tailwind prose styles */
+/*
+  Syntax Highlighting - Warm Editorial Theme
+
+  Dark background, warm grays, two brand accents:
+    Coral (#e8a088) for structural elements (keywords, tags)
+    Teal (#8ec0a6) for values (strings, symbols)
+  Everything else stays quiet.
+*/
 
 /* Base highlight container */
-pre.highlight code { color: #f8f8f2 !important; background: transparent !important }
-pre.highlight code .hll { background-color: #49483e !important }
+pre.highlight code { color: #d1cdc7 !important; background: transparent !important }
+pre.highlight code .hll { background-color: #2d2a26 !important }
 
-/* Comments */
+/* Comments - dim, italic */
 pre.highlight code .c,
 pre.highlight code .cm,
 pre.highlight code .cp,
 pre.highlight code .c1,
-pre.highlight code .cs { color: #95917c !important }
+pre.highlight code .cs { color: #6e6a63 !important; font-style: italic }
 
-/* Keywords - bright pink */
+/* Keywords - soft coral */
 pre.highlight code .k,
 pre.highlight code .kc,
 pre.highlight code .kd,
 pre.highlight code .kn,
 pre.highlight code .kp,
-pre.highlight code .kr { color: #ff6188 !important }
-pre.highlight code .kt { color: #78dce8 !important }
+pre.highlight code .kr { color: #e8a088 !important }
+pre.highlight code .kt { color: #d1cdc7 !important }
 
 /* Names and identifiers */
-pre.highlight code .n { color: #78dce8 !important }
+pre.highlight code .n { color: #d1cdc7 !important }
 pre.highlight code .na,
 pre.highlight code .nc,
 pre.highlight code .nd,
 pre.highlight code .ne,
-pre.highlight code .nf { color: #a9dc76 !important }
+pre.highlight code .nf { color: #dcd7cf !important }
 pre.highlight code .nb,
-pre.highlight code .no { color: #78dce8 !important }
+pre.highlight code .no { color: #d1cdc7 !important }
 pre.highlight code .ni,
 pre.highlight code .nl,
 pre.highlight code .nn,
-pre.highlight code .nv { color: #f8f8f2 !important }
-pre.highlight code .nt { color: #ff6188 !important }
+pre.highlight code .nv { color: #d1cdc7 !important }
+pre.highlight code .nt { color: #e8a088 !important }
 
-/* Literals - strings */
+/* Strings - soft teal */
 pre.highlight code .s,
 pre.highlight code .sb,
 pre.highlight code .sc,
@@ -46,39 +52,40 @@ pre.highlight code .sh,
 pre.highlight code .si,
 pre.highlight code .sx,
 pre.highlight code .sr,
-pre.highlight code .s1 { color: #ffd866 !important }
+pre.highlight code .s1 { color: #8ec0a6 !important }
 pre.highlight code .se,
-pre.highlight code .ss { color: #ab9df2 !important }
+pre.highlight code .ss { color: #8ec0a6 !important }
 
-/* Numbers */
+/* Numbers - soft lavender */
 pre.highlight code .m,
 pre.highlight code .mf,
 pre.highlight code .mh,
 pre.highlight code .mi,
 pre.highlight code .mo,
-pre.highlight code .il { color: #ab9df2 !important }
+pre.highlight code .il { color: #c4b5d4 !important }
 
-/* Operators and punctuation */
+/* Operators and punctuation - quiet */
 pre.highlight code .o,
-pre.highlight code .ow { color: #ff6188 !important }
-pre.highlight code .p { color: #939293 !important }
+pre.highlight code .ow { color: #9e9a93 !important }
+pre.highlight code .p { color: #8a8680 !important }
 
 /* Other elements */
-pre.highlight code .err { color: #ff6188 !important; background-color: transparent !important }
-pre.highlight code .w { color: #f8f8f2 !important }
-pre.highlight code .gd { color: #ff6188 !important }
+pre.highlight code .err { color: #d1cdc7 !important; background-color: transparent !important }
+pre.highlight code .w { color: #d1cdc7 !important }
+pre.highlight code .gd { color: #d1cdc7 !important; background-color: #3e1f1f !important }
 pre.highlight code .ge { font-style: italic }
-pre.highlight code .gi { color: #a9dc76 !important }
+pre.highlight code .gi { color: #d1cdc7 !important; background-color: #2d3a2a !important }
 pre.highlight code .gs { font-weight: bold }
-pre.highlight code .gu { color: #95917c !important }
+pre.highlight code .gu { color: #6e6a63 !important }
 pre.highlight code .bp,
 pre.highlight code .vc,
 pre.highlight code .vg,
-pre.highlight code .vi { color: #f8f8f2 !important }
+pre.highlight code .vi { color: #d1cdc7 !important }
 
 /* Code block styling */
 pre.highlight {
-  @apply rounded-lg border border-gray-200 bg-gray-900 p-4 overflow-x-auto;
+  @apply rounded-lg bg-[#1a1a1a] p-4 overflow-x-auto;
+  border: none;
 }
 
 /* Ensure proper spacing after code blocks */
@@ -93,22 +100,24 @@ code:not([class*="language-"]):not(pre code) {
 
 /* Plain code blocks without syntax highlighting */
 pre:not(.highlight) {
-  @apply rounded-lg border border-gray-700 bg-gray-900 text-gray-100 p-4 overflow-x-auto;
+  @apply rounded-lg bg-[#1a1a1a] text-[#d1cdc7] p-4 overflow-x-auto;
+  border: none;
 }
 
 pre:not(.highlight) code {
-  @apply text-gray-100 bg-transparent;
+  @apply text-[#d1cdc7] bg-transparent;
 }
 
 /* Fix for text/plain code blocks in prose */
 .prose pre[class*="language-text"],
 .prose pre[class*="language-plain"],
 .prose pre:not([class*="language-"]):not(.highlight) {
-  @apply bg-gray-900 text-gray-100 border-gray-700;
+  @apply bg-[#1a1a1a] text-[#d1cdc7];
+  border: none;
 }
 
 .prose pre[class*="language-text"] code,
 .prose pre[class*="language-plain"] code,
 .prose pre:not([class*="language-"]):not(.highlight) code {
-  @apply text-gray-100;
+  @apply text-[#d1cdc7];
 }

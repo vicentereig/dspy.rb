@@ -2,6 +2,58 @@
 @import "mobile-enhancements.css";
 @import "mobile-navigation.css";
 
+/* ==========================================================================
+   Font Faces
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(/fonts/manrope-variable.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(/fonts/newsreader-variable.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/newsreader-italic-700.woff2) format('woff2');
+}
+
+/* JetBrains Mono for code */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPVmUsaaDhw.woff2') format('woff2');
+}
+
+/* ==========================================================================
+   Design Tokens
+   ========================================================================== */
+
+:root {
+  --color-accent: #f26f4e;
+  --color-link: #4aa885;
+  --color-highlight: #a8e6cf;
+}
+
+::selection {
+  background-color: #a8e6cf;
+  color: #1a1a1a;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,7 +87,7 @@
   }
 
   .prose .anchor-link:hover {
-    @apply text-red-600;
+    @apply text-[#4aa885];
   }
 }
 
@@ -62,6 +114,129 @@
   
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background-color: #d1d5db;
+  }
+}
+
+/* ==========================================================================
+   Blog Post Content Overflow
+   Code blocks, images, and tables bleed beyond the text column
+   ========================================================================== */
+
+/* Code blocks - bleed out with layered shadows */
+.post-content pre.highlight,
+.post-content pre:not(.highlight) {
+  width: calc(100% + 10rem) !important;
+  max-width: calc(100% + 10rem) !important;
+  margin-left: -5rem !important;
+  margin-right: -5rem !important;
+  padding: 2rem !important;
+  border-radius: 8px !important;
+  box-shadow:
+    0 1px 1px hsl(0deg 0% 0% / 0.075),
+    0 2px 2px hsl(0deg 0% 0% / 0.075),
+    0 4px 4px hsl(0deg 0% 0% / 0.075),
+    0 8px 8px hsl(0deg 0% 0% / 0.075),
+    0 16px 16px hsl(0deg 0% 0% / 0.075);
+}
+
+@media (max-width: 768px) {
+  .post-content pre.highlight,
+  .post-content pre:not(.highlight) {
+    width: calc(100% + 2.5rem) !important;
+    max-width: calc(100% + 2.5rem) !important;
+    margin-left: -1.25rem !important;
+    margin-right: -1.25rem !important;
+    padding: 1rem !important;
+  }
+}
+
+/* Images - bleed out beyond text column */
+.post-content img {
+  max-width: calc(100% + 6rem);
+  width: calc(100% + 6rem);
+  margin-left: -3rem;
+  margin-right: -3rem;
+  height: auto;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .post-content img {
+    max-width: calc(100% + 2rem);
+    width: calc(100% + 2rem);
+    margin-left: -1rem;
+  }
+}
+
+/* Tables - bleed out, JetBrains Mono, clean borders */
+.post-content table {
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  width: calc(100% + 6rem);
+  max-width: calc(100% + 6rem);
+  margin-left: -3rem;
+  margin-right: -3rem;
+  border-collapse: collapse;
+}
+
+@media (max-width: 768px) {
+  .post-content table {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    font-size: 0.75rem;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+.post-content thead {
+  border-bottom: 2px solid #1a1a1a;
+}
+
+.post-content th {
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  color: #1a1a1a;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.post-content td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e5e5;
+  color: #1a1a1a;
+  vertical-align: top;
+}
+
+.post-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.post-content td:not(:first-child),
+.post-content th:not(:first-child) {
+  text-align: right;
+}
+
+/* Mermaid diagrams - bleed out */
+.post-content .mermaid {
+  width: calc(100% + 6rem);
+  max-width: calc(100% + 6rem);
+  margin-left: -3rem;
+  margin-right: -3rem;
+}
+
+@media (max-width: 768px) {
+  .post-content .mermaid {
+    width: calc(100% + 2rem);
+    max-width: calc(100% + 2rem);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    overflow-x: auto;
   }
 }
 

@@ -7,10 +7,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'dspy-ruby': '#CC342D',
+        'dspy-coral': '#f26f4e',
+        'dspy-link': '#4aa885',
+        'dspy-highlight': '#a8e6cf',
+        'dspy-muted': '#666',
         'dspy-dark': '#111827',
       },
       fontFamily: {
+        'serif': ['Newsreader', 'Georgia', 'serif'],
+        'sans': ['Manrope', 'system-ui', 'sans-serif'],
         'mono': ['JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'monospace'],
       },
       typography: (theme) => ({

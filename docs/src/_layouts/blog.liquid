@@ -1,120 +1,46 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
 {% render "head" %}
-<body class="h-full">
+<body class="h-full font-sans">
   <div class="bg-white">
     {% render "header" %}
 
-    <article class="relative isolate overflow-hidden bg-white px-6 pt-20 pb-32 lg:px-8">
-  <!-- Background decorative elements -->
-  <div class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.indigo.100),white)] opacity-20"></div>
-  <div class="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 sm:mr-28 lg:mr-0 xl:mr-16 xl:origin-center"></div>
-  
-  <div class="mx-auto max-w-3xl text-base leading-7 text-gray-700">
-    <header>
-      <div class="flex justify-center">
-        <a href="{{ '/blog/' | relative_url }}" class="group relative rounded-full px-4 py-2 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 hover:bg-gray-50 transition-all">
-          <span aria-hidden="true" class="transition-transform group-hover:-translate-x-1">&larr;</span> Back to blog
-        </a>
-      </div>
-      
-      <div class="mt-16 text-center">
-        <div class="flex justify-center">
-          <span class="inline-flex items-center rounded-full bg-dspy-ruby/10 px-3 py-1 text-sm font-medium text-dspy-ruby ring-1 ring-inset ring-dspy-ruby/20">
-            {% if page.category %}{{ page.category }}{% else %}Article{% endif %}
-          </span>
-        </div>
-        <h1 class="mt-6 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-          {{ page.title }}
-        </h1>
-        <p class="mt-6 text-xl leading-8 text-gray-600 max-w-2xl mx-auto">
-          {{ page.description }}
-        </p>
-      </div>
-      
-      <div class="mt-10 flex items-center justify-center gap-x-8">
-        <div class="flex items-center gap-x-4">
-          <div class="h-12 w-12 rounded-full bg-gradient-to-br from-dspy-ruby to-red-700 flex items-center justify-center shadow-lg ring-2 ring-white">
-            <span class="text-sm font-bold text-white">{{ page.author | default: "DSPy" | slice: 0, 1 }}</span>
-          </div>
-          <div class="text-sm leading-6">
-            <p class="font-semibold text-gray-900">
-              {{ page.author | default: "Vicente Reig" }}
-            </p>
-            <p class="text-gray-600">
-              Fractional Engineering Lead •
-              <time datetime="{{ page.date | date: '%Y-%m-%d' }}">
-                {{ page.date | date: "%B %d, %Y" }}
-              </time>
-              {% if page.reading_time %}
-                • {{ page.reading_time }}
-              {% endif %}
-            </p>
-          </div>
-        </div>
-      </div>
+    <article class="relative isolate bg-white px-6 pt-20 pb-32 lg:px-8">
+  <div class="mx-auto max-w-2xl text-base leading-7 text-gray-700">
+    <header class="mb-10">
+      <h1 class="font-serif text-2xl font-medium tracking-tight text-gray-900 sm:text-3xl" style="letter-spacing: -0.02em;">
+        {{ page.title }}
+      </h1>
+      <p class="mt-2 text-base text-gray-500" style="font-family: 'Newsreader', Georgia, serif;">
+        {{ page.date | date: "%B %Y" }} – <a href="/" class="text-gray-500 no-underline hover:text-gray-900 hover:underline" style="text-underline-offset: 3px;">{{ page.author | default: "Vicente Reig Rincón de Arellano" }}</a>
+      </p>
     </header>
 
-    <div class="mt-16 max-w-2xl mx-auto">
-      <div class="prose prose-lg prose-gray max-w-none
-                  prose-headings:font-bold prose-headings:tracking-tight
-                  prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
-                  prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-                  prose-p:text-gray-600 prose-p:leading-relaxed
-                  prose-a:text-dspy-ruby prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
-                  prose-strong:text-gray-900 prose-strong:font-semibold
-                  prose-code:text-dspy-ruby prose-code:bg-red-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-[''] prose-code:after:content-['']
-                  prose-blockquote:border-l-dspy-ruby prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-600
-                  prose-img:rounded-xl prose-img:shadow-lg
-                  [&_img[alt*='concurrent']]:w-[120%] [&_img[alt*='concurrent']]:ml-[-10%] [&_img[alt*='concurrent']]:p-4 [&_img[alt*='concurrent']]:border [&_img[alt*='concurrent']]:border-gray-200 [&_img[alt*='concurrent']]:shadow-xl [&_img[alt*='concurrent']]:bg-white
-                  prose-pre:!p-0 prose-pre:!bg-transparent
-                  [&_pre.highlight]:!bg-gray-900 [&_pre.highlight]:!p-4 [&_pre.highlight]:!overflow-x-auto [&_pre.highlight]:!rounded-lg
-                  [&_pre.highlight_code]:!bg-transparent
-                  [&_pre.highlight_span]:!bg-transparent">
-        {{ content }}
-      </div>
+    <div class="post-content prose prose-lg prose-gray max-w-none
+                prose-headings:font-serif prose-headings:font-medium prose-headings:tracking-tight
+                prose-h2:text-xl prose-h2:mt-12 prose-h2:mb-3
+                prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-2 prose-h3:font-semibold
+                prose-p:text-gray-700 prose-p:leading-relaxed
+                prose-a:text-inherit prose-a:underline prose-a:decoration-dspy-coral/40 hover:prose-a:decoration-dspy-coral
+                prose-strong:text-gray-900 prose-strong:font-semibold
+                prose-code:text-gray-900 prose-code:bg-stone-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-[''] prose-code:after:content-['']
+                prose-blockquote:border-l-dspy-coral prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-600
+                prose-img:rounded-lg
+                prose-pre:!p-0 prose-pre:!bg-transparent prose-pre:!border-0
+                [&_pre.highlight]:!bg-[#1a1a1a] [&_pre.highlight]:!p-8 [&_pre.highlight]:!overflow-x-auto [&_pre.highlight]:!rounded-lg
+                [&_pre.highlight_code]:!bg-transparent
+                [&_pre.highlight_span]:!bg-transparent"
+         style="font-family: 'Newsreader', Georgia, serif; font-size: 1.0625rem; line-height: 1.65;">
+      {{ content }}
     </div>
 
-    <footer class="mt-16">
-      <div class="mx-auto max-w-2xl">
-        <div class="border-t border-gray-200 pt-8">
-          <!-- Newsletter CTA -->
-          <div class="rounded-2xl bg-gray-50 px-6 py-8 sm:px-8 lg:px-12">
-            <div class="mx-auto max-w-2xl text-center">
-              <h2 class="text-2xl font-bold tracking-tight text-gray-900">Stay updated</h2>
-              <p class="mt-2 text-base leading-7 text-gray-600">
-                Get the latest <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer">DSPy.rb</a> tutorials and insights delivered to your inbox.
-              </p>
-              <div class="mt-6 flex justify-center gap-x-4">
-                <a href="https://github.com/vicentereig/dspy.rb/discussions" rel="noopener noreferrer" class="rounded-md bg-dspy-ruby px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-ruby">
-                  Join the discussion
-                </a>
-                <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                  Star on GitHub
-                </a>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Navigation -->
-          <div class="mt-8 flex items-center justify-between">
-            <a href="{{ '/blog/' | relative_url }}" class="flex items-center text-sm font-semibold text-gray-900 hover:text-dspy-ruby">
-              <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-              </svg>
-              Back to blog
-            </a>
-            {% if page.next_post %}
-              <a href="{{ page.next_post.url | relative_url }}" class="flex items-center text-sm font-semibold text-gray-900 hover:text-dspy-ruby">
-                Next: {{ page.next_post.title }}
-                <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </a>
-            {% endif %}
-          </div>
-        </div>
-      </div>
+    <footer class="mt-16 pt-8 border-t border-gray-200 flex justify-between items-center flex-wrap gap-4">
+      <a href="{{ '/blog/' | relative_url }}" class="text-sm text-dspy-coral underline hover:text-gray-900" style="text-underline-offset: 3px; font-family: 'Newsreader', Georgia, serif;">
+        &larr; Back to Writing
+      </a>
+      {% if page.category %}
+      <span class="text-xs text-gray-500 uppercase tracking-wider">{{ page.category }}</span>
+      {% endif %}
     </footer>
   </div>
 </article>
@@ -126,35 +52,35 @@
   <!-- Mermaid diagrams support -->
   <script type="module">
     import mermaid from 'https://unpkg.com/mermaid@10.6.1/dist/mermaid.esm.min.mjs';
-    
+
     document.addEventListener('DOMContentLoaded', function() {
-      mermaid.initialize({ 
+      mermaid.initialize({
         startOnLoad: false,
         theme: 'neutral',
         themeVariables: {
-          primaryColor: '#dc2626',
+          primaryColor: '#f26f4e',
           primaryTextColor: '#1f2937',
-          primaryBorderColor: '#dc2626',
+          primaryBorderColor: '#f26f4e',
           lineColor: '#6b7280',
           secondaryColor: '#f3f4f6',
           tertiaryColor: '#ffffff'
         }
       });
-      
+
       // Find all mermaid code blocks and convert them
       document.querySelectorAll('pre code.language-mermaid').forEach(function(block) {
         const code = block.textContent;
         const pre = block.parentNode;
-        
+
         // Create a new div for the mermaid diagram
         const mermaidDiv = document.createElement('div');
         mermaidDiv.className = 'mermaid';
         mermaidDiv.textContent = code;
-        
+
         // Replace the pre block with the mermaid div
         pre.parentNode.replaceChild(mermaidDiv, pre);
       });
-      
+
       // Render all mermaid diagrams
       mermaid.run();
     });
