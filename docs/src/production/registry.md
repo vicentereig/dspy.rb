@@ -19,16 +19,16 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Registry & Versions
 
-The DSPy.rb registry system provides version management for signature configurations and deployment tracking. It enables versioning of optimization results, simple deployment management, and rollback capabilities.
+The registry records versioned signature configurations and which version an environment has deployed. It can register optimization results, compare recorded scores, promote a version, and roll back the deployment pointer.
 
 ## Overview
 
-The registry system provides:
+The registry records:
 - **Signature Version Management**: Track different versions of signature configurations
 - **Deployment Tracking**: Know which version is currently deployed
 - **Performance History**: Track performance scores across versions
-- **Automatic Integration**: Auto-register optimization results
-- **Simple Rollback**: Revert to previous versions when needed
+- **Optimization Integration**: Register optimization results through `RegistryManager`
+- **Rollback**: Move an environment's deployment pointer to an earlier version
 
 ## Basic Usage
 
@@ -254,7 +254,7 @@ dspy_registry/
 ### Deployment Status
 
 ```ruby
-# Get comprehensive deployment status
+# Get deployment status
 status = manager.get_deployment_status('text_classifier')
 
 puts "Deployed: #{status[:deployed_version][:version]}" if status[:deployed_version]
@@ -348,7 +348,7 @@ registry.register_version(
 
 ### 2. Metadata Standards
 
-Include comprehensive metadata for better tracking:
+Record enough metadata to reproduce the selection decision:
 
 ```ruby
 metadata = {
@@ -395,4 +395,3 @@ For production systems, use conservative deployment:
 manager.integration_config.auto_deploy_threshold = 0.15  # 15% improvement
 manager.integration_config.deployment_strategy = 'conservative'
 ```
-

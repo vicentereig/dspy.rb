@@ -17,7 +17,7 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Custom Metrics
 
-DSPy.rb's evaluation framework allows you to define custom metrics for domain-specific evaluation scenarios. While the framework provides basic built-in metrics, you can create sophisticated evaluation logic tailored to your specific use cases and business requirements.
+A metric turns an example and a prediction into the score an evaluator or optimizer should use. Keep the metric close to the behavior you can inspect: exact fields, bounded numeric scores, or explicit feedback.
 
 ## Overview
 
@@ -25,7 +25,7 @@ Custom metrics in DSPy.rb:
 - **Proc-based Implementation**: Define metrics as Ruby procedures
 - **Domain-specific Logic**: Create evaluation criteria specific to your use case
 - **Flexible Scoring**: Support for boolean, numeric, and composite scoring
-- **Integration**: Work seamlessly with DSPy's evaluation and optimization systems
+- **Integration**: Reuse the same metric in evaluation and optimization
 - **Built-in Evaluators**: Common evaluators like exact match, contains, regex, and similarity
 
 ## Built-in Score Evaluators
@@ -565,4 +565,3 @@ customer_satisfaction_metric = ->(example, prediction) do
   factors.map { |factor, present| present ? weights[factor] : 0 }.sum
 end
 ```
-

@@ -7,21 +7,21 @@ last_modified_at: 2025-07-11 00:00:00 +0000
 ---
 # Advanced Topics
 
-Ready to take your DSPy.rb applications to the next level? This section covers advanced patterns and techniques for building sophisticated LLM systems.
+These guides cover composition, agents, tools, retrieval, Rails integration, rich types, and evaluation. Use them after you can define a signature and run a module.
 
 ## Advanced Guides
 
 ### [DSPy.rb vs LangChain Ruby Comparison](./dspy-vs-langchain/)
-Complete framework comparison with benchmarks, migration guide, and use case recommendations for Ruby developers.
+Compare the two libraries' programming models and migration tradeoffs. Treat the historical benchmarks as context, not universal results.
 
 ### [Stateful Agents](./stateful-agents/)
-Production patterns for building agents that maintain context and state across multiple interactions.
+Keep conversation state in application storage and pass the relevant context into a bounded agent loop.
 
 ### [Custom Toolsets](./custom-toolsets/)
-Build advanced toolsets for specialized agent capabilities like database operations, file handling, and API integrations.
+Group typed database, file, and API operations for use by ReAct agents.
 
 ### [Pipelines](./pipelines/)
-Build complex multi-stage processing pipelines that combine multiple modules for sophisticated workflows.
+Compose modules with ordinary Ruby control flow when the application should determine the step order.
 
 ### [RAG (Retrieval-Augmented Generation)](./rag/)
 Implement retrieval-augmented generation patterns to ground your LLM responses in real data.
@@ -30,22 +30,9 @@ Implement retrieval-augmented generation patterns to ground your LLM responses i
 Work with structured data, nested objects, and rich type hierarchies in your signatures.
 
 ### [Rails Integration](./rails-integration/)
-Integrate DSPy.rb seamlessly with Ruby on Rails applications, including enum handling and service patterns.
+Integrate DSPy.rb with Rails service objects, jobs, caching, enums, and instrumentation.
 
 ### [Custom Metrics](./custom-metrics/)
-Build domain-specific metrics to evaluate and optimize your modules for your unique use cases.
+Define metrics that express acceptable behavior for evaluation and optimization.
 
-## When to Use Advanced Features
-
-Consider these patterns when:
-- Building production systems with multiple processing stages
-- Working with large knowledge bases or documents
-- Handling complex, structured data
-- Optimizing for domain-specific requirements
-
-## Best Practices
-
-1. Start simple and add complexity gradually
-2. Test each component independently
-3. Monitor performance at each stage
-4. Use appropriate error handling and fallbacks
+Choose the smallest execution strategy that fits the task. Use a predictor for one typed call, Ruby control flow for fixed composition, and an agent when the model has a useful choice among tools or actions.

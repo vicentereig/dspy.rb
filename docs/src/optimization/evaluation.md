@@ -1,7 +1,7 @@
 ---
 layout: docs
 name: Evaluation Framework
-description: Systematically test and measure your LLM applications
+description: Evaluate DSPy.rb programs against typed examples and explicit metrics
 breadcrumb:
 - name: Optimization
   url: "/optimization/"
@@ -11,396 +11,151 @@ prev:
   name: Optimization
   url: "/optimization/"
 next:
-  name: Prompt Optimization
+  name: Program Optimization
   url: "/optimization/prompt-optimization/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # Evaluation Framework
 
-DSPy.rb provides a comprehensive evaluation framework for systematically testing and measuring the performance of your LLM applications. It supports both simple and complex evaluation scenarios with built-in and custom metrics.
+`DSPy::Evals` runs a program against `DSPy::Example` objects and applies a metric to each prediction. Evaluation measures the behavior named by that metric; typed output validation alone does not establish correctness.
 
-## Overview
+## Define Examples
 
-The evaluation framework enables:
-- **Systematic Testing**: Evaluate predictors against test datasets
-- **Built-in Metrics**: Common metrics like exact match and containment
-- **Custom Metrics**: Define domain-specific evaluation logic
-- **Batch Processing**: Evaluate multiple examples efficiently
-- **Result Analysis**: Detailed results with per-example scores
-
-## Basic Usage
-
-### Simple Evaluation
+Examples use the same signature as the program:
 
 ```ruby
-# Create an evaluator with a custom metric
-metric = proc do |example, prediction|
-  # Return true if prediction matches expected output
-  prediction.answer == example.expected_values[:answer]
+class Sentiment < DSPy::Signature
+  input do
+    const :text, String
+  end
+
+  output do
+    const :label, String
+  end
 end
 
-evaluator = DSPy::Evals.new(predictor, metric: metric)
-
-# Evaluate on test examples
-result = evaluator.evaluate(
-  test_examples,
-  display_table: true,
-  display_progress: true
-)
-
-puts "Pass Rate: #{(result.pass_rate * 100).round(1)}%"
-puts "Passed: #{result.passed_examples}/#{result.total_examples}"
-```
-
-### Automatic Score Export
-
-Export evaluation scores to Langfuse automatically:
-
-```ruby
-# Enable score export for Langfuse integration
-evaluator = DSPy::Evals.new(
-  predictor,
-  metric: metric,
-  export_scores: true,        # Export scores for each example
-  score_name: 'qa_accuracy'   # Custom score name (default: 'evaluation')
-)
-
-result = evaluator.evaluate(test_examples)
-# Creates individual scores for each example
-# Creates a batch score with overall pass rate at the end
-```
-
-The `export_scores` option:
-- Emits `score.create` events for each evaluated example
-- Creates a batch score with the overall pass rate when evaluation completes
-- Scores automatically attach to the current trace context
-- Works with the `DSPy::Scores::Exporter` for async Langfuse export
-
-### Built-in Metrics
-
-DSPy.rb provides common metrics in the `DSPy::Metrics` module:
-
-```ruby
-# Exact match - prediction must exactly match expected value
-metric = DSPy::Metrics.exact_match(
-  field: :answer,           # Field to compare (default: :answer)
-  case_sensitive: true      # Case-sensitive comparison (default: true)
-)
-evaluator = DSPy::Evals.new(predictor, metric: metric)
-
-# Contains - prediction must contain expected substring
-metric = DSPy::Metrics.contains(
-  field: :answer,           # Field to compare (default: :answer)
-  case_sensitive: false     # Case-insensitive by default
-)
-evaluator = DSPy::Evals.new(predictor, metric: metric)
-
-# Numeric difference - for numeric outputs within tolerance
-metric = DSPy::Metrics.numeric_difference(
-  field: :answer,           # Field to compare (default: :answer)
-  tolerance: 0.01           # Acceptable difference (default: 0.01)
-)
-evaluator = DSPy::Evals.new(predictor, metric: metric)
-
-# Composite AND - all metrics must pass
-metric1 = DSPy::Metrics.exact_match(field: :answer)
-metric2 = DSPy::Metrics.contains(field: :reasoning)
-metric = DSPy::Metrics.composite_and(metric1, metric2)
-evaluator = DSPy::Evals.new(predictor, metric: metric)
-```
-
-## Observability Hooks
-
-`DSPy::Evals` exposes callback hooks so you can plug in logging, telemetry, or Langfuse reporting without editing the evaluator. Callbacks receive a payload describing the current run, and they fire exactly where you register them.
-
-```ruby
-# Log each example before it is scored
-DSPy::Evals.before_example do |payload|
-  example = payload[:example]
-  DSPy.logger.info("Evaluating example #{example.id}") if example.respond_to?(:id)
-end
-
-# Send aggregate metrics to Langfuse when a batch completes
-DSPy::Evals.after_batch do |payload|
-  result = payload[:result]
-  Langfuse.event(
-    name: 'eval.batch',
-    metadata: {
-      total: result.total_examples,
-      passed: result.passed_examples,
-      score: result.score
-    }
+examples = [
+  DSPy::Example.new(
+    signature_class: Sentiment,
+    input: { text: "The release fixed my issue." },
+    expected: { label: "positive" },
+    id: "positive-1"
+  ),
+  DSPy::Example.new(
+    signature_class: Sentiment,
+    input: { text: "The request timed out." },
+    expected: { label: "negative" },
+    id: "negative-1"
   )
+]
+```
+
+Construction validates the input and expected output against the signature. Use `example.input_values` and `example.expected_values` inside metrics and debugging code.
+
+## Define a Metric
+
+A metric receives an example and the program's prediction:
+
+```ruby
+exact_label = lambda do |example, prediction|
+  prediction.label == example.expected_values[:label]
 end
 ```
 
-Callbacks mirror the Python API: use `before_example` / `after_example` for single predictions and `before_batch` / `after_batch` for full evaluations. Because the evaluator manages callback execution, you can interleave telemetry with custom spans or multithreaded runs without wrapping the methods yourself.
+Boolean metrics count passing examples. Numeric metrics contribute to the aggregate score. Keep numeric ranges and thresholds explicit so readers can interpret the result.
 
-## Custom Metrics
+## Run an Evaluation
 
-### Defining Custom Metrics
-
-```ruby
-# Custom metric as a proc
-accuracy_metric = ->(example, prediction) do
-  return false unless prediction && prediction.label
-  prediction.label.downcase == example.expected_label.downcase
-end
-
-evaluator = DSPy::Evals.new(metric: accuracy_metric)
-```
-
-### Complex Custom Metrics
+Pass the program and metric to `DSPy::Evals`, then evaluate the dataset:
 
 ```ruby
-# Multi-factor evaluation
-quality_metric = ->(example, prediction) do
-  return false unless prediction
-  
-  score = 0.0
-  
-  # Check accuracy
-  if prediction.answer == example.expected_answer
-    score += 0.5
-  end
-  
-  # Check completeness
-  if prediction.explanation && prediction.explanation.length > 50
-    score += 0.3
-  end
-  
-  # Check confidence
-  if prediction.confidence && prediction.confidence > 0.8
-    score += 0.2
-  end
-  
-  score >= 0.7  # Pass threshold
-end
+program = DSPy::Predict.new(Sentiment)
+evaluator = DSPy::Evals.new(program, metric: exact_label)
 
-evaluator = DSPy::Evals.new(metric: quality_metric)
-```
+result = evaluator.evaluate(
+  examples,
+  display_progress: true,
+  display_table: false
+)
 
-## Evaluation Results
-
-### Working with Results
-
-```ruby
-result = evaluator.evaluate(examples: test_examples) do |example|
-  predictor.call(text: example.text)
-end
-
-# Access overall metrics
+puts "Passed: #{result.passed_examples}/#{result.total_examples}"
+puts "Pass rate: #{result.pass_rate}"
 puts "Score: #{result.score}"
-puts "Passed: #{result.passed_count}"
-puts "Failed: #{result.failed_count}"
-puts "Total: #{result.total_count}"
+```
 
-# Access individual results
-result.results.each do |individual_result|
-  puts "Example: #{individual_result.example.text}"
-  puts "Passed: #{individual_result.passed}"
-  puts "Score: #{individual_result.score}"
-  
-  if individual_result.error
-    puts "Error: #{individual_result.error}"
-  end
+`BatchEvaluationResult#score` is expressed on a 0-100 scale. `pass_rate` is expressed on a 0-1 scale.
+
+## Inspect Failures
+
+Each `EvaluationResult` contains the example, prediction, trace, metric values, and pass status:
+
+```ruby
+result.results.reject(&:passed).each do |failure|
+  puts "Example: #{failure.example.id}"
+  puts "Input: #{failure.example.input_values.inspect}"
+  puts "Expected: #{failure.example.expected_values.inspect}"
+  puts "Prediction: #{failure.prediction.inspect}"
+  puts "Metrics: #{failure.metrics.inspect}"
 end
 ```
 
-### Batch Results
+Provider or program exceptions are recorded as failed results by the evaluator. Inspect the associated trace and logs for the original exception.
 
-When evaluation completes, you get a `BatchEvaluationResult` with:
-- `score`: Overall score (0.0 to 1.0)
-- `passed_count`: Number of examples that passed
-- `failed_count`: Number of examples that failed  
-- `error_count`: Number of examples that errored
-- `results`: Array of individual `EvaluationResult` objects
+## Use Numeric Scores
 
-## Display Options
-
-### Table Display
+A metric can reward partial behavior:
 
 ```ruby
-# Show results in a formatted table
-result = evaluator.evaluate(
-  examples: test_examples,
-  display_table: true,
-  display_progress: true
-) do |example|
-  predictor.call(input: example.input)
+quality = lambda do |example, prediction|
+  expected = example.expected_values
+
+  score = 0.0
+  score += 0.7 if prediction.answer == expected[:answer]
+  score += 0.3 if prediction.explanation.to_s.length >= 40
+  score
 end
 ```
 
-This displays:
-- Progress updates during evaluation
-- Final summary table with pass/fail counts
-- Overall score
+Do not combine unrelated concerns into one number without recording the components. A single score can hide a regression in the behavior that matters most.
 
-### Custom Display
+## Run in Parallel
 
-```ruby
-# Suppress default display
-result = evaluator.evaluate(
-  examples: test_examples,
-  display_table: false,
-  display_progress: false
-) do |example|
-  predictor.call(input: example.input)
-end
-
-# Custom result formatting
-puts "=" * 50
-puts "Evaluation Complete"
-puts "=" * 50
-puts "Accuracy: #{(result.score * 100).round(1)}%"
-puts "Details:"
-result.results.each_with_index do |r, i|
-  status = r.passed ? "✓" : "✗"
-  puts "  #{i+1}. #{status} #{r.example.text[0..30]}..."
-end
-```
-
-## Error Handling
-
-### Graceful Error Handling
+Set `num_threads` on the evaluator when calls are independent:
 
 ```ruby
-result = evaluator.evaluate(examples: test_examples) do |example|
-  begin
-    predictor.call(input: example.input)
-  rescue => e
-    # Errors are captured in results
-    nil
-  end
-end
-
-# Check for errors
-errors = result.results.select { |r| r.error }
-if errors.any?
-  puts "#{errors.count} examples failed with errors:"
-  errors.each do |r|
-    puts "  - #{r.example.id}: #{r.error}"
-  end
-end
-```
-
-## Multi-Threading
-
-The evaluator supports concurrent evaluation:
-
-```ruby
-# Initialize with thread count
 evaluator = DSPy::Evals.new(
-  metric: :exact_match,
-  num_threads: 4  # Process 4 examples concurrently
-)
-
-# Note: Currently num_threads is accepted but not used in evaluation
-# All examples are processed sequentially
-```
-
-## Integration with Optimizers
-
-### Evaluation in Optimization
-
-```ruby
-# Define evaluation metric for optimization
-metric = proc do |example, prediction|
-  # Custom evaluation logic
-  expected = example.expected_values[:answer].to_s.strip.downcase
-  predicted = prediction.respond_to?(:answer) ? prediction.answer.to_s.strip.downcase : ''
-  !expected.empty? && predicted.include?(expected)
-end
-
-# Create optimizer with metric
-program = DSPy::Predict.new(QASignature)
-optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)
-
-result = optimizer.compile(
   program,
-  trainset: train_examples,
-  valset: dev_examples
+  metric: exact_label,
+  num_threads: 4
 )
 
-# Evaluate optimized program on test set
-evaluator = DSPy::Evals.new(result.optimized_program, metric: metric)
-test_result = evaluator.evaluate(test_examples, display_table: true)
-
-puts "Test accuracy: #{(test_result.pass_rate * 100).round(2)}%"
+result = evaluator.evaluate(examples)
 ```
 
-## Best Practices
+Parallel evaluation increases concurrent provider calls. Keep provider rate limits and the cost of the full dataset in view.
 
-### 1. Choose Appropriate Metrics
+## Evaluate an Optimized Program
+
+Use the same held-out examples and metric for the baseline and optimized program:
 
 ```ruby
-# For classification tasks
-metric = DSPy::Metrics.exact_match(field: :label, case_sensitive: true)
-evaluator = DSPy::Evals.new(predictor, metric: metric)
+baseline = DSPy::Evals.new(program, metric: exact_label).evaluate(test_examples)
+optimized = DSPy::Evals.new(
+  optimization_result.optimized_program,
+  metric: exact_label
+).evaluate(test_examples)
 
-# For text generation with flexibility
-metric = DSPy::Metrics.contains(field: :answer, case_sensitive: false)
-evaluator = DSPy::Evals.new(predictor, metric: metric)
-
-# For custom domain logic
-metric = proc do |example, prediction|
-  # Your domain-specific validation logic
-  prediction.meets_requirements?(example.requirements)
-end
-evaluator = DSPy::Evals.new(predictor, metric: metric)
+puts "Baseline: #{baseline.score}"
+puts "Optimized: #{optimized.score}"
 ```
 
-### 2. Handle Edge Cases
+Do not use the optimizer's validation set for this final comparison. Candidate selection has already adapted to that data.
 
-```ruby
-robust_metric = ->(example, prediction) do
-  # Handle nil predictions
-  return false unless prediction
-  
-  # Handle missing fields
-  return false unless prediction.respond_to?(:answer)
-  
-  # Normalize before comparison
-  predicted = prediction.answer.to_s.strip.downcase
-  expected = example.expected.to_s.strip.downcase
-  
-  predicted == expected
-end
-```
+## Metric Design
 
-### 3. Meaningful Error Messages
-
-```ruby
-result = evaluator.evaluate(examples: examples) do |example|
-  prediction = predictor.call(input: example.input)
-  
-  # Add context for debugging
-  if prediction.nil?
-    raise "Predictor returned nil for example: #{example.id}"
-  end
-  
-  prediction
-end
-```
-
-### 4. Batch Size Considerations
-
-For large datasets, process in batches:
-
-```ruby
-all_examples = load_large_dataset()
-batch_size = 100
-results = []
-
-all_examples.each_slice(batch_size) do |batch|
-  result = evaluator.evaluate(examples: batch) do |example|
-    predictor.call(input: example.input)
-  end
-  results << result
-end
-
-# Aggregate results
-total_passed = results.sum(&:passed_count)
-total_count = results.sum(&:total_count)
-overall_score = total_passed.to_f / total_count
-```
+- Begin with deterministic checks for fields, formats, and known answers.
+- Use an LM judge only for behavior that deterministic code cannot express.
+- Calibrate judge prompts and thresholds against human-reviewed examples.
+- Record separate metrics for correctness, safety, cost, and latency when they lead to different decisions.
+- Include failures and boundary cases, not only representative happy paths.
+- Version the examples and metric with the program artifact they selected.

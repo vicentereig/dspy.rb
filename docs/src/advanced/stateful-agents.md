@@ -18,7 +18,7 @@ date: 2025-07-11 00:00:00 +0000
 ---
 # Stateful Agents
 
-Stateful agents maintain context and information across multiple interactions, enabling them to provide responses that take into account previous conversations and user preferences. This guide covers production patterns for building robust stateful agents with DSPy.rb.
+`DSPy::ReAct` runs a bounded tool-selection loop; it does not persist conversation state between calls. The application must load relevant history and preferences, pass them into the agent, and store approved changes.
 
 ## Core Concepts
 
@@ -718,4 +718,4 @@ def use_stored_preference(user_id)
 end
 ```
 
-Stateful agents require careful design and implementation, but they enable much more sophisticated and personalized user experiences. By following these patterns and best practices, you can build robust agents that maintain context effectively while handling edge cases gracefully.
+Keep session state separate from durable memory. Bound the context passed to each call, validate stored values before reuse, and enforce permissions in the tools or services that perform side effects.

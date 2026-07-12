@@ -1,43 +1,32 @@
 ---
 layout: docs
 title: Optimization
-description: Learn how to optimize your DSPy.rb applications for better performance
+description: Evaluate DSPy.rb programs and compile instructions and examples against a metric
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-07-23 00:00:00 +0000
 ---
 # Optimization
 
-One of DSPy.rb's most powerful features is automatic optimization. Instead of manually tweaking prompts, you can use optimizers to systematically improve your modules.
+Optimizers search over supported program parameters, including instructions and few-shot examples. You supply examples, a metric, and a budget; the optimizer returns the best candidate it found.
 
-## Why Optimize?
-
-Traditional prompt engineering is:
-- Time-consuming and manual
-- Inconsistent across different inputs
-- Hard to maintain as requirements change
-
-DSPy.rb optimization is:
-- Automatic and data-driven
-- Consistent and reproducible
-- Adapts to new requirements
+Optimization does not define quality for you. Build and inspect the metric first, preserve a held-out test set, and record the model and dataset used for each run.
 
 ## Optimization Guides
 
-### [Prompt Optimization](./prompt-optimization/)
-Learn the fundamentals of how DSPy.rb optimizes prompts automatically using examples and metrics.
+### [Program Optimization](./prompt-optimization/)
+Revise instructions and examples immutably, measure a baseline, and compile a program against a metric.
 
 ### [MIPROv2](./miprov2/)
-State-of-the-art optimization with MIPROv2 featuring Bayesian optimization with Gaussian Processes, multiple optimization strategies, and production-grade performance.
+Use Bayesian search to select instructions and demonstrations for single- or multi-predictor programs.
 
 ### [Evaluation](./evaluation/)
 Build metrics and evaluation frameworks to measure and improve your modules systematically.
 
 ### [Benchmarking Raw Prompts](./benchmarking-raw-prompts/)
-Compare monolithic prompts against modular DSPy implementations to measure improvements in token usage, performance, and cost.
+Compare an existing prompt with a DSPy module under the same models, examples, and measurements.
 
 ## Getting Started
 
-We recommend starting with:
-1. Understanding [Prompt Optimization](./prompt-optimization/) concepts
-2. Building proper [Evaluation](./evaluation/) metrics
-3. Graduating to [MIPROv2](./miprov2/) for production use
+1. Define and test an [evaluation metric](./evaluation/).
+2. Read the [program optimization](./prompt-optimization/) guide.
+3. Choose [MIPROv2](./miprov2/) or [GEPA](./gepa/) based on the feedback your metric can provide.

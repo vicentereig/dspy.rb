@@ -18,11 +18,11 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Storage System
 
-DSPy.rb provides a storage system for persisting optimization results and program states. This enables saving and reloading optimized predictors, tracking optimization history, and managing multiple versions of your programs.
+The storage API persists optimization results and serialized program state. Use it to reload an optimized program and retain the metadata needed to identify the run that produced it.
 
 ## Overview
 
-The storage system supports:
+The storage system provides:
 - **Program Storage**: Persist optimized predictors and their configurations
 - **Optimization History**: Track optimization runs and their results
 - **Program Discovery**: Find programs by various criteria
@@ -333,4 +333,3 @@ if iteration % 10 == 0
   )
 end
 ```
-

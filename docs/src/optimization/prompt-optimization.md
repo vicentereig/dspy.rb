@@ -1,12 +1,12 @@
 ---
 layout: docs
-title: "Automatic Prompt Optimization in Ruby | MIPROv2 & GEPA"
-name: Prompt Optimization
-description: "Stop guessing at prompts. DSPy.rb optimizes them automatically using MIPROv2 and GEPA algorithms. Define your metric, provide examples, and let the optimizer find the best instructions. Works with OpenAI, Anthropic, and local models."
+title: "Program Optimization in Ruby | MIPROv2 & GEPA"
+name: Program Optimization
+description: "Evaluate DSPy.rb programs, revise instructions and examples immutably, and compile candidates with MIPROv2 or GEPA."
 breadcrumb:
 - name: Optimization
   url: "/optimization/"
-- name: Prompt Optimization
+- name: Program Optimization
   url: "/optimization/prompt-optimization/"
 prev:
   name: Evaluation Framework
@@ -16,497 +16,136 @@ next:
   url: "/optimization/miprov2/"
 date: 2025-07-10 00:00:00 +0000
 ---
-# Prompt Optimization
+# Program Optimization
 
-DSPy.rb treats prompts as first-class objects that can be manipulated, analyzed, and optimized programmatically. Rather than hand-crafting prompt strings, you work with structured prompt objects that contain instructions, few-shot examples, and schema information.
+DSPy.rb applications define tasks with signatures and execute them with modules. Instructions and few-shot examples remain part of the program, but you do not need to maintain provider-specific prompt templates. Adapters render the signature, examples, and output constraints for each provider.
 
-## Overview
+Optimization starts with a dataset and a metric. The optimizer proposes program variants, evaluates them, and returns the best candidate it found within the configured budget. A higher validation score is evidence about that dataset and metric, not a general guarantee.
 
-DSPy.rb provides:
-- **Prompt Objects**: Structured representation of prompts with instruction and examples
-- **Programmatic Manipulation**: Methods to modify prompts systematically
-- **Integration with Optimization**: Automatic prompt improvement through MIPROv2 (with Bayesian optimization)
-- **Schema Awareness**: Prompts understand input/output types from signatures
+## Inspect a Program
 
-## Prompt Objects
-
-### Basic Prompt Structure
+`DSPy::Predict` exposes its immutable `DSPy::Prompt`:
 
 ```ruby
-# Prompts are created automatically from signatures
 class ClassifyText < DSPy::Signature
   description "Classify the sentiment of the given text"
-  
+
   input do
     const :text, String
   end
-  
+
   output do
     const :sentiment, String
     const :confidence, Float
   end
 end
 
-# Create a predictor to access its prompt
 predictor = DSPy::Predict.new(ClassifyText)
 prompt = predictor.prompt
 
-puts "Instruction: #{prompt.instruction}"
-puts "Examples: #{prompt.few_shot_examples.size}"
-puts "Schema: #{prompt.schema}"
+puts prompt.instruction
+puts prompt.few_shot_examples.size
 ```
 
-### Prompt Components
+The prompt stores the instruction and examples. The signature remains the source of the input and output contract.
+
+## Revise Instructions and Examples
+
+Use module methods to create a revised program. The original remains unchanged.
 
 ```ruby
-# A DSPy::Prompt contains:
-prompt = predictor.prompt
-
-# Core instruction
-prompt.instruction
-# => "Classify the sentiment of the given text"
-
-# Few-shot examples
-prompt.few_shot_examples
-# => [#<DSPy::FewShotExample...>, ...]
-
-# Input/output schema from signature
-prompt.schema
-# => { input: { text: String }, output: { sentiment: String, confidence: Float } }
-
-# Formatted messages for LLM
-prompt.to_messages
-# => [{ role: "user", content: "..." }, ...]
-```
-
-## Manipulating Prompts
-
-### Modifying Instructions
-
-```ruby
-# Create a new prompt with different instruction
-new_prompt = prompt.with_instruction(
-  "Analyze the emotional tone of the text and classify it as positive, negative, or neutral"
+revised = predictor.with_instruction(
+  "Classify the text as positive, negative, or neutral."
 )
 
-# Instructions can be refined iteratively
-refined_prompt = new_prompt.with_instruction(
-  "Carefully analyze the sentiment expressed in the text. Consider context, tone, and emotional indicators to classify as positive, negative, or neutral."
-)
-```
-
-### Working with Few-Shot Examples
-
-```ruby
-# Create few-shot examples
 examples = [
-  DSPy::FewShotExample.new(
-    input: { text: "I love this product!" },
-    output: { sentiment: "positive", confidence: 0.9 }
+  DSPy::Example.new(
+    signature_class: ClassifyText,
+    input: { text: "I love this product." },
+    expected: { sentiment: "positive", confidence: 0.9 }
   ),
-  DSPy::FewShotExample.new(
-    input: { text: "This is terrible quality." },
-    output: { sentiment: "negative", confidence: 0.85 }
-  ),
-  DSPy::FewShotExample.new(
-    input: { text: "It's an okay product." },
-    output: { sentiment: "neutral", confidence: 0.7 }
+  DSPy::Example.new(
+    signature_class: ClassifyText,
+    input: { text: "The build failed again." },
+    expected: { sentiment: "negative", confidence: 0.9 }
   )
 ]
 
-# Create new prompt with examples
-enhanced_prompt = prompt.with_examples(examples)
-
-# Add more examples
-additional_examples = [
-  DSPy::FewShotExample.new(
-    input: { text: "Outstanding service!" },
-    output: { sentiment: "positive", confidence: 0.95 }
-  )
-]
-
-final_prompt = enhanced_prompt.with_examples(
-  enhanced_prompt.few_shot_examples + additional_examples
-)
+revised = revised.with_examples(examples)
 ```
 
-### Combining Modifications
+`with_instruction` and `with_examples` return new module instances. There is no `prompt=` writer on `DSPy::Predict`.
+
+## Measure a Baseline
+
+Evaluate the same examples and metric before and after a change:
 
 ```ruby
-# Chain modifications
-optimized_prompt = prompt
-  .with_instruction("Perform sentiment analysis on the given text")
-  .with_examples(training_examples)
+metric = lambda do |example, prediction|
+  prediction.sentiment == example.expected_values[:sentiment]
+end
 
-# Create predictor with custom prompt
-custom_predictor = DSPy::Predict.new(ClassifyText)
-custom_predictor.prompt = optimized_prompt
+baseline = DSPy::Evals.new(predictor, metric: metric).evaluate(validation_examples)
+candidate = DSPy::Evals.new(revised, metric: metric).evaluate(validation_examples)
+
+puts "Baseline: #{baseline.score}"
+puts "Candidate: #{candidate.score}"
 ```
 
-## Automatic Prompt Optimization
+Keep a separate test set for the final comparison. Reusing the validation set for the final claim rewards candidates that happened to fit that set.
 
-### Using MIPROv2 for Prompt Optimization
+## Compile with MIPROv2
 
-> ⚠️ **Install note** — MIPROv2 lives in the optional `dspy-miprov2` gem. Add `gem 'dspy-miprov2'` next to `gem 'dspy'` (or set `DSPY_WITH_MIPROV2=1` when developing inside this repo) before requiring the teleprompter.
+MIPROv2 lives in the optional `dspy-miprov2` gem:
 
 ```ruby
-# Create program to optimize
-program = DSPy::Predict.new(ClassifyText)
-
-# Define evaluation metric
-metric = proc do |example, prediction|
-  prediction.sentiment.downcase == example.expected_sentiment.downcase
-end
-
-# MIPROv2 automatically optimizes prompts using Bayesian optimization
-optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
-
-result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
-  evaluator = DSPy::Evals.new(metric: :exact_match)
-  evaluator.evaluate(examples: val_examples) do |example|
-    predictor.call(text: example.text)
-  end.score
-end
-
-# Access the optimized prompt
-optimized_predictor = result.optimized_program
-optimized_prompt = optimized_predictor.prompt
-
-puts "Original instruction: #{predictor.prompt.instruction}"
-puts "Optimized instruction: #{optimized_prompt.instruction}"
-puts "Few-shot examples: #{optimized_prompt.few_shot_examples.size}"
+gem "dspy"
+gem "dspy-miprov2"
 ```
 
-## Prompt Analysis
-
-### Analyzing Prompt Performance
+Compile the program against training and validation examples:
 
 ```ruby
-# Test different prompt variations
-instructions = [
-  "Classify the sentiment of this text",
-  "Analyze the emotional tone and determine if it's positive, negative, or neutral",
-  "Evaluate the sentiment expressed in the given text"
-]
-
-results = instructions.map do |instruction|
-  test_prompt = prompt.with_instruction(instruction)
-  test_predictor = DSPy::Predict.new(ClassifyText)
-  test_predictor.prompt = test_prompt
-  
-  # Evaluate performance
-  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
-  result = evaluator.evaluate(test_examples)
-  score = result.pass_rate
-  
-  { instruction: instruction, score: score }
-end
-
-# Find best instruction
-best = results.max_by { |r| r[:score] }
-puts "Best instruction: #{best[:instruction]}"
-puts "Score: #{best[:score]}"
-```
-
-### Few-Shot Example Impact
-
-```ruby
-# Test impact of different numbers of examples
-base_prompt = prompt.with_instruction("Classify sentiment as positive, negative, or neutral")
-
-[0, 1, 3, 5, 8].each do |num_examples|
-  test_examples_subset = training_examples.sample(num_examples)
-  test_prompt = base_prompt.with_examples(test_examples_subset)
-  
-  test_predictor = DSPy::Predict.new(ClassifyText)
-  test_predictor.prompt = test_prompt
-  
-  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
-  result = evaluator.evaluate(validation_examples)
-  score = result.pass_rate
-  
-  puts "#{num_examples} examples: #{score}"
-end
-```
-
-## Prompt Generation
-
-### Instruction Variations
-
-```ruby
-# Generate instruction variations for testing
-base_instruction = "Classify the sentiment of the given text"
-
-variations = [
-  base_instruction,
-  "Determine whether the text expresses positive, negative, or neutral sentiment",
-  "Analyze the emotional tone of the text and categorize it",
-  "Evaluate the sentiment conveyed in the provided text",
-  "Assess the emotional polarity of the given text"
-]
-
-# Test each variation
-best_instruction = nil
-best_score = 0.0
-
-variations.each do |instruction|
-  test_prompt = prompt.with_instruction(instruction)
-  test_predictor = DSPy::Predict.new(ClassifyText)
-  test_predictor.prompt = test_prompt
-  
-  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
-  result = evaluator.evaluate(test_examples)
-  score = result.pass_rate
-  
-  if score > best_score
-    best_score = score
-    best_instruction = instruction
-  end
-end
-
-puts "Best instruction: #{best_instruction}"
-puts "Score: #{best_score}"
-```
-
-### Example Selection Strategies
-
-```ruby
-# Random selection
-random_examples = training_examples.sample(5)
-
-# Diverse selection (manual)
-diverse_examples = [
-  training_examples.find { |e| e.expected_sentiment == "positive" },
-  training_examples.find { |e| e.expected_sentiment == "negative" },
-  training_examples.find { |e| e.expected_sentiment == "neutral" },
-  training_examples.find { |e| e.text.length > 100 },  # Long text
-  training_examples.find { |e| e.text.length < 50 }    # Short text
-].compact
-
-# Compare strategies
-strategies = {
-  random: random_examples,
-  diverse: diverse_examples
-}
-
-strategies.each do |strategy, examples|
-  test_prompt = prompt.with_examples(examples)
-  test_predictor = DSPy::Predict.new(ClassifyText)
-  test_predictor.prompt = test_prompt
-  
-  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
-  result = evaluator.evaluate(validation_examples)
-  score = result.pass_rate
-  
-  puts "#{strategy} selection: #{score}"
-end
-```
-
-## Advanced Prompt Techniques
-
-### Progressive Prompting
-
-```ruby
-# Start simple, add complexity progressively
-simple_prompt = prompt.with_instruction("Classify sentiment")
-
-# Add details
-detailed_prompt = simple_prompt.with_instruction(
-  "Classify the sentiment of the text as positive, negative, or neutral. Consider the overall emotional tone and context."
-)
-
-# Add examples
-enhanced_prompt = detailed_prompt.with_examples(training_examples.sample(3))
-
-# Add confidence requirement
-final_prompt = enhanced_prompt.with_instruction(
-  "Classify the sentiment of the text as positive, negative, or neutral. Provide a confidence score between 0 and 1. Consider context, tone, and emotional indicators."
-)
-
-# Test progression
-[simple_prompt, detailed_prompt, enhanced_prompt, final_prompt].each_with_index do |p, i|
-  test_predictor = DSPy::Predict.new(ClassifyText)
-  test_predictor.prompt = p
-  
-  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
-  result = evaluator.evaluate(test_examples)
-  score = result.pass_rate
-  
-  puts "Step #{i + 1}: #{score}"
-end
-```
-
-### Context-Aware Prompting
-
-```ruby
-# Adapt prompts based on input characteristics
-def create_adaptive_prompt(example)
-  base_instruction = "Classify the sentiment of the text"
-  
-  # Adapt based on text length
-  if example.text.length > 200
-    instruction = "#{base_instruction}. This is a longer text, so consider the overall sentiment rather than individual phrases."
-  elsif example.text.length < 50
-    instruction = "#{base_instruction}. This is a short text, so focus on the key emotional indicators."
-  else
-    instruction = base_instruction
-  end
-  
-  prompt.with_instruction(instruction)
-end
-
-# Use adaptive prompting
-adaptive_scores = []
-test_examples.each do |example|
-  adaptive_prompt = create_adaptive_prompt(example)
-  test_predictor = DSPy::Predict.new(ClassifyText)
-  test_predictor.prompt = adaptive_prompt
-  
-  prediction = test_predictor.call(text: example.text)
-  correct = prediction.sentiment == example.expected_sentiment
-  adaptive_scores << (correct ? 1.0 : 0.0)
-end
-
-adaptive_accuracy = adaptive_scores.sum / adaptive_scores.size
-puts "Adaptive prompting accuracy: #{adaptive_accuracy}"
-```
-
-## Integration with Storage
-
-### Saving Prompt Configurations
-
-```ruby
-# Save successful prompt configurations
-if final_score > target_score
-  prompt_config = {
-    instruction: optimized_prompt.instruction,
-    few_shot_examples: optimized_prompt.few_shot_examples.map(&:to_h),
-    performance: final_score
-  }
-  
-  storage_manager = DSPy::Storage::StorageManager.new
-  saved_program = storage_manager.save_optimization_result(
-    result,
-    metadata: {
-      prompt_config: prompt_config,
-      optimization_method: 'manual_prompt_tuning'
-    }
-  )
-  
-  puts "Saved prompt configuration with ID: #{saved_program.program_id}"
-end
-```
-
-### Loading and Reusing Prompts
-
-```ruby
-# Load previous optimization results
-storage_manager = DSPy::Storage::StorageManager.new
-previous_programs = storage_manager.find_programs(
-  signature_class: 'ClassifyText'
-)
-
-if previous_programs.any?
-  best_program = previous_programs.max_by { |p| p[:best_score] }
-  saved_program = storage_manager.storage.load_program(best_program[:program_id])
-  
-  if saved_program.metadata[:prompt_config]
-    # Recreate the optimized prompt
-    config = saved_program.metadata[:prompt_config]
-    
-    reused_prompt = prompt
-      .with_instruction(config[:instruction])
-      .with_examples(config[:few_shot_examples].map { |ex| DSPy::FewShotExample.from_h(ex) })
-    
-    puts "Reusing optimized prompt with score: #{config[:performance]}"
-  end
-end
-```
-
-## Best Practices
-
-### 1. Systematic Testing
-
-```ruby
-# Test prompts systematically
-prompt_variants = [
-  { instruction: "Base instruction", examples: [] },
-  { instruction: "Detailed instruction", examples: [] },
-  { instruction: "Base instruction", examples: training_examples.sample(3) },
-  { instruction: "Detailed instruction", examples: training_examples.sample(3) }
-]
-
-results = prompt_variants.map do |variant|
-  test_prompt = prompt
-    .with_instruction(variant[:instruction])
-    .with_examples(variant[:examples])
-  
-  test_predictor = DSPy::Predict.new(ClassifyText)
-  test_predictor.prompt = test_prompt
-  
-  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
-  result = evaluator.evaluate(test_examples)
-  score = result.pass_rate
-  
-  variant.merge(score: score)
-end
-
-results.sort_by { |r| -r[:score] }.each do |result|
-  puts "#{result[:score]}: #{result[:instruction]} (#{result[:examples].size} examples)"
-end
-```
-
-### 2. Incremental Improvement
-
-```ruby
-# Improve prompts incrementally
-current_prompt = prompt
-current_score = baseline_score
-
-improvements = [
-  -> (p) { p.with_instruction("Improved instruction") },
-  -> (p) { p.with_examples(training_examples.sample(2)) },
-  -> (p) { p.with_examples(p.few_shot_examples + training_examples.sample(1)) }
-]
-
-improvements.each_with_index do |improvement, i|
-  candidate_prompt = improvement.call(current_prompt)
-  
-  test_predictor = DSPy::Predict.new(ClassifyText)
-  test_predictor.prompt = candidate_prompt
-  
-  evaluator = DSPy::Evals.new(test_predictor, metric: :exact_match)
-  result = evaluator.evaluate(test_examples)
-  score = result.pass_rate
-  
-  if score > current_score
-    current_prompt = candidate_prompt
-    current_score = score
-    puts "Improvement #{i + 1}: #{score}"
-  else
-    puts "No improvement from change #{i + 1}"
-  end
-end
-```
-
-### 3. Use Optimization Algorithms
-
-```ruby
-# Let MIPROv2 handle prompt optimization using medium mode
-program = DSPy::Predict.new(ClassifyText)
-metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
-
 optimizer = DSPy::Teleprompt::MIPROv2::AutoMode.medium(metric: metric)
 
-result = optimizer.compile(program, trainset: training_examples, valset: validation_examples)
-  evaluator = DSPy::Evals.new(metric: :exact_match)
-  evaluator.evaluate(examples: val_examples) do |example|
-    predictor.call(text: example.text)
-  end.score
-end
+result = optimizer.compile(
+  predictor,
+  trainset: training_examples,
+  valset: validation_examples
+)
 
-# Use the automatically optimized prompt
-optimized_prompt = result.optimized_program.prompt
-puts "Automatically optimized instruction: #{optimized_prompt.instruction}"
-puts "Automatically selected examples: #{optimized_prompt.few_shot_examples.size}"
+optimized_program = result.optimized_program
+puts optimized_program.prompt.instruction
+puts result.best_score_value
 ```
+
+MIPROv2 searches over instructions and demonstrations. Its API returns an `OptimizationResult`; deploy or serialize `result.optimized_program`, not the optimizer itself.
+
+See [MIPROv2](/optimization/miprov2/) for budgets, presets, and multi-predictor programs.
+
+## Compile with GEPA
+
+GEPA uses scalar scores and textual feedback to propose instruction changes. It lives in the optional `dspy-gepa` gem.
+
+Use GEPA when your metric can explain a failure, not merely mark it wrong. The reflection model receives that feedback and uses it to propose the next candidate.
+
+See [GEPA](/optimization/gepa/) for its metric contract, reflection model, and evaluation budget.
+
+## Store the Result
+
+Optimized programs can be serialized directly:
+
+```ruby
+DSPy::Serializer.save(optimized_program, "sentiment-program.json")
+loaded_program = DSPy::Serializer.load("sentiment-program.json")
+```
+
+Record the dataset version, metric version, model, optimizer configuration, and validation score beside the artifact. Those details explain what the optimized program was selected to do.
+
+## Operational Limits
+
+- Optimization spends LM calls. Set a budget before starting a run.
+- A metric defines what the search rewards. Test the metric against examples a human has reviewed.
+- Validation gains may not survive model, provider, or data changes.
+- Optimizers revise supported textual parameters and demonstrations. They do not choose the product objective or make unsafe tools safe.
+- Re-run evaluation before promoting a stored program into a changed environment.
