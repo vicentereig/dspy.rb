@@ -1,7 +1,7 @@
 ---
 layout: blog
-title: "Program Persistence and Serialization: Save Your Optimized DSPy Programs"
-description: "DSPy.rb v0.20.0 introduces comprehensive program serialization and storage capabilities, allowing you to save, load, and share optimized DSPy programs with full state preservation."
+title: "Saving Optimized DSPy.rb Programs"
+description: "Use Module#save or ProgramStorage to persist serializable program state and optimization metadata."
 date: 2025-08-26
 author: "Vicente Reig"
 category: "Features"
@@ -10,462 +10,126 @@ canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/program-persi
 image: /images/og/program-persistence-and-serialization.png
 ---
 
-DSPy.rb v0.20.0 introduces a powerful new capability: complete program persistence and serialization. Thanks to Stefan Froelich's excellent work, you can now save optimized DSPy programs to disk, reload them later, and share them across environments with full state preservation.
+An optimizer can spend minutes, provider tokens, and a fair amount of patience finding better instructions and demonstrations. DSPy.rb v0.20.0 added storage primitives so applications do not have to discard that work.
 
-## The Problem: Optimization Investment
+There are two APIs. They solve different problems.
 
-DSPy optimization can take significant time and computational resources:
-- **MIPROv2 optimization** might run for hours on complex tasks
-- **Few-shot examples** are carefully curated and valuable
-- **Custom instructions** represent domain expertise
-- **Performance metrics** provide valuable insights
+## Save Module State to JSON
 
-Previously, these optimization results existed only in memory. If your process crashed or you needed to deploy to production, you'd lose all that valuable work.
-
-## Introducing Program Storage
-
-DSPy.rb now provides a comprehensive storage system that preserves:
-- **Optimized program state** - Instructions, examples, and configuration
-- **Performance metrics** - Scores, optimization history, and metadata  
-- **Version information** - DSPy version, Ruby version, and timestamps
-- **Search history** - Complete audit trail of optimization runs
-
-## Basic Program Serialization
-
-Every DSPy module now supports serialization through the `from_h` method:
+Every `DSPy::Module` has `save(path)`. It writes the module's `to_h` result as formatted JSON and creates the parent directory when needed.
 
 ```ruby
-require 'dspy'
-
-# Define a signature
-class ProductReview < DSPy::Signature
-  description "Analyze product reviews for sentiment and key insights"
-  
-  input do
-    const :review_text, String
-    const :product_category, String
-  end
-  
-  output do
-    const :sentiment, String
-    const :key_points, T::Array[String]
-    const :recommendation, String
-    const :confidence, Float
-  end
-end
-
-# Create and optimize a program
-original_program = DSPy::Predict.new(ProductReview)
-  .with_instruction("Focus on specific product features and user experience")
-  .with_examples([
-    DSPy::FewShotExample.new(
-      input: {
-        review_text: "This laptop is incredibly fast and the battery lasts all day!",
-        product_category: "Electronics"
-      },
-      output: {
-        sentiment: "positive",
-        key_points: ["fast performance", "excellent battery life"],
-        recommendation: "recommended",
-        confidence: 0.95
-      }
-    )
-  ])
-
-# Serialize the program
-program_data = {
-  class_name: original_program.class.name,
-  state: {
-    signature_class: ProductReview.name,
-    instruction: original_program.prompt.instruction,
-    few_shot_examples: original_program.few_shot_examples
-  }
-}
-
-# Save to JSON file
-File.write('product_review_program.json', JSON.pretty_generate(program_data))
-
-# Later, deserialize the program
-loaded_data = JSON.parse(File.read('product_review_program.json'), symbolize_names: true)
-restored_program = DSPy::Predict.from_h(loaded_data)
-
-# The restored program has identical behavior
-puts restored_program.prompt.instruction
-# => "Focus on specific product features and user experience"
-
-puts restored_program.few_shot_examples.size
-# => 1
+program.save("artifacts/support_classifier.json")
 ```
 
-## Advanced Storage with ProgramStorage
-
-For production use, DSPy.rb provides a comprehensive storage system:
+The base implementation only records the class name and an empty state:
 
 ```ruby
-require 'dspy/storage/program_storage'
+{
+  class_name: "SupportClassifier",
+  state: {}
+}
+```
 
-# Initialize storage (creates directory structure)
+Useful persistence therefore depends on the module. Built-in modules can override `to_h`; custom modules should serialize the state required to reproduce their behavior.
+
+`Module#save` does not provide a corresponding universal `Module.load`. Ruby cannot safely reconstruct an arbitrary object graph from a class name. Treat the file as a state artifact and implement an explicit loader for your module when you need one.
+
+## Store Optimization Results
+
+`DSPy::Storage::ProgramStorage` keeps program state, optimization metadata, and a history index:
+
+```ruby
+require "dspy/storage/program_storage"
+
 storage = DSPy::Storage::ProgramStorage.new(
-  storage_path: "./my_optimized_programs"
+  storage_path: "./dspy_storage"
 )
 
-# Create and optimize a program
-program = DSPy::ChainOfThought.new(ProductReview)
-  .with_instruction("Analyze reviews with step-by-step reasoning")
-
-# Simulate optimization results (normally from MIPROv2, etc.)
-optimization_result = {
-  best_score_value: 0.92,
-  best_score_name: 'f1_score',
-  scores: { f1_score: 0.92, precision: 0.89, recall: 0.95 },
-  history: { total_trials: 25, best_trial: 18 },
-  metadata: { optimizer: 'MIPROv2', duration_seconds: 1800 }
-}
-
-# Save the optimized program
-saved_program = storage.save_program(
-  program,
+saved = storage.save_program(
+  optimized_program,
   optimization_result,
   metadata: {
-    task: "product_review_analysis",
-    dataset: "electronics_reviews_2024",
-    author: "data_team"
+    dataset: "support-v2",
+    git_sha: ENV["GIT_SHA"]
   }
 )
 
-puts "Saved program: #{saved_program.program_id}"
-puts "Best score: #{saved_program.optimization_result[:best_score_value]}"
+puts saved.program_id
 ```
 
-## Loading and Using Saved Programs
-
-Load programs by ID for immediate use:
+The storage directory contains one JSON file per program under `programs/` and a `history.json` index. `list_programs` and `get_history` read that index.
 
 ```ruby
-# Load a previously saved program
-loaded_program = storage.load_program(saved_program.program_id)
-
-if loaded_program
-  # Access the restored program
-  restored = loaded_program.program
-  
-  # Use immediately
-  result = restored.forward(
-    review_text: "The delivery was fast but the product quality is poor",
-    product_category: "Electronics"
-  )
-  
-  puts "Sentiment: #{result.sentiment}"
-  puts "Key points: #{result.key_points}"
-  puts "Reasoning: #{result.reasoning}"  # Available with ChainOfThought
-  
-  # Check optimization metrics
-  puts "This program achieved #{loaded_program.optimization_result[:best_score_value]} F1 score"
-  puts "Optimized with #{loaded_program.optimization_result[:metadata][:optimizer]}"
-else
-  puts "Program not found"
+storage.list_programs.each do |entry|
+  puts [entry[:program_id], entry[:best_score], entry[:saved_at]].join("\t")
 end
 ```
 
-## Program Management and History
-
-Track and manage all your optimized programs:
+## Loading a Program
 
 ```ruby
-# List all saved programs
-programs = storage.list_programs
-programs.each do |program_info|
-  puts "ID: #{program_info[:program_id]}"
-  puts "Score: #{program_info[:best_score]} (#{program_info[:score_name]})"
-  puts "Signature: #{program_info[:signature_class]}"
-  puts "Saved: #{program_info[:saved_at]}"
-  puts "---"
-end
+loaded = storage.load_program(saved.program_id)
 
-# Get comprehensive history with statistics
-history = storage.get_history
-puts "Total programs: #{history[:summary][:total_programs]}"
-puts "Average score: #{history[:summary][:avg_score].round(3)}"
-puts "Latest save: #{history[:summary][:latest_save]}"
-
-# Programs sorted by performance
-best_programs = history[:programs]
-  .sort_by { |p| -p[:best_score] }
-  .first(5)
-
-puts "Top 5 performing programs:"
-best_programs.each do |program|
-  puts "#{program[:signature_class]}: #{program[:best_score]}"
+if loaded
+  program = loaded.program
+  result = loaded.optimization_result
+  metadata = loaded.metadata
 end
 ```
 
-## Import/Export for Collaboration
+Loading is deliberately constrained. The stored `class_name` must resolve to a loaded Ruby constant, and that class must implement `.from_h`.
 
-Share optimized programs across environments:
+`ProgramStorage` does not call an arbitrary module's `to_h`. Its current serializer extracts a small common state: the signature class name, prompt instruction, and few-shot examples when the program exposes them. Built-in program classes that implement compatible `.from_h` methods can reconstruct that state. A custom module with additional instance state needs its own persistence boundary; `Module#save` plus an explicit loader is the clearer option.
+
+Persist model identifiers, instructions, demonstrations, and configuration that affect behavior. Do not serialize credentials.
+
+`load_program` returns `nil` when the file is absent or deserialization fails. If an application must distinguish those cases, validate the artifact and class compatibility before deployment rather than relying on a late load.
+
+## Export, Import, and Deletion
+
+Program storage can move selected artifacts between files and remove old entries:
 
 ```ruby
-# Export programs for sharing
-program_ids = ['abc123', 'def456', 'ghi789']
-export_path = './shared_programs.json'
+storage.export_programs([saved.program_id], "release/programs.json")
+storage.import_programs("release/programs.json")
+storage.delete_program(saved.program_id)
+```
 
-storage.export_programs(program_ids, export_path)
-puts "Exported #{program_ids.size} programs to #{export_path}"
+An export is JSON, not a self-contained Ruby package. The destination still needs the same program class and compatible `.from_h` behavior.
 
-# On another system or environment
-new_storage = DSPy::Storage::ProgramStorage.new(
-  storage_path: "./production_programs"
+## Storage Manager
+
+`DSPy::Storage::StorageManager` wraps `ProgramStorage` for optimizer results. It can auto-save an `optimized_program`, find saved programs by score, age, tags, optimizer, or signature class, and retain a configured number of artifacts.
+
+```ruby
+require "dspy/storage/storage_manager"
+
+config = DSPy::Storage::StorageManager::StorageConfig.new
+config.storage_path = "./dspy_storage"
+config.max_stored_programs = 25
+
+manager = DSPy::Storage::StorageManager.new(config: config)
+manager.save_optimization_result(
+  optimization_result,
+  tags: ["support", "candidate"],
+  description: "GEPA run on support-v2"
 )
-
-# Import the shared programs
-imported_programs = new_storage.import_programs('./shared_programs.json')
-puts "Imported #{imported_programs.size} programs"
-
-imported_programs.each do |saved_program|
-  puts "Available: #{saved_program.program_id} (score: #{saved_program.optimization_result[:best_score_value]})"
-end
 ```
 
-## Integration with Optimization Workflows
+This is filesystem storage with a JSON history file. It has no locking or transactional database behind it. Coordinate writers yourself, and use object storage or a database when several processes must publish artifacts concurrently.
 
-Seamlessly integrate storage with your optimization workflows:
+## What to Version
 
-```ruby
-class ProductAnalysisOptimizer
-  def initialize(storage_path: "./optimized_programs")
-    @storage = DSPy::Storage::ProgramStorage.new(storage_path: storage_path)
-  end
-  
-  def optimize_for_task(signature_class, training_data, task_name)
-    puts "Starting optimization for #{task_name}..."
-    
-    # Create base program
-    program = DSPy::ChainOfThought.new(signature_class)
-    
-    # Run optimization (using MIPROv2, etc.)
-    optimizer = DSPy::Optimization::MIPROv2.new(
-      metric: DSPy::Evaluation::Metric::F1Score.new,
-      n_trials: 20
-    )
-    
-    result = optimizer.optimize(program, training_data)
-    
-    # Save the optimized program
-    saved_program = @storage.save_program(
-      result.program,
-      {
-        best_score_value: result.best_score,
-        best_score_name: 'f1_score',
-        scores: result.scores,
-        history: result.optimization_history,
-        metadata: {
-          optimizer: 'MIPROv2',
-          task: task_name,
-          training_samples: training_data.size
-        }
-      },
-      metadata: {
-        task: task_name,
-        optimization_date: Time.now.iso8601,
-        environment: Rails.env
-      }
-    )
-    
-    puts "Optimization complete! Saved as #{saved_program.program_id}"
-    puts "Best F1 score: #{result.best_score}"
-    
-    saved_program
-  end
-  
-  def load_best_for_task(task_name)
-    programs = @storage.list_programs
-      .select { |p| p[:metadata][:task] == task_name }
-      .sort_by { |p| -p[:best_score] }
-    
-    if programs.any?
-      best_program = @storage.load_program(programs.first[:program_id])
-      puts "Loaded best #{task_name} program (score: #{best_program.optimization_result[:best_score_value]})"
-      best_program.program
-    else
-      puts "No optimized programs found for task: #{task_name}"
-      nil
-    end
-  end
-end
+A saved prompt artifact is only one part of an LM program. Record enough context to explain a result later:
 
-# Usage
-optimizer = ProductAnalysisOptimizer.new
+- DSPy.rb and Ruby versions
+- model identifier and provider configuration
+- optimizer and metric
+- dataset or fixture version
+- application commit
+- custom module serialization version
 
-# Optimize for a specific task
-saved_program = optimizer.optimize_for_task(
-  ProductReview,
-  training_data,
-  "product_sentiment_analysis"
-)
+`ProgramStorage` records DSPy.rb and Ruby versions automatically. The application must supply the rest as metadata.
 
-# Later, load the best program for production
-production_program = optimizer.load_best_for_task("product_sentiment_analysis")
-
-if production_program
-  # Use in production
-  result = production_program.forward(
-    review_text: customer_review,
-    product_category: product.category
-  )
-end
-```
-
-## Version Compatibility and Migration
-
-Storage includes version tracking for compatibility:
-
-```ruby
-# Check version compatibility
-programs = storage.list_programs
-programs.each do |program_info|
-  metadata = program_info[:metadata]
-  
-  if metadata[:dspy_version] != DSPy::VERSION
-    puts "Warning: Program #{program_info[:program_id]} was saved with DSPy v#{metadata[:dspy_version]}"
-    puts "Current version: v#{DSPy::VERSION}"
-  end
-  
-  if metadata[:ruby_version] != RUBY_VERSION
-    puts "Note: Program saved with Ruby #{metadata[:ruby_version]}, running #{RUBY_VERSION}"
-  end
-end
-
-# Load with version checking
-def safe_load_program(storage, program_id)
-  saved_program = storage.load_program(program_id)
-  return nil unless saved_program
-  
-  saved_version = saved_program.metadata[:dspy_version]
-  current_version = DSPy::VERSION
-  
-  if saved_version != current_version
-    puts "Version mismatch detected:"
-    puts "Saved with: DSPy v#{saved_version}"
-    puts "Current: DSPy v#{current_version}"
-    puts "Program may need reoptimization for best performance"
-  end
-  
-  saved_program
-end
-```
-
-## File Organization and Structure
-
-The storage system creates a clean, organized structure:
-
-```
-my_optimized_programs/
-├── programs/
-│   ├── abc123def456.json    # Individual program files
-│   ├── def456ghi789.json
-│   └── ghi789jkl012.json
-└── history.json             # Program index and statistics
-```
-
-Each program file contains:
-```json
-{
-  "program_id": "abc123def456",
-  "saved_at": "2024-08-26T10:30:00Z",
-  "program_data": {
-    "class_name": "DSPy::Predict",
-    "state": {
-      "signature_class": "ProductReview",
-      "instruction": "Focus on specific product features...",
-      "few_shot_examples": [...]
-    }
-  },
-  "optimization_result": {
-    "best_score_value": 0.92,
-    "best_score_name": "f1_score",
-    "scores": {...},
-    "history": {...}
-  },
-  "metadata": {
-    "dspy_version": "0.20.0",
-    "ruby_version": "3.3.0",
-    "task": "product_sentiment_analysis"
-  }
-}
-```
-
-## Best Practices
-
-1. **Organize by Task**: Use descriptive metadata to group related programs
-2. **Version Control**: Include storage directories in your version control
-3. **Regular Cleanup**: Periodically remove outdated programs
-4. **Backup Important Programs**: Export critical programs to separate files
-5. **Environment Separation**: Use different storage paths for dev/test/prod
-
-```ruby
-# Environment-based storage paths
-storage_path = case Rails.env
-               when 'development'
-                 './storage/development'
-               when 'test'  
-                 './storage/test'
-               when 'production'
-                 ENV['DSPY_STORAGE_PATH'] || './storage/production'
-               end
-
-storage = DSPy::Storage::ProgramStorage.new(storage_path: storage_path)
-```
-
-## Error Handling and Observability
-
-The storage system includes comprehensive logging:
-
-```ruby
-# Storage operations are automatically logged
-DSPy.configure do |config|
-  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
-    logger.add_backend(stream: 'log/dspy_storage.log')
-  end
-end
-
-# Log events include:
-# - storage.save_start / storage.save_complete
-# - storage.load_start / storage.load_complete  
-# - storage.save_error / storage.load_error
-# - storage.export / storage.import
-# - storage.delete
-
-# Monitor your storage operations
-saved_program = storage.save_program(program, optimization_result)
-# Logs: {"message": "storage.save_complete", "storage.program_id": "abc123", 
-#        "storage.best_score": 0.92, "storage.file_size": 2048}
-```
-
-## Migration Guide
-
-If you're currently managing optimized programs manually:
-
-```ruby
-# Before: Manual serialization
-program_state = {
-  instruction: program.prompt.instruction,
-  examples: program.few_shot_examples.map(&:to_h)
-}
-File.write('program.json', JSON.generate(program_state))
-
-# After: Comprehensive storage
-storage = DSPy::Storage::ProgramStorage.new
-saved_program = storage.save_program(program, optimization_result)
-# Automatic metadata, versioning, history tracking, and error handling
-```
-
-## Conclusion
-
-Program persistence in DSPy.rb v0.20.0 transforms how you work with optimized programs. Key benefits:
-
-- **Investment Protection**: Never lose optimization work again
-- **Collaboration**: Share optimized programs across teams
-- **Version Management**: Track program evolution and performance
-- **Production Ready**: Reliable storage with comprehensive error handling
-- **Audit Trail**: Complete history of optimization experiments
-
-Special thanks to Stefan Froelich for implementing this essential feature! Start saving your optimized DSPy programs today and build a library of high-performing AI components. 🚀
+Save an artifact only after evaluating it. A serialized bad program is merely a bad program that starts faster.
