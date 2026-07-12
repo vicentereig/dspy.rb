@@ -6,10 +6,11 @@
 [![Documentation](https://img.shields.io/badge/docs-oss.vicente.services%2Fdspy.rb-blue)](https://oss.vicente.services/dspy.rb/)
 [![Discord](https://img.shields.io/discord/1161519468141355160?label=discord&logo=discord&logoColor=white)](https://discord.gg/zWBhrMqn)
 
-**Build reliable LLM applications in idiomatic Ruby using composable, type-safe modules.**
+**Build typed LLM applications in Ruby.**
 
-DSPy.rb is the Ruby port of Stanford's [DSPy](https://dspy.ai). Instead of wrestling with brittle prompt strings, you define typed signatures and let the framework handle the rest. Prompts become functions. LLM calls become predictable.
-The `1.x` line is the stable release track for production Ruby LLM applications.
+DSPy.rb is the Ruby port of Stanford's [DSPy](https://dspy.ai). A signature declares the inputs and outputs of an LLM operation. DSPy.rb turns that signature into a prompt, calls the model, and validates the response.
+
+The `1.x` series is the current stable release line.
 
 ```ruby
 require 'dspy'
@@ -35,7 +36,7 @@ result = summarizer.call(text: "DSPy.rb brings structured LLM programming to Rub
 puts result.summary
 ```
 
-That's it. No prompt templates. No JSON parsing. No prayer-based error handling.
+No prompt templates. No JSON parsing. No prayer-based error handling.
 
 ## Installation
 
@@ -55,6 +56,8 @@ bundle install
 ## Quick Start
 
 ### Configure Your LLM
+
+Configure one provider. The examples below show the supported model identifier formats.
 
 ```ruby
 # OpenAI
@@ -90,7 +93,7 @@ end
 
 ### Define a Signature
 
-Signatures are typed contracts for LLM operations. Define inputs, outputs, and let DSPy handle the prompt:
+A signature defines the fields an LLM operation accepts and returns. `DSPy::Predict` uses it to make the request and validate the result:
 
 ```ruby
 class Classify < DSPy::Signature
@@ -123,7 +126,7 @@ result.confidence   # => 0.92
 
 ### Chain of Thought
 
-For complex reasoning, use `ChainOfThought` to get step-by-step explanations:
+Use `ChainOfThought` when the result should include the model's reasoning:
 
 ```ruby
 solver = DSPy::ChainOfThought.new(MathProblem)
@@ -135,7 +138,7 @@ result.answer     # => "60 km/h"
 
 ### ReAct Agents
 
-Build agents that use tools to accomplish tasks:
+`ReAct` lets a module call Ruby tools while working on a task:
 
 ```ruby
 class SearchTool < DSPy::Tools::Base
@@ -155,27 +158,24 @@ result = agent.call(question: "What's the latest on Ruby 3.4?")
 
 ## What's Included
 
-**Core Modules**: Predict, ChainOfThought, ReAct agents, and composable pipelines.
-
-**Type Safety**: Sorbet-based runtime validation. Enums, unions, nested structs—all work.
-
-**Multimodal**: Image analysis with `DSPy::Image` for vision-capable models.
-
-**Observability**: Zero-config Langfuse integration via OpenTelemetry. Non-blocking, production-ready.
-
-**Optimization**: MIPROv2 (Bayesian optimization) and GEPA (genetic evolution) for prompt tuning.
-
-**Provider Support**: OpenAI, Anthropic, Gemini, Ollama, and OpenRouter via official SDKs.
+| Capability | What it provides |
+| --- | --- |
+| Modules | `Predict`, `ChainOfThought`, ReAct agents, and composable pipelines |
+| Runtime types | Sorbet validation for enums, unions, and nested structs |
+| Multimodal input | `DSPy::Image` support for vision-capable models |
+| Observability | Optional `dspy-o11y-langfuse` integration with an asynchronous OpenTelemetry span exporter |
+| Optimization | MIPROv2 Bayesian optimization and GEPA genetic-Pareto evolution |
+| Providers | OpenAI, Anthropic, Gemini, Ollama, and OpenRouter through their SDKs |
 
 ## Documentation
 
-**[Full Documentation](https://oss.vicente.services/dspy.rb/)** — Getting started, core concepts, advanced patterns.
+**[Full Documentation](https://oss.vicente.services/dspy.rb/)** — Installation, core concepts, and advanced usage.
 
-**[llms.txt](https://oss.vicente.services/dspy.rb/llms.txt)** — LLM-friendly reference for AI assistants.
+**[llms.txt](https://oss.vicente.services/dspy.rb/llms.txt)** — Reference formatted for AI assistants.
 
 ### Claude Skill
 
-A [Claude Skill](https://github.com/vicentereig/dspy-rb-skill) is available to help you build DSPy.rb applications:
+The [Claude Skill](https://github.com/vicentereig/dspy-rb-skill) provides DSPy.rb guidance in Claude Code and Claude.ai:
 
 ```bash
 # Claude Code — install from the vicentereig/engineering marketplace
@@ -186,7 +186,7 @@ For Claude.ai Pro/Max, download the [skill ZIP](https://github.com/vicentereig/d
 
 ## Examples
 
-The [examples/](examples/) directory has runnable code for common patterns:
+The [examples/](examples/) directory contains runnable examples:
 
 - Sentiment classification
 - ReAct agents with tools
@@ -199,7 +199,7 @@ bundle exec ruby examples/basic_search_agent.rb
 
 ## Optional Gems
 
-DSPy.rb ships sibling gems for features with heavier dependencies. Add them as needed:
+Optional features with heavier dependencies ship as separate gems:
 
 | Gem | What it does |
 | --- | --- |
@@ -215,7 +215,7 @@ See [the full list](https://oss.vicente.services/dspy.rb/getting-started/install
 
 ## Contributing
 
-Feedback is invaluable. If you encounter issues, [open an issue](https://github.com/vicentereig/dspy.rb/issues). For suggestions, [start a discussion](https://github.com/vicentereig/dspy.rb/discussions).
+For bugs, [open an issue](https://github.com/vicentereig/dspy.rb/issues). For suggestions, [start a discussion](https://github.com/vicentereig/dspy.rb/discussions).
 
 Want to contribute code? Reach out: hey at vicente.services
 
