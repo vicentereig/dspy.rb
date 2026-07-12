@@ -1,8 +1,8 @@
 ---
 layout: docs
-title: "MIPROv2 Ruby: Production-Ready Prompt Optimization"
+title: "MIPROv2 Program Optimization in Ruby"
 name: MIPROv2 Optimizer
-description: "Ship better multi-stage prompts by reusing the ADE MIPROv2 demo. Learn how to install the separate gem, plug in your metric, and let MIPROv2 iterate toward measurable wins."
+description: "Use the ADE example to configure MIPROv2, define a metric, set a search budget, and inspect the optimized program."
 breadcrumb:
 - name: Optimization
   url: "/optimization/"
@@ -18,16 +18,14 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # MIPROv2 Optimizer
 
-MIPROv2 is DSPy’s most capable instruction tuner. It was designed for language-model programs with multiple predictors, and focuses on outcomes: higher downstream accuracy, fewer hallucinations, and reusable prompt assets. Instead of tinkering with strings, you give MIPROv2 a typed program, a dataset, and a metric. The optimizer proposes new instructions and few-shot demonstrations, evaluates them on mini-batches, and keeps what actually moves your metric[^miprov2-paper].
-
-Ruby developers care because the workflow stays familiar: typed signatures, `DSPy::Example` objects, and plain-old Ruby lambdas for metrics. MIPROv2 handles the heavy lifting—dataset summaries, per-predictor instructions, Bayesian search—without asking you to babysit the loop.
+MIPROv2 searches over instructions and few-shot demonstrations for one or more predictors. You provide a typed program, examples, a metric, and a budget. It evaluates candidates on minibatches and returns the best program it found for the validation data.[^miprov2-paper]
 
 ## Why teams reach for MIPROv2
 
-- **Outcome-driven**: Every trial is accepted or rejected based on your metric (accuracy, recall, goal completion, etc.). No guesswork.
+- **Metric-driven**: Candidate selection follows the metric you provide.
 - **Program-aware**: Multi-stage predictors (e.g., ReAct agents) receive separate instructions, so improvements land where they matter.
 - **Data-aware**: The optimizer bootstraps few-shot demos and dataset summaries before proposing instructions, keeping candidates grounded in your examples.
-- **Budget friendly**: Mini-batch evaluations let you cap API spend. Presets expose trade-offs between speed and peak quality.
+- **Budgeted**: Trial and minibatch settings bound the search work.
 
 > ℹ️ **Packaging note** — MIPROv2 ships as the `dspy-miprov2` gem. Add it alongside `dspy` in your `Gemfile`:
 > ```ruby
@@ -193,16 +191,14 @@ The Stanford team behind MIPROv2 observed three practices that translate well to
 2. **Stochastic evaluation keeps the loop affordable** — Mini-batching during evaluation mimics a noisy but cheaper fitness function. Use the presets’ defaults unless you have a strict budget; then lower `minibatch_size` to stretch API calls.
 3. **Meta-learning improves over time** — MIPROv2 adjusts which proposal strategies to favor based on past wins. You only see the payoff (better instructions, fewer useless trials), so let multi-trial runs finish before judging the outcome.
 
-The result: teams reported accuracy bumps of up to 13% on multi-hop QA tasks without touching model weights—just better prompts.
+The paper reports improvements on its evaluated tasks. Measure the Ruby program on a held-out set before promoting an optimized artifact.
 
 ## Production checklist
 
-- ✅ Add both `dspy` and `dspy-miprov2` to your Gemfile and bundle install.
-- ✅ Keep a validation set separate from your test or staging traffic.
-- ✅ Log `result.optimization_trace[:trial_logs]` so you can reproduce or audit changes.
-- ✅ Promote the optimized program by serializing it to JSON/YAML and loading it in production.
-- ✅ Re-run MIPROv2 when metrics drift or you add new training data.
-
-With that, you can ship prompt improvements using the same Ruby tooling you already know—no manual prompt juggling required.
+- Add both `dspy` and `dspy-miprov2` to the Gemfile.
+- Keep validation and held-out test sets separate.
+- Record `result.optimization_trace`, model identifiers, data version, and random seed.
+- Serialize `result.optimized_program` and evaluate the loaded artifact before deployment.
+- Re-run evaluation when the model, metric, or input distribution changes.
 
 [^miprov2-paper]: Opsahl-Ong, Krista, et al. *Optimizing Instructions and Demonstrations for Multi-Stage Language Model Programs.* arXiv:2406.11695v2, 2024.

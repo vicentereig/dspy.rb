@@ -5,40 +5,13 @@ description: Common issues and solutions for DSPy.rb
 date: 2025-07-20 00:00:00 +0000
 last_modified_at: 2025-08-08 00:00:00 +0000
 ---
-# Troubleshooting Guide
-
-This guide covers common issues you might encounter when using DSPy.rb and their solutions.
+# Troubleshooting
 
 ## Language Model Configuration
 
-### Error: NoMethodError: undefined method 'model' for nil
-
-**Problem**: This error occurs when a DSPy module doesn't have a language model configured.
-
-```ruby
-module = DSPy::Predict.new(MySignature)
-module.forward(input: "test")
-# => NoMethodError: undefined method 'model' for nil
-```
-
-**Solution**: Configure a language model either globally or at the module level.
-
-```ruby
-# Option 1: Global configuration
-DSPy.configure do |config|
-  config.lm = DSPy::LM.new("openai/gpt-4", api_key: ENV["OPENAI_API_KEY"])
-end
-
-# Option 2: Module-level configuration
-module = DSPy::Predict.new(MySignature)
-module.configure do |config|
-  config.lm = DSPy::LM.new("anthropic/claude-3", api_key: ENV["ANTHROPIC_API_KEY"])
-end
-```
-
 ### Error: DSPy::ConfigurationError
 
-**Problem**: Starting from version 0.9.0, DSPy provides clearer error messages when LM is not configured.
+**Cause**: The module cannot resolve a configured language model.
 
 ```ruby
 DSPy::ConfigurationError: No language model configured for MyModule module.
@@ -56,13 +29,13 @@ Or on the module instance:
   end
 ```
 
-**Solution**: Follow the instructions in the error message to configure an LM.
+**Correction**: Configure an LM globally or on the module instance as shown in the error. Prefer current model identifiers from the provider documentation.
 
 ## Gem Conflicts
 
 ### Warning: ruby-openai gem detected
 
-**Problem**: DSPy uses the official OpenAI SDK, which conflicts with the community `ruby-openai` gem.
+**Cause**: DSPy uses the official OpenAI SDK. The community `ruby-openai` gem defines the same `OpenAI` namespace.
 
 ```
 WARNING: ruby-openai gem detected. This may cause conflicts with DSPy's OpenAI integration.
@@ -71,7 +44,7 @@ DSPy uses the official 'openai' gem. The community 'ruby-openai' gem uses the sa
 OpenAI namespace and will cause conflicts.
 ```
 
-**Solution**: Remove `ruby-openai` from your Gemfile and use the official gem:
+**Correction**: Remove `ruby-openai` from the process that loads DSPy:
 
 ```ruby
 # Gemfile
@@ -82,7 +55,7 @@ OpenAI namespace and will cause conflicts.
 gem 'dspy'
 ```
 
-If you need both gems for different parts of your application, consider isolating them in separate processes or using bundler groups to load them conditionally.
+If the application needs both SDKs, isolate them in separate processes. Bundler groups help only when the conflicting gems are not loaded together.
 
 ### Namespace Conflicts
 
@@ -106,7 +79,7 @@ response = client.chat.completions.create(model: "gpt-4", messages: [...])
 
 ### Error: DSPy::LM::MissingAPIKeyError
 
-**Problem**: API key is not provided for the language model.
+**Cause**: The adapter cannot find an API key in its argument or provider environment variable.
 
 **Solution**: Set the API key via environment variable or parameter:
 
@@ -124,9 +97,9 @@ lm = DSPy::LM.new("openai/gpt-4", api_key: "your-key-here")
 
 ### Error: JSON parsing failures
 
-**Problem**: LLM returns invalid JSON that can't be parsed.
+**Cause**: The provider returned content that the configured JSON strategy could not parse or validate.
 
-**Solution**: DSPy.rb uses robust extraction strategies that try multiple patterns (code blocks, raw JSON, nested objects). For best reliability, use providers with native structured outputs:
+**Correction**: Use provider-native structured output when the selected model supports it. Otherwise inspect the raw response and simplify the signature or field descriptions.
 
 ```ruby
 DSPy.configure do |config|
@@ -144,11 +117,11 @@ DSPy.configure do |config|
   #   structured_outputs: true
   # )
 
-  # Anthropic with Beta API structured outputs (default, recommended)
+  # Anthropic structured outputs
   # config.lm = DSPy::LM.new(
   #   "anthropic/claude-sonnet-4-5-20250929",
   #   api_key: ENV["ANTHROPIC_API_KEY"],
-  #   structured_outputs: true  # Default - uses Beta API
+  #   structured_outputs: true
   # )
 
   # Anthropic with enhanced prompting (alternative)
@@ -160,17 +133,13 @@ DSPy.configure do |config|
 end
 ```
 
-**Provider Support**:
-- **OpenAI/Gemini/Ollama**: Use `structured_outputs: true` for native JSON mode
-- **Anthropic** (requires anthropic gem >= 1.16.2):
-  - `structured_outputs: true` (default) - Beta API structured outputs with JSON schema enforcement
-  - `structured_outputs: false` - Enhanced prompting extraction
+Provider capabilities vary by model and SDK version. A provider prefix alone does not establish native schema support.
 
 ## Memory Issues
 
 ### Error: Memory storage full
 
-**Problem**: In-memory storage reaches capacity limits.
+**Cause**: The application retained more memory records than its configured in-memory limit.
 
 **Solution**: Use the MemoryManager to handle memory with automatic compaction:
 
@@ -199,12 +168,13 @@ manager.clear_memories(user_id: "user_123")
 
 ### Slow LLM responses
 
-**Problem**: API calls taking too long.
+**Verification**: Inspect provider latency and DSPy spans before changing execution strategy.
 
-**Solution**: 
-1. Use smaller models for development
-2. Enable caching for repeated calls
-3. Use async processing for batch operations
+**Corrections**:
+
+1. Use a lower-latency model where its measured quality is sufficient.
+2. Add application caching only when the cache key and invalidation rule are explicit.
+3. Move independent batch work to an application job or concurrency boundary. DSPy does not schedule a batch automatically.
 
 ```ruby
 # Use faster model for development
@@ -217,13 +187,13 @@ end
 
 ### VCR cassette errors
 
-**Problem**: Tests fail due to outdated VCR cassettes.
+**Cause**: The recorded request no longer matches the adapter's current request shape.
 
 **Solution**: Re-record cassettes when API changes:
 
 ```bash
 # Delete specific cassette
-rm spec/fixtures/vcr_cassettes/my_test.yml
+rm spec/vcr_cassettes/my_test.yml
 
 # Re-run test to record new cassette
 bundle exec rspec spec/my_test_spec.rb
@@ -265,8 +235,8 @@ puts module.config.inspect
 3. **Verify API connectivity**:
 ```ruby
 lm = DSPy::LM.new("openai/gpt-4")
-response = lm.generate("Test prompt")
-puts response
+response = lm.raw_chat([{ role: "user", content: "Reply with OK" }])
+puts response.content
 ```
 
 4. **Use JSON logging for production**:

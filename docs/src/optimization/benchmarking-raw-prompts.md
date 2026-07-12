@@ -8,7 +8,7 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Benchmarking Raw Prompts
 
-When migrating from monolithic prompts to modular DSPy implementations, it's crucial to measure and compare their performance. DSPy.rb provides the `raw_chat` method specifically for this purpose, allowing you to run existing prompts through the same observability system as your DSPy modules.
+Use `raw_chat` to establish a baseline for an existing provider prompt before replacing it with a typed module. Compare both implementations with the same model, inputs, metric, and telemetry.
 
 ## Why Benchmark Raw Prompts?
 
@@ -270,7 +270,7 @@ predictor.forward(input: 'Hello')                   # Logged as dspy.predict
 
 ## Benchmarking Schema Formats
 
-DSPy.rb v0.13.0+ supports BAML schema format, which can reduce prompt token usage by 80%+ compared to JSON Schema. You can benchmark this impact:
+DSPy.rb supports JSON Schema and BAML schema rendering. Measure both formats on your actual signature; the difference depends on schema shape and provider formatting.
 
 ```ruby
 # Test JSON schema (default)
@@ -322,16 +322,10 @@ baml_result = baml_predictor.call(
 )
 
 # Compare token usage from logs
-# JSON Schema: ~1400 chars for schema definitions
-# BAML Schema: ~200 chars for schema definitions
-# Token savings: 84%+ on prompt tokens
+# Record input tokens and output quality for each run.
 ```
 
-**BAML Schema Benefits:**
-- Reduces prompt tokens by 80%+ for rich signatures
-- Maintains identical output quality and structure
-- Saves costs on high-volume LLM API usage
-- More readable schema definitions
+Do not infer output quality from schema length. Compare validation failures and task metrics beside token counts.
 
 See [Schema Formats](/core-concepts/signatures/#schema-formats) for detailed comparison.
 
@@ -366,8 +360,4 @@ else
 end
 ```
 
-## Conclusion
-
-The `raw_chat` method provides a crucial bridge for teams migrating from monolithic prompts to modular DSPy implementations. By enabling direct performance comparisons with full observability support, it helps make data-driven decisions about when and how to modularize your prompts.
-
-Remember: while token efficiency is important, the real benefits of DSPy's modular approach include improved maintainability, testability, and the ability to optimize prompts programmatically.
+Keep the baseline when the module does not improve the metric or operational boundary that motivated the migration. A typed interface is useful, but it does not make a weaker result acceptable.

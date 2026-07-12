@@ -1,8 +1,8 @@
 ---
 layout: docs
-title: "Ruby RAG Tutorial: Build Production-Ready Retrieval Systems with DSPy.rb"
+title: "Ruby RAG Tutorial with DSPy.rb"
 name: Retrieval Augmented Generation (RAG)
-description: "Step-by-step guide to implementing Retrieval Augmented Generation in Ruby. Vector search, Rails integration, and evaluation metrics. Better than Python's LangChain."
+description: "Build retrieval-augmented generation in Ruby with external search, typed signatures, and evaluation."
 breadcrumb:
 - name: Advanced
   url: "/advanced/"
@@ -18,7 +18,7 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Retrieval Augmented Generation (RAG)
 
-DSPy.rb supports building RAG (Retrieval Augmented Generation) applications by combining retrieval systems with LLM-powered reasoning. While the framework doesn't provide built-in vector stores or embedding models, you can integrate external retrieval services and build sophisticated RAG pipelines.
+DSPy.rb does not provide a vector store or embedding model. A RAG program retrieves context through application code or a tool, then passes that context into a typed module.
 
 ## Overview
 

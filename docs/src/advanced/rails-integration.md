@@ -1,18 +1,18 @@
 ---
 layout: docs
 title: Rails Integration Guide
-description: Seamlessly integrate DSPy.rb with Ruby on Rails applications, including
+description: Integrate DSPy.rb with Ruby on Rails applications, including
   enum handling and best practices
 date: 2025-07-11 00:00:00 +0000
 last_modified_at: 2025-08-13 00:00:00 +0000
 ---
 # Rails Integration Guide
 
-DSPy.rb is designed to work seamlessly with Ruby on Rails applications. This guide covers common integration patterns and solutions to potential issues.
+This guide covers enum coercion, service objects, jobs, caching, validation, callbacks, and instrumentation in Rails applications.
 
 ## Enum Handling
 
-One common source of confusion is how DSPy.rb handles enums in Rails applications. The good news: **DSPy automatically deserializes string values to T::Enum instances**.
+DSPy.rb coerces returned enum strings into the `T::Enum` declared by the signature.
 
 ### The Problem
 
@@ -374,7 +374,7 @@ end
 
 ## Using Lifecycle Callbacks with Rails Patterns
 
-DSPy modules support Rails-style lifecycle callbacks (`before`, `after`, `around`) that work seamlessly with Rails patterns. For complete callback documentation, see the [Module Runtime Context documentation](/core-concepts/module-runtime-context/#lifecycle-callbacks).
+DSPy modules support `before`, `after`, and `around` lifecycle callbacks. For callback order and arguments, see [Module Runtime Context](/core-concepts/module-runtime-context/#lifecycle-callbacks).
 
 ### Callbacks with Service Objects
 
@@ -691,14 +691,4 @@ end
 4. **Handle errors gracefully** - Use `around` callbacks to catch and report errors to your error tracking service
 5. **Track performance** - Use callbacks to measure and report execution time to APM tools
 
-## Conclusion
-
-DSPy.rb's automatic enum handling makes Rails integration straightforward. The key points:
-
-1. **Enums are automatically deserialized** - no manual parsing needed
-2. **Use `.serialize` to get string values** for database storage
-3. **Compare enums properly** - use enum constants, not strings
-4. **Cache AI responses** to improve performance
-5. **Use service objects** for clean architecture
-
-If you're still seeing issues with enum handling, ensure you're using the latest version of DSPy.rb (0.8.1+) which includes improved type coercion.
+For enum fields, compare the returned value with enum constants and call `.serialize` before storing it in a string column. Keep provider calls in service objects or jobs where timeout, retry, and telemetry policy are explicit.

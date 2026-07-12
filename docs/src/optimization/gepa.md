@@ -2,7 +2,7 @@
 layout: docs
 title: "GEPA Optimizer for Ruby — Reflective Prompt Evolution"
 name: GEPA Optimizer
-description: "Implement GEPA (Reflective Prompt Evolution) in Ruby. Step-by-step guide: configure reflection feedback, define evaluation metrics, and ship optimized prompts. Includes working ADE demo code."
+description: "Configure GEPA in Ruby with scalar scores, textual feedback, a reflection model, and a bounded evaluation budget."
 breadcrumb:
 - name: Optimization
   url: "/optimization/"
@@ -20,7 +20,7 @@ date: 2025-07-10 00:00:00 +0000
 
 GEPA stands for **Genetic-Pareto Reflective Prompt Evolution**. In practice, it is a feedback loop: run your DSPy module on a small batch, collect both scores and short text notes about what happened, and let a reflection model rewrite the instruction. If the rewrite helps on the validation set without regressing elsewhere, GEPA keeps it as a new candidate on the Pareto frontier.
 
-The walkthrough below uses `examples/ade_optimizer_gepa/` as a template. It highlights the small set of hooks you need to provide and explains the runtime knobs in plain language so you can plug the optimizer into your own project with confidence.
+The walkthrough uses `examples/ade_optimizer_gepa/` as a concrete implementation. Replace its signature, dataset, and metric while retaining the budget and held-out evaluation structure.
 
 ## Installation
 
@@ -269,6 +269,6 @@ Use the ADE workflow as a template:
 3. Tune `max_metric_calls` and `minibatch_size` for your task.
 4. Persist GEPA telemetry/metrics using the experiment tracker.
 
-With a few dozen lines of glue, GEPA becomes a drop-in evolutionary loop that keeps your Ruby prompts improving over time.
+Promote `result.optimized_program` only after evaluating it on data GEPA did not use for candidate selection.
 
 [^gepa-paper]: Lakshya A. Agrawal et al., “GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning,” arXiv:2507.19457 (2025).

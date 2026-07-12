@@ -17,15 +17,15 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Multi-stage Pipelines
 
-DSPy.rb supports building complex, multi-stage pipelines by composing multiple DSPy modules together. You can create sequential workflows, conditional processing, and reusable pipeline components for sophisticated LLM applications.
+A pipeline composes DSPy modules with Ruby control flow. Use one when the application should determine the sequence, branches, and failure handling. Use an agent only when the model has a useful decision to make about the next action.
 
 ## Overview
 
-DSPy.rb enables pipeline creation through:
+Pipeline code provides:
 - **Module Composition**: Combine multiple DSPy::Module instances
 - **Sequential Processing**: Chain operations in order
 - **Data Flow**: Pass results between pipeline stages
-- **Error Handling**: Graceful failure management
+- **Error Handling**: Explicit failure and recovery paths
 - **Reusable Components**: Build modular, testable pipelines
 
 ## Basic Pipeline Concepts
@@ -616,4 +616,3 @@ class EfficientPipeline < DSPy::Module
   end
 end
 ```
-

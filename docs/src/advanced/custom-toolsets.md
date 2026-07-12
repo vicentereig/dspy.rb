@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Custom Toolsets
-description: Build advanced toolsets for specialized agent capabilities
+description: Group typed application operations for use by DSPy.rb agents
 breadcrumb:
 - name: Advanced
   url: "/advanced/"
@@ -18,7 +18,7 @@ date: 2025-07-11 00:00:00 +0000
 ---
 # Custom Toolsets
 
-Custom toolsets allow you to extend agents with specialized capabilities by grouping related operations into cohesive tool collections. This guide covers advanced patterns for building production-ready toolsets.
+A toolset groups typed operations that a ReAct agent may select during its loop. The application remains responsible for authorization, side-effect boundaries, timeouts, and resource cleanup.
 
 ## Toolset Architecture
 
@@ -64,7 +64,7 @@ end
 
 ### Advanced Type Support
 
-DSPy.rb toolsets support comprehensive Sorbet types with automatic conversion:
+Tool methods can declare Sorbet types that DSPy.rb converts into tool schemas:
 
 ```ruby
 class Priority < T::Enum
@@ -1110,4 +1110,4 @@ class CachedToolset < DSPy::Tools::Toolset
 end
 ```
 
-Custom toolsets allow you to extend agents with domain-specific capabilities by grouping related operations together. By following these patterns and best practices, you can build robust, secure, and performant toolsets that integrate with DSPy.rb's agent system.
+Treat tool descriptions as part of the agent interface. Validate inputs again at the system boundary, restrict permissions outside the model, and test each tool independently before exposing the toolset to an agent.

@@ -17,7 +17,7 @@ date: 2025-09-03 00:00:00 +0000
 ---
 # Event System vs Monkey-Patching
 
-The DSPy.rb event system eliminates the need for complex monkey-patching and override techniques that were previously required for custom observability.
+Subscribe to DSPy.rb events when you need custom metrics or logs. The public event API avoids replacing logger internals or patching module methods.
 
 ## The Problem with Monkey-Patching
 
@@ -43,6 +43,8 @@ DSPy.configure do |config|
     logger.add_backend(EventInterceptorBackend.new(stream: "log/production.log"))
   end
 end
+```
+
 ## ✅ New Approach: Event System
 
 The new event system provides clean, simple observability without monkey-patching:

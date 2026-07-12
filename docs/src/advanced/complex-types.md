@@ -18,7 +18,7 @@ last_modified_at: 2025-07-21 00:00:00 +0000
 ---
 # Rich Types
 
-DSPy.rb provides support for structured data types beyond simple strings through integration with Sorbet's type system. You can use enums, structs, arrays, and hashes to create well-defined interfaces for your LLM applications.
+Signatures can use Sorbet enums, structs, unions, arrays, hashes, and nullable fields. DSPy.rb converts those declarations into an output schema and coerces the returned values at runtime.
 
 ## Overview
 
@@ -405,7 +405,7 @@ puts result2.result_type  # => "categorical"
 
 ### Union Types with Structs (Single-Field Unions)
 
-A powerful pattern is using union types with different struct types. As of v0.11.0, DSPy.rb automatically adds a `_type` field to each struct, eliminating the need for manual discriminator fields. This makes union types much simpler to use.
+Union types can combine several struct types. DSPy.rb adds a `_type` discriminator to each struct schema so the returned object can be coerced to the correct type.
 
 ```ruby
 # NEW in v0.11.0: Single-field union types - no discriminator needed!
@@ -784,7 +784,7 @@ schema = signature.schema
 
 ### BAML Schema Format (New in v0.13.0)
 
-For rich types with nested structures, BAML format provides 80%+ token savings:
+For nested types, BAML can render a shorter schema than JSON Schema. Measure the difference for the signature and provider you use:
 
 ```ruby
 # Configure BAML format globally
@@ -822,14 +822,10 @@ end
 #   budget float
 # }
 
-# JSON Schema would be 5x longer with verbose property definitions
+# Compare this representation with the generated JSON Schema.
 ```
 
-**BAML Benefits for Rich Types:**
-- 80%+ reduction in schema token usage
-- More readable for deeply nested structures
-- Better LLM comprehension of type hierarchies
-- Significant cost savings on high-volume usage
+Schema length does not establish output quality. Compare token usage, validation failures, and task metrics before choosing a format.
 
 See the [Schema Formats section in Signatures](/core-concepts/signatures/#schema-formats) for detailed comparison.
 
@@ -1018,4 +1014,3 @@ Instead of deep nesting, consider:
 - Flattening complex structures
 - Using separate API calls for complex data
 - Breaking down into multiple simpler signatures
-

@@ -18,7 +18,7 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 ---
 # Observability
 
-DSPy.rb provides an event-driven observability system based on OpenTelemetry. The system eliminates complex monkey-patching while providing powerful, extensible observability features.
+DSPy.rb emits structured events and OpenTelemetry spans for modules, LM calls, tools, evaluation, and optimization. Subscribe to events for application metrics; install the optional Langfuse integration when you need span export there.
 
 ## Overview
 
@@ -26,10 +26,10 @@ The observability system offers:
 - **Event System**: Simple `DSPy.event()` API for structured event emission
 - **Pluggable Listeners**: Subscribe to events with pattern matching
 - **OpenTelemetry Integration**: Automatic span creation with semantic conventions  
-- **Langfuse Export**: Zero-config export to Langfuse via OpenTelemetry (requires environment variables)
+- **Langfuse Export**: Optional export through `dspy-o11y-langfuse` and OpenTelemetry configuration
 - **Type Safety**: Sorbet T::Struct event validation
 - **Non-Blocking Exports**: Dedicated single-thread executor keeps telemetry off hot paths
-- **Zero Breaking Changes**: All existing `DSPy.log()` calls work unchanged
+- **Logging Compatibility**: Existing `DSPy.log()` calls continue to emit log events
 
 ## Installation
 
@@ -1036,12 +1036,4 @@ The DSPy.rb event system provides:
 4. **Type Safety**: Sorbet T::Struct event validation
 5. **Backward Compatibility**: Existing `DSPy.log()` calls enhanced automatically
 
-Key benefits:
-- **Zero breaking changes**: All existing code works unchanged
-- **Clean API**: Rails-like event system developers expect  
-- **Extensible**: Easy to add custom observability providers
-- **Type safe**: Structured events with validation
-- **Thread safe**: Production-ready concurrent access
-- **No dependencies**: Uses existing OpenTelemetry gems
-
-The system eliminates complex monkey-patching while providing powerful observability features. See `examples/event_system_demo.rb` for hands-on demonstration.
+See `examples/event_system_demo.rb` for event subscriptions and emitted attributes. Keep sensitive input and output data out of exported spans unless your retention and access policy permits it.
