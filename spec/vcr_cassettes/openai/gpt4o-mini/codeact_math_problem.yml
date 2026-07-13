@@ -98,7 +98,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '1851'
       Openai-Project:
@@ -120,7 +120,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 261ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
@@ -280,7 +280,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '1694'
       Openai-Project:
@@ -302,7 +302,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 303ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:

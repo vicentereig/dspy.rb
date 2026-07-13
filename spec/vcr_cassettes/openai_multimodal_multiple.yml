@@ -54,7 +54,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '749'
       Openai-Project:
@@ -82,7 +82,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 11.703s
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Cf-Cache-Status:
       - DYNAMIC
       Set-Cookie:

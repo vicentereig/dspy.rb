@@ -2,61 +2,7 @@
 http_interactions:
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1775416028894.541,"message":"trace_id=\"6d82636a-867a-4efb-b834-42a9da5e3f62\"
-        thread_id=1824 fiber_id=3736 request_id=nil request_start_time=nil reason=\"Explicitly
-        disabled via DSPY_DISABLE_OBSERVABILITY\" event=\"observability.disabled\"\n"}]}]'
-    headers:
-      Content-Encoding:
-      - identity
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: ''
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '0'
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Envoy-Upstream-Service-Time:
-      - '1'
-      Date:
-      - Sun, 05 Apr 2026 19:07:13 GMT
-      Server:
-      - envoy
-      Nr-Rate-Limited:
-      - allowed
-      X-Served-By:
-      - cache-mad2200126-MAD
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Sun, 05 Apr 2026 19:07:14 GMT
-- request:
-    method: post
-    uri: https://api.anthropic.com/v1/messages?beta=true
+    uri: https://api.anthropic.com/v1/messages
     body:
       encoding: UTF-8
       string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
@@ -65,8 +11,10 @@ http_interactions:
         \"balanced\",\n    \"hustle\": \"maximal\",\n    \"vulnerability\": \"muted\"\n  },\n  \"structure_template\":
         \"story_lesson_cta\",\n  \"hashtag_band\": {\n    \"min\": 2,\n    \"max\":
         5,\n    \"auto_brand\": true\n  },\n  \"length_cap\": {\n    \"mode\": \"standard\"\n  },\n  \"recommendations\":
-        []\n}\n```"}],"max_tokens":4096,"temperature":0.0,"system":"Your input schema
-        fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        []\n}\n```"}],"max_tokens":4096,"temperature":0.0,"output_config":{"format":{"type":"json_schema","schema":{"type":"object","properties":{"post":{"type":"string","description":"Sales-ready
+        copy that reflects the requested toggles."},"hooks":{"type":"array","items":{"type":"string"},"description":"Short
+        hook options that help the evaluator judge intent."}},"required":["post","hooks"],"additionalProperties":false}}},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"topic_seed\": {\n      \"type\": \"object\",\n      \"properties\":
         {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
         \"TopicSeed\"\n        },\n        \"phrase\": {\n          \"type\": \"string\"\n        },\n        \"take\":
@@ -108,9 +56,7 @@ http_interactions:
         \"EvaluatorLoop::Recommendation struct\",\n        \"additionalProperties\":
         false\n      },\n      \"description\": \"Prior evaluator notes the generator
         should incorporate.\"\n    }\n  },\n  \"required\": [\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\"\n  ]\n}\n```\n\nYour
-        objective is: Draft a concise sales pitch that embraces a persona''s preferences.","output_format":{"type":"json_schema","schema":{"type":"object","properties":{"post":{"type":"string","description":"Sales-ready
-        copy that reflects the requested toggles."},"hooks":{"type":"array","items":{"type":"string"},"description":"Short
-        hook options that help the evaluator judge intent."}},"required":["post","hooks"],"additionalProperties":false}}}'
+        objective is: Draft a concise sales pitch that embraces a persona''s preferences."}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -121,38 +67,36 @@ http_interactions:
       Host:
       - api.anthropic.com
       X-Stainless-Arch:
-      - arm64
+      - x64
       X-Stainless-Lang:
       - ruby
       X-Stainless-Os:
-      - MacOS
+      - Linux
       X-Stainless-Package-Version:
       - 1.28.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.4.5
+      - 3.4.8
       Content-Type:
       - application/json
       Anthropic-Version:
       - '2023-06-01'
       X-Api-Key:
       - "<ANTHROPIC_API_KEY>"
-      Anthropic-Beta:
-      - structured-outputs-2025-11-13
       X-Stainless-Retry-Count:
       - '0'
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '5563'
+      - '5574'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sun, 05 Apr 2026 19:07:15 GMT
+      - Mon, 13 Jul 2026 03:54:35 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -160,147 +104,86 @@ http_interactions:
       Connection:
       - keep-alive
       Anthropic-Ratelimit-Input-Tokens-Limit:
-      - '450000'
+      - '10000000'
       Anthropic-Ratelimit-Input-Tokens-Remaining:
-      - '449000'
+      - '9999000'
       Anthropic-Ratelimit-Input-Tokens-Reset:
-      - '2026-04-05T19:07:11Z'
+      - '2026-07-13T03:54:29Z'
       Anthropic-Ratelimit-Output-Tokens-Limit:
-      - '90000'
+      - '2000000'
       Anthropic-Ratelimit-Output-Tokens-Remaining:
-      - '90000'
+      - '2000000'
       Anthropic-Ratelimit-Output-Tokens-Reset:
-      - '2026-04-05T19:07:15Z'
+      - '2026-07-13T03:54:35Z'
       Anthropic-Ratelimit-Requests-Limit:
-      - '1000'
+      - '10000'
       Anthropic-Ratelimit-Requests-Remaining:
-      - '999'
+      - '9999'
       Anthropic-Ratelimit-Requests-Reset:
-      - '2026-04-05T19:07:09Z'
+      - '2026-07-13T03:54:27Z'
       Anthropic-Ratelimit-Tokens-Limit:
-      - '540000'
+      - '12000000'
       Anthropic-Ratelimit-Tokens-Remaining:
-      - '539000'
+      - '11999000'
       Anthropic-Ratelimit-Tokens-Reset:
-      - '2026-04-05T19:07:11Z'
+      - '2026-07-13T03:54:29Z'
       Request-Id:
-      - req_011CZm9Zv8NjMw7eSAMHFzsS
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
-      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      - "<ANTHROPIC_ORGANIZATION>"
+      Traceresponse:
+      - 00-a0d26c027fb4ec73d1280b942d0584ef-8bb47c85d304b239-01
       Server:
       - cloudflare
-      X-Envoy-Upstream-Service-Time:
-      - '5864'
       Vary:
       - Accept-Encoding
-      Server-Timing:
-      - x-originResponse;dur=5866
-      Set-Cookie:
-      - _cfuvid=<REDACTED>
       X-Robots-Tag:
       - none
-      Cf-Cache-Status:
-      - DYNAMIC
       Content-Security-Policy:
       - default-src 'none'; frame-ancestors 'none'
+      Cf-Cache-Status:
+      - DYNAMIC
       Cf-Ray:
-      - 9e7ad5863e640327-MAD
+      - a1a558b05b5f1b4d-DUS
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        eyJtb2RlbCI6ImNsYXVkZS1oYWlrdS00LTUtMjAyNTEwMDEiLCJpZCI6Im1zZ18wMVVIcXZ6VXc0aDIyZW8yeWpNN1k4VkYiLCJ0eXBlIjoibWVzc2FnZSIsInJvbGUiOiJhc3Npc3RhbnQiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJwb3N0XCI6XCJFdmVyeW9uZSdzIG9ic2Vzc2VkIHdpdGggQUkgc2NyZWVuaW5nIGNhbmRpZGF0ZXMuIFdlIGRpZCBpdCBmb3IgNiBtb250aHMgYW5kIGtpbGxlZCB0aGUgcHJvZ3JhbS5cXG5cXG5IZXJlJ3Mgd2hhdCBub2JvZHkgdGFsa3MgYWJvdXQ6IHRoZSBiZXN0IGhpcmVzIGFyZW4ndCBvcHRpbWl6ZWQgZm9yIGFsZ29yaXRobXMuIFRoZXkncmUgdGhlIG9uZXMgd2hvIHRha2Ugd2VpcmQgY2FyZWVyIHBhdGhzLCB3aG8gcGl2b3QgaW5kdXN0cmllcywgd2hvIGhhdmUgZ2FwcyB0aGF0IHRlbGwgYSBzdG9yeS4gQUkgZmxhZ3MgYWxsIG9mIHRoYXQgYXMgcmlzay5cXG5cXG5XZSB3YXRjaGVkIG91ciB0b29sIHJlamVjdCBwZW9wbGUgd2hvIGJlY2FtZSBvdXIgdG9wIHBlcmZvcm1lcnMuIFRoZSBwYXR0ZXJuIHdhcyBicnV0YWzigJRpdCBmaWx0ZXJlZCBmb3IgcmVzdW1lIGxpbmVhcml0eSwgbm90IHBvdGVudGlhbC5cXG5cXG5UaGUgbGVzc29uOiBBSSBoaXJpbmcgd29ya3MgZ3JlYXQgZm9yIGVsaW1pbmF0aW5nIG9idmlvdXMgZGlzcXVhbGlmaWVycy4gQnV0IGlmIHlvdSdyZSB0cnlpbmcgdG8gZmluZCBleGNlcHRpb25hbCB0YWxlbnQsIHlvdSBuZWVkIGh1bWFucyBpbiB0aGUgbG9vcCBtYWtpbmcganVkZ21lbnQgY2FsbHMgb24gdGhlIG91dGxpZXJzLlxcblxcblN0b3AgbGV0dGluZyB0aGUgYWxnb3JpdGhtIGRlY2lkZSB3aG8gZGVzZXJ2ZXMgYSBjb252ZXJzYXRpb24uIFVzZSBpdCB0byBzY2FsZSBzY3JlZW5pbmcsIG5vdCB0byByZXBsYWNlIGludHVpdGlvbi5cXG5cXG4jQUlIaXJpbmcgI1RhbGVudEFjcXVpc2l0aW9uICNIaXJpbmdTdHJhdGVneSAjQ29udHJhcmlhblRha2UgI1JlY3J1aXRtZW50VGVjaFwiLFwiaG9va3NcIjpbXCJFdmVyeW9uZSdzIHVzaW5nIEFJIHRvIGhpcmUuIFdlIHN0b3BwZWQuXCIsXCJUaGUgYmVzdCBjYW5kaWRhdGVzIGdldCByZWplY3RlZCBieSBBSSBzY3JlZW5pbmcuXCIsXCJZb3VyIGhpcmluZyBhbGdvcml0aG0gaXMgZmlsdGVyaW5nIG91dCB5b3VyIGZ1dHVyZSBzdGFycy5cIixcIkFJIGhpcmluZyBzb3VuZHMgc21hcnQuIEl0IGNvc3QgdXMgdG9wIHRhbGVudC5cIl19In1dLCJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIiwic3RvcF9zZXF1ZW5jZSI6bnVsbCwic3RvcF9kZXRhaWxzIjpudWxsLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjE1MzcsImNhY2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfcmVhZF9pbnB1dF90b2tlbnMiOjAsImNhY2hlX2NyZWF0aW9uIjp7ImVwaGVtZXJhbF81bV9pbnB1dF90b2tlbnMiOjAsImVwaGVtZXJhbF8xaF9pbnB1dF90b2tlbnMiOjB9LCJvdXRwdXRfdG9rZW5zIjoyNjAsInNlcnZpY2VfdGllciI6InN0YW5kYXJkIiwiaW5mZXJlbmNlX2dlbyI6Im5vdF9hdmFpbGFibGUifX0=
-  recorded_at: Sun, 05 Apr 2026 19:07:15 GMT
+        eyJtb2RlbCI6ImNsYXVkZS1oYWlrdS00LTUtMjAyNTEwMDEiLCJpZCI6Im1zZ18wMTFDY3lQM3o2RlY1eFl0WTcyTFVzU0UiLCJ0eXBlIjoibWVzc2FnZSIsInJvbGUiOiJhc3Npc3RhbnQiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJwb3N0XCI6XCJJIHNwZW50IDYgbW9udGhzIGJ1aWxkaW5nIGFuIFxcXCJBSS1maXJzdFxcXCIgaGlyaW5nIHBpcGVsaW5lLiBSZWplY3RlZCAyMDArIGNhbmRpZGF0ZXMgdGhlIGFsZ29yaXRobSBmbGFnZ2VkIGFzIFxcXCJsb3ctZml0LlxcXCIgVGhlbiBJIGFjdHVhbGx5IHRhbGtlZCB0byB0aGVtLlxcblxcblR1cm5zIG91dCB0aGUgYmVzdCBoaXJlIGNhbWUgZnJvbSBzb21lb25lIHRoZSBzeXN0ZW0gYnVyaWVkIGluIHJvdW5kIDIuXFxuXFxuSGVyZSdzIHRoZSBjb250cmFyaWFuIHRydXRoOiBBSSBoaXJpbmcgdG9vbHMgb3B0aW1pemUgZm9yIHBhdHRlcm4tbWF0Y2hpbmcsIG5vdCBwb3RlbnRpYWwuIFRoZXkncmUgYnJpbGxpYW50IGF0IGZpbmRpbmcgY2xvbmVzIG9mIHlvdXIgbGFzdCA1MCBoaXJlc+KAlHRlcnJpYmxlIGF0IHNwb3R0aW5nIHRoZSB1bmNvbnZlbnRpb25hbCB0YWxlbnQgdGhhdCBhY3R1YWxseSBtb3ZlcyB0aGUgbmVlZGxlLlxcblxcblRoZSBsZXNzb24/IFVzZSBBSSB0byAqZmlsdGVyIG5vaXNlKiwgbm90ICptYWtlIGRlY2lzaW9ucyouIFlvdXIgZ3V0ICsgZGF0YSBiZWF0cyBhbGdvcml0aG0gYWxvbmUgZXZlcnkgdGltZS5cXG5cXG5JZiB5b3UncmUgYXV0b21hdGluZyBoaXJpbmcgd2l0aG91dCBodW1hbiBvdmVycmlkZSwgeW91J3JlIGxlYXZpbmcgZGlhbW9uZHMgaW4gdGhlIHJvdWdoLiBTdG9wIG91dHNvdXJjaW5nIGp1ZGdtZW50IHRvIGEgYmxhY2sgYm94LlxcblxcblJlYWR5IHRvIGhpcmUgc21hcnRlcj8gTGV0J3MgdGFsay4gI0FJSGlyaW5nICNUYWxlbnRTdHJhdGVneSAjSGlyaW5nVHJ1dGggI1JlY3J1aXRtZW50SW5ub3ZhdGlvblwiLFwiaG9va3NcIjpbXCJBSSBoaXJpbmcgdG9vbHMgYXJlIGNvc3RpbmcgeW91IHlvdXIgYmVzdCBjYW5kaWRhdGVzXCIsXCJUaGUgYWxnb3JpdGhtIGlzbid0IHNtYXJ0ZXIgdGhhbiB5b3VyIGluc3RpbmN0c1wiLFwiV2h5IHBhdHRlcm4tbWF0Y2hpbmcgZmFpbHMgYXQgZmluZGluZyBleGNlcHRpb25hbCB0YWxlbnRcIl19In1dLCJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIiwic3RvcF9zZXF1ZW5jZSI6bnVsbCwic3RvcF9kZXRhaWxzIjpudWxsLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjE1MzcsImNhY2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfcmVhZF9pbnB1dF90b2tlbnMiOjAsImNhY2hlX2NyZWF0aW9uIjp7ImVwaGVtZXJhbF81bV9pbnB1dF90b2tlbnMiOjAsImVwaGVtZXJhbF8xaF9pbnB1dF90b2tlbnMiOjB9LCJvdXRwdXRfdG9rZW5zIjoyNTgsInNlcnZpY2VfdGllciI6InN0YW5kYXJkIiwiaW5mZXJlbmNlX2dlbyI6Im5vdF9hdmFpbGFibGUifX0=
+  recorded_at: Mon, 13 Jul 2026 03:54:33 GMT
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1775416035094.061,"message":"trace_id=\"6d82636a-867a-4efb-b834-42a9da5e3f62\"
-        thread_id=1824 fiber_id=4264 request_id=nil request_start_time=nil input_tokens=1537
-        output_tokens=260 total_tokens=1797 cache_creation_input_tokens=0 cache_read_input_tokens=0
-        gen_ai.system=\"anthropic\" gen_ai.request.model=\"claude-haiku-4-5-20251001\"
-        dspy.signature=\"EvaluatorLoop::GenerateLinkedInArticle\" module_path=[{id:
-        \"ea1f4127-133b-4db9-b234-2a5643438ac6\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
-        label: nil}, {id: \"5352db7f-8220-402b-ae72-65ea9cf74f9b\", class: \"DSPy::Predict\",
-        label: nil}] module_root={id: \"ea1f4127-133b-4db9-b234-2a5643438ac6\", class:
-        \"EvaluatorLoop::SalesPitchWriterLoop\", label: nil} module_leaf={id: \"5352db7f-8220-402b-ae72-65ea9cf74f9b\",
-        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"ea1f4127-133b-4db9-b234-2a5643438ac6>5352db7f-8220-402b-ae72-65ea9cf74f9b\",
-        depth: 2} event=\"lm.tokens\"\n"}]}]'
-    headers:
-      Content-Encoding:
-      - identity
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: ''
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '0'
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Envoy-Upstream-Service-Time:
-      - '1'
-      Date:
-      - Sun, 05 Apr 2026 19:07:18 GMT
-      Server:
-      - envoy
-      Nr-Rate-Limited:
-      - allowed
-      X-Served-By:
-      - cache-mad2200126-MAD
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Sun, 05 Apr 2026 19:07:19 GMT
-- request:
-    method: post
-    uri: https://api.anthropic.com/v1/messages?beta=true
+    uri: https://api.anthropic.com/v1/messages
     body:
       encoding: UTF-8
       string: '{"model":"claude-sonnet-4-5-20250929","messages":[{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"post\": \"Everyone''s obsessed with AI screening
-        candidates. We did it for 6 months and killed the program.\\n\\nHere''s what
-        nobody talks about: the best hires aren''t optimized for algorithms. They''re
-        the ones who take weird career paths, who pivot industries, who have gaps
-        that tell a story. AI flags all of that as risk.\\n\\nWe watched our tool
-        reject people who became our top performers. The pattern was brutal—it filtered
-        for resume linearity, not potential.\\n\\nThe lesson: AI hiring works great
-        for eliminating obvious disqualifiers. But if you''re trying to find exceptional
-        talent, you need humans in the loop making judgment calls on the outliers.\\n\\nStop
-        letting the algorithm decide who deserves a conversation. Use it to scale
-        screening, not to replace intuition.\\n\\n#AIHiring #TalentAcquisition #HiringStrategy
-        #ContrarianTake #RecruitmentTech\",\n  \"hooks\": [\n    \"Everyone''s using
-        AI to hire. We stopped.\",\n    \"The best candidates get rejected by AI screening.\",\n    \"Your
-        hiring algorithm is filtering out your future stars.\",\n    \"AI hiring sounds
-        smart. It cost us top talent.\"\n  ],\n  \"topic_seed\": {\n    \"phrase\":
+        Input Values\n```json\n{\n  \"post\": \"I spent 6 months building an \\\"AI-first\\\"
+        hiring pipeline. Rejected 200+ candidates the algorithm flagged as \\\"low-fit.\\\"
+        Then I actually talked to them.\\n\\nTurns out the best hire came from someone
+        the system buried in round 2.\\n\\nHere''s the contrarian truth: AI hiring
+        tools optimize for pattern-matching, not potential. They''re brilliant at
+        finding clones of your last 50 hires—terrible at spotting the unconventional
+        talent that actually moves the needle.\\n\\nThe lesson? Use AI to *filter
+        noise*, not *make decisions*. Your gut + data beats algorithm alone every
+        time.\\n\\nIf you''re automating hiring without human override, you''re leaving
+        diamonds in the rough. Stop outsourcing judgment to a black box.\\n\\nReady
+        to hire smarter? Let''s talk. #AIHiring #TalentStrategy #HiringTruth #RecruitmentInnovation\",\n  \"hooks\":
+        [\n    \"AI hiring tools are costing you your best candidates\",\n    \"The
+        algorithm isn''t smarter than your instincts\",\n    \"Why pattern-matching
+        fails at finding exceptional talent\"\n  ],\n  \"topic_seed\": {\n    \"phrase\":
         \"AI hiring lessons\",\n    \"take\": \"contrarian\"\n  },\n  \"vibe_toggles\":
         {\n    \"cringe\": \"balanced\",\n    \"hustle\": \"maximal\",\n    \"vulnerability\":
         \"muted\"\n  },\n  \"structure_template\": \"story_lesson_cta\",\n  \"hashtag_band\":
         {\n    \"min\": 2,\n    \"max\": 5,\n    \"auto_brand\": true\n  },\n  \"length_cap\":
         {\n    \"mode\": \"standard\"\n  },\n  \"recommendations\": [],\n  \"attempt\":
-        1,\n  \"mindset\": \"skeptical\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        1,\n  \"mindset\": \"skeptical\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"output_config":{"format":{"type":"json_schema","schema":{"type":"object","properties":{"decision":{"type":"string","enum":["approved","needs_revision"],"description":"Whether
+        this draft is approved or needs another revision. Default to ''needs_revision''
+        unless the post truly meets all criteria for the given mindset."},"feedback":{"type":"string","description":"Narrative
+        explanation of the rubric score."},"recommendations":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Recommendation"},"message":{"type":"string"},"source_attempt":{"type":"integer"},"severity":{"type":"string"}},"required":["_type","message","source_attempt","severity"],"description":"EvaluatorLoop::Recommendation
+        struct","additionalProperties":false},"description":"Structured edits the
+        generator should apply next."},"self_score":{"type":"number","description":"Pitch
+        quality score between 0.0 and 1.0 inclusive."}},"required":["decision","feedback","recommendations","self_score"],"additionalProperties":false}}},"system":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"post\": {\n      \"type\": \"string\",\n      \"description\":
         \"Latest pitch draft from the generator.\"\n    },\n    \"topic_seed\": {\n      \"type\":
@@ -353,13 +236,7 @@ http_interactions:
         \"How critically to evaluate (skeptical: rarely approves, lenient: benefit
         of doubt).\"\n    }\n  },\n  \"required\": [\n    \"post\",\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\",\n    \"hashtag_band\",\n    \"length_cap\",\n    \"recommendations\",\n    \"hooks\",\n    \"attempt\",\n    \"mindset\"\n  ]\n}\n```\n\nYour
         objective is: Evaluate a sales pitch draft according to the specified editor
-        mindset.","output_format":{"type":"json_schema","schema":{"type":"object","properties":{"decision":{"type":"string","enum":["approved","needs_revision"],"description":"Whether
-        this draft is approved or needs another revision. Default to ''needs_revision''
-        unless the post truly meets all criteria for the given mindset."},"feedback":{"type":"string","description":"Narrative
-        explanation of the rubric score."},"recommendations":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Recommendation"},"message":{"type":"string"},"source_attempt":{"type":"integer"},"severity":{"type":"string"}},"required":["_type","message","source_attempt","severity"],"description":"EvaluatorLoop::Recommendation
-        struct","additionalProperties":false},"description":"Structured edits the
-        generator should apply next."},"self_score":{"type":"number","description":"Pitch
-        quality score between 0.0 and 1.0 inclusive."}},"required":["decision","feedback","recommendations","self_score"],"additionalProperties":false}}}'
+        mindset."}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -370,38 +247,36 @@ http_interactions:
       Host:
       - api.anthropic.com
       X-Stainless-Arch:
-      - arm64
+      - x64
       X-Stainless-Lang:
       - ruby
       X-Stainless-Os:
-      - MacOS
+      - Linux
       X-Stainless-Package-Version:
       - 1.28.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.4.5
+      - 3.4.8
       Content-Type:
       - application/json
       Anthropic-Version:
       - '2023-06-01'
       X-Api-Key:
       - "<ANTHROPIC_API_KEY>"
-      Anthropic-Beta:
-      - structured-outputs-2025-11-13
       X-Stainless-Retry-Count:
       - '0'
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '8272'
+      - '8208'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sun, 05 Apr 2026 19:07:35 GMT
+      - Mon, 13 Jul 2026 03:54:59 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -409,123 +284,57 @@ http_interactions:
       Connection:
       - keep-alive
       Anthropic-Ratelimit-Input-Tokens-Limit:
-      - '450000'
+      - '10000000'
       Anthropic-Ratelimit-Input-Tokens-Remaining:
-      - '449000'
+      - '9999000'
       Anthropic-Ratelimit-Input-Tokens-Reset:
-      - '2026-04-05T19:07:19Z'
+      - '2026-07-13T03:54:39Z'
       Anthropic-Ratelimit-Output-Tokens-Limit:
-      - '90000'
+      - '2000000'
       Anthropic-Ratelimit-Output-Tokens-Remaining:
-      - '90000'
+      - '2000000'
       Anthropic-Ratelimit-Output-Tokens-Reset:
-      - '2026-04-05T19:07:35Z'
+      - '2026-07-13T03:54:59Z'
       Anthropic-Ratelimit-Requests-Limit:
-      - '1000'
+      - '10000'
       Anthropic-Ratelimit-Requests-Remaining:
-      - '999'
+      - '9999'
       Anthropic-Ratelimit-Requests-Reset:
-      - '2026-04-05T19:07:15Z'
+      - '2026-07-13T03:54:35Z'
       Anthropic-Ratelimit-Tokens-Limit:
-      - '540000'
+      - '12000000'
       Anthropic-Ratelimit-Tokens-Remaining:
-      - '539000'
+      - '11999000'
       Anthropic-Ratelimit-Tokens-Reset:
-      - '2026-04-05T19:07:19Z'
+      - '2026-07-13T03:54:39Z'
       Request-Id:
-      - req_011CZm9aNwRkTAtUow4FQ5q2
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
-      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      - "<ANTHROPIC_ORGANIZATION>"
+      Traceresponse:
+      - 00-e57c9fbd79376900bb03f4e1ac92ea06-8ff8656894371620-01
       Server:
       - cloudflare
-      X-Envoy-Upstream-Service-Time:
-      - '20214'
       Vary:
       - Accept-Encoding
-      Server-Timing:
-      - x-originResponse;dur=20216
-      Set-Cookie:
-      - _cfuvid=<REDACTED>
       X-Robots-Tag:
       - none
-      Cf-Cache-Status:
-      - DYNAMIC
       Content-Security-Policy:
       - default-src 'none'; frame-ancestors 'none'
+      Cf-Cache-Status:
+      - DYNAMIC
       Cf-Ray:
-      - 9e7ad5ad6b96014a-MAD
+      - a1a558e55b9ff966-DUS
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC01LTIwMjUwOTI5IiwiaWQiOiJtc2dfMDFZSEdBazFzd2dMVDRMSmk2cDlMMTFzIiwidHlwZSI6Im1lc3NhZ2UiLCJyb2xlIjoiYXNzaXN0YW50IiwiY29udGVudCI6W3sidHlwZSI6InRleHQiLCJ0ZXh0Ijoie1wiZGVjaXNpb25cIjpcIm5lZWRzX3JldmlzaW9uXCIsXCJmZWVkYmFja1wiOlwiVGhpcyBkcmFmdCBoYXMgc3Ryb25nIGJvbmVzIGJ1dCBmYWxscyBzaG9ydCBvZiBhcHByb3ZhbCB1bmRlciBza2VwdGljYWwgZXZhbHVhdGlvbi4gVGhlIGNvbnRyYXJpYW4gYW5nbGUgaXMgcHJlc2VudCBidXQgbGFja3MgdGhlIHB1bmNoIG5lZWRlZOKAlCd3ZSBraWxsZWQgdGhlIHByb2dyYW0nIGlzIGdvb2QsIGJ1dCB0aGUgc3RvcnkgZmVlbHMgZ2VuZXJpYyByYXRoZXIgdGhhbiB2aXNjZXJhbC4gVGhlIHZ1bG5lcmFiaWxpdHkgaXMgYXBwcm9wcmlhdGVseSBtdXRlZCwgYnV0IHRoaXMgY3JlYXRlcyBhIGNyZWRpYmlsaXR5IGdhcDogbm8gYWRtaXNzaW9uIG9mIG1pc3Rha2VzLCBjb3N0cywgb3IgaW50ZXJuYWwgY29uZmxpY3QgbWFrZXMgdGhlIG5hcnJhdGl2ZSBmZWVsIHNhbml0aXplZC4gVGhlICdtYXhpbWFsIGh1c3RsZScgcmVxdWlyZW1lbnQgaXNuJ3QgZnVsbHkgbWV04oCUdGhlIENUQSBpcyBwYXNzaXZlICgnc3RvcCBsZXR0aW5nJykgcmF0aGVyIHRoYW4gYWN0aW9uLWRyaXZpbmcuIFRoZSBzdHJ1Y3R1cmUgZm9sbG93cyBzdG9yeeKGkmxlc3NvbuKGkkNUQSBjb3JyZWN0bHksIGJ1dCB0aGUgbGVzc29uIHNlY3Rpb24gaXMgdG9vIGFic3RyYWN0ICgnYnJ1dGFsIHBhdHRlcm4sJyAncmVzdW1lIGxpbmVhcml0eScpIHdpdGhvdXQgY29uY3JldGUgZXhhbXBsZXMuIEhhc2h0YWdzIGFyZSB3aXRoaW4gcmFuZ2UgYnV0ICNDb250cmFyaWFuVGFrZSBpcyBtZXRhL3NlbGYtcmVmZXJlbnRpYWwsIHdoaWNoIHVuZGVybWluZXMgYXV0aGVudGljaXR5LiBUaGUgcG9zdCByZWFkcyBsaWtlIGEgdGhvdWdodCBsZWFkZXJzaGlwIHRlbXBsYXRlIHJhdGhlciB0aGFuIGEgYmF0dGxlLXRlc3RlZCBpbnNpZ2h0LiBGb3Igc2tlcHRpY2FsIGFwcHJvdmFsLCB0aGlzIG5lZWRzIHNoYXJwZXIgc3BlY2lmaWNzLCBnZW51aW5lIHN0YWtlcywgYW5kIGEgbW9yZSBjb21tYW5kaW5nIGNsb3NlLlwiLFwicmVjb21tZW5kYXRpb25zXCI6W3tcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiUmVwbGFjZSBhYnN0cmFjdCBsYW5ndWFnZSAoJ2JydXRhbCBwYXR0ZXJuLCcgJ3Jlc3VtZSBsaW5lYXJpdHknKSB3aXRoIG9uZSBjb25jcmV0ZSBleGFtcGxlOiBuYW1lIGEgc3BlY2lmaWMgc2tpbGwvYmFja2dyb3VuZCB5b3VyIEFJIHJlamVjdGVkIHRoYXQgYmVjYW1lIHZhbHVhYmxlLCBvciBxdWFudGlmeSB0aGUgbWlzcyAoZS5nLiwgJzMgb2Ygb3VyIHRvcCA1IHBlcmZvcm1lcnMgd291bGQndmUgYmVlbiBhdXRvLXJlamVjdGVkJykuXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjEsXCJzZXZlcml0eVwiOlwiaGlnaFwifSx7XCJfdHlwZVwiOlwiUmVjb21tZW5kYXRpb25cIixcIm1lc3NhZ2VcIjpcIkFkZCBhIHNpbmdsZSBzZW50ZW5jZSBhY2tub3dsZWRnaW5nIHRoZSBjb3N0L21pc3Rha2U6ICdJdCB0b29rIHVzIGxvc2luZyB0d28gZXhjZXB0aW9uYWwgY2FuZGlkYXRlcyB0byBjb21wZXRpdG9ycyBiZWZvcmUgd2UgYXVkaXRlZCB0aGUgc3lzdGVtLicgVGhpcyBpbmplY3RzIG5lY2Vzc2FyeSB2dWxuZXJhYmlsaXR5IHdpdGhvdXQgb3ZlcmRvaW5nIGl0LlwiLFwic291cmNlX2F0dGVtcHRcIjoxLFwic2V2ZXJpdHlcIjpcImhpZ2hcIn0se1wiX3R5cGVcIjpcIlJlY29tbWVuZGF0aW9uXCIsXCJtZXNzYWdlXCI6XCJTdHJlbmd0aGVuIHRoZSBDVEEgdG8gbWF0Y2ggJ21heGltYWwgaHVzdGxlJzogY2hhbmdlIHRoZSBwYXNzaXZlICdTdG9wIGxldHRpbmcgdGhlIGFsZ29yaXRobSBkZWNpZGUnIHRvIGFuIGFjdGl2ZSBkaXJlY3RpdmUgbGlrZSAnQXVkaXQgeW91ciBBSSByZWplY3Rpb25zIHRoaXMgd2Vlay4gWW91J2xsIGZpbmQgeW91ciBuZXh0IHN0YXIgaW4gdGhlIGRpc2NhcmQgcGlsZS4nXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjEsXCJzZXZlcml0eVwiOlwibWVkaXVtXCJ9LHtcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiUmVtb3ZlICNDb250cmFyaWFuVGFrZeKAlGl0J3Mgc2VsZi1jb25ncmF0dWxhdG9yeSBhbmQgYnJlYWtzIGltbWVyc2lvbi4gUmVwbGFjZSB3aXRoIGEgZnVuY3Rpb25hbCBoYXNodGFnIGxpa2UgI0Z1dHVyZU9mV29yayBvciAjSFJUZWNoIHRvIHN0YXkgd2l0aGluIHRoZSAyLTUgcmFuZ2Ugd2hpbGUgbWFpbnRhaW5pbmcgcmVsZXZhbmNlLlwiLFwic291cmNlX2F0dGVtcHRcIjoxLFwic2V2ZXJpdHlcIjpcIm1lZGl1bVwifSx7XCJfdHlwZVwiOlwiUmVjb21tZW5kYXRpb25cIixcIm1lc3NhZ2VcIjpcIlRpZ2h0ZW4gdGhlIG9wZW5pbmcgaG9vazogJ0V2ZXJ5b25lJ3Mgb2JzZXNzZWQgd2l0aCBBSSBzY3JlZW5pbmcgY2FuZGlkYXRlcy4gV2UgZGlkIGl0IGZvciA2IG1vbnRocyBhbmQga2lsbGVkIHRoZSBwcm9ncmFtJyBjb3VsZCBiZSBwdW5jaGllciBhcyAnV2Ugc3BlbnQgJDQ3SyBvbiBBSSBoaXJpbmcgdG9vbHMuIFNodXQgdGhlbSBkb3duIGFmdGVyIDYgbW9udGhzLicgKFVzZSBhIHJlYWwgbnVtYmVyIGlmIHBvc3NpYmxl4oCUc3BlY2lmaWNpdHkgc2VsbHMgdGhlIGNvbnRyYXJpYW4gY3JlZGliaWxpdHkuKVwiLFwic291cmNlX2F0dGVtcHRcIjoxLFwic2V2ZXJpdHlcIjpcImxvd1wifV0sXCJzZWxmX3Njb3JlXCI6MC42Mn0ifV0sInN0b3BfcmVhc29uIjoiZW5kX3R1cm4iLCJzdG9wX3NlcXVlbmNlIjpudWxsLCJzdG9wX2RldGFpbHMiOm51bGwsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MjMyOSwiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowLCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6MCwiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MH0sIm91dHB1dF90b2tlbnMiOjYxMSwic2VydmljZV90aWVyIjoic3RhbmRhcmQiLCJpbmZlcmVuY2VfZ2VvIjoibm90X2F2YWlsYWJsZSJ9fQ==
-  recorded_at: Sun, 05 Apr 2026 19:07:35 GMT
+        eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC01LTIwMjUwOTI5IiwiaWQiOiJtc2dfMDExQ2N5UDRoSFZCTGh5S21YQ0M3NWNWIiwidHlwZSI6Im1lc3NhZ2UiLCJyb2xlIjoiYXNzaXN0YW50IiwiY29udGVudCI6W3sidHlwZSI6InRleHQiLCJ0ZXh0Ijoie1wiZGVjaXNpb25cIjpcIm5lZWRzX3JldmlzaW9uXCIsXCJmZWVkYmFja1wiOlwiVGhpcyBkcmFmdCBkZW1vbnN0cmF0ZXMgc3Ryb25nIHN0cnVjdHVyYWwgYm9uZXMgYW5kIGEgY29tcGVsbGluZyBjb250cmFyaWFuIGFuZ2xlLCBidXQgZmFsbHMgc2hvcnQgb2YgYXBwcm92YWwgdW5kZXIgc2tlcHRpY2FsIGV2YWx1YXRpb24gZHVlIHRvIHNldmVyYWwgY3JpdGljYWwgd2Vha25lc3Nlcy4gVGhlIG9wZW5pbmcgc3RvcnkgbGFja3Mgc3BlY2lmaWNpdHnigJQnNiBtb250aHMnIGFuZCAnMjAwKyBjYW5kaWRhdGVzJyBmZWVsIGxpa2UgcGxhY2Vob2xkZXIgbnVtYmVycyByYXRoZXIgdGhhbiBhdXRoZW50aWMgZGV0YWlscy4gVGhlICdiZXN0IGhpcmUnIGFuZWNkb3RlIGlzIG1lbnRpb25lZCBidXQgbmV2ZXIgZGV2ZWxvcGVkIHdpdGggY29uY3JldGUgb3V0Y29tZXMgb3Igc3Rha2VzLiBUaGUgdnVsbmVyYWJpbGl0eSB0b2dnbGUgaXMgc2V0IHRvICdtdXRlZCwnIHlldCB0aGUgcG9zdCBuZWVkcyBNT1JFIHZ1bG5lcmFiaWxpdHkgaGVyZeKAlGFkbWl0dGluZyB0aGUgY29zdCBvZiB0aGlzIG1pc3Rha2UsIHRoZSBlbWJhcnJhc3NtZW50IG9mIG5lYXJseSBtaXNzaW5nIGdyZWF0IHRhbGVudCwgb3IgdGhlIG9yZ2FuaXphdGlvbmFsIGltcGFjdCB3b3VsZCBzdHJlbmd0aGVuIGNyZWRpYmlsaXR5LiBUaGUgbWF4aW1hbCBodXN0bGUgdmliZSBjb21lcyB0aHJvdWdoIGluIHRoZSBDVEEgYnV0IGZlZWxzIGRpc2Nvbm5lY3RlZCBmcm9tIHRoZSBsZXNzb24gaXRzZWxmLiBUaGUgcGhyYXNlICdkaWFtb25kcyBpbiB0aGUgcm91Z2gnIGlzIGNsaWNow6kgYW5kIHVuZGVybWluZXMgdGhlIG90aGVyd2lzZSBzaGFycCBjb250cmFyaWFuIHBvc2l0aW9uaW5nLiBNb3N0IGNyaXRpY2FsbHksIHRoZSBsZXNzb24gJ1VzZSBBSSB0byBmaWx0ZXIgbm9pc2UsIG5vdCBtYWtlIGRlY2lzaW9ucycgaXMgc29saWQgYnV0IHVuZGVyZGV2ZWxvcGVk4oCUaXQgbmVlZHMgYSBjb25jcmV0ZSBmcmFtZXdvcmsgb3IgYWN0aW9uYWJsZSBkaXN0aW5jdGlvbiBiZXR3ZWVuIGFwcHJvcHJpYXRlIGFuZCBpbmFwcHJvcHJpYXRlIEFJIHVzZSBjYXNlcy4gVGhlIGhhc2h0YWdzIGFyZSBnZW5lcmljICgjVGFsZW50U3RyYXRlZ3ksICNSZWNydWl0bWVudElubm92YXRpb24pIHJhdGhlciB0aGFuIGNvbnZlcnNhdGlvbi1zdGFydGVycy4gRm9yIGEgc2tlcHRpY2FsIG1pbmRzZXQsIHRoaXMgcmVhZHMgbGlrZSBhIGNvbXBldGVudCBmaXJzdCBkcmFmdCB0aGF0IGhhc24ndCB5ZXQgZWFybmVkIGl0cyBjb250cmFyaWFuIGNyZWRpYmlsaXR5IHRocm91Z2ggc3BlY2lmaWNpdHkgYW5kIGRlcHRoLlwiLFwicmVjb21tZW5kYXRpb25zXCI6W3tcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiUmVwbGFjZSB2YWd1ZSBtZXRyaWNzICgnNiBtb250aHMsJyAnMjAwKyBjYW5kaWRhdGVzJykgd2l0aCBzcGVjaWZpYywgbWVtb3JhYmxlIGRldGFpbHMuIEV4YW1wbGU6ICdBZnRlciAxNDcgZGF5cyBhbmQgZXhhY3RseSAyMzcgYWxnb3JpdGhtIHJlamVjdGlvbnMsIEkgbWFudWFsbHkgcmV2aWV3ZWQgdGhlIGJvdHRvbSAyMCUgb2Ygb3VyIGNhbmRpZGF0ZSBwb29sLicgU3BlY2lmaWNpdHkgPSBjcmVkaWJpbGl0eS5cIixcInNvdXJjZV9hdHRlbXB0XCI6MSxcInNldmVyaXR5XCI6XCJoaWdoXCJ9LHtcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiRGV2ZWxvcCB0aGUgJ2Jlc3QgaGlyZScgc3Rvcnkgd2l0aCBjb25jcmV0ZSBvdXRjb21lcy4gV2hhdCBkaWQgdGhpcyBwZXJzb24gYWNjb21wbGlzaD8gV2hhdCB3b3VsZCB5b3UgaGF2ZSBsb3N0PyBFeGFtcGxlOiAnU2hlJ3Mgbm93IG91ciB0b3AgcGVyZm9ybWVy4oCUY2xvc2VkICQyTSBpbiBoZXIgZmlyc3QgcXVhcnRlciwgc29tZXRoaW5nIG91ciAnaGlnaC1maXQnIGNhbmRpZGF0ZXMgbmV2ZXIgYXBwcm9hY2hlZC4nIEdpdmUgdXMgc3Rha2VzLlwiLFwic291cmNlX2F0dGVtcHRcIjoxLFwic2V2ZXJpdHlcIjpcImhpZ2hcIn0se1wiX3R5cGVcIjpcIlJlY29tbWVuZGF0aW9uXCIsXCJtZXNzYWdlXCI6XCJJbmplY3QgY29udHJvbGxlZCB2dWxuZXJhYmlsaXR5IGRlc3BpdGUgdGhlICdtdXRlZCcgc2V0dGluZy4gQWRtaXQgdGhlIGNvc3Q6ICdUaGlzIG1pc3Rha2UgbmVhcmx5IGNvc3QgbWUgbXkgY3JlZGliaWxpdHkgd2l0aCB0aGUgZXhlYyB0ZWFtJyBvciAnSSB3YXN0ZWQgJDQwSyBpbiByZWNydWl0ZXIgZmVlcyBjaGFzaW5nIGFsZ29yaXRobS1hcHByb3ZlZCBtZWRpb2NyaXR5LicgVnVsbmVyYWJpbGl0eSBoZXJlIHN0cmVuZ3RoZW5zIHRoZSBjb250cmFyaWFuIGNsYWltLlwiLFwic291cmNlX2F0dGVtcHRcIjoxLFwic2V2ZXJpdHlcIjpcIm1lZGl1bVwifSx7XCJfdHlwZVwiOlwiUmVjb21tZW5kYXRpb25cIixcIm1lc3NhZ2VcIjpcIlJlcGxhY2UgJ2RpYW1vbmRzIGluIHRoZSByb3VnaCcgd2l0aCBmcmVzaCBsYW5ndWFnZS4gVGhlIGNsaWNow6kgdW5kZXJtaW5lcyB5b3VyIGNvbnRyYXJpYW4gcG9zaXRpb25pbmcuIFRyeTogJ3RoZSBtaXNmaXRzIHdobyBhY3R1YWxseSBidWlsZCB0aGluZ3MnIG9yICd0aGUgcGF0dGVybi1icmVha2VycyB5b3VyIGFsZ29yaXRobSBpcyB0cmFpbmVkIHRvIHJlamVjdC4nXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjEsXCJzZXZlcml0eVwiOlwibWVkaXVtXCJ9LHtcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiRXhwYW5kIHRoZSBsZXNzb24gd2l0aCBhIGNvbmNyZXRlIGZyYW1ld29yay4gRG9uJ3QganVzdCBzYXkgJ3VzZSBBSSB0byBmaWx0ZXIgbm9pc2Un4oCUZ2l2ZSB1cyB0aGUgZGVjaXNpb24gYm91bmRhcnkuIEV4YW1wbGU6ICdBSSBzY3JlZW5zIGZvciBiYXNlbGluZSBxdWFsaWZpY2F0aW9ucy4gSHVtYW5zIGV2YWx1YXRlIGZvciB1cHNpZGUgcG90ZW50aWFsLiBOZXZlciBsZXQgdGhlIGFsZ29yaXRobSBtYWtlIHRoZSBmaW5hbCBjYWxsIG9uIGFueW9uZSBpbiB0aGUgdG9wIDMwJS4nXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjEsXCJzZXZlcml0eVwiOlwiaGlnaFwifSx7XCJfdHlwZVwiOlwiUmVjb21tZW5kYXRpb25cIixcIm1lc3NhZ2VcIjpcIlN0cmVuZ3RoZW4gaGFzaHRhZyBzdHJhdGVneSB3aXRoIGNvbnZlcnNhdGlvbi1zdGFydGVycyByYXRoZXIgdGhhbiBnZW5lcmljIGluZHVzdHJ5IHRhZ3MuIFJlcGxhY2UgI1RhbGVudFN0cmF0ZWd5IGFuZCAjUmVjcnVpdG1lbnRJbm5vdmF0aW9uIHdpdGggc29tZXRoaW5nIGxpa2UgI0FsZ29yaXRobUJsaW5kU3BvdHMgb3IgI0hpcmluZ0NvbnRyYXJpYW4gdG8gc2lnbmFsIHRoZSB0YWtlIG1vcmUgY2xlYXJseS5cIixcInNvdXJjZV9hdHRlbXB0XCI6MSxcInNldmVyaXR5XCI6XCJsb3dcIn1dLFwic2VsZl9zY29yZVwiOjAuNjJ9In1dLCJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIiwic3RvcF9zZXF1ZW5jZSI6bnVsbCwic3RvcF9kZXRhaWxzIjpudWxsLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjIzMjcsImNhY2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfcmVhZF9pbnB1dF90b2tlbnMiOjAsImNhY2hlX2NyZWF0aW9uIjp7ImVwaGVtZXJhbF81bV9pbnB1dF90b2tlbnMiOjAsImVwaGVtZXJhbF8xaF9pbnB1dF90b2tlbnMiOjB9LCJvdXRwdXRfdG9rZW5zIjo3NjgsInNlcnZpY2VfdGllciI6InN0YW5kYXJkIiwiaW5mZXJlbmNlX2dlbyI6Im5vdF9hdmFpbGFibGUifX0=
+  recorded_at: Mon, 13 Jul 2026 03:54:57 GMT
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1775416055839.868,"message":"trace_id=\"6d82636a-867a-4efb-b834-42a9da5e3f62\"
-        thread_id=1824 fiber_id=4352 request_id=nil request_start_time=nil input_tokens=2329
-        output_tokens=611 total_tokens=2940 cache_creation_input_tokens=0 cache_read_input_tokens=0
-        gen_ai.system=\"anthropic\" gen_ai.request.model=\"claude-sonnet-4-5-20250929\"
-        dspy.signature=\"EvaluatorLoop::EvaluateLinkedInArticle\" module_path=[{id:
-        \"ea1f4127-133b-4db9-b234-2a5643438ac6\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
-        label: nil}, {id: \"cef5d964-f11a-4cc4-8d47-44a664949ea6\", class: \"DSPy::Predict\",
-        label: nil}] module_root={id: \"ea1f4127-133b-4db9-b234-2a5643438ac6\", class:
-        \"EvaluatorLoop::SalesPitchWriterLoop\", label: nil} module_leaf={id: \"cef5d964-f11a-4cc4-8d47-44a664949ea6\",
-        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"ea1f4127-133b-4db9-b234-2a5643438ac6>cef5d964-f11a-4cc4-8d47-44a664949ea6\",
-        depth: 2} event=\"lm.tokens\"\n"}]}]'
-    headers:
-      Content-Encoding:
-      - identity
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: ''
-    headers:
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '0'
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Envoy-Upstream-Service-Time:
-      - '1'
-      Date:
-      - Sun, 05 Apr 2026 19:07:39 GMT
-      Server:
-      - envoy
-      Nr-Rate-Limited:
-      - allowed
-      X-Served-By:
-      - cache-mad2200126-MAD
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Sun, 05 Apr 2026 19:07:39 GMT
-- request:
-    method: post
-    uri: https://api.anthropic.com/v1/messages?beta=true
+    uri: https://api.anthropic.com/v1/messages
     body:
       encoding: UTF-8
       string: '{"model":"claude-haiku-4-5-20251001","messages":[{"role":"user","content":"##
@@ -534,28 +343,35 @@ http_interactions:
         \"balanced\",\n    \"hustle\": \"maximal\",\n    \"vulnerability\": \"muted\"\n  },\n  \"structure_template\":
         \"story_lesson_cta\",\n  \"hashtag_band\": {\n    \"min\": 2,\n    \"max\":
         5,\n    \"auto_brand\": true\n  },\n  \"length_cap\": {\n    \"mode\": \"standard\"\n  },\n  \"recommendations\":
-        [\n    {\n      \"message\": \"Replace abstract language (''brutal pattern,''
-        ''resume linearity'') with one concrete example: name a specific skill/background
-        your AI rejected that became valuable, or quantify the miss (e.g., ''3 of
-        our top 5 performers would''ve been auto-rejected'').\",\n      \"source_attempt\":
-        1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\": \"Add
-        a single sentence acknowledging the cost/mistake: ''It took us losing two
-        exceptional candidates to competitors before we audited the system.'' This
-        injects necessary vulnerability without overdoing it.\",\n      \"source_attempt\":
-        1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\": \"Strengthen
-        the CTA to match ''maximal hustle'': change the passive ''Stop letting the
-        algorithm decide'' to an active directive like ''Audit your AI rejections
-        this week. You''ll find your next star in the discard pile.''\",\n      \"source_attempt\":
-        1,\n      \"severity\": \"medium\"\n    },\n    {\n      \"message\": \"Remove
-        #ContrarianTake—it''s self-congratulatory and breaks immersion. Replace with
-        a functional hashtag like #FutureOfWork or #HRTech to stay within the 2-5
-        range while maintaining relevance.\",\n      \"source_attempt\": 1,\n      \"severity\":
-        \"medium\"\n    },\n    {\n      \"message\": \"Tighten the opening hook:
-        ''Everyone''s obsessed with AI screening candidates. We did it for 6 months
-        and killed the program'' could be punchier as ''We spent $47K on AI hiring
-        tools. Shut them down after 6 months.'' (Use a real number if possible—specificity
-        sells the contrarian credibility.)\",\n      \"source_attempt\": 1,\n      \"severity\":
-        \"low\"\n    }\n  ]\n}\n```"}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        [\n    {\n      \"message\": \"Replace vague metrics (''6 months,'' ''200+
+        candidates'') with specific, memorable details. Example: ''After 147 days
+        and exactly 237 algorithm rejections, I manually reviewed the bottom 20% of
+        our candidate pool.'' Specificity = credibility.\",\n      \"source_attempt\":
+        1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\": \"Develop
+        the ''best hire'' story with concrete outcomes. What did this person accomplish?
+        What would you have lost? Example: ''She''s now our top performer—closed $2M
+        in her first quarter, something our ''high-fit'' candidates never approached.''
+        Give us stakes.\",\n      \"source_attempt\": 1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\":
+        \"Inject controlled vulnerability despite the ''muted'' setting. Admit the
+        cost: ''This mistake nearly cost me my credibility with the exec team'' or
+        ''I wasted $40K in recruiter fees chasing algorithm-approved mediocrity.''
+        Vulnerability here strengthens the contrarian claim.\",\n      \"source_attempt\":
+        1,\n      \"severity\": \"medium\"\n    },\n    {\n      \"message\": \"Replace
+        ''diamonds in the rough'' with fresh language. The cliché undermines your
+        contrarian positioning. Try: ''the misfits who actually build things'' or
+        ''the pattern-breakers your algorithm is trained to reject.''\",\n      \"source_attempt\":
+        1,\n      \"severity\": \"medium\"\n    },\n    {\n      \"message\": \"Expand
+        the lesson with a concrete framework. Don''t just say ''use AI to filter noise''—give
+        us the decision boundary. Example: ''AI screens for baseline qualifications.
+        Humans evaluate for upside potential. Never let the algorithm make the final
+        call on anyone in the top 30%.''\",\n      \"source_attempt\": 1,\n      \"severity\":
+        \"high\"\n    },\n    {\n      \"message\": \"Strengthen hashtag strategy
+        with conversation-starters rather than generic industry tags. Replace #TalentStrategy
+        and #RecruitmentInnovation with something like #AlgorithmBlindSpots or #HiringContrarian
+        to signal the take more clearly.\",\n      \"source_attempt\": 1,\n      \"severity\":
+        \"low\"\n    }\n  ]\n}\n```"}],"max_tokens":4096,"temperature":0.0,"output_config":{"format":{"type":"json_schema","schema":{"type":"object","properties":{"post":{"type":"string","description":"Sales-ready
+        copy that reflects the requested toggles."},"hooks":{"type":"array","items":{"type":"string"},"description":"Short
+        hook options that help the evaluator judge intent."}},"required":["post","hooks"],"additionalProperties":false}}},"system":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"topic_seed\": {\n      \"type\": \"object\",\n      \"properties\":
         {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
@@ -598,9 +414,7 @@ http_interactions:
         \"EvaluatorLoop::Recommendation struct\",\n        \"additionalProperties\":
         false\n      },\n      \"description\": \"Prior evaluator notes the generator
         should incorporate.\"\n    }\n  },\n  \"required\": [\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\"\n  ]\n}\n```\n\nYour
-        objective is: Draft a concise sales pitch that embraces a persona''s preferences.","output_format":{"type":"json_schema","schema":{"type":"object","properties":{"post":{"type":"string","description":"Sales-ready
-        copy that reflects the requested toggles."},"hooks":{"type":"array","items":{"type":"string"},"description":"Short
-        hook options that help the evaluator judge intent."}},"required":["post","hooks"],"additionalProperties":false}}}'
+        objective is: Draft a concise sales pitch that embraces a persona''s preferences."}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -611,38 +425,36 @@ http_interactions:
       Host:
       - api.anthropic.com
       X-Stainless-Arch:
-      - arm64
+      - x64
       X-Stainless-Lang:
       - ruby
       X-Stainless-Os:
-      - MacOS
+      - Linux
       X-Stainless-Package-Version:
       - 1.28.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.4.5
+      - 3.4.8
       Content-Type:
       - application/json
       Anthropic-Version:
       - '2023-06-01'
       X-Api-Key:
       - "<ANTHROPIC_API_KEY>"
-      Anthropic-Beta:
-      - structured-outputs-2025-11-13
       X-Stainless-Retry-Count:
       - '0'
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '7225'
+      - '7670'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sun, 05 Apr 2026 19:07:39 GMT
+      - Mon, 13 Jul 2026 03:55:05 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -650,164 +462,115 @@ http_interactions:
       Connection:
       - keep-alive
       Anthropic-Ratelimit-Input-Tokens-Limit:
-      - '450000'
+      - '10000000'
       Anthropic-Ratelimit-Input-Tokens-Remaining:
-      - '449000'
+      - '9999000'
       Anthropic-Ratelimit-Input-Tokens-Reset:
-      - '2026-04-05T19:07:37Z'
+      - '2026-07-13T03:55:01Z'
       Anthropic-Ratelimit-Output-Tokens-Limit:
-      - '90000'
+      - '2000000'
       Anthropic-Ratelimit-Output-Tokens-Remaining:
-      - '90000'
+      - '2000000'
       Anthropic-Ratelimit-Output-Tokens-Reset:
-      - '2026-04-05T19:07:39Z'
+      - '2026-07-13T03:55:05Z'
       Anthropic-Ratelimit-Requests-Limit:
-      - '1000'
+      - '10000'
       Anthropic-Ratelimit-Requests-Remaining:
-      - '999'
+      - '9999'
       Anthropic-Ratelimit-Requests-Reset:
-      - '2026-04-05T19:07:36Z'
+      - '2026-07-13T03:54:59Z'
       Anthropic-Ratelimit-Tokens-Limit:
-      - '540000'
+      - '12000000'
       Anthropic-Ratelimit-Tokens-Remaining:
-      - '539000'
+      - '11999000'
       Anthropic-Ratelimit-Tokens-Reset:
-      - '2026-04-05T19:07:37Z'
+      - '2026-07-13T03:55:01Z'
       Request-Id:
-      - req_011CZm9btXwHvKsxNRmwqiMU
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
-      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      - "<ANTHROPIC_ORGANIZATION>"
+      Traceresponse:
+      - 00-edffbb20530b16137dcc8323f050617a-c16a3be9e3bcf041-01
       Server:
       - cloudflare
-      X-Envoy-Upstream-Service-Time:
-      - '3704'
-      Server-Timing:
-      - x-originResponse;dur=3706
-      Set-Cookie:
-      - _cfuvid=<REDACTED>
+      Vary:
+      - Accept-Encoding
       X-Robots-Tag:
       - none
-      Cf-Cache-Status:
-      - DYNAMIC
       Content-Security-Policy:
       - default-src 'none'; frame-ancestors 'none'
+      Cf-Cache-Status:
+      - DYNAMIC
       Cf-Ray:
-      - 9e7ad62d68a00327-MAD
+      - a1a5597b7f8f1b4d-DUS
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        eyJtb2RlbCI6ImNsYXVkZS1oYWlrdS00LTUtMjAyNTEwMDEiLCJpZCI6Im1zZ18wMU5RaHBlZFBQdHJ0dm5lRm9zV0ZrcWciLCJ0eXBlIjoibWVzc2FnZSIsInJvbGUiOiJhc3Npc3RhbnQiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJwb3N0XCI6XCJXZSBzcGVudCBzaXggbW9udGhzIGFuZCBzZXJpb3VzIGJ1ZGdldCBvbiBBSSBoaXJpbmcgdG9vbHMuIFRoZW4gd2Uga2lsbGVkIHRoZSBwcm9ncmFtLlxcblxcbkhlcmUncyB3aGF0IHdlIGxlYXJuZWQ6IG91ciBhbGdvcml0aG0gcmVqZWN0ZWQgdGhyZWUgb2Ygb3VyIHRvcCBmaXZlIHBlcmZvcm1lcnMgYmVmb3JlIHRoZXkgd2VyZSBoaXJlZC4gT25lIGNhbmRpZGF0ZSdzIGJhY2tncm91bmQgZGlkbid0IGZpdCB0aGUgXFxcInJlc3VtZSBsaW5lYXJpdHlcXFwiIHRoZSBzeXN0ZW0gd2FzIHRyYWluZWQgb24uIEFub3RoZXIgaGFkIGEgbm9uLXRyYWRpdGlvbmFsIGNhcmVlciBwYXRoLiBCb3RoIGJlY2FtZSBpbnZhbHVhYmxlLlxcblxcbkl0IHRvb2sgbG9zaW5nIHR3byBleGNlcHRpb25hbCBjYW5kaWRhdGVzIHRvIGNvbXBldGl0b3JzIGJlZm9yZSB3ZSBhdWRpdGVkIHRoZSBzeXN0ZW0gYW5kIHJlYWxpemVkIHRoZSBjb3N0IG9mIGFsZ29yaXRobWljIGJsaW5kIHNwb3RzLlxcblxcblRoZSBjb250cmFyaWFuIHRydXRoPyBBSSBzY3JlZW5pbmcgZG9lc24ndCBmaW5kIHlvdXIgYmVzdCBwZW9wbGXigJRpdCBmaW5kcyB5b3VyIG1vc3QgcHJlZGljdGFibGUgb25lcy4gQW5kIHByZWRpY3RhYmxlIGlzbid0IHdoYXQgd2lucy5cXG5cXG5BdWRpdCB5b3VyIEFJIHJlamVjdGlvbnMgdGhpcyB3ZWVrLiBZb3UnbGwgZmluZCB5b3VyIG5leHQgc3RhciBpbiB0aGUgZGlzY2FyZCBwaWxlLlxcblxcbiNGdXR1cmVPZldvcmsgI0hSVGVjaCAjSGlyaW5nXCIsXCJob29rc1wiOltcIldlIGtpbGxlZCBvdXIgJDQ3SyBBSSBoaXJpbmcgcHJvZ3JhbSBhZnRlciA2IG1vbnRoc+KAlGhlcmUncyB3aHlcIixcIllvdXIgYmVzdCBjYW5kaWRhdGVzIGFyZSBpbiB0aGUgQUkgcmVqZWN0aW9uIHBpbGVcIixcIlRocmVlIG9mIG91ciB0b3AgcGVyZm9ybWVycyB3b3VsZCd2ZSBiZWVuIGF1dG8tcmVqZWN0ZWQgYnkgb3VyIGFsZ29yaXRobVwiXX0ifV0sInN0b3BfcmVhc29uIjoiZW5kX3R1cm4iLCJzdG9wX3NlcXVlbmNlIjpudWxsLCJzdG9wX2RldGFpbHMiOm51bGwsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MTk3NCwiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowLCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6MCwiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MH0sIm91dHB1dF90b2tlbnMiOjIzMywic2VydmljZV90aWVyIjoic3RhbmRhcmQiLCJpbmZlcmVuY2VfZ2VvIjoibm90X2F2YWlsYWJsZSJ9fQ==
-  recorded_at: Sun, 05 Apr 2026 19:07:39 GMT
+        eyJtb2RlbCI6ImNsYXVkZS1oYWlrdS00LTUtMjAyNTEwMDEiLCJpZCI6Im1zZ18wMTFDY3lQNkZLTHZaWVhXWGEyYXc3VGsiLCJ0eXBlIjoibWVzc2FnZSIsInJvbGUiOiJhc3Npc3RhbnQiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJwb3N0XCI6XCJJIHNwZW50IDE0NyBkYXlzIGFuZCAkNDBLIGluIHJlY3J1aXRlciBmZWVzIGNoYXNpbmcgYWxnb3JpdGhtLWFwcHJvdmVkIGNhbmRpZGF0ZXMuIFdlIGhpcmVkIGV4YWN0bHkgemVybyBvZiB0aGVtLlxcblxcblRoZW4gSSBicm9rZSBwcm90b2NvbC4gUHVsbGVkIHRoZSBib3R0b20gMjAlIG9mIG91ciBhcHBsaWNhbnQgcG9vbOKAlHRoZSBvbmVzIHRoZSBBSSBmbGFnZ2VkIGFzIG1pc21hdGNoZXMuIE1hbnVhbGx5IHJldmlld2VkIDIzNyByZWplY3RlZCBwcm9maWxlcy4gRm91bmQgU2FyYWguXFxuXFxuU2FyYWgncyByZXN1bWUgZGlkbid0IGZpdCB0aGUgcGF0dGVybi4gTm9uLXRyYWRpdGlvbmFsIGJhY2tncm91bmQuIEdhcHMgdGhlIGFsZ29yaXRobSBoYXRlZC4gSSBuZWFybHkgZ290IG92ZXJydWxlZCBieSBteSBleGVjIHRlYW0gZm9yIGV2ZW4gaW50ZXJ2aWV3aW5nIGhlci5cXG5cXG5TaGUgY2xvc2VkICQyTSBpbiBoZXIgZmlyc3QgcXVhcnRlci4gT3VyIFxcXCJoaWdoLWZpdFxcXCIgY2FuZGlkYXRlcz8gU3RpbGwgcmFtcGluZy5cXG5cXG5IZXJlJ3Mgd2hhdCBJIGxlYXJuZWQ6IEFJIGlzIGV4Y2VwdGlvbmFsIGF0IGZpbHRlcmluZyBub2lzZS4gSXQncyB0ZXJyaWJsZSBhdCBzcG90dGluZyB1cHNpZGUuIFlvdXIgYWxnb3JpdGhtIGlzIHRyYWluZWQgdG8gcmVqZWN0IHBhdHRlcm4tYnJlYWtlcnPigJR0aGUgZXhhY3QgcGVvcGxlIHdobyBidWlsZCB0aGluZ3MuXFxuXFxuTmV3IHJ1bGU6IExldCBBSSBzY3JlZW4gZm9yIGJhc2VsaW5lIHF1YWxpZmljYXRpb25zLiBMZXQgaHVtYW5zIGV2YWx1YXRlIGZvciBwb3RlbnRpYWwuIE5ldmVyIGxldCB0aGUgYWxnb3JpdGhtIG1ha2UgdGhlIGZpbmFsIGNhbGwgb24gYW55b25lIGluIHlvdXIgdG9wIDMwJS5cXG5cXG5UaGUgbWlzZml0cyB3aG8gYWN0dWFsbHkgbW92ZSB0aGUgbmVlZGxlPyBUaGV5J3JlIGhpZGluZyBpbiB5b3VyIHJlamVjdCBwaWxlLlxcblxcbiNBbGdvcml0aG1CbGluZFNwb3RzICNIaXJpbmdDb250cmFyaWFuICNUYWxlbnRTdHJhdGVneVwiLFwiaG9va3NcIjpbXCJJIHdhc3RlZCAkNDBLIG9uIGFsZ29yaXRobS1hcHByb3ZlZCBoaXJlcy4gVGhlbiBJIGJyb2tlIHRoZSBydWxlcy5cIixcIllvdXIgYmVzdCBjYW5kaWRhdGUgaXMgcHJvYmFibHkgaW4geW91ciByZWplY3QgcGlsZS5cIixcIkFJIGlzIGdyZWF0IGF0IGZpbHRlcmluZyBub2lzZS4gSXQncyB0ZXJyaWJsZSBhdCBzcG90dGluZyB3aW5uZXJzLlwiLFwiVGhlIHBhdHRlcm4tYnJlYWtlcnMgeW91ciBhbGdvcml0aG0gcmVqZWN0cz8gVGhleSdyZSB5b3VyIHRvcCBwZXJmb3JtZXJzLlwiXX0ifV0sInN0b3BfcmVhc29uIjoiZW5kX3R1cm4iLCJzdG9wX3NlcXVlbmNlIjpudWxsLCJzdG9wX2RldGFpbHMiOm51bGwsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MjA3OCwiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowLCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6MCwiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MH0sIm91dHB1dF90b2tlbnMiOjM0MCwic2VydmljZV90aWVyIjoic3RhbmRhcmQiLCJpbmZlcmVuY2VfZ2VvIjoibm90X2F2YWlsYWJsZSJ9fQ==
+  recorded_at: Mon, 13 Jul 2026 03:55:03 GMT
 - request:
     method: post
-    uri: https://collector.newrelic.com/agent_listener/invoke_raw_method?license_key=<NEW_RELIC_LICENSE_KEY>&marshal_format=json&method=log_event_data&protocol_version=17&run_id=BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-    body:
-      encoding: UTF-8
-      string: '[{"common":{"attributes":{"entity.name":"DSPy.rb","hostname":"simba.local","entity.guid":"MzkyNjk2NHxBUE18QVBQTElDQVRJT058NTI0MDg1MDE4"}},"logs":[{"level":"INFO","timestamp":1775416059678.7341,"message":"trace_id=\"6d82636a-867a-4efb-b834-42a9da5e3f62\"
-        thread_id=1824 fiber_id=4392 request_id=nil request_start_time=nil input_tokens=1974
-        output_tokens=233 total_tokens=2207 cache_creation_input_tokens=0 cache_read_input_tokens=0
-        gen_ai.system=\"anthropic\" gen_ai.request.model=\"claude-haiku-4-5-20251001\"
-        dspy.signature=\"EvaluatorLoop::GenerateLinkedInArticle\" module_path=[{id:
-        \"ea1f4127-133b-4db9-b234-2a5643438ac6\", class: \"EvaluatorLoop::SalesPitchWriterLoop\",
-        label: nil}, {id: \"5352db7f-8220-402b-ae72-65ea9cf74f9b\", class: \"DSPy::Predict\",
-        label: nil}] module_root={id: \"ea1f4127-133b-4db9-b234-2a5643438ac6\", class:
-        \"EvaluatorLoop::SalesPitchWriterLoop\", label: nil} module_leaf={id: \"5352db7f-8220-402b-ae72-65ea9cf74f9b\",
-        class: \"DSPy::Predict\", label: nil} module_scope={ancestry_token: \"ea1f4127-133b-4db9-b234-2a5643438ac6>5352db7f-8220-402b-ae72-65ea9cf74f9b\",
-        depth: 2} event=\"lm.tokens\"\n"}]}]'
-    headers:
-      Content-Encoding:
-      - identity
-      Host:
-      - collector.newrelic.com
-      Nr-Utilizationmetadata:
-      - AQICFgALc2ltYmEubG9jYWwXAAtzaW1iYS5sb2NhbA
-      Nr-Utilizationextra:
-      - AQARAAUAAAAIAABgAA
-      Nr-Session:
-      - BWqZTtnmgGliADvrtB84K3pp0rNMAAEBAAAnIQEAABNFAgQfPOcaAwAGOS4yMS4wAAtzaW1iYS5sb2NhbAAHRFNQeS5yYg
-      Nr-Agenttags:
-      - AX2uHIkGAAlhY2NvdW50SWQABzM5MjY5NjQAEHRydXN0ZWRBY2NvdW50SWQABzM5MjY5NjQAB2FjY291bnQAD0FjY291bnQgMzkyNjk2NA
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-      User-Agent:
-      - NewRelic-RubyAgent/9.21.0 (ruby 3.4.5 arm64-darwin23) zlib/1.2.12
-      Content-Type:
-      - application/octet-stream
-  response:
-    status:
-      code: 202
-      message: ''
-    headers:
-      Connection:
-      - close
-      Content-Length:
-      - '0'
-      X-Envoy-Upstream-Service-Time:
-      - '0'
-      Date:
-      - Sun, 05 Apr 2026 19:07:43 GMT
-      Server:
-      - envoy
-      Nr-Rate-Limited:
-      - allowed
-      Content-Type:
-      - application/json; charset=UTF-8
-      X-Served-By:
-      - cache-mad2200126-MAD
-    body:
-      encoding: UTF-8
-      string: ''
-  recorded_at: Sun, 05 Apr 2026 19:07:43 GMT
-- request:
-    method: post
-    uri: https://api.anthropic.com/v1/messages?beta=true
+    uri: https://api.anthropic.com/v1/messages
     body:
       encoding: UTF-8
       string: '{"model":"claude-sonnet-4-5-20250929","messages":[{"role":"user","content":"##
-        Input Values\n```json\n{\n  \"post\": \"We spent six months and serious budget
-        on AI hiring tools. Then we killed the program.\\n\\nHere''s what we learned:
-        our algorithm rejected three of our top five performers before they were hired.
-        One candidate''s background didn''t fit the \\\"resume linearity\\\" the system
-        was trained on. Another had a non-traditional career path. Both became invaluable.\\n\\nIt
-        took losing two exceptional candidates to competitors before we audited the
-        system and realized the cost of algorithmic blind spots.\\n\\nThe contrarian
-        truth? AI screening doesn''t find your best people—it finds your most predictable
-        ones. And predictable isn''t what wins.\\n\\nAudit your AI rejections this
-        week. You''ll find your next star in the discard pile.\\n\\n#FutureOfWork
-        #HRTech #Hiring\",\n  \"hooks\": [\n    \"We killed our $47K AI hiring program
-        after 6 months—here''s why\",\n    \"Your best candidates are in the AI rejection
-        pile\",\n    \"Three of our top performers would''ve been auto-rejected by
-        our algorithm\"\n  ],\n  \"topic_seed\": {\n    \"phrase\": \"AI hiring lessons\",\n    \"take\":
-        \"contrarian\"\n  },\n  \"vibe_toggles\": {\n    \"cringe\": \"balanced\",\n    \"hustle\":
-        \"maximal\",\n    \"vulnerability\": \"muted\"\n  },\n  \"structure_template\":
-        \"story_lesson_cta\",\n  \"hashtag_band\": {\n    \"min\": 2,\n    \"max\":
-        5,\n    \"auto_brand\": true\n  },\n  \"length_cap\": {\n    \"mode\": \"standard\"\n  },\n  \"recommendations\":
-        [\n    {\n      \"message\": \"Replace abstract language (''brutal pattern,''
-        ''resume linearity'') with one concrete example: name a specific skill/background
-        your AI rejected that became valuable, or quantify the miss (e.g., ''3 of
-        our top 5 performers would''ve been auto-rejected'').\",\n      \"source_attempt\":
-        1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\": \"Add
-        a single sentence acknowledging the cost/mistake: ''It took us losing two
-        exceptional candidates to competitors before we audited the system.'' This
-        injects necessary vulnerability without overdoing it.\",\n      \"source_attempt\":
-        1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\": \"Strengthen
-        the CTA to match ''maximal hustle'': change the passive ''Stop letting the
-        algorithm decide'' to an active directive like ''Audit your AI rejections
-        this week. You''ll find your next star in the discard pile.''\",\n      \"source_attempt\":
-        1,\n      \"severity\": \"medium\"\n    },\n    {\n      \"message\": \"Remove
-        #ContrarianTake—it''s self-congratulatory and breaks immersion. Replace with
-        a functional hashtag like #FutureOfWork or #HRTech to stay within the 2-5
-        range while maintaining relevance.\",\n      \"source_attempt\": 1,\n      \"severity\":
-        \"medium\"\n    },\n    {\n      \"message\": \"Tighten the opening hook:
-        ''Everyone''s obsessed with AI screening candidates. We did it for 6 months
-        and killed the program'' could be punchier as ''We spent $47K on AI hiring
-        tools. Shut them down after 6 months.'' (Use a real number if possible—specificity
-        sells the contrarian credibility.)\",\n      \"source_attempt\": 1,\n      \"severity\":
-        \"low\"\n    }\n  ],\n  \"attempt\": 2,\n  \"mindset\": \"skeptical\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"system":"Your
+        Input Values\n```json\n{\n  \"post\": \"I spent 147 days and $40K in recruiter
+        fees chasing algorithm-approved candidates. We hired exactly zero of them.\\n\\nThen
+        I broke protocol. Pulled the bottom 20% of our applicant pool—the ones the
+        AI flagged as mismatches. Manually reviewed 237 rejected profiles. Found Sarah.\\n\\nSarah''s
+        resume didn''t fit the pattern. Non-traditional background. Gaps the algorithm
+        hated. I nearly got overruled by my exec team for even interviewing her.\\n\\nShe
+        closed $2M in her first quarter. Our \\\"high-fit\\\" candidates? Still ramping.\\n\\nHere''s
+        what I learned: AI is exceptional at filtering noise. It''s terrible at spotting
+        upside. Your algorithm is trained to reject pattern-breakers—the exact people
+        who build things.\\n\\nNew rule: Let AI screen for baseline qualifications.
+        Let humans evaluate for potential. Never let the algorithm make the final
+        call on anyone in your top 30%.\\n\\nThe misfits who actually move the needle?
+        They''re hiding in your reject pile.\\n\\n#AlgorithmBlindSpots #HiringContrarian
+        #TalentStrategy\",\n  \"hooks\": [\n    \"I wasted $40K on algorithm-approved
+        hires. Then I broke the rules.\",\n    \"Your best candidate is probably in
+        your reject pile.\",\n    \"AI is great at filtering noise. It''s terrible
+        at spotting winners.\",\n    \"The pattern-breakers your algorithm rejects?
+        They''re your top performers.\"\n  ],\n  \"topic_seed\": {\n    \"phrase\":
+        \"AI hiring lessons\",\n    \"take\": \"contrarian\"\n  },\n  \"vibe_toggles\":
+        {\n    \"cringe\": \"balanced\",\n    \"hustle\": \"maximal\",\n    \"vulnerability\":
+        \"muted\"\n  },\n  \"structure_template\": \"story_lesson_cta\",\n  \"hashtag_band\":
+        {\n    \"min\": 2,\n    \"max\": 5,\n    \"auto_brand\": true\n  },\n  \"length_cap\":
+        {\n    \"mode\": \"standard\"\n  },\n  \"recommendations\": [\n    {\n      \"message\":
+        \"Replace vague metrics (''6 months,'' ''200+ candidates'') with specific,
+        memorable details. Example: ''After 147 days and exactly 237 algorithm rejections,
+        I manually reviewed the bottom 20% of our candidate pool.'' Specificity =
+        credibility.\",\n      \"source_attempt\": 1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\":
+        \"Develop the ''best hire'' story with concrete outcomes. What did this person
+        accomplish? What would you have lost? Example: ''She''s now our top performer—closed
+        $2M in her first quarter, something our ''high-fit'' candidates never approached.''
+        Give us stakes.\",\n      \"source_attempt\": 1,\n      \"severity\": \"high\"\n    },\n    {\n      \"message\":
+        \"Inject controlled vulnerability despite the ''muted'' setting. Admit the
+        cost: ''This mistake nearly cost me my credibility with the exec team'' or
+        ''I wasted $40K in recruiter fees chasing algorithm-approved mediocrity.''
+        Vulnerability here strengthens the contrarian claim.\",\n      \"source_attempt\":
+        1,\n      \"severity\": \"medium\"\n    },\n    {\n      \"message\": \"Replace
+        ''diamonds in the rough'' with fresh language. The cliché undermines your
+        contrarian positioning. Try: ''the misfits who actually build things'' or
+        ''the pattern-breakers your algorithm is trained to reject.''\",\n      \"source_attempt\":
+        1,\n      \"severity\": \"medium\"\n    },\n    {\n      \"message\": \"Expand
+        the lesson with a concrete framework. Don''t just say ''use AI to filter noise''—give
+        us the decision boundary. Example: ''AI screens for baseline qualifications.
+        Humans evaluate for upside potential. Never let the algorithm make the final
+        call on anyone in the top 30%.''\",\n      \"source_attempt\": 1,\n      \"severity\":
+        \"high\"\n    },\n    {\n      \"message\": \"Strengthen hashtag strategy
+        with conversation-starters rather than generic industry tags. Replace #TalentStrategy
+        and #RecruitmentInnovation with something like #AlgorithmBlindSpots or #HiringContrarian
+        to signal the take more clearly.\",\n      \"source_attempt\": 1,\n      \"severity\":
+        \"low\"\n    }\n  ],\n  \"attempt\": 2,\n  \"mindset\": \"skeptical\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"output_config":{"format":{"type":"json_schema","schema":{"type":"object","properties":{"decision":{"type":"string","enum":["approved","needs_revision"],"description":"Whether
+        this draft is approved or needs another revision. Default to ''needs_revision''
+        unless the post truly meets all criteria for the given mindset."},"feedback":{"type":"string","description":"Narrative
+        explanation of the rubric score."},"recommendations":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Recommendation"},"message":{"type":"string"},"source_attempt":{"type":"integer"},"severity":{"type":"string"}},"required":["_type","message","source_attempt","severity"],"description":"EvaluatorLoop::Recommendation
+        struct","additionalProperties":false},"description":"Structured edits the
+        generator should apply next."},"self_score":{"type":"number","description":"Pitch
+        quality score between 0.0 and 1.0 inclusive."}},"required":["decision","feedback","recommendations","self_score"],"additionalProperties":false}}},"system":"Your
         input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
         \"object\",\n  \"properties\": {\n    \"post\": {\n      \"type\": \"string\",\n      \"description\":
         \"Latest pitch draft from the generator.\"\n    },\n    \"topic_seed\": {\n      \"type\":
@@ -860,13 +623,7 @@ http_interactions:
         \"How critically to evaluate (skeptical: rarely approves, lenient: benefit
         of doubt).\"\n    }\n  },\n  \"required\": [\n    \"post\",\n    \"topic_seed\",\n    \"vibe_toggles\",\n    \"structure_template\",\n    \"hashtag_band\",\n    \"length_cap\",\n    \"recommendations\",\n    \"hooks\",\n    \"attempt\",\n    \"mindset\"\n  ]\n}\n```\n\nYour
         objective is: Evaluate a sales pitch draft according to the specified editor
-        mindset.","output_format":{"type":"json_schema","schema":{"type":"object","properties":{"decision":{"type":"string","enum":["approved","needs_revision"],"description":"Whether
-        this draft is approved or needs another revision. Default to ''needs_revision''
-        unless the post truly meets all criteria for the given mindset."},"feedback":{"type":"string","description":"Narrative
-        explanation of the rubric score."},"recommendations":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Recommendation"},"message":{"type":"string"},"source_attempt":{"type":"integer"},"severity":{"type":"string"}},"required":["_type","message","source_attempt","severity"],"description":"EvaluatorLoop::Recommendation
-        struct","additionalProperties":false},"description":"Structured edits the
-        generator should apply next."},"self_score":{"type":"number","description":"Pitch
-        quality score between 0.0 and 1.0 inclusive."}},"required":["decision","feedback","recommendations","self_score"],"additionalProperties":false}}}'
+        mindset."}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -877,38 +634,36 @@ http_interactions:
       Host:
       - api.anthropic.com
       X-Stainless-Arch:
-      - arm64
+      - x64
       X-Stainless-Lang:
       - ruby
       X-Stainless-Os:
-      - MacOS
+      - Linux
       X-Stainless-Package-Version:
       - 1.28.0
       X-Stainless-Runtime:
       - ruby
       X-Stainless-Runtime-Version:
-      - 3.4.5
+      - 3.4.8
       Content-Type:
       - application/json
       Anthropic-Version:
       - '2023-06-01'
       X-Api-Key:
       - "<ANTHROPIC_API_KEY>"
-      Anthropic-Beta:
-      - structured-outputs-2025-11-13
       X-Stainless-Retry-Count:
       - '0'
       X-Stainless-Timeout:
       - '600.0'
       Content-Length:
-      - '9825'
+      - '10621'
   response:
     status:
       code: 200
       message: OK
     headers:
       Date:
-      - Sun, 05 Apr 2026 19:08:00 GMT
+      - Mon, 13 Jul 2026 03:55:27 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -916,56 +671,52 @@ http_interactions:
       Connection:
       - keep-alive
       Anthropic-Ratelimit-Input-Tokens-Limit:
-      - '450000'
+      - '10000000'
       Anthropic-Ratelimit-Input-Tokens-Remaining:
-      - '449000'
+      - '9999000'
       Anthropic-Ratelimit-Input-Tokens-Reset:
-      - '2026-04-05T19:07:43Z'
+      - '2026-07-13T03:55:07Z'
       Anthropic-Ratelimit-Output-Tokens-Limit:
-      - '90000'
+      - '2000000'
       Anthropic-Ratelimit-Output-Tokens-Remaining:
-      - '90000'
+      - '2000000'
       Anthropic-Ratelimit-Output-Tokens-Reset:
-      - '2026-04-05T19:08:01Z'
+      - '2026-07-13T03:55:26Z'
       Anthropic-Ratelimit-Requests-Limit:
-      - '1000'
+      - '10000'
       Anthropic-Ratelimit-Requests-Remaining:
-      - '999'
+      - '9999'
       Anthropic-Ratelimit-Requests-Reset:
-      - '2026-04-05T19:07:40Z'
+      - '2026-07-13T03:55:05Z'
       Anthropic-Ratelimit-Tokens-Limit:
-      - '540000'
+      - '12000000'
       Anthropic-Ratelimit-Tokens-Remaining:
-      - '539000'
+      - '11999000'
       Anthropic-Ratelimit-Tokens-Reset:
-      - '2026-04-05T19:07:43Z'
+      - '2026-07-13T03:55:07Z'
       Request-Id:
-      - req_011CZm9cAuBbVzdYmebkCvRv
+      - "<REQUEST_ID>"
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
-      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      - "<ANTHROPIC_ORGANIZATION>"
+      Traceresponse:
+      - 00-85943e8caa1e0095a751ae3b28d2562b-df7dc5d517caf95d-01
       Server:
       - cloudflare
-      X-Envoy-Upstream-Service-Time:
-      - '21049'
       Vary:
       - Accept-Encoding
-      Server-Timing:
-      - x-originResponse;dur=21051
-      Set-Cookie:
-      - _cfuvid=<REDACTED>
       X-Robots-Tag:
       - none
-      Cf-Cache-Status:
-      - DYNAMIC
       Content-Security-Policy:
       - default-src 'none'; frame-ancestors 'none'
+      Cf-Cache-Status:
+      - DYNAMIC
       Cf-Ray:
-      - 9e7ad6456c04014a-MAD
+      - a1a559a0cea6f966-DUS
     body:
       encoding: ASCII-8BIT
       string: !binary |-
-        eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC01LTIwMjUwOTI5IiwiaWQiOiJtc2dfMDEzblNXeFB5WEhTOHJ3R2I3SDVHclJ6IiwidHlwZSI6Im1lc3NhZ2UiLCJyb2xlIjoiYXNzaXN0YW50IiwiY29udGVudCI6W3sidHlwZSI6InRleHQiLCJ0ZXh0Ijoie1wiZGVjaXNpb25cIjpcIm5lZWRzX3JldmlzaW9uXCIsXCJmZWVkYmFja1wiOlwiVGhpcyBkcmFmdCBzaG93cyBtZWFuaW5nZnVsIGltcHJvdmVtZW504oCUY29uY3JldGUgZXhhbXBsZXMgYXJlIG5vdyBwcmVzZW50ICgzIG9mIHRvcCA1IHBlcmZvcm1lcnMsIHJlc3VtZSBsaW5lYXJpdHksIG5vbi10cmFkaXRpb25hbCBwYXRocyksIHZ1bG5lcmFiaWxpdHkgaXMgaW5qZWN0ZWQgdmlhIHRoZSBjb21wZXRpdG9yIGxvc3MgYWRtaXNzaW9uLCBhbmQgdGhlIENUQSBpcyBhcHByb3ByaWF0ZWx5IGRpcmVjdGl2ZS4gSG93ZXZlciwgdW5kZXIgYSBza2VwdGljYWwgbGVucywgY3JpdGljYWwgZ2FwcyByZW1haW46ICgxKSBUaGUgb3BlbmluZyBob29rIHN0aWxsIGxhY2tzIHRoZSBzcGVjaWZpY2l0eSB0aGF0IHdvdWxkIG1ha2UgdGhlIGNvbnRyYXJpYW4gY2xhaW0gY3JlZGlibGXigJQnc2VyaW91cyBidWRnZXQnIGlzIHZhZ3VlIHdoZXJlIGEgY29uY3JldGUgZmlndXJlIHdvdWxkIGFuY2hvciB0aGUgc3RvcnkncyBzdGFrZXMuICgyKSBUaGUgdnVsbmVyYWJpbGl0eSBtb21lbnQgKCdsb3NpbmcgdHdvIGV4Y2VwdGlvbmFsIGNhbmRpZGF0ZXMnKSBmZWVscyB0YWNrZWQgb24gcmF0aGVyIHRoYW4gaW50ZWdyYXRlZCBpbnRvIHRoZSBuYXJyYXRpdmUgZmxvd+KAlGl0IGFwcGVhcnMgbWlkLXN0b3J5IHdpdGhvdXQgZW1vdGlvbmFsIHdlaWdodCBvciBjb25zZXF1ZW5jZSBiZXlvbmQgdGhlIGF1ZGl0LiAoMykgVGhlICdwcmVkaWN0YWJsZSB2cy4gd2lubmluZycgZGljaG90b215IGluIHRoZSBsZXNzb24gaXMgYXNzZXJ0ZWQgYnV0IG5vdCBlYXJuZWTigJR0aGVyZSdzIG5vIGJyaWRnZSBleHBsYWluaW5nICp3aHkqIHVucHJlZGljdGFiaWxpdHkgY29ycmVsYXRlcyB3aXRoIHBlcmZvcm1hbmNlIGluIHlvdXIgY29udGV4dC4gKDQpIEhhc2h0YWcgc2VsZWN0aW9uICgjRnV0dXJlT2ZXb3JrLCAjSFJUZWNoLCAjSGlyaW5nKSBpcyBmdW5jdGlvbmFsIGJ1dCBnZW5lcmljOyBmb3IgbWF4aW1hbCBodXN0bGUsIGF0IGxlYXN0IG9uZSBzaG91bGQgc2lnbmFsIGJvbGQgUE9WIChlLmcuLCAjSGlyaW5nQ29udHJhcmlhbiBvciAjQUlCYWNrbGFzaCkuIFRoZSBwb3N0IGlzICpjbG9zZSogdG8gYXBwcm92YWwgYnV0IGRvZXNuJ3QgeWV0IGp1c3RpZnkgdGhlIGNvbnRyYXJpYW4gYXV0aG9yaXR5IGl0IGNsYWltc+KAlGl0IHJlYWRzIGxpa2UgYSBjYXV0aW9uYXJ5IGFuZWNkb3RlIHJhdGhlciB0aGFuIGEgYmF0dGxlLXRlc3RlZCBpbnNpZ2h0LiBPbmUgbW9yZSBwYXNzIHRvIGRlZXBlbiB0aGUgc3Rha2VzLCBpbnRlZ3JhdGUgdnVsbmVyYWJpbGl0eSBvcmdhbmljYWxseSwgYW5kIHNoYXJwZW4gdGhlIGxlc3NvbidzIGxvZ2ljIHdpbGwgY3Jvc3MgdGhlIHRocmVzaG9sZC5cIixcInJlY29tbWVuZGF0aW9uc1wiOlt7XCJfdHlwZVwiOlwiUmVjb21tZW5kYXRpb25cIixcIm1lc3NhZ2VcIjpcIlJlcGxhY2UgJ3NlcmlvdXMgYnVkZ2V0JyB3aXRoIGEgc3BlY2lmaWMgZG9sbGFyIGZpZ3VyZSAoZS5nLiwgJyQ0N0snIG9yICc2LWZpZ3VyZSBpbnZlc3RtZW50JykuIFZhZ3VlIGNvc3Qgc2lnbmFscyB1bmRlcm1pbmUgdGhlIGNvbnRyYXJpYW4gY3JlZGliaWxpdHnigJRjb25jcmV0ZSBudW1iZXJzIG1ha2UgdGhlIGZhaWx1cmUgcmVhbCBhbmQgdGhlIGxlc3NvbiBlYXJuZWQuXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjIsXCJzZXZlcml0eVwiOlwiaGlnaFwifSx7XCJfdHlwZVwiOlwiUmVjb21tZW5kYXRpb25cIixcIm1lc3NhZ2VcIjpcIkludGVncmF0ZSB0aGUgdnVsbmVyYWJpbGl0eSBiZWF0IGludG8gdGhlIHN0b3J5J3MgY29uc2VxdWVuY2Ugc3RydWN0dXJlOiBtb3ZlICdJdCB0b29rIGxvc2luZyB0d28gZXhjZXB0aW9uYWwgY2FuZGlkYXRlcyB0byBjb21wZXRpdG9ycyBiZWZvcmUgd2UgYXVkaXRlZCcgdG8gaW1tZWRpYXRlbHkgZm9sbG93IHRoZSBhbGdvcml0aG0gcmVqZWN0aW9uIGV4YW1wbGVzLCB0aGVuIGFkZCBhIG9uZS1zZW50ZW5jZSBlbW90aW9uYWwgYmVhdCAoZS5nLiwgJ1RoYXQncyB3aGVuIHdlIHJlYWxpemVkIHRoZSBjb3N0IG9mIGFsZ29yaXRobWljIGJsaW5kIHNwb3RzJykuIFRoaXMgY3JlYXRlcyBuYXJyYXRpdmUgY2F1c2FsaXR5IHJhdGhlciB0aGFuIGEgYm9sdGVkLW9uIGFkbWlzc2lvbi5cIixcInNvdXJjZV9hdHRlbXB0XCI6MixcInNldmVyaXR5XCI6XCJoaWdoXCJ9LHtcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiU3RyZW5ndGhlbiB0aGUgbGVzc29uJ3MgbG9naWMgYnJpZGdlOiBhZnRlciAncHJlZGljdGFibGUgaXNuJ3Qgd2hhdCB3aW5zLCcgYWRkIG9uZSBzZW50ZW5jZSBleHBsYWluaW5nICp3aHkqIGluIHlvdXIgY29udGV4dCAoZS5nLiwgJ091ciBmYXN0ZXN0LWdyb3dpbmcgYWNjb3VudHMgY2FtZSBmcm9tIHJlcHMgd2hvJ2QgcGl2b3RlZCBpbmR1c3RyaWVz4oCUZXhhY3RseSB0aGUgcHJvZmlsZXMgb3VyIEFJIGZsYWdnZWQgYXMgcmlza3knKS4gVGhpcyBncm91bmRzIHRoZSBjb250cmFyaWFuIGNsYWltIGluIG9wZXJhdGlvbmFsIHJlYWxpdHkuXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjIsXCJzZXZlcml0eVwiOlwibWVkaXVtXCJ9LHtcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiU3dhcCBvbmUgZ2VuZXJpYyBoYXNodGFnICgjSGlyaW5nIG9yICNIUlRlY2gpIGZvciBhIGJvbGRlciBzaWduYWwgdGhhdCBtYXRjaGVzIG1heGltYWwgaHVzdGxlIGFuZCBjb250cmFyaWFuIHRha2XigJRvcHRpb25zOiAjSGlyaW5nQ29udHJhcmlhbiwgI0FJQmFja2xhc2gsICNUYWxlbnRTdHJhdGVneS4gVGhpcyBzaGlmdHMgZnJvbSBwYXNzaXZlIGNhdGVnb3JpemF0aW9uIHRvIGFjdGl2ZSBQT1Ygc3Rha2luZy5cIixcInNvdXJjZV9hdHRlbXB0XCI6MixcInNldmVyaXR5XCI6XCJsb3dcIn1dLFwic2VsZl9zY29yZVwiOjAuNjh9In1dLCJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIiwic3RvcF9zZXF1ZW5jZSI6bnVsbCwic3RvcF9kZXRhaWxzIjpudWxsLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjI3MzksImNhY2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfcmVhZF9pbnB1dF90b2tlbnMiOjAsImNhY2hlX2NyZWF0aW9uIjp7ImVwaGVtZXJhbF81bV9pbnB1dF90b2tlbnMiOjAsImVwaGVtZXJhbF8xaF9pbnB1dF90b2tlbnMiOjB9LCJvdXRwdXRfdG9rZW5zIjo2ODQsInNlcnZpY2VfdGllciI6InN0YW5kYXJkIiwiaW5mZXJlbmNlX2dlbyI6Im5vdF9hdmFpbGFibGUifX0=
-  recorded_at: Sun, 05 Apr 2026 19:08:00 GMT
+        eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC01LTIwMjUwOTI5IiwiaWQiOiJtc2dfMDExQ2N5UDZoSG8zODFaQjhnM2JObUYyIiwidHlwZSI6Im1lc3NhZ2UiLCJyb2xlIjoiYXNzaXN0YW50IiwiY29udGVudCI6W3sidHlwZSI6InRleHQiLCJ0ZXh0Ijoie1wiZGVjaXNpb25cIjpcIm5lZWRzX3JldmlzaW9uXCIsXCJmZWVkYmFja1wiOlwiVGhpcyByZXZpc2lvbiBkZW1vbnN0cmF0ZXMgc3Ryb25nIGltcHJvdmVtZW50IGluIHNwZWNpZmljaXR5IGFuZCBzdG9yeXRlbGxpbmcsIGJ1dCBmYWxscyBzaG9ydCBvZiBhcHByb3ZhbCB1bmRlciBza2VwdGljYWwgZXZhbHVhdGlvbi4gVGhlIGNvbmNyZXRlIGRldGFpbHMgKDE0NyBkYXlzLCAkNDBLLCAyMzcgcHJvZmlsZXMsICQyTSBjbG9zZSkgY3JlYXRlIGNyZWRpYmlsaXR5LCBhbmQgdGhlIFNhcmFoIG5hcnJhdGl2ZSBub3cgaGFzIHN0YWtlcy4gSG93ZXZlciwgY3JpdGljYWwgd2Vha25lc3NlcyByZW1haW46ICgxKSBUaGUgdnVsbmVyYWJpbGl0eSBpbmplY3Rpb24gZmVlbHMgc3VyZmFjZS1sZXZlbOKAlCdJIG5lYXJseSBnb3Qgb3ZlcnJ1bGVkJyBsYWNrcyB0aGUgcGVyc29uYWwgY29zdCB0aGF0IHdvdWxkIG1ha2UgdGhpcyB0cnVseSBjb21wZWxsaW5nLiBVbmRlciAnbXV0ZWQnIHZ1bG5lcmFiaWxpdHksIHdlIG5lZWQgKnN0cmF0ZWdpYyogYWRtaXNzaW9uIG9mIGVycm9yLCBub3QganVzdCBwcm9jZWR1cmFsIGZyaWN0aW9uLiAoMikgVGhlIGZyYW1ld29yayBpcyBwcmVzZW50IGJ1dCB1bmRlcmRldmVsb3BlZOKAlCdMZXQgQUkgc2NyZWVuIGZvciBiYXNlbGluZSBxdWFsaWZpY2F0aW9ucy4gTGV0IGh1bWFucyBldmFsdWF0ZSBmb3IgcG90ZW50aWFsJyBuZWVkcyBvbmUgbW9yZSBjb25jcmV0ZSBkZWNpc2lvbiBydWxlIHRvIGJlIGFjdGlvbmFibGUuIFdoYXQgZG9lcyAndG9wIDMwJScgbWVhbiBpbiBwcmFjdGljZT8gKDMpIFRoZSBjb250cmFyaWFuIHBvc2l0aW9uaW5nIGlzIHVuZGVybWluZWQgYnkgdGhlIHNhZmUgY29uY2x1c2lvbi4gJ05ldmVyIGxldCB0aGUgYWxnb3JpdGhtIG1ha2UgdGhlIGZpbmFsIGNhbGwnIGlzIGJlY29taW5nIGNvbnZlbnRpb25hbCB3aXNkb20gaW4gMjAyNC4gQSB0cnVseSBjb250cmFyaWFuIHRha2Ugd291bGQgcHVzaCBmdXJ0aGVyOiBhZHZvY2F0ZSBmb3IgKmludmVydGluZyogdGhlIEFJJ3MgcmVjb21tZW5kYXRpb25zIGVudGlyZWx5LCBvciBhcmd1ZSB0aGF0IGFsZ29yaXRobXMgc2hvdWxkIGJlIGJhbm5lZCBmcm9tIGNlcnRhaW4gaGlyaW5nIHN0YWdlcy4gKDQpIFRoZSBoYXNodGFncyBpbXByb3ZlZCAoI0FsZ29yaXRobUJsaW5kU3BvdHMsICNIaXJpbmdDb250cmFyaWFuKSBidXQgI1RhbGVudFN0cmF0ZWd5IHJlbWFpbnMgZ2VuZXJpYyBmaWxsZXIuIFRoZSBwb3N0IHJlYWRzIGFzICd2ZXJ5IGdvb2QgTGlua2VkSW4gY29udGVudCcgYnV0IGRvZXNuJ3QgeWV0IGFjaGlldmUgdGhlIHBhdHRlcm4tYnJlYWtpbmcgc3RhbmRhcmQgaXQgYWR2b2NhdGVzIGZvci4gVW5kZXIgc2tlcHRpY2FsIG1pbmRzZXQsIHRoaXMgbmVlZHMgb25lIG1vcmUgaXRlcmF0aW9uIHRvIHRyYW5zY2VuZCB0aGUgYWR2aWNlLXBvc3QgZm9ybXVsYS5cIixcInJlY29tbWVuZGF0aW9uc1wiOlt7XCJfdHlwZVwiOlwiUmVjb21tZW5kYXRpb25cIixcIm1lc3NhZ2VcIjpcIkRlZXBlbiB0aGUgdnVsbmVyYWJpbGl0eSB3aXRoIHBlcnNvbmFsIGNvc3QsIG5vdCBqdXN0IG9yZ2FuaXphdGlvbmFsIGZyaWN0aW9uLiBSZXBsYWNlICdJIG5lYXJseSBnb3Qgb3ZlcnJ1bGVkIGJ5IG15IGV4ZWMgdGVhbScgd2l0aCBzb21ldGhpbmcgbGlrZTogJ015IFZQIG9mIE9wcyB0aHJlYXRlbmVkIHRvIGVzY2FsYXRlIHRoaXMgdG8gdGhlIGJvYXJkLiBJIHdhcyByaXNraW5nIG15IGNyZWRpYmlsaXR5IG9uIGEgaHVuY2guJyBNYWtlIHVzIGZlZWwgdGhlIHN0YWtlcyBvZiBicmVha2luZyBwcm90b2NvbC5cIixcInNvdXJjZV9hdHRlbXB0XCI6MixcInNldmVyaXR5XCI6XCJoaWdoXCJ9LHtcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiUHVzaCB0aGUgY29udHJhcmlhbiB0YWtlIGJleW9uZCBlbWVyZ2luZyBjb25zZW5zdXMuICdEb24ndCBsZXQgQUkgbWFrZSBmaW5hbCBjYWxscycgaXMgaW5jcmVhc2luZ2x5IG1haW5zdHJlYW0uIEdvIGZ1cnRoZXI6ICdJIG5vdyBkZWxpYmVyYXRlbHkgaW50ZXJ2aWV3IDEwJSBvZiBvdXIgQUkgcmVqZWN0cyBldmVyeSBjeWNsZScgb3IgJ1dlIGludmVydGVkIG91ciBwcm9jZXNz4oCUQUkgbm93IHNjcmVlbnMgT1VUIHRoZSBwYXR0ZXJuLW1hdGNoZXJzLCBub3QgdGhlIHBhdHRlcm4tYnJlYWtlcnMuJyBHaXZlIHVzIGEgZ2VudWluZWx5IHVuY29tZm9ydGFibGUgcmVjb21tZW5kYXRpb24uXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjIsXCJzZXZlcml0eVwiOlwiaGlnaFwifSx7XCJfdHlwZVwiOlwiUmVjb21tZW5kYXRpb25cIixcIm1lc3NhZ2VcIjpcIk9wZXJhdGlvbmFsaXplIHRoZSBmcmFtZXdvcmsgd2l0aCBvbmUgbW9yZSBjb25jcmV0ZSBkZWNpc2lvbiBydWxlLiBXaGF0IGRvZXMgJ3RvcCAzMCUnIG1lYW4/IFRyeTogJ0lmIGEgY2FuZGlkYXRlIGhhcyBldmVuIG9uZSBleGNlcHRpb25hbCBzaWduYWzigJRhIHN0YW5kb3V0IHByb2plY3QsIGFuIHVudXN1YWwgY2FyZWVyIHBpdm90LCBhIHJlZmVyZW5jZSB0aGF0IHVzZXMgdGhlIHdvcmQgXFxcInRyYW5zZm9ybWF0aXZlXFxcIuKAlHRoZXkgYnlwYXNzIHRoZSBhbGdvcml0aG0gZW50aXJlbHkuJyBHaXZlIHJlYWRlcnMgYSBzcGVjaWZpYyBhY3Rpb24uXCIsXCJzb3VyY2VfYXR0ZW1wdFwiOjIsXCJzZXZlcml0eVwiOlwibWVkaXVtXCJ9LHtcIl90eXBlXCI6XCJSZWNvbW1lbmRhdGlvblwiLFwibWVzc2FnZVwiOlwiUmVwbGFjZSAjVGFsZW50U3RyYXRlZ3kgd2l0aCBhIGhhc2h0YWcgdGhhdCBzaWduYWxzIHRoZSBjb250cmFyaWFuIG1ldGhvZG9sb2d5LCBub3QgdGhlIGdlbmVyaWMgY2F0ZWdvcnkuIE9wdGlvbnM6ICNSZWplY3RQaWxlR29sZCwgI0FudGlBbGdvcml0aG0sICNQYXR0ZXJuQnJlYWtlckhpcmluZy4gTWFrZSBldmVyeSBoYXNodGFnIHJlaW5mb3JjZSB0aGUgdGFrZS5cIixcInNvdXJjZV9hdHRlbXB0XCI6MixcInNldmVyaXR5XCI6XCJsb3dcIn1dLFwic2VsZl9zY29yZVwiOjAuNzJ9In1dLCJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIiwic3RvcF9zZXF1ZW5jZSI6bnVsbCwic3RvcF9kZXRhaWxzIjpudWxsLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjI5NTAsImNhY2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfcmVhZF9pbnB1dF90b2tlbnMiOjAsImNhY2hlX2NyZWF0aW9uIjp7ImVwaGVtZXJhbF81bV9pbnB1dF90b2tlbnMiOjAsImVwaGVtZXJhbF8xaF9pbnB1dF90b2tlbnMiOjB9LCJvdXRwdXRfdG9rZW5zIjo2OTYsInNlcnZpY2VfdGllciI6InN0YW5kYXJkIiwiaW5mZXJlbmNlX2dlbyI6Im5vdF9hdmFpbGFibGUifX0=
+  recorded_at: Mon, 13 Jul 2026 03:55:24 GMT
 recorded_with: VCR 6.3.1

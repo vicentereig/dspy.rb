@@ -234,7 +234,9 @@ This satisfies requirement #5 from the maintainer: the *default* call path (no `
 - `DSPy::Reasoning.new(...)` itself raises `ConfigurationError` if more than one of `effort/budget_tokens/adaptive/disabled` is set (added in the PR #257 review; see §2).
 - `reasoning:` on any non-Anthropic provider (OpenAI, Gemini, Ollama, OpenRouter, RubyLLM) raises `DSPy::LM::ConfigurationError` from `DSPy::LM::AdapterFactory.create`, checked once centrally before the adapter is constructed — added in the PR #257 review so all providers fail the same way, instead of a raw `ArgumentError` (adapters with no `reasoning:` keyword) or silent no-op (`RubyLLMAdapter`'s `**options`).
 
-All validated in the constructor (`DSPy::LM.new(...)` time), not on first request — cheap failure, matches "fail loudly."
+All of the above (`reasoning:`-related) are validated in the constructor (`DSPy::LM.new(...)` time), not on first request — cheap failure, matches "fail loudly."
+
+**Revised during PR #257 review — scope correction**: this eagerness applies to `reasoning:` only, not to `temperature:`. An explicit `temperature:` (constructor or per-call) is deliberately **not** validated against `capability.fixed_sampling` at construction time — per §6, we "don't second-guess an explicit value." An incompatible explicit `temperature:` (e.g. `0.7` on `claude-sonnet-5`) is caught lazily, by Anthropic's own 400 response on the actual request, not by `DSPy::LM.new`. Only the *implicit default* temperature is eagerly and silently made model-aware (omitted rather than validated). The maintainer flagged that earlier wording here read as if all temperature handling were eagerly validated the same way `reasoning:` is — it is not, by design, and this note exists to keep that distinction explicit.
 
 ## Alternatives Considered
 

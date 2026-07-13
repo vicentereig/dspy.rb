@@ -80,6 +80,22 @@ RSpec.describe DSPy::LM::AdapterFactory do
           described_class.create('openai/gpt-4', api_key: 'test-key')
         }.not_to raise_error
       end
+
+      it 'does not raise, and does not forward the keyword, for explicit reasoning: nil on a non-Anthropic provider (PR #257 review)' do
+        # reasoning: nil should behave exactly like not passing reasoning: at all —
+        # not like passing an unsupported truthy value. Pre-fix, AdapterFactory
+        # forwarded the (nil) key into **options anyway, and OpenAIAdapter/etc.
+        # don't declare a `reasoning:` keyword, so this raised a raw ArgumentError.
+        expect {
+          described_class.create('openai/gpt-4', api_key: 'test-key', reasoning: nil)
+        }.not_to raise_error
+      end
+
+      it 'does not raise for explicit reasoning: nil on ruby_llm/, unlike a truthy reasoning:' do
+        expect {
+          described_class.create('ruby_llm/gpt-4o-mini', api_key: 'test-key', reasoning: nil)
+        }.not_to raise_error
+      end
     end
 
     it 'passes Openrouter-specific options to the adapter' do

@@ -59,11 +59,11 @@ http_interactions:
       Anthropic-Ratelimit-Tokens-Reset:
       - '2026-04-03T19:45:47Z'
       Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
-      - "<ANTHROPIC_ORGANIZATION>"
+      - <ANTHROPIC_ORGANIZATION>
       Server:
       - cloudflare
       X-Envoy-Upstream-Service-Time:

@@ -153,7 +153,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '4351'
       Openai-Project:
@@ -175,7 +175,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 656ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:
@@ -335,7 +335,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '2225'
       Openai-Project:
@@ -357,7 +357,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 298ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:
@@ -579,7 +579,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '4154'
       Openai-Project:
@@ -601,7 +601,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 720ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:
@@ -772,7 +772,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '1704'
       Openai-Project:
@@ -794,7 +794,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 356ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:
@@ -1027,7 +1027,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '7666'
       Openai-Project:
@@ -1049,7 +1049,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 778ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:

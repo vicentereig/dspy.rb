@@ -13,18 +13,20 @@ require 'spec_helper'
 # Recorded once against the live API with a real ANTHROPIC_API_KEY (VCR
 # scrubs the key from the cassette before it's written — see
 # spec/spec_helper.rb's `filter_sensitive_data('<ANTHROPIC_API_KEY>')`).
+#
 # Once spec/vcr_cassettes/anthropic/reasoning_effort_adaptive_opus_4_8.yml
-# exists, this spec replays it and needs no API key at all.
+# exists, VCR's default `record: :once` mode replays it by matching on
+# [:method, :uri] only — it never inspects the `X-Api-Key` header value, so
+# this spec needs *some* string for `api_key:` (AnthropicAdapter validates
+# presence, not validity) but not a real one. Per PR #257 review feedback,
+# it must run — and pass — in any environment, including CI/local runs with
+# no Anthropic credentials at all, not just when a real key happens to be set.
 RSpec.describe 'Anthropic reasoning: effort tiers on opt-in adaptive models', :vcr do
-  before do
-    skip "ANTHROPIC_API_KEY not set (only required to (re-)record the cassette)" unless ENV['ANTHROPIC_API_KEY']
-  end
-
   it 'accepts thinking: adaptive together with output_config.effort on claude-opus-4-8',
      vcr: { cassette_name: 'anthropic/reasoning_effort_adaptive_opus_4_8' } do
     adapter = DSPy::Anthropic::LM::Adapters::AnthropicAdapter.new(
       model: 'claude-opus-4-8',
-      api_key: ENV['ANTHROPIC_API_KEY'],
+      api_key: ENV['ANTHROPIC_API_KEY'] || 'test-anthropic-key-for-vcr',
       reasoning: DSPy::Reasoning.high
     )
 

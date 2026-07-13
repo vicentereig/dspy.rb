@@ -16,9 +16,12 @@ RSpec.describe DSPy::Anthropic::LM::ModelCapabilities do
         adaptive_thinking: :always_on, manual_budget: false, thinking_disable: false,
         effort: true, xhigh_effort: true, max_effort: true, fixed_sampling: true
       },
+      # fixed_sampling: true per PR #257 review (vicentereig, 2026-07-11) — Anthropic
+      # documents Mythos Preview as rejecting non-default temperature/top_p/top_k,
+      # same as Fable 5/Mythos 5/Sonnet 5/Opus 4.7/4.8.
       'claude-mythos-preview' => {
         adaptive_thinking: :default_on, manual_budget: true, thinking_disable: false,
-        effort: true, xhigh_effort: false, max_effort: true, fixed_sampling: false
+        effort: true, xhigh_effort: false, max_effort: true, fixed_sampling: true
       },
       'claude-opus-4-8' => {
         adaptive_thinking: :opt_in, manual_budget: false, thinking_disable: true,
