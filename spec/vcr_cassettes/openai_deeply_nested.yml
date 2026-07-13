@@ -85,7 +85,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '1264'
       Openai-Version:
@@ -105,7 +105,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 197ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:

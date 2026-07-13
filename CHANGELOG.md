@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Anthropic structured outputs migrated off the deprecated Beta API** - `dspy-anthropic` now builds `output_config: { format:, effort: }` on the stable (non-beta) `client.messages.create`/`stream`, replacing the deprecated `output_format`/`betas` Beta API shape. This lets structured outputs and `reasoning:` compose under a single request shape instead of competing for separate ones.
 
+### Fixed
+- **`claude-mythos-preview` sent an incompatible default `temperature`** (#256 follow-up, PR #257 review) - Its capability entry was registered with `fixed_sampling: false`, so `DSPy::LM.new("anthropic/claude-mythos-preview", ...)` still sent the implicit `temperature: 0.0` default, even though Anthropic documents this model as rejecting non-default `temperature`/`top_p`/`top_k` like Sonnet 5 and Opus 4.7/4.8. Corrected to `fixed_sampling: true`.
+
 ## [1.0.1] - 2026-06-12
 
 ### Fixed

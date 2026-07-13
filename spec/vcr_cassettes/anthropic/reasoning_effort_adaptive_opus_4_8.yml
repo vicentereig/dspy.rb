@@ -78,11 +78,11 @@ http_interactions:
       Anthropic-Ratelimit-Tokens-Reset:
       - '2026-07-10T09:40:21Z'
       Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
-      - "<ANTHROPIC_ORGANIZATION>"
+      - <ANTHROPIC_ORGANIZATION>
       Traceresponse:
       - 00-9234a9b05712c7f490604c61be206bac-08d00c79d64c9d52-01
       Server:

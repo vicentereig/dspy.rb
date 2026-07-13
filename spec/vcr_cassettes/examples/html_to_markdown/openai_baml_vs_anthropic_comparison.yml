@@ -238,7 +238,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '7368'
       Openai-Project:
@@ -260,7 +260,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 192ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       X-Openai-Proxy-Wasm:
       - v0.1
       Cf-Cache-Status:
@@ -479,11 +479,11 @@ http_interactions:
       Anthropic-Ratelimit-Tokens-Reset:
       - '2025-12-30T12:02:09Z'
       Request-Id:
-      - req_011CWcqWJtwhbukye7dUmZ2g
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Anthropic-Organization-Id:
-      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      - <ANTHROPIC_ORGANIZATION>
       Server:
       - cloudflare
       X-Envoy-Upstream-Service-Time:

@@ -74,7 +74,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '3699'
       Openai-Version:
@@ -94,7 +94,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 129ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
@@ -223,7 +223,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '5018'
       Openai-Version:
@@ -243,7 +243,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 129ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
@@ -373,7 +373,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '6469'
       Openai-Version:
@@ -393,7 +393,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 129ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
@@ -523,7 +523,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '4649'
       Openai-Version:
@@ -543,7 +543,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 130ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
@@ -673,7 +673,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '5367'
       Openai-Version:
@@ -693,7 +693,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 130ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
@@ -823,7 +823,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '4785'
       Openai-Version:
@@ -843,7 +843,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 129ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:
@@ -973,7 +973,7 @@ http_interactions:
       Access-Control-Expose-Headers:
       - X-Request-ID
       Openai-Organization:
-      - "<OPENAI_ORGANIZATION>"
+      - <OPENAI_ORGANIZATION>
       Openai-Processing-Ms:
       - '5668'
       Openai-Version:
@@ -993,7 +993,7 @@ http_interactions:
       X-Ratelimit-Reset-Tokens:
       - 130ms
       X-Request-Id:
-      - "<REQUEST_ID>"
+      - <REQUEST_ID>
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Cf-Cache-Status:

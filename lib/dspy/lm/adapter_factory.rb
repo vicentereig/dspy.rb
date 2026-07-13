@@ -45,6 +45,7 @@ module DSPy
           provider, model = parse_model_id(model_id)
           adapter_class = get_adapter_class(provider)
           ensure_reasoning_supported!(provider, options)
+          options = normalize_reasoning_option(provider, options)
 
           # Pass provider-specific options
           adapter_options = { model: model, api_key: api_key }
@@ -63,6 +64,18 @@ module DSPy
           raise DSPy::LM::ConfigurationError,
             "reasoning: is currently supported only by the Anthropic adapter " \
             "(got provider: #{provider.inspect}). See adr/019-anthropic-reasoning-temperature-config.md."
+        end
+
+        # `reasoning: nil` on an unsupported provider should behave exactly like
+        # not passing `reasoning:` at all — ensure_reasoning_supported! already
+        # let it through (only a *truthy* reasoning: raises above), but the key
+        # would otherwise still get forwarded into `**options`, and adapters
+        # that don't declare a `reasoning:` keyword (OpenAI, Gemini, Ollama,
+        # OpenRouter) would raise a raw ArgumentError over a value nobody set.
+        def normalize_reasoning_option(provider, options)
+          return options if REASONING_SUPPORTED_PROVIDERS.include?(provider)
+
+          options.reject { |key, _| key == :reasoning }
         end
 
         # Parse model_id to determine provider and model

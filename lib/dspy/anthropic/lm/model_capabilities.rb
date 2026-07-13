@@ -52,9 +52,12 @@ module DSPy
           effort: true, xhigh_effort: true, max_effort: true, fixed_sampling: true
         ).freeze
 
+        # fixed_sampling: true per PR #257 review (vicentereig, 2026-07-11) —
+        # Anthropic documents Mythos Preview as rejecting non-default
+        # temperature/top_p/top_k, same failure class as #256.
         MYTHOS_PREVIEW = Capability.new(
           adaptive_thinking: :default_on, manual_budget: true, thinking_disable: false,
-          effort: true, xhigh_effort: false, max_effort: true, fixed_sampling: false
+          effort: true, xhigh_effort: false, max_effort: true, fixed_sampling: true
         ).freeze
 
         OPUS_4_7_OR_4_8 = Capability.new(

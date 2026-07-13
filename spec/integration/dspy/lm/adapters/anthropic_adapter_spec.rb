@@ -411,6 +411,14 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
         described_class.new(model: 'claude-sonnet-5', api_key: 'test-key').chat(messages: messages)
       end
 
+      it 'omits temperature by default on claude-mythos-preview (PR #257 review, fixed_sampling correction)' do
+        expect(mock_messages).to receive(:create).with(
+          hash_excluding(:temperature)
+        ).and_return(mock_response)
+
+        described_class.new(model: 'claude-mythos-preview', api_key: 'test-key').chat(messages: messages)
+      end
+
       it 'sends an explicit temperature even on a fixed-sampling model' do
         expect(mock_messages).to receive(:create).with(
           hash_including(temperature: 0.7)
