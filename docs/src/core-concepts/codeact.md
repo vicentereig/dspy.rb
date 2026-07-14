@@ -1,5 +1,6 @@
 ---
 layout: docs
+published: false
 title: 'CodeAct: Dynamic Code Generation'
 description: 'CodeAct now ships as its own gem with dedicated documentation.'
 date: 2025-07-11 00:00:00 +0000

@@ -29,7 +29,7 @@ Use toolsets when you have related operations that share state or logic:
 - **API clients** - get, post, put, delete
 - **Database operations** - query, insert, update, delete
 
-## Basic Usage
+## Basic Usage {#using-toolsets}
 
 ```ruby
 class MyToolset < DSPy::Tools::Toolset
@@ -406,7 +406,11 @@ end
 
 The toolset pattern works well for grouping related operations. The `TextProcessingToolset` provides text manipulation utilities, while the `GithubCliToolset` wraps GitHub CLI operations.
 
-Custom toolsets can wrap domain services by extending `Toolset`. The application remains responsible for authorization, side effects, timeouts, and failures.
+Custom toolsets can wrap domain services by extending `Toolset`.
+
+## Runtime Boundaries {#runtime-boundaries}
+
+A tool schema tells the model how to call a method. It does not authorize the operation or isolate its side effects. The application must enforce permissions, validate external resources, handle failures, and bound the agent loop.
 
 ## Design Decisions
 

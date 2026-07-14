@@ -21,7 +21,7 @@ last_modified_at: 2025-08-08 00:00:00 +0000
 
 Build a typed prediction, compose modules with Ruby, then add a tool-using agent where the model needs to choose an action.
 
-## Your First DSPy Program
+## Your First DSPy Program {#first-program}
 
 Add DSPy.rb and the OpenAI adapter to your Gemfile:
 

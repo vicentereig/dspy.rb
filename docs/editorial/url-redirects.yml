@@ -1,0 +1,142 @@
+version: 2
+base_path: /dspy.rb
+policy:
+  path_case: lowercase
+  canonical_trailing_slash: true
+  artifact: directory-index
+  unknown_fragment: destination-default
+  unknown_fragment_reason: An unrecognized fragment cannot be proved safe; send the reader to the reviewed default destination.
+redirects:
+  - id: first-program-merge
+    state: planned
+    corpus_id: getting-started-first-program
+    source: docs/src/getting-started/first-program.md
+    from: /getting-started/first-program/
+    to: /getting-started/quick-start/#first-program
+    target_source: docs/src/getting-started/quick-start.md
+    activation_requires: Merge unique typed-result, validation-boundary, error-handling, and testing guidance before suppressing the source.
+    fragments:
+      mappings:
+        your-first-structured-ai-program: first-program
+        what-were-building: first-program
+        setting-up: first-program
+        replace-the-prompt-string-with-a-task-contract: first-program
+        the-prompt-string: first-program
+        the-typed-program: first-program
+        understanding-what-just-happened: first-program
+        1-clear-interface-definition: first-program
+        2-predictable-module-creation: first-program
+        3-structured-results: first-program
+        add-richer-result-types: /advanced/complex-types/
+        advanced-sorbet-types: /advanced/complex-types/
+        building-react-agents-with-ruby-types: /getting-started/quick-start/#give-an-agent-a-typed-tool
+        adding-error-handling: /production/troubleshooting/
+        testing-your-system: /core-concepts/examples/
+        what-the-program-contains: first-program
+        your-next-steps: /getting-started/quick-start/#next-steps
+        deepen-your-understanding: /core-concepts/
+        compose-modules: /core-concepts/modules/
+        add-tools: /core-concepts/toolsets/
+  - id: getting-started-concepts-merge
+    state: planned
+    corpus_id: getting-started-core-concepts
+    source: docs/src/getting-started/core-concepts.md
+    from: /getting-started/core-concepts/
+    to: /core-concepts/
+    target_source: docs/src/core-concepts/index.md
+    activation_requires: Preserve the linked concept definitions and update every inbound article fragment before suppressing the source.
+    fragments:
+      mappings:
+        core-concepts: /core-concepts/
+        signatures-as-the-contract: /core-concepts/signatures/
+        signatures-defining-llm-interfaces: /core-concepts/signatures/
+        what-the-signature-provides: /core-concepts/signatures/
+        predictors-basic-llm-operations: /core-concepts/predictors/
+        dspypredict: /core-concepts/predictors/
+        dspychainofthought: /core-concepts/predictors/
+        dspyreact: /core-concepts/predictors/
+        modules-composing-ruby-programs: /core-concepts/modules/
+        examples-type-safe-training-data: /core-concepts/examples/
+        configuration-setting-up-your-environment: /getting-started/installation/
+        language-model-options: /getting-started/installation/#provider-setup
+        raw-chat-api: /core-concepts/examples/
+        error-handling-and-validation: /production/troubleshooting/
+        best-practices: /core-concepts/
+        1-start-simple: /core-concepts/
+        2-use-clear-descriptions: /core-concepts/signatures/
+        3-leverage-type-safety: /core-concepts/signatures/
+        4-keep-control-flow-explicit: /core-concepts/modules/
+        next-steps: /core-concepts/
+        common-patterns: /core-concepts/examples/
+        multi-step-processing: /advanced/pipelines/
+        conditional-routing: /core-concepts/modules/
+        error-recovery: /production/troubleshooting/
+  - id: toolsets-guide-merge
+    state: planned
+    corpus_id: toolsets-guide-duplicate
+    source: docs/src/core-concepts/toolsets-guide.md
+    from: /core-concepts/toolsets-guide/
+    to: /core-concepts/toolsets/#using-toolsets
+    target_source: docs/src/core-concepts/toolsets.md
+    activation_requires: Preserve the application-owned authorization, side-effect, timeout, failure, and agent-loop boundary before suppressing the source.
+    fragments:
+      mappings:
+        toolsets: /core-concepts/toolsets/
+        when-to-use-toolsets: /core-concepts/toolsets/#when-to-use-toolsets
+        basic-usage: using-toolsets
+        text-processing-toolset-example: /core-concepts/toolsets/#text-processing-toolset-example
+        how-it-works: /core-concepts/toolsets/#how-it-works
+        dsl-methods: /core-concepts/toolsets/#dsl-methods
+        toolset_namename: /core-concepts/toolsets/#toolset_namename
+        toolmethod_name-options: /core-concepts/toolsets/#toolmethod_name-options
+        type-safety: /core-concepts/toolsets/#type-safety
+        text-processing-operations: /core-concepts/toolsets/#text-processing-operations
+        llm-usage: /core-concepts/toolsets/#llm-usage
+        testing: /core-concepts/toolsets/#testing
+        limitations: /core-concepts/toolsets/#limitations
+        runtime-boundaries: /core-concepts/toolsets/#runtime-boundaries
+        design-decisions: /core-concepts/toolsets/#design-decisions
+  - id: codeact-package-move
+    state: active
+    corpus_id: core-concepts
+    source: docs/src/core-concepts/codeact.md
+    from: /core-concepts/codeact/
+    to: https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md
+    target_source: lib/dspy/code_act/README.md
+    fragments:
+      mappings:
+        codeact-has-moved: codeact-dynamic-code-generation-for-dspyrb
+  - id: runtime-context-move
+    state: active
+    corpus_id: core-concepts
+    source: docs/src/core-concepts/module-runtime-context.md
+    from: /core-concepts/module-runtime-context/
+    to: /advanced/module-runtime-context/
+    target_source: docs/src/core-concepts/module-runtime-context.md
+    fragments:
+      mappings:
+        module-runtime-context: module-runtime-context
+        fiber-local-lm-context: fiber-local-lm-context
+        basic-usage: basic-usage
+        lm-resolution-hierarchy: lm-resolution-hierarchy
+        using-with-different-model-types: using-with-different-model-types
+        configuring-agent-lms: configuring-agent-lms
+        basic-configuration: basic-configuration
+        fine-grained-control: fine-grained-control
+        available-predictors-by-agent-type: available-predictors-by-agent-type
+        propagation-behavior: propagation-behavior
+        lifecycle-callbacks: lifecycle-callbacks
+        available-callback-types: available-callback-types
+        basic-usage-1: basic-usage-1
+        before-callbacks: before-callbacks
+        after-callbacks: after-callbacks
+        around-callbacks: around-callbacks
+        combined-callbacks: combined-callbacks
+        multiple-callbacks-of-same-type: multiple-callbacks-of-same-type
+        inheritance: inheritance
+        common-use-cases: common-use-cases
+        1-observability-and-metrics: 1-observability-and-metrics
+        2-memory-and-state-management: 2-memory-and-state-management
+        3-rate-limiting-and-circuit-breaking: 3-rate-limiting-and-circuit-breaking
+        4-error-recovery-and-retry-logic: 4-error-recovery-and-retry-logic
+        next-steps: next-steps

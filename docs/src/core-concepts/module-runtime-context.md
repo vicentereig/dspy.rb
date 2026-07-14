@@ -1,12 +1,13 @@
 ---
 layout: docs
+permalink: /advanced/module-runtime-context/
 name: Module Runtime Context
 description: Manage runtime behavior for DSPy.rb modules with fiber-local models, callbacks, and cross-cutting concerns.
 breadcrumb:
 - name: Core Concepts
-  url: "/core-concepts/"
+  url: "/advanced/"
 - name: Module Runtime Context
-  url: "/core-concepts/module-runtime-context/"
+  url: "/advanced/module-runtime-context/"
 nav:
   prev:
     name: Modules
